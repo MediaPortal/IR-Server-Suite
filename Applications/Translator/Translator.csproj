@@ -1,0 +1,169 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Translator</RootNamespace>
+    <AssemblyName>Translator</AssemblyName>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <StartupObject>Translator.Program</StartupObject>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Forms\BlastCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BlastCommand.Designer.cs">
+      <DependentUpon>BlastCommand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ButtonMapping.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Forms\ButtonMappingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ButtonMappingForm.Designer.cs">
+      <DependentUpon>ButtonMappingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EditProgramForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditProgramForm.Designer.cs">
+      <DependentUpon>EditProgramForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GetKeyCodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetKeyCodeForm.Designer.cs">
+      <DependentUpon>GetKeyCodeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LearnIR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LearnIR.Designer.cs">
+      <DependentUpon>LearnIR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MacroEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MacroEditor.Designer.cs">
+      <DependentUpon>MacroEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MappedEvent.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProgramSettings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\BlastCommand.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>BlastCommand.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ButtonMappingForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ButtonMappingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditProgramForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>EditProgramForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetKeyCodeForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetKeyCodeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LearnIR.resx">
+      <DependentUpon>LearnIR.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MacroEditor.resx">
+      <DependentUpon>MacroEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\irssUtils\IrssUtils.csproj">
+      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
+      <Name>IrssUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IPC\AppModule.InterProcessComm\AppModule.InterProcessComm.csproj">
+      <Project>{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}</Project>
+      <Name>AppModule.InterProcessComm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IPC\AppModule.NamedPipes\AppModule.NamedPipes.csproj">
+      <Project>{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}</Project>
+      <Name>AppModule.NamedPipes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IPC\Named Pipes\Named Pipes.csproj">
+      <Project>{F4EA6055-7133-4F18-8971-E19ADEB482C1}</Project>
+      <Name>Named Pipes</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icon16Connecting.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>copy "*.*" "\MediaPortal Development\Plugin Releases\IR Server Suite\$(ProjectName)\"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,132 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IrssUtils</RootNamespace>
+    <AssemblyName>IrssUtils</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>
+    </DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CDRom.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="Forms\ExternalProgram.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ExternalProgram.Designer.cs">
+      <DependentUpon>ExternalProgram.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\KeysCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\KeysCommand.Designer.cs">
+      <DependentUpon>KeysCommand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MessageCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MessageCommand.Designer.cs">
+      <DependentUpon>MessageCommand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PauseTime.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PauseTime.Designer.cs">
+      <DependentUpon>PauseTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PopupMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PopupMessage.Designer.cs">
+      <DependentUpon>PopupMessage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SerialCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SerialCommand.Designer.cs">
+      <DependentUpon>SerialCommand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ServerAddress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ServerAddress.Designer.cs">
+      <DependentUpon>ServerAddress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IrssLog.cs" />
+    <Compile Include="Mouse.cs" />
+    <Compile Include="TransceiverInfo.cs" />
+    <Compile Include="Win32.cs" />
+    <Compile Include="XML.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\ExternalProgram.resx">
+      <DependentUpon>ExternalProgram.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KeysCommand.resx">
+      <DependentUpon>KeysCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MessageCommand.resx">
+      <DependentUpon>MessageCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PauseTime.resx">
+      <DependentUpon>PauseTime.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PopupMessage.resx">
+      <DependentUpon>PopupMessage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SerialCommand.resx">
+      <DependentUpon>SerialCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ServerAddress.resx">
+      <DependentUpon>ServerAddress.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
