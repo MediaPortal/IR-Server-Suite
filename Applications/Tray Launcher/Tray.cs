@@ -7,8 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-
-using Microsoft.Win32;
+using System.Xml;
 
 using NamedPipes;
 using IrssUtils;
@@ -19,16 +18,14 @@ namespace TrayLauncher
   public class Tray : Form
   {
 
-    #region Properties
+    #region Constants
 
-    internal static Common.MessageHandler HandleMessage
-    {
-      get { return _handleMessage; }
-      set { _handleMessage = value; }
-    }
+    const string DefaultKeyCode = "31730";
 
-    #endregion Properties
-    
+    public static readonly string ConfigurationFile = Common.FolderAppData + "Tray Launcher\\Tray Launcher.xml";
+
+    #endregion Constants
+
     #region Variables
 
     static Common.MessageHandler _handleMessage = null;
@@ -49,24 +46,28 @@ namespace TrayLauncher
     NotifyIcon _notifyIcon;
 
     #endregion Variables
+
+    #region Properties
+
+    internal static Common.MessageHandler HandleMessage
+    {
+      get { return _handleMessage; }
+      set { _handleMessage = value; }
+    }
+
+    #endregion Properties
     
-    #region Constants
-
-    const string DefaultKeyCode = "31730";
-
-    #endregion Constants
-
     #region Constructor
 
     public Tray()
     {
-      ContextMenu contextMenu = new ContextMenu();
-      contextMenu.MenuItems.Add(new MenuItem("Launch", ClickLaunch));
-      contextMenu.MenuItems.Add(new MenuItem("Setup", ClickSetup));
-      contextMenu.MenuItems.Add(new MenuItem("Quit", ClickQuit));
+      ContextMenuStrip contextMenu = new ContextMenuStrip();
+      contextMenu.Items.Add(new ToolStripMenuItem("&Launch", null, new EventHandler(ClickLaunch)));
+      contextMenu.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
+      contextMenu.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
 
       _notifyIcon = new NotifyIcon();
-      _notifyIcon.ContextMenu = contextMenu;
+      _notifyIcon.ContextMenuStrip = contextMenu;
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
       _notifyIcon.Text = "Tray Launcher - Connecting ...";
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
@@ -80,7 +81,7 @@ namespace TrayLauncher
     {
       try
       {
-        LoadSetup();
+        LoadSettings();
 
         bool didSetup = false;
         if (String.IsNullOrEmpty(_programFile) || String.IsNullOrEmpty(_serverHost))
@@ -118,7 +119,7 @@ namespace TrayLauncher
 
       try
       {
-        if (_keepAliveThread != null)
+        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
           _keepAliveThread.Abort();
       }
       catch { }
@@ -143,58 +144,76 @@ namespace TrayLauncher
       catch { }
     }
 
-    void LoadSetup()
+    void LoadSettings()
     {
-      IrssLog.Info("Load Setup");
-
       try
       {
-        RegistryKey key;
-
-        key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-        _autoRun = (key.GetValue("Tray Launcher", null) != null);
-        key.Close();
-
-        key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\TrayLauncher");
-        _serverHost = (string)key.GetValue("ServerHost", String.Empty);
-        _programFile = (string)key.GetValue("Launch", String.Empty);
-        _launchOnLoad = bool.Parse((string)key.GetValue("LaunchOnLoad", "False"));
-        _launchKeyCode = (string)key.GetValue("LaunchButton", DefaultKeyCode);
-        key.Close();
+        _autoRun = SystemRegistry.GetAutoRun("Tray Launcher");
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
+
+        _autoRun = false;
       }
-    }
-    void SaveSetup()
-    {
-      IrssLog.Info("Save Setup");
 
       try
       {
-        RegistryKey key;
+        XmlDocument doc = new XmlDocument();
+        doc.Load(ConfigurationFile);
 
-        key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+        _serverHost     = doc.DocumentElement.Attributes["ServerHost"].Value;
+        _programFile    = doc.DocumentElement.Attributes["ProgramFile"].Value;
+        _launchOnLoad   = bool.Parse(doc.DocumentElement.Attributes["LaunchOnLoad"].Value);
+        _launchKeyCode  = doc.DocumentElement.Attributes["LaunchKeyCode"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+
+        _serverHost     = String.Empty;
+        _programFile    = String.Empty;
+        _launchOnLoad   = false;
+        _launchKeyCode  = DefaultKeyCode;
+      }
+    }
+    void SaveSettings()
+    {
+      try
+      {
         if (_autoRun)
-          key.SetValue("Tray Launcher", Application.ExecutablePath);
-        else if (key.GetValue("Tray Launcher", null) != null)
-          key.DeleteValue("Tray Launcher");
-        key.Close();
+          SystemRegistry.SetAutoRun("Tray Launcher", Application.ExecutablePath);
+        else
+          SystemRegistry.RemoveAutoRun("Tray Launcher");
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
 
-        key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\TrayLauncher");
-        key.SetValue("ServerHost", _serverHost);
-        key.SetValue("Launch", _programFile);
-        key.SetValue("LaunchOnLoad", _launchOnLoad.ToString());
-        key.SetValue("LaunchButton", _launchKeyCode);
-        key.Close();
+      try
+      {
+        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("settings"); // <settings>
+
+        writer.WriteAttributeString("ServerHost", _serverHost);
+        writer.WriteAttributeString("ProgramFile", _programFile);
+        writer.WriteAttributeString("LaunchOnLoad", _launchOnLoad.ToString());
+        writer.WriteAttributeString("LaunchKeyCode", _launchKeyCode);
+
+        writer.WriteEndElement(); // </settings>
+        writer.WriteEndDocument();
+        writer.Close();
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
       }
     }
-
 
     bool OpenLocalPipe()
     {
@@ -388,7 +407,6 @@ namespace TrayLauncher
 
     }
 
-
     void ReceivedMessage(string message)
     {
       PipeMessage received = PipeMessage.FromString(message);
@@ -457,7 +475,6 @@ namespace TrayLauncher
       }
     }
 
-
     void RemoteButtonPressed(string keyCode)
     {
       IrssLog.Info("Remote Button: {0}", keyCode);
@@ -471,24 +488,25 @@ namespace TrayLauncher
       IrssLog.Info("Setup");
 
       Setup setup = new Setup();
-      setup.ServerHost = _serverHost;
-      setup.ProgramFile = _programFile;
-      setup.AutoRun = _autoRun;
-      setup.LaunchOnLoad = _launchOnLoad;
-      setup.LaunchButton = _launchKeyCode;
+
+      setup.AutoRun       = _autoRun;
+      setup.ServerHost    = _serverHost;
+      setup.ProgramFile   = _programFile;
+      setup.LaunchOnLoad  = _launchOnLoad;
+      setup.LaunchKeyCode  = _launchKeyCode;
 
       if (setup.ShowDialog() == DialogResult.OK)
       {
         if (PipeAccess.ServerRunning && _serverHost != setup.ServerHost)
           MessageBox.Show(this, "Changes to the server host address may not take effect until you restart Tray Launcher", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-        _serverHost = setup.ServerHost;
-        _programFile = setup.ProgramFile;
-        _autoRun = setup.AutoRun;
-        _launchOnLoad = setup.LaunchOnLoad;
-        _launchKeyCode = setup.LaunchButton;
+        _autoRun        = setup.AutoRun;
+        _serverHost     = setup.ServerHost;
+        _programFile    = setup.ProgramFile;
+        _launchOnLoad   = setup.LaunchOnLoad;
+        _launchKeyCode  = setup.LaunchKeyCode;
 
-        SaveSetup();
+        SaveSettings();
       }
     }
     void ClickLaunch(object sender, EventArgs e)

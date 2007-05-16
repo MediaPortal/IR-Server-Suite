@@ -8,8 +8,6 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-using Microsoft.Win32;
-
 using IrssUtils;
 using IrssUtils.Forms;
 
@@ -99,9 +97,7 @@ namespace Translator
 
       try
       {
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-        checkBoxAutoRun.Checked = (key.GetValue("Translator", null) != null);
-        key.Close();
+        checkBoxAutoRun.Checked = SystemRegistry.GetAutoRun("Translator");
       }
       catch { }
     }
@@ -652,12 +648,10 @@ namespace Translator
 
     private void checkBoxAutoRun_CheckedChanged(object sender, EventArgs e)
     {
-      RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
       if (checkBoxAutoRun.Checked)
-        key.SetValue("Translator", Application.ExecutablePath);
-      else if (key.GetValue("Translator", null) != null)
-        key.DeleteValue("Translator");
-      key.Close();
+        SystemRegistry.SetAutoRun("Translator", Application.ExecutablePath);
+      else
+        SystemRegistry.RemoveAutoRun("Translator");
     }
 
     private void buttonAddEvent_Click(object sender, EventArgs e)
@@ -862,14 +856,12 @@ namespace Translator
     }
     private void serverToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Program.ServerHost);
+      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Program.Config.ServerHost);
       if (serverAddress.ShowDialog(this) == DialogResult.OK)
       {
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\Translator");
-        key.SetValue("ServerHost", serverAddress.ServerHost);
-        key.Close();
-
-        MessageBox.Show(this, "Changes to the Server Host will not take effect until the program is restarted", "Note", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        Program.StopComms();
+        Program.Config.ServerHost = serverAddress.ServerHost;
+        Program.StartComms();
       }
     }
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -878,12 +870,14 @@ namespace Translator
     }
     private void translatorHelpToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("Software\\IR Server Suite\\");
-      string installFolder = (string)registryKey.GetValue("Install_Dir", String.Empty);
-      registryKey.Close();
-
-      Help.ShowHelp(this, installFolder + "\\IR Server Suite.chm");
-      // , HelpNavigator.Topic, "index.html"
+      try
+      {
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Translator");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {

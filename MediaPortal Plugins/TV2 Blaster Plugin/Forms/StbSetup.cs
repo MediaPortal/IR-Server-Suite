@@ -218,8 +218,15 @@ namespace MediaPortal.Plugins
           else
             command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
-          blastCommand = new BlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
-          listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+          if (command.StartsWith(Common.CmdPrefixSTB))
+          {
+            blastCommand = new BlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
+            listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+          }
+          else
+          {
+            listViewExternalCommands.Items[i].SubItems[1].Text = command;
+          }
         }
 
         numericUpDownPauseTime.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "PauseTime", Decimal.ToInt32(numericUpDownPauseTime.Value)));

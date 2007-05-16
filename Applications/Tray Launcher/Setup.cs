@@ -19,7 +19,7 @@ namespace TrayLauncher
     #region Variables
 
     OpenFileDialog openFileDialog;
-    string _launchButton;
+    string _launchKeyCode;
 
     #endregion Variables
 
@@ -45,10 +45,10 @@ namespace TrayLauncher
       get { return checkBoxLaunchOnLoad.Checked; }
       set { checkBoxLaunchOnLoad.Checked = value; }
     }
-    public string LaunchButton
+    public string LaunchKeyCode
     {
-      get { return _launchButton; }
-      set { _launchButton = value; }
+      get { return _launchKeyCode; }
+      set { _launchKeyCode = value; }
     }
 
     #endregion Properties
@@ -108,7 +108,7 @@ namespace TrayLauncher
       if (String.IsNullOrEmpty(keyCode))
         return;
 
-      _launchButton = keyCode;
+      _launchKeyCode = keyCode;
     }
 
   }

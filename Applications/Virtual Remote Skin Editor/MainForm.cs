@@ -8,8 +8,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-using Microsoft.Win32;
-
 using NamedPipes;
 using IrssUtils;
 
@@ -18,6 +16,12 @@ namespace SkinEditor
 
   public partial class MainForm : Form
   {
+
+    #region Constants
+
+    public static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote Skin Editor\\Virtual Remote Skin Editor.xml";
+
+    #endregion Constants
 
     #region Variables
 
@@ -238,13 +242,15 @@ namespace SkinEditor
     {
       try
       {
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\VirtualRemoteSkinEditor");
-        _serverHost = (string)key.GetValue("ServerHost", String.Empty);
-        key.Close();
+        XmlDocument doc = new XmlDocument();
+        doc.Load(ConfigurationFile);
+
+        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
+
         _serverHost = String.Empty;
       }
     }
@@ -252,13 +258,22 @@ namespace SkinEditor
     {
       try
       {
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\VirtualRemoteSkinEditor");
-        key.SetValue("ServerHost", _serverHost);
-        key.Close();
+        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("settings"); // <settings>
+
+        writer.WriteAttributeString("ServerHost", _serverHost);
+
+        writer.WriteEndElement(); // </settings>
+        writer.WriteEndDocument();
+        writer.Close();
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.Message);
+        IrssLog.Error(ex.ToString());
       }
     }
 

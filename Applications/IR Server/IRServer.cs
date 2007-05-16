@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
 
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
@@ -43,6 +44,12 @@ namespace IRServer
   internal class IRServer
   {
 
+    #region Constants
+
+    public static readonly string ConfigurationFile = Common.FolderAppData + "IR Server\\IR Server.xml";
+
+    #endregion Constants
+
     #region Variables
 
     NotifyIcon _notifyIcon;
@@ -64,31 +71,23 @@ namespace IRServer
     string _pluginName = String.Empty;
     IIRServerPlugin _plugin = null;
 
+    bool _inConfiguration = false;
+
     #endregion Variables
 
     #region Constructor
 
     public IRServer()
     {
-      try
-      {
-        // Load settings
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\IRServer");
+      // Setup taskbar icon
+      _notifyIcon = new NotifyIcon();
+      _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
+      _notifyIcon.Icon = Properties.Resources.Icon16;
+      _notifyIcon.Text = "IR Server";
 
-        _mode         = (IRServerMode)key.GetValue("Mode", (int)IRServerMode.ServerMode);
-        _hostComputer = (string)key.GetValue("HostComputer", String.Empty);
-        _pluginName   = (string)key.GetValue("Plugin", String.Empty);
 
-        key.Close();
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.Message);
-
-        _mode         = IRServerMode.ServerMode;
-        _hostComputer = String.Empty;
-        _pluginName   = String.Empty;
-      }
     }
 
     #endregion Constructor
@@ -103,66 +102,40 @@ namespace IRServer
     {
       try
       {
-        IrssLog.Debug("Starting IR Server");
+        IrssLog.Debug("Starting IR Server ...");
 
-        if (String.IsNullOrEmpty(_pluginName))
+        LoadSettings();
+
+        // Try to load the IR Plugin, if it fails (for whatever reason) then run configuration.
+        _plugin = null;
+        while (_plugin == null)
         {
-          IrssLog.Error("No transceiver plugin specified, cannot start.  Run Configuration.");
-          return false;
-        }
-        else
-        {
-          IIRServerPlugin[] serverPlugins = Program.AvailablePlugins();
-
-          if (serverPlugins == null)
-          {
-            IrssLog.Error("No IR Server Plugins found, cannot start.");
-            return false;
-          }
-
-          foreach (IIRServerPlugin plugin in serverPlugins)
-          {
-            if (plugin.Name == _pluginName)
-            {
-              _plugin = plugin;
-              break;
-            }
-          }
+          _plugin = Program.GetPlugin(_pluginName);
+          IrssLog.Warn("Failed to load plugin \"{0}\"", _pluginName);
 
           if (_plugin == null)
           {
-            IrssLog.Error("Failed to start transceiver plugin \"{0}\", cannot start.  Run Configuration.", _pluginName);
-            return false;
-          }
-          else
-          {
-            IrssLog.Info("Loading transceiver plugin: \"{0}\"", _pluginName);
+            if (Configure())
+              SaveSettings();
+            else
+              return false;
           }
         }
 
-        // Create a FIFO message queue
-        _messageQueue = Queue.Synchronized(new Queue());
-
-        // Start message queue handling thread
-        _processMessageQueue = true;
-        _messageHandlerThread = new Thread(new ThreadStart(MessageHandlerThread));
-        _messageHandlerThread.IsBackground = true;
-        _messageHandlerThread.Name = "IR Server Message Queue";
-        _messageHandlerThread.Start();
-
-        IrssLog.Debug("Message Queue thread started");
+        StartMessageQueue();
 
         switch (_mode)
         {
           case IRServerMode.ServerMode:
             {
-              // Initialize registered clients list
+              // Initialize registered client lists ...
               _registeredClients = new List<Client>();
+              _registeredRepeaters = new List<Client>();
 
               // Start server pipe
               PipeAccess.StartServer(Common.ServerPipeName, new PipeMessageHandler(QueueMessage));
 
-              IrssLog.Debug("Server Mode: \\\\" + Environment.MachineName + "\\pipe\\" + Common.ServerPipeName);
+              IrssLog.Info("Server Mode: \\\\" + Environment.MachineName + "\\pipe\\" + Common.ServerPipeName);
               break;
             }
 
@@ -207,12 +180,6 @@ namespace IRServer
         if (_plugin.CanReceive)
           _plugin.RemoteButtonCallback += new RemoteButtonHandler(RemoteButtonPressed);
 
-        // Setup taskbar icon
-        _notifyIcon = new NotifyIcon();
-        _notifyIcon.ContextMenu = new ContextMenu();
-        _notifyIcon.ContextMenu.MenuItems.Add(new MenuItem("&Quit", ClickQuit));
-        _notifyIcon.Icon = Properties.Resources.Icon16;
-        _notifyIcon.Text = "IR Server";
         _notifyIcon.Visible = true;
 
         IrssLog.Info("IR Server started");
@@ -233,13 +200,12 @@ namespace IRServer
     {
       IrssLog.Info("Stopping IR Server ...");
 
-      _processMessageQueue = false;
-
       _notifyIcon.Visible = false;
 
       if (_plugin.CanReceive)
         _plugin.RemoteButtonCallback -= new RemoteButtonHandler(RemoteButtonPressed);
-
+      
+      // Stop Plugin
       try
       {
         _plugin.Stop();
@@ -249,6 +215,17 @@ namespace IRServer
         IrssLog.Error(ex.ToString());
       }
 
+      // Stop Message Queue
+      try
+      {
+        StopMessageQueue();
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
+
+      // Stop Server
       try
       {
         switch (_mode)
@@ -271,8 +248,66 @@ namespace IRServer
       {
         IrssLog.Error(ex.ToString());
       }
+    }
 
-      Application.Exit();
+    bool Configure()
+    {
+      _inConfiguration = true;
+
+      try
+      {
+        Config config = new Config();
+        config.Mode = _mode;
+        config.HostComputer = _hostComputer;
+        config.Plugin = _pluginName;
+
+        if (config.ShowDialog() == DialogResult.OK)
+        {
+          _mode = config.Mode;
+          _hostComputer = config.HostComputer;
+          _pluginName = config.Plugin;
+
+          _inConfiguration = false;
+
+          return true;
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
+
+      _inConfiguration = false;
+
+      return false;
+    }
+
+    void StartMessageQueue()
+    {
+      _processMessageQueue = true;
+      
+      // Create a FIFO message queue
+      _messageQueue = Queue.Synchronized(new Queue());
+
+      // Start message queue handling thread
+      _messageHandlerThread = new Thread(new ThreadStart(MessageHandlerThread));
+      _messageHandlerThread.IsBackground = true;
+      _messageHandlerThread.Name = "IR Server Message Queue";
+      _messageHandlerThread.Start();
+    }
+    void StopMessageQueue()
+    {
+      _processMessageQueue = false;
+
+      try
+      {
+        if (_messageHandlerThread != null && _messageHandlerThread.IsAlive)
+          _messageHandlerThread.Abort();
+      }
+      catch { }
+
+      _messageQueue.Clear();
+      _messageQueue = null;
     }
 
     bool StartRelay()
@@ -344,8 +379,6 @@ namespace IRServer
 
     bool StartRepeater()
     {
-      _registeredRepeaters = new List<Client>();
-
       bool retry = false;
       int pipeNumber = 1;
       string localPipeTest;
@@ -530,7 +563,6 @@ namespace IRServer
         UnregisterClient(pipe, server);
       }
     }
-
     void SendToRepeaters(PipeMessage message)
     {
       IrssLog.Debug("SendToRepeaters({0})", message.ToString());
@@ -902,7 +934,9 @@ namespace IRServer
                 PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Server Shutdown", null);
                 SendToAll(response);
               }
+
               Stop();
+              Application.Exit();
               break;
             }
 
@@ -1001,9 +1035,26 @@ namespace IRServer
       catch { }
     }
 
+    void ClickSetup(object sender, EventArgs e)
+    {
+      IrssLog.Info("Setup");
+
+      if (_inConfiguration)
+        return;
+
+      Stop();
+
+      if (Configure())
+        SaveSettings();
+
+      Start();
+    }
     void ClickQuit(object sender, EventArgs e)
     {
       IrssLog.Info("Quit");
+
+      if (_inConfiguration)
+        return;
 
       if (_mode == IRServerMode.ServerMode)
       {
@@ -1012,6 +1063,52 @@ namespace IRServer
       }
 
       Stop();
+      Application.Exit();
+    }
+
+    void LoadSettings()
+    {
+      try
+      {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(ConfigurationFile);
+
+        _mode         = (IRServerMode)Enum.Parse(typeof(IRServerMode), doc.DocumentElement.Attributes["Mode"].Value);
+        _hostComputer = doc.DocumentElement.Attributes["HostComputer"].Value;
+        _pluginName   = doc.DocumentElement.Attributes["Plugin"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+
+        _mode         = IRServerMode.ServerMode;
+        _hostComputer = String.Empty;
+        _pluginName   = String.Empty;
+      }
+    }
+    void SaveSettings()
+    {
+      try
+      {
+        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("settings"); // <settings>
+
+        writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), _mode));
+        writer.WriteAttributeString("HostComputer", _hostComputer);
+        writer.WriteAttributeString("Plugin", _pluginName);
+
+        writer.WriteEndElement(); // </settings>
+        writer.WriteEndDocument();
+        writer.Close();
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
     }
 
     #endregion Implementation

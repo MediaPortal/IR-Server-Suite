@@ -10,8 +10,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using Microsoft.Win32;
-
 using MediaPortal.Configuration;
 using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
@@ -354,7 +352,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        if (_keepAliveThread != null)
+        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
           _keepAliveThread.Abort();
       }
       catch { }

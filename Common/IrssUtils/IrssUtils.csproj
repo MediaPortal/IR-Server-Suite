@@ -86,6 +86,7 @@
     </Compile>
     <Compile Include="IrssLog.cs" />
     <Compile Include="Mouse.cs" />
+    <Compile Include="SystemRegistry.cs" />
     <Compile Include="TransceiverInfo.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="XML.cs" />

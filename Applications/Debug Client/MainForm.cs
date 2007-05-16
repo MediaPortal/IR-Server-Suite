@@ -10,8 +10,6 @@ using System.Security;
 using System.Text;
 using System.Windows.Forms;
 
-using Microsoft.Win32;
-
 using NamedPipes;
 using IrssUtils;
 
@@ -97,7 +95,7 @@ namespace DebugClient
 
     #region Constants
 
-    const string  TempIRFile = "test.IR";
+    const string TempIRFile = "test.IR";
 
     #endregion
 
@@ -190,10 +188,12 @@ namespace DebugClient
           {
             _transceiverInfo = TransceiverInfo.FromBytes(received.Data);
 
-            comboBoxPort.Items.Add(_transceiverInfo.Ports);
+            comboBoxPort.Items.Clear();
+            comboBoxPort.Items.AddRange(_transceiverInfo.Ports);
             comboBoxPort.SelectedIndex = 0;
 
-            comboBoxSpeed.Items.Add(_transceiverInfo.Speeds);
+            comboBoxSpeed.Items.Clear();
+            comboBoxSpeed.Items.AddRange(_transceiverInfo.Speeds);
             comboBoxSpeed.SelectedIndex = 0;
             return;
           }
@@ -574,12 +574,15 @@ namespace DebugClient
 
     private void buttonHelp_Click(object sender, EventArgs e)
     {
-      RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("Software\\IR Server Suite\\");
-      string installFolder = (string)registryKey.GetValue("Install_Dir", String.Empty);
-      registryKey.Close();
-
-      Help.ShowHelp(this, installFolder + "\\IR Server Suite.chm");
-      // , HelpNavigator.Topic, "index.html"
+      try
+      {
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm");
+        // , HelpNavigator.Topic, "index.html"
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     #endregion Controls

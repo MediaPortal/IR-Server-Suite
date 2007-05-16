@@ -10,8 +10,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using Microsoft.Win32;
-
 using TvLibrary.Log;
 using TvEngine;
 using TvControl;
@@ -256,12 +254,14 @@ namespace SetupTv.Sections
 
     private void buttonHelp_Click(object sender, EventArgs e)
     {
-      RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("Software\\IR Server Suite\\");
-      string installFolder = (string)registryKey.GetValue("Install_Dir", String.Empty);
-      registryKey.Close();
-
-      Help.ShowHelp(this, installFolder + "\\IR Server Suite.chm");
-      // , HelpNavigator.Topic, "index.html"
+      try
+      {
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "TV3 Blaster Plugin");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     #endregion Controls

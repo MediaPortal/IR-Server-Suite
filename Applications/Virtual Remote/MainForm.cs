@@ -10,8 +10,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using Microsoft.Win32;
-
 using NamedPipes;
 using IrssUtils;
 
@@ -21,75 +19,11 @@ namespace VirtualRemote
   public partial class MainForm : Form
   {
 
-    #region Enumerations
-
-    /// <summary>
-    /// A list of MCE remote buttons
-    /// </summary>
-    public enum MceButton
-    {
-      Custom        = -1,
-      None          = 0,
-      TV_Power      = 0x7b9a,
-      Blue          = 0x7ba1,
-      Yellow        = 0x7ba2,
-      Green         = 0x7ba3,
-      Red           = 0x7ba4,
-      Teletext      = 0x7ba5,
-      Radio         = 0x7baf,
-      Print         = 0x7bb1,
-      Videos        = 0x7bb5,
-      Pictures      = 0x7bb6,
-      Recorded_TV   = 0x7bb7,
-      Music         = 0x7bb8,
-      TV            = 0x7bb9,
-      Guide         = 0x7bd9,
-      Live_TV       = 0x7bda,
-      DVD_Menu      = 0x7bdb,
-      Back          = 0x7bdc,
-      OK            = 0x7bdd,
-      Right         = 0x7bde,
-      Left          = 0x7bdf,
-      Down          = 0x7be0,
-      Up            = 0x7be1,
-      Star          = 0x7be2,
-      Hash          = 0x7be3,
-      Replay        = 0x7be4,
-      Skip          = 0x7be5,
-      Stop          = 0x7be6,
-      Pause         = 0x7be7,
-      Record        = 0x7be8,
-      Play          = 0x7be9,
-      Rewind        = 0x7bea,
-      Forward       = 0x7beb,
-      Channel_Down  = 0x7bec,
-      Channel_Up    = 0x7bed,
-      Volume_Down   = 0x7bee,
-      Volume_Up     = 0x7bef,
-      Info          = 0x7bf0,
-      Mute          = 0x7bf1,
-      Start         = 0x7bf2,
-      PC_Power      = 0x7bf3,
-      Enter         = 0x7bf4,
-      Escape        = 0x7bf5,
-      Number_9      = 0x7bf6,
-      Number_8      = 0x7bf7,
-      Number_7      = 0x7bf8,
-      Number_6      = 0x7bf9,
-      Number_5      = 0x7bfa,
-      Number_4      = 0x7bfb,
-      Number_3      = 0x7bfc,
-      Number_2      = 0x7bfd,
-      Number_1      = 0x7bfe,
-      Number_0      = 0x7bff,
-    }
-
-    #endregion Enumerations
-
     #region Constants
 
     const string DefaultSkin          = "MCE";
-    const string DefaultIntallFolder  = ".";
+
+    public static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Virtual Remote.xml";
 
     #endregion Constants
 
@@ -197,34 +131,52 @@ namespace VirtualRemote
     {
       try
       {
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\VirtualRemote");
-        _remoteSkin = (string)key.GetValue("Skin", DefaultSkin);
-        _serverHost = (string)key.GetValue("ServerHost", String.Empty);
-        key.Close();
-
-        key = Registry.LocalMachine.OpenSubKey("Software\\IR Server Suite\\");
-        _installFolder = (string)key.GetValue("Install_Dir", DefaultIntallFolder);
-        key.Close();
-
-        if (_installFolder != DefaultIntallFolder)
+        _installFolder = SystemRegistry.GetInstallFolder();
+        if (String.IsNullOrEmpty(_installFolder))
+          _installFolder = ".";
+        else
           _installFolder += "\\Virtual Remote";
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
-        _remoteSkin     = DefaultSkin;
-        _serverHost     = String.Empty;
-        _installFolder  = DefaultIntallFolder;
+
+        _installFolder = ".";
+      }
+
+      try
+      {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(ConfigurationFile);
+
+        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+        _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+
+        _serverHost = String.Empty;
+        _remoteSkin = DefaultSkin;
       }
     }
     void SaveSettings()
     {
       try
       {
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\VirtualRemote");
-        key.SetValue("Skin", _remoteSkin);
-        key.SetValue("ServerHost", _serverHost);
-        key.Close();
+        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("settings"); // <settings>
+
+        writer.WriteAttributeString("ServerHost", _serverHost);
+        writer.WriteAttributeString("Skin", _remoteSkin);
+
+        writer.WriteEndElement(); // </settings>
+        writer.WriteEndDocument();
+        writer.Close();
       }
       catch (Exception ex)
       {
@@ -250,14 +202,13 @@ namespace VirtualRemote
 
       return false;
     }
-
     void StopComms()
     {
       _keepAlive = false;
 
       try
       {
-        if (_keepAliveThread != null)
+        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
           _keepAliveThread.Abort();
       }
       catch { }

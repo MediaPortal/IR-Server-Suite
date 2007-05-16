@@ -97,7 +97,6 @@ namespace Translator
 
     static Configuration _config;
 
-    static string _serverHost = String.Empty;
     static string _localPipeName = String.Empty;
     static string _learnIRFilename = null;
 
@@ -115,12 +114,6 @@ namespace Translator
     #endregion Variables
 
     #region Properties
-
-    internal static string ServerHost
-    {
-      get { return _serverHost; }
-      set { _serverHost = value; }
-    }
 
     internal static Configuration Config
     {
@@ -165,24 +158,20 @@ namespace Translator
 
       IrssLog.Debug("Platform is {0}", (IntPtr.Size == 4 ? "32-bit" : "64-bit"));
 
-      RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\Translator");
-      _serverHost = (string)key.GetValue("ServerHost", String.Empty);
-      key.Close();
-
-      if (String.IsNullOrEmpty(_serverHost))
-      {
-        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(_serverHost);
-
-        if (serverAddress.ShowDialog() == DialogResult.OK)
-        {
-          _serverHost = serverAddress.ServerHost;
-          SaveOptions();
-        }
-      }
-
       _config = Configuration.Load(ConfigFile);
       if (_config == null)
         _config = new Configuration();
+
+      if (String.IsNullOrEmpty(_config.ServerHost))
+      {
+        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(_config.ServerHost);
+
+        if (serverAddress.ShowDialog() == DialogResult.OK)
+        {
+          _config.ServerHost = serverAddress.ServerHost;
+          Configuration.Save(_config, ConfigFile);
+        }
+      }
 
       // Setup notify icon ...
       _notifyIcon = new NotifyIcon();
@@ -247,13 +236,6 @@ namespace Translator
           break;
       }
 
-    }
-
-    internal static void SaveOptions()
-    {
-      RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\Translator");
-      key.SetValue("ServerHost", _serverHost);
-      key.Close();
     }
 
     internal static void UpdateNotifyMenu()
@@ -333,7 +315,7 @@ namespace Translator
       Application.Exit();
     }
 
-    static bool StartComms()
+    internal static bool StartComms()
     {
       try
       {
@@ -354,7 +336,7 @@ namespace Translator
 
       return false;
     }
-    static void StopComms()
+    internal static void StopComms()
     {
       _notifyIcon.Visible = false;
 
@@ -362,7 +344,7 @@ namespace Translator
       
       try
       {
-        if (_keepAliveThread != null)
+        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
           _keepAliveThread.Abort();
       }
       catch { }
@@ -374,7 +356,7 @@ namespace Translator
           _registered = false;
 
           PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+          PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
         }
       }
       catch { }
@@ -430,7 +412,7 @@ namespace Translator
       try
       {
         PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+        PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
         return true;
       }
       catch (AppModule.NamedPipes.NamedPipeIOException)
@@ -462,7 +444,7 @@ namespace Translator
 
         #region Connect to server
 
-        IrssLog.Info("Connecting ({0}) ...", _serverHost);
+        IrssLog.Info("Connecting ({0}) ...", _config.ServerHost);
         attempt = 0;
         while (_keepAlive && reconnect)
         {
@@ -511,7 +493,7 @@ namespace Translator
 
         if (_keepAlive && _registered && !reconnect)
         {
-          IrssLog.Info("Connected ({0})", _serverHost);
+          IrssLog.Info("Connected ({0})", _config.ServerHost);
 
           _notifyIcon.Icon = Properties.Resources.Icon16;
           _notifyIcon.Text = "Translator";
@@ -529,7 +511,7 @@ namespace Translator
 
         while (_keepAlive && _registered && !reconnect)
         {
-          IrssLog.Info("Ping ({0})", _serverHost);
+          IrssLog.Info("Ping ({0})", _config.ServerHost);
 
           int pingID = random.Next();
           long pingTime = DateTime.Now.Ticks;
@@ -537,7 +519,7 @@ namespace Translator
           try
           {
             PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Ping", BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+            PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
           }
           catch
           {
@@ -910,7 +892,7 @@ namespace Translator
         _learnIRFilename = fileName;
 
         PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Learn", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+        PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
       }
       catch (Exception ex)
       {
@@ -948,7 +930,7 @@ namespace Translator
       file.Close();
 
       PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
-      PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message.ToString());
+      PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
     }
 
     /// <summary>

@@ -615,7 +615,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        if (_keepAliveThread != null)
+        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
           _keepAliveThread.Abort();
       }
       catch { }

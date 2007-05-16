@@ -16,86 +16,22 @@ namespace IRServer
   static class Program
   {
 
-    enum ErrorCode : int
-    {
-      None                = 0,
-      InvalidCommandLine  = 1,
-      MultipleInstances   = 2,
-      FailedToStart       = 3,
-      Other               = 127
-    }
-
-    /// <summary>
-    /// Entry point for IR Server
-    /// </summary>
-    /// <param name="args">Command line arguments
-    /// /c = configure the IR Server
-    /// /k = kill the server
-    /// /? = show command line parameters
-    /// </param>
-    /// <returns>Exit code to show what happened
-    /// 0 = Successful
-    /// 1 = Invalid command line arguments
-    /// 2 = Multiple instances
-    /// 3 = Failed to start
-    /// 4 = Other failure
-    /// </returns>
     [STAThread]
     static int Main(string[] args)
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-      // Process Command Line Arguments
-      if (args.Length == 1)
-      {
-        switch(args[0])
-        {
-          case "--help":
-          case "-help":
-          case "/help":
-          case "-?":
-          case "/?":
-            MessageBox.Show(
-@"Command Line Parameters:
-
-/c = configure the IR Server
-/k = kill the server
-/? = show command line parameters",
-            "IR Server", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return (int)ErrorCode.None;
-
-          case "-configure":
-          case "/configure":
-          case "-c":
-          case "/c":
-            return Configure();
-
-          case "-kill":
-          case "/kill":
-          case "-k":
-          case "/k":
-            return Kill();
-
-          default:
-            return (int)ErrorCode.InvalidCommandLine;
-        }
-      }
-      else if (args.Length > 1)
-      {
-        return (int)ErrorCode.InvalidCommandLine;
-      }
-
       // Check for multiple instances
       try
       {
-        if (IsMultipleInstances())
-          return (int)ErrorCode.MultipleInstances;
+        if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
+          return 1;
       }
       catch (Exception ex)
       {
         Console.WriteLine(ex.Message);
-        return (int)ErrorCode.Other;
+        return 1;
       }
 
       // Open log file
@@ -109,103 +45,41 @@ namespace IRServer
       catch (Exception ex)
       {
         Console.WriteLine(ex.Message);
-        return (int)ErrorCode.Other;
+        return 1;
       }
 
       // Start Server
-      IRServer transceiverServer = new IRServer();
+      IRServer irServer = new IRServer();
       
-      if (transceiverServer.Start())
+      if (irServer.Start())
       {
         Application.Run();
 
         IrssLog.Close();
-        return (int)ErrorCode.None;
+        return 0;
       }
       else
       {
         MessageBox.Show("Failed to start IR Server, refer to log file for more details.", "IR Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         IrssLog.Close();
-        return (int)ErrorCode.FailedToStart;
+        return 1;
       }
 
     }
 
-    static bool IsMultipleInstances()
-    {
-      return (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1);
-    }
-
-    static int Configure()
-    {
-      RegistryKey key = null;
-
-      try
-      {
-        key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\and-81\IRServer");
-
-        Config config = new Config();
-        config.Mode = (IRServerMode)key.GetValue("Mode", (int)IRServerMode.ServerMode);
-        config.HostComputer = (string)key.GetValue("HostComputer", String.Empty);
-        config.Plugin = (string)key.GetValue("Plugin", String.Empty);
-
-        if (config.ShowDialog() == DialogResult.OK)
-        {
-          key.SetValue("Mode", (int)config.Mode);
-          key.SetValue("HostComputer", config.HostComputer);
-          key.SetValue("Plugin", config.Plugin);
-
-          if (IsMultipleInstances())
-            MessageBox.Show("You must restart the IR Server for any settings changes to take effect.", "IR Server", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-        
-        key.Close();
-      }
-      catch (Exception ex)
-      {
-        if (key != null)
-          key.Close();
-
-        MessageBox.Show(ex.Message, "IR Server - Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return (int)ErrorCode.Other;
-      }
-
-      return (int)ErrorCode.None;
-    }
-    static int Kill()
-    {
-      try
-      {
-        Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
-        foreach (Process proc in processes)
-          if (proc.Id != Process.GetCurrentProcess().Id)
-            proc.Kill();
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message, "IR Server Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return (int)ErrorCode.Other;
-      }
-
-      return (int)ErrorCode.None;
-    }
-    
     /// <summary>
-    /// Retreives a list of available IR Server plugins
+    /// Retreives a list of available IR Server plugins.
     /// </summary>
-    /// <returns>Array of plugin instances</returns>
+    /// <returns>Array of plugin instances.</returns>
     internal static IIRServerPlugin[] AvailablePlugins()
     {
       try
       {
         List<IIRServerPlugin> plugins = new List<IIRServerPlugin>();
 
-        RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("Software\\IR Server Suite\\");
-        string installFolder = (string)registryKey.GetValue("Install_Dir", String.Empty);
-        registryKey.Close();
-
-        if (string.IsNullOrEmpty(installFolder))
+        string installFolder = SystemRegistry.GetInstallFolder();
+        if (String.IsNullOrEmpty(installFolder))
           return null;
 
         string[] files = Directory.GetFiles(installFolder + "\\IR Server Plugins\\", "*.dll", SearchOption.TopDirectoryOnly);
@@ -239,7 +113,7 @@ namespace IRServer
             MessageBox.Show(ex.ToString(), "IR Server Unexpected Error");
           }
         }
-        
+
         return plugins.ToArray();
       }
       catch (Exception ex)
@@ -247,6 +121,31 @@ namespace IRServer
         Console.WriteLine(ex.ToString());
         return null;
       }
+    }
+
+    /// <summary>
+    /// Retreives a plugin instance given the plugin name.
+    /// </summary>
+    /// <param name="pluginName">Name of plugin to instantiate.</param>
+    /// <returns>Plugin instance.</returns>
+    internal static IIRServerPlugin GetPlugin(string pluginName)
+    {
+      if (String.IsNullOrEmpty(pluginName))
+        return null;
+
+      IIRServerPlugin[] serverPlugins = AvailablePlugins();
+      if (serverPlugins == null)
+        return null;
+
+      foreach (IIRServerPlugin plugin in serverPlugins)
+      {
+        if (plugin.Name == pluginName)
+        {
+          return plugin;
+        }
+      }
+
+      return null;
     }
 
   }

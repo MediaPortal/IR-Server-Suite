@@ -16,6 +16,8 @@ namespace Translator
 
     #region Variables
 
+    string _serverHost;
+
     List<ButtonMapping> _systemWideMappings;
     List<ProgramSettings> _programSettings;
     List<MappedEvent> _mappedEvents;
@@ -23,6 +25,13 @@ namespace Translator
     #endregion Variables
 
     #region Properties
+
+    [XmlElement]
+    public string ServerHost
+    {
+      get { return _serverHost; }
+      set { _serverHost = value; }
+    }
 
     [XmlArray]
     public List<ButtonMapping> SystemWideMappings
@@ -51,6 +60,8 @@ namespace Translator
 
     public Configuration()
     {
+      _serverHost = String.Empty;
+
       _systemWideMappings = new List<ButtonMapping>();
       _programSettings = new List<ProgramSettings>();
       _mappedEvents = new List<MappedEvent>();
@@ -78,7 +89,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.Message);
+        IrssLog.Error(ex.ToString());
         return false;
       }
     }
@@ -98,7 +109,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.Message);
+        IrssLog.Error(ex.ToString());
         return null;
       }
     }

@@ -9,8 +9,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using Microsoft.Win32;
-
 using MediaPortal.GUI.Library;
 using MediaPortal.Hardware;
 using MediaPortal.Util;
@@ -364,12 +362,14 @@ namespace MediaPortal.Plugins
 
     private void buttonHelp_Click(object sender, EventArgs e)
     {
-      RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("Software\\IR Server Suite\\");
-      string installFolder = (string)registryKey.GetValue("Install_Dir", String.Empty);
-      registryKey.Close();
-
-      Help.ShowHelp(this, installFolder + "\\IR Server Suite.chm");
-      // , HelpNavigator.Topic, "index.html"
+      try
+      {
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "MP Control Plugin");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     private void buttonNewIR_Click(object sender, EventArgs e)

@@ -2,8 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-using Microsoft.Win32;
-
 using IrssUtils;
 
 namespace TrayLauncher
