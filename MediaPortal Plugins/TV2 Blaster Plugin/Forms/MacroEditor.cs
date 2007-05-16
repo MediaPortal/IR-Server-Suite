@@ -233,7 +233,7 @@ namespace MediaPortal.Plugins
       }
       else
       {
-        BlastCommand blastCommand = new BlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+        BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, selected.Substring(Common.CmdPrefixBlast.Length));
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -398,7 +398,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixBlast))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
-          BlastCommand blastCommand = new BlastCommand(commands);
+          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, commands);
           if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
             return;
 

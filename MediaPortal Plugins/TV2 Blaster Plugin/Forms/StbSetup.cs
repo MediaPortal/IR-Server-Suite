@@ -220,7 +220,7 @@ namespace MediaPortal.Plugins
 
           if (command.StartsWith(Common.CmdPrefixSTB))
           {
-            blastCommand = new BlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
+            blastCommand = new BlastCommand(Common.FolderSTB, command.Substring(Common.CmdPrefixSTB.Length));
             listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
           }
           else
@@ -280,14 +280,14 @@ namespace MediaPortal.Plugins
         if (selected.StartsWith(Common.CmdPrefixBlast))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
-          BlastCommand blastCommand = new BlastCommand(commands);
+          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, commands);
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixSTB))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixSTB.Length));
-          BlastCommand blastCommand = new BlastCommand(commands);
+          BlastCommand blastCommand = new BlastCommand(Common.FolderSTB, commands);
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
         }
@@ -366,7 +366,7 @@ namespace MediaPortal.Plugins
         }
         else if (selected.StartsWith(Common.CmdPrefixBlast))
         {
-          BlastCommand blastCommand = new BlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, selected.Substring(Common.CmdPrefixBlast.Length));
           if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
             return;
 

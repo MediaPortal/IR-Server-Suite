@@ -29,43 +29,54 @@ namespace TvEngine
 
     #endregion Properties
 
+    #region Variables
+
+    string _baseFolder;
+
+    #endregion Variables
+
     #region Constructors
 
-    public BlastCommand(string file)
+    public BlastCommand(string baseFolder, string file)
     {
       InitializeComponent();
+
+      SetupPortsAndSpeeds();
+
+      _baseFolder = baseFolder;
 
       labelIRCommandFile.Text = file;
-
-      comboBoxPort.Items.AddRange(TV3BlasterPlugin.TransceiverInformation.Ports);
-      comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.AddRange(TV3BlasterPlugin.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
     }
-    public BlastCommand(string[] commands)
+    public BlastCommand(string baseFolder, string[] commands)
     {
       InitializeComponent();
+
+      SetupPortsAndSpeeds();
+      
+      _baseFolder = baseFolder;
 
       if (commands == null)
         return;
 
       labelIRCommandFile.Text = commands[0];
 
-      comboBoxPort.Items.AddRange(TV3BlasterPlugin.TransceiverInformation.Ports);
       if (comboBoxPort.Items.Contains(commands[1]))
         comboBoxPort.SelectedItem = commands[1];
-      else
-        comboBoxPort.SelectedIndex = 0;
 
-      comboBoxSpeed.Items.AddRange(TV3BlasterPlugin.TransceiverInformation.Speeds);
       if (comboBoxSpeed.Items.Contains(commands[2]))
         comboBoxSpeed.SelectedItem = commands[2];
-      else
-        comboBoxSpeed.SelectedIndex = 0;
     }
 
     #endregion Constructors
+
+    void SetupPortsAndSpeeds()
+    {
+      comboBoxPort.Items.AddRange(TV3BlasterPlugin.TransceiverInformation.Ports);
+      comboBoxPort.SelectedIndex = 0;
+
+      comboBoxSpeed.Items.AddRange(TV3BlasterPlugin.TransceiverInformation.Speeds);
+      comboBoxSpeed.SelectedIndex = 0;
+    }
 
     #region Buttons
 
@@ -90,7 +101,7 @@ namespace TvEngine
 
       try
       {
-        TV3BlasterPlugin.BlastIR(Common.FolderIRCommands + fileName + Common.FileExtensionIR,
+        TV3BlasterPlugin.BlastIR(_baseFolder + fileName + Common.FileExtensionIR,
           comboBoxPort.SelectedItem as string,
           comboBoxSpeed.SelectedItem as string);
       }
