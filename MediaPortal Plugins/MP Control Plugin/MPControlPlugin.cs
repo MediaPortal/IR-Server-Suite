@@ -231,16 +231,10 @@ namespace MediaPortal.Plugins
       if (MultiMappingEnabled)
         LoadMultiMappings();
 
-      if (StartComms())
-      {
-        Log.Debug("MPControlPlugin: Connected to IR Server host \"{0}\"", ServerHost);
-        RemoteButtonListener = new RemoteButtonHandler(RemoteButtonPressed);
-      }
-      else
-      {
-        Log.Error("MPControlPlugin: Failed to connect to server on host \"{0}\"", ServerHost);
-        Log.Error("MPControlPlugin: Remote button reception and IR blasting are disabled for this session");
-      }
+      if (!StartComms())
+        Log.Error("MPControlPlugin: Failed to start local comms, IR input and IR blasting is disabled for this session");
+
+      RemoteButtonListener += new RemoteButtonHandler(RemoteButtonPressed);
 
       // Load the event mapper mappings
       if (EventMapperEnabled)
@@ -268,6 +262,8 @@ namespace MediaPortal.Plugins
 
       //SystemEvents.SessionEnding -= new SessionEndingEventHandler(SystemEvents_SessionEnding);
       SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
+
+      RemoteButtonListener -= new RemoteButtonHandler(RemoteButtonPressed);
 
       if (EventMapperEnabled)
         MapEvent(MappedEvent.MappingEvent.MediaPortal_Stop);

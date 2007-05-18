@@ -129,15 +129,8 @@ namespace MediaPortal.Plugins
 
       LoadExternalConfigs();
 
-      if (StartComms())
-      {
-        Log.Debug("TV2BlasterPlugin: Connected to IR Server host \"{0}\"", ServerHost);
-      }
-      else
-      {
-        Log.Error("TV2BlasterPlugin: Failed to connect to server on host \"{0}\"", ServerHost);
-        Log.Error("TV2BlasterPlugin: IR blasting is disabled for this session");
-      }
+      if (!StartComms())
+        Log.Error("TV2BlasterPlugin: Failed to start local comms, IR blasting is disabled for this session");
 
       // Register with MediaPortal to receive GUI Messages ...
       GUIWindowManager.Receivers += new SendMessageHandler(OnMessage);

@@ -45,7 +45,10 @@ namespace Translator
       comboBoxCommands.Items.Add(Common.UITextSerial);
       comboBoxCommands.Items.Add(Common.UITextMessage);
       comboBoxCommands.Items.Add(Common.UITextKeys);
-
+      //TODO: Add Shutdown and Reboot
+      comboBoxCommands.Items.Add(Common.UITextStandby);
+      comboBoxCommands.Items.Add(Common.UITextHibernate);
+      
       string[] irList = Common.GetIRList(true);
       if (irList != null && irList.Length > 0)
         comboBoxCommands.Items.AddRange(irList);
@@ -95,6 +98,16 @@ namespace Translator
           {
             writer.WriteAttributeString("command", Common.XmlTagKeys);
             writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
+          }
+          else if (item.StartsWith(Common.CmdPrefixStandby))
+          {
+            writer.WriteAttributeString("command", Common.XmlTagStandby);
+            writer.WriteAttributeString("cmdproperty", String.Empty);
+          }
+          else if (item.StartsWith(Common.CmdPrefixHibernate))
+          {
+            writer.WriteAttributeString("command", Common.XmlTagHibernate);
+            writer.WriteAttributeString("cmdproperty", String.Empty);
           }
 
           writer.WriteEndElement();
@@ -147,6 +160,14 @@ namespace Translator
 
             case Common.XmlTagKeys:
               listBoxMacro.Items.Add(Common.CmdPrefixKeys + commandProperty);
+              break;
+
+            case Common.XmlTagStandby:
+              listBoxMacro.Items.Add(Common.CmdPrefixStandby);
+              break;
+            
+            case Common.XmlTagHibernate:
+              listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
               break;
           }
         }
@@ -210,6 +231,14 @@ namespace Translator
           return;
 
         listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
+      }
+      else if (selected == Common.UITextStandby)
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixStandby);
+      }
+      else if (selected == Common.UITextHibernate)
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
       }
       else
       {

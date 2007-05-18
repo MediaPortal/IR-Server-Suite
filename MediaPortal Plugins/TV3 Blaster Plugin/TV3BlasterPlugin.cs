@@ -144,15 +144,8 @@ namespace TvEngine
       _eventHandler = new TvServerEventHandler(events_OnTvServerEvent);
       events.OnTvServerEvent += _eventHandler;
 
-      if (StartComms())
-      {
-        Log.Debug("TV3BlasterPlugin: Connected to IR Server host \"{0}\"", ServerHost);
-      }
-      else
-      {
-        Log.Error("TV3BlasterPlugin: Failed to connect to server on host \"{0}\"", ServerHost);
-        Log.Error("TV3BlasterPlugin: IR blasting is disabled for this session");
-      }
+      if (!StartComms())
+        Log.Error("TV3BlasterPlugin: Failed to start local comms, IR blasting is disabled for this session");
     }
 
     public void Stop()

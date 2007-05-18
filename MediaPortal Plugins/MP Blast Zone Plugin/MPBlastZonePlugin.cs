@@ -247,15 +247,8 @@ namespace MediaPortal.Plugins
 
       InConfiguration = false;
 
-      if (StartComms())
-      {
-        Log.Debug("MPBlastZonePlugin: Connected to IR Server host \"{0}\"", ServerHost);
-      }
-      else
-      {
-        Log.Error("MPBlastZonePlugin: Failed to start local comms");
-        Log.Error("MPBlastZonePlugin: IR blasting is disabled for this session");
-      }
+      if (!StartComms())
+        Log.Error("MPBlastZonePlugin: Failed to start local comms, IR blasting is disabled for this session");
 
       if (LogVerbose)
         Log.Info("MPBlastZonePlugin: Started");

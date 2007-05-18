@@ -858,6 +858,18 @@ namespace Translator
               Common.ProcessKeyCommand(commandProperty);
               break;
             }
+
+          case Common.XmlTagStandby:
+            {
+              Application.SetSuspendState(PowerState.Suspend, true, false);
+              break;
+            }
+
+          case Common.XmlTagHibernate:
+            {
+              Application.SetSuspendState(PowerState.Hibernate, true, false);
+              break;
+            }
         }
       }
     }
