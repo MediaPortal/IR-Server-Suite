@@ -74,13 +74,7 @@ namespace MediaPortal.Plugins
         listBoxMappings.Items.Add(map);
       
       // Event Mapper ...
-      comboBoxCommands.Items.Clear();
-      comboBoxCommands.Items.Add(Common.UITextRun);
-      comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextMessage);
-      comboBoxCommands.Items.Add(Common.UITextKeys);
-      comboBoxCommands.Items.Add(Common.UITextGoto);
-      comboBoxCommands.Items.AddRange(MPControlPlugin.GetFileList(true));
+      RefreshEventMapperCommands();
 
       comboBoxEvents.Items.Clear();
       foreach (string eventType in Enum.GetNames(typeof(MappedEvent.MappingEvent)))
@@ -254,6 +248,17 @@ namespace MediaPortal.Plugins
       listBoxMacro.Items.AddRange(MPControlPlugin.GetMacroList(false));
     }
 
+    void RefreshEventMapperCommands()
+    {
+      comboBoxCommands.Items.Clear();
+      comboBoxCommands.Items.Add(Common.UITextRun);
+      comboBoxCommands.Items.Add(Common.UITextSerial);
+      comboBoxCommands.Items.Add(Common.UITextMessage);
+      comboBoxCommands.Items.Add(Common.UITextKeys);
+      comboBoxCommands.Items.Add(Common.UITextGoto);
+      comboBoxCommands.Items.AddRange(MPControlPlugin.GetFileList(true));
+  }
+
     void EditIR()
     {
       if (listBoxIR.SelectedIndex != -1)
@@ -270,6 +275,7 @@ namespace MediaPortal.Plugins
         {
           MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
           RefreshIRList();
+          RefreshEventMapperCommands();
         }
       }
     }
@@ -289,6 +295,7 @@ namespace MediaPortal.Plugins
         {
           MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
           RefreshMacroList();
+          RefreshEventMapperCommands();
         }
       }
     }
@@ -378,6 +385,7 @@ namespace MediaPortal.Plugins
       learnIR.ShowDialog(this);
 
       RefreshIRList();
+      RefreshEventMapperCommands();
     }
     private void buttonEditIR_Click(object sender, EventArgs e)
     {
@@ -400,6 +408,7 @@ namespace MediaPortal.Plugins
         }
 
         RefreshIRList();
+        RefreshEventMapperCommands();
       }
     }
 
@@ -409,6 +418,7 @@ namespace MediaPortal.Plugins
       macroEditor.ShowDialog(this);
 
       RefreshMacroList();
+      RefreshEventMapperCommands();
     }
     private void buttonEditMacro_Click(object sender, EventArgs e)
     {
@@ -431,6 +441,7 @@ namespace MediaPortal.Plugins
         }
 
         RefreshMacroList();
+        RefreshEventMapperCommands();
       }
     }
     private void buttonTestMacro_Click(object sender, EventArgs e)

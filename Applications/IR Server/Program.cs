@@ -17,7 +17,7 @@ namespace IRServer
   {
 
     [STAThread]
-    static int Main(string[] args)
+    static int Main()
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);

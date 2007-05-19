@@ -345,8 +345,6 @@ namespace TvEngine
 
         while (_keepAlive && _registered && !reconnect)
         {
-          Log.Debug("TV3BlasterPlugin: Ping ({0})", _serverHost);
-
           int pingID = random.Next();
           long pingTime = DateTime.Now.Ticks;
 
@@ -381,15 +379,13 @@ namespace TvEngine
 
           if (receivedEcho) // Received ping echo ...
           {
-            Log.Debug("TV3BlasterPlugin: Echo received");
-
             // Wait 60 seconds before re-pinging ...
             for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
               Thread.Sleep(1000);
           }
           else // Didn't receive ping echo ...
           {
-            Log.Error("TV3BlasterPlugin: No echo, attempting to reconnect ...");
+            Log.Error("TV3BlasterPlugin: No echo to ping, attempting to reconnect ...");
 
             // Break out of pinging cycle ...
             _registered = false;
@@ -408,7 +404,7 @@ namespace TvEngine
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Info("TV3BlasterPlugin: Received Message \"{0}\"", received.Name);
+        Log.Debug("TV3BlasterPlugin: Received Message \"{0}\"", received.Name);
 
       try
       {
@@ -664,7 +660,7 @@ namespace TvEngine
         }
         catch (Exception ex)
         {
-          _externalChannelConfigs[index] = new ExternalChannelConfig();
+          _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
           Log.Error(ex.ToString());
         }
         _externalChannelConfigs[index].CardId = card.IdCard;

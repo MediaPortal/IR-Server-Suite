@@ -446,7 +446,7 @@ namespace IRServer
 
     void RemoteButtonPressed(string keyCode)
     {
-      IrssLog.Info("Remote Button Pressed: {0}", keyCode);
+      IrssLog.Debug("Remote Button Pressed: {0}", keyCode);
       
       byte[] bytes = Encoding.ASCII.GetBytes(keyCode);
 
@@ -468,7 +468,7 @@ namespace IRServer
 
         case IRServerMode.RepeaterMode:
           {
-            IrssLog.Info("Remote button press ignored, IR Server is in Repeater Mode.");
+            IrssLog.Debug("Remote button press ignored, IR Server is in Repeater Mode.");
             break;
           }
       }
@@ -477,8 +477,6 @@ namespace IRServer
     void SendToAll(PipeMessage message)
     {
       IrssLog.Debug("SendToAll({0})", message.ToString());
-
-      IrssLog.Info("Message out: {0}", message.Name);
 
       List<Client> unregister = new List<Client>();
 
@@ -511,8 +509,6 @@ namespace IRServer
     void SendToAllExcept(string exceptPipe, string exceptServer, PipeMessage message)
     {
       IrssLog.Debug("SendToAllExcept({0}, {1}, {2})", exceptPipe, exceptServer, message.ToString());
-
-      IrssLog.Info("Message out: {0}", message.Name);
 
       List<Client> unregister = new List<Client>();
 
@@ -549,8 +545,6 @@ namespace IRServer
     {
       IrssLog.Debug("SendTo({0}, {1}, {2})", pipe, server, message.ToString());
 
-      IrssLog.Info("Message out: {0}", message.Name);
-
       try
       {
         PipeAccess.SendMessage(pipe, server, message.ToString());
@@ -566,8 +560,6 @@ namespace IRServer
     void SendToRepeaters(PipeMessage message)
     {
       IrssLog.Debug("SendToRepeaters({0})", message.ToString());
-
-      IrssLog.Info("Message out: {0}", message.Name);
 
       List<Client> unregister = new List<Client>();
 
@@ -828,8 +820,6 @@ namespace IRServer
     {
       IrssLog.Debug("Message received from client \\\\{0}\\pipe\\{1} = {2}", received.FromServer, received.FromPipe, received.ToString());
 
-      IrssLog.Info("Message in: {0}", received.Name);
-
       try
       {
         switch (received.Name)
@@ -929,6 +919,8 @@ namespace IRServer
 
           case "Shutdown":
             {
+              IrssLog.Info("Shutdown command received");
+
               if (_mode == IRServerMode.ServerMode)
               {
                 PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Server Shutdown", null);
@@ -995,6 +987,7 @@ namespace IRServer
 
           case "Server Shutdown":
             {
+              IrssLog.Info("Host server shut down");
               _registered = false;
               break;
             }

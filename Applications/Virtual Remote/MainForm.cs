@@ -21,7 +21,7 @@ namespace VirtualRemote
 
     #region Constants
 
-    const string DefaultSkin          = "MCE";
+    const string DefaultSkin = "MCE";
 
     public static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Virtual Remote.xml";
 
@@ -172,7 +172,7 @@ namespace VirtualRemote
         writer.WriteStartElement("settings"); // <settings>
 
         writer.WriteAttributeString("ServerHost", _serverHost);
-        writer.WriteAttributeString("Skin", _remoteSkin);
+        writer.WriteAttributeString("RemoteSkin", _remoteSkin);
 
         writer.WriteEndElement(); // </settings>
         writer.WriteEndDocument();
@@ -473,8 +473,6 @@ namespace VirtualRemote
 
         while (_keepAlive && _registered && !reconnect)
         {
-          IrssLog.Info("Ping ({0})", _serverHost);
-
           int pingID = random.Next();
           long pingTime = DateTime.Now.Ticks;
 
@@ -509,15 +507,13 @@ namespace VirtualRemote
 
           if (receivedEcho) // Received ping echo ...
           {
-            IrssLog.Info("Echo received");
-
             // Wait 60 seconds before re-pinging ...
             for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
               Thread.Sleep(1000);
           }
           else // Didn't receive ping echo ...
           {
-            IrssLog.Warn("No echo, attempting to reconnect ...");
+            IrssLog.Warn("No echo to ping, attempting to reconnect ...");
 
             // Break out of pinging cycle ...
             _registered = false;

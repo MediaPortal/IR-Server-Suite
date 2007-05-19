@@ -368,8 +368,6 @@ namespace MediaPortal.Plugins
 
         while (_keepAlive && _registered && !reconnect)
         {
-          Log.Debug("TV2BlasterPlugin: Ping ({0})", _serverHost);
-
           int pingID = random.Next();
           long pingTime = DateTime.Now.Ticks;
 
@@ -404,15 +402,13 @@ namespace MediaPortal.Plugins
 
           if (receivedEcho) // Received ping echo ...
           {
-            Log.Debug("TV2BlasterPlugin: Echo received");
-
             // Wait 60 seconds before re-pinging ...
             for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
               Thread.Sleep(1000);
           }
           else // Didn't receive ping echo ...
           {
-            Log.Warn("TV2BlasterPlugin: No echo, attempting to reconnect ...");
+            Log.Warn("TV2BlasterPlugin: No echo to ping, attempting to reconnect ...");
 
             // Break out of pinging cycle ...
             _registered = false;
@@ -431,7 +427,7 @@ namespace MediaPortal.Plugins
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Info("TV2BlasterPlugin: Received Message \"{0}\"", received.Name);
+        Log.Debug("TV2BlasterPlugin: Received Message \"{0}\"", received.Name);
 
       try
       {
@@ -558,7 +554,7 @@ namespace MediaPortal.Plugins
         }
         catch (Exception ex)
         {
-          ExternalChannelConfigs[index] = new ExternalChannelConfig();
+          ExternalChannelConfigs[index] = new ExternalChannelConfig(fileName);
           Log.Error(ex);
         }
       }

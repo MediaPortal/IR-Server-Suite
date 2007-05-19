@@ -33,7 +33,7 @@ namespace MediaPortal.Plugins
       if (!newMacro)
       {
         string fileName = MPControlPlugin.FolderMacros + name + Common.FileExtensionMacro;
-        ReadFromFile(name);
+        ReadFromFile(fileName);
       }
     }
 
@@ -480,6 +480,8 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, "You must supply a name for this macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
       }
+
+      fileName = MPControlPlugin.FolderMacros + fileName + Common.FileExtensionMacro;
 
       WriteToFile(fileName);
 

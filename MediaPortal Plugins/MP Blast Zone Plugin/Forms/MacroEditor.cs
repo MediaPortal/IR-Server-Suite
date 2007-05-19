@@ -36,7 +36,10 @@ namespace MediaPortal.Plugins
       textBoxName.Enabled = newMacro;
 
       if (!newMacro)
-        ReadFromFile(name);
+      {
+        string fileName = MPBlastZonePlugin.FolderMacros + name + Common.FileExtensionMacro;
+        ReadFromFile(fileName);
+      }
     }
 
     #endregion Constructor
@@ -70,7 +73,7 @@ namespace MediaPortal.Plugins
     /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
     void WriteToFile(string fileName)
     {
-      XmlTextWriter writer = new XmlTextWriter(MPBlastZonePlugin.FolderMacros + fileName + Common.FileExtensionMacro, System.Text.Encoding.UTF8);
+      XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8);
       writer.Formatting = Formatting.Indented;
       writer.Indentation = 1;
       writer.IndentChar = (char)9;
@@ -169,7 +172,7 @@ namespace MediaPortal.Plugins
     void ReadFromFile(string fileName)
     {
       XmlDocument doc = new XmlDocument();
-      doc.Load(MPBlastZonePlugin.FolderMacros + fileName + Common.FileExtensionMacro);
+      doc.Load(fileName);
 
       listBoxMacro.Items.Clear();
 
@@ -370,6 +373,8 @@ namespace MediaPortal.Plugins
         return;
       }
 
+      fileName = MPBlastZonePlugin.FolderMacros + fileName + Common.FileExtensionMacro;
+
       WriteToFile(fileName);
 
       try
@@ -397,6 +402,8 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, "You must supply a name for this macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
       }
+
+      fileName = MPBlastZonePlugin.FolderMacros + fileName + Common.FileExtensionMacro;
 
       WriteToFile(fileName);
 

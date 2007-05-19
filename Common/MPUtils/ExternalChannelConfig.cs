@@ -113,8 +113,10 @@ namespace MPUtils
 
     #region Constructor
 
-    public ExternalChannelConfig()
+    public ExternalChannelConfig(string fileName)
     {
+      _fileName               = fileName;
+
       _cardID                 = DefaultCardID;
 
       _pauseTime              = DefaultPauseTime;
@@ -207,8 +209,7 @@ namespace MPUtils
 
     public static ExternalChannelConfig Load(string fileName)
     {
-      ExternalChannelConfig newECC = new ExternalChannelConfig();
-      newECC._fileName = fileName;
+      ExternalChannelConfig newECC = new ExternalChannelConfig(fileName);
 
       XmlDocument doc = new XmlDocument();
       doc.Load(newECC._fileName);

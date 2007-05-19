@@ -86,7 +86,9 @@ namespace TrayLauncher
         bool didSetup = false;
         if (String.IsNullOrEmpty(_programFile) || String.IsNullOrEmpty(_serverHost))
         {
-          ClickSetup(null, null);
+          if (!Configure())
+            return false;
+
           didSetup = true;
         }
 
@@ -349,8 +351,6 @@ namespace TrayLauncher
 
         while (_keepAlive && _registered && !reconnect)
         {
-          IrssLog.Info("Ping ({0})", _serverHost);
-
           int pingID = random.Next();
           long pingTime = DateTime.Now.Ticks;
 
@@ -385,15 +385,13 @@ namespace TrayLauncher
 
           if (receivedEcho) // Received ping echo ...
           {
-            IrssLog.Info("Echo received");
-
             // Wait 60 seconds before re-pinging ...
             for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
               Thread.Sleep(1000);
           }
           else // Didn't receive ping echo ...
           {
-            IrssLog.Warn("No echo, attempting to reconnect ...");
+            IrssLog.Warn("No echo to ping, attempting to reconnect ...");
 
             // Break out of pinging cycle ...
             _registered = false;
@@ -411,7 +409,7 @@ namespace TrayLauncher
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      IrssLog.Info(received.Name);
+      IrssLog.Debug("Received Message \"{0}\"", received.Name);
 
       try
       {
@@ -483,23 +481,18 @@ namespace TrayLauncher
         ClickLaunch(null, null);
     }
 
-    void ClickSetup(object sender, EventArgs e)
+    bool Configure()
     {
-      IrssLog.Info("Setup");
-
       Setup setup = new Setup();
 
       setup.AutoRun       = _autoRun;
       setup.ServerHost    = _serverHost;
       setup.ProgramFile   = _programFile;
       setup.LaunchOnLoad  = _launchOnLoad;
-      setup.LaunchKeyCode  = _launchKeyCode;
+      setup.LaunchKeyCode = _launchKeyCode;
 
-      if (setup.ShowDialog() == DialogResult.OK)
+      if (setup.ShowDialog(this) == DialogResult.OK)
       {
-        if (PipeAccess.ServerRunning && _serverHost != setup.ServerHost)
-          MessageBox.Show(this, "Changes to the server host address may not take effect until you restart Tray Launcher", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
         _autoRun        = setup.AutoRun;
         _serverHost     = setup.ServerHost;
         _programFile    = setup.ProgramFile;
@@ -507,6 +500,22 @@ namespace TrayLauncher
         _launchKeyCode  = setup.LaunchKeyCode;
 
         SaveSettings();
+        
+        return true;
+      }
+
+      return false;
+    }
+
+    void ClickSetup(object sender, EventArgs e)
+    {
+      IrssLog.Info("Setup");
+
+      if (Configure())
+      {
+        Stop();
+        Thread.Sleep(500);
+        Start();
       }
     }
     void ClickLaunch(object sender, EventArgs e)

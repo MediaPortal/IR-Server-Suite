@@ -52,7 +52,6 @@ namespace MediaPortal.Plugins
     internal static readonly string MultiMappingFile = Common.FolderAppData + "MP Control Plugin\\MultiMapping.xml";
     internal static readonly string EventMappingFile = Common.FolderAppData + "MP Control Plugin\\EventMapping.xml";
 
-    internal static readonly string ExtCfgFolder = Common.FolderAppData + "MP Control Plugin\\";
     internal static readonly string RemotePresetsFolder = Common.FolderAppData + "MP Control Plugin\\Remote Presets\\";
 
     #endregion Constants
@@ -110,11 +109,6 @@ namespace MediaPortal.Plugins
     #endregion Variables
 
     #region Properties
-
-    internal static bool IsRegistered
-    {
-      get { return _registered; }
-    }
 
     internal static string ServerHost
     {
@@ -762,8 +756,6 @@ namespace MediaPortal.Plugins
 
         while (_keepAlive && _registered && !reconnect)
         {
-          Log.Debug("MPControlPlugin: Ping ({0})", _serverHost);
-
           int pingID = random.Next();
           long pingTime = DateTime.Now.Ticks;
 
@@ -798,15 +790,13 @@ namespace MediaPortal.Plugins
 
           if (receivedEcho) // Received ping echo ...
           {
-            Log.Debug("MPControlPlugin: Echo received");
-
             // Wait 60 seconds before re-pinging ...
             for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
               Thread.Sleep(1000);
           }
           else // Didn't receive ping echo ...
           {
-            Log.Warn("MPControlPlugin: No echo, attempting to reconnect ...");
+            Log.Warn("MPControlPlugin: No echo to ping, attempting to reconnect ...");
 
             // Break out of pinging cycle ...
             _registered = false;
@@ -825,7 +815,7 @@ namespace MediaPortal.Plugins
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Info("MPControlPlugin: Received Message \"{0}\"", received.Name);
+        Log.Debug("MPControlPlugin: Received Message \"{0}\"", received.Name);
 
       try
       {
@@ -949,6 +939,14 @@ namespace MediaPortal.Plugins
     }
     static void ChangeMultiMapping(string multiMapping)
     {
+      Log.Debug("ChangeMultiMapping: {0}", multiMapping);
+
+      if (multiMapping == "TOGGLE")
+      {
+        ChangeMultiMapping();
+        return;
+      }
+
       for (int index = 0; index < MultiMaps.Length; index++)
       {
         if (MultiMaps[index] == multiMapping)
@@ -1087,6 +1085,8 @@ namespace MediaPortal.Plugins
     static void MapEvent(GUIMessage msg)
     {
       MappedEvent.MappingEvent eventType = MappedEvent.GetEventType(msg.Message);
+      if (eventType == MappedEvent.MappingEvent.None)
+        return;
 
       foreach (MappedEvent mappedEvent in EventMappings)
       {
@@ -1104,44 +1104,21 @@ namespace MediaPortal.Plugins
 
             switch (mappedEvent.Param)
             {
-              case "Label 1":               
-                matched = (msg.Label == paramValueString);    
-                break;
-              case "Label 2":               
-                matched = (msg.Label2 == paramValueString);   
-                break;
-              case "Label 3":               
-                matched = (msg.Label3 == paramValueString);   
-                break;
-              case "Label 4":               
-                matched = (msg.Label4 == paramValueString);   
-                break;
-              case "Parameter 1":           
-                matched = (msg.Param1 == paramValueInt);      
-                break;
-              case "Parameter 2":           
-                matched = (msg.Param2 == paramValueInt);      
-                break;
-              case "Parameter 3":           
-                matched = (msg.Param3 == paramValueInt);      
-                break;
-              case "Parameter 4":           
-                matched = (msg.Param4 == paramValueInt);      
-                break;
-              case "Sender Control ID":     
-                matched = (msg.SenderControlId == paramValueInt);     
-                break;
-              case "Send To Target Window": 
-                matched = (msg.SendToTargetWindow == paramValueBool); 
-                break;
-              case "Target Control ID":     
-                matched = (msg.TargetControlId == paramValueInt);     
-                break;
-              case "Target Window ID":      
-                matched = (msg.TargetWindowId == paramValueInt);      
-                break;
-              default:                      
-                matched = false;  
+              case "Label 1":               matched = (msg.Label == paramValueString);            break;
+              case "Label 2":               matched = (msg.Label2 == paramValueString);           break;
+              case "Label 3":               matched = (msg.Label3 == paramValueString);           break;
+              case "Label 4":               matched = (msg.Label4 == paramValueString);           break;
+              case "Parameter 1":           matched = (msg.Param1 == paramValueInt);              break;
+              case "Parameter 2":           matched = (msg.Param2 == paramValueInt);              break;
+              case "Parameter 3":           matched = (msg.Param3 == paramValueInt);              break;
+              case "Parameter 4":           matched = (msg.Param4 == paramValueInt);              break;
+              case "Sender Control ID":     matched = (msg.SenderControlId == paramValueInt);     break;
+              case "Send To Target Window": matched = (msg.SendToTargetWindow == paramValueBool); break;
+              case "Target Control ID":     matched = (msg.TargetControlId == paramValueInt);     break;
+              case "Target Window ID":      matched = (msg.TargetWindowId == paramValueInt);      break;
+              
+              default:
+                matched = false;
                 break;
             }
           }

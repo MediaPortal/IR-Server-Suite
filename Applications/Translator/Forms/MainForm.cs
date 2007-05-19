@@ -664,7 +664,7 @@ namespace Translator
     }
     private void buttonSetCommand_Click(object sender, EventArgs e)
     {
-      if (comboBoxCommands.SelectedIndex == -1)
+      if (comboBoxCommands.SelectedIndex == -1 || listViewEventMap.SelectedItems.Count == 0)
         return;
 
       string selected = comboBoxCommands.SelectedItem as string;

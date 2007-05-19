@@ -290,6 +290,8 @@ namespace TvEngine
         return;
       }
 
+      fileName = TV3BlasterPlugin.FolderMacros + fileName + Common.FileExtensionMacro;
+
       WriteToFile(fileName);
 
       this.DialogResult = DialogResult.OK;

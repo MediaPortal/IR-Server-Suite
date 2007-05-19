@@ -496,8 +496,6 @@ namespace MediaPortal.Plugins
 
         while (_keepAlive && _registered && !reconnect)
         {
-          Log.Debug("MPBlastZonePlugin: Ping ({0})", _serverHost);
-
           int pingID = random.Next();
           long pingTime = DateTime.Now.Ticks;
 
@@ -532,15 +530,13 @@ namespace MediaPortal.Plugins
 
           if (receivedEcho) // Received ping echo ...
           {
-            Log.Debug("MPBlastZonePlugin: Echo received");
-
             // Wait 60 seconds before re-pinging ...
             for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
               Thread.Sleep(1000);
           }
           else // Didn't receive ping echo ...
           {
-            Log.Warn("MPBlastZonePlugin: No echo, attempting to reconnect ...");
+            Log.Warn("MPBlastZonePlugin: No echo to ping, attempting to reconnect ...");
 
             // Break out of pinging cycle ...
             _registered = false;
@@ -559,7 +555,7 @@ namespace MediaPortal.Plugins
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Info("MPBlastZonePlugin: Received Message \"{0}\"", received.Name);
+        Log.Debug("MPBlastZonePlugin: Received Message \"{0}\"", received.Name);
 
       try
       {
