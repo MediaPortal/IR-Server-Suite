@@ -11,8 +11,8 @@ namespace MediaPortal.Plugins
 
     #region Variables
 
-    public RemoteButton _button;
-    public string _keyCode;
+    RemoteButton _button;
+    string _keyCode;
     
     #endregion Variables
 
@@ -33,20 +33,12 @@ namespace MediaPortal.Plugins
 
     #region Constructors
 
-    public MappedKeyCode()
-      : this(RemoteButton.None, String.Empty)
-    {
-    }
-
-    public MappedKeyCode(string button, string keyCode)
-      : this((RemoteButton)Enum.Parse(typeof(RemoteButton), button), keyCode)
-    {
-    }
-
+    public MappedKeyCode() : this(RemoteButton.None, String.Empty) { }
+    public MappedKeyCode(string button, string keyCode) : this((RemoteButton)Enum.Parse(typeof(RemoteButton), button), keyCode) { }
     public MappedKeyCode(RemoteButton button, string keyCode)
     {
-      _button = button;
-      _keyCode = keyCode;
+      _button   = button;
+      _keyCode  = keyCode;
     }
 
     #endregion Constructors
