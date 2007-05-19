@@ -16,7 +16,7 @@ namespace MPUtils.Forms
 
     public string Screen
     {
-      get { return comboBoxScreen.SelectedText; }
+      get { return comboBoxScreen.Text; }
     }
 
     #endregion Properties
@@ -33,7 +33,7 @@ namespace MPUtils.Forms
       if (String.IsNullOrEmpty(selected))
         comboBoxScreen.SelectedIndex = 0;
       else
-        comboBoxScreen.SelectedText = selected;
+        comboBoxScreen.Text = selected;
     }
     
     #endregion Constructors
