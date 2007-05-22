@@ -257,6 +257,7 @@ namespace SetupTv.Sections
       // 
       // PluginSetup
       // 
+      this.BackColor = System.Drawing.Color.Transparent;
       this.Controls.Add(this.tabControl);
       this.MinimumSize = new System.Drawing.Size(328, 266);
       this.Name = "PluginSetup";
