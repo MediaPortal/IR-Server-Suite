@@ -65,7 +65,6 @@
       <DependentUpon>Setup.cs</DependentUpon>
     </Compile>
     <Compile Include="Tray.cs">
-      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

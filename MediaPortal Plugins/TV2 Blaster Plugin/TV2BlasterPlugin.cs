@@ -547,7 +547,7 @@ namespace MediaPortal.Plugins
       string fileName;
       for (int index = 0; index < cardCount; index++)
       {
-        fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, index + 1);
+        fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, Convert.ToString(index + 1));
         try
         {
           ExternalChannelConfigs[index] = ExternalChannelConfig.Load(fileName);
@@ -557,6 +557,8 @@ namespace MediaPortal.Plugins
           ExternalChannelConfigs[index] = new ExternalChannelConfig(fileName);
           Log.Error(ex);
         }
+        
+        ExternalChannelConfigs[index].CardId = index;
       }
     }
 
@@ -601,7 +603,7 @@ namespace MediaPortal.Plugins
     {
       int card = int.Parse(tunerCard);
 
-      // To fix a known bug in MediaPortal scheduled recording (Added: 25-Feb-2007)
+      // To work around a known bug in MediaPortal scheduled recording (Added: 25-Feb-2007)
       if (card < 0)
         card = 0;
 

@@ -111,10 +111,11 @@ namespace IRServer
         while (_plugin == null)
         {
           _plugin = Program.GetPlugin(_pluginName);
-          IrssLog.Warn("Failed to load plugin \"{0}\"", _pluginName);
 
           if (_plugin == null)
           {
+            IrssLog.Warn("Failed to load plugin \"{0}\"", _pluginName);
+
             if (Configure())
               SaveSettings();
             else
@@ -282,6 +283,7 @@ namespace IRServer
       return false;
     }
 
+    // Todo: Put in the proper retry system from other apps/plugins
     void StartMessageQueue()
     {
       _processMessageQueue = true;

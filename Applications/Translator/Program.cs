@@ -153,6 +153,7 @@ namespace Translator
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
+      // TODO: Change log level to info for release.
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open(Common.FolderIrssLogs + "Translator.log");
 

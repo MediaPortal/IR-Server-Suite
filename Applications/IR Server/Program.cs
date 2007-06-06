@@ -37,6 +37,7 @@ namespace IRServer
       // Open log file
       try
       {
+        // TODO: Change log level to info for release.
         IrssLog.LogLevel = IrssLog.Level.Debug;
         IrssLog.Open(Common.FolderIrssLogs + "IR Server.log");
 
@@ -138,12 +139,8 @@ namespace IRServer
         return null;
 
       foreach (IIRServerPlugin plugin in serverPlugins)
-      {
-        if (plugin.Name == pluginName)
-        {
+        if (plugin.Name.Equals(pluginName, StringComparison.InvariantCultureIgnoreCase))
           return plugin;
-        }
-      }
 
       return null;
     }

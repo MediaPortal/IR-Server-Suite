@@ -27,11 +27,20 @@ namespace IrssUtils
 
     #region Static Methods
 
+    /// <summary>
+    /// Given a drive letter this function returns true if it is a CD-Rom.
+    /// </summary>
+    /// <param name="driveLetter">Drive letter to test.</param>
+    /// <returns>True if the drive is a CD-Rom, else false.</returns>
     public static bool IsCDRom(string driveLetter)
     {
       return (GetDriveType(driveLetter) == DRIVE_CDROM);
     }
 
+    /// <summary>
+    /// Open the tray on the given CD-Rom drive.
+    /// </summary>
+    /// <param name="driveLetter">Drive letter of CD-Rom to open.</param>
     public static void Open(string driveLetter)
     {
       string returnString = "";
@@ -39,6 +48,10 @@ namespace IrssUtils
       mciSendStringA(command, returnString, 0, 0);
     }
 
+    /// <summary>
+    /// Close the tray on the given CD-Rom drive.
+    /// </summary>
+    /// <param name="driveLetter">Drive letter of CD-Rom to close.</param>
     public static void Close(string driveLetter)
     {
       string returnString = "";

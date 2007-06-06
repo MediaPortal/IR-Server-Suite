@@ -15,7 +15,7 @@ using IrssUtils;
 namespace TrayLauncher
 {
 
-  public class Tray : Form
+  public class Tray
   {
 
     #region Constants
@@ -491,7 +491,7 @@ namespace TrayLauncher
       setup.LaunchOnLoad  = _launchOnLoad;
       setup.LaunchKeyCode = _launchKeyCode;
 
-      if (setup.ShowDialog(this) == DialogResult.OK)
+      if (setup.ShowDialog() == DialogResult.OK)
       {
         _autoRun        = setup.AutoRun;
         _serverHost     = setup.ServerHost;
@@ -547,7 +547,7 @@ namespace TrayLauncher
       catch (Exception ex)
       {
         IrssLog.Error(ex.Message);
-        MessageBox.Show(this, ex.Message, "Tray Launcher", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.Message, "Tray Launcher", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     void ClickQuit(object sender, EventArgs e)

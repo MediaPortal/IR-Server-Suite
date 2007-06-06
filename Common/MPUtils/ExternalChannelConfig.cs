@@ -12,7 +12,7 @@ namespace MPUtils
 
     #region Constants
 
-    const int DefaultCardID                 = -1;
+    const int DefaultCardID                 = 0;
 
     const int DefaultPauseTime              = 250;
     const bool DefaultSendSelect            = false;
@@ -28,19 +28,19 @@ namespace MPUtils
 
     string _fileName;
 
-    int _cardID = -1;
+    int _cardID;
 
-    int _pauseTime              = 250;
-    bool _sendSelect            = false;
-    bool _doubleChannelSelect   = false;
-    int _repeatChannelCommands  = 0;
-    int _channelDigits          = 0;
-    int _repeatPauseTime        = 1000;
-    bool _usePreChangeCommand   = false;
+    int _pauseTime;
+    bool _sendSelect;
+    bool _doubleChannelSelect;
+    int _repeatChannelCommands;
+    int _channelDigits;
+    int _repeatPauseTime;
+    bool _usePreChangeCommand;
 
-    string _selectCommand       = String.Empty;
-    string _preChangeCommand    = String.Empty;
-    string[] _digits            = new string[10];
+    string _selectCommand;
+    string _preChangeCommand;
+    string[] _digits;
 
     #endregion Variables
 
@@ -212,7 +212,7 @@ namespace MPUtils
       ExternalChannelConfig newECC = new ExternalChannelConfig(fileName);
 
       XmlDocument doc = new XmlDocument();
-      doc.Load(newECC._fileName);
+      doc.Load(fileName);
 
       newECC.PauseTime = GetInt(doc, "PauseTime", DefaultPauseTime);
       newECC.UsePreChangeCommand = GetBool(doc, "UsePreChangeCommand", DefaultUsePreChangeCommand);
