@@ -291,8 +291,9 @@ namespace MediaPortal.Plugins
       // treeMapping
       // 
       this.treeMapping.AllowDrop = true;
-      this.treeMapping.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)));
+      this.treeMapping.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
       this.treeMapping.FullRowSelect = true;
       this.treeMapping.HideSelection = false;
       this.treeMapping.Location = new System.Drawing.Point(16, 56);
@@ -303,6 +304,7 @@ namespace MediaPortal.Plugins
       // 
       // labelExpand
       // 
+      this.labelExpand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.labelExpand.AutoSize = true;
       this.labelExpand.Location = new System.Drawing.Point(328, 374);
       this.labelExpand.Name = "labelExpand";
@@ -313,7 +315,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonDefault
       // 
-      this.buttonDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonDefault.Location = new System.Drawing.Point(268, 442);
       this.buttonDefault.Name = "buttonDefault";
       this.buttonDefault.Size = new System.Drawing.Size(75, 23);
@@ -732,6 +734,7 @@ namespace MediaPortal.Plugins
       this.Controls.Add(this.groupBoxCondition);
       this.Controls.Add(this.groupBoxLayer);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.MinimumSize = new System.Drawing.Size(598, 509);
       this.Name = "InputMappingForm";
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

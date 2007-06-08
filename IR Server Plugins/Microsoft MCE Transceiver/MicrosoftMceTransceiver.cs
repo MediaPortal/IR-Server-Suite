@@ -387,7 +387,7 @@ namespace MicrosoftMceTransceiver
         ServiceController[] services = ServiceController.GetServices();
         foreach (ServiceController service in services)
         {
-          if (service.ServiceName == "ehRecvr")
+          if (service.ServiceName.Equals("ehRecvr", StringComparison.InvariantCultureIgnoreCase))
           {
             if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
             {
@@ -395,7 +395,15 @@ namespace MicrosoftMceTransceiver
             }
           }
 
-          if (service.ServiceName == "ehSched")
+          if (service.ServiceName.Equals("ehSched", StringComparison.InvariantCultureIgnoreCase))
+          {
+            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
+            {
+              service.Stop();
+            }
+          }
+
+          if (service.ServiceName.Equals("mcrdsvc", StringComparison.InvariantCultureIgnoreCase))
           {
             if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
             {

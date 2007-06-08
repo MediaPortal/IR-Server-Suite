@@ -1400,22 +1400,22 @@ namespace MediaPortal.Plugins
               break;
             }
           /*
-                      case Common.XmlTagWindowState:
-                        {
-                          if (InConfiguration)
-                          {
-                            MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", "Window State Toggle Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            break;
-                          }
+          case Common.XmlTagWindowState:
+            {
+              if (InConfiguration)
+              {
+                MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", "Window State Toggle Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                break;
+              }
 
-                          GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_SWITCH_FULL_WINDOWED, 0, 0, 0, 0, 0, null);
+              GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_SWITCH_FULL_WINDOWED, 0, 0, 0, 0, 0, null);
 
-                          if (GUIGraphicsContext.DX9Device.PresentationParameters.Windowed)
-                            msg.Param1 = 1;
+              if (GUIGraphicsContext.DX9Device.PresentationParameters.Windowed)
+                msg.Param1 = 1;
 
-                          GUIWindowManager.SendMessage(msg);
-                          break;
-                        }
+              GUIWindowManager.SendMessage(msg);
+              break;
+            }
           */
           case Common.XmlTagFocus:
             {
@@ -1539,34 +1539,34 @@ namespace MediaPortal.Plugins
       if (String.IsNullOrEmpty(command))
         throw new ArgumentException("Null or empty argument", "command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro)) // Macro
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
         ProcessMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
 
         string fileName = Common.FolderIRCommands + commands[0] + Common.FileExtensionIR;
         BlastIR(fileName, commands[1], commands[2]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.InvariantCultureIgnoreCase)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.InvariantCultureIgnoreCase)) // Serial Port Command
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixMessage))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixMessage, StringComparison.InvariantCultureIgnoreCase))  // Message Command
       {
         string[] commands = Common.SplitMessageCommand(command.Substring(Common.CmdPrefixMessage.Length));
         Common.ProcessMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys))  // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         if (InConfiguration)
@@ -1574,7 +1574,7 @@ namespace MediaPortal.Plugins
         else
           Common.ProcessKeyCommand(keyCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixGoto)) // Go To Screen
+      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.InvariantCultureIgnoreCase)) // Go To Screen
       {
         MPCommands.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), MP_BasicHome);
       }
