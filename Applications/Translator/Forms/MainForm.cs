@@ -705,9 +705,7 @@ namespace Translator
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
-        string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
-
-        BlastCommand blastCommand = new BlastCommand(commands);
+        BlastCommand blastCommand = new BlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 

@@ -29,31 +29,44 @@ namespace Translator
 
     #endregion Properties
 
-    #region Constructor
+    #region Constructors
 
+    public BlastCommand(string file)
+    {
+      InitializeComponent();
+
+      SetupPortsAndSpeeds();
+
+      labelIRCommandFile.Text = file;
+    }
     public BlastCommand(string[] commands)
     {
       InitializeComponent();
+
+      SetupPortsAndSpeeds();
 
       if (commands == null)
         return;
 
       labelIRCommandFile.Text = commands[0];
 
-      comboBoxPort.Items.AddRange(Program.TransceiverInformation.Ports);
       if (comboBoxPort.Items.Contains(commands[1]))
         comboBoxPort.SelectedItem = commands[1];
-      else
-        comboBoxPort.SelectedIndex = 0;
 
-      comboBoxSpeed.Items.AddRange(Program.TransceiverInformation.Speeds);
       if (comboBoxSpeed.Items.Contains(commands[2]))
         comboBoxSpeed.SelectedItem = commands[2];
-      else
-        comboBoxSpeed.SelectedIndex = 0;
     }
 
-    #endregion Constructor
+    #endregion Constructors
+
+    void SetupPortsAndSpeeds()
+    {
+      comboBoxPort.Items.AddRange(Program.TransceiverInformation.Ports);
+      comboBoxPort.SelectedIndex = 0;
+
+      comboBoxSpeed.Items.AddRange(Program.TransceiverInformation.Speeds);
+      comboBoxSpeed.SelectedIndex = 0;
+    }
 
     #region Buttons
 

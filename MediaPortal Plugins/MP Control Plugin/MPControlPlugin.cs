@@ -39,7 +39,7 @@ namespace MediaPortal.Plugins
 
     #region Constants
 
-    internal const string PluginVersion = "MP Control Plugin 1.0.3.1 for IR Server";
+    internal const string PluginVersion = "MP Control Plugin 1.0.3.2 for IR Server";
 
     internal static readonly string CustomInputDevice = Config.GetFolder(Config.Dir.CustomInputDevice) + "\\";
     internal static readonly string CustomInputDefault = Config.GetFolder(Config.Dir.CustomInputDefault) + "\\";
@@ -975,7 +975,7 @@ namespace MediaPortal.Plugins
           ServerHost = xmlreader.GetValueAsString("MPControlPlugin", "ServerHost", String.Empty);
 
           LogVerbose = xmlreader.GetValueAsBool("MPControlPlugin", "LogVerbose", false);
-          RequireFocus = xmlreader.GetValueAsBool("MPControlPlugin", "RequireFocus", false);
+          RequireFocus = xmlreader.GetValueAsBool("MPControlPlugin", "RequireFocus", true);
           MultiMappingEnabled = xmlreader.GetValueAsBool("MPControlPlugin", "MultiMappingEnabled", false);
           MultiMappingButton = (RemoteButton)xmlreader.GetValueAsInt("MPControlPlugin", "MultiMappingButton", (int)RemoteButton.Start);
           EventMapperEnabled = xmlreader.GetValueAsBool("MPControlPlugin", "EventMapperEnabled", false);
