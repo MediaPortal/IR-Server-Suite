@@ -29,20 +29,8 @@ namespace MediaPortal.Plugins
 
     #endregion Properties
 
-    #region Constructors
+    #region Constructor
 
-    public BlastCommand(string file)
-    {
-      InitializeComponent();
-
-      labelIRCommandFile.Text = file;
-
-      comboBoxPort.Items.AddRange(MPControlPlugin.TransceiverInformation.Ports);
-      comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.AddRange(MPControlPlugin.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
-    }
     public BlastCommand(string[] commands)
     {
       InitializeComponent();
@@ -65,7 +53,7 @@ namespace MediaPortal.Plugins
         comboBoxSpeed.SelectedIndex = 0;
     }
 
-    #endregion Constructors
+    #endregion Constructor
 
     #region Buttons
 

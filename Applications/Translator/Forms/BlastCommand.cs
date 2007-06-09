@@ -29,20 +29,8 @@ namespace Translator
 
     #endregion Properties
 
-    #region Constructors
+    #region Constructor
 
-    public BlastCommand(string file)
-    {
-      InitializeComponent();
-
-      labelIRCommandFile.Text = file;
-
-      comboBoxPort.Items.AddRange(Program.TransceiverInformation.Ports);
-      comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.AddRange(Program.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
-    }
     public BlastCommand(string[] commands)
     {
       InitializeComponent();
@@ -65,7 +53,7 @@ namespace Translator
         comboBoxSpeed.SelectedIndex = 0;
     }
 
-    #endregion Constructors
+    #endregion Constructor
 
     #region Buttons
 

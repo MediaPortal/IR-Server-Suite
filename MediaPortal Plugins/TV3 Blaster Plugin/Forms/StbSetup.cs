@@ -390,7 +390,9 @@ namespace TvEngine
         }
         else if (selected.StartsWith(Common.CmdPrefixBlast))
         {
-          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, selected.Substring(Common.CmdPrefixBlast.Length));
+          string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+
+          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, commands);
           if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
             return;
 
