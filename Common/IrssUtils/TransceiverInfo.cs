@@ -17,7 +17,6 @@ namespace IrssUtils
     string[] _speeds;
 
     string _name;
-    bool _canConfigure;
     bool _canLearn;
     bool _canReceive;
     bool _canTransmit;
@@ -51,15 +50,6 @@ namespace IrssUtils
     {
       get { return _name; }
       set { _name = value; }
-    }
-
-    /// <summary>
-    /// Can this transceiver be configured.
-    /// </summary>
-    public bool CanConfigure
-    {
-      get { return _canConfigure; }
-      set { _canConfigure = value; }
     }
 
     /// <summary>
@@ -98,8 +88,7 @@ namespace IrssUtils
       _ports        = new string[] { "None" };
       _speeds       = new string[] { "None" };
 
-      _name         = "Unknown";
-      _canConfigure = false;
+      _name         = String.Empty;
       _canLearn     = false;
       _canReceive   = false;
       _canTransmit  = false;
@@ -136,16 +125,15 @@ namespace IrssUtils
             speeds.Append(',');
         }
 
-        string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}",
+        string data = String.Format("{0},{1},{2},{3},{4},{5},{6},{7}",
           transceiverInfo.Name,           // 0
-          transceiverInfo.CanConfigure,   // 1
-          transceiverInfo.CanLearn,       // 2
-          transceiverInfo.CanReceive,     // 3
-          transceiverInfo.CanTransmit,    // 4
-          transceiverInfo.Ports.Length,   // 5
-          ports.ToString(),               // 6
-          transceiverInfo.Speeds.Length,  // 7
-          speeds.ToString()               // 8
+          transceiverInfo.CanLearn,       // 1
+          transceiverInfo.CanReceive,     // 2
+          transceiverInfo.CanTransmit,    // 3
+          transceiverInfo.Ports.Length,   // 4
+          ports.ToString(),               // 5
+          transceiverInfo.Speeds.Length,  // 6
+          speeds.ToString()               // 7
         );
 
         return Encoding.ASCII.GetBytes(data);
@@ -171,14 +159,13 @@ namespace IrssUtils
 
         TransceiverInfo transceiverInfo = new TransceiverInfo();
         transceiverInfo.Name            = data[0];
-        transceiverInfo.CanConfigure    = bool.Parse(data[1]);
-        transceiverInfo.CanLearn        = bool.Parse(data[2]);
-        transceiverInfo.CanReceive      = bool.Parse(data[3]);
-        transceiverInfo.CanTransmit     = bool.Parse(data[4]);
+        transceiverInfo.CanLearn        = bool.Parse(data[1]);
+        transceiverInfo.CanReceive      = bool.Parse(data[2]);
+        transceiverInfo.CanTransmit     = bool.Parse(data[3]);
 
         int index;
 
-        int portIndex = 5;
+        int portIndex = 4;
         int portCount = int.Parse(data[portIndex]);
         transceiverInfo.Ports = new string[portCount];
         for (index = portIndex + 1; index <= portIndex + portCount; index++)

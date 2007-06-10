@@ -105,8 +105,34 @@ namespace WinLircReceiver
       _server.CommandEvent -= new WinLircServer.CommandEventHandler(CommandHandler);
     }
 
-    public bool Transmit(string file) { return false; }
-    public LearnStatus Learn(string file) { return LearnStatus.Failure; }
+    public bool Transmit(string file)
+    {
+      string password, remoteName, buttonName, repeats;
+
+      try
+      {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(file);
+
+        password    = doc.DocumentElement.Attributes["Password"].Value;
+        remoteName  = doc.DocumentElement.Attributes["RemoteName"].Value;
+        buttonName  = doc.DocumentElement.Attributes["ButtonName"].Value;
+        repeats     = doc.DocumentElement.Attributes["Repeats"].Value;
+
+        string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
+        _server.Transmit(output);
+
+        return true;
+      }
+      catch
+      {
+        return false;
+      }
+    }
+    public LearnStatus Learn(string file)
+    {
+      return LearnStatus.Failure;
+    }
 
     public bool SetPort(string port)    { return true; }
     public bool SetSpeed(string speed)  { return true; }

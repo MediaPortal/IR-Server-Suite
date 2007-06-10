@@ -17,7 +17,7 @@ namespace IRServer
   {
 
     [STAThread]
-    static int Main()
+    static void Main()
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
@@ -26,12 +26,12 @@ namespace IRServer
       try
       {
         if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
-          return 1;
+          return;
       }
       catch (Exception ex)
       {
         Console.WriteLine(ex.Message);
-        return 1;
+        return;
       }
 
       // Open log file
@@ -46,27 +46,17 @@ namespace IRServer
       catch (Exception ex)
       {
         Console.WriteLine(ex.Message);
-        return 1;
+        return;
       }
 
       // Start Server
       IRServer irServer = new IRServer();
       
       if (irServer.Start())
-      {
         Application.Run();
 
-        IrssLog.Close();
-        return 0;
-      }
-      else
-      {
-        MessageBox.Show("Failed to start IR Server, refer to log file for more details.", "IR Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-        IrssLog.Close();
-        return 1;
-      }
-
+      IrssLog.Close();
+      return;
     }
 
     /// <summary>

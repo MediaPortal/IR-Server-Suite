@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace WinLircReceiver
 {
+
   /// <summary>
   /// WinLIRC server class implementing communication with WinLIRC
   /// all remotes are supported as long as WinLIRC supports them
@@ -113,6 +114,11 @@ namespace WinLircReceiver
     {
       Process[] processes = Process.GetProcessesByName("winlirc");
       return (processes.Length > 0);
+    }
+
+    public void Transmit(string transmit)
+    {
+      _socket.Send(Encoding.ASCII.GetBytes(transmit));
     }
 
     #endregion
@@ -223,4 +229,5 @@ namespace WinLircReceiver
     }
     #endregion
   }
+
 }
