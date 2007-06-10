@@ -177,7 +177,7 @@ namespace IRServer
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "IR Server");
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "IR Server\\index.html");
       }
       catch (Exception ex)
       {

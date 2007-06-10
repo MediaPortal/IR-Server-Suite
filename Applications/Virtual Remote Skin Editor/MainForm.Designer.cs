@@ -51,6 +51,10 @@ namespace SkinEditor
       this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.iRServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.changeServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.timerFlash = new System.Windows.Forms.Timer(this.components);
       this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
       this.buttonAddButton = new System.Windows.Forms.Button();
@@ -58,10 +62,7 @@ namespace SkinEditor
       this.buttonSetCode = new System.Windows.Forms.Button();
       this.buttonSetShortcut = new System.Windows.Forms.Button();
       this.comboBoxShortcut = new System.Windows.Forms.ComboBox();
-      this.iRServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.changeServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.panelRemote.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRemote)).BeginInit();
       this.menuStrip.SuspendLayout();
@@ -191,7 +192,8 @@ namespace SkinEditor
       // 
       this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.iRServerToolStripMenuItem});
+            this.iRServerToolStripMenuItem,
+            this.helpToolStripMenuItem});
       this.menuStrip.Location = new System.Drawing.Point(0, 0);
       this.menuStrip.Name = "menuStrip";
       this.menuStrip.Size = new System.Drawing.Size(792, 24);
@@ -252,6 +254,37 @@ namespace SkinEditor
       this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.quitToolStripMenuItem.Text = "Quit";
       this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
+      // 
+      // iRServerToolStripMenuItem
+      // 
+      this.iRServerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.connectToolStripMenuItem,
+            this.disconnectToolStripMenuItem,
+            this.changeServerToolStripMenuItem});
+      this.iRServerToolStripMenuItem.Name = "iRServerToolStripMenuItem";
+      this.iRServerToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
+      this.iRServerToolStripMenuItem.Text = "IR Server";
+      // 
+      // connectToolStripMenuItem
+      // 
+      this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
+      this.connectToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.connectToolStripMenuItem.Text = "Connect";
+      this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
+      // 
+      // disconnectToolStripMenuItem
+      // 
+      this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
+      this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.disconnectToolStripMenuItem.Text = "Disconnect";
+      this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.disconnectToolStripMenuItem_Click);
+      // 
+      // changeServerToolStripMenuItem
+      // 
+      this.changeServerToolStripMenuItem.Name = "changeServerToolStripMenuItem";
+      this.changeServerToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.changeServerToolStripMenuItem.Text = "Change Server";
+      this.changeServerToolStripMenuItem.Click += new System.EventHandler(this.changeServerToolStripMenuItem_Click);
       // 
       // timerFlash
       // 
@@ -314,36 +347,12 @@ namespace SkinEditor
       this.comboBoxShortcut.Size = new System.Drawing.Size(112, 21);
       this.comboBoxShortcut.TabIndex = 9;
       // 
-      // iRServerToolStripMenuItem
+      // helpToolStripMenuItem
       // 
-      this.iRServerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.connectToolStripMenuItem,
-            this.disconnectToolStripMenuItem,
-            this.changeServerToolStripMenuItem});
-      this.iRServerToolStripMenuItem.Name = "iRServerToolStripMenuItem";
-      this.iRServerToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
-      this.iRServerToolStripMenuItem.Text = "IR Server";
-      // 
-      // connectToolStripMenuItem
-      // 
-      this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
-      this.connectToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.connectToolStripMenuItem.Text = "Connect";
-      this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
-      // 
-      // disconnectToolStripMenuItem
-      // 
-      this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
-      this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.disconnectToolStripMenuItem.Text = "Disconnect";
-      this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.disconnectToolStripMenuItem_Click);
-      // 
-      // changeServerToolStripMenuItem
-      // 
-      this.changeServerToolStripMenuItem.Name = "changeServerToolStripMenuItem";
-      this.changeServerToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.changeServerToolStripMenuItem.Text = "Change Server";
-      this.changeServerToolStripMenuItem.Click += new System.EventHandler(this.changeServerToolStripMenuItem_Click);
+      this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+      this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+      this.helpToolStripMenuItem.Text = "Help";
+      this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
       // 
       // MainForm
       // 
@@ -410,6 +419,7 @@ namespace SkinEditor
     private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem changeServerToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
   }
 
 }

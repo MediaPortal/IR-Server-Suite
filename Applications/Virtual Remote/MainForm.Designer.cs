@@ -35,6 +35,7 @@ namespace VirtualRemote
       this.changeServerHostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripMenuItemQuit = new System.Windows.Forms.ToolStripMenuItem();
       this.labelDisabled = new System.Windows.Forms.Label();
+      this.toolStripMenuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
       this.contextMenuStrip.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -44,11 +45,12 @@ namespace VirtualRemote
       this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripComboBoxSkin,
             this.changeServerHostToolStripMenuItem,
+            this.toolStripMenuItemHelp,
             this.toolStripMenuItemQuit});
       this.contextMenuStrip.Name = "contextMenuStrip";
       this.contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
       this.contextMenuStrip.ShowImageMargin = false;
-      this.contextMenuStrip.Size = new System.Drawing.Size(156, 73);
+      this.contextMenuStrip.Size = new System.Drawing.Size(156, 117);
       // 
       // toolStripComboBoxSkin
       // 
@@ -88,6 +90,13 @@ namespace VirtualRemote
       this.labelDisabled.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.labelDisabled.Visible = false;
       // 
+      // toolStripMenuItemHelp
+      // 
+      this.toolStripMenuItemHelp.Name = "toolStripMenuItemHelp";
+      this.toolStripMenuItemHelp.Size = new System.Drawing.Size(155, 22);
+      this.toolStripMenuItemHelp.Text = "Help";
+      this.toolStripMenuItemHelp.Click += new System.EventHandler(this.toolStripMenuItemHelp_Click);
+      // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -119,6 +128,7 @@ namespace VirtualRemote
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemQuit;
     private System.Windows.Forms.ToolStripMenuItem changeServerHostToolStripMenuItem;
     private System.Windows.Forms.Label labelDisabled;
+    private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemHelp;
   }
 }
 

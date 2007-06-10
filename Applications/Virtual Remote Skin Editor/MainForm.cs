@@ -645,6 +645,18 @@ namespace SkinEditor
       IrssLog.Close();
     }
 
+    private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      try
+      {
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Virtual Remote\\Skin Editor\\index.html");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
   }
 
 }

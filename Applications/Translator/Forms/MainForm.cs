@@ -872,7 +872,7 @@ namespace Translator
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Translator");
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Translator\\index.html");
       }
       catch (Exception ex)
       {
@@ -881,7 +881,7 @@ namespace Translator
     }
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      MessageBox.Show(this, "Translator\nVersion 1.0.3.1 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(this, "Translator\nVersion 1.0.3.2 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     #endregion Menu

@@ -577,7 +577,6 @@ namespace DebugClient
       try
       {
         Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm");
-        // , HelpNavigator.Topic, "index.html"
       }
       catch (Exception ex)
       {
