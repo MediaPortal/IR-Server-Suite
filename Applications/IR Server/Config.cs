@@ -194,7 +194,8 @@ namespace IRServer
         SourceGrid.Cells.Controllers.CustomEvents nameCellController = new SourceGrid.Cells.Controllers.CustomEvents();
         nameCellController.DoubleClick += new EventHandler(PluginDoubleClick);
         nameCell.AddController(nameCellController);
-        
+
+        nameCell.AddController(new SourceGrid.Cells.Controllers.ToolTipText());
         nameCell.ToolTipText = string.Format("{0}\nVersion: {1}\nAuthor: {2}\n{3}", transceiver.Name, transceiver.Version, transceiver.Author, transceiver.Description);
 
         gridPlugins[row, 0] = nameCell;
