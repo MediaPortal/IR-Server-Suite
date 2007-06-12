@@ -88,7 +88,7 @@ namespace IrssUtils
       _ports        = new string[] { "None" };
       _speeds       = new string[] { "None" };
 
-      _name         = String.Empty;
+      _name         = "None";
       _canLearn     = false;
       _canReceive   = false;
       _canTransmit  = false;

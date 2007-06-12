@@ -28,6 +28,17 @@ namespace SetupTv.Sections
     public PluginSetup()
     {
       InitializeComponent();
+    }
+
+    #endregion Constructor
+
+    #region SetupTv.SectionSettings
+
+    public override void OnSectionActivated()
+    {
+      Log.Info("TV3BlasterPlugin: Configuration activated");
+
+      TV3BlasterPlugin.InConfiguration = true;
 
       TvBusinessLayer layer = new TvBusinessLayer();
       TV3BlasterPlugin.LogVerbose = checkBoxLogVerbose.Checked = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
@@ -41,14 +52,13 @@ namespace SetupTv.Sections
       if (!TV3BlasterPlugin.StartComms())
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "TV3 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
+      TV3BlasterPlugin.LoadExternalConfigs();
+
       RefreshIRList();
       RefreshMacroList();
+
+      base.OnSectionActivated();
     }
-
-    #endregion Constructor
-
-    #region SetupTv.SectionSettings
-
     public override void OnSectionDeActivated()
     {
       Log.Info("TV3BlasterPlugin: Configuration deactivated");
@@ -66,21 +76,13 @@ namespace SetupTv.Sections
       setting.Value = TV3BlasterPlugin.ServerHost;
       setting.Persist();
 
-      TV3BlasterPlugin.LoadExternalConfigs();
+      //TV3BlasterPlugin.LoadExternalConfigs();
+
+      TV3BlasterPlugin.StopComms();
 
       TV3BlasterPlugin.InConfiguration = false;
 
       base.OnSectionDeActivated();
-    }
-    public override void OnSectionActivated()
-    {
-      Log.Info("TV3BlasterPlugin: Configuration activated");
-
-      TV3BlasterPlugin.InConfiguration = true;
-
-      TV3BlasterPlugin.LoadExternalConfigs();
-
-      base.OnSectionActivated();
     }
 
     #endregion SetupTv.SectionSettings

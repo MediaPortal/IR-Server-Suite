@@ -39,7 +39,7 @@ namespace MediaPortal.Plugins
 
     const int WindowID = 248101;
 
-    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.3.1 for IR Server";
+    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.3.2 for IR Server";
 
     internal static readonly string MenuFile = Common.FolderAppData + "MP Blast Zone Plugin\\Menu.xml";
 
@@ -156,19 +156,26 @@ namespace MediaPortal.Plugins
 
     public void ShowPlugin()
     {
-      InConfiguration = true;
+      try
+      {
+        InConfiguration = true;
 
-      if (LogVerbose)
-        Log.Info("MPBlastZonePlugin: ShowPlugin()");
+        if (LogVerbose)
+          Log.Info("MPBlastZonePlugin: ShowPlugin()");
 
-      SetupForm setupForm = new SetupForm();
-      if (setupForm.ShowDialog() == DialogResult.OK)
-        SaveSettings();
+        SetupForm setupForm = new SetupForm();
+        if (setupForm.ShowDialog() == DialogResult.OK)
+          SaveSettings();
 
-      StopComms();
+        StopComms();
 
-      if (LogVerbose)
-        Log.Info("MPBlastZonePlugin: ShowPlugin() - End");
+        if (LogVerbose)
+          Log.Info("MPBlastZonePlugin: ShowPlugin() - End");
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex);
+      }
     }
 
     #endregion
@@ -183,16 +190,35 @@ namespace MediaPortal.Plugins
 
     public override bool Init()
     {
-      Start();
+      InConfiguration = false;
 
-      return Load(GUIGraphicsContext.Skin + "\\BlastZone.xml");
+      Log.Info("MPBlastZonePlugin: Starting ({0})", PluginVersion);
+
+      if (!StartComms())
+        Log.Error("MPBlastZonePlugin: Failed to start local comms, IR blasting is disabled for this session");
+
+      if (Load(GUIGraphicsContext.Skin + "\\BlastZone.xml"))
+      {
+        if (LogVerbose)
+          Log.Info("MPBlastZonePlugin: Started");
+
+        return true;
+      }
+      else
+      {
+        Log.Error("MPBlastZonePlugin: Failed to load skin file.");
+        return false;
+      }
     }
 
     public override void DeInit()
     {
-      Stop();
+      StopComms();
 
       base.DeInit();
+
+      if (LogVerbose)
+        Log.Info("MPBlastZonePlugin: Stopped");
     }
 
     protected override void OnPageLoad()
@@ -238,30 +264,6 @@ namespace MediaPortal.Plugins
     #endregion GUIWindow Members
 
     #region Implementation
-
-    static void Start()
-    {
-      Log.Info("MPBlastZonePlugin: Starting ({0})", PluginVersion);
-
-      Log.Debug("MPBlastZonePlugin: Platform is {0}", (IntPtr.Size == 4 ? "32-bit" : "64-bit"));
-
-      InConfiguration = false;
-
-      if (!StartComms())
-        Log.Error("MPBlastZonePlugin: Failed to start local comms, IR blasting is disabled for this session");
-
-      if (LogVerbose)
-        Log.Info("MPBlastZonePlugin: Started");
-    }
-    static void Stop()
-    {
-      if (LogVerbose)
-        Log.Info("MPBlastZonePlugin: Stopping");
-
-      StopComms();
-
-      Log.Info("MPBlastZonePlugin: Stopped");
-    }
 
     static string GetCommand(string path, string name)
     {

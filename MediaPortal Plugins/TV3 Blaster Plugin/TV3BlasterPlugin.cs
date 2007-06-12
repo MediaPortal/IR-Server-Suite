@@ -28,7 +28,7 @@ namespace TvEngine
 
     #region Constants
 
-    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.3.1 for IR Server";
+    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.3.2 for IR Server";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "TV3 Blaster Plugin\\Macro\\";
 
@@ -70,7 +70,7 @@ namespace TvEngine
     /// <summary>
     /// returns the version of the plugin
     /// </summary>
-    public string Version { get { return "1.0.3.1"; } }
+    public string Version { get { return "1.0.3.2"; } }
     /// <summary>
     /// returns the author of the plugin
     /// </summary>
@@ -130,8 +130,6 @@ namespace TvEngine
     {
       Log.Info("TV3BlasterPlugin: Version {0}", PluginVersion);
 
-      Log.Debug("TV3BlasterPlugin: Platform is {0}", (IntPtr.Size == 4 ? "32-bit" : "64-bit"));
-
       InConfiguration = false;
 
       TvBusinessLayer layer = new TvBusinessLayer();
@@ -146,6 +144,9 @@ namespace TvEngine
 
       if (!StartComms())
         Log.Error("TV3BlasterPlugin: Failed to start local comms, IR blasting is disabled for this session");
+
+      if (LogVerbose)
+        Log.Info("TV3BlasterPlugin: Started");
     }
 
     public void Stop()
@@ -154,6 +155,9 @@ namespace TvEngine
       events.OnTvServerEvent -= _eventHandler;
 
       StopComms();
+
+      if (LogVerbose)
+        Log.Info("TV3BlasterPlugin: Stopped");
     }
 
     [CLSCompliant(false)]

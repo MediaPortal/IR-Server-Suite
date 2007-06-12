@@ -43,7 +43,7 @@ namespace WinLircReceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "WinLirc"; } }
-    public string Version       { get { return "1.0.3.1"; } }
+    public string Version       { get { return "1.0.3.2"; } }
     public string Author        { get { return "and-81, original code for MediaPortal by Sven"; } }
     public string Description   { get { return "Supports WinLirc as a reciever"; } }
     public bool   CanReceive    { get { return true; } }

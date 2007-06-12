@@ -206,14 +206,12 @@ namespace MediaPortal.Plugins
 
     public void Start()
     {
-      Log.Info("MPControlPlugin: Starting ({0})", PluginVersion);
+      InConfiguration = false;
 
-      Log.Debug("MPControlPlugin: Platform is {0}", (IntPtr.Size == 4 ? "32-bit" : "64-bit"));
+      Log.Info("MPControlPlugin: Starting ({0})", PluginVersion);
 
       // Load basic settings
       LoadSettings();
-
-      InConfiguration = false;
 
       // Load the remote button mappings
       _remoteMap = LoadRemoteMap(RemotesFile);
@@ -250,9 +248,6 @@ namespace MediaPortal.Plugins
     }
     public void Stop()
     {
-      if (LogVerbose)
-        Log.Info("MPControlPlugin: Stopping");
-
       //SystemEvents.SessionEnding -= new SessionEndingEventHandler(SystemEvents_SessionEnding);
       SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
 
@@ -273,7 +268,8 @@ namespace MediaPortal.Plugins
         for (int i = 0; i < _multiInputHandlers.Count; i++)
           _multiInputHandlers[i] = null;
 
-      Log.Info("MPControlPlugin: Stopped");
+      if (LogVerbose)
+        Log.Info("MPControlPlugin: Stopped");
     }
 
     #endregion IPlugin methods
@@ -290,23 +286,30 @@ namespace MediaPortal.Plugins
 
     public void ShowPlugin()
     {
-      LoadSettings();
-      LoadDefaultMapping();
-      LoadMultiMappings();
+      try
+      {
+        LoadSettings();
+        LoadDefaultMapping();
+        LoadMultiMappings();
 
-      InConfiguration = true;
+        InConfiguration = true;
 
-      if (LogVerbose)
-        Log.Info("MPControlPlugin: ShowPlugin()");
+        if (LogVerbose)
+          Log.Info("MPControlPlugin: ShowPlugin()");
 
-      SetupForm setupForm = new SetupForm();
-      if (setupForm.ShowDialog() == DialogResult.OK)
-        SaveSettings();
+        SetupForm setupForm = new SetupForm();
+        if (setupForm.ShowDialog() == DialogResult.OK)
+          SaveSettings();
 
-      StopComms();
+        StopComms();
 
-      if (LogVerbose)
-        Log.Info("MPControlPlugin: ShowPlugin() - End");
+        if (LogVerbose)
+          Log.Info("MPControlPlugin: ShowPlugin() - End");
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex);
+      }
     }
 
     public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus, out string strPictureImage)

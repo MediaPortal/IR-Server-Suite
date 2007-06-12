@@ -126,7 +126,6 @@ namespace DebugClient
 
     private void MainForm_Load(object sender, EventArgs e)
     {
-
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open(Common.FolderIrssLogs + "Debug Client.log");
 
@@ -402,6 +401,16 @@ namespace DebugClient
       {
         PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
         PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
+      }
+      catch (Exception ex)
+      {
+        AddStatusLine(ex.Message);
+      }
+
+      try
+      {
+        if (PipeAccess.ServerRunning)
+          PipeAccess.StopServer();
       }
       catch (Exception ex)
       {

@@ -335,7 +335,7 @@ namespace MicrosoftMceTransceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "Microsoft MCE"; } }
-    public string Version       { get { return "1.0.3.1"; } }
+    public string Version       { get { return "1.0.3.2"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Microsoft MCE Infrared Transceiver"; } }
     public bool   CanReceive    { get { return true; } }

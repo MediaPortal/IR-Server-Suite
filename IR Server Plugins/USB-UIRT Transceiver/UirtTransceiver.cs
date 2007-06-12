@@ -202,7 +202,7 @@ namespace UirtTransceiver
     #region IIRServerPlugin Members
 
     public string Name        { get { return "USB-UIRT"; } }
-    public string Version     { get { return "1.0.3.1"; } }
+    public string Version     { get { return "1.0.3.2"; } }
     public string Author      { get { return "and-81"; } }
     public string Description { get { return "Support for the USB-UIRT transceiver"; } }
     public bool CanReceive    { get { return true; } }

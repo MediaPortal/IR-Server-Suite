@@ -54,7 +54,7 @@ namespace WindowsMessageReceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "Windows Messages"; } }
-    public string Version       { get { return "1.0.3.1"; } }
+    public string Version       { get { return "1.0.3.2"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Supports receiving simulated button presses through Windows Messages"; } }
     public bool   CanReceive    { get { return true; } }

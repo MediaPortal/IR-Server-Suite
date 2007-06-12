@@ -221,7 +221,7 @@ namespace IRTransTransceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "IRTrans (Experimental)"; } }
-    public string Version       { get { return "1.0.3.1"; } }
+    public string Version       { get { return "1.0.3.2"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "IRTrans Transceiver (Experimental)"; } }
     public bool   CanReceive    { get { return true; } }

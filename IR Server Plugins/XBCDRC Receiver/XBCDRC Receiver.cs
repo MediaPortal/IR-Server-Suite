@@ -187,7 +187,7 @@ namespace XBCDRCReceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "XBCDRC"; } }
-    public string Version       { get { return "1.0.3.1"; } }
+    public string Version       { get { return "1.0.3.2"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Supports the XBox 1 IR receiver with XBCDRC"; } }
     public bool   CanReceive    { get { return true; } }

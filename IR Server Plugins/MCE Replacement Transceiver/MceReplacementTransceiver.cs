@@ -42,7 +42,7 @@ namespace MceReplacementTransceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "MCE Replacement"; } }
-    public string Version       { get { return "1.0.3.1"; } }
+    public string Version       { get { return "1.0.3.2"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Supports the MCE Replacement Driver for accessing the Microsoft MCE transceiver"; } }
     public bool   CanReceive    { get { return true; } }

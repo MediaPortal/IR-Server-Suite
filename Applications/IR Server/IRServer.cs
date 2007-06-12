@@ -984,9 +984,7 @@ namespace IRServer
 
                 if (_pluginTransmit != null)
                 {
-                  if (String.IsNullOrEmpty(transceiverInfo.Name))
-                    transceiverInfo.Name        = _pluginTransmit.Name;
-
+                  transceiverInfo.Name          = _pluginTransmit.Name;
                   transceiverInfo.Ports         = _pluginTransmit.AvailablePorts;
                   transceiverInfo.Speeds        = _pluginTransmit.AvailableSpeeds;
                   transceiverInfo.CanLearn      = _pluginTransmit.CanLearn;

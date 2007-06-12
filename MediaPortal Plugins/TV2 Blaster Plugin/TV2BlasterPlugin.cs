@@ -27,7 +27,7 @@ namespace MediaPortal.Plugins
 
     #region Constants
 
-    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.1 for IR Server";
+    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.2 for IR Server";
 
     internal static readonly string MPConfigFile = Config.GetFolder(Config.Dir.Config) + "\\MediaPortal.xml";
 
@@ -120,8 +120,6 @@ namespace MediaPortal.Plugins
     {
       Log.Info("TV2BlasterPlugin: Starting ({0})", PluginVersion);
 
-      Log.Debug("TV2BlasterPlugin: Platform is {0}", (IntPtr.Size == 4 ? "32-bit" : "64-bit"));
-
       // Load basic settings
       LoadSettings();
 
@@ -140,14 +138,12 @@ namespace MediaPortal.Plugins
     }
     public void Stop()
     {
-      if (LogVerbose)
-        Log.Info("TV2BlasterPlugin: Stopping");
-
       GUIWindowManager.Receivers -= new SendMessageHandler(OnMessage);
 
       StopComms();
 
-      Log.Info("TV2BlasterPlugin: Stopped");
+      if (LogVerbose)
+        Log.Info("TV2BlasterPlugin: Stopped");
     }
 
     #endregion IPlugin methods
@@ -164,22 +160,29 @@ namespace MediaPortal.Plugins
 
     public void ShowPlugin()
     {
-      LoadSettings();
-      LoadExternalConfigs();
+      try
+      {
+        LoadSettings();
+        LoadExternalConfigs();
 
-      InConfiguration = true;
+        InConfiguration = true;
 
-      if (LogVerbose)
-        Log.Info("TV2BlasterPlugin: ShowPlugin()");
+        if (LogVerbose)
+          Log.Info("TV2BlasterPlugin: ShowPlugin()");
 
-      SetupForm setupForm = new SetupForm();
-      if (setupForm.ShowDialog() == DialogResult.OK)
-        SaveSettings();
+        SetupForm setupForm = new SetupForm();
+        if (setupForm.ShowDialog() == DialogResult.OK)
+          SaveSettings();
 
-      StopComms();
+        StopComms();
 
-      if (LogVerbose)
-        Log.Info("TV2BlasterPlugin: ShowPlugin() - End");
+        if (LogVerbose)
+          Log.Info("TV2BlasterPlugin: ShowPlugin() - End");
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex);
+      }
     }
 
     public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus, out string strPictureImage)
