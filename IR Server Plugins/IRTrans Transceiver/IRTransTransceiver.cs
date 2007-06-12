@@ -357,7 +357,7 @@ namespace IRTransTransceiver
 
       // Wait for the learning to finish ...
       while (_learning && Environment.TickCount < _learnStartTick + timeout)
-        Thread.SpinWait(100);
+        Thread.Sleep(100);
 
       if (Environment.TickCount >= _learnStartTick + timeout)
         return LearnStatus.Timeout;

@@ -160,15 +160,15 @@ namespace IRServer
       this.groupBoxMode.Size = new System.Drawing.Size(424, 120);
       this.groupBoxMode.TabIndex = 1;
       this.groupBoxMode.TabStop = false;
-      this.groupBoxMode.Text = "Server mode";
+      this.groupBoxMode.Text = "Mode";
       // 
       // labelComputer
       // 
       this.labelComputer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.labelComputer.Location = new System.Drawing.Point(160, 24);
+      this.labelComputer.Location = new System.Drawing.Point(160, 56);
       this.labelComputer.Name = "labelComputer";
-      this.labelComputer.Size = new System.Drawing.Size(248, 64);
+      this.labelComputer.Size = new System.Drawing.Size(248, 32);
       this.labelComputer.TabIndex = 3;
       this.labelComputer.Text = "Button Relay / IR Repeater mode host computer:";
       this.labelComputer.TextAlign = System.Drawing.ContentAlignment.BottomLeft;

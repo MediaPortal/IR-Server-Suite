@@ -461,7 +461,7 @@ namespace MicrosoftMceTransceiver
 
       // Wait for the learning to finish ...
       while (_learning && Environment.TickCount < _learnStartTick + timeout)
-        Thread.SpinWait(1000);
+        Thread.Sleep(1000);
 
       if (_learning)
       {

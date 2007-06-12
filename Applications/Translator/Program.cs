@@ -540,7 +540,7 @@ namespace Translator
             }
             else
             {
-              Thread.SpinWait(1000);
+              Thread.Sleep(1000);
             }
           }
 

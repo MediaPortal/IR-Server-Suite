@@ -236,11 +236,10 @@ namespace MediaPortal.Plugins
         LoadEventMappings();
 
         MapEvent(MappedEvent.MappingEvent.MediaPortal_Start);
-      }
 
-      // Register with MediaPortal to receive GUI Messages ...
-      if (EventMapperEnabled)
+        // Register with MediaPortal to receive GUI Messages ...
         GUIWindowManager.Receivers += new SendMessageHandler(OnMessage);
+      }
 
       // Register for Power State message ...
       //SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
@@ -260,10 +259,11 @@ namespace MediaPortal.Plugins
       RemoteButtonListener -= new RemoteButtonHandler(RemoteButtonPressed);
 
       if (EventMapperEnabled)
-        MapEvent(MappedEvent.MappingEvent.MediaPortal_Stop);
-
-      if (EventMapperEnabled)
+      {
         GUIWindowManager.Receivers -= new SendMessageHandler(OnMessage);
+
+        MapEvent(MappedEvent.MappingEvent.MediaPortal_Stop);
+      }
 
       StopComms();
 
@@ -594,7 +594,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error(ex.ToString());
+        Log.Error(ex);
       }
 
       return false;
@@ -663,7 +663,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error(ex.ToString());
+        Log.Error(ex);
         return false;
       }
     }
@@ -682,7 +682,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error(ex.ToString());
+        Log.Error(ex);
         return false;
       }
     }
@@ -784,7 +784,7 @@ namespace MediaPortal.Plugins
             }
             else
             {
-              Thread.SpinWait(1000);
+              Thread.Sleep(1000);
             }
           }
 
@@ -1129,7 +1129,14 @@ namespace MediaPortal.Plugins
           if (LogVerbose)
             Log.Info("MPControlPlugin: Event Mapper - Event \"{0}\"", Enum.GetName(typeof(MappedEvent.MappingEvent), eventType));
 
-          ProcessCommand(mappedEvent.Command);
+          try
+          {
+            ProcessCommand(mappedEvent.Command);
+          }
+          catch (Exception ex)
+          {
+            Log.Error(ex);
+          }
         }
       }
     }
@@ -1150,7 +1157,14 @@ namespace MediaPortal.Plugins
           if (LogVerbose)
             Log.Info("MPControlPlugin: Event Mapper - Event \"{0}\"", Enum.GetName(typeof(MappedEvent.MappingEvent), eventType));
 
-          ProcessCommand(mappedEvent.Command);
+          try
+          {
+            ProcessCommand(mappedEvent.Command);
+          }
+          catch (Exception ex)
+          {
+            Log.Error(ex);
+          }
         }
       }
     }

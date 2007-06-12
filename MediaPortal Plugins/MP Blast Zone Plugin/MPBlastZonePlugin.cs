@@ -334,7 +334,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error(ex.ToString());
+        Log.Error(ex);
       }
 
       return false;
@@ -403,7 +403,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error(ex.ToString());
+        Log.Error(ex);
         return false;
       }
     }
@@ -422,7 +422,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error(ex.ToString());
+        Log.Error(ex);
         return false;
       }
     }
@@ -524,7 +524,7 @@ namespace MediaPortal.Plugins
             }
             else
             {
-              Thread.SpinWait(1000);
+              Thread.Sleep(1000);
             }
           }
 
