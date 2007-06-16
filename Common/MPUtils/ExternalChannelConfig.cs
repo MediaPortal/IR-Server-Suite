@@ -7,6 +7,9 @@ using System.Xml;
 namespace MPUtils
 {
 
+  /// <summary>
+  /// External Channel Changing configuration file for tuning Set Top Boxes in MediaPortal.
+  /// </summary>
   public class ExternalChannelConfig
   {
 

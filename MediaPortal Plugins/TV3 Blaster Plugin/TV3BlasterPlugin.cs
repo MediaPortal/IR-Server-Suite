@@ -737,10 +737,10 @@ namespace TvEngine
               break;
             }
 
-          case Common.XmlTagMessage:
+          case Common.XmlTagWindowMsg:
             {
-              string[] commands = Common.SplitMessageCommand(commandProperty);
-              Common.ProcessMessageCommand(commands);
+              string[] commands = Common.SplitWindowMessageCommand(commandProperty);
+              Common.ProcessWindowMessageCommand(commands);
               break;
             }
 
@@ -816,10 +816,10 @@ namespace TvEngine
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixMessage))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg))  // Message Command
       {
-        string[] commands = Common.SplitMessageCommand(command.Substring(Common.CmdPrefixMessage.Length));
-        Common.ProcessMessageCommand(commands);
+        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
+        Common.ProcessWindowMessageCommand(commands);
       }
       else if (command.StartsWith(Common.CmdPrefixKeys))  // Keystroke Command
       {

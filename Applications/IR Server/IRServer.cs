@@ -217,6 +217,12 @@ namespace IRServer
 
       _notifyIcon.Visible = false;
 
+      if (_mode == IRServerMode.ServerMode)
+      {
+        PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Server Shutdown", null);
+        SendToAll(message);
+      }
+
       if (_pluginReceive != null && _pluginReceive.CanReceive)
         _pluginReceive.RemoteButtonCallback -= new RemoteButtonHandler(RemoteButtonPressed);
       
@@ -949,12 +955,6 @@ namespace IRServer
             {
               IrssLog.Info("Shutdown command received");
 
-              if (_mode == IRServerMode.ServerMode)
-              {
-                PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Server Shutdown", null);
-                SendToAll(response);
-              }
-
               Stop();
               Application.Exit();
               break;
@@ -1083,12 +1083,6 @@ namespace IRServer
         return;
 
       IrssLog.Info("Quit");
-
-      if (_mode == IRServerMode.ServerMode)
-      {
-        PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Server Shutdown", null);
-        SendToAll(message);
-      }
 
       Stop();
       Application.Exit();

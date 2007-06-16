@@ -175,15 +175,31 @@ namespace Translator
               break;
             }
 
-          case Common.CmdPrefixMessage:
+          case Common.CmdPrefixWindowMsg:
             {
-              string[] commands = Common.SplitMessageCommand(suffix);
+              string[] commands = Common.SplitWindowMessageCommand(suffix);
 
               tabControl.SelectTab(tabPageMessage);
-              textBoxMsgApp.Text = (checkBoxMsgCurrApp.Checked ? "*" : commands[0]);
-              numericUpDownMsg.Value = decimal.Parse(commands[1]);
-              numericUpDownWParam.Value = decimal.Parse(commands[2]);
-              numericUpDownLParam.Value = decimal.Parse(commands[3]);
+              switch (commands[0].ToLowerInvariant())
+              {
+                case "active":
+                  radioButtonActiveWindow.Checked = true;
+                  break;
+                case "application":
+                  radioButtonApplication.Checked = true;
+                  break;
+                case "class":
+                  radioButtonClass.Checked = true;
+                  break;
+                case "window":
+                  radioButtonWindowTitle.Checked = true;
+                  break;
+              }
+
+              textBoxMsgTarget.Text = commands[1];
+              numericUpDownMsg.Value = decimal.Parse(commands[2]);
+              numericUpDownWParam.Value = decimal.Parse(commands[3]);
+              numericUpDownLParam.Value = decimal.Parse(commands[4]);
               break;
             }
 
@@ -284,10 +300,30 @@ namespace Translator
 
         case "tabPageMessage":
           {
+            string target = "error";
+
+            if (radioButtonActiveWindow.Checked)
+            {
+              target = "active";
+              textBoxMsgTarget.Text = "*";
+            }
+            else if (radioButtonApplication.Checked)
+            {
+              target = "application";
+            }
+            else if (radioButtonClass.Checked)
+            {
+              target = "class";
+            }
+            else if (radioButtonWindowTitle.Checked)
+            {
+              target = "window";
+            }
+
             textBoxCommand.Text = _command =
-              String.Format("{0}{1}|{2}|{3}|{4}",
-                Common.CmdPrefixMessage,
-                checkBoxMsgCurrApp.Checked ? "*" : textBoxMsgApp.Text,
+              String.Format("{0}|{1}|{2}|{3}|{4}",
+                target,
+                textBoxMsgTarget.Text,
                 numericUpDownMsg.Value.ToString(),
                 numericUpDownWParam.Value.ToString(),
                 numericUpDownLParam.Value.ToString());
@@ -319,15 +355,47 @@ namespace Translator
       }
     }
 
-    private void buttonFindMsgApp_Click(object sender, EventArgs e)
+    private void buttonFindMsgTarget_Click(object sender, EventArgs e)
     {
-      OpenFileDialog find = new OpenFileDialog();
-      find.Filter = "All files|*.*";
-      find.Multiselect = false;
-      find.Title = "Application to send message to";
+      if (radioButtonApplication.Checked)
+      {
+        OpenFileDialog find = new OpenFileDialog();
+        find.Filter = "All files|*.*";
+        find.Multiselect = false;
+        find.Title = "Application to send message to";
 
-      if (find.ShowDialog(this) == DialogResult.OK)
-        textBoxMsgApp.Text = find.FileName;
+        if (find.ShowDialog(this) == DialogResult.OK)
+          textBoxMsgTarget.Text = find.FileName;
+      }
+      else if (radioButtonClass.Checked)
+      {
+        // TODO: Locate Class
+      }
+      else if (radioButtonWindowTitle.Checked)
+      {
+        // TODO: Locate Window
+      }
+    }
+
+    private void radioButtonActiveWindow_CheckedChanged(object sender, EventArgs e)
+    {
+      buttonFindMsgTarget.Enabled = false;
+      textBoxMsgTarget.Enabled = false;
+    }
+    private void radioButtonApplication_CheckedChanged(object sender, EventArgs e)
+    {
+      buttonFindMsgTarget.Enabled = true;
+      textBoxMsgTarget.Enabled = true;
+    }
+    private void radioButtonClass_CheckedChanged(object sender, EventArgs e)
+    {
+      buttonFindMsgTarget.Enabled = false;
+      textBoxMsgTarget.Enabled = true;
+    }
+    private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)
+    {
+      buttonFindMsgTarget.Enabled = false;
+      textBoxMsgTarget.Enabled = true;
     }
 
     private void buttonLocate_Click(object sender, EventArgs e)
@@ -372,19 +440,14 @@ namespace Translator
 
     private void buttonKeyHelp_Click(object sender, EventArgs e)
     {
-      MessageBox.Show(this,
-@"Place special keys inside {}, for example: {F4} for the F4 key.
-Use + to apply the SHIFT key to the following character,
-Use ^ to apply the CONTROL key to the following character,
-Use % to apply the ALT key to the following character.
-
-For more information refer to 'Simulating Keystrokes.txt'
-", "Advanced keystroke input", MessageBoxButtons.OK, MessageBoxIcon.Information);
-    }
-
-    private void checkBoxMsgCurrApp_CheckedChanged(object sender, EventArgs e)
-    {
-      textBoxMsgApp.Enabled = !checkBoxMsgCurrApp.Checked;
+      try
+      {
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Common\\keystrokes_info.html");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     private void textBoxButtonDesc_TextChanged(object sender, EventArgs e)

@@ -45,12 +45,12 @@ namespace IrssUtils.Forms
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.groupBoxTarget = new System.Windows.Forms.GroupBox();
+      this.radioButtonWindowTitle = new System.Windows.Forms.RadioButton();
+      this.radioButtonClass = new System.Windows.Forms.RadioButton();
+      this.radioButtonApplication = new System.Windows.Forms.RadioButton();
+      this.radioButtonActiveWindow = new System.Windows.Forms.RadioButton();
       this.groupBoxDetails = new System.Windows.Forms.GroupBox();
       this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-      this.radioButtonActiveWindow = new System.Windows.Forms.RadioButton();
-      this.radioButtonApplication = new System.Windows.Forms.RadioButton();
-      this.radioButtonClass = new System.Windows.Forms.RadioButton();
-      this.radioButtonWindowTitle = new System.Windows.Forms.RadioButton();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLParam)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWParam)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMsg)).BeginInit();
@@ -211,6 +211,53 @@ namespace IrssUtils.Forms
       this.groupBoxTarget.TabStop = false;
       this.groupBoxTarget.Text = "Target";
       // 
+      // radioButtonWindowTitle
+      // 
+      this.radioButtonWindowTitle.Location = new System.Drawing.Point(152, 48);
+      this.radioButtonWindowTitle.Name = "radioButtonWindowTitle";
+      this.radioButtonWindowTitle.Size = new System.Drawing.Size(112, 16);
+      this.radioButtonWindowTitle.TabIndex = 3;
+      this.radioButtonWindowTitle.TabStop = true;
+      this.radioButtonWindowTitle.Text = "Window title";
+      this.toolTip.SetToolTip(this.radioButtonWindowTitle, "Send the message to the window with the specified title");
+      this.radioButtonWindowTitle.UseVisualStyleBackColor = true;
+      this.radioButtonWindowTitle.CheckedChanged += new System.EventHandler(this.radioButtonWindowTitle_CheckedChanged);
+      // 
+      // radioButtonClass
+      // 
+      this.radioButtonClass.Location = new System.Drawing.Point(8, 48);
+      this.radioButtonClass.Name = "radioButtonClass";
+      this.radioButtonClass.Size = new System.Drawing.Size(112, 16);
+      this.radioButtonClass.TabIndex = 2;
+      this.radioButtonClass.TabStop = true;
+      this.radioButtonClass.Text = "Class";
+      this.toolTip.SetToolTip(this.radioButtonClass, "Send the message to the specified class");
+      this.radioButtonClass.UseVisualStyleBackColor = true;
+      this.radioButtonClass.CheckedChanged += new System.EventHandler(this.radioButtonClass_CheckedChanged);
+      // 
+      // radioButtonApplication
+      // 
+      this.radioButtonApplication.Location = new System.Drawing.Point(152, 24);
+      this.radioButtonApplication.Name = "radioButtonApplication";
+      this.radioButtonApplication.Size = new System.Drawing.Size(112, 16);
+      this.radioButtonApplication.TabIndex = 1;
+      this.radioButtonApplication.TabStop = true;
+      this.radioButtonApplication.Text = "Application";
+      this.toolTip.SetToolTip(this.radioButtonApplication, "Send the message to the specified application");
+      this.radioButtonApplication.UseVisualStyleBackColor = true;
+      this.radioButtonApplication.CheckedChanged += new System.EventHandler(this.radioButtonApplication_CheckedChanged);
+      // 
+      // radioButtonActiveWindow
+      // 
+      this.radioButtonActiveWindow.Location = new System.Drawing.Point(8, 24);
+      this.radioButtonActiveWindow.Name = "radioButtonActiveWindow";
+      this.radioButtonActiveWindow.Size = new System.Drawing.Size(112, 16);
+      this.radioButtonActiveWindow.TabIndex = 0;
+      this.radioButtonActiveWindow.Text = "Active window";
+      this.toolTip.SetToolTip(this.radioButtonActiveWindow, "Send the message to the active window");
+      this.radioButtonActiveWindow.UseVisualStyleBackColor = true;
+      this.radioButtonActiveWindow.CheckedChanged += new System.EventHandler(this.radioButtonActiveWindow_CheckedChanged);
+      // 
       // groupBoxDetails
       // 
       this.groupBoxDetails.Controls.Add(this.labelMessage);
@@ -226,53 +273,6 @@ namespace IrssUtils.Forms
       this.groupBoxDetails.TabStop = false;
       this.groupBoxDetails.Text = "Message Details";
       // 
-      // radioButtonActiveWindow
-      // 
-      this.radioButtonActiveWindow.Location = new System.Drawing.Point(8, 24);
-      this.radioButtonActiveWindow.Name = "radioButtonActiveWindow";
-      this.radioButtonActiveWindow.Size = new System.Drawing.Size(112, 16);
-      this.radioButtonActiveWindow.TabIndex = 0;
-      this.radioButtonActiveWindow.Text = "Active window";
-      this.toolTip.SetToolTip(this.radioButtonActiveWindow, "Send the message to the active window");
-      this.radioButtonActiveWindow.UseVisualStyleBackColor = true;
-      this.radioButtonActiveWindow.CheckedChanged += new System.EventHandler(this.radioButtonActiveWindow_CheckedChanged);
-      // 
-      // radioButtonApplication
-      // 
-      this.radioButtonApplication.Location = new System.Drawing.Point(152, 24);
-      this.radioButtonApplication.Name = "radioButtonApplication";
-      this.radioButtonApplication.Size = new System.Drawing.Size(112, 16);
-      this.radioButtonApplication.TabIndex = 1;
-      this.radioButtonApplication.TabStop = true;
-      this.radioButtonApplication.Text = "Application";
-      this.toolTip.SetToolTip(this.radioButtonApplication, "Send the message to the specified application");
-      this.radioButtonApplication.UseVisualStyleBackColor = true;
-      this.radioButtonApplication.CheckedChanged += new System.EventHandler(this.radioButtonApplication_CheckedChanged);
-      // 
-      // radioButtonClass
-      // 
-      this.radioButtonClass.Location = new System.Drawing.Point(8, 48);
-      this.radioButtonClass.Name = "radioButtonClass";
-      this.radioButtonClass.Size = new System.Drawing.Size(112, 16);
-      this.radioButtonClass.TabIndex = 2;
-      this.radioButtonClass.TabStop = true;
-      this.radioButtonClass.Text = "Class";
-      this.toolTip.SetToolTip(this.radioButtonClass, "Send the message to the specified class");
-      this.radioButtonClass.UseVisualStyleBackColor = true;
-      this.radioButtonClass.CheckedChanged += new System.EventHandler(this.radioButtonClass_CheckedChanged);
-      // 
-      // radioButtonWindowTitle
-      // 
-      this.radioButtonWindowTitle.Location = new System.Drawing.Point(152, 48);
-      this.radioButtonWindowTitle.Name = "radioButtonWindowTitle";
-      this.radioButtonWindowTitle.Size = new System.Drawing.Size(112, 16);
-      this.radioButtonWindowTitle.TabIndex = 3;
-      this.radioButtonWindowTitle.TabStop = true;
-      this.radioButtonWindowTitle.Text = "Window title";
-      this.toolTip.SetToolTip(this.radioButtonWindowTitle, "Send the message to the window with the specified title");
-      this.radioButtonWindowTitle.UseVisualStyleBackColor = true;
-      this.radioButtonWindowTitle.CheckedChanged += new System.EventHandler(this.radioButtonWindowTitle_CheckedChanged);
-      // 
       // MessageCommand
       // 
       this.AcceptButton = this.buttonOK;
@@ -284,12 +284,13 @@ namespace IrssUtils.Forms
       this.Controls.Add(this.groupBoxTarget);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
+      this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(296, 322);
       this.Name = "MessageCommand";
       this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-      this.Text = "Message Command";
+      this.Text = "Window Message Command";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLParam)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWParam)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMsg)).EndInit();

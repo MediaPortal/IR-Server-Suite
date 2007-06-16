@@ -9,11 +9,17 @@ using System.Windows.Forms;
 namespace MPUtils.Forms
 {
 
+  /// <summary>
+  /// Go To Screen command input form.
+  /// </summary>
   public partial class GoToScreen : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// MediaPortal screen identifier.
+    /// </summary>
     public string Screen
     {
       get { return comboBoxScreen.Text; }
@@ -23,7 +29,15 @@ namespace MPUtils.Forms
 
     #region Constructors
 
+    /// <summary>
+    /// Default Constructor.
+    /// </summary>
     public GoToScreen() : this(String.Empty) { }
+
+    /// <summary>
+    /// Create the form with a preselected MediaPortal screen identifier.
+    /// </summary>
+    /// <param name="selected">MediaPortal screen identifier.</param>
     public GoToScreen(string selected)
     {
       InitializeComponent();

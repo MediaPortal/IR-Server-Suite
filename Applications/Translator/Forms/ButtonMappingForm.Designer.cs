@@ -79,16 +79,20 @@ namespace Translator
       this.textBoxSerialCommand = new System.Windows.Forms.TextBox();
       this.labelSerialCommand = new System.Windows.Forms.Label();
       this.tabPageMessage = new System.Windows.Forms.TabPage();
-      this.checkBoxMsgCurrApp = new System.Windows.Forms.CheckBox();
-      this.labelMsgApp = new System.Windows.Forms.Label();
-      this.buttonFindMsgApp = new System.Windows.Forms.Button();
-      this.textBoxMsgApp = new System.Windows.Forms.TextBox();
+      this.groupBoxMessageDetails = new System.Windows.Forms.GroupBox();
+      this.labelMessage = new System.Windows.Forms.Label();
+      this.numericUpDownMsg = new System.Windows.Forms.NumericUpDown();
       this.numericUpDownLParam = new System.Windows.Forms.NumericUpDown();
       this.numericUpDownWParam = new System.Windows.Forms.NumericUpDown();
-      this.numericUpDownMsg = new System.Windows.Forms.NumericUpDown();
       this.labelLParam = new System.Windows.Forms.Label();
       this.labelWParam = new System.Windows.Forms.Label();
-      this.labelMessage = new System.Windows.Forms.Label();
+      this.groupBoxMessageTarget = new System.Windows.Forms.GroupBox();
+      this.radioButtonActiveWindow = new System.Windows.Forms.RadioButton();
+      this.textBoxMsgTarget = new System.Windows.Forms.TextBox();
+      this.buttonFindMsgTarget = new System.Windows.Forms.Button();
+      this.radioButtonWindowTitle = new System.Windows.Forms.RadioButton();
+      this.radioButtonApplication = new System.Windows.Forms.RadioButton();
+      this.radioButtonClass = new System.Windows.Forms.RadioButton();
       this.tabPageKeystrokes = new System.Windows.Forms.TabPage();
       this.buttonKeyHelp = new System.Windows.Forms.Button();
       this.labelKeystrokes = new System.Windows.Forms.Label();
@@ -107,9 +111,11 @@ namespace Translator
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDataBits)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBaudRate)).BeginInit();
       this.tabPageMessage.SuspendLayout();
+      this.groupBoxMessageDetails.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMsg)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLParam)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWParam)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMsg)).BeginInit();
+      this.groupBoxMessageTarget.SuspendLayout();
       this.tabPageKeystrokes.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -123,7 +129,7 @@ namespace Translator
       this.groupBoxButton.Controls.Add(this.textBoxButtonDesc);
       this.groupBoxButton.Location = new System.Drawing.Point(8, 8);
       this.groupBoxButton.Name = "groupBoxButton";
-      this.groupBoxButton.Size = new System.Drawing.Size(408, 80);
+      this.groupBoxButton.Size = new System.Drawing.Size(456, 80);
       this.groupBoxButton.TabIndex = 0;
       this.groupBoxButton.TabStop = false;
       this.groupBoxButton.Text = "Button";
@@ -154,7 +160,7 @@ namespace Translator
       this.textBoxKeyCode.Location = new System.Drawing.Point(88, 16);
       this.textBoxKeyCode.Name = "textBoxKeyCode";
       this.textBoxKeyCode.ReadOnly = true;
-      this.textBoxKeyCode.Size = new System.Drawing.Size(312, 20);
+      this.textBoxKeyCode.Size = new System.Drawing.Size(360, 20);
       this.textBoxKeyCode.TabIndex = 1;
       this.textBoxKeyCode.TabStop = false;
       this.textBoxKeyCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -165,8 +171,9 @@ namespace Translator
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxButtonDesc.Location = new System.Drawing.Point(88, 48);
       this.textBoxButtonDesc.Name = "textBoxButtonDesc";
-      this.textBoxButtonDesc.Size = new System.Drawing.Size(312, 20);
+      this.textBoxButtonDesc.Size = new System.Drawing.Size(360, 20);
       this.textBoxButtonDesc.TabIndex = 3;
+      this.textBoxButtonDesc.TextChanged += new System.EventHandler(this.textBoxButtonDesc_TextChanged);
       // 
       // groupBoxSet
       // 
@@ -179,7 +186,7 @@ namespace Translator
       this.groupBoxSet.Controls.Add(this.buttonTest);
       this.groupBoxSet.Location = new System.Drawing.Point(8, 96);
       this.groupBoxSet.Name = "groupBoxSet";
-      this.groupBoxSet.Size = new System.Drawing.Size(408, 264);
+      this.groupBoxSet.Size = new System.Drawing.Size(456, 296);
       this.groupBoxSet.TabIndex = 1;
       this.groupBoxSet.TabStop = false;
       this.groupBoxSet.Text = "Command";
@@ -189,16 +196,16 @@ namespace Translator
       this.textBoxCommand.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.textBoxCommand.Location = new System.Drawing.Point(64, 232);
+      this.textBoxCommand.Location = new System.Drawing.Point(64, 264);
       this.textBoxCommand.Name = "textBoxCommand";
       this.textBoxCommand.ReadOnly = true;
-      this.textBoxCommand.Size = new System.Drawing.Size(280, 20);
+      this.textBoxCommand.Size = new System.Drawing.Size(328, 20);
       this.textBoxCommand.TabIndex = 2;
       // 
       // buttonSet
       // 
       this.buttonSet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonSet.Location = new System.Drawing.Point(8, 232);
+      this.buttonSet.Location = new System.Drawing.Point(8, 264);
       this.buttonSet.Name = "buttonSet";
       this.buttonSet.Size = new System.Drawing.Size(48, 20);
       this.buttonSet.TabIndex = 1;
@@ -220,7 +227,7 @@ namespace Translator
       this.tabControl.Location = new System.Drawing.Point(8, 24);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(392, 200);
+      this.tabControl.Size = new System.Drawing.Size(440, 232);
       this.tabControl.TabIndex = 0;
       // 
       // tabPageBlastIR
@@ -235,7 +242,7 @@ namespace Translator
       this.tabPageBlastIR.Location = new System.Drawing.Point(4, 22);
       this.tabPageBlastIR.Name = "tabPageBlastIR";
       this.tabPageBlastIR.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageBlastIR.Size = new System.Drawing.Size(384, 174);
+      this.tabPageBlastIR.Size = new System.Drawing.Size(432, 206);
       this.tabPageBlastIR.TabIndex = 0;
       this.tabPageBlastIR.Text = "Blast IR";
       this.tabPageBlastIR.UseVisualStyleBackColor = true;
@@ -255,13 +262,13 @@ namespace Translator
       this.comboBoxSpeed.FormattingEnabled = true;
       this.comboBoxSpeed.Location = new System.Drawing.Point(96, 80);
       this.comboBoxSpeed.Name = "comboBoxSpeed";
-      this.comboBoxSpeed.Size = new System.Drawing.Size(88, 21);
+      this.comboBoxSpeed.Size = new System.Drawing.Size(120, 21);
       this.comboBoxSpeed.TabIndex = 5;
       // 
       // buttonLearnIR
       // 
       this.buttonLearnIR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonLearnIR.Location = new System.Drawing.Point(312, 144);
+      this.buttonLearnIR.Location = new System.Drawing.Point(360, 176);
       this.buttonLearnIR.Name = "buttonLearnIR";
       this.buttonLearnIR.Size = new System.Drawing.Size(64, 24);
       this.buttonLearnIR.TabIndex = 6;
@@ -286,7 +293,7 @@ namespace Translator
       this.comboBoxIRCode.FormattingEnabled = true;
       this.comboBoxIRCode.Location = new System.Drawing.Point(96, 16);
       this.comboBoxIRCode.Name = "comboBoxIRCode";
-      this.comboBoxIRCode.Size = new System.Drawing.Size(280, 21);
+      this.comboBoxIRCode.Size = new System.Drawing.Size(328, 21);
       this.comboBoxIRCode.TabIndex = 1;
       // 
       // comboBoxPort
@@ -295,7 +302,7 @@ namespace Translator
       this.comboBoxPort.FormattingEnabled = true;
       this.comboBoxPort.Location = new System.Drawing.Point(96, 48);
       this.comboBoxPort.Name = "comboBoxPort";
-      this.comboBoxPort.Size = new System.Drawing.Size(88, 21);
+      this.comboBoxPort.Size = new System.Drawing.Size(120, 21);
       this.comboBoxPort.TabIndex = 3;
       // 
       // labelIRCommand
@@ -315,7 +322,7 @@ namespace Translator
       this.tabPageMacro.Location = new System.Drawing.Point(4, 22);
       this.tabPageMacro.Name = "tabPageMacro";
       this.tabPageMacro.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMacro.Size = new System.Drawing.Size(384, 174);
+      this.tabPageMacro.Size = new System.Drawing.Size(432, 206);
       this.tabPageMacro.TabIndex = 1;
       this.tabPageMacro.Text = "Macro";
       this.tabPageMacro.UseVisualStyleBackColor = true;
@@ -323,7 +330,7 @@ namespace Translator
       // buttonNewMacro
       // 
       this.buttonNewMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonNewMacro.Location = new System.Drawing.Point(312, 144);
+      this.buttonNewMacro.Location = new System.Drawing.Point(360, 176);
       this.buttonNewMacro.Name = "buttonNewMacro";
       this.buttonNewMacro.Size = new System.Drawing.Size(64, 24);
       this.buttonNewMacro.TabIndex = 2;
@@ -339,7 +346,7 @@ namespace Translator
       this.comboBoxMacro.FormattingEnabled = true;
       this.comboBoxMacro.Location = new System.Drawing.Point(96, 16);
       this.comboBoxMacro.Name = "comboBoxMacro";
-      this.comboBoxMacro.Size = new System.Drawing.Size(280, 21);
+      this.comboBoxMacro.Size = new System.Drawing.Size(328, 21);
       this.comboBoxMacro.TabIndex = 1;
       // 
       // labelMacro
@@ -368,7 +375,7 @@ namespace Translator
       this.tabPageProgram.Location = new System.Drawing.Point(4, 22);
       this.tabPageProgram.Name = "tabPageProgram";
       this.tabPageProgram.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageProgram.Size = new System.Drawing.Size(384, 174);
+      this.tabPageProgram.Size = new System.Drawing.Size(432, 206);
       this.tabPageProgram.TabIndex = 3;
       this.tabPageProgram.Text = "Run";
       this.tabPageProgram.UseVisualStyleBackColor = true;
@@ -401,7 +408,7 @@ namespace Translator
       this.comboBoxWindowStyle.Location = new System.Drawing.Point(96, 112);
       this.comboBoxWindowStyle.MaxDropDownItems = 4;
       this.comboBoxWindowStyle.Name = "comboBoxWindowStyle";
-      this.comboBoxWindowStyle.Size = new System.Drawing.Size(104, 21);
+      this.comboBoxWindowStyle.Size = new System.Drawing.Size(112, 21);
       this.comboBoxWindowStyle.TabIndex = 9;
       // 
       // labelWindowStyle
@@ -428,7 +435,7 @@ namespace Translator
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxApplicationParameters.Location = new System.Drawing.Point(96, 80);
       this.textBoxApplicationParameters.Name = "textBoxApplicationParameters";
-      this.textBoxApplicationParameters.Size = new System.Drawing.Size(280, 20);
+      this.textBoxApplicationParameters.Size = new System.Drawing.Size(328, 20);
       this.textBoxApplicationParameters.TabIndex = 7;
       // 
       // labelStartupFolder
@@ -443,7 +450,7 @@ namespace Translator
       // buttonStartupFolder
       // 
       this.buttonStartupFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonStartupFolder.Location = new System.Drawing.Point(352, 48);
+      this.buttonStartupFolder.Location = new System.Drawing.Point(400, 48);
       this.buttonStartupFolder.Name = "buttonStartupFolder";
       this.buttonStartupFolder.Size = new System.Drawing.Size(24, 20);
       this.buttonStartupFolder.TabIndex = 5;
@@ -457,7 +464,7 @@ namespace Translator
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxAppStartFolder.Location = new System.Drawing.Point(96, 48);
       this.textBoxAppStartFolder.Name = "textBoxAppStartFolder";
-      this.textBoxAppStartFolder.Size = new System.Drawing.Size(248, 20);
+      this.textBoxAppStartFolder.Size = new System.Drawing.Size(296, 20);
       this.textBoxAppStartFolder.TabIndex = 4;
       // 
       // labelApplication
@@ -472,7 +479,7 @@ namespace Translator
       // buttonLocate
       // 
       this.buttonLocate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonLocate.Location = new System.Drawing.Point(352, 16);
+      this.buttonLocate.Location = new System.Drawing.Point(400, 16);
       this.buttonLocate.Name = "buttonLocate";
       this.buttonLocate.Size = new System.Drawing.Size(24, 20);
       this.buttonLocate.TabIndex = 2;
@@ -486,7 +493,7 @@ namespace Translator
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxApp.Location = new System.Drawing.Point(96, 16);
       this.textBoxApp.Name = "textBoxApp";
-      this.textBoxApp.Size = new System.Drawing.Size(248, 20);
+      this.textBoxApp.Size = new System.Drawing.Size(296, 20);
       this.textBoxApp.TabIndex = 1;
       // 
       // tabPageSerial
@@ -498,7 +505,7 @@ namespace Translator
       this.tabPageSerial.Location = new System.Drawing.Point(4, 22);
       this.tabPageSerial.Name = "tabPageSerial";
       this.tabPageSerial.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageSerial.Size = new System.Drawing.Size(384, 174);
+      this.tabPageSerial.Size = new System.Drawing.Size(432, 206);
       this.tabPageSerial.TabIndex = 2;
       this.tabPageSerial.Text = "Serial";
       this.tabPageSerial.UseVisualStyleBackColor = true;
@@ -520,7 +527,7 @@ namespace Translator
       this.groupBoxPortSetup.Controls.Add(this.labelComPort);
       this.groupBoxPortSetup.Location = new System.Drawing.Point(8, 48);
       this.groupBoxPortSetup.Name = "groupBoxPortSetup";
-      this.groupBoxPortSetup.Size = new System.Drawing.Size(368, 120);
+      this.groupBoxPortSetup.Size = new System.Drawing.Size(416, 144);
       this.groupBoxPortSetup.TabIndex = 3;
       this.groupBoxPortSetup.TabStop = false;
       this.groupBoxPortSetup.Text = "Port setup";
@@ -529,7 +536,7 @@ namespace Translator
       // 
       this.comboBoxComPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxComPort.FormattingEnabled = true;
-      this.comboBoxComPort.Location = new System.Drawing.Point(80, 24);
+      this.comboBoxComPort.Location = new System.Drawing.Point(88, 24);
       this.comboBoxComPort.Name = "comboBoxComPort";
       this.comboBoxComPort.Size = new System.Drawing.Size(96, 21);
       this.comboBoxComPort.TabIndex = 1;
@@ -538,7 +545,7 @@ namespace Translator
       // 
       this.comboBoxStopBits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxStopBits.FormattingEnabled = true;
-      this.comboBoxStopBits.Location = new System.Drawing.Point(80, 88);
+      this.comboBoxStopBits.Location = new System.Drawing.Point(88, 88);
       this.comboBoxStopBits.Name = "comboBoxStopBits";
       this.comboBoxStopBits.Size = new System.Drawing.Size(96, 21);
       this.comboBoxStopBits.TabIndex = 9;
@@ -547,14 +554,14 @@ namespace Translator
       // 
       this.labelStopBits.Location = new System.Drawing.Point(8, 88);
       this.labelStopBits.Name = "labelStopBits";
-      this.labelStopBits.Size = new System.Drawing.Size(72, 21);
+      this.labelStopBits.Size = new System.Drawing.Size(80, 21);
       this.labelStopBits.TabIndex = 8;
       this.labelStopBits.Text = "Stop bits:";
       this.labelStopBits.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // numericUpDownDataBits
       // 
-      this.numericUpDownDataBits.Location = new System.Drawing.Point(264, 56);
+      this.numericUpDownDataBits.Location = new System.Drawing.Point(312, 56);
       this.numericUpDownDataBits.Maximum = new decimal(new int[] {
             8,
             0,
@@ -577,9 +584,9 @@ namespace Translator
       // 
       // labelDataBits
       // 
-      this.labelDataBits.Location = new System.Drawing.Point(192, 56);
+      this.labelDataBits.Location = new System.Drawing.Point(232, 56);
       this.labelDataBits.Name = "labelDataBits";
-      this.labelDataBits.Size = new System.Drawing.Size(72, 20);
+      this.labelDataBits.Size = new System.Drawing.Size(80, 20);
       this.labelDataBits.TabIndex = 6;
       this.labelDataBits.Text = "Data bits:";
       this.labelDataBits.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -588,7 +595,7 @@ namespace Translator
       // 
       this.comboBoxParity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxParity.FormattingEnabled = true;
-      this.comboBoxParity.Location = new System.Drawing.Point(80, 56);
+      this.comboBoxParity.Location = new System.Drawing.Point(88, 56);
       this.comboBoxParity.Name = "comboBoxParity";
       this.comboBoxParity.Size = new System.Drawing.Size(96, 21);
       this.comboBoxParity.TabIndex = 5;
@@ -597,14 +604,14 @@ namespace Translator
       // 
       this.labelParity.Location = new System.Drawing.Point(8, 56);
       this.labelParity.Name = "labelParity";
-      this.labelParity.Size = new System.Drawing.Size(72, 21);
+      this.labelParity.Size = new System.Drawing.Size(80, 21);
       this.labelParity.TabIndex = 4;
       this.labelParity.Text = "Parity:";
       this.labelParity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // numericUpDownBaudRate
       // 
-      this.numericUpDownBaudRate.Location = new System.Drawing.Point(264, 24);
+      this.numericUpDownBaudRate.Location = new System.Drawing.Point(312, 24);
       this.numericUpDownBaudRate.Maximum = new decimal(new int[] {
             256000,
             0,
@@ -627,9 +634,9 @@ namespace Translator
       // 
       // labelBaudRate
       // 
-      this.labelBaudRate.Location = new System.Drawing.Point(192, 24);
+      this.labelBaudRate.Location = new System.Drawing.Point(232, 24);
       this.labelBaudRate.Name = "labelBaudRate";
-      this.labelBaudRate.Size = new System.Drawing.Size(72, 20);
+      this.labelBaudRate.Size = new System.Drawing.Size(80, 20);
       this.labelBaudRate.TabIndex = 2;
       this.labelBaudRate.Text = "Baud rate:";
       this.labelBaudRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -638,7 +645,7 @@ namespace Translator
       // 
       this.labelComPort.Location = new System.Drawing.Point(8, 24);
       this.labelComPort.Name = "labelComPort";
-      this.labelComPort.Size = new System.Drawing.Size(72, 20);
+      this.labelComPort.Size = new System.Drawing.Size(80, 20);
       this.labelComPort.TabIndex = 0;
       this.labelComPort.Text = "Com port:";
       this.labelComPort.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -646,7 +653,7 @@ namespace Translator
       // buttonParamQuestion
       // 
       this.buttonParamQuestion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonParamQuestion.Location = new System.Drawing.Point(352, 16);
+      this.buttonParamQuestion.Location = new System.Drawing.Point(400, 16);
       this.buttonParamQuestion.Name = "buttonParamQuestion";
       this.buttonParamQuestion.Size = new System.Drawing.Size(24, 20);
       this.buttonParamQuestion.TabIndex = 2;
@@ -660,7 +667,7 @@ namespace Translator
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxSerialCommand.Location = new System.Drawing.Point(96, 16);
       this.textBoxSerialCommand.Name = "textBoxSerialCommand";
-      this.textBoxSerialCommand.Size = new System.Drawing.Size(248, 20);
+      this.textBoxSerialCommand.Size = new System.Drawing.Size(296, 20);
       this.textBoxSerialCommand.TabIndex = 1;
       // 
       // labelSerialCommand
@@ -674,93 +681,43 @@ namespace Translator
       // 
       // tabPageMessage
       // 
-      this.tabPageMessage.Controls.Add(this.checkBoxMsgCurrApp);
-      this.tabPageMessage.Controls.Add(this.labelMsgApp);
-      this.tabPageMessage.Controls.Add(this.buttonFindMsgApp);
-      this.tabPageMessage.Controls.Add(this.textBoxMsgApp);
-      this.tabPageMessage.Controls.Add(this.numericUpDownLParam);
-      this.tabPageMessage.Controls.Add(this.numericUpDownWParam);
-      this.tabPageMessage.Controls.Add(this.numericUpDownMsg);
-      this.tabPageMessage.Controls.Add(this.labelLParam);
-      this.tabPageMessage.Controls.Add(this.labelWParam);
-      this.tabPageMessage.Controls.Add(this.labelMessage);
+      this.tabPageMessage.Controls.Add(this.groupBoxMessageDetails);
+      this.tabPageMessage.Controls.Add(this.groupBoxMessageTarget);
       this.tabPageMessage.Location = new System.Drawing.Point(4, 22);
       this.tabPageMessage.Name = "tabPageMessage";
       this.tabPageMessage.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMessage.Size = new System.Drawing.Size(384, 174);
+      this.tabPageMessage.Size = new System.Drawing.Size(432, 206);
       this.tabPageMessage.TabIndex = 4;
-      this.tabPageMessage.Text = "Message";
+      this.tabPageMessage.Text = "Window Message";
       this.tabPageMessage.UseVisualStyleBackColor = true;
       // 
-      // checkBoxMsgCurrApp
+      // groupBoxMessageDetails
       // 
-      this.checkBoxMsgCurrApp.Location = new System.Drawing.Point(96, 40);
-      this.checkBoxMsgCurrApp.Name = "checkBoxMsgCurrApp";
-      this.checkBoxMsgCurrApp.Size = new System.Drawing.Size(160, 16);
-      this.checkBoxMsgCurrApp.TabIndex = 3;
-      this.checkBoxMsgCurrApp.Text = "Send to active window";
-      this.checkBoxMsgCurrApp.UseVisualStyleBackColor = true;
+      this.groupBoxMessageDetails.Controls.Add(this.labelMessage);
+      this.groupBoxMessageDetails.Controls.Add(this.numericUpDownMsg);
+      this.groupBoxMessageDetails.Controls.Add(this.numericUpDownLParam);
+      this.groupBoxMessageDetails.Controls.Add(this.numericUpDownWParam);
+      this.groupBoxMessageDetails.Controls.Add(this.labelLParam);
+      this.groupBoxMessageDetails.Controls.Add(this.labelWParam);
+      this.groupBoxMessageDetails.Location = new System.Drawing.Point(8, 104);
+      this.groupBoxMessageDetails.Name = "groupBoxMessageDetails";
+      this.groupBoxMessageDetails.Size = new System.Drawing.Size(416, 88);
+      this.groupBoxMessageDetails.TabIndex = 1;
+      this.groupBoxMessageDetails.TabStop = false;
+      this.groupBoxMessageDetails.Text = "Details";
       // 
-      // labelMsgApp
+      // labelMessage
       // 
-      this.labelMsgApp.Location = new System.Drawing.Point(8, 16);
-      this.labelMsgApp.Name = "labelMsgApp";
-      this.labelMsgApp.Size = new System.Drawing.Size(88, 20);
-      this.labelMsgApp.TabIndex = 0;
-      this.labelMsgApp.Text = "Application:";
-      this.labelMsgApp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // buttonFindMsgApp
-      // 
-      this.buttonFindMsgApp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonFindMsgApp.Location = new System.Drawing.Point(352, 16);
-      this.buttonFindMsgApp.Name = "buttonFindMsgApp";
-      this.buttonFindMsgApp.Size = new System.Drawing.Size(24, 20);
-      this.buttonFindMsgApp.TabIndex = 2;
-      this.buttonFindMsgApp.Text = "...";
-      this.buttonFindMsgApp.UseVisualStyleBackColor = true;
-      this.buttonFindMsgApp.Click += new System.EventHandler(this.buttonFindMsgApp_Click);
-      // 
-      // textBoxMsgApp
-      // 
-      this.textBoxMsgApp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.textBoxMsgApp.Location = new System.Drawing.Point(96, 16);
-      this.textBoxMsgApp.Name = "textBoxMsgApp";
-      this.textBoxMsgApp.Size = new System.Drawing.Size(248, 20);
-      this.textBoxMsgApp.TabIndex = 1;
-      // 
-      // numericUpDownLParam
-      // 
-      this.numericUpDownLParam.Location = new System.Drawing.Point(96, 136);
-      this.numericUpDownLParam.Maximum = new decimal(new int[] {
-            -1,
-            0,
-            0,
-            0});
-      this.numericUpDownLParam.Name = "numericUpDownLParam";
-      this.numericUpDownLParam.Size = new System.Drawing.Size(104, 20);
-      this.numericUpDownLParam.TabIndex = 9;
-      this.numericUpDownLParam.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-      this.numericUpDownLParam.ThousandsSeparator = true;
-      // 
-      // numericUpDownWParam
-      // 
-      this.numericUpDownWParam.Location = new System.Drawing.Point(96, 104);
-      this.numericUpDownWParam.Maximum = new decimal(new int[] {
-            -1,
-            0,
-            0,
-            0});
-      this.numericUpDownWParam.Name = "numericUpDownWParam";
-      this.numericUpDownWParam.Size = new System.Drawing.Size(104, 20);
-      this.numericUpDownWParam.TabIndex = 7;
-      this.numericUpDownWParam.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-      this.numericUpDownWParam.ThousandsSeparator = true;
+      this.labelMessage.Location = new System.Drawing.Point(8, 24);
+      this.labelMessage.Name = "labelMessage";
+      this.labelMessage.Size = new System.Drawing.Size(72, 20);
+      this.labelMessage.TabIndex = 0;
+      this.labelMessage.Text = "Message:";
+      this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // numericUpDownMsg
       // 
-      this.numericUpDownMsg.Location = new System.Drawing.Point(96, 72);
+      this.numericUpDownMsg.Location = new System.Drawing.Point(80, 24);
       this.numericUpDownMsg.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -768,36 +725,137 @@ namespace Translator
             0});
       this.numericUpDownMsg.Name = "numericUpDownMsg";
       this.numericUpDownMsg.Size = new System.Drawing.Size(104, 20);
-      this.numericUpDownMsg.TabIndex = 5;
+      this.numericUpDownMsg.TabIndex = 1;
       this.numericUpDownMsg.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownMsg.ThousandsSeparator = true;
       // 
+      // numericUpDownLParam
+      // 
+      this.numericUpDownLParam.Location = new System.Drawing.Point(304, 56);
+      this.numericUpDownLParam.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+      this.numericUpDownLParam.Name = "numericUpDownLParam";
+      this.numericUpDownLParam.Size = new System.Drawing.Size(104, 20);
+      this.numericUpDownLParam.TabIndex = 5;
+      this.numericUpDownLParam.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.numericUpDownLParam.ThousandsSeparator = true;
+      // 
+      // numericUpDownWParam
+      // 
+      this.numericUpDownWParam.Location = new System.Drawing.Point(304, 24);
+      this.numericUpDownWParam.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+      this.numericUpDownWParam.Name = "numericUpDownWParam";
+      this.numericUpDownWParam.Size = new System.Drawing.Size(104, 20);
+      this.numericUpDownWParam.TabIndex = 3;
+      this.numericUpDownWParam.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.numericUpDownWParam.ThousandsSeparator = true;
+      // 
       // labelLParam
       // 
-      this.labelLParam.Location = new System.Drawing.Point(8, 136);
+      this.labelLParam.Location = new System.Drawing.Point(216, 56);
       this.labelLParam.Name = "labelLParam";
       this.labelLParam.Size = new System.Drawing.Size(88, 20);
-      this.labelLParam.TabIndex = 8;
+      this.labelLParam.TabIndex = 4;
       this.labelLParam.Text = "Long Param:";
       this.labelLParam.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // labelWParam
       // 
-      this.labelWParam.Location = new System.Drawing.Point(8, 104);
+      this.labelWParam.Location = new System.Drawing.Point(216, 24);
       this.labelWParam.Name = "labelWParam";
       this.labelWParam.Size = new System.Drawing.Size(88, 20);
-      this.labelWParam.TabIndex = 6;
+      this.labelWParam.TabIndex = 2;
       this.labelWParam.Text = "Word Param:";
       this.labelWParam.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // labelMessage
+      // groupBoxMessageTarget
       // 
-      this.labelMessage.Location = new System.Drawing.Point(8, 72);
-      this.labelMessage.Name = "labelMessage";
-      this.labelMessage.Size = new System.Drawing.Size(88, 20);
-      this.labelMessage.TabIndex = 4;
-      this.labelMessage.Text = "Message:";
-      this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.groupBoxMessageTarget.Controls.Add(this.radioButtonActiveWindow);
+      this.groupBoxMessageTarget.Controls.Add(this.textBoxMsgTarget);
+      this.groupBoxMessageTarget.Controls.Add(this.buttonFindMsgTarget);
+      this.groupBoxMessageTarget.Controls.Add(this.radioButtonWindowTitle);
+      this.groupBoxMessageTarget.Controls.Add(this.radioButtonApplication);
+      this.groupBoxMessageTarget.Controls.Add(this.radioButtonClass);
+      this.groupBoxMessageTarget.Location = new System.Drawing.Point(8, 16);
+      this.groupBoxMessageTarget.Name = "groupBoxMessageTarget";
+      this.groupBoxMessageTarget.Size = new System.Drawing.Size(416, 80);
+      this.groupBoxMessageTarget.TabIndex = 0;
+      this.groupBoxMessageTarget.TabStop = false;
+      this.groupBoxMessageTarget.Text = "Target";
+      // 
+      // radioButtonActiveWindow
+      // 
+      this.radioButtonActiveWindow.Anchor = System.Windows.Forms.AnchorStyles.Top;
+      this.radioButtonActiveWindow.Location = new System.Drawing.Point(16, 24);
+      this.radioButtonActiveWindow.Name = "radioButtonActiveWindow";
+      this.radioButtonActiveWindow.Size = new System.Drawing.Size(104, 16);
+      this.radioButtonActiveWindow.TabIndex = 0;
+      this.radioButtonActiveWindow.Text = "Active window";
+      this.radioButtonActiveWindow.UseVisualStyleBackColor = true;
+      this.radioButtonActiveWindow.CheckedChanged += new System.EventHandler(this.radioButtonActiveWindow_CheckedChanged);
+      // 
+      // textBoxMsgTarget
+      // 
+      this.textBoxMsgTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.textBoxMsgTarget.Location = new System.Drawing.Point(8, 48);
+      this.textBoxMsgTarget.Name = "textBoxMsgTarget";
+      this.textBoxMsgTarget.Size = new System.Drawing.Size(368, 20);
+      this.textBoxMsgTarget.TabIndex = 4;
+      // 
+      // buttonFindMsgTarget
+      // 
+      this.buttonFindMsgTarget.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonFindMsgTarget.Location = new System.Drawing.Point(384, 48);
+      this.buttonFindMsgTarget.Name = "buttonFindMsgTarget";
+      this.buttonFindMsgTarget.Size = new System.Drawing.Size(24, 20);
+      this.buttonFindMsgTarget.TabIndex = 5;
+      this.buttonFindMsgTarget.Text = "...";
+      this.buttonFindMsgTarget.UseVisualStyleBackColor = true;
+      this.buttonFindMsgTarget.Click += new System.EventHandler(this.buttonFindMsgTarget_Click);
+      // 
+      // radioButtonWindowTitle
+      // 
+      this.radioButtonWindowTitle.Anchor = System.Windows.Forms.AnchorStyles.Top;
+      this.radioButtonWindowTitle.Location = new System.Drawing.Point(304, 24);
+      this.radioButtonWindowTitle.Name = "radioButtonWindowTitle";
+      this.radioButtonWindowTitle.Size = new System.Drawing.Size(96, 16);
+      this.radioButtonWindowTitle.TabIndex = 3;
+      this.radioButtonWindowTitle.TabStop = true;
+      this.radioButtonWindowTitle.Text = "Window title";
+      this.radioButtonWindowTitle.UseVisualStyleBackColor = true;
+      this.radioButtonWindowTitle.CheckedChanged += new System.EventHandler(this.radioButtonWindowTitle_CheckedChanged);
+      // 
+      // radioButtonApplication
+      // 
+      this.radioButtonApplication.Anchor = System.Windows.Forms.AnchorStyles.Top;
+      this.radioButtonApplication.Location = new System.Drawing.Point(128, 24);
+      this.radioButtonApplication.Name = "radioButtonApplication";
+      this.radioButtonApplication.Size = new System.Drawing.Size(88, 16);
+      this.radioButtonApplication.TabIndex = 1;
+      this.radioButtonApplication.TabStop = true;
+      this.radioButtonApplication.Text = "Application";
+      this.radioButtonApplication.UseVisualStyleBackColor = true;
+      this.radioButtonApplication.CheckedChanged += new System.EventHandler(this.radioButtonApplication_CheckedChanged);
+      // 
+      // radioButtonClass
+      // 
+      this.radioButtonClass.Anchor = System.Windows.Forms.AnchorStyles.Top;
+      this.radioButtonClass.Location = new System.Drawing.Point(224, 24);
+      this.radioButtonClass.Name = "radioButtonClass";
+      this.radioButtonClass.Size = new System.Drawing.Size(72, 16);
+      this.radioButtonClass.TabIndex = 2;
+      this.radioButtonClass.TabStop = true;
+      this.radioButtonClass.Text = "Class";
+      this.radioButtonClass.UseVisualStyleBackColor = true;
+      this.radioButtonClass.CheckedChanged += new System.EventHandler(this.radioButtonClass_CheckedChanged);
       // 
       // tabPageKeystrokes
       // 
@@ -807,7 +865,7 @@ namespace Translator
       this.tabPageKeystrokes.Location = new System.Drawing.Point(4, 22);
       this.tabPageKeystrokes.Name = "tabPageKeystrokes";
       this.tabPageKeystrokes.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageKeystrokes.Size = new System.Drawing.Size(384, 174);
+      this.tabPageKeystrokes.Size = new System.Drawing.Size(432, 206);
       this.tabPageKeystrokes.TabIndex = 5;
       this.tabPageKeystrokes.Text = "Keystrokes";
       this.tabPageKeystrokes.UseVisualStyleBackColor = true;
@@ -815,7 +873,7 @@ namespace Translator
       // buttonKeyHelp
       // 
       this.buttonKeyHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonKeyHelp.Location = new System.Drawing.Point(312, 144);
+      this.buttonKeyHelp.Location = new System.Drawing.Point(360, 176);
       this.buttonKeyHelp.Name = "buttonKeyHelp";
       this.buttonKeyHelp.Size = new System.Drawing.Size(64, 24);
       this.buttonKeyHelp.TabIndex = 2;
@@ -829,7 +887,7 @@ namespace Translator
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.labelKeystrokes.Location = new System.Drawing.Point(8, 8);
       this.labelKeystrokes.Name = "labelKeystrokes";
-      this.labelKeystrokes.Size = new System.Drawing.Size(368, 16);
+      this.labelKeystrokes.Size = new System.Drawing.Size(416, 16);
       this.labelKeystrokes.TabIndex = 0;
       this.labelKeystrokes.Text = "Keystrokes:";
       this.labelKeystrokes.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -843,13 +901,13 @@ namespace Translator
       this.textBoxKeys.Multiline = true;
       this.textBoxKeys.Name = "textBoxKeys";
       this.textBoxKeys.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-      this.textBoxKeys.Size = new System.Drawing.Size(368, 112);
+      this.textBoxKeys.Size = new System.Drawing.Size(416, 144);
       this.textBoxKeys.TabIndex = 1;
       // 
       // buttonTest
       // 
       this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonTest.Location = new System.Drawing.Point(352, 232);
+      this.buttonTest.Location = new System.Drawing.Point(400, 264);
       this.buttonTest.Name = "buttonTest";
       this.buttonTest.Size = new System.Drawing.Size(48, 20);
       this.buttonTest.TabIndex = 3;
@@ -861,7 +919,7 @@ namespace Translator
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(360, 368);
+      this.buttonCancel.Location = new System.Drawing.Point(408, 400);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
       this.buttonCancel.TabIndex = 3;
@@ -872,7 +930,7 @@ namespace Translator
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(296, 368);
+      this.buttonOK.Location = new System.Drawing.Point(344, 400);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
       this.buttonOK.TabIndex = 2;
@@ -886,14 +944,14 @@ namespace Translator
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(424, 401);
+      this.ClientSize = new System.Drawing.Size(472, 433);
       this.Controls.Add(this.groupBoxButton);
       this.Controls.Add(this.groupBoxSet);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(432, 428);
+      this.MinimumSize = new System.Drawing.Size(480, 428);
       this.Name = "ButtonMappingForm";
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -914,10 +972,12 @@ namespace Translator
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDataBits)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBaudRate)).EndInit();
       this.tabPageMessage.ResumeLayout(false);
-      this.tabPageMessage.PerformLayout();
+      this.groupBoxMessageDetails.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMsg)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLParam)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWParam)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMsg)).EndInit();
+      this.groupBoxMessageTarget.ResumeLayout(false);
+      this.groupBoxMessageTarget.PerformLayout();
       this.tabPageKeystrokes.ResumeLayout(false);
       this.tabPageKeystrokes.PerformLayout();
       this.ResumeLayout(false);
@@ -975,10 +1035,6 @@ namespace Translator
     private System.Windows.Forms.TextBox textBoxSerialCommand;
     private System.Windows.Forms.Label labelSerialCommand;
     private System.Windows.Forms.TabPage tabPageMessage;
-    private System.Windows.Forms.CheckBox checkBoxMsgCurrApp;
-    private System.Windows.Forms.Label labelMsgApp;
-    private System.Windows.Forms.Button buttonFindMsgApp;
-    private System.Windows.Forms.TextBox textBoxMsgApp;
     private System.Windows.Forms.NumericUpDown numericUpDownLParam;
     private System.Windows.Forms.NumericUpDown numericUpDownWParam;
     private System.Windows.Forms.NumericUpDown numericUpDownMsg;
@@ -993,6 +1049,14 @@ namespace Translator
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.CheckBox checkBoxNoWindow;
+    private System.Windows.Forms.RadioButton radioButtonWindowTitle;
+    private System.Windows.Forms.RadioButton radioButtonClass;
+    private System.Windows.Forms.RadioButton radioButtonApplication;
+    private System.Windows.Forms.RadioButton radioButtonActiveWindow;
+    private System.Windows.Forms.TextBox textBoxMsgTarget;
+    private System.Windows.Forms.Button buttonFindMsgTarget;
+    private System.Windows.Forms.GroupBox groupBoxMessageTarget;
+    private System.Windows.Forms.GroupBox groupBoxMessageDetails;
 
   }
 }

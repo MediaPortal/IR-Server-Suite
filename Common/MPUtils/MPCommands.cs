@@ -11,6 +11,9 @@ using MediaPortal.Util;
 namespace MPUtils
 {
 
+  /// <summary>
+  /// Contains MediaPortal commands.
+  /// </summary>
   public static class MPCommands
   {
 

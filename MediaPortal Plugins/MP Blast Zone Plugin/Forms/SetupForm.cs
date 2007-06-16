@@ -86,7 +86,7 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Clear();
       comboBoxCommands.Items.Add(Common.UITextRun);
       comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextMessage);
+      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextGoto);
       comboBoxCommands.Items.AddRange(MPBlastZonePlugin.GetFileList(true));
     }
@@ -255,13 +255,13 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (selected == Common.UITextMessage)
+      else if (selected == Common.UITextWindowMsg)
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
-        command = Common.CmdPrefixMessage + messageCommand.CommandString;
+        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
@@ -603,14 +603,14 @@ namespace MediaPortal.Plugins
 
         treeViewMenu.SelectedNode.Text = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixMessage))
+      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixWindowMsg))
       {
-        string[] commands = Common.SplitMessageCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixMessage.Length));
+        string[] commands = Common.SplitWindowMessageCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixWindowMsg.Length));
         MessageCommand messageCommand = new MessageCommand(commands);
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
-        treeViewMenu.SelectedNode.Text = Common.CmdPrefixMessage + messageCommand.CommandString;
+        treeViewMenu.SelectedNode.Text = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
       else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixGoto))
       {

@@ -29,6 +29,8 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Core, Version=0.2.2.0, Culture=neutral, processorArchitecture=x86">

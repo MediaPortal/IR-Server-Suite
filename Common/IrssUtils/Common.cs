@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 
@@ -98,7 +99,8 @@ namespace IrssUtils
     public const string CmdPrefixRun          = "Run: ";
     public const string CmdPrefixSerial       = "Serial: ";
     public const string CmdPrefixKeys         = "Keys: ";
-    public const string CmdPrefixMessage      = "Message: ";
+    public const string CmdPrefixWindowMsg    = "Window Message: ";
+    public const string CmdPrefixTcpMsg       = "TCP Message: ";
     public const string CmdPrefixGoto         = "Goto: ";
     public const string CmdPrefixPopup        = "Popup: ";
     public const string CmdPrefixMultiMap     = "Multi-Mapping: ";
@@ -121,7 +123,8 @@ namespace IrssUtils
     public const string XmlTagRun             = "RUN";
     public const string XmlTagSerial          = "SERIAL";
     public const string XmlTagKeys            = "KEYS";
-    public const string XmlTagMessage         = "MESSAGE";
+    public const string XmlTagWindowMsg       = "WINDOW_MESSAGE";
+    public const string XmlTagTcpMsg          = "TCP_MESSAGE";
     public const string XmlTagGoto            = "GOTO";
     public const string XmlTagPopup           = "POPUP";
     public const string XmlTagMultiMap        = "MULTI_MAPPING";
@@ -143,7 +146,8 @@ namespace IrssUtils
     public const string UITextPause           = "Pause";
     public const string UITextSerial          = "Serial Command";
     public const string UITextKeys            = "Keystrokes Command";
-    public const string UITextMessage         = "Message Command";
+    public const string UITextWindowMsg       = "Window Message";
+    public const string UITextTcpMsg          = "TCP Message";
     public const string UITextGoto            = "Go To Screen";
     public const string UITextPopup           = "Popup Message";
     public const string UITextMultiMap        = "Set Multi-Mapping";
@@ -170,88 +174,71 @@ namespace IrssUtils
     /// <summary>
     /// Splits a Blast command into it's component parts.
     /// </summary>
-    /// <param name="blastCommand">The command to be split</param>
+    /// <param name="command">The command to be split</param>
     /// <returns>Returns string[] of command elements</returns>
     public static string[] SplitBlastCommand(string command)
     {
-      if (String.IsNullOrEmpty(command))
-        throw new ArgumentException("Null or empty command", "command");
-
-      string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
-
-      if (commands.Length != 3)
-        throw new ArgumentException(String.Format("Command structure is invalid: {0}", command), "command");
-
-      return commands;
+      return SplitCommand(command, 3);
     }
 
     /// <summary>
     /// Splits a Run command into it's component parts.
     /// </summary>
-    /// <param name="runCommand">The command to be split</param>
+    /// <param name="command">The command to be split</param>
     /// <returns>Returns string[] of command elements</returns>
     public static string[] SplitRunCommand(string command)
     {
-      if (String.IsNullOrEmpty(command))
-        throw new ArgumentException("Null or empty command", "command");
-
-      string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
-
-      if (commands.Length != 7)
-        throw new ArgumentException(String.Format("Command structure is invalid: {0}", command), "command");
-
-      return commands;
+      return SplitCommand(command, 7);
     }
 
     /// <summary>
     /// Splits a Serial Command into it's component parts.
     /// </summary>
-    /// <param name="serialCommand">The command to be split</param>
+    /// <param name="command">The command to be split</param>
     /// <returns>Returns string[] of command elements</returns>
     public static string[] SplitSerialCommand(string command)
     {
-      if (String.IsNullOrEmpty(command))
-        throw new ArgumentException("Null or empty command", "command");
-
-      string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
-
-      if (commands.Length != 6)
-        throw new ArgumentException(String.Format("Command structure is invalid: {0}", command), "command");
-
-      return commands;
+      return SplitCommand(command, 6);
     }
 
     /// <summary>
-    /// Splits a Message Command into it's component parts.
+    /// Splits a Window Message Command into it's component parts.
     /// </summary>
-    /// <param name="messageCommand">The command to be split</param>
+    /// <param name="command">The command to be split</param>
     /// <returns>Returns string[] of command elements</returns>
-    public static string[] SplitMessageCommand(string command)
+    public static string[] SplitWindowMessageCommand(string command)
     {
-      if (String.IsNullOrEmpty(command))
-        throw new ArgumentException("Null or empty command", "command");
-
-      string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
-
-      if (commands.Length != 5)
-        throw new ArgumentException(String.Format("Command structure is invalid: {0}", command), "command");
-
-      return commands;
+      return SplitCommand(command, 5);
     }
 
     /// <summary>
     /// Splits a Popup Command into it's component parts.
     /// </summary>
-    /// <param name="popupCommand">The command to be split</param>
+    /// <param name="command">The command to be split</param>
     /// <returns>Returns string[] of command elements</returns>
     public static string[] SplitPopupCommand(string command)
+    {
+      return SplitCommand(command, 3);
+    }
+
+    /// <summary>
+    /// Splits a TCP Message Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split</param>
+    /// <returns>Returns string[] of command elements</returns>
+    public static string[] SplitTcpMessageCommand(string command)
+    {
+      return SplitCommand(command, 3);
+    }
+
+    static string[] SplitCommand(string command, int elements)
     {
       if (String.IsNullOrEmpty(command))
         throw new ArgumentException("Null or empty command", "command");
 
       string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
 
-      if (commands.Length != 3)
+      if (commands.Length != elements)
         throw new ArgumentException(String.Format("Command structure is invalid: {0}", command), "command");
 
       return commands;
@@ -298,10 +285,10 @@ namespace IrssUtils
     }
 
     /// <summary>
-    /// Given a split Message Command this method will send the windows message according to the command structure supplied.
+    /// Given a split Window Message Command this method will send the windows message according to the command structure supplied.
     /// </summary>
-    /// <param name="commands">An array of arguments for the method (the output of SplitMessageCommand)</param>
-    public static void ProcessMessageCommand(string[] commands)
+    /// <param name="commands">An array of arguments for the method (the output of SplitWindowMessageCommand)</param>
+    public static void ProcessWindowMessageCommand(string[] commands)
     {
       IntPtr windowHandle = IntPtr.Zero;
 
@@ -351,6 +338,26 @@ namespace IrssUtils
     public static void ProcessKeyCommand(string command)
     {
       SendKeys.SendWait(command);
+    }
+
+    /// <summary>
+    /// Given a split TCP Message Command this method will send the TCP message according to the command structure supplied.
+    /// </summary>
+    /// <param name="commands">An array of arguments for the method (the output of SplitTcpMessageCommand)</param>
+    public static void ProcessTcpMessageCommand(string[] commands)
+    {
+      TcpClient tcpClient = new TcpClient();
+      tcpClient.Connect(commands[0], int.Parse(commands[1]));
+      NetworkStream networkStream = tcpClient.GetStream();
+      
+      StreamWriter streamWriter = new StreamWriter(networkStream);
+      streamWriter.Write(ReplaceEscapeCodes(commands[2]));
+      streamWriter.Flush();
+
+      System.Threading.Thread.Sleep(1000);
+
+      streamWriter.Close();
+      tcpClient.Close();
     }
 
     #endregion Command Execution

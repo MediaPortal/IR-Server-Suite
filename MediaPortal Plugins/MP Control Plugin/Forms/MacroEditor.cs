@@ -46,7 +46,7 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextRun);
       comboBoxCommands.Items.Add(Common.UITextPause);
       comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextMessage);
+      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
       comboBoxCommands.Items.Add(Common.UITextGoto);
       comboBoxCommands.Items.Add(Common.UITextPopup);
@@ -106,10 +106,10 @@ namespace MediaPortal.Plugins
             writer.WriteAttributeString("command", Common.XmlTagSerial);
             writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixSerial.Length));
           }
-          else if (item.StartsWith(Common.CmdPrefixMessage))
+          else if (item.StartsWith(Common.CmdPrefixWindowMsg))
           {
-            writer.WriteAttributeString("command", Common.XmlTagMessage);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMessage.Length));
+            writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
+            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
           }
           else if (item.StartsWith(Common.CmdPrefixKeys))
           {
@@ -218,8 +218,8 @@ namespace MediaPortal.Plugins
               listBoxMacro.Items.Add(Common.CmdPrefixSerial + commandProperty);
               break;
 
-            case Common.XmlTagMessage:
-              listBoxMacro.Items.Add(Common.CmdPrefixMessage + commandProperty);
+            case Common.XmlTagWindowMsg:
+              listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + commandProperty);
               break;
 
             case Common.XmlTagKeys:
@@ -320,13 +320,13 @@ namespace MediaPortal.Plugins
 
         listBoxMacro.Items.Add(Common.CmdPrefixSerial + serialCommand.CommandString);
       }
-      else if (selected == Common.UITextMessage)
+      else if (selected == Common.UITextWindowMsg)
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
-        listBoxMacro.Items.Add(Common.CmdPrefixMessage + messageCommand.CommandString);
+        listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
       }
       else if (selected == Common.UITextKeys)
       {
@@ -533,9 +533,9 @@ namespace MediaPortal.Plugins
           listBoxMacro.Items.Insert(index, Common.CmdPrefixSerial + serialCommand.CommandString);
           listBoxMacro.SelectedIndex = index;
         }
-        else if (selected.StartsWith(Common.CmdPrefixMessage))
+        else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
         {
-          string[] commands = Common.SplitMessageCommand(selected.Substring(Common.CmdPrefixMessage.Length));
+          string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
 
           MessageCommand messageCommand = new MessageCommand(commands);
           if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -543,7 +543,7 @@ namespace MediaPortal.Plugins
 
           int index = listBoxMacro.SelectedIndex;
           listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixMessage + messageCommand.CommandString);
+          listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
           listBoxMacro.SelectedIndex = index;
         }
         else if (selected.StartsWith(Common.CmdPrefixKeys))

@@ -253,7 +253,7 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Clear();
       comboBoxCommands.Items.Add(Common.UITextRun);
       comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextMessage);
+      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
       comboBoxCommands.Items.Add(Common.UITextGoto);
       comboBoxCommands.Items.AddRange(MPControlPlugin.GetFileList(true));
@@ -519,13 +519,13 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (selected == Common.UITextMessage)
+      else if (selected == Common.UITextWindowMsg)
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
-        command = Common.CmdPrefixMessage + messageCommand.CommandString;
+        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
       else if (selected == Common.UITextKeys)
       {
@@ -727,14 +727,14 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixMessage))
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg))
       {
-        string[] commands = Common.SplitMessageCommand(command.Substring(Common.CmdPrefixMessage.Length));
+        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         MessageCommand messageCommand = new MessageCommand(commands);
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
-        command = Common.CmdPrefixMessage + messageCommand.CommandString;
+        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
       else if (command.StartsWith(Common.CmdPrefixKeys))
       {

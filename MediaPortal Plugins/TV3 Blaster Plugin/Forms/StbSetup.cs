@@ -120,7 +120,7 @@ namespace TvEngine
       // Setup commands combo box
       comboBoxCommands.Items.Add(Common.UITextRun);
       comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextMessage);
+      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
 
       comboBoxCommands.Items.AddRange(TV3BlasterPlugin.GetFileList(true));
@@ -329,12 +329,12 @@ namespace TvEngine
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixMessage))
+        else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
         {
-          string[] commands = Common.SplitMessageCommand(selected.Substring(Common.CmdPrefixMessage.Length));
+          string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
           MessageCommand messageCommand = new MessageCommand(commands);
           if (messageCommand.ShowDialog(this) == DialogResult.OK)
-            listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixMessage + messageCommand.CommandString;
+            listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixKeys))
         {
@@ -370,14 +370,14 @@ namespace TvEngine
 
           commandString = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
-        else if (selected == Common.UITextMessage)
+        else if (selected == Common.UITextWindowMsg)
         {
           MessageCommand messageCommand = new MessageCommand();
 
           if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
             return;
 
-          commandString = Common.CmdPrefixMessage + messageCommand.CommandString;
+          commandString = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
         }
         else if (selected == Common.UITextKeys)
         {
