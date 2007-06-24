@@ -228,7 +228,7 @@ namespace IRManReceiver
         writer.WriteStartElement("settings"); // <settings>
 
         writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
-        writer.WriteAttributeString("BlastRepeats", _serialPortName);
+        writer.WriteAttributeString("SerialPortName", _serialPortName);
 
         writer.WriteEndElement(); // </settings>
         writer.WriteEndDocument();
