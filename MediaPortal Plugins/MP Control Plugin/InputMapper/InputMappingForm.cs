@@ -150,9 +150,9 @@ namespace MediaPortal.Plugins
     private MediaPortal.UserInterface.Controls.MPTextBox textBoxKeyCode;
     private MediaPortal.UserInterface.Controls.MPLabel labelExpand;
     private MediaPortal.UserInterface.Controls.MPCheckBox checkBoxGainFocus;
+    private MediaPortal.UserInterface.Controls.MPRadioButton radioButtonBlast;
 
     #endregion
-    private MediaPortal.UserInterface.Controls.MPRadioButton radioButtonBlast;
 
 
     /// <summary>
@@ -813,7 +813,7 @@ namespace MediaPortal.Plugins
               string condition = nodeAction.Attributes["condition"].Value.ToUpper();
               string conProperty = nodeAction.Attributes["conproperty"].Value.ToUpper();
               string command = nodeAction.Attributes["command"].Value.ToUpper();
-              string cmdProperty = nodeAction.Attributes["cmdproperty"].Value.ToUpper();
+              string cmdProperty = nodeAction.Attributes["cmdproperty"].Value; // .ToUpper()
               string sound = String.Empty;
               XmlAttribute soundAttribute = nodeAction.Attributes["sound"];
               if (soundAttribute != null)
@@ -875,7 +875,7 @@ namespace MediaPortal.Plugins
                   commandString = processList[Array.IndexOf(nativeProcessList, cmdProperty)];
                   break;
                 case "BLAST":
-                  commandString = "Blast IR: \"" + cmdProperty + "\"";
+                  commandString = cmdProperty;
                   break;
               }
 
@@ -1808,7 +1808,7 @@ namespace MediaPortal.Plugins
       TreeNode node = getNode("COMMAND");
       Data data = new Data("COMMAND", "BLAST", String.Empty);
       node.Tag = data;
-      node.Text = "Blast IR: \"\"";
+      node.Text = "";
       ((Data)node.Tag).Focus = checkBoxGainFocus.Checked;
       UpdateCombo(ref comboBoxCmdProperty, MPControlPlugin.GetFileList(true), String.Empty);
       changedSettings = true;
@@ -1874,9 +1874,25 @@ namespace MediaPortal.Plugins
           node.Text = (string)comboBoxCmdProperty.SelectedItem;
           break;
         case "BLAST":
-          node.Tag = new Data("COMMAND", "BLAST", (string)comboBoxCmdProperty.SelectedItem);
-          node.Text = "Blast IR: \"" + (string)comboBoxCmdProperty.SelectedItem + "\"";
-          break;
+          {
+            string text = (string)comboBoxCmdProperty.SelectedItem;
+            if (text.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))
+            {
+              BlastCommand blastCommand = new BlastCommand(text.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
+              if (blastCommand.ShowDialog(this) == DialogResult.OK)
+              {
+                string command = IrssUtils.Common.CmdPrefixBlast + blastCommand.CommandString;
+                node.Tag = new Data("COMMAND", "BLAST", command);
+                node.Text = command;
+              }
+            }
+            else if (text.StartsWith(IrssUtils.Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase))
+            {
+              node.Tag = new Data("COMMAND", "BLAST", text);
+              node.Text = text;
+            }
+            break;
+          }
       }
       ((Data)node.Tag).Focus = checkBoxGainFocus.Checked;
       changedSettings = true;
