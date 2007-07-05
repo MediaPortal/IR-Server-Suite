@@ -40,7 +40,10 @@ namespace CustomHIDReceiver
     byte _byteMask;
     bool _useAllBytes;
 
+    int _repeatDelay;
 
+    string _lastKeyCode = String.Empty;
+    DateTime _lastCodeTime = DateTime.Now;
 
     bool _disposed = false;
 
@@ -190,10 +193,11 @@ namespace CustomHIDReceiver
         XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
 
-        _deviceID = doc.DocumentElement.Attributes["DeviceID"].Value;
-        _inputByte = int.Parse(doc.DocumentElement.Attributes["InputByte"].Value);
-        _byteMask = byte.Parse(doc.DocumentElement.Attributes["ByteMask"].Value);
-        _useAllBytes = bool.Parse(doc.DocumentElement.Attributes["UseAllBytes"].Value);
+        _deviceID     = doc.DocumentElement.Attributes["DeviceID"].Value;
+        _inputByte    = int.Parse(doc.DocumentElement.Attributes["InputByte"].Value);
+        _byteMask     = byte.Parse(doc.DocumentElement.Attributes["ByteMask"].Value);
+        _useAllBytes  = bool.Parse(doc.DocumentElement.Attributes["UseAllBytes"].Value);
+        _repeatDelay  = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
       }
       catch (Exception ex)
       {
@@ -203,6 +207,7 @@ namespace CustomHIDReceiver
         _inputByte    = 3;
         _byteMask     = 0x7F;
         _useAllBytes  = false;
+        _repeatDelay  = 250;
       }
     }
     void SaveSettings()
@@ -220,6 +225,7 @@ namespace CustomHIDReceiver
         writer.WriteAttributeString("InputByte", _inputByte.ToString());
         writer.WriteAttributeString("ByteMask", _byteMask.ToString());
         writer.WriteAttributeString("UseAllBytes", _useAllBytes.ToString());
+        writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
 
         writer.WriteEndElement(); // </settings>
         writer.WriteEndDocument();
@@ -311,18 +317,35 @@ namespace CustomHIDReceiver
 
         if (_remoteButtonHandler != null)
         {
+          string keyCode = String.Empty;
+
           if (_useAllBytes)
           {
-            _remoteButtonHandler(BitConverter.ToString(_deviceBuffer, 0, bytesRead));
+            keyCode = BitConverter.ToString(_deviceBuffer, 0, bytesRead);
           }
           else if (bytesRead > _inputByte)
           {
             int keyByte = _deviceBuffer[_inputByte] & _byteMask;
 
-            string keyCode = keyByte.ToString("X2");
-
-            _remoteButtonHandler(keyCode);
+            keyCode = keyByte.ToString("X2");
           }
+
+          if (keyCode == _lastKeyCode)
+          {
+            TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
+
+            if (timeSpan.Milliseconds >= _repeatDelay)
+            {
+              _remoteButtonHandler(keyCode);
+              _lastCodeTime = DateTime.Now;
+            }
+          }
+          else
+          {
+            _remoteButtonHandler(keyCode);
+            _lastCodeTime = DateTime.Now;
+            _lastKeyCode = keyCode;
+          }          
         }
 
         _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);

@@ -176,19 +176,35 @@ namespace IRServer
         // Start plugin(s) ...
         if (_pluginReceive != null)
         {
-          if (_pluginReceive.Start())
-            IrssLog.Info("Receiver plugin started: \"{0}\"", _pluginNameReceive);
-          else
+          try
+          {
+            if (_pluginReceive.Start())
+              IrssLog.Info("Receiver plugin started: \"{0}\"", _pluginNameReceive);
+            else
+              IrssLog.Error("Failed to start receive plugin: \"{0}\"", _pluginNameReceive);
+          }
+          catch (Exception ex)
+          {
             IrssLog.Error("Failed to start receive plugin: \"{0}\"", _pluginNameReceive);
+            IrssLog.Error(ex.ToString());
+          }
         }
         if (!_pluginNameTransmit.Equals(_pluginNameReceive, StringComparison.InvariantCultureIgnoreCase))
         {
           if (_pluginTransmit != null)
           {
-            if (_pluginTransmit.Start())
-              IrssLog.Info("Transmit plugin started: \"{0}\"", _pluginNameTransmit);
-            else
+            try
+            {
+              if (_pluginTransmit.Start())
+                IrssLog.Info("Transmit plugin started: \"{0}\"", _pluginNameTransmit);
+              else
+                IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
+            }
+            catch (Exception ex)
+            {
               IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
+              IrssLog.Error(ex.ToString());
+            }
           }
         }
 

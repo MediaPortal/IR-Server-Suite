@@ -33,8 +33,11 @@ namespace CustomHIDReceiver
       this.checkBoxUseAllBytes = new System.Windows.Forms.CheckBox();
       this.labelInputByteMask = new System.Windows.Forms.Label();
       this.numericUpDownInputByteMask = new System.Windows.Forms.NumericUpDown();
+      this.labelRepeatDelay = new System.Windows.Forms.Label();
+      this.numericUpDownRepeatDelay = new System.Windows.Forms.NumericUpDown();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownInputByte)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownInputByteMask)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRepeatDelay)).BeginInit();
       this.SuspendLayout();
       // 
       // numericUpDownInputByte
@@ -91,11 +94,35 @@ namespace CustomHIDReceiver
       this.numericUpDownInputByteMask.TabIndex = 3;
       this.numericUpDownInputByteMask.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       // 
+      // labelRepeatDelay
+      // 
+      this.labelRepeatDelay.Location = new System.Drawing.Point(8, 104);
+      this.labelRepeatDelay.Name = "labelRepeatDelay";
+      this.labelRepeatDelay.Size = new System.Drawing.Size(104, 20);
+      this.labelRepeatDelay.TabIndex = 6;
+      this.labelRepeatDelay.Text = "Repeat delay:";
+      this.labelRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // numericUpDownRepeatDelay
+      // 
+      this.numericUpDownRepeatDelay.Location = new System.Drawing.Point(112, 104);
+      this.numericUpDownRepeatDelay.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+      this.numericUpDownRepeatDelay.Name = "numericUpDownRepeatDelay";
+      this.numericUpDownRepeatDelay.Size = new System.Drawing.Size(56, 20);
+      this.numericUpDownRepeatDelay.TabIndex = 5;
+      this.numericUpDownRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      // 
       // AdvancedSettings
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(176, 97);
+      this.ClientSize = new System.Drawing.Size(176, 137);
+      this.Controls.Add(this.labelRepeatDelay);
+      this.Controls.Add(this.numericUpDownRepeatDelay);
       this.Controls.Add(this.labelInputByteMask);
       this.Controls.Add(this.numericUpDownInputByteMask);
       this.Controls.Add(this.checkBoxUseAllBytes);
@@ -109,6 +136,7 @@ namespace CustomHIDReceiver
       this.Text = "Advanced Settings";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownInputByte)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownInputByteMask)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRepeatDelay)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -121,5 +149,7 @@ namespace CustomHIDReceiver
     private System.Windows.Forms.CheckBox checkBoxUseAllBytes;
     private System.Windows.Forms.Label labelInputByteMask;
     private System.Windows.Forms.NumericUpDown numericUpDownInputByteMask;
+    private System.Windows.Forms.Label labelRepeatDelay;
+    private System.Windows.Forms.NumericUpDown numericUpDownRepeatDelay;
   }
 }
