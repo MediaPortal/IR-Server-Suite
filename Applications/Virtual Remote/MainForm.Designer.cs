@@ -33,9 +33,9 @@ namespace VirtualRemote
       this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.toolStripComboBoxSkin = new System.Windows.Forms.ToolStripComboBox();
       this.changeServerHostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripMenuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripMenuItemQuit = new System.Windows.Forms.ToolStripMenuItem();
       this.labelDisabled = new System.Windows.Forms.Label();
-      this.toolStripMenuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
       this.contextMenuStrip.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -50,7 +50,7 @@ namespace VirtualRemote
       this.contextMenuStrip.Name = "contextMenuStrip";
       this.contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
       this.contextMenuStrip.ShowImageMargin = false;
-      this.contextMenuStrip.Size = new System.Drawing.Size(156, 117);
+      this.contextMenuStrip.Size = new System.Drawing.Size(156, 95);
       // 
       // toolStripComboBoxSkin
       // 
@@ -67,6 +67,13 @@ namespace VirtualRemote
       this.changeServerHostToolStripMenuItem.Text = "Change server host";
       this.changeServerHostToolStripMenuItem.ToolTipText = "Change the address of the server host";
       this.changeServerHostToolStripMenuItem.Click += new System.EventHandler(this.changeServerHostToolStripMenuItem_Click);
+      // 
+      // toolStripMenuItemHelp
+      // 
+      this.toolStripMenuItemHelp.Name = "toolStripMenuItemHelp";
+      this.toolStripMenuItemHelp.Size = new System.Drawing.Size(155, 22);
+      this.toolStripMenuItemHelp.Text = "Help";
+      this.toolStripMenuItemHelp.Click += new System.EventHandler(this.toolStripMenuItemHelp_Click);
       // 
       // toolStripMenuItemQuit
       // 
@@ -89,13 +96,6 @@ namespace VirtualRemote
       this.labelDisabled.Text = "Connecting to IR Server ...";
       this.labelDisabled.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.labelDisabled.Visible = false;
-      // 
-      // toolStripMenuItemHelp
-      // 
-      this.toolStripMenuItemHelp.Name = "toolStripMenuItemHelp";
-      this.toolStripMenuItemHelp.Size = new System.Drawing.Size(155, 22);
-      this.toolStripMenuItemHelp.Text = "Help";
-      this.toolStripMenuItemHelp.Click += new System.EventHandler(this.toolStripMenuItemHelp_Click);
       // 
       // MainForm
       // 

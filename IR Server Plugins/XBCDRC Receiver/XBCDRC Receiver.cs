@@ -365,8 +365,7 @@ namespace XBCDRCReceiver
 
             if (keyCode != _lastCode || timeSpan.Milliseconds > 250)
             {
-              if (_remoteButtonHandler != null)
-                _remoteButtonHandler(keyCode);
+              _remoteButtonHandler(keyCode);
               
               _lastCodeTime = DateTime.Now;
             }

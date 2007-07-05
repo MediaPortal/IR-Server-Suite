@@ -165,7 +165,7 @@ namespace DebugClient
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      this.Invoke(_AddStatusLine, new Object[] { received.Name });
+      this.Invoke(_AddStatusLine, new Object[] { String.Format("Received Message: \"{0}\"", received.Name) });
 
       try
       {
@@ -357,7 +357,7 @@ namespace DebugClient
     }
     void RemoteButtonPressed(string keyCode)
     {
-      string text = String.Format(" - {0}", keyCode);
+      string text = String.Format("Remote Button \"{0}\"", keyCode);
 
       this.Invoke(_AddStatusLine, new Object[] { text });
     }
