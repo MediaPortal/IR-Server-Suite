@@ -3,29 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using System.Xml;
 
 using NamedPipes;
 using IrssUtils;
 
-namespace VirtualRemote
+namespace IRBlast
 {
 
   static class Program
   {
-
-    #region Constants
-
-    const string DefaultSkin = "MCE";
-
-    public static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Virtual Remote.xml";
-
-    #endregion Constants
 
     #region Variables
 
@@ -34,46 +24,15 @@ namespace VirtualRemote
     static int _echoID = -1;
     static Thread _keepAliveThread;
 
-    static string _serverHost;
+    static string _serverHost = null;
     static string _localPipeName;
-    static string _lastKeyCode = String.Empty;
 
-    static string _installFolder;
+    static string _blastPort = "None";
+    static string _blastSpeed = "None";
 
-    static string _remoteSkin;
+    static bool _treatAsChannelNumber = false;
 
     #endregion Variables
-
-    #region Properties
-
-    internal static bool Registered
-    {
-      get { return _registered; }
-    }
-
-    internal static string ServerHost
-    {
-      get { return _serverHost; }
-      set { _serverHost = value; }
-    }
-
-    internal static string LocalPipeName
-    {
-      get { return _localPipeName; }
-    }
-
-    internal static string InstallFolder
-    {
-      get { return _installFolder; }
-    }
-
-    internal static string RemoteSkin
-    {
-      get { return _remoteSkin; }
-      set { _remoteSkin = value; }
-    }
-
-    #endregion Properties
 
     /// <summary>
     /// The main entry point for the application.
@@ -81,92 +40,116 @@ namespace VirtualRemote
     [STAThread]
     static void Main(string[] args)
     {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
-
       IrssLog.LogLevel = IrssLog.Level.Debug;
-      IrssLog.Open(Common.FolderIrssLogs + "Virtual Remote.log");
+      IrssLog.Open(Common.FolderIrssLogs + "IR Blast.log");
 
       IrssLog.Debug("Platform is {0}", (IntPtr.Size == 4 ? "32-bit" : "64-bit"));
 
-      LoadSettings();
+      ShowHeader();
 
-      if (args.Length > 0) // Command Line Start ...
+      try
       {
-        List<String> virtualButtons = new List<string>();
-        
-        try
+
+        if (args.Length > 0) // Command Line Start ...
         {
+          List<String> irCommands = new List<string>();
+
           for (int index = 0; index < args.Length; index++)
           {
-            if (args[index].Equals("-host", StringComparison.InvariantCultureIgnoreCase))
+            switch (args[index].ToLowerInvariant())
             {
-              _serverHost = args[++index];
-              continue;
-            }
-            else
-            {
-              virtualButtons.Add(args[index]);
+              case "-host":
+                _serverHost = args[++index];
+                continue;
+
+              case "-port":
+                _blastPort = args[++index];
+                continue;
+
+              case "-speed":
+                _blastSpeed = args[++index];
+                continue;
+
+              case "-channel":
+                _treatAsChannelNumber = true;
+                continue;
+
+              default:
+                irCommands.Add(args[index]);
+                continue;
             }
           }
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error("Error processing command line parameters: {0}", ex.ToString());
-        }
 
-        if (virtualButtons.Count != 0 && StartComms())
-        {
-          Thread.Sleep(250);
-
-          // Wait for registered ... Give up after 10 seconds ...
-          int attempt = 0;
-          while (!_registered)
+          if (String.IsNullOrEmpty(_serverHost) || irCommands.Count == 0)
           {
-            if (++attempt >= 10)
-              break;
-            else
-              Thread.Sleep(1000);
+            Console.WriteLine("Malformed command line parameters ...");
+            Console.WriteLine();
+
+            ShowHelp();
           }
-
-          if (_registered)
+          else if (StartComms())
           {
-            foreach (String button in virtualButtons)
+            Thread.Sleep(250);
+
+            // Wait for registered ... Give up after 10 seconds ...
+            int attempt = 0;
+            while (!_registered)
             {
-              if (button.StartsWith("~"))
-              {
-                Thread.Sleep(button.Length * 500);
-              }
+              if (++attempt >= 10)
+                break;
               else
-              {
-                PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, "Forward Remote Button", Encoding.ASCII.GetBytes(button));
-                PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message.ToString());
-              }
+                Thread.Sleep(1000);
             }
 
-            Thread.Sleep(500);
-          }
-          else
-          {
-            IrssLog.Warn("Failed to register with server host \"{0}\", custom message(s) not sent", Program.ServerHost);
+            if (_registered)
+            {
+              string fileName;
+              foreach (String command in irCommands)
+              {
+                if (_treatAsChannelNumber)
+                {
+                  Info("Processing channel: {0}", command);
+                  foreach (char digit in command)
+                  {
+                    if (digit == '~')
+                    {
+                      Thread.Sleep(500);
+                    }
+                    else
+                    {
+                      fileName = Common.FolderIRCommands + digit + Common.FileExtensionIR;
+                      BlastIR(fileName, _blastPort, _blastSpeed);
+                    }
+                  }
+                }
+                else if (command.StartsWith("~"))
+                {
+                  Thread.Sleep(command.Length * 500);
+                }
+                else
+                {
+                  fileName = Common.FolderIRCommands + command;
+                  BlastIR(fileName, _blastPort, _blastSpeed);
+                }
+              }
+
+              Thread.Sleep(500);
+            }
+            else
+            {
+              Warn("Failed to register with server host \"{0}\", blasting not sent", _serverHost);
+            }
+
           }
         }
-
-      }
-      else // GUI Start ...
-      {
-        if (String.IsNullOrEmpty(_serverHost))
+        else // Give help ...
         {
-          IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Environment.MachineName);
-          serverAddress.ShowDialog();
-
-          _serverHost = serverAddress.ServerHost;
+          ShowHelp();
         }
-
-        if (StartComms())
-          Application.Run(new MainForm());
-
-        SaveSettings();
+      }
+      catch (Exception ex)
+      {
+        Error(ex);
       }
 
       StopComms();
@@ -174,65 +157,52 @@ namespace VirtualRemote
       IrssLog.Close();
     }
 
-
-    static void LoadSettings()
+    static void ShowHeader()
     {
-      try
-      {
-        _installFolder = SystemRegistry.GetInstallFolder();
-        if (String.IsNullOrEmpty(_installFolder))
-          _installFolder = ".";
-        else
-          _installFolder += "\\Virtual Remote";
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-
-        _installFolder = ".";
-      }
-
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(ConfigurationFile);
-
-        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
-        _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-
-        _serverHost = String.Empty;
-        _remoteSkin = DefaultSkin;
-      }
-    }
-    static void SaveSettings()
-    {
-      try
-      {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
-
-        writer.WriteAttributeString("ServerHost", _serverHost);
-        writer.WriteAttributeString("RemoteSkin", _remoteSkin);
-
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-      }
+      Console.WriteLine("");
+      Console.WriteLine("IR Blast");
+      Console.WriteLine("-----------------------------------------------------------------------------");
+      Console.WriteLine("Command line IR blaster for IR Server Suite.");
+      Console.WriteLine("By and-81.");
+      Console.WriteLine("");
+      Console.WriteLine("");
     }
 
-    internal static bool StartComms()
+    static void ShowHelp()
+    {
+      IrssLog.Debug("Show Help");
+
+      Console.WriteLine("IRBlast.exe -host <server> -port [port] -speed [speed] [-channel] <commands>");
+      Console.WriteLine("");
+      Console.WriteLine("Use -host to specify the computer that is hosting the IR Server.");
+      Console.WriteLine("Use -port to blast to a particular blaster port (Optional).");
+      Console.WriteLine("Use -speed to set the blaster speed (Optional).");
+      Console.WriteLine("Use -channel to tell IR Blast to break apart the following IR Command and");
+      Console.WriteLine(" use each digit for a separate IR blast (Optional).");
+      Console.WriteLine("Use a tilde ~ between commands to insert half second pauses.");
+      Console.WriteLine("");
+      Console.WriteLine("");
+      Console.WriteLine("Examples:");
+      Console.WriteLine("");
+      Console.WriteLine("IRBlast -host HTPC TV_Power.IR");
+      Console.WriteLine("");
+      Console.WriteLine("This would blast the TV_Power.IR command on the HTPC computer to the default");
+      Console.WriteLine("blaster port at the default blaster speed.");
+      Console.WriteLine("");
+      Console.WriteLine("IRBlast -host MEDIAPC -port Port_2 \"Turn on surround.IR\"");
+      Console.WriteLine("");
+      Console.WriteLine("This would blast the \"Turn on surround.IR\" command on the MEDIAPC computer");
+      Console.WriteLine("to blaster port 2 at the default blaster speed.");
+      Console.WriteLine("");
+      Console.WriteLine("IRBlast -host HTPC -channel 302");
+      Console.WriteLine("");
+      Console.WriteLine("This would blast the 3.IR, 0.IR, and 2.IR commands on the HTPC computer to");
+      Console.WriteLine("the default blaster port at the default blaster speed.");
+      Console.WriteLine("");
+      Console.WriteLine("");
+    }
+
+    static bool StartComms()
     {
       try
       {
@@ -245,12 +215,12 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        Error(ex);
       }
 
       return false;
     }
-    internal static void StopComms()
+    static void StopComms()
     {
       _keepAlive = false;
 
@@ -314,7 +284,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        Error(ex);
         return false;
       }
     }
@@ -333,7 +303,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        Error(ex);
         return false;
       }
     }
@@ -352,7 +322,7 @@ namespace VirtualRemote
 
         #region Connect to server
 
-        IrssLog.Info("Connecting ({0}) ...", _serverHost);
+        Info("Connecting ({0}) ...", _serverHost);
         attempt = 0;
         while (_keepAlive && reconnect)
         {
@@ -412,7 +382,7 @@ namespace VirtualRemote
           catch
           {
             // Failed to ping ... reconnect ...
-            IrssLog.Warn("Failed to ping, attempting to reconnect ...");
+            Warn("Failed to ping, attempting to reconnect ...");
             _registered = false;
             reconnect = true;
             break;
@@ -441,7 +411,7 @@ namespace VirtualRemote
           }
           else // Didn't receive ping echo ...
           {
-            IrssLog.Warn("No echo to ping, attempting to reconnect ...");
+            Warn("No echo to ping, attempting to reconnect ...");
 
             // Break out of pinging cycle ...
             _registered = false;
@@ -468,9 +438,17 @@ namespace VirtualRemote
           case "Remote Button":
             break;
 
+          case "Blast Success":
+            Info("Blast Success");
+            break;
+
+          case "Blast Failure":
+            Warn("Blast Failed!");
+            break;
+
           case "Register Success":
             {
-              IrssLog.Info("Registered to IR Server");
+              Info("Registered to IR Server");
               _registered = true;
               //_transceiverInfo = TransceiverInfo.FromBytes(received.Data);
               break;
@@ -478,14 +456,14 @@ namespace VirtualRemote
 
           case "Register Failure":
             {
-              IrssLog.Warn("IR Server refused to register");
+              Warn("IR Server refused to register");
               _registered = false;
               break;
             }
 
           case "Server Shutdown":
             {
-              IrssLog.Warn("IR Server Shutdown - Virtual Remote disabled until IR Server returns");
+              Warn("IR Server Shutdown - Blasting disabled until IR Server returns");
               _registered = false;
               break;
             }
@@ -498,22 +476,62 @@ namespace VirtualRemote
 
           case "Error":
             {
-              IrssLog.Error(Encoding.ASCII.GetString(received.Data));
+              Warn(Encoding.ASCII.GetString(received.Data));
               break;
             }
 
           default:
             {
-              IrssLog.Warn("Unknown message received from server: " + received.Name);
+              Warn("Unknown message received from server: " + received.Name);
               break;
             }
         }
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        Error(ex);
       }
     }
+
+    static void BlastIR(string fileName, string port, string speed)
+    {
+      FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+      byte[] outData = new byte[8 + port.Length + speed.Length + file.Length];
+
+      BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+      Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+      BitConverter.GetBytes(speed.Length).CopyTo(outData, 4 + port.Length);
+      Encoding.ASCII.GetBytes(speed).CopyTo(outData, 8 + port.Length);
+
+      file.Read(outData, 8 + port.Length + speed.Length, (int)file.Length);
+      file.Close();
+
+      PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
+      PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+    }
+
+    #region Log Commands
+
+    static void Info(string format, params object[] args)
+    {
+      string message = String.Format(format, args);
+      Console.WriteLine(message);
+      IrssLog.Info(message);
+    }
+    static void Warn(string format, params object[] args)
+    {
+      string message = String.Format(format, args);
+      Console.WriteLine(message);
+      IrssLog.Warn(message);
+    }
+    static void Error(Exception ex)
+    {
+      Console.WriteLine(ex.Message);
+      IrssLog.Error(ex.ToString());
+    }
+
+    #endregion Log Commands
 
   }
 
