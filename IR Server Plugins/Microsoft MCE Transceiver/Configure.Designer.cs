@@ -40,10 +40,15 @@ namespace MicrosoftMceTransceiver
       this.comboBoxBlasterType = new System.Windows.Forms.ComboBox();
       this.labelBlasterType = new System.Windows.Forms.Label();
       this.groupBoxBlaster = new System.Windows.Forms.GroupBox();
+      this.groupBoxLearnTimeout = new System.Windows.Forms.GroupBox();
+      this.labelLearnIRTimeout = new System.Windows.Forms.Label();
+      this.numericUpDownLearnTimeout = new System.Windows.Forms.NumericUpDown();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).BeginInit();
       this.groupBoxTimes.SuspendLayout();
       this.groupBoxBlaster.SuspendLayout();
+      this.groupBoxLearnTimeout.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLearnTimeout)).BeginInit();
       this.SuspendLayout();
       // 
       // labelButtonRepeatDelay
@@ -127,7 +132,7 @@ namespace MicrosoftMceTransceiver
       // 
       // buttonOK
       // 
-      this.buttonOK.Location = new System.Drawing.Point(96, 168);
+      this.buttonOK.Location = new System.Drawing.Point(96, 232);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 2;
@@ -138,7 +143,7 @@ namespace MicrosoftMceTransceiver
       // buttonCancel
       // 
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(168, 168);
+      this.buttonCancel.Location = new System.Drawing.Point(168, 232);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 3;
@@ -189,14 +194,65 @@ namespace MicrosoftMceTransceiver
       this.groupBoxBlaster.TabStop = false;
       this.groupBoxBlaster.Text = "Blaster setup";
       // 
+      // groupBoxLearnTimeout
+      // 
+      this.groupBoxLearnTimeout.Controls.Add(this.labelLearnIRTimeout);
+      this.groupBoxLearnTimeout.Controls.Add(this.numericUpDownLearnTimeout);
+      this.groupBoxLearnTimeout.Location = new System.Drawing.Point(8, 168);
+      this.groupBoxLearnTimeout.Name = "groupBoxLearnTimeout";
+      this.groupBoxLearnTimeout.Size = new System.Drawing.Size(224, 56);
+      this.groupBoxLearnTimeout.TabIndex = 5;
+      this.groupBoxLearnTimeout.TabStop = false;
+      this.groupBoxLearnTimeout.Text = "Learn IR timeout (in milliseconds)";
+      // 
+      // labelLearnIRTimeout
+      // 
+      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 24);
+      this.labelLearnIRTimeout.Name = "labelLearnIRTimeout";
+      this.labelLearnIRTimeout.Size = new System.Drawing.Size(120, 20);
+      this.labelLearnIRTimeout.TabIndex = 2;
+      this.labelLearnIRTimeout.Text = "Learn IR timeout:";
+      this.labelLearnIRTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // numericUpDownLearnTimeout
+      // 
+      this.numericUpDownLearnTimeout.Increment = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(136, 24);
+      this.numericUpDownLearnTimeout.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+      this.numericUpDownLearnTimeout.Minimum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+      this.numericUpDownLearnTimeout.Name = "numericUpDownLearnTimeout";
+      this.numericUpDownLearnTimeout.Size = new System.Drawing.Size(80, 20);
+      this.numericUpDownLearnTimeout.TabIndex = 3;
+      this.numericUpDownLearnTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.numericUpDownLearnTimeout.ThousandsSeparator = true;
+      this.toolTips.SetToolTip(this.numericUpDownLearnTimeout, "When teaching IR commands this is how long before the process times out");
+      this.numericUpDownLearnTimeout.Value = new decimal(new int[] {
+            8000,
+            0,
+            0,
+            0});
+      // 
       // Configure
       // 
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(240, 202);
+      this.ClientSize = new System.Drawing.Size(240, 263);
       this.ControlBox = false;
+      this.Controls.Add(this.groupBoxLearnTimeout);
       this.Controls.Add(this.groupBoxBlaster);
       this.Controls.Add(this.groupBoxTimes);
       this.Controls.Add(this.buttonCancel);
@@ -209,6 +265,8 @@ namespace MicrosoftMceTransceiver
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).EndInit();
       this.groupBoxTimes.ResumeLayout(false);
       this.groupBoxBlaster.ResumeLayout(false);
+      this.groupBoxLearnTimeout.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLearnTimeout)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -226,5 +284,8 @@ namespace MicrosoftMceTransceiver
     private System.Windows.Forms.ComboBox comboBoxBlasterType;
     private System.Windows.Forms.Label labelBlasterType;
     private System.Windows.Forms.GroupBox groupBoxBlaster;
+    private System.Windows.Forms.GroupBox groupBoxLearnTimeout;
+    private System.Windows.Forms.Label labelLearnIRTimeout;
+    private System.Windows.Forms.NumericUpDown numericUpDownLearnTimeout;
   }
 }

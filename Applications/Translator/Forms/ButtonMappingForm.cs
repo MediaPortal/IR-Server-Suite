@@ -373,7 +373,9 @@ namespace Translator
       }
       else if (radioButtonWindowTitle.Checked)
       {
-        // TODO: Locate Window
+        WindowList windowList = new WindowList();
+        if (windowList.ShowDialog(this) == DialogResult.OK)
+          textBoxMsgTarget.Text = windowList.SelectedWindowTitle;
       }
     }
 
@@ -394,7 +396,7 @@ namespace Translator
     }
     private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)
     {
-      buttonFindMsgTarget.Enabled = false;
+      buttonFindMsgTarget.Enabled = true;
       textBoxMsgTarget.Enabled = true;
     }
 

@@ -24,6 +24,11 @@ namespace UirtTransceiver
       get { return Decimal.ToInt32(numericUpDownRepeatCount.Value); }
       set { numericUpDownRepeatCount.Value = new Decimal(value); }
     }
+    public int LearnTimeout
+    {
+      get { return Decimal.ToInt32(numericUpDownLearnTimeout.Value); }
+      set { numericUpDownLearnTimeout.Value = new Decimal(value); }
+    }
 
     #endregion Properties
 

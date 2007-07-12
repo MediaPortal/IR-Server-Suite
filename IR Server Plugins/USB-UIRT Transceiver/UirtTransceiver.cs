@@ -145,6 +145,7 @@ namespace UirtTransceiver
 
     int _repeatDelay;
     int _blastRepeats;
+    int _learnTimeout;
 
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
@@ -227,11 +228,13 @@ namespace UirtTransceiver
 
       config.RepeatDelay  = _repeatDelay;
       config.BlastRepeats = _blastRepeats;
+      config.LearnTimeout = _learnTimeout;
 
       if (config.ShowDialog() == DialogResult.OK)
       {
         _repeatDelay  = config.RepeatDelay;
         _blastRepeats = config.BlastRepeats;
+        _learnTimeout = config.LearnTimeout;
 
         SaveSettings();
       }
@@ -308,9 +311,7 @@ namespace UirtTransceiver
       _learnTimedOut = false;
 
       Timer timer = new Timer();
-      
-      // TODO: Implement proper timeout ...
-      timer.Interval = 8000;
+      timer.Interval = _learnTimeout;
       timer.Tick += new EventHandler(timer_Tick);
 
       result = UirtTransceiver.UUIRTLearnIR(
@@ -379,6 +380,7 @@ namespace UirtTransceiver
 
         _repeatDelay  = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
         _blastRepeats = int.Parse(doc.DocumentElement.Attributes["BlastRepeats"].Value);
+        _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value);
       }
       catch (Exception ex)
       {
@@ -386,6 +388,7 @@ namespace UirtTransceiver
 
         _repeatDelay  = 500;
         _blastRepeats = 4;
+        _learnTimeout = 10000;
       }
     }
     void SaveSettings()
@@ -401,6 +404,7 @@ namespace UirtTransceiver
 
         writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
         writer.WriteAttributeString("BlastRepeats", _blastRepeats.ToString());
+        writer.WriteAttributeString("LearnTimeout", _learnTimeout.ToString());
 
         writer.WriteEndElement(); // </settings>
         writer.WriteEndDocument();

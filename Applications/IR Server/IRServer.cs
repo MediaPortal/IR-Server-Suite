@@ -152,11 +152,7 @@ namespace IRServer
               if (StartRelay())
                 IrssLog.Info("Started in Relay Mode");
               else
-              {
                 IrssLog.Error("Failed to start in Relay Mode");
-                return false;
-              }
-
               break;
             }
 
@@ -165,10 +161,7 @@ namespace IRServer
               if (StartRepeater())
                 IrssLog.Info("Started in Repeater Mode");
               else
-              {
                 IrssLog.Error("Failed to start in Repeater Mode");
-                return false;
-              }
               break;
             }
         }
@@ -331,7 +324,6 @@ namespace IRServer
       return false;
     }
 
-    // Todo: Put in the proper retry system from other apps/plugins
     void StartMessageQueue()
     {
       _processMessageQueue = true;
@@ -945,8 +937,8 @@ namespace IRServer
                 break;
               }
 
-              // Pause 1 second before instructing the client to start the IR learning ...
-              Thread.Sleep(1000);
+              // Pause half a second before instructing the client to start the IR learning ...
+              Thread.Sleep(500);
 
               // Send back a "Start Learn" trigger ...
               PipeMessage trigger = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Start Learn", null);

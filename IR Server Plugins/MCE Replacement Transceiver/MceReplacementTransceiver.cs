@@ -36,6 +36,7 @@ namespace MceReplacementTransceiver
 
     int _repeatDelay;
     int _heldDelay;
+    int _learnTimeout;
 
     #endregion Variables
 
@@ -74,12 +75,14 @@ namespace MceReplacementTransceiver
       config.BlastType    = _blasterType;
       config.RepeatDelay  = _repeatDelay;
       config.HeldDelay    = _heldDelay;
+      config.LearnTimeout = _learnTimeout;
 
       if (config.ShowDialog() == DialogResult.OK)
       {
         _blasterType  = config.BlastType;
         _repeatDelay  = config.RepeatDelay;
         _heldDelay    = config.HeldDelay;
+        _learnTimeout = config.LearnTimeout;
 
         SaveSettings();
       }
@@ -157,19 +160,16 @@ namespace MceReplacementTransceiver
 
       DateTime start = DateTime.Now;
 
-      // TODO: Implement proper timeout ...
-      int timeout = 8000;
-
-      bool result = MceIrApi.RecordToFile(fileStream.SafeFileHandle, timeout);
+      bool result = MceIrApi.RecordToFile(fileStream.SafeFileHandle, _learnTimeout);
 
       fileStream.Close();
 
       TimeSpan timeTaken = start.Subtract(DateTime.Now);
 
-      if (timeTaken.Milliseconds >= timeout)
-        return LearnStatus.Timeout;
-      else if (result)
+      if (result)
         return LearnStatus.Success;
+      else if (timeTaken.Milliseconds >= _learnTimeout)
+        return LearnStatus.Timeout;
       else
         return LearnStatus.Failure;
     }
@@ -215,6 +215,7 @@ namespace MceReplacementTransceiver
         _blasterType  = (MceIrApi.BlasterType)Enum.Parse(typeof(MceIrApi.BlasterType), doc.DocumentElement.Attributes["BlastType"].Value);
         _repeatDelay  = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
         _heldDelay    = int.Parse(doc.DocumentElement.Attributes["HeldDelay"].Value);
+        _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value);
       }
       catch (Exception ex)
       {
@@ -223,6 +224,7 @@ namespace MceReplacementTransceiver
         _blasterType  = MceIrApi.BlasterType.Microsoft;
         _repeatDelay  = 500;
         _heldDelay    = 250;
+        _learnTimeout = 8000;
       }
     }
     void SaveSettings()
@@ -239,6 +241,7 @@ namespace MceReplacementTransceiver
         writer.WriteAttributeString("BlastType", Enum.GetName(typeof(MceIrApi.BlasterType), _blasterType));
         writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
         writer.WriteAttributeString("HeldDelay", _heldDelay.ToString());
+        writer.WriteAttributeString("LearnTimeout", _learnTimeout.ToString());
 
         writer.WriteEndElement(); // </settings>
         writer.WriteEndDocument();

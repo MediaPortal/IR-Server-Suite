@@ -164,7 +164,6 @@ namespace MceReplacementTransceiver
     #region Methods
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrRegisterEvents(HandleRef windowHandle);
     /// <summary>
     /// Register your window handle to receive window messages from the MceIrApi.
@@ -184,7 +183,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrUnregisterEvents();
     /// <summary>
     /// Unregister from receiving window messages from the MceIrApi.
@@ -203,7 +201,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrSetRepeatTimes(int firstRepeat, int nextRepeats);
     /// <summary>
     /// Sets the time between key presses being repeated.
@@ -218,7 +215,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrRecordToFile(SafeFileHandle fileHandle, int timeout);
     /// <summary>
     /// Record an IR code to file.
@@ -233,7 +229,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrPlaybackFromFile(SafeFileHandle fileHandle);
     /// <summary>
     /// Transmit an IR Code from a file.
@@ -249,7 +244,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrSuspend();
     /// <summary>
     /// Suspend the MceIrApi.
@@ -265,7 +259,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrResume();
     /// <summary>
     /// Resume the MceIrApi.
@@ -282,7 +275,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrSelectBlaster(int portNumber);
     /// <summary>
     /// Select the Blaster port to use for transmitting IR Codes.
@@ -295,7 +287,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrCheckFile(SafeFileHandle fileHandle);
     /// <summary>
     /// Check an IR Code file to ensure it is valid.
@@ -309,7 +300,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrSetBlasterSpeed(int speed);
     /// <summary>
     /// Set the Speed to transmit IR Codes at.
@@ -322,7 +312,6 @@ namespace MceReplacementTransceiver
     }
 
     [DllImport("MceIr.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool MceIrSetBlasterType(int type);
     /// <summary>
     /// Set the Type of MCE unit.

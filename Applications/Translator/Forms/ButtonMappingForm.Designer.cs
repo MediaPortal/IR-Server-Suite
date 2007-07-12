@@ -793,10 +793,12 @@ namespace Translator
       // radioButtonActiveWindow
       // 
       this.radioButtonActiveWindow.Anchor = System.Windows.Forms.AnchorStyles.Top;
+      this.radioButtonActiveWindow.Checked = true;
       this.radioButtonActiveWindow.Location = new System.Drawing.Point(16, 24);
       this.radioButtonActiveWindow.Name = "radioButtonActiveWindow";
       this.radioButtonActiveWindow.Size = new System.Drawing.Size(104, 16);
       this.radioButtonActiveWindow.TabIndex = 0;
+      this.radioButtonActiveWindow.TabStop = true;
       this.radioButtonActiveWindow.Text = "Active window";
       this.radioButtonActiveWindow.UseVisualStyleBackColor = true;
       this.radioButtonActiveWindow.CheckedChanged += new System.EventHandler(this.radioButtonActiveWindow_CheckedChanged);
@@ -828,7 +830,6 @@ namespace Translator
       this.radioButtonWindowTitle.Name = "radioButtonWindowTitle";
       this.radioButtonWindowTitle.Size = new System.Drawing.Size(96, 16);
       this.radioButtonWindowTitle.TabIndex = 3;
-      this.radioButtonWindowTitle.TabStop = true;
       this.radioButtonWindowTitle.Text = "Window title";
       this.radioButtonWindowTitle.UseVisualStyleBackColor = true;
       this.radioButtonWindowTitle.CheckedChanged += new System.EventHandler(this.radioButtonWindowTitle_CheckedChanged);
@@ -840,7 +841,6 @@ namespace Translator
       this.radioButtonApplication.Name = "radioButtonApplication";
       this.radioButtonApplication.Size = new System.Drawing.Size(88, 16);
       this.radioButtonApplication.TabIndex = 1;
-      this.radioButtonApplication.TabStop = true;
       this.radioButtonApplication.Text = "Application";
       this.radioButtonApplication.UseVisualStyleBackColor = true;
       this.radioButtonApplication.CheckedChanged += new System.EventHandler(this.radioButtonApplication_CheckedChanged);
@@ -852,7 +852,6 @@ namespace Translator
       this.radioButtonClass.Name = "radioButtonClass";
       this.radioButtonClass.Size = new System.Drawing.Size(72, 16);
       this.radioButtonClass.TabIndex = 2;
-      this.radioButtonClass.TabStop = true;
       this.radioButtonClass.Text = "Class";
       this.radioButtonClass.UseVisualStyleBackColor = true;
       this.radioButtonClass.CheckedChanged += new System.EventHandler(this.radioButtonClass_CheckedChanged);

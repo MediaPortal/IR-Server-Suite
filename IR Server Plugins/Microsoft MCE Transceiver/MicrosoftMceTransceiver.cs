@@ -318,6 +318,8 @@ namespace MicrosoftMceTransceiver
     static int _repeatDelay;
     static int _heldDelay;
 
+    static int _learnTimeout;
+
     static ArrayList _packetArray;
     static Guid _blasterGuid;
     static FileStream _blasterStream;
@@ -367,12 +369,14 @@ namespace MicrosoftMceTransceiver
       config.BlastType    = _blasterType;
       config.RepeatDelay  = _repeatDelay;
       config.HeldDelay    = _heldDelay;
+      config.LearnTimeout = _learnTimeout;
 
       if (config.ShowDialog() == DialogResult.OK)
       {
         _blasterType  = config.BlastType;
         _repeatDelay  = config.RepeatDelay;
         _heldDelay    = config.HeldDelay;
+        _learnTimeout = config.LearnTimeout;
 
         SaveSettings();
       }
@@ -454,14 +458,11 @@ namespace MicrosoftMceTransceiver
     {
       _irData = null;
       
-      // TODO: Implement proper timeout
-      int timeout = 8000;
-
       BeginLearn(new RemoteEventHandler(LearnIRDone));
 
       // Wait for the learning to finish ...
-      while (_learning && Environment.TickCount < _learnStartTick + timeout)
-        Thread.Sleep(1000);
+      while (_learning && Environment.TickCount < _learnStartTick + _learnTimeout)
+        Thread.Sleep(500);
 
       if (_learning)
       {
