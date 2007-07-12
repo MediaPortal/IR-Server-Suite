@@ -21,9 +21,6 @@ namespace Translator
     private static extern int GetWindowText(int hWnd, StringBuilder title, int size);
     
     [DllImport("user32.dll")]
-    private static extern int GetWindowModuleFileName(int hWnd, StringBuilder title, int size);
-    
-    [DllImport("user32.dll")]
     private static extern int EnumWindows(EnumWindowsProc ewp, int lParam); 
 
     #endregion Interop
@@ -50,23 +47,18 @@ namespace Translator
 
     void PopulateList()
     {
-      EnumWindowsProc ewp = new EnumWindowsProc(EvalWindow);
+      EnumWindowsProc ewp = new EnumWindowsProc(AddWindow);
 
       EnumWindows(ewp, 0);
     }
 
-    bool EvalWindow(int hWnd, int lParam)
+    bool AddWindow(int hWnd, int lParam)
     {
       StringBuilder title = new StringBuilder(256);
       GetWindowText(hWnd, title, 256);
 
-      //StringBuilder module = new StringBuilder(256);
-      //GetWindowModuleFileName(hWnd, module, 256);
-
-      if (title.Length == 0)
-        return true;
-
-      listBoxWindows.Items.Add(title.ToString());
+      if (title.Length != 0)
+        listBoxWindows.Items.Add(title.ToString());
 
       return true;
     }
