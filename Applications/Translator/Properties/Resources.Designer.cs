@@ -60,6 +60,27 @@ namespace Translator.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap ClickLeft {
+            get {
+                object obj = ResourceManager.GetObject("ClickLeft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ClickMiddle {
+            get {
+                object obj = ResourceManager.GetObject("ClickMiddle", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ClickRight {
+            get {
+                object obj = ResourceManager.GetObject("ClickRight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon Icon16 {
             get {
                 object obj = ResourceManager.GetObject("Icon16", resourceCulture);
@@ -71,6 +92,48 @@ namespace Translator.Properties {
             get {
                 object obj = ResourceManager.GetObject("Icon16Connecting", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap MoveDown {
+            get {
+                object obj = ResourceManager.GetObject("MoveDown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap MoveLeft {
+            get {
+                object obj = ResourceManager.GetObject("MoveLeft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap MoveRight {
+            get {
+                object obj = ResourceManager.GetObject("MoveRight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap MoveUp {
+            get {
+                object obj = ResourceManager.GetObject("MoveUp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ScrollDown {
+            get {
+                object obj = ResourceManager.GetObject("ScrollDown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ScrollUp {
+            get {
+                object obj = ResourceManager.GetObject("ScrollUp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

@@ -28,6 +28,7 @@ namespace Translator
     /// </summary>
     private void InitializeComponent()
     {
+      this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ButtonMappingForm));
       this.groupBoxButton = new System.Windows.Forms.GroupBox();
       this.labelKeyCode = new System.Windows.Forms.Label();
@@ -97,9 +98,25 @@ namespace Translator
       this.buttonKeyHelp = new System.Windows.Forms.Button();
       this.labelKeystrokes = new System.Windows.Forms.Label();
       this.textBoxKeys = new System.Windows.Forms.TextBox();
+      this.tabPageMouse = new System.Windows.Forms.TabPage();
+      this.groupBoxMouseScroll = new System.Windows.Forms.GroupBox();
+      this.checkBoxMouseScrollDown = new System.Windows.Forms.CheckBox();
+      this.checkBoxMouseScrollUp = new System.Windows.Forms.CheckBox();
+      this.groupBoxMouseClick = new System.Windows.Forms.GroupBox();
+      this.checkBoxMouseClickRight = new System.Windows.Forms.CheckBox();
+      this.checkBoxMouseClickMiddle = new System.Windows.Forms.CheckBox();
+      this.checkBoxMouseClickLeft = new System.Windows.Forms.CheckBox();
+      this.groupBoxMouseMove = new System.Windows.Forms.GroupBox();
+      this.checkBoxMouseMoveLeft = new System.Windows.Forms.CheckBox();
+      this.checkBoxMouseMoveDown = new System.Windows.Forms.CheckBox();
+      this.checkBoxMouseMoveRight = new System.Windows.Forms.CheckBox();
+      this.checkBoxMouseMoveUp = new System.Windows.Forms.CheckBox();
+      this.labelMouseMove = new System.Windows.Forms.Label();
+      this.numericUpDownMouseMove = new System.Windows.Forms.NumericUpDown();
       this.buttonTest = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
+      this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.groupBoxButton.SuspendLayout();
       this.groupBoxSet.SuspendLayout();
       this.tabControl.SuspendLayout();
@@ -117,6 +134,11 @@ namespace Translator
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWParam)).BeginInit();
       this.groupBoxMessageTarget.SuspendLayout();
       this.tabPageKeystrokes.SuspendLayout();
+      this.tabPageMouse.SuspendLayout();
+      this.groupBoxMouseScroll.SuspendLayout();
+      this.groupBoxMouseClick.SuspendLayout();
+      this.groupBoxMouseMove.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseMove)).BeginInit();
       this.SuspendLayout();
       // 
       // groupBoxButton
@@ -210,6 +232,7 @@ namespace Translator
       this.buttonSet.Size = new System.Drawing.Size(48, 20);
       this.buttonSet.TabIndex = 1;
       this.buttonSet.Text = "Set";
+      this.toolTips.SetToolTip(this.buttonSet, "Click here to set the command");
       this.buttonSet.UseVisualStyleBackColor = true;
       this.buttonSet.Click += new System.EventHandler(this.buttonSet_Click);
       // 
@@ -224,6 +247,7 @@ namespace Translator
       this.tabControl.Controls.Add(this.tabPageSerial);
       this.tabControl.Controls.Add(this.tabPageMessage);
       this.tabControl.Controls.Add(this.tabPageKeystrokes);
+      this.tabControl.Controls.Add(this.tabPageMouse);
       this.tabControl.Location = new System.Drawing.Point(8, 24);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
@@ -903,6 +927,206 @@ namespace Translator
       this.textBoxKeys.Size = new System.Drawing.Size(416, 144);
       this.textBoxKeys.TabIndex = 1;
       // 
+      // tabPageMouse
+      // 
+      this.tabPageMouse.Controls.Add(this.groupBoxMouseScroll);
+      this.tabPageMouse.Controls.Add(this.groupBoxMouseClick);
+      this.tabPageMouse.Controls.Add(this.groupBoxMouseMove);
+      this.tabPageMouse.Location = new System.Drawing.Point(4, 22);
+      this.tabPageMouse.Name = "tabPageMouse";
+      this.tabPageMouse.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageMouse.Size = new System.Drawing.Size(432, 206);
+      this.tabPageMouse.TabIndex = 6;
+      this.tabPageMouse.Text = "Mouse";
+      this.tabPageMouse.UseVisualStyleBackColor = true;
+      // 
+      // groupBoxMouseScroll
+      // 
+      this.groupBoxMouseScroll.Anchor = System.Windows.Forms.AnchorStyles.None;
+      this.groupBoxMouseScroll.Controls.Add(this.checkBoxMouseScrollDown);
+      this.groupBoxMouseScroll.Controls.Add(this.checkBoxMouseScrollUp);
+      this.groupBoxMouseScroll.Location = new System.Drawing.Point(296, 16);
+      this.groupBoxMouseScroll.Name = "groupBoxMouseScroll";
+      this.groupBoxMouseScroll.Size = new System.Drawing.Size(128, 176);
+      this.groupBoxMouseScroll.TabIndex = 2;
+      this.groupBoxMouseScroll.TabStop = false;
+      this.groupBoxMouseScroll.Text = "Scroll";
+      // 
+      // checkBoxMouseScrollDown
+      // 
+      this.checkBoxMouseScrollDown.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseScrollDown.Image = global::Translator.Properties.Resources.ScrollDown;
+      this.checkBoxMouseScrollDown.Location = new System.Drawing.Point(48, 96);
+      this.checkBoxMouseScrollDown.Name = "checkBoxMouseScrollDown";
+      this.checkBoxMouseScrollDown.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseScrollDown.TabIndex = 1;
+      this.toolTips.SetToolTip(this.checkBoxMouseScrollDown, "Scroll the mouse wheel down");
+      this.checkBoxMouseScrollDown.UseVisualStyleBackColor = true;
+      this.checkBoxMouseScrollDown.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // checkBoxMouseScrollUp
+      // 
+      this.checkBoxMouseScrollUp.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseScrollUp.Image = global::Translator.Properties.Resources.ScrollUp;
+      this.checkBoxMouseScrollUp.Location = new System.Drawing.Point(48, 40);
+      this.checkBoxMouseScrollUp.Name = "checkBoxMouseScrollUp";
+      this.checkBoxMouseScrollUp.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseScrollUp.TabIndex = 0;
+      this.toolTips.SetToolTip(this.checkBoxMouseScrollUp, "Scroll the mouse wheel up");
+      this.checkBoxMouseScrollUp.UseVisualStyleBackColor = true;
+      this.checkBoxMouseScrollUp.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // groupBoxMouseClick
+      // 
+      this.groupBoxMouseClick.Anchor = System.Windows.Forms.AnchorStyles.None;
+      this.groupBoxMouseClick.Controls.Add(this.checkBoxMouseClickRight);
+      this.groupBoxMouseClick.Controls.Add(this.checkBoxMouseClickMiddle);
+      this.groupBoxMouseClick.Controls.Add(this.checkBoxMouseClickLeft);
+      this.groupBoxMouseClick.Location = new System.Drawing.Point(160, 16);
+      this.groupBoxMouseClick.Name = "groupBoxMouseClick";
+      this.groupBoxMouseClick.Size = new System.Drawing.Size(128, 176);
+      this.groupBoxMouseClick.TabIndex = 1;
+      this.groupBoxMouseClick.TabStop = false;
+      this.groupBoxMouseClick.Text = "Click";
+      // 
+      // checkBoxMouseClickRight
+      // 
+      this.checkBoxMouseClickRight.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseClickRight.Image = global::Translator.Properties.Resources.ClickRight;
+      this.checkBoxMouseClickRight.Location = new System.Drawing.Point(88, 64);
+      this.checkBoxMouseClickRight.Name = "checkBoxMouseClickRight";
+      this.checkBoxMouseClickRight.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseClickRight.TabIndex = 2;
+      this.toolTips.SetToolTip(this.checkBoxMouseClickRight, "Click the right mouse button");
+      this.checkBoxMouseClickRight.UseVisualStyleBackColor = true;
+      this.checkBoxMouseClickRight.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // checkBoxMouseClickMiddle
+      // 
+      this.checkBoxMouseClickMiddle.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseClickMiddle.Image = global::Translator.Properties.Resources.ClickMiddle;
+      this.checkBoxMouseClickMiddle.Location = new System.Drawing.Point(48, 64);
+      this.checkBoxMouseClickMiddle.Name = "checkBoxMouseClickMiddle";
+      this.checkBoxMouseClickMiddle.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseClickMiddle.TabIndex = 1;
+      this.toolTips.SetToolTip(this.checkBoxMouseClickMiddle, "Click the middle mouse button");
+      this.checkBoxMouseClickMiddle.UseVisualStyleBackColor = true;
+      this.checkBoxMouseClickMiddle.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // checkBoxMouseClickLeft
+      // 
+      this.checkBoxMouseClickLeft.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseClickLeft.Image = global::Translator.Properties.Resources.ClickLeft;
+      this.checkBoxMouseClickLeft.Location = new System.Drawing.Point(8, 64);
+      this.checkBoxMouseClickLeft.Name = "checkBoxMouseClickLeft";
+      this.checkBoxMouseClickLeft.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseClickLeft.TabIndex = 0;
+      this.toolTips.SetToolTip(this.checkBoxMouseClickLeft, "Click the left mouse button");
+      this.checkBoxMouseClickLeft.UseVisualStyleBackColor = true;
+      this.checkBoxMouseClickLeft.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // groupBoxMouseMove
+      // 
+      this.groupBoxMouseMove.Anchor = System.Windows.Forms.AnchorStyles.None;
+      this.groupBoxMouseMove.Controls.Add(this.checkBoxMouseMoveLeft);
+      this.groupBoxMouseMove.Controls.Add(this.checkBoxMouseMoveDown);
+      this.groupBoxMouseMove.Controls.Add(this.checkBoxMouseMoveRight);
+      this.groupBoxMouseMove.Controls.Add(this.checkBoxMouseMoveUp);
+      this.groupBoxMouseMove.Controls.Add(this.labelMouseMove);
+      this.groupBoxMouseMove.Controls.Add(this.numericUpDownMouseMove);
+      this.groupBoxMouseMove.Location = new System.Drawing.Point(8, 16);
+      this.groupBoxMouseMove.Name = "groupBoxMouseMove";
+      this.groupBoxMouseMove.Size = new System.Drawing.Size(144, 176);
+      this.groupBoxMouseMove.TabIndex = 0;
+      this.groupBoxMouseMove.TabStop = false;
+      this.groupBoxMouseMove.Text = "Move";
+      // 
+      // checkBoxMouseMoveLeft
+      // 
+      this.checkBoxMouseMoveLeft.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseMoveLeft.Image = global::Translator.Properties.Resources.MoveLeft;
+      this.checkBoxMouseMoveLeft.Location = new System.Drawing.Point(24, 64);
+      this.checkBoxMouseMoveLeft.Name = "checkBoxMouseMoveLeft";
+      this.checkBoxMouseMoveLeft.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseMoveLeft.TabIndex = 1;
+      this.toolTips.SetToolTip(this.checkBoxMouseMoveLeft, "Move the mouse position left on screen");
+      this.checkBoxMouseMoveLeft.UseVisualStyleBackColor = true;
+      this.checkBoxMouseMoveLeft.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // checkBoxMouseMoveDown
+      // 
+      this.checkBoxMouseMoveDown.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseMoveDown.Image = global::Translator.Properties.Resources.MoveDown;
+      this.checkBoxMouseMoveDown.Location = new System.Drawing.Point(56, 96);
+      this.checkBoxMouseMoveDown.Name = "checkBoxMouseMoveDown";
+      this.checkBoxMouseMoveDown.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseMoveDown.TabIndex = 3;
+      this.toolTips.SetToolTip(this.checkBoxMouseMoveDown, "Move the mousse position down the screen");
+      this.checkBoxMouseMoveDown.UseVisualStyleBackColor = true;
+      this.checkBoxMouseMoveDown.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // checkBoxMouseMoveRight
+      // 
+      this.checkBoxMouseMoveRight.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseMoveRight.Image = global::Translator.Properties.Resources.MoveRight;
+      this.checkBoxMouseMoveRight.Location = new System.Drawing.Point(88, 64);
+      this.checkBoxMouseMoveRight.Name = "checkBoxMouseMoveRight";
+      this.checkBoxMouseMoveRight.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseMoveRight.TabIndex = 2;
+      this.toolTips.SetToolTip(this.checkBoxMouseMoveRight, "Move the mouse position right on screen");
+      this.checkBoxMouseMoveRight.UseVisualStyleBackColor = true;
+      this.checkBoxMouseMoveRight.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // checkBoxMouseMoveUp
+      // 
+      this.checkBoxMouseMoveUp.Appearance = System.Windows.Forms.Appearance.Button;
+      this.checkBoxMouseMoveUp.Image = global::Translator.Properties.Resources.MoveUp;
+      this.checkBoxMouseMoveUp.Location = new System.Drawing.Point(56, 32);
+      this.checkBoxMouseMoveUp.Name = "checkBoxMouseMoveUp";
+      this.checkBoxMouseMoveUp.Size = new System.Drawing.Size(32, 32);
+      this.checkBoxMouseMoveUp.TabIndex = 0;
+      this.toolTips.SetToolTip(this.checkBoxMouseMoveUp, "Move the mouse position up the screen");
+      this.checkBoxMouseMoveUp.UseVisualStyleBackColor = true;
+      this.checkBoxMouseMoveUp.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      // 
+      // labelMouseMove
+      // 
+      this.labelMouseMove.Location = new System.Drawing.Point(8, 144);
+      this.labelMouseMove.Name = "labelMouseMove";
+      this.labelMouseMove.Size = new System.Drawing.Size(72, 20);
+      this.labelMouseMove.TabIndex = 4;
+      this.labelMouseMove.Text = "Distance:";
+      this.labelMouseMove.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // numericUpDownMouseMove
+      // 
+      this.numericUpDownMouseMove.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+      this.numericUpDownMouseMove.Location = new System.Drawing.Point(80, 144);
+      this.numericUpDownMouseMove.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+      this.numericUpDownMouseMove.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+      this.numericUpDownMouseMove.Name = "numericUpDownMouseMove";
+      this.numericUpDownMouseMove.Size = new System.Drawing.Size(56, 20);
+      this.numericUpDownMouseMove.TabIndex = 5;
+      this.numericUpDownMouseMove.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.toolTips.SetToolTip(this.numericUpDownMouseMove, "The distance (in pixels) to move the mouse");
+      this.numericUpDownMouseMove.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+      // 
       // buttonTest
       // 
       this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -911,6 +1135,7 @@ namespace Translator
       this.buttonTest.Size = new System.Drawing.Size(48, 20);
       this.buttonTest.TabIndex = 3;
       this.buttonTest.Text = "Test";
+      this.toolTips.SetToolTip(this.buttonTest, "Click here to test the currently set command");
       this.buttonTest.UseVisualStyleBackColor = true;
       this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
       // 
@@ -979,6 +1204,11 @@ namespace Translator
       this.groupBoxMessageTarget.PerformLayout();
       this.tabPageKeystrokes.ResumeLayout(false);
       this.tabPageKeystrokes.PerformLayout();
+      this.tabPageMouse.ResumeLayout(false);
+      this.groupBoxMouseScroll.ResumeLayout(false);
+      this.groupBoxMouseClick.ResumeLayout(false);
+      this.groupBoxMouseMove.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseMove)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -1056,6 +1286,22 @@ namespace Translator
     private System.Windows.Forms.Button buttonFindMsgTarget;
     private System.Windows.Forms.GroupBox groupBoxMessageTarget;
     private System.Windows.Forms.GroupBox groupBoxMessageDetails;
+    private System.Windows.Forms.TabPage tabPageMouse;
+    private System.Windows.Forms.GroupBox groupBoxMouseMove;
+    private System.Windows.Forms.Label labelMouseMove;
+    private System.Windows.Forms.NumericUpDown numericUpDownMouseMove;
+    private System.Windows.Forms.CheckBox checkBoxMouseMoveUp;
+    private System.Windows.Forms.GroupBox groupBoxMouseScroll;
+    private System.Windows.Forms.CheckBox checkBoxMouseScrollDown;
+    private System.Windows.Forms.CheckBox checkBoxMouseScrollUp;
+    private System.Windows.Forms.GroupBox groupBoxMouseClick;
+    private System.Windows.Forms.CheckBox checkBoxMouseClickRight;
+    private System.Windows.Forms.CheckBox checkBoxMouseClickMiddle;
+    private System.Windows.Forms.CheckBox checkBoxMouseClickLeft;
+    private System.Windows.Forms.CheckBox checkBoxMouseMoveLeft;
+    private System.Windows.Forms.CheckBox checkBoxMouseMoveDown;
+    private System.Windows.Forms.CheckBox checkBoxMouseMoveRight;
+    private System.Windows.Forms.ToolTip toolTips;
 
   }
 }

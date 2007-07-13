@@ -990,6 +990,11 @@ namespace Translator
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         Common.ProcessKeyCommand(keyCommand);
       }
+      else if (command.StartsWith(Common.CmdPrefixMouse)) // Mouse Command
+      {
+        string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
+        Common.ProcessMouseCommand(mouseCommand);
+      }
       else
       {
         throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");

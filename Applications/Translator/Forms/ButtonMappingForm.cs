@@ -209,6 +209,29 @@ namespace Translator
               textBoxKeys.Text = suffix;
               break;
             }
+
+          case Common.CmdPrefixMouse:
+            {
+              tabControl.SelectTab(tabPageMouse);
+              switch (suffix)
+              {
+                case Common.MouseClickLeft:   checkBoxMouseClickLeft.Checked = true;    break;
+                case Common.MouseClickMiddle: checkBoxMouseClickMiddle.Checked = true;  break;
+                case Common.MouseClickRight:  checkBoxMouseClickRight.Checked = true;   break;
+                case Common.MouseScrollDown:  checkBoxMouseScrollDown.Checked = true;   break;
+                case Common.MouseScrollUp:    checkBoxMouseScrollUp.Checked = true;     break;
+
+                default:
+                  if (suffix.StartsWith(Common.MouseMoveDown))        checkBoxMouseMoveDown.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveLeft))   checkBoxMouseMoveLeft.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveRight))  checkBoxMouseMoveRight.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveUp))     checkBoxMouseMoveUp.Checked = true;
+
+                  numericUpDownMouseMove.Value = Decimal.Parse(suffix.Substring(suffix.IndexOf(" ")));
+                  break;
+              }
+              break;
+            }
         }
       }
 
@@ -335,6 +358,31 @@ namespace Translator
             textBoxCommand.Text = _command = Common.CmdPrefixKeys + textBoxKeys.Text;
             break;
           }
+
+        case "tabPageMouse":
+          {
+            StringBuilder newCommand = new StringBuilder();
+            newCommand.Append(Common.CmdPrefixMouse);
+
+            if (checkBoxMouseClickLeft.Checked)         newCommand.Append(Common.MouseClickLeft);
+            else if (checkBoxMouseClickRight.Checked)   newCommand.Append(Common.MouseClickRight);
+            else if (checkBoxMouseClickMiddle.Checked)  newCommand.Append(Common.MouseClickMiddle);
+            else if (checkBoxMouseScrollUp.Checked)     newCommand.Append(Common.MouseScrollUp);
+            else if (checkBoxMouseScrollDown.Checked)   newCommand.Append(Common.MouseScrollDown);
+            else
+            {
+              if (checkBoxMouseMoveUp.Checked)          newCommand.Append(Common.MouseMoveUp);
+              else if (checkBoxMouseMoveDown.Checked)   newCommand.Append(Common.MouseMoveDown);
+              else if (checkBoxMouseMoveLeft.Checked)   newCommand.Append(Common.MouseMoveLeft);
+              else if (checkBoxMouseMoveRight.Checked)  newCommand.Append(Common.MouseMoveRight);
+              else break;
+
+              newCommand.Append(numericUpDownMouseMove.Value.ToString());
+            }
+            
+            textBoxCommand.Text = _command = newCommand.ToString();
+            break;
+          }
       }
     }
 
@@ -458,6 +506,24 @@ namespace Translator
     }
 
     #endregion Controls
+
+    private void checkBoxMouse_CheckedChanged(object sender, EventArgs e)
+    {
+      CheckBox origin = (CheckBox)sender;
+
+      if (!origin.Checked)
+        return;
+      
+      if (origin != checkBoxMouseClickLeft)   checkBoxMouseClickLeft.Checked = false;
+      if (origin != checkBoxMouseClickRight)  checkBoxMouseClickRight.Checked = false;
+      if (origin != checkBoxMouseClickMiddle) checkBoxMouseClickMiddle.Checked = false;
+      if (origin != checkBoxMouseMoveUp)      checkBoxMouseMoveUp.Checked = false;
+      if (origin != checkBoxMouseMoveDown)    checkBoxMouseMoveDown.Checked = false;
+      if (origin != checkBoxMouseMoveLeft)    checkBoxMouseMoveLeft.Checked = false;
+      if (origin != checkBoxMouseMoveRight)   checkBoxMouseMoveRight.Checked = false;
+      if (origin != checkBoxMouseScrollUp)    checkBoxMouseScrollUp.Checked = false;
+      if (origin != checkBoxMouseScrollDown)  checkBoxMouseScrollDown.Checked = false;
+    }
 
   }
 

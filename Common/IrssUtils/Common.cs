@@ -114,6 +114,8 @@ namespace IrssUtils
     public const string CmdPrefixReboot       = "Reboot";
     public const string CmdPrefixShutdown     = "Shutdown";
 
+    public const string CmdPrefixMouse        = "Mouse: ";
+
     #endregion Command Prefixes
 
     #region XML Tags
@@ -138,6 +140,8 @@ namespace IrssUtils
     public const string XmlTagReboot          = "REBOOT";
     public const string XmlTagShutdown        = "SHUTDOWN";
 
+    public const string XmlTagMouse           = "MOUSE";
+
     #endregion XML Tags
 
     #region User Interface Text
@@ -161,7 +165,25 @@ namespace IrssUtils
     public const string UITextReboot          = "Reboot";
     public const string UITextShutdown        = "Shutdown";
 
+    public const string UITextMouse           = "Mouse Command";
+
     #endregion User Interface Text
+
+    #region Mouse Commands
+
+    public const string MouseMoveUp       = "Move_Up ";
+    public const string MouseMoveDown     = "Move_Down ";
+    public const string MouseMoveLeft     = "Move_Left ";
+    public const string MouseMoveRight    = "Move_Right ";
+    
+    public const string MouseClickLeft    = "Click_Left";
+    public const string MouseClickRight   = "Click_Right";
+    public const string MouseClickMiddle  = "Click_Middle";
+    
+    public const string MouseScrollUp     = "Scroll_Up";
+    public const string MouseScrollDown   = "Scroll_Down";
+
+    #endregion Mouse Commands
 
     #endregion Strings
 
@@ -358,6 +380,52 @@ namespace IrssUtils
 
       streamWriter.Close();
       tcpClient.Close();
+    }
+
+    /// <summary>
+    /// Given a Mouse Command this method will move, click or scroll the mouse according to the command issued.
+    /// </summary>
+    /// <param name="command">The Mouse Command string</param>
+    public static void ProcessMouseCommand(string command)
+    {
+      switch (command)
+      {
+        case MouseClickLeft:
+          Mouse.Button(Mouse.MouseEvents.LeftDown);
+          Mouse.Button(Mouse.MouseEvents.LeftUp);
+          break;
+
+        case  MouseClickMiddle:
+          Mouse.Button(Mouse.MouseEvents.MiddleDown);
+          Mouse.Button(Mouse.MouseEvents.MiddleUp);
+          break;
+
+        case MouseClickRight:
+          Mouse.Button(Mouse.MouseEvents.RightDown);
+          Mouse.Button(Mouse.MouseEvents.RightUp);
+          break;
+
+        case MouseScrollDown:
+          Mouse.Scroll(Mouse.ScrollDir.Down);
+          break;
+
+        case MouseScrollUp:
+          Mouse.Scroll(Mouse.ScrollDir.Up);
+          break;
+
+        default:
+          if (command.StartsWith(MouseMoveDown))
+            Mouse.Move(0, int.Parse(command.Substring(MouseMoveDown.Length)), false);
+          else if (command.StartsWith(MouseMoveLeft))
+            Mouse.Move(-int.Parse(command.Substring(MouseMoveLeft.Length)), 0, false);
+          else if (command.StartsWith(MouseMoveRight))
+            Mouse.Move(int.Parse(command.Substring(MouseMoveRight.Length)), 0, false);
+          else if (command.StartsWith(MouseMoveUp))
+            Mouse.Move(0, -int.Parse(command.Substring(MouseMoveUp.Length)), false);
+          else
+            throw new ApplicationException("Invalid Mouse Command");
+          break;
+      }
     }
 
     #endregion Command Execution

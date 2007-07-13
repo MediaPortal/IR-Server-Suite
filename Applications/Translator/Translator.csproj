@@ -165,6 +165,17 @@
   <ItemGroup>
     <None Include="Icon16Connecting.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Graphics\ClickLeft.png" />
+    <Content Include="Graphics\ClickMiddle.png" />
+    <Content Include="Graphics\ClickRight.png" />
+    <Content Include="Graphics\MoveDown.png" />
+    <Content Include="Graphics\MoveLeft.png" />
+    <Content Include="Graphics\MoveRight.png" />
+    <Content Include="Graphics\MoveUp.png" />
+    <Content Include="Graphics\ScrollDown.png" />
+    <Content Include="Graphics\ScrollUp.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
