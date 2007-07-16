@@ -86,87 +86,83 @@ namespace CustomHIDReceiver
 
     void FindHIDDevices()
     {
-      int lastError;
+      uint deviceCount = 0;
+      int dwSize = (Marshal.SizeOf(typeof(NativeMethods.RAWINPUTDEVICELIST)));
 
-      // Get the HID Guid
-      Guid classGuid = new Guid();
-      NativeMethods.HidD_GetHidGuid(ref classGuid);
-
-      // 0x12 = DIGCF_PRESENT | DIGCF_DEVICEINTERFACE
-      IntPtr handle = NativeMethods.SetupDiGetClassDevs(ref classGuid, "", IntPtr.Zero, 0x12);
-      lastError = Marshal.GetLastWin32Error();
-
-      if (handle.ToInt32() == -1)
-        throw new Win32Exception(lastError);
-
-      for (int deviceIndex = 0; ; deviceIndex++)
+      // Get the number of raw input devices in the list,
+      // then allocate sufficient memory and get the entire list
+      if (NativeMethods.GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, (uint)dwSize) == 0)
       {
-        NativeMethods.DeviceInfoData deviceInfoData = new NativeMethods.DeviceInfoData();
-        deviceInfoData.Size = Marshal.SizeOf(deviceInfoData);
+        IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int)(dwSize * deviceCount));
+        NativeMethods.GetRawInputDeviceList(pRawInputDeviceList, ref deviceCount, (uint)dwSize);
 
-        if (NativeMethods.SetupDiEnumDeviceInfo(handle, deviceIndex, ref deviceInfoData) == false)
+        // Iterate through the list, discarding undesired items
+        // and retrieving further information on keyboard devices
+        for (int i = 0; i < deviceCount; i++)
         {
+          string deviceName;
+          uint pcbSize = 0;
 
-          // out of devices or do we have an error?
-          /*
-          lastError = Marshal.GetLastWin32Error();
-          if (lastError != 0x0103 && lastError != 0x007E)
+          NativeMethods.RAWINPUTDEVICELIST rid = (NativeMethods.RAWINPUTDEVICELIST)Marshal.PtrToStructure(
+                                     new IntPtr((pRawInputDeviceList.ToInt32() + (dwSize * i))),
+                                     typeof(NativeMethods.RAWINPUTDEVICELIST));
+
+          NativeMethods.GetRawInputDeviceInfo(rid.hDevice, NativeMethods.RIDI_DEVICENAME, IntPtr.Zero, ref pcbSize);
+
+          if (pcbSize > 0)
           {
-            NativeMethods.SetupDiDestroyDeviceInfoList(handle);
-            throw new Win32Exception(Marshal.GetLastWin32Error());
+            IntPtr pData = Marshal.AllocHGlobal((int)pcbSize);
+            NativeMethods.GetRawInputDeviceInfo(rid.hDevice, NativeMethods.RIDI_DEVICENAME, pData, ref pcbSize);
+            deviceName = (string)Marshal.PtrToStringAnsi(pData);
+
+            // Drop the "root" keyboard and mouse devices used for Terminal 
+            // Services and the Remote Desktop
+            if (deviceName.ToUpperInvariant().Contains("ROOT"))
+              continue;
+
+            // Get Detailed Info ...
+            uint size = (uint)Marshal.SizeOf(typeof(NativeMethods.DeviceInfo));
+            NativeMethods.DeviceInfo di = new NativeMethods.DeviceInfo();
+            di.Size = Marshal.SizeOf(typeof(NativeMethods.DeviceInfo));
+            NativeMethods.GetRawInputDeviceInfo(rid.hDevice, NativeMethods.RIDI_DEVICEINFO, ref di, ref size);
+
+            di = new NativeMethods.DeviceInfo();
+            di.Size = Marshal.SizeOf(typeof(NativeMethods.DeviceInfo));
+            NativeMethods.GetRawInputDeviceInfo(rid.hDevice, NativeMethods.RIDI_DEVICEINFO, ref di, ref size);
+
+            DeviceDetails deviceDetails = new DeviceDetails();
+            switch (di.Type)
+            {
+              case NativeMethods.RawInputType.HID:
+                {
+                  string vidAndPid = String.Format("Vid_{0:x4}&Pid_{1:x4}", di.HIDInfo.VendorID, di.HIDInfo.ProductID);
+                  deviceDetails.Name = String.Format("HID: {0}", GetFriendlyName(vidAndPid));
+                  deviceDetails.ID = deviceName;
+                  break;
+                }
+
+              case NativeMethods.RawInputType.Keyboard:
+                {
+                  deviceDetails.Name = "Keyboard";
+                  deviceDetails.ID = deviceName;
+                  break;
+                }
+
+              case NativeMethods.RawInputType.Mouse:
+                {
+                  deviceDetails.Name = "Mouse";
+                  deviceDetails.ID = deviceName;
+                  break;
+                }
+            }
+            _devices.Add(deviceDetails);
+
+            Marshal.FreeHGlobal(pData);
           }
-          */
-
-          NativeMethods.SetupDiDestroyDeviceInfoList(handle);
-          break;
         }
 
-        NativeMethods.DeviceInterfaceData deviceInterfaceData = new NativeMethods.DeviceInterfaceData();
-        deviceInterfaceData.Size = Marshal.SizeOf(deviceInterfaceData);
-
-        if (NativeMethods.SetupDiEnumDeviceInterfaces(handle, ref deviceInfoData, ref classGuid, 0, ref deviceInterfaceData) == false)
-        {
-          NativeMethods.SetupDiDestroyDeviceInfoList(handle);
-          //throw new Win32Exception(Marshal.GetLastWin32Error());
-          continue;
-        }
-
-        uint cbData = 0;
-
-        if (NativeMethods.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) == false && cbData == 0)
-        {
-          NativeMethods.SetupDiDestroyDeviceInfoList(handle);
-          //throw new Win32Exception(Marshal.GetLastWin32Error());
-          continue;
-        }
-
-        NativeMethods.DeviceInterfaceDetailData deviceInterfaceDetailData = new NativeMethods.DeviceInterfaceDetailData();
-        deviceInterfaceDetailData.Size = 5;
-
-        if (NativeMethods.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData, IntPtr.Zero, IntPtr.Zero) == false)
-        {
-          NativeMethods.SetupDiDestroyDeviceInfoList(handle);
-          //throw new Win32Exception(Marshal.GetLastWin32Error());
-          continue;
-        }
-
-        string devicePath = deviceInterfaceDetailData.DevicePath;
-
-        if (!String.IsNullOrEmpty(devicePath))
-        {
-          string friendlyName = GetFriendlyName(devicePath);
-          if (String.IsNullOrEmpty(friendlyName))
-            friendlyName = "Unknown";
-
-          DeviceDetails deviceDetails = new DeviceDetails();
-          deviceDetails.Name = friendlyName;
-          deviceDetails.ID = devicePath;
-          _devices.Add(deviceDetails);
-        }
-
-        NativeMethods.SetupDiDestroyDeviceInfoList(handle);
+        Marshal.FreeHGlobal(pRawInputDeviceList);
       }
-
     }
 
     private void buttonOK_Click(object sender, EventArgs e)
@@ -181,13 +177,11 @@ namespace CustomHIDReceiver
       this.Close();
     }
 
-    string GetFriendlyName(string deviceID)
+    string GetFriendlyName(string vidAndPid)
     {
       try
       {
         RegistryKey USBEnum = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Enum\\USB");
-
-        string vidAndPid = GetVidAndPid(deviceID);
 
         foreach (string usbSubKey in USBEnum.GetSubKeyNames())
         {
@@ -201,13 +195,8 @@ namespace CustomHIDReceiver
           foreach (string vidAndPidSubKey in vidAndPidSubKeys)
           {
             RegistryKey subKey = currentKey.OpenSubKey(vidAndPidSubKey);
-            string parentIdPrefix = subKey.GetValue("ParentIdPrefix", null) as string;
 
-            if (String.IsNullOrEmpty(parentIdPrefix))
-              continue;
-
-            if (deviceID.Contains(parentIdPrefix))
-              return subKey.GetValue("DeviceDesc", null) as string + " (" + subKey.GetValue("LocationInformation", null) as string + ")";
+            return subKey.GetValue("LocationInformation", null) as string;
           }
         }
       }
@@ -216,18 +205,6 @@ namespace CustomHIDReceiver
       }
 
       return null;
-    }
-
-    string GetVidAndPid(string deviceID)
-    {
-      // \\?\hid#vid_0fe9&pid_9010#6&162bd6c4&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
-
-      int vidStart = deviceID.IndexOf("vid_", StringComparison.InvariantCultureIgnoreCase);
-
-      if (vidStart != -1)
-        return deviceID.Substring(vidStart, 17);
-      else
-        return null;
     }
 
     private void buttonAdvanced_Click(object sender, EventArgs e)

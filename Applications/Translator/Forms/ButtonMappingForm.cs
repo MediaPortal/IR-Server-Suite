@@ -79,6 +79,16 @@ namespace Translator
       }
     }
 
+    void InsertKeystroke(string keystroke)
+    {
+      string clipboardWas = Clipboard.GetText();
+
+      Clipboard.SetText(keystroke);
+      textBoxKeys.Paste();
+
+      Clipboard.SetText(clipboardWas);
+    }
+
     private void ButtonMappingForm_Load(object sender, EventArgs e)
     {
       textBoxKeyCode.Text = _keyCode;
@@ -505,8 +515,6 @@ namespace Translator
       _description = textBoxButtonDesc.Text;
     }
 
-    #endregion Controls
-
     private void checkBoxMouse_CheckedChanged(object sender, EventArgs e)
     {
       CheckBox origin = (CheckBox)sender;
@@ -524,6 +532,88 @@ namespace Translator
       if (origin != checkBoxMouseScrollUp)    checkBoxMouseScrollUp.Checked = false;
       if (origin != checkBoxMouseScrollDown)  checkBoxMouseScrollDown.Checked = false;
     }
+
+    private void KeystrokeToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      ToolStripMenuItem origin = sender as ToolStripMenuItem;
+
+      if (origin == null)
+        return;
+
+      switch (origin.Name)
+      {
+        case "upToolStripMenuItem":         InsertKeystroke("{UP}"); break;
+        case "downToolStripMenuItem":       InsertKeystroke("{DOWN}"); break;
+        case "leftToolStripMenuItem":       InsertKeystroke("{LEFT}"); break;
+        case "rightToolStripMenuItem":      InsertKeystroke("{RIGHT}"); break;
+
+        case "f1ToolStripMenuItem":         InsertKeystroke("{F1}"); break;
+        case "f2ToolStripMenuItem":         InsertKeystroke("{F2}"); break;
+        case "f3ToolStripMenuItem":         InsertKeystroke("{F3}"); break;
+        case "f4ToolStripMenuItem":         InsertKeystroke("{F4}"); break;
+        case "f5ToolStripMenuItem":         InsertKeystroke("{F5}"); break;
+        case "f6ToolStripMenuItem":         InsertKeystroke("{F6}"); break;
+        case "f7ToolStripMenuItem":         InsertKeystroke("{F7}"); break;
+        case "f8ToolStripMenuItem":         InsertKeystroke("{F8}"); break;
+        case "f9ToolStripMenuItem":         InsertKeystroke("{F9}"); break;
+        case "f10ToolStripMenuItem":        InsertKeystroke("{F10}"); break;
+        case "f11ToolStripMenuItem":        InsertKeystroke("{F11}"); break;
+        case "f12ToolStripMenuItem":        InsertKeystroke("{F12}"); break;
+        case "f13ToolStripMenuItem":        InsertKeystroke("{F13}"); break;
+        case "f14ToolStripMenuItem":        InsertKeystroke("{F14}"); break;
+        case "f15ToolStripMenuItem":        InsertKeystroke("{F15}"); break;
+        case "f16ToolStripMenuItem":        InsertKeystroke("{F16}"); break;
+
+        case "addToolStripMenuItem":        InsertKeystroke("{ADD}"); break;
+        case "subtractToolStripMenuItem":   InsertKeystroke("{SUBTRACT}"); break;
+        case "multiplyToolStripMenuItem":   InsertKeystroke("{MULTIPLY}"); break;
+        case "divideToolStripMenuItem":     InsertKeystroke("{DIVIDE}"); break;
+
+        case "altToolStripMenuItem":        InsertKeystroke("%"); break;
+        case "controlToolStripMenuItem":    InsertKeystroke("^"); break;
+        case "shiftToolStripMenuItem":      InsertKeystroke("+"); break;
+
+        case "backspaceToolStripMenuItem":  InsertKeystroke("{BACKSPACE}"); break;
+        case "breakToolStripMenuItem":      InsertKeystroke("{BREAK}"); break;
+        case "capsLockToolStripMenuItem":   InsertKeystroke("{CAPSLOCK}"); break;
+        case "delToolStripMenuItem":        InsertKeystroke("{DEL}"); break;
+
+        case "endToolStripMenuItem":        InsertKeystroke("{END}"); break;
+        case "enterToolStripMenuItem":      InsertKeystroke("{ENTER}"); break;
+        case "escapeToolStripMenuItem":     InsertKeystroke("{ESC}"); break;
+        case "helpToolStripMenuItem":       InsertKeystroke("{HELP}"); break;
+        case "homeToolStripMenuItem":       InsertKeystroke("{HOME}"); break;
+        case "insToolStripMenuItem":        InsertKeystroke("{INS}"); break;
+        case "numLockToolStripMenuItem":    InsertKeystroke("{NUMLOCK}"); break;
+        case "pageDownToolStripMenuItem":   InsertKeystroke("{PGDN}"); break;
+        case "pageUpToolStripMenuItem":     InsertKeystroke("{PGUP}"); break;
+        case "scrollLockToolStripMenuItem": InsertKeystroke("{SCROLLLOCK}"); break;
+        case "tabToolStripMenuItem":        InsertKeystroke("{TAB}"); break;
+      }
+    }
+
+    private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      textBoxKeys.Cut();
+    }
+    private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      textBoxKeys.Copy();
+    }
+    private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      textBoxKeys.Paste();
+    }
+    private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      textBoxKeys.SelectAll();
+    }
+    private void selectNoneToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      textBoxKeys.SelectionLength = 0;
+    }
+
+    #endregion Controls
 
   }
 
