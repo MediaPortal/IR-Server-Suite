@@ -25,6 +25,7 @@ namespace IrssUtils
     [Flags]
     public enum MouseEvents : int
     {
+      None        = 0x0000,
       Move        = 0x0001,
       LeftDown    = 0x0002,
       LeftUp      = 0x0004,

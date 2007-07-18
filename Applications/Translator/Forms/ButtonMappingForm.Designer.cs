@@ -106,7 +106,7 @@ namespace Translator
       this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.selectNoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-      this.specialKeyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.specialKeysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.arrowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.upToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.downToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1005,58 +1005,58 @@ namespace Translator
             this.selectAllToolStripMenuItem,
             this.selectNoneToolStripMenuItem,
             this.toolStripSeparator2,
-            this.specialKeyToolStripMenuItem});
+            this.specialKeysToolStripMenuItem});
       this.contextMenuStripKeystrokes.Name = "contextMenuStripKeystrokes";
-      this.contextMenuStripKeystrokes.Size = new System.Drawing.Size(155, 170);
+      this.contextMenuStripKeystrokes.Size = new System.Drawing.Size(145, 148);
       // 
       // cutToolStripMenuItem
       // 
       this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-      this.cutToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+      this.cutToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.cutToolStripMenuItem.Text = "Cut";
       this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
       // 
       // copyToolStripMenuItem
       // 
       this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-      this.copyToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+      this.copyToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.copyToolStripMenuItem.Text = "Copy";
       this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
       // 
       // pasteToolStripMenuItem
       // 
       this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-      this.pasteToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+      this.pasteToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.pasteToolStripMenuItem.Text = "Paste";
       this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
       // 
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(151, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(141, 6);
       // 
       // selectAllToolStripMenuItem
       // 
       this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-      this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+      this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.selectAllToolStripMenuItem.Text = "Select All";
       this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
       // 
       // selectNoneToolStripMenuItem
       // 
       this.selectNoneToolStripMenuItem.Name = "selectNoneToolStripMenuItem";
-      this.selectNoneToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+      this.selectNoneToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.selectNoneToolStripMenuItem.Text = "Select None";
       this.selectNoneToolStripMenuItem.Click += new System.EventHandler(this.selectNoneToolStripMenuItem_Click);
       // 
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(151, 6);
+      this.toolStripSeparator2.Size = new System.Drawing.Size(141, 6);
       // 
-      // specialKeyToolStripMenuItem
+      // specialKeysToolStripMenuItem
       // 
-      this.specialKeyToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+      this.specialKeysToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.arrowsToolStripMenuItem,
             this.functionKeysToolStripMenuItem,
             this.keypadToolStripMenuItem,
@@ -1077,9 +1077,9 @@ namespace Translator
             this.pageUpToolStripMenuItem,
             this.scrollLockToolStripMenuItem,
             this.tabToolStripMenuItem});
-      this.specialKeyToolStripMenuItem.Name = "specialKeyToolStripMenuItem";
-      this.specialKeyToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-      this.specialKeyToolStripMenuItem.Text = "Special Key ...";
+      this.specialKeysToolStripMenuItem.Name = "specialKeysToolStripMenuItem";
+      this.specialKeysToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+      this.specialKeysToolStripMenuItem.Text = "Special Keys";
       // 
       // arrowsToolStripMenuItem
       // 
@@ -1819,7 +1819,7 @@ namespace Translator
     private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem selectNoneToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-    private System.Windows.Forms.ToolStripMenuItem specialKeyToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem specialKeysToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem arrowsToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem upToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem downToolStripMenuItem;
