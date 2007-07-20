@@ -87,7 +87,7 @@ namespace IrssUtils.Forms
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(336, 160);
+      this.ClientSize = new System.Drawing.Size(336, 167);
       this.Controls.Add(this.labelKeystrokes);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);

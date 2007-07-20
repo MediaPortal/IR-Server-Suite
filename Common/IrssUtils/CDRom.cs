@@ -6,6 +6,9 @@ using System.Text;
 namespace IrssUtils
 {
 
+  /// <summary>
+  /// Access to the CDRom door.
+  /// </summary>
   public static class CDRom
   {
 

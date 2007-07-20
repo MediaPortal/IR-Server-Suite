@@ -1,17 +1,22 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Microsoft.Win32;
 
 namespace IrssUtils
 {
 
+  /// <summary>
+  /// Used for accessing the Windows System Registry
+  /// </summary>
   public static class SystemRegistry
   {
 
+    #region Constants
+
     const string AutoRunPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-    
+
+    #endregion Constants
+
     /// <summary>
     /// Get the install folder for IR Server Suite.
     /// </summary>

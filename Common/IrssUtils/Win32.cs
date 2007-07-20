@@ -31,13 +31,17 @@ namespace IrssUtils
     [DllImport("user32")]
     public static extern IntPtr GetForegroundWindow();
 
+    [DllImport("user32")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetForegroundWindow(IntPtr hWnd);
+
     [DllImport("user32", SetLastError = false)]
     public static extern IntPtr SendMessage(IntPtr windowHandle, int msg, IntPtr wordParam, IntPtr longParam);
 
     [DllImport("user32", SetLastError = true)]
     public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport("user32", SetLastError = true)]
     public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
     #region Net API

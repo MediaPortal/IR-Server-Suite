@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace IrssUtils
@@ -284,6 +285,18 @@ namespace IrssUtils
       process.StartInfo.CreateNoWindow    = bool.Parse(commands[4]);
       process.StartInfo.UseShellExecute   = bool.Parse(commands[5]);
       process.Start();
+
+      // Give new process focus ...
+      if (!process.StartInfo.CreateNoWindow &&
+        process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
+        process.StartInfo.WindowStyle != ProcessWindowStyle.Minimized)
+      {
+        Thread.Sleep(500);
+
+        IntPtr processWindow = process.MainWindowHandle;
+        if (processWindow != IntPtr.Zero)
+          Win32.SetForegroundWindow(processWindow);
+      }
     }
 
     /// <summary>
