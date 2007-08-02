@@ -112,12 +112,12 @@ namespace MediaPortal.Plugins
 
       // Register for remote button presses
       _addNode = new DelegateAddNode(AddNode);
-      MPControlPlugin.RemoteButtonListener += new RemoteButtonHandler(RemoteButtonPressed);
+      MPControlPlugin.RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
     }
 
     private void SetupForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-      MPControlPlugin.RemoteButtonListener -= new RemoteButtonHandler(RemoteButtonPressed);
+      MPControlPlugin.RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
     }
     
     #region Local Methods
@@ -232,7 +232,7 @@ namespace MediaPortal.Plugins
       }
     }
 
-    void RemoteButtonPressed(string keyCode)
+    void RemoteHandlerCallback(string keyCode)
     {
       this.Invoke(_addNode, new Object[] { keyCode });
     }

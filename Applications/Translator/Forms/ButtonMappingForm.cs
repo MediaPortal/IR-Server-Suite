@@ -431,7 +431,7 @@ namespace Translator
       }
       else if (radioButtonWindowTitle.Checked)
       {
-        WindowList windowList = new WindowList();
+        IrssUtils.Forms.WindowList windowList = new IrssUtils.Forms.WindowList();
         if (windowList.ShowDialog(this) == DialogResult.OK)
           textBoxMsgTarget.Text = windowList.SelectedWindowTitle;
       }

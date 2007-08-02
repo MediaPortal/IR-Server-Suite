@@ -23,7 +23,7 @@ namespace VirtualRemote
 
     const string DefaultSkin = "MCE";
 
-    public static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Virtual Remote.xml";
+    static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Virtual Remote.xml";
 
     #endregion Constants
 
@@ -139,7 +139,7 @@ namespace VirtualRemote
               }
               else
               {
-                PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, "Forward Remote Button", Encoding.ASCII.GetBytes(button));
+                PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, "Forward Remote Event", Encoding.ASCII.GetBytes(button));
                 PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message.ToString());
               }
             }
@@ -173,7 +173,6 @@ namespace VirtualRemote
 
       IrssLog.Close();
     }
-
 
     static void LoadSettings()
     {
@@ -465,7 +464,9 @@ namespace VirtualRemote
       {
         switch (received.Name)
         {
-          case "Remote Button":
+          case "Remote Event":
+          case "Keyboard Event":
+          case "Mouse Event":
             break;
 
           case "Register Success":

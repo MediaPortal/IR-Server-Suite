@@ -23,64 +23,64 @@ namespace Translator
     #region Enumerations
 
     /// <summary>
-    /// A list of MCE remote buttons
+    /// A list of MCE remote buttons.
     /// </summary>
     internal enum MceButton
     {
-      Custom = -1,
-      None = 0,
-      TV_Power = 0x7b9a,
-      Blue = 0x7ba1,
-      Yellow = 0x7ba2,
-      Green = 0x7ba3,
-      Red = 0x7ba4,
-      Teletext = 0x7ba5,
-      Radio = 0x7baf,
-      Print = 0x7bb1,
-      Videos = 0x7bb5,
-      Pictures = 0x7bb6,
-      Recorded_TV = 0x7bb7,
-      Music = 0x7bb8,
-      TV = 0x7bb9,
-      Guide = 0x7bd9,
-      Live_TV = 0x7bda,
-      DVD_Menu = 0x7bdb,
-      Back = 0x7bdc,
-      OK = 0x7bdd,
-      Right = 0x7bde,
-      Left = 0x7bdf,
-      Down = 0x7be0,
-      Up = 0x7be1,
-      Star = 0x7be2,
-      Hash = 0x7be3,
-      Replay = 0x7be4,
-      Skip = 0x7be5,
-      Stop = 0x7be6,
-      Pause = 0x7be7,
-      Record = 0x7be8,
-      Play = 0x7be9,
-      Rewind = 0x7bea,
-      Forward = 0x7beb,
-      Channel_Down = 0x7bec,
-      Channel_Up = 0x7bed,
-      Volume_Down = 0x7bee,
-      Volume_Up = 0x7bef,
-      Info = 0x7bf0,
-      Mute = 0x7bf1,
-      Start = 0x7bf2,
-      PC_Power = 0x7bf3,
-      Enter = 0x7bf4,
-      Escape = 0x7bf5,
-      Number_9 = 0x7bf6,
-      Number_8 = 0x7bf7,
-      Number_7 = 0x7bf8,
-      Number_6 = 0x7bf9,
-      Number_5 = 0x7bfa,
-      Number_4 = 0x7bfb,
-      Number_3 = 0x7bfc,
-      Number_2 = 0x7bfd,
-      Number_1 = 0x7bfe,
-      Number_0 = 0x7bff,
+      Custom        = -1,
+      None          = 0,
+      TV_Power      = 0x7b9a,
+      Blue          = 0x7ba1,
+      Yellow        = 0x7ba2,
+      Green         = 0x7ba3,
+      Red           = 0x7ba4,
+      Teletext      = 0x7ba5,
+      Radio         = 0x7baf,
+      Print         = 0x7bb1,
+      Videos        = 0x7bb5,
+      Pictures      = 0x7bb6,
+      Recorded_TV   = 0x7bb7,
+      Music         = 0x7bb8,
+      TV            = 0x7bb9,
+      Guide         = 0x7bd9,
+      Live_TV       = 0x7bda,
+      DVD_Menu      = 0x7bdb,
+      Back          = 0x7bdc,
+      OK            = 0x7bdd,
+      Right         = 0x7bde,
+      Left          = 0x7bdf,
+      Down          = 0x7be0,
+      Up            = 0x7be1,
+      Star          = 0x7be2,
+      Hash          = 0x7be3,
+      Replay        = 0x7be4,
+      Skip          = 0x7be5,
+      Stop          = 0x7be6,
+      Pause         = 0x7be7,
+      Record        = 0x7be8,
+      Play          = 0x7be9,
+      Rewind        = 0x7bea,
+      Forward       = 0x7beb,
+      Channel_Down  = 0x7bec,
+      Channel_Up    = 0x7bed,
+      Volume_Down   = 0x7bee,
+      Volume_Up     = 0x7bef,
+      Info          = 0x7bf0,
+      Mute          = 0x7bf1,
+      Start         = 0x7bf2,
+      PC_Power      = 0x7bf3,
+      Enter         = 0x7bf4,
+      Escape        = 0x7bf5,
+      Number_9      = 0x7bf6,
+      Number_8      = 0x7bf7,
+      Number_7      = 0x7bf8,
+      Number_6      = 0x7bf9,
+      Number_5      = 0x7bfa,
+      Number_4      = 0x7bfb,
+      Number_3      = 0x7bfc,
+      Number_2      = 0x7bfd,
+      Number_1      = 0x7bfe,
+      Number_0      = 0x7bff,
     }
 
     #endregion Enumerations
@@ -245,19 +245,68 @@ namespace Translator
 
       if (Config.Programs.Count > 0)
       {
-        foreach (ProgramSettings programSettings in Config.Programs)
-          _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem(programSettings.Name, null, new EventHandler(ClickProgram)));
+        ToolStripMenuItem launch = new ToolStripMenuItem("&Launch");
 
-        _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+        foreach (ProgramSettings programSettings in Config.Programs)
+          launch.DropDownItems.Add(programSettings.Name, null, new EventHandler(ClickProgram));
+
+        _notifyIcon.ContextMenuStrip.Items.Add(launch);
+      }
+      
+      /*
+      string[] irList = Common.GetIRList(false);
+      if (irList.Length > 0)
+      {
+        ToolStripMenuItem irCommands = new ToolStripMenuItem("&IR Commands");
+
+        foreach (string irCommand in irList)
+          irCommands.DropDownItems.Add(irCommand, null, new EventHandler(ClickIrCommand));
+
+        _notifyIcon.ContextMenuStrip.Items.Add(irCommands);
+      }
+      */
+
+      string[] macroList = GetMacroList(false);
+      if (macroList.Length > 0)
+      {
+        ToolStripMenuItem macros = new ToolStripMenuItem("&Macros");
+
+        foreach (string macro in macroList)
+          macros.DropDownItems.Add(macro, null, new EventHandler(ClickMacro));
+
+        _notifyIcon.ContextMenuStrip.Items.Add(macros);
       }
 
-      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
-      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
+      ToolStripMenuItem actions = new ToolStripMenuItem("&Actions");
+      actions.DropDownItems.Add("Next Window", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Last Window", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Close Window", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Maximize Window", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Minimize Window", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Restore Window", null, new EventHandler(ClickAction));
+
+      actions.DropDownItems.Add("System Standby", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("System Hibernate", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("System Reboot", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("System Logoff", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("System Shutdown", null, new EventHandler(ClickAction));
+
+      actions.DropDownItems.Add("Volume Up", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Volume Down", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Volume Mute", null, new EventHandler(ClickAction));
+
+
+      _notifyIcon.ContextMenuStrip.Items.Add(actions);
+
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+
+      _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, new EventHandler(ClickSetup));
+      _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, new EventHandler(ClickQuit));
     }
 
     static void ClickProgram(object sender, EventArgs e)
     {
-      IrssLog.Info("Launch Program");
+      IrssLog.Info("Click Launch Program");
 
       ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
       if (menuItem == null)
@@ -272,7 +321,10 @@ namespace Translator
 
           try
           {
-            programSettings.Launch();
+            string launchCommand = programSettings.LaunchCommand();
+            string[] commands = Common.SplitRunCommand(launchCommand);
+            
+            Common.ProcessRunCommand(commands);
           }
           catch (Exception ex)
           {
@@ -285,6 +337,110 @@ namespace Translator
 
       IrssLog.Warn("Failed to launch (could not find program details): {0}", program);
     }
+
+    /*
+    static void ClickIrCommand(object sender, EventArgs e)
+    {
+      IrssLog.Info("Click IR Command");
+
+      ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+      if (menuItem == null)
+        return;
+
+      string irCommand = menuItem.Text;
+    }
+    */
+
+    static void ClickMacro(object sender, EventArgs e)
+    {
+      IrssLog.Info("Click Macro");
+
+      ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+      if (menuItem == null)
+        return;
+
+      string fileName = Program.FolderMacros + menuItem.Text + Common.FileExtensionMacro;
+
+      try
+      {
+        Program.ProcessMacro(fileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.Message, "Macro failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
+    static void ClickAction(object sender, EventArgs e)
+    {
+      IrssLog.Info("Click Action");
+
+      ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+      if (menuItem == null)
+        return;
+
+      try
+      {
+        switch (menuItem.Text)
+        {
+          case "Next Window":
+            break;
+
+          case "Last Window":
+            break;
+
+          case "Close Window":
+            break;
+
+          case "Maximize Window":
+            break;
+
+          case "Minimize Window":
+            break;
+
+          case "Restore Window":
+            break;
+
+
+          case "System Standby":
+            break;
+
+          case "System Hibernate":
+            break;
+
+          case "System Reboot":
+            break;
+
+          case "System Logoff":
+            break;
+
+          case "System Shutdown":
+            break;
+
+
+          case "Volume Up":
+            break;
+
+          case "Volume Down":
+            break;
+
+          case "Volume Mute":
+            break;
+
+
+          default:
+            throw new Exception("Unknown action: " + menuItem.Text);
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.Message, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
+    
     static void ClickSetup(object sender, EventArgs e)
     {
       IrssLog.Info("Enter configuration");
@@ -580,10 +736,27 @@ namespace Translator
           case "Blast Success":
             break;
 
-          case "Remote Button":
+          case "Remote Event":
             {
               string keyCode = Encoding.ASCII.GetString(received.Data);
-              RemoteButtonPressed(keyCode);
+              RemoteHandlerCallback(keyCode);
+              break;
+            }
+
+          case "Keyboard Event":
+            {
+              int vKey = BitConverter.ToInt32(received.Data, 0);
+              bool keyUp = BitConverter.ToBoolean(received.Data, 4);
+              KeyboardHandlerCallback(vKey, keyUp);
+              break;
+            }
+
+          case "Mouse Event":
+            {
+              int deltaX = BitConverter.ToInt32(received.Data, 0);
+              int deltaY = BitConverter.ToInt32(received.Data, 4);
+              int buttons = BitConverter.ToInt32(received.Data, 8);
+              MouseHandlerCallback(deltaX, deltaY, buttons);
               break;
             }
 
@@ -700,7 +873,7 @@ namespace Translator
       return null;
     }
 
-    static void RemoteButtonPressed(string keyCode)
+    static void RemoteHandlerCallback(string keyCode)
     {
       ProgramSettings active = ActiveProgram();
 
@@ -762,6 +935,24 @@ namespace Translator
 
       IrssLog.Debug("No mapping found for KeyCode = {0}", keyCode);
     }
+
+    static void KeyboardHandlerCallback(int vKey, bool keyUp)
+    {
+      if (keyUp)
+        Keyboard.KeyUp((Keyboard.VKey)vKey);
+      else
+        Keyboard.KeyDown((Keyboard.VKey)vKey);
+    }
+
+    static void MouseHandlerCallback(int deltaX, int deltaY, int buttons)
+    {
+      if (buttons != (int)Mouse.MouseEvents.None)
+        Mouse.Button((Mouse.MouseEvents)buttons);
+
+      if (deltaX != 0 || deltaY != 0)
+        Mouse.Move(deltaX, deltaY, false);
+    }
+
 
     static void MapEvent(MappingEvent theEvent)
     {
@@ -1002,9 +1193,9 @@ namespace Translator
     }
 
     /// <summary>
-    /// Returns a list of Macros
+    /// Returns a list of Macros.
     /// </summary>
-    /// <returns>string[] of Macros</returns>
+    /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
       string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);

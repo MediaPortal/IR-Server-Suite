@@ -131,7 +131,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Constructor: Initializes mappings from XML file
     /// </summary>
-    /// <param name="deviceXmlName">Input device name</param>
+    /// <param name="deviceXmlName">Input device name.</param>
     public InputHandler(string deviceXmlName)
     {
 
@@ -146,7 +146,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Get version of XML mapping file 
     /// </summary>
-    /// <param name="xmlPath">Path to XML file</param>
+    /// <param name="xmlPath">Path to XML file.</param>
     /// Possible exceptions: System.Xml.XmlException
     public int GetXmlVersion(string xmlPath)
     {
@@ -159,7 +159,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Check if XML file exists and version is current
     /// </summary>
-    /// <param name="xmlPath">Path to XML file</param>
+    /// <param name="xmlPath">Path to XML file.</param>
     /// Possible exceptions: System.IO.FileNotFoundException
     ///                      System.Xml.XmlException
     ///                      ApplicationException("XML version mismatch")
@@ -174,8 +174,8 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Get path to XML mmapping file for given device name
     /// </summary>
-    /// <param name="deviceXmlName">Input device name</param>
-    /// <returns>Path to XML file</returns>
+    /// <param name="deviceXmlName">Input device name.</param>
+    /// <returns>Path to XML file.</returns>
     /// Possible exceptions: System.IO.FileNotFoundException
     ///                      System.Xml.XmlException
     ///                      ApplicationException("XML version mismatch")
@@ -202,7 +202,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Load mapping from XML file
     /// </summary>
-    /// <param name="xmlPath">Path to XML file</param>
+    /// <param name="xmlPath">Path to XML file.</param>
     public void LoadMapping(string xmlPath)
     {
       if (xmlPath != String.Empty)
@@ -254,7 +254,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file)</param>
+    /// <param name="btnCode">Button code (ref: XML file).</param>
     public bool MapAction(int btnCode)
     {
       return DoMapAction(btnCode.ToString(), -1);
@@ -263,7 +263,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file)</param>
+    /// <param name="btnCode">Button code (ref: XML file).</param>
     public bool MapAction(string btnCode)
     {
       return DoMapAction(btnCode, -1);
@@ -273,8 +273,8 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action with an optional paramter
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file)</param>
-    /// <param name="processID">Process-ID for close/kill commands</param>
+    /// <param name="btnCode">Button code (ref: XML file).</param>
+    /// <param name="processID">Process-ID for close/kill commands.</param>
     public bool MapAction(int btnCode, int processID)
     {
       return DoMapAction(btnCode.ToString(), processID);
@@ -284,8 +284,8 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action with an optional paramter
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file)</param>
-    /// <param name="processID">Process-ID for close/kill commands</param>
+    /// <param name="btnCode">Button code (ref: XML file).</param>
+    /// <param name="processID">Process-ID for close/kill commands.</param>
     public bool MapAction(string btnCode, int processID)
     {
       return DoMapAction(btnCode, processID);
@@ -295,8 +295,8 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file)</param>
-    /// <param name="processID">Process-ID for close/kill commands</param>
+    /// <param name="btnCode">Button code (ref: XML file).</param>
+    /// <param name="processID">Process-ID for close/kill commands.</param>
     bool DoMapAction(string btnCode, int processID)
     {
       if (!_isLoaded)   // No mapping loaded
@@ -426,8 +426,8 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Get mappings for a given button code based on the current conditions
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file)</param>
-    /// <returns>Mapping</returns>
+    /// <param name="btnCode">Button code (ref: XML file).</param>
+    /// <returns>Mapping.</returns>
     public Mapping GetMapping(string btnCode)
     {
       RemoteMap button = null;

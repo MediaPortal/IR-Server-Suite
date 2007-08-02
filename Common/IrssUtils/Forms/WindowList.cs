@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Translator
+namespace IrssUtils.Forms
 {
 
   public partial class WindowList : Form

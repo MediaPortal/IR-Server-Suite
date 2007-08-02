@@ -46,7 +46,7 @@ namespace IRServer
 
     #region Constants
 
-    public static readonly string ConfigurationFile = Common.FolderAppData + "IR Server\\IR Server.xml";
+    static readonly string ConfigurationFile = Common.FolderAppData + "IR Server\\IR Server.xml";
 
     #endregion Constants
 
@@ -98,7 +98,7 @@ namespace IRServer
     /// <summary>
     /// Start the server
     /// </summary>
-    /// <returns>success</returns>
+    /// <returns>success.</returns>
     internal bool Start()
     {
       try
@@ -202,7 +202,11 @@ namespace IRServer
         }
 
         if (_pluginReceive != null && _pluginReceive.CanReceive)
-          _pluginReceive.RemoteButtonCallback += new RemoteButtonHandler(RemoteButtonPressed);
+        {
+          _pluginReceive.RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
+          _pluginReceive.KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
+          _pluginReceive.MouseCallback += new MouseHandler(MouseHandlerCallback);
+        }
 
         _notifyIcon.Visible = true;
 
@@ -233,7 +237,11 @@ namespace IRServer
       }
 
       if (_pluginReceive != null && _pluginReceive.CanReceive)
-        _pluginReceive.RemoteButtonCallback -= new RemoteButtonHandler(RemoteButtonPressed);
+      {
+        _pluginReceive.RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
+        _pluginReceive.KeyboardCallback -= new KeyboardHandler(KeyboardHandlerCallback);
+        _pluginReceive.MouseCallback -= new MouseHandler(MouseHandlerCallback);
+      }
       
       // Stop Plugin(s)
       try
@@ -486,35 +494,101 @@ namespace IRServer
       catch { }
     }
 
-    void RemoteButtonPressed(string keyCode)
+    void RemoteHandlerCallback(string keyCode)
     {
-      IrssLog.Debug("Remote Button Pressed: {0}", keyCode);
-      
+      IrssLog.Debug("Remote Event: {0}", keyCode);
+
       byte[] bytes = Encoding.ASCII.GetBytes(keyCode);
 
       switch (_mode)
       {
         case IRServerMode.ServerMode:
           {
-            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Remote Button", bytes);
+            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Remote Event", bytes);
             SendToAll(message);
             break;
           }
 
         case IRServerMode.RelayMode:
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Remote Button", bytes);
+            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Remote Event", bytes);
             SendTo(Common.ServerPipeName, _hostComputer, message);
             break;
           }
 
         case IRServerMode.RepeaterMode:
           {
-            IrssLog.Debug("Remote button press ignored, IR Server is in Repeater Mode.");
+            IrssLog.Debug("Remote event ignored, IR Server is in Repeater Mode.");
             break;
           }
       }
     }
+
+    void KeyboardHandlerCallback(int vKey, bool keyUp)
+    {
+      IrssLog.Debug("Keyboard Event: {0}, keyUp: {1}", vKey, keyUp);
+
+      byte[] bytes = new byte[8];
+      BitConverter.GetBytes(vKey).CopyTo(bytes, 0);
+      BitConverter.GetBytes(keyUp).CopyTo(bytes, 4);
+      
+      switch (_mode)
+      {
+        case IRServerMode.ServerMode:
+          {
+            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Keyboard Event", bytes);
+            SendToAll(message);
+            break;
+          }
+
+        case IRServerMode.RelayMode:
+          {
+            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Keyboard Event", bytes);
+            SendTo(Common.ServerPipeName, _hostComputer, message);
+            break;
+          }
+
+        case IRServerMode.RepeaterMode:
+          {
+            IrssLog.Debug("Keyboard event ignored, IR Server is in Repeater Mode.");
+            break;
+          }
+      }
+    }
+
+    void MouseHandlerCallback(int deltaX, int deltaY, int buttons)
+    {
+      IrssLog.Debug("Mouse Event - deltaX: {0}, deltaY: {1}, buttons: {2}", deltaX, deltaY, buttons);
+
+      byte[] bytes = new byte[12];
+      BitConverter.GetBytes(deltaX).CopyTo(bytes, 0);
+      BitConverter.GetBytes(deltaY).CopyTo(bytes, 4);
+      BitConverter.GetBytes(buttons).CopyTo(bytes, 8);
+
+      switch (_mode)
+      {
+        case IRServerMode.ServerMode:
+          {
+            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Mouse Event", bytes);
+            SendToAll(message);
+            break;
+          }
+
+        case IRServerMode.RelayMode:
+          {
+            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Mouse Event", bytes);
+            SendTo(Common.ServerPipeName, _hostComputer, message);
+            break;
+          }
+
+        case IRServerMode.RepeaterMode:
+          {
+            IrssLog.Debug("Mouse event ignored, IR Server is in Repeater Mode.");
+            break;
+          }
+      }
+    }
+
 
     void SendToAll(PipeMessage message)
     {
@@ -814,28 +888,14 @@ namespace IRServer
       }
 
       byte[] data = null;
-      FileStream fileStream = null;
 
       try
       {
-        string tempFile = Path.GetTempFileName();
-
-        LearnStatus status = _pluginTransmit.Learn(tempFile);
+        LearnStatus status = _pluginTransmit.Learn(out data);
         switch (status)
         {
           case LearnStatus.Success:
-            fileStream = new FileStream(tempFile, FileMode.Open);
-
-            if (fileStream != null && fileStream.Length != 0)
-            {
-              data = new byte[fileStream.Length];
-              fileStream.Read(data, 0, (int)fileStream.Length);
-            }
-
-            fileStream.Close();
-            fileStream = null;
-
-            File.Delete(tempFile);
+            IrssLog.Info("Learn IR success");
             break;
 
           case LearnStatus.Failure:
@@ -850,9 +910,6 @@ namespace IRServer
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
-
-        if (fileStream != null)
-          fileStream.Close();
       }
 
       return data;
@@ -866,7 +923,9 @@ namespace IRServer
       {
         switch (received.Name)
         {
-          case "Remote Button":
+          case "Remote Event":
+          case "Keyboard Event":
+          case "Mouse Event":
             break;
 
           case "Register Success":
@@ -883,9 +942,39 @@ namespace IRServer
               break;
             }
 
-          case "Forward Remote Button":
+          case "Forward Remote Event":
             {
-              PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Remote Button", received.Data);
+              PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Remote Event", received.Data);
+              if (_mode == IRServerMode.RelayMode)
+              {
+                forward.Name = received.Name;
+                SendTo(Common.ServerPipeName, _hostComputer, forward);
+              }
+              else
+              {
+                SendToAllExcept(received.FromPipe, received.FromServer, forward);
+              }
+              break;
+            }
+
+          case "Forward Keyboard Event":
+            {
+              PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Keyboard Event", received.Data);
+              if (_mode == IRServerMode.RelayMode)
+              {
+                forward.Name = received.Name;
+                SendTo(Common.ServerPipeName, _hostComputer, forward);
+              }
+              else
+              {
+                SendToAllExcept(received.FromPipe, received.FromServer, forward);
+              }
+              break;
+            }
+
+          case "Forward Mouse Event":
+            {
+              PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Mouse Event", received.Data);
               if (_mode == IRServerMode.RelayMode)
               {
                 forward.Name = received.Name;

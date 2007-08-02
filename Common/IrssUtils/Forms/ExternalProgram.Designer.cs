@@ -47,6 +47,9 @@ namespace IrssUtils.Forms
       this.checkBoxWaitForExit = new System.Windows.Forms.CheckBox();
       this.comboBoxWindowStyle = new System.Windows.Forms.ComboBox();
       this.labelWindowStyle = new System.Windows.Forms.Label();
+      this.checkBoxForceFocus = new System.Windows.Forms.CheckBox();
+      this.groupBoxOptions = new System.Windows.Forms.GroupBox();
+      this.groupBoxOptions.SuspendLayout();
       this.SuspendLayout();
       // 
       // textBoxProgram
@@ -114,10 +117,10 @@ namespace IrssUtils.Forms
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(208, 216);
+      this.buttonOK.Location = new System.Drawing.Point(208, 304);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
-      this.buttonOK.TabIndex = 15;
+      this.buttonOK.TabIndex = 14;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -126,10 +129,10 @@ namespace IrssUtils.Forms
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(272, 216);
+      this.buttonCancel.Location = new System.Drawing.Point(272, 304);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
-      this.buttonCancel.TabIndex = 16;
+      this.buttonCancel.TabIndex = 15;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -176,39 +179,41 @@ namespace IrssUtils.Forms
       // 
       // checkBoxShellExecute
       // 
-      this.checkBoxShellExecute.Location = new System.Drawing.Point(8, 184);
+      this.checkBoxShellExecute.AutoSize = true;
+      this.checkBoxShellExecute.Location = new System.Drawing.Point(16, 24);
       this.checkBoxShellExecute.Name = "checkBoxShellExecute";
-      this.checkBoxShellExecute.Size = new System.Drawing.Size(184, 21);
-      this.checkBoxShellExecute.TabIndex = 12;
+      this.checkBoxShellExecute.Size = new System.Drawing.Size(141, 17);
+      this.checkBoxShellExecute.TabIndex = 0;
       this.checkBoxShellExecute.Text = "Start using ShellExecute";
       this.checkBoxShellExecute.UseVisualStyleBackColor = true;
       // 
       // buttonTest
       // 
       this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonTest.Location = new System.Drawing.Point(8, 216);
+      this.buttonTest.Location = new System.Drawing.Point(8, 304);
       this.buttonTest.Name = "buttonTest";
       this.buttonTest.Size = new System.Drawing.Size(56, 24);
-      this.buttonTest.TabIndex = 14;
+      this.buttonTest.TabIndex = 13;
       this.buttonTest.Text = "Test";
       this.buttonTest.UseVisualStyleBackColor = true;
       this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
       // 
       // checkBoxNoWindow
       // 
-      this.checkBoxNoWindow.Location = new System.Drawing.Point(208, 152);
+      this.checkBoxNoWindow.Location = new System.Drawing.Point(176, 168);
       this.checkBoxNoWindow.Name = "checkBoxNoWindow";
-      this.checkBoxNoWindow.Size = new System.Drawing.Size(104, 21);
+      this.checkBoxNoWindow.Size = new System.Drawing.Size(120, 21);
       this.checkBoxNoWindow.TabIndex = 11;
       this.checkBoxNoWindow.Text = "No window";
       this.checkBoxNoWindow.UseVisualStyleBackColor = true;
       // 
       // checkBoxWaitForExit
       // 
-      this.checkBoxWaitForExit.Location = new System.Drawing.Point(208, 184);
+      this.checkBoxWaitForExit.AutoSize = true;
+      this.checkBoxWaitForExit.Location = new System.Drawing.Point(200, 24);
       this.checkBoxWaitForExit.Name = "checkBoxWaitForExit";
-      this.checkBoxWaitForExit.Size = new System.Drawing.Size(104, 21);
-      this.checkBoxWaitForExit.TabIndex = 13;
+      this.checkBoxWaitForExit.Size = new System.Drawing.Size(82, 17);
+      this.checkBoxWaitForExit.TabIndex = 1;
       this.checkBoxWaitForExit.Text = "Wait for exit";
       this.checkBoxWaitForExit.UseVisualStyleBackColor = true;
       // 
@@ -216,34 +221,56 @@ namespace IrssUtils.Forms
       // 
       this.comboBoxWindowStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxWindowStyle.FormattingEnabled = true;
-      this.comboBoxWindowStyle.Location = new System.Drawing.Point(104, 152);
+      this.comboBoxWindowStyle.Location = new System.Drawing.Point(8, 168);
       this.comboBoxWindowStyle.MaxDropDownItems = 4;
       this.comboBoxWindowStyle.Name = "comboBoxWindowStyle";
-      this.comboBoxWindowStyle.Size = new System.Drawing.Size(88, 21);
+      this.comboBoxWindowStyle.Size = new System.Drawing.Size(136, 21);
       this.comboBoxWindowStyle.TabIndex = 10;
       // 
       // labelWindowStyle
       // 
       this.labelWindowStyle.Location = new System.Drawing.Point(8, 152);
       this.labelWindowStyle.Name = "labelWindowStyle";
-      this.labelWindowStyle.Size = new System.Drawing.Size(96, 21);
+      this.labelWindowStyle.Size = new System.Drawing.Size(136, 16);
       this.labelWindowStyle.TabIndex = 9;
-      this.labelWindowStyle.Text = "Window Style:";
+      this.labelWindowStyle.Text = "Window style:";
       this.labelWindowStyle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // checkBoxForceFocus
+      // 
+      this.checkBoxForceFocus.AutoSize = true;
+      this.checkBoxForceFocus.Location = new System.Drawing.Point(16, 56);
+      this.checkBoxForceFocus.Name = "checkBoxForceFocus";
+      this.checkBoxForceFocus.Size = new System.Drawing.Size(121, 17);
+      this.checkBoxForceFocus.TabIndex = 2;
+      this.checkBoxForceFocus.Text = "Force window focus";
+      this.checkBoxForceFocus.UseVisualStyleBackColor = true;
+      // 
+      // groupBoxOptions
+      // 
+      this.groupBoxOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxOptions.Controls.Add(this.checkBoxWaitForExit);
+      this.groupBoxOptions.Controls.Add(this.checkBoxForceFocus);
+      this.groupBoxOptions.Controls.Add(this.checkBoxShellExecute);
+      this.groupBoxOptions.Location = new System.Drawing.Point(8, 200);
+      this.groupBoxOptions.Name = "groupBoxOptions";
+      this.groupBoxOptions.Size = new System.Drawing.Size(320, 88);
+      this.groupBoxOptions.TabIndex = 12;
+      this.groupBoxOptions.TabStop = false;
+      this.groupBoxOptions.Text = "Options";
       // 
       // ExternalProgram
       // 
-      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(336, 248);
+      this.ClientSize = new System.Drawing.Size(336, 337);
+      this.Controls.Add(this.groupBoxOptions);
       this.Controls.Add(this.checkBoxNoWindow);
-      this.Controls.Add(this.checkBoxWaitForExit);
       this.Controls.Add(this.comboBoxWindowStyle);
       this.Controls.Add(this.labelWindowStyle);
       this.Controls.Add(this.buttonTest);
-      this.Controls.Add(this.checkBoxShellExecute);
       this.Controls.Add(this.buttonParamQuestion);
       this.Controls.Add(this.labelParameters);
       this.Controls.Add(this.textBoxParameters);
@@ -257,13 +284,15 @@ namespace IrssUtils.Forms
       this.Controls.Add(this.textBoxProgram);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(344, 282);
+      this.MinimumSize = new System.Drawing.Size(344, 364);
       this.Name = "ExternalProgram";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "External Program Details";
       this.Load += new System.EventHandler(this.ExternalProgram_Load);
+      this.groupBoxOptions.ResumeLayout(false);
+      this.groupBoxOptions.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -290,5 +319,7 @@ namespace IrssUtils.Forms
     private System.Windows.Forms.CheckBox checkBoxWaitForExit;
     private System.Windows.Forms.ComboBox comboBoxWindowStyle;
     private System.Windows.Forms.Label labelWindowStyle;
+    private System.Windows.Forms.CheckBox checkBoxForceFocus;
+    private System.Windows.Forms.GroupBox groupBoxOptions;
   }
 }

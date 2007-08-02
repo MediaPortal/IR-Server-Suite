@@ -27,7 +27,7 @@ namespace MediaPortal.Plugins
 
     #region Constants
 
-    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.2 for IR Server";
+    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.3 for IR Server";
 
     internal static readonly string MPConfigFile = Config.GetFolder(Config.Dir.Config) + "\\MediaPortal.xml";
 
@@ -438,7 +438,9 @@ namespace MediaPortal.Plugins
         {
           case "Start Learn":
           case "Blast Success":
-          case "Remote Button":
+          case "Remote Event":
+          case "Keyboard Event":
+          case "Mouse Event":
             break;
 
           case "Blast Failure":
@@ -524,7 +526,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// OnMessage is used to receive requests to Tune External Channels and for event mapping.
     /// </summary>
-    /// <param name="msg">Message</param>
+    /// <param name="msg">Message.</param>
     void OnMessage(GUIMessage msg)
     {
       if (msg.Message == GUIMessage.MessageType.GUI_MSG_TUNE_EXTERNAL_CHANNEL)
@@ -895,7 +897,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Learn an IR Command and put it in a file
+    /// Learn an IR Command and put it in a file.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in.</param>
     /// <returns>Success.</returns>
@@ -937,9 +939,9 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Returns a list of Macros
+    /// Returns a list of Macros.
     /// </summary>
-    /// <returns>string[] of Macros</returns>
+    /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
       string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
@@ -958,9 +960,9 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Returns a combined list of IR Commands and Macros
+    /// Returns a combined list of IR Commands and Macros.
     /// </summary>
-    /// <returns>string[] of IR Commands and Macros</returns>
+    /// <returns>string[] of IR Commands and Macros.</returns>
     internal static string[] GetFileList(bool commandPrefix)
     {
       string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);

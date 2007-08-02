@@ -1,4 +1,4 @@
-namespace Translator
+namespace IrssUtils.Forms
 {
   partial class WindowList
   {

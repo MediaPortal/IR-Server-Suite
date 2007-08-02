@@ -31,6 +31,7 @@ namespace IRBlast
     static string _blastSpeed = "None";
 
     static bool _treatAsChannelNumber = false;
+    static int _padChannelNumber = 0;
 
     #endregion Variables
 
@@ -74,6 +75,10 @@ namespace IRBlast
                 _treatAsChannelNumber = true;
                 continue;
 
+              case "-pad":
+                int.TryParse(args[++index], out _padChannelNumber);
+                continue;
+
               default:
                 irCommands.Add(args[index]);
                 continue;
@@ -109,7 +114,18 @@ namespace IRBlast
                 if (_treatAsChannelNumber)
                 {
                   Info("Processing channel: {0}", command);
-                  foreach (char digit in command)
+
+                  StringBuilder channelNumber = new StringBuilder(command);
+
+                  if (_padChannelNumber > 0)
+                  {
+                    for (int index = 0; index < _padChannelNumber - command.Length; index++)
+                      channelNumber.Insert(0, '0');
+
+                    Info("Padding channel number: {0} becomes {1}", command, channelNumber.ToString());
+                  }
+
+                  foreach (char digit in channelNumber.ToString())
                   {
                     if (digit == '~')
                     {
@@ -172,13 +188,15 @@ namespace IRBlast
     {
       IrssLog.Debug("Show Help");
 
-      Console.WriteLine("IRBlast.exe -host <server> -port [port] -speed [speed] [-channel] <commands>");
+      Console.WriteLine("IRBlast -host <server> [-port x] [-speed x] [-pad x] [-channel] <commands>");
       Console.WriteLine("");
       Console.WriteLine("Use -host to specify the computer that is hosting the IR Server.");
       Console.WriteLine("Use -port to blast to a particular blaster port (Optional).");
       Console.WriteLine("Use -speed to set the blaster speed (Optional).");
       Console.WriteLine("Use -channel to tell IR Blast to break apart the following IR Command and");
       Console.WriteLine(" use each digit for a separate IR blast (Optional).");
+      Console.WriteLine("Use -pad to tell IR Blast to pad channel numbers to a certain length");
+      Console.WriteLine(" (Optional, Requires -channel).");
       Console.WriteLine("Use a tilde ~ between commands to insert half second pauses.");
       Console.WriteLine("");
       Console.WriteLine("");
@@ -194,10 +212,10 @@ namespace IRBlast
       Console.WriteLine("This would blast the \"Turn on surround.IR\" command on the MEDIAPC computer");
       Console.WriteLine("to blaster port 2 at the default blaster speed.");
       Console.WriteLine("");
-      Console.WriteLine("IRBlast -host HTPC -channel 302");
+      Console.WriteLine("IRBlast -host HTPC -pad 4 -channel 302");
       Console.WriteLine("");
-      Console.WriteLine("This would blast the 3.IR, 0.IR, and 2.IR commands on the HTPC computer to");
-      Console.WriteLine("the default blaster port at the default blaster speed.");
+      Console.WriteLine("This would blast the 0.IR (for padding), 3.IR, 0.IR, and 2.IR commands on");
+      Console.WriteLine("the HTPC computer to the default blaster port at the default blaster speed.");
       Console.WriteLine("");
       Console.WriteLine("");
     }
@@ -435,7 +453,9 @@ namespace IRBlast
       {
         switch (received.Name)
         {
-          case "Remote Button":
+          case "Remote Event":
+          case "Keyboard Event":
+          case "Mouse Event":
             break;
 
           case "Blast Success":

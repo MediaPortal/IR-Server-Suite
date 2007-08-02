@@ -9,7 +9,10 @@ using IrssUtils;
 
 namespace Translator
 {
-  
+
+  /// <summary>
+  /// Translator configuration.
+  /// </summary>
   [XmlRoot]
   public class Configuration
   {
@@ -26,6 +29,9 @@ namespace Translator
 
     #region Properties
 
+    /// <summary>
+    /// IR Server host.
+    /// </summary>
     [XmlElement]
     public string ServerHost
     {
@@ -33,6 +39,9 @@ namespace Translator
       set { _serverHost = value; }
     }
 
+    /// <summary>
+    /// System wide button mappings.
+    /// </summary>
     [XmlArray]
     public List<ButtonMapping> SystemWideMappings
     {
@@ -40,6 +49,9 @@ namespace Translator
       set { _systemWideMappings = value; }
     }
 
+    /// <summary>
+    /// Program settings.
+    /// </summary>
     [XmlArray]
     public List<ProgramSettings> Programs
     {
@@ -47,6 +59,9 @@ namespace Translator
       set { _programSettings = value; }
     }
 
+    /// <summary>
+    /// Mapped events.
+    /// </summary>
     [XmlArray]
     public List<MappedEvent> Events
     {

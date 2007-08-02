@@ -8,7 +8,7 @@ namespace MediaPortal.Plugins
 {
 
   /// <summary>
-  /// MappedEvent class is used to pass events into the Event Mapper feature
+  /// MappedEvent class is used to pass events into the Event Mapper feature.
   /// </summary>
   public class MappedEvent
   {
@@ -16,7 +16,7 @@ namespace MediaPortal.Plugins
     #region Enumerations
 
     /// <summary>
-    /// A list of events that can be mapped in the Event Mapper
+    /// A list of events that can be mapped in the Event Mapper.
     /// </summary>
     public enum MappingEvent
     {
@@ -111,10 +111,10 @@ namespace MediaPortal.Plugins
     #region Static Methods
 
     /// <summary>
-    /// Translates a supplied GUIMessage.MessageType into an "Event"
+    /// Translates a supplied GUIMessage.MessageType into an "Event".
     /// </summary>
-    /// <param name="messageType">MediaPortal GUIMessage.MessageType</param>
-    /// <returns></returns>
+    /// <param name="messageType">MediaPortal GUIMessage.MessageType.</param>
+    /// <returns>MappingEvent equivalent of GUIMessage.MessageType.</returns>
     [CLSCompliant(false)]
     public static MappingEvent GetEventType(GUIMessage.MessageType messageType)
     {
@@ -160,11 +160,11 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Creates a MappedEvent object from supplied eventString and commandString
+    /// Creates a MappedEvent object from supplied eventString and commandString.
     /// </summary>
-    /// <param name="eventString">This string has either the event name by itself or both the event name and a parameter to match</param>
-    /// <param name="commandString">This is the command to execute when the mapped event occurs</param>
-    /// <returns>Returns a MappedEvent object</returns>
+    /// <param name="eventString">This string has either the event name by itself or both the event name and a parameter to match.</param>
+    /// <param name="commandString">This is the command to execute when the mapped event occurs.</param>
+    /// <returns>Returns a MappedEvent object.</returns>
     public static MappedEvent FromStrings(string eventString, string commandString)
     {
       if (eventString == null || commandString == null)
@@ -215,7 +215,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Type of event
+    /// Type of event.
     /// </summary>
     public MappingEvent EventType
     {
@@ -223,7 +223,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Parameter to match
+    /// Parameter to match.
     /// </summary>
     public string Param
     {
@@ -231,7 +231,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Value of the parameter to match
+    /// Value of the parameter to match.
     /// </summary>
     public string ParamValue
     {
@@ -239,7 +239,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Command to execute when mapped event occurs
+    /// Command to execute when mapped event occurs.
     /// </summary>
     public string Command
     {
@@ -251,10 +251,10 @@ namespace MediaPortal.Plugins
     #region Constructors
 
     /// <summary>
-    /// Used to run the Event Mapper
+    /// Used to run the Event Mapper.
     /// </summary>
-    /// <param name="eventType">Event to act on</param>
-    /// <param name="command">Command to execute when event occurs</param>
+    /// <param name="eventType">Event to act on.</param>
+    /// <param name="command">Command to execute when event occurs.</param>
     public MappedEvent(MappingEvent eventType, string command)
     {
       _matchParam = false;
@@ -265,12 +265,12 @@ namespace MediaPortal.Plugins
     }
     
     /// <summary>
-    /// Used to run the Event Mapper
+    /// Used to run the Event Mapper.
     /// </summary>
-    /// <param name="eventType">Event to act on</param>
-    /// <param name="param">Parameter to match</param>
-    /// <param name="paramValue">Value of parameter to match</param>
-    /// <param name="command">Command to execute when event occurs</param>
+    /// <param name="eventType">Event to act on.</param>
+    /// <param name="param">Parameter to match.</param>
+    /// <param name="paramValue">Value of parameter to match.</param>
+    /// <param name="command">Command to execute when event occurs.</param>
     public MappedEvent(MappingEvent eventType, string param, string paramValue, string command)
     {
       _matchParam = true;

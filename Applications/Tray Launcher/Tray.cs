@@ -22,7 +22,7 @@ namespace TrayLauncher
 
     const string DefaultKeyCode = "31730";
 
-    public static readonly string ConfigurationFile = Common.FolderAppData + "Tray Launcher\\Tray Launcher.xml";
+    static readonly string ConfigurationFile = Common.FolderAppData + "Tray Launcher\\Tray Launcher.xml";
 
     #endregion Constants
 
@@ -415,6 +415,10 @@ namespace TrayLauncher
       {
         switch (received.Name)
         {
+          case "Keyboard Event":
+          case "Mouse Event":
+            break;
+
           case "Register Success":
             {
               IrssLog.Info("Registered to IR Server");
@@ -430,10 +434,10 @@ namespace TrayLauncher
               break;
             }
 
-          case "Remote Button":
+          case "Remote Event":
             {
               string keyCode = Encoding.ASCII.GetString(received.Data);
-              RemoteButtonPressed(keyCode);
+              RemoteHandlerCallback(keyCode);
               break;
             }
 
@@ -473,9 +477,9 @@ namespace TrayLauncher
       }
     }
 
-    void RemoteButtonPressed(string keyCode)
+    void RemoteHandlerCallback(string keyCode)
     {
-      IrssLog.Info("Remote Button: {0}", keyCode);
+      IrssLog.Info("Remote Event: {0}", keyCode);
 
       if (keyCode == _launchKeyCode)
         ClickLaunch(null, null);

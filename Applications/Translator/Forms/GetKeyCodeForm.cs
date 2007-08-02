@@ -61,7 +61,7 @@ namespace Translator
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      if (received.Name == "Remote Button")
+      if (received.Name == "Remote Event")
       {
         _keyCode = Encoding.ASCII.GetString(received.Data);
 

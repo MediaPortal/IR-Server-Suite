@@ -88,11 +88,11 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\WindowList.cs">
+    <Compile Include="Forms\PopupMenu.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\WindowList.Designer.cs">
-      <DependentUpon>WindowList.cs</DependentUpon>
+    <Compile Include="Forms\PopupMenu.Designer.cs">
+      <DependentUpon>PopupMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="MappedEvent.cs" />
     <Compile Include="Program.cs" />
@@ -126,9 +126,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\WindowList.resx">
-      <DependentUpon>WindowList.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\PopupMenu.resx">
       <SubType>Designer</SubType>
+      <DependentUpon>PopupMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -140,6 +140,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="EventSchedule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.ico" />

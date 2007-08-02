@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -22,6 +23,10 @@ namespace IrssUtils
 
     #region Named Pipes
 
+    /// <summary>
+    /// Message handler method for pipe messages.
+    /// </summary>
+    /// <param name="message">Pipe message as string.</param>
     public delegate void MessageHandler(string message);
 
     #endregion Named Pipes
@@ -188,6 +193,17 @@ namespace IrssUtils
 
     #endregion Strings
 
+    #region Command Segments
+
+    public const int SegmentsBlastCommand         = 3;
+    public const int SegmentsRunCommand           = 8;
+    public const int SegmentsSerialCommand        = 6;
+    public const int SegmentsWindowMessageCommand = 5;
+    public const int SegmentsPopupCommand         = 3;
+    public const int SegmentsTcpMessageCommand    = 3;
+
+    #endregion Command Segments
+
     #endregion Constants
 
     #region Methods
@@ -197,61 +213,61 @@ namespace IrssUtils
     /// <summary>
     /// Splits a Blast command into it's component parts.
     /// </summary>
-    /// <param name="command">The command to be split</param>
-    /// <returns>Returns string[] of command elements</returns>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
     public static string[] SplitBlastCommand(string command)
     {
-      return SplitCommand(command, 3);
+      return SplitCommand(command, SegmentsBlastCommand);
     }
 
     /// <summary>
     /// Splits a Run command into it's component parts.
     /// </summary>
-    /// <param name="command">The command to be split</param>
-    /// <returns>Returns string[] of command elements</returns>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
     public static string[] SplitRunCommand(string command)
     {
-      return SplitCommand(command, 7);
+      return SplitCommand(command, SegmentsRunCommand);
     }
 
     /// <summary>
     /// Splits a Serial Command into it's component parts.
     /// </summary>
-    /// <param name="command">The command to be split</param>
-    /// <returns>Returns string[] of command elements</returns>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
     public static string[] SplitSerialCommand(string command)
     {
-      return SplitCommand(command, 6);
+      return SplitCommand(command, SegmentsSerialCommand);
     }
 
     /// <summary>
     /// Splits a Window Message Command into it's component parts.
     /// </summary>
-    /// <param name="command">The command to be split</param>
-    /// <returns>Returns string[] of command elements</returns>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
     public static string[] SplitWindowMessageCommand(string command)
     {
-      return SplitCommand(command, 5);
+      return SplitCommand(command, SegmentsWindowMessageCommand);
     }
 
     /// <summary>
     /// Splits a Popup Command into it's component parts.
     /// </summary>
-    /// <param name="command">The command to be split</param>
-    /// <returns>Returns string[] of command elements</returns>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
     public static string[] SplitPopupCommand(string command)
     {
-      return SplitCommand(command, 3);
+      return SplitCommand(command, SegmentsPopupCommand);
     }
 
     /// <summary>
     /// Splits a TCP Message Command into it's component parts.
     /// </summary>
-    /// <param name="command">The command to be split</param>
-    /// <returns>Returns string[] of command elements</returns>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
     public static string[] SplitTcpMessageCommand(string command)
     {
-      return SplitCommand(command, 3);
+      return SplitCommand(command, SegmentsTcpMessageCommand);
     }
 
     static string[] SplitCommand(string command, int elements)
@@ -274,7 +290,7 @@ namespace IrssUtils
     /// <summary>
     /// Given a split Run command this method will launch the process according to the details of the command structure.
     /// </summary>
-    /// <param name="command">An array of arguments for the method (the output of SplitRunCommand)</param>
+    /// <param name="command">An array of arguments for the method (the output of SplitRunCommand).</param>
     public static void ProcessRunCommand(string[] commands)
     {
       Process process = new Process();
@@ -284,25 +300,39 @@ namespace IrssUtils
       process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3]);
       process.StartInfo.CreateNoWindow    = bool.Parse(commands[4]);
       process.StartInfo.UseShellExecute   = bool.Parse(commands[5]);
+
+      bool waitForExit                    = bool.Parse(commands[6]);
+      bool forceFocus                     = bool.Parse(commands[7]);
+
       process.Start();
 
       // Give new process focus ...
       if (!process.StartInfo.CreateNoWindow &&
         process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
-        process.StartInfo.WindowStyle != ProcessWindowStyle.Minimized)
+        forceFocus)
       {
-        Thread.Sleep(500);
+        IntPtr processWindow = IntPtr.Zero;
+        while (!process.HasExited)
+        {
+          processWindow = process.MainWindowHandle;
+          if (processWindow != IntPtr.Zero)
+          {
+            Win32.SetForegroundWindow(processWindow);
+            break;
+          }
 
-        IntPtr processWindow = process.MainWindowHandle;
-        if (processWindow != IntPtr.Zero)
-          Win32.SetForegroundWindow(processWindow);
+          Thread.Sleep(500);
+        }
       }
+
+      if (waitForExit)
+        process.WaitForExit();
     }
 
     /// <summary>
     /// Given a split Serial Command this method will send the command over the serial port according to the command structure supplied.
     /// </summary>
-    /// <param name="commands">An array of arguments for the method (the output of SplitSerialCommand)</param>
+    /// <param name="commands">An array of arguments for the method (the output of SplitSerialCommand).</param>
     public static void ProcessSerialCommand(string[] commands)
     {
       string command    = Common.ReplaceEscapeCodes(commands[0]);
@@ -322,7 +352,7 @@ namespace IrssUtils
     /// <summary>
     /// Given a split Window Message Command this method will send the windows message according to the command structure supplied.
     /// </summary>
-    /// <param name="commands">An array of arguments for the method (the output of SplitWindowMessageCommand)</param>
+    /// <param name="commands">An array of arguments for the method (the output of SplitWindowMessageCommand).</param>
     public static void ProcessWindowMessageCommand(string[] commands)
     {
       IntPtr windowHandle = IntPtr.Zero;
@@ -363,7 +393,17 @@ namespace IrssUtils
       IntPtr wordParam = new IntPtr(int.Parse(commands[3]));
       IntPtr longParam = new IntPtr(int.Parse(commands[4]));
 
-      Win32.SendMessage(windowHandle, msg, wordParam, longParam);
+      //Win32.SendMessage(windowHandle, msg, wordParam, longParam);
+
+      IntPtr result;
+      Win32.SendMessageTimeout(windowHandle, msg, wordParam, longParam, Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
+
+      if (result == IntPtr.Zero)
+      {
+        int lastError = Marshal.GetLastWin32Error();
+        Marshal.ThrowExceptionForHR(lastError);
+      }
+
     }
 
     /// <summary>
@@ -378,7 +418,7 @@ namespace IrssUtils
     /// <summary>
     /// Given a split TCP Message Command this method will send the TCP message according to the command structure supplied.
     /// </summary>
-    /// <param name="commands">An array of arguments for the method (the output of SplitTcpMessageCommand)</param>
+    /// <param name="commands">An array of arguments for the method (the output of SplitTcpMessageCommand).</param>
     public static void ProcessTcpMessageCommand(string[] commands)
     {
       TcpClient tcpClient = new TcpClient();
@@ -389,7 +429,7 @@ namespace IrssUtils
       streamWriter.Write(ReplaceEscapeCodes(commands[2]));
       streamWriter.Flush();
 
-      System.Threading.Thread.Sleep(1000);
+      Thread.Sleep(1000);
 
       streamWriter.Close();
       tcpClient.Close();
@@ -398,7 +438,7 @@ namespace IrssUtils
     /// <summary>
     /// Given a Mouse Command this method will move, click or scroll the mouse according to the command issued.
     /// </summary>
-    /// <param name="command">The Mouse Command string</param>
+    /// <param name="command">The Mouse Command string.</param>
     public static void ProcessMouseCommand(string command)
     {
       switch (command)
@@ -446,9 +486,9 @@ namespace IrssUtils
     #region Misc
 
     /// <summary>
-    /// Returns a list of IR Commands
+    /// Returns a list of IR Commands.
     /// </summary>
-    /// <returns>string[] of IR Commands</returns>
+    /// <returns>string[] of IR Commands.</returns>
     public static string[] GetIRList(bool commandPrefix)
     {
       string[] files = Directory.GetFiles(FolderIRCommands, '*' + FileExtensionIR);

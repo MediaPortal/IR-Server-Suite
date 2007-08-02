@@ -20,6 +20,7 @@ namespace Translator
     string _folder;
     string _arguments;
     bool _useShellExecute;
+    bool _forceWindowFocus;
     bool _ignoreSystemWide;
     ProcessWindowStyle _windowState;
     List<ButtonMapping> _buttonMappings;
@@ -79,6 +80,16 @@ namespace Translator
     }
 
     /// <summary>
+    /// Force the new progam's window to be focused.
+    /// </summary>
+    [XmlAttribute]
+    public bool ForceWindowFocus
+    {
+      get { return _forceWindowFocus; }
+      set { _forceWindowFocus = value; }
+    }
+
+    /// <summary>
     /// Ignore system-wide Translator button mappings
     /// </summary>
     [XmlAttribute]
@@ -119,6 +130,7 @@ namespace Translator
       _folder           = String.Empty;
       _arguments        = String.Empty;
       _useShellExecute  = false;
+      _forceWindowFocus = false;
       _ignoreSystemWide = false;
       _windowState      = ProcessWindowStyle.Normal;
       _buttonMappings   = new List<ButtonMapping>();
@@ -128,16 +140,21 @@ namespace Translator
 
     #region Members
 
-    public void Launch()
+    /// <summary>
+    /// Get the Command String to launch the program.
+    /// </summary>
+    /// <returns>Returns the Command String to launch the program.</returns>
+    public string LaunchCommand()
     {
-      Process process                     = new Process();
-      process.StartInfo.FileName          = _filename;
-      process.StartInfo.WorkingDirectory  = _folder;
-      process.StartInfo.Arguments         = _arguments;
-      process.StartInfo.WindowStyle       = _windowState;
-      //process.StartInfo.CreateNoWindow  =
-      process.StartInfo.UseShellExecute   = _useShellExecute;
-      process.Start();
+      return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
+        _filename,
+        _folder,
+        _arguments,
+        _windowState.ToString(),
+        false,
+        _useShellExecute,
+        false,
+        _forceWindowFocus);
     }
 
     #endregion Members

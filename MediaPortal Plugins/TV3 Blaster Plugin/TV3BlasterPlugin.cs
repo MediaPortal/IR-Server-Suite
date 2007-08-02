@@ -28,7 +28,7 @@ namespace TvEngine
 
     #region Constants
 
-    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.3.2 for IR Server";
+    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.3.3 for IR Server";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "TV3 Blaster Plugin\\Macro\\";
 
@@ -64,20 +64,19 @@ namespace TvEngine
     #region Properties
 
     /// <summary>
-    /// returns the name of the plugin
+    /// Returns the name of the plugin.
     /// </summary>
     public string Name { get { return "TV3 STB Blaster Plugin for IR Server"; } }
     /// <summary>
-    /// returns the version of the plugin
+    /// Returns the version of the plugin.
     /// </summary>
-    public string Version { get { return "1.0.3.2"; } }
+    public string Version { get { return "1.0.3.3"; } }
     /// <summary>
-    /// returns the author of the plugin
+    /// Returns the author of the plugin.
     /// </summary>
     public string Author { get { return "and-81"; } }
     /// <summary>
-    /// returns if the plugin should only run on the master server
-    /// or also on slave servers
+    /// Returns if the plugin should only run on the master server or also on slave servers.
     /// </summary>
     public bool MasterOnly { get { return false; } }
 
@@ -416,7 +415,9 @@ namespace TvEngine
         {
           case "Start Learn":
           case "Blast Success":
-          case "Remote Button":
+          case "Remote Event":
+          case "Keyboard Event":
+          case "Mouse Event":
             break;
 
           case "Blast Failure":
@@ -836,7 +837,7 @@ namespace TvEngine
     }
 
     /// <summary>
-    /// Learn an IR Command and put it in a file
+    /// Learn an IR Command and put it in a file.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in.</param>
     /// <returns>Success.</returns>
@@ -878,9 +879,9 @@ namespace TvEngine
     }
 
     /// <summary>
-    /// Returns a list of Macros
+    /// Returns a list of Macros.
     /// </summary>
-    /// <returns>string[] of Macros</returns>
+    /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
       string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
@@ -899,9 +900,9 @@ namespace TvEngine
     }
 
     /// <summary>
-    /// Returns a combined list of IR Commands and Macros
+    /// Returns a combined list of IR Commands and Macros.
     /// </summary>
-    /// <returns>string[] of IR Commands and Macros</returns>
+    /// <returns>string[] of IR Commands and Macros.</returns>
     internal static string[] GetFileList(bool commandPrefix)
     {
       string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);

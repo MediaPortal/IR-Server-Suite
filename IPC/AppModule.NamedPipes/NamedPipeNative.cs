@@ -362,7 +362,7 @@ namespace AppModule.NamedPipes
     /// </summary>
     /// <param name="hHandle">Handle to the file.</param>
     /// <param name="lpBuffer">Pointer to the buffer containing the data to be written to the file.</param>
-    /// <param name="nNumberOfBytesToWrite"></param>
+    /// <param name="nNumberOfBytesToWrite">.</param>
     /// <param name="lpNumberOfBytesWritten">Pointer to the variable that receives the number of bytes written.</param>
     /// <param name="lpOverlapped">Pointer to an 
     /// <see cref="AppModule.NamedPipes.Overlapped">Overlapped</see> object.</param>
@@ -394,7 +394,7 @@ namespace AppModule.NamedPipes
     /// pipe transfers information over the network.</param>
     /// <param name="lpUserName">Pointer to a buffer that receives the 
     /// null-terminated string containing the user name string associated 
-    /// with the client application. </param>
+    /// with the client application. .</param>
     /// <param name="nMaxUserNameSize">Size of the buffer specified by the 
     /// lpUserName parameter.</param>
     /// <returns>If the function succeeds, the return value is nonzero.</returns>
@@ -511,9 +511,9 @@ namespace AppModule.NamedPipes
     /// <summary>
     /// Creates a SecurityDescriptor with a Null Dacl
     /// </summary>
-    /// <param name="sd">out SecurityDescriptor</param>
-    /// <param name="pSd">out IntPtr to SecurityDescriptor</param>
-    /// <returns>success</returns>
+    /// <param name="sd">out SecurityDescriptor.</param>
+    /// <param name="pSd">out IntPtr to SecurityDescriptor.</param>
+    /// <returns>success.</returns>
     #endregion
     public static bool CreateSdWithNullDacl(out SecurityDescriptor sd, out IntPtr pSd)
     {
@@ -544,8 +544,8 @@ namespace AppModule.NamedPipes
     /// <summary>
     /// Create a SecurityAttributes object with a Null Dacl SecurityDescriptor
     /// </summary>
-    /// <param name="sa">out SecurityAttributes</param>
-    /// <returns>success</returns>
+    /// <param name="sa">out SecurityAttributes.</param>
+    /// <returns>success.</returns>
     #endregion
     public static bool CreateSaWithNullDaclSd(out SecurityAttributes sa)
     {
@@ -570,9 +570,9 @@ namespace AppModule.NamedPipes
     /// <summary>
     /// Initializes a Security Descriptor
     /// </summary>
-    /// <param name="pSecurityDescriptor">Pointer to a SecurityDescriptor object</param>
-    /// <param name="dwRevision">Security Descriptor revision (Always 1)</param>
-    /// <returns>success</returns>
+    /// <param name="pSecurityDescriptor">Pointer to a SecurityDescriptor object.</param>
+    /// <param name="dwRevision">Security Descriptor revision (Always 1).</param>
+    /// <returns>success.</returns>
     #endregion
     [DllImport("advapi32", SetLastError = true),
     SuppressUnmanagedCodeSecurityAttribute]
@@ -586,11 +586,11 @@ namespace AppModule.NamedPipes
     /// <summary>
     /// Sets the Dacl on a SecurityDescriptor
     /// </summary>
-    /// <param name="pSecurityDescriptor">Pointer to a SecurityDescriptor</param>
-    /// <param name="bDaclPresent">is Dacl present?</param>
-    /// <param name="pDacl">Pointer to Dacl</param>
-    /// <param name="bDaclDefaulted">Dacl Defaulted</param>
-    /// <returns>success</returns>
+    /// <param name="pSecurityDescriptor">Pointer to a SecurityDescriptor.</param>
+    /// <param name="bDaclPresent">is Dacl present?.</param>
+    /// <param name="pDacl">Pointer to Dacl.</param>
+    /// <param name="bDaclDefaulted">Dacl Defaulted.</param>
+    /// <returns>success.</returns>
     #endregion
     [DllImport("advapi32", SetLastError = true),
     SuppressUnmanagedCodeSecurityAttribute]
@@ -606,8 +606,8 @@ namespace AppModule.NamedPipes
     /// <summary>
     /// Given a pointer to a security descriptor it returns if it is valid
     /// </summary>
-    /// <param name="pSecurityDescriptor">Pointer to a SecurityDesciptor</param>
-    /// <returns>Is pSecurityDescriptor valid</returns>
+    /// <param name="pSecurityDescriptor">Pointer to a SecurityDesciptor.</param>
+    /// <returns>Is pSecurityDescriptor valid.</returns>
     #endregion
     [DllImport("advapi32", SetLastError = true),
     SuppressUnmanagedCodeSecurityAttribute]

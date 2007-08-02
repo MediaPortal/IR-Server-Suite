@@ -24,13 +24,12 @@ using NamedPipes;
 using IrssUtils;
 using MPUtils;
 
-
 namespace MediaPortal.Plugins
 {
 
   #region Delegates
 
-  internal delegate void RemoteButtonHandler(string keyCode);
+  internal delegate void RemoteHandler(string keyCode);
 
   #endregion Delegates
 
@@ -39,7 +38,7 @@ namespace MediaPortal.Plugins
 
     #region Constants
 
-    internal const string PluginVersion = "MP Control Plugin 1.0.3.2 for IR Server";
+    internal const string PluginVersion = "MP Control Plugin 1.0.3.3 for IR Server";
 
     internal static readonly string CustomInputDevice = Config.GetFolder(Config.Dir.CustomInputDevice) + "\\";
     internal static readonly string CustomInputDefault = Config.GetFolder(Config.Dir.CustomInputDefault) + "\\";
@@ -100,7 +99,7 @@ namespace MediaPortal.Plugins
 
     static bool _mpBasicHome;
 
-    internal static RemoteButtonHandler RemoteButtonListener;
+    internal static RemoteHandler RemoteCallback;
 
     MappedKeyCode[] _remoteMap = null;
 
@@ -226,7 +225,7 @@ namespace MediaPortal.Plugins
       if (!StartComms())
         Log.Error("MPControlPlugin: Failed to start local comms, IR input and IR blasting is disabled for this session");
 
-      RemoteButtonListener += new RemoteButtonHandler(RemoteButtonPressed);
+      RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
 
       // Load the event mapper mappings
       if (EventMapperEnabled)
@@ -251,7 +250,7 @@ namespace MediaPortal.Plugins
       //SystemEvents.SessionEnding -= new SessionEndingEventHandler(SystemEvents_SessionEnding);
       SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
 
-      RemoteButtonListener -= new RemoteButtonHandler(RemoteButtonPressed);
+      RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
 
       if (EventMapperEnabled)
       {
@@ -534,7 +533,7 @@ namespace MediaPortal.Plugins
       return false;
     }
 
-    void RemoteButtonPressed(string keyCode)
+    void RemoteHandlerCallback(string keyCode)
     {
       // If user has stipulated that MP must have focus to recognize commands ...
       if (RequireFocus && !GUIGraphicsContext.HasFocus)
@@ -826,13 +825,15 @@ namespace MediaPortal.Plugins
         {
           case "Start Learn":
           case "Blast Success":
+          case "Keyboard Event":
+          case "Mouse Event":
             break;
 
-          case "Remote Button":
+          case "Remote Event":
             {
               string keyCode = Encoding.ASCII.GetString(received.Data);
-              if (RemoteButtonListener != null)
-                RemoteButtonListener(keyCode);
+              if (RemoteCallback != null)
+                RemoteCallback(keyCode);
 
               break;
             }
@@ -920,7 +921,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// OnMessage is used for event mapping.
     /// </summary>
-    /// <param name="msg">Message</param>
+    /// <param name="msg">Message.</param>
     void OnMessage(GUIMessage msg)
     {
       if (EventMapperEnabled)
@@ -1082,9 +1083,9 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Run the event mapper over the supplied GUIMessage
+    /// Run the event mapper over the supplied GUIMessage.
     /// </summary>
-    /// <param name="msg">MediaPortal Message to run through the event mapper</param>
+    /// <param name="msg">MediaPortal Message to run through the event mapper.</param>
     static void MapEvent(GUIMessage msg)
     {
       MappedEvent.MappingEvent eventType = MappedEvent.GetEventType(msg.Message);
@@ -1145,9 +1146,9 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Run the event mapper over the supplied MappedEvent type
+    /// Run the event mapper over the supplied MappedEvent type.
     /// </summary>
-    /// <param name="msg">MappedEvent to run through the event mapper</param>
+    /// <param name="msg">MappedEvent to run through the event mapper.</param>
     static void MapEvent(MappedEvent.MappingEvent eventType)
     {
       foreach (MappedEvent mappedEvent in EventMappings)
@@ -1187,7 +1188,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Loads the default remote button input handler
+    /// Loads the default remote button input handler.
     /// </summary>
     internal static void LoadDefaultMapping()
     {
@@ -1198,7 +1199,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Loads multi-mappings for input handling
+    /// Loads multi-mappings for input handling.
     /// </summary>
     internal static void LoadMultiMappings()
     {
@@ -1602,7 +1603,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Learn an IR Command and put it in a file
+    /// Learn an IR Command and put it in a file.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in.</param>
     /// <returns>Success.</returns>
@@ -1644,9 +1645,9 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Returns a list of Macros
+    /// Returns a list of Macros.
     /// </summary>
-    /// <returns>string[] of Macros</returns>
+    /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
       string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
@@ -1665,9 +1666,9 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Returns a combined list of IR Commands and Macros
+    /// Returns a combined list of IR Commands and Macros.
     /// </summary>
-    /// <returns>string[] of IR Commands and Macros</returns>
+    /// <returns>string[] of IR Commands and Macros.</returns>
     internal static string[] GetFileList(bool commandPrefix)
     {
       string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);

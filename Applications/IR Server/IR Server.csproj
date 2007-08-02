@@ -120,10 +120,6 @@
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\MPUtils\MPUtils.csproj">
-      <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
-      <Name>MPUtils</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\IPC\Named Pipes\Named Pipes.csproj">
       <Project>{F4EA6055-7133-4F18-8971-E19ADEB482C1}</Project>
       <Name>Named Pipes</Name>

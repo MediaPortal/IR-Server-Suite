@@ -37,35 +37,35 @@ namespace AppModule.InterProcessComm {
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>.</returns>
 		#endregion
 		string Read();
 		#region Comments
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>.</returns>
 		#endregion
 		byte[] ReadBytes();
 		#region Comments
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="text"></param>
+		/// <param name="text">.</param>
 		#endregion
 		void Write(string text);
 		#region Comments
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="bytes"></param>
+		/// <param name="bytes">.</param>
 		#endregion
 		void WriteBytes(byte[] bytes);
 		#region Comments
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>.</returns>
 		#endregion
 		InterProcessConnectionState GetState();
 	}

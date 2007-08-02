@@ -39,7 +39,7 @@ namespace MediaPortal.Plugins
 
     const int WindowID = 248101;
 
-    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.3.2 for IR Server";
+    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.3.3 for IR Server";
 
     internal static readonly string MenuFile = Common.FolderAppData + "MP Blast Zone Plugin\\Menu.xml";
 
@@ -565,7 +565,9 @@ namespace MediaPortal.Plugins
         {
           case "Start Learn":
           case "Blast Success":
-          case "Remote Button":
+          case "Remote Event":
+          case "Keyboard Event":
+          case "Mouse Event":
             break;
 
           case "Blast Failure":
@@ -980,7 +982,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Returns a list of Macros
     /// </summary>
-    /// <returns>string[] of Macros</returns>
+    /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
       string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
@@ -1001,7 +1003,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Returns a combined list of IR Commands and Macros
     /// </summary>
-    /// <returns>string[] of IR Commands and Macros</returns>
+    /// <returns>string[] of IR Commands and Macros.</returns>
     internal static string[] GetFileList(bool commandPrefix)
     {
       string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);

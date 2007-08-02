@@ -32,6 +32,7 @@ namespace IRBlast
     static string _blastSpeed = "None";
 
     static bool _treatAsChannelNumber = false;
+    static int _padChannelNumber = 0;
 
     #endregion Variables
 
@@ -73,6 +74,10 @@ namespace IRBlast
                 _treatAsChannelNumber = true;
                 continue;
 
+              case "-pad":
+                int.TryParse(args[++index], out _padChannelNumber);
+                continue;
+
               default:
                 irCommands.Add(args[index]);
                 continue;
@@ -108,7 +113,18 @@ namespace IRBlast
                 if (_treatAsChannelNumber)
                 {
                   IrssLog.Info("Processing channel: {0}", command);
-                  foreach (char digit in command)
+
+                  StringBuilder channelNumber = new StringBuilder(command);
+
+                  if (_padChannelNumber > 0)
+                  {
+                    for (int index = 0; index < _padChannelNumber - command.Length; index++)
+                      channelNumber.Insert(0, '0');
+
+                    IrssLog.Info("Padding channel number: {0} becomes {1}", command, channelNumber.ToString());
+                  }
+
+                  foreach (char digit in channelNumber.ToString())
                   {
                     if (digit == '~')
                     {
@@ -141,7 +157,7 @@ namespace IRBlast
 
           }
         }
-        else
+        else // Give help ...
         {
           ShowHelp();
         }
@@ -399,7 +415,9 @@ Refer to IR Blast help for more information.",
       {
         switch (received.Name)
         {
-          case "Remote Button":
+          case "Remote Event":
+          case "Keyboard Event":
+          case "Mouse Event":
             break;
 
           case "Blast Success":

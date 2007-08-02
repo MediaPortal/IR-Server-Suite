@@ -20,31 +20,31 @@ namespace AppModule.InterProcessComm {
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
+		/// <param name="request">.</param>
+		/// <returns>.</returns>
 		#endregion
 		string HandleRequest(string request);
 		#region Comments
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
+		/// <param name="request">.</param>
+		/// <returns>.</returns>
 		#endregion
 		string HandleRequest(Stream request);
 		#region Comments
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
+		/// <param name="request">.</param>
+		/// <returns>.</returns>
 		#endregion
 		object HandleRequest(object request);
 		#region Comments
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>.</returns>
 		#endregion
 		IClientChannel Create();
 	}

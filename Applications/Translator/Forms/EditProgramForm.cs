@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 using IrssUtils;
@@ -48,6 +49,11 @@ namespace Translator
       get { return checkBoxShellExecute.Checked; }
       set { checkBoxShellExecute.Checked = value; }
     }
+    public bool ForceWindowFocus
+    {
+      get { return checkBoxForceFocus.Checked; }
+      set { checkBoxForceFocus.Checked = value; }
+    }
     public bool IgnoreSystemWide
     {
       get { return checkBoxIgnoreSystemWide.Checked; }
@@ -66,13 +72,14 @@ namespace Translator
 
       if (progSettings != null)
       {
-        DisplayName = progSettings.Name;
-        Filename = progSettings.Filename;
-        StartupFolder = progSettings.Folder;
-        Parameters = progSettings.Arguments;
-        StartState = progSettings.WindowState;
-        UseShellExecute = progSettings.UseShellExecute;
-        IgnoreSystemWide = progSettings.IgnoreSystemWide;
+        DisplayName       = progSettings.Name;
+        Filename          = progSettings.Filename;
+        StartupFolder     = progSettings.Folder;
+        Parameters        = progSettings.Arguments;
+        StartState        = progSettings.WindowState;
+        UseShellExecute   = progSettings.UseShellExecute;
+        ForceWindowFocus  = progSettings.ForceWindowFocus;
+        IgnoreSystemWide  = progSettings.IgnoreSystemWide;
       }
     }
 
@@ -114,15 +121,33 @@ namespace Translator
       try
       {
         Process process = new Process();
-        process.StartInfo.FileName = Filename;
-        process.StartInfo.WorkingDirectory = StartupFolder;
-        process.StartInfo.Arguments = Parameters;
-        process.StartInfo.WindowStyle = StartState;
-        process.StartInfo.UseShellExecute = UseShellExecute;
+        process.StartInfo.FileName          = Filename;
+        process.StartInfo.WorkingDirectory  = StartupFolder;
+        process.StartInfo.Arguments         = Parameters;
+        process.StartInfo.WindowStyle       = StartState;
+        process.StartInfo.UseShellExecute   = UseShellExecute;
 
         IrssLog.Info("Launching program {0}", DisplayName);
 
         process.Start();
+
+        // Give new process focus ...
+        if (StartState != ProcessWindowStyle.Hidden && ForceWindowFocus)
+        {
+          IntPtr processWindow = IntPtr.Zero;
+          while (!process.HasExited)
+          {
+            processWindow = process.MainWindowHandle;
+            if (processWindow != IntPtr.Zero)
+            {
+              Win32.SetForegroundWindow(processWindow);
+              break;
+            }
+
+            Thread.Sleep(500);
+          }
+        }
+
       }
       catch (Exception ex)
       {

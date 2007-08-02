@@ -39,7 +39,7 @@ namespace AppModule.InterProcessComm
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="text"></param>
+		/// <param name="text">.</param>
 		#endregion
 		public InterProcessIOException(String text) : base(text) 
     {
@@ -49,8 +49,8 @@ namespace AppModule.InterProcessComm
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="info"></param>
-		/// <param name="context"></param>
+		/// <param name="info">.</param>
+		/// <param name="context">.</param>
 		#endregion
 		protected InterProcessIOException(SerializationInfo info, StreamingContext context) : base(info, context)
     {

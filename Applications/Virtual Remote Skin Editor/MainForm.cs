@@ -19,7 +19,7 @@ namespace SkinEditor
 
     #region Constants
 
-    public static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote Skin Editor\\Virtual Remote Skin Editor.xml";
+    static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote Skin Editor\\Virtual Remote Skin Editor.xml";
 
     #endregion Constants
 
@@ -539,7 +539,11 @@ namespace SkinEditor
       {
         switch (received.Name)
         {
-          case "Remote Button":
+          case "Keyboard Event":
+          case "Mouse Event":
+            break;
+
+          case "Remote Event":
             if (listViewButtons.SelectedItems.Count == 1)
               listViewButtons.SelectedItems[0].SubItems[1].Text = Encoding.ASCII.GetString(received.Data);
             return;

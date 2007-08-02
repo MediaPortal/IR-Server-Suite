@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
@@ -25,14 +26,15 @@ namespace IrssUtils.Forms
     {
       get
       {
-        return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}",
+        return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
           textBoxProgram.Text,
           textBoxStartup.Text,
           textBoxParameters.Text,
           comboBoxWindowStyle.SelectedItem as string,
           checkBoxNoWindow.Checked.ToString(),
           checkBoxShellExecute.Checked.ToString(),
-          checkBoxWaitForExit.Checked.ToString());
+          checkBoxWaitForExit.Checked.ToString(),
+          checkBoxForceFocus.Checked.ToString());
       }
     }
 
@@ -76,6 +78,7 @@ namespace IrssUtils.Forms
         checkBoxNoWindow.Checked      = bool.Parse(commands[4]);
         checkBoxShellExecute.Checked  = bool.Parse(commands[5]);
         checkBoxWaitForExit.Checked   = bool.Parse(commands[6]);
+        checkBoxForceFocus.Checked    = bool.Parse(commands[7]);
 
         comboBoxWindowStyle.SelectedItem  = ((ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3])).ToString();
       }
@@ -120,7 +123,7 @@ namespace IrssUtils.Forms
     {
       if (textBoxProgram.Text.Trim().Length == 0)
       {
-        MessageBox.Show(this, "You must specify a program to run", "Missing program name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must specify a program to run", "Missing program path", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
       }
       
@@ -143,24 +146,40 @@ namespace IrssUtils.Forms
     {
       if (textBoxProgram.Text.Trim().Length == 0)
       {
-        MessageBox.Show(this, "You must specify a program to run", "Missing program name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must specify a program to run", "Missing program path", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
       }
 
       try
       {
         Process process = new Process();
-        process.StartInfo.FileName = textBoxProgram.Text;
-        process.StartInfo.WorkingDirectory = textBoxStartup.Text;
-        process.StartInfo.Arguments = textBoxParameters.Text;
-        process.StartInfo.WindowStyle = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string);
-        process.StartInfo.CreateNoWindow = checkBoxNoWindow.Checked;
-        process.StartInfo.UseShellExecute = checkBoxShellExecute.Checked;
+        process.StartInfo.FileName          = textBoxProgram.Text;
+        process.StartInfo.WorkingDirectory  = textBoxStartup.Text;
+        process.StartInfo.Arguments         = textBoxParameters.Text;
+        process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string);
+        process.StartInfo.CreateNoWindow    = checkBoxNoWindow.Checked;
+        process.StartInfo.UseShellExecute   = checkBoxShellExecute.Checked;
 
         process.Start();
 
-        if (checkBoxWaitForExit.Visible && checkBoxWaitForExit.Checked)  // Wait for exit
-          process.WaitForExit();
+        // Give new process focus ...
+        if (!process.StartInfo.CreateNoWindow &&
+          process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
+          checkBoxForceFocus.Checked)
+        {
+          IntPtr processWindow = IntPtr.Zero;
+          while (!process.HasExited)
+          {
+            processWindow = process.MainWindowHandle;
+            if (processWindow != IntPtr.Zero)
+            {
+              Win32.SetForegroundWindow(processWindow);
+              break;
+            }
+
+            Thread.Sleep(500);
+          }
+        }
       }
       catch (Exception ex)
       {

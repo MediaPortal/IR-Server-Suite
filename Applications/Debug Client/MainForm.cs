@@ -22,7 +22,7 @@ namespace DebugClient
     #region Enumerations
 
     /// <summary>
-    /// A list of MCE remote buttons
+    /// A list of MCE remote buttons.
     /// </summary>
     public enum MceButton
     {
@@ -174,6 +174,8 @@ namespace DebugClient
           case "Blast Success":
           case "Blast Failure":
           case "Start Learn":
+          case "Keyboard Event":
+          case "Mouse Event":
             return;
 
           case "Clients":
@@ -204,10 +206,10 @@ namespace DebugClient
             return;
           }
 
-          case "Remote Button":
+          case "Remote Event":
           {
             string keyCode = Encoding.ASCII.GetString(received.Data);
-            RemoteButtonPressed(keyCode);
+            RemoteHandlerCallback(keyCode);
             return;
           }
 
@@ -355,9 +357,9 @@ namespace DebugClient
 
       return true;
     }
-    void RemoteButtonPressed(string keyCode)
+    void RemoteHandlerCallback(string keyCode)
     {
-      string text = String.Format("Remote Button \"{0}\"", keyCode);
+      string text = String.Format("Remote Event \"{0}\"", keyCode);
 
       this.Invoke(_AddStatusLine, new Object[] { text });
     }
@@ -572,7 +574,7 @@ namespace DebugClient
         BitConverter.GetBytes(keyCode).CopyTo(data, 0);
         BitConverter.GetBytes(0).CopyTo(data, 4);
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Remote Button", data);
+        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Remote Event", data);
         PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
       }
       catch (Exception ex)
