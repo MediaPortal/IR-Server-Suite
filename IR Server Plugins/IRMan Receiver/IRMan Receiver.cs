@@ -34,7 +34,7 @@ namespace IRManReceiver
     SerialPort _serialPort;
     byte[] _deviceBuffer;
 
-    RemoteButtonHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler = null;
 
     int _repeatDelay;
     string _serialPortName;
@@ -49,7 +49,7 @@ namespace IRManReceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "IRMan"; } }
-    public string Version       { get { return "1.0.3.2"; } }
+    public string Version       { get { return "1.0.3.3"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Receiver support for the Serial IRMan device"; } }
     public bool   CanReceive    { get { return true; } }
@@ -57,13 +57,17 @@ namespace IRManReceiver
     public bool   CanLearn      { get { return false; } }
     public bool   CanConfigure  { get { return true; } }
 
-    public RemoteButtonHandler RemoteButtonCallback
+    public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
 
-    public string[] AvailablePorts  { get { return Ports; }   }
+    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
+
+    public MouseHandler MouseCallback { get { return null; } set { } }
+
+    public string[] AvailablePorts { get { return Ports; } }
     public string[] AvailableSpeeds { get { return Speeds; }  }
 
     public void Configure()
@@ -134,7 +138,11 @@ namespace IRManReceiver
     }
 
     public bool Transmit(string file) { return false; }
-    public LearnStatus Learn(string file) { return LearnStatus.Failure; }
+    public LearnStatus Learn(out byte[] data)
+    {
+      data = null;
+      return LearnStatus.Failure;
+    }
 
     public bool SetPort(string port)    { return true; }
     public bool SetSpeed(string speed)  { return true; }

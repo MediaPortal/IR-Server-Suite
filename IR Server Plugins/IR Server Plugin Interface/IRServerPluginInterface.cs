@@ -11,8 +11,24 @@ namespace IRServerPluginInterface
   /// IR Server callback for remote button press handling.
   /// </summary>
   /// <param name="keyCode">Remote button code.</param>
-  public delegate void RemoteButtonHandler(string keyCode);
+  public delegate void RemoteHandler(string keyCode);
 
+  /// <summary>
+  /// IR Server callback for keyboard key press handling.
+  /// </summary>
+  /// <param name="vKey">Virtual key code.</param>
+  /// <param name="keyUp">.</param>
+  public delegate void KeyboardHandler(int vKey, bool keyUp);
+
+  /// <summary>
+  /// IR Server callback for mouse event handling.
+  /// </summary>
+  /// <param name="deltaX">Mouse movement on the X-axis.</param>
+  /// <param name="deltaY">Mouse movement on the Y-axis.</param>
+  /// <param name="rightButton">Is the right button pressed?</param>
+  /// <param name="leftButton">Is the left button pressed?</param>
+  public delegate void MouseHandler(int deltaX, int deltaY, int buttons);
+  
   #endregion Delegates
 
   #region Enumerations
@@ -89,7 +105,17 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Callback for remote button presses.
     /// </summary>
-    RemoteButtonHandler RemoteButtonCallback { get; set; }
+    RemoteHandler RemoteCallback { get; set; }
+
+    /// <summary>
+    /// Callback for keyboard presses.
+    /// </summary>
+    KeyboardHandler KeyboardCallback { get; set; }
+
+    /// <summary>
+    /// Callback for mouse events.
+    /// </summary>
+    MouseHandler MouseCallback { get; set; }
 
     /// <summary>
     /// Lists the available blaster ports.
@@ -141,9 +167,9 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Learn an infrared command.
     /// </summary>
-    /// <param name="file">New infrared command file to create.</param>
+    /// <param name="data">New infrared command.</param>
     /// <returns>Tells the calling code if the learn was Successful, Failed or Timed Out.</returns>
-    LearnStatus Learn(string file);
+    LearnStatus Learn(out byte[] data);
 
     /// <summary>
     /// Set the transmit port to use for infrared command output.
@@ -163,4 +189,37 @@ namespace IRServerPluginInterface
 
   }
 
+  /*
+
+  public interface IConfigurable
+  {
+
+  }
+
+  public interface ITransmitIR
+  {
+
+  }
+
+  public interface ILearnIR
+  {
+
+  }
+
+  public interface IRemoteReceiver
+  {
+
+  }
+
+  public interface IKeyboardReceiver
+  {
+
+  }
+
+  public interface IMouseReceiver
+  {
+
+  }
+
+  */
 }

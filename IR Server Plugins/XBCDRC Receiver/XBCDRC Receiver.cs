@@ -25,7 +25,7 @@ namespace XBCDRCReceiver
 
     #region Variables
 
-    RemoteButtonHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler = null;
     FileStream _deviceStream;
     byte[] _deviceBuffer;
 
@@ -187,7 +187,7 @@ namespace XBCDRCReceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "XBCDRC"; } }
-    public string Version       { get { return "1.0.3.2"; } }
+    public string Version       { get { return "1.0.3.3"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Supports the XBox 1 IR receiver with XBCDRC"; } }
     public bool   CanReceive    { get { return true; } }
@@ -195,13 +195,17 @@ namespace XBCDRCReceiver
     public bool   CanLearn      { get { return false; } }
     public bool   CanConfigure  { get { return false; } }
 
-    public RemoteButtonHandler RemoteButtonCallback
+    public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
 
-    public string[] AvailablePorts  { get { return Ports; }   }
+    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
+
+    public MouseHandler MouseCallback { get { return null; } set { } }
+
+    public string[] AvailablePorts { get { return Ports; } }
     public string[] AvailableSpeeds { get { return Speeds; }  }
 
     public void Configure() { }
@@ -248,7 +252,11 @@ namespace XBCDRCReceiver
     }
 
     public bool Transmit(string file) { return false; }
-    public LearnStatus Learn(string file) { return LearnStatus.Failure; }
+    public LearnStatus Learn(out byte[] data)
+    {
+      data = null;
+      return LearnStatus.Failure;
+    }
 
     public bool SetPort(string port)    { return true; }
     public bool SetSpeed(string speed)  { return true; }

@@ -204,7 +204,7 @@ namespace IRTransTransceiver
 
     #region Variables
 
-    static RemoteButtonHandler _remoteButtonHandler = null;
+    static RemoteHandler _remoteButtonHandler = null;
 
     static string _blasterSpeed = Speeds[0];
     static string _blasterPort = Ports[0];
@@ -221,7 +221,7 @@ namespace IRTransTransceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "IRTrans (Experimental)"; } }
-    public string Version       { get { return "1.0.3.2"; } }
+    public string Version       { get { return "1.0.3.3"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "IRTrans Transceiver (Experimental)"; } }
     public bool   CanReceive    { get { return true; } }
@@ -229,11 +229,15 @@ namespace IRTransTransceiver
     public bool   CanLearn      { get { return false; } }
     public bool   CanConfigure  { get { return true; } }
 
-    public RemoteButtonHandler RemoteButtonCallback
+    public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
+
+    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
+
+    public MouseHandler MouseCallback { get { return null; } set { } }
 
     public string[] AvailablePorts
     {
@@ -322,8 +326,10 @@ namespace IRTransTransceiver
       }
       */
     }
-    public LearnStatus Learn(string file)
+    public LearnStatus Learn(out byte[] data)
     {
+      data = null;
+
       /*
       try
       {

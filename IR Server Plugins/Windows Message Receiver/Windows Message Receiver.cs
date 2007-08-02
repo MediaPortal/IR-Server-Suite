@@ -47,14 +47,14 @@ namespace WindowsMessageReceiver
     int _messageType  = WM_APP;
     int _wParam       = DefaultMessageID;
 
-    RemoteButtonHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler = null;
 
     #endregion Variables
 
     #region IIRServerPlugin Members
 
     public string Name          { get { return "Windows Messages"; } }
-    public string Version       { get { return "1.0.3.2"; } }
+    public string Version       { get { return "1.0.3.3"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Supports receiving simulated button presses through Windows Messages"; } }
     public bool   CanReceive    { get { return true; } }
@@ -62,11 +62,15 @@ namespace WindowsMessageReceiver
     public bool   CanLearn      { get { return false; } }
     public bool   CanConfigure  { get { return true; } }
 
-    public RemoteButtonHandler RemoteButtonCallback
+    public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
+
+    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
+
+    public MouseHandler MouseCallback { get { return null; } set { } }
 
     public string[] AvailablePorts  { get { return Ports; }   }
     public string[] AvailableSpeeds { get { return Speeds; }  }
@@ -120,8 +124,9 @@ namespace WindowsMessageReceiver
       */
       return false;
     }
-    public LearnStatus Learn(string file)
+    public LearnStatus Learn(out byte[] data)
     {
+      data = null;
       return LearnStatus.Failure;
     }
 
