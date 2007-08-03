@@ -52,7 +52,7 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
-    public MessageCommand() : this(new string[] { "active", String.Empty, Win32.WM_USER.ToString(), "0", "0" }) { }
+    public MessageCommand() : this(new string[] { "active", String.Empty, ((int)Win32.WindowsMessage.WM_USER).ToString(), "0", "0" }) { }
     public MessageCommand(string[] commands)
     {
       InitializeComponent();
@@ -104,7 +104,9 @@ namespace IrssUtils.Forms
       }
       else if (radioButtonWindowTitle.Checked)
       {
-        // TODO: Locate Window
+        WindowList windowList = new WindowList();
+        if (windowList.ShowDialog(this) == DialogResult.OK)
+          textBoxMsgTarget.Text = windowList.SelectedWindowTitle;
       }
     }
 
@@ -122,11 +124,11 @@ namespace IrssUtils.Forms
 
     private void wMAPPToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      numericUpDownMsg.Value = new decimal(Win32.WM_APP);
+      numericUpDownMsg.Value = new decimal((int)Win32.WindowsMessage.WM_APP);
     }
     private void wMUSERToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      numericUpDownMsg.Value = new decimal(Win32.WM_USER);
+      numericUpDownMsg.Value = new decimal((int)Win32.WindowsMessage.WM_USER);
     }
 
     private void radioButtonActiveWindow_CheckedChanged(object sender, EventArgs e)

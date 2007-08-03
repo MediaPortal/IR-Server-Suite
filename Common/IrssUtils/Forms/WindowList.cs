@@ -13,18 +13,6 @@ namespace IrssUtils.Forms
   public partial class WindowList : Form
   {
 
-    #region Interop
-
-    public delegate bool EnumWindowsProc(int hWnd, int lParam);
-
-    [DllImport("user32.dll")]
-    private static extern int GetWindowText(int hWnd, StringBuilder title, int size);
-    
-    [DllImport("user32.dll")]
-    private static extern int EnumWindows(EnumWindowsProc ewp, int lParam); 
-
-    #endregion Interop
-
     #region Properties
 
     public string SelectedWindowTitle
@@ -47,18 +35,17 @@ namespace IrssUtils.Forms
 
     void PopulateList()
     {
-      EnumWindowsProc ewp = new EnumWindowsProc(AddWindow);
+      Win32.EnumWindowsProc ewp = new Win32.EnumWindowsProc(AddWindow);
 
-      EnumWindows(ewp, 0);
+      Win32.EnumWindows(ewp, 0);
     }
 
-    bool AddWindow(int hWnd, int lParam)
+    bool AddWindow(IntPtr hWnd, int lParam)
     {
-      StringBuilder title = new StringBuilder(256);
-      GetWindowText(hWnd, title, 256);
+      string title = Win32.GetWindowTitle(hWnd);
 
-      if (title.Length != 0)
-        listBoxWindows.Items.Add(title.ToString());
+      if (!String.IsNullOrEmpty(title))
+        listBoxWindows.Items.Add(title);
 
       return true;
     }

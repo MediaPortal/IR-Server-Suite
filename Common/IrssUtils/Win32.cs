@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 
 namespace IrssUtils
 {
@@ -12,29 +13,16 @@ namespace IrssUtils
   public static class Win32
   {
 
-    #region Constants
-
-    /// <summary>
-    /// Windows Message (USER).
-    /// </summary>
-    public const int WM_USER  = 0x0400;
-
-    /// <summary>
-    /// Windows Message (APP).
-    /// </summary>
-    public const int WM_APP   = 0x8000;
-
-    #endregion Constants
-
     #region Enumerations
 
-    public enum WindowsMessages
+    public enum WindowsMessage
     {
       WM_ACTIVATE = 0x6,
       WM_ACTIVATEAPP = 0x1C,
       WM_AFXFIRST = 0x360,
       WM_AFXLAST = 0x37F,
       WM_APP = 0x8000,
+      WM_APPCOMMAND = 0x319,
       WM_ASKCBFORMATNAME = 0x30C,
       WM_CANCELJOURNAL = 0x4B,
       WM_CANCELMODE = 0x1F,
@@ -240,9 +228,150 @@ namespace IrssUtils
       WM_XBUTTONUP = 0x20C
     }
 
+    public enum SysCommand
+    {
+      SC_SIZE         = 0xF000,
+      SC_MOVE         = 0xF010,
+      SC_MINIMIZE     = 0xF020,
+      SC_MAXIMIZE     = 0xF030,
+      SC_NEXTWINDOW   = 0xF040,
+      SC_PREVWINDOW   = 0xF050,
+      SC_CLOSE        = 0xF060,
+      SC_VSCROLL      = 0xF070,
+      SC_HSCROLL      = 0xF080,
+      SC_MOUSEMENU    = 0xF090,
+      SC_KEYMENU      = 0xF100,
+      SC_ARRANGE      = 0xF110,
+      SC_RESTORE      = 0xF120,
+      SC_TASKLIST     = 0xF130,
+      SC_SCREENSAVE   = 0xF140,
+      SC_HOTKEY       = 0xF150,
+      SC_DEFAULT      = 0xF160,
+      SC_MONITORPOWER = 0xF170,
+      SC_CONTEXTHELP  = 0xF180,
+      SC_SEPARATOR    = 0xF00F,
+      
+      SCF_ISSECURE    = 0x00000001,
+      
+      SC_ICON         = SC_MINIMIZE,
+      SC_ZOOM         = SC_MAXIMIZE,
+    }
+
+    public enum AppCommand
+    {
+      APPCOMMAND_BROWSER_BACKWARD     = 1,
+      APPCOMMAND_BROWSER_FORWARD      = 2,
+      APPCOMMAND_BROWSER_REFRESH      = 3,
+      APPCOMMAND_BROWSER_STOP         = 4,
+      APPCOMMAND_BROWSER_SEARCH       = 5,
+      APPCOMMAND_BROWSER_FAVORITES    = 6,
+      APPCOMMAND_BROWSER_HOME         = 7,
+      APPCOMMAND_VOLUME_MUTE          = 8,
+      APPCOMMAND_VOLUME_DOWN          = 9,
+      APPCOMMAND_VOLUME_UP            = 10,
+      APPCOMMAND_MEDIA_NEXTTRACK      = 11,
+      APPCOMMAND_MEDIA_PREVIOUSTRACK  = 12,
+      APPCOMMAND_MEDIA_STOP           = 13,
+      APPCOMMAND_MEDIA_PLAY_PAUSE     = 4143,
+      APPCOMMAND_MEDIA_PLAY           = 4142,
+      APPCOMMAND_MEDIA_PAUSE          = 4143,
+      APPCOMMAND_MEDIA_RECORD         = 4144,
+      APPCOMMAND_MEDIA_FASTFORWARD    = 4145,
+      APPCOMMAND_MEDIA_REWIND         = 4146,
+      APPCOMMAND_MEDIA_CHANNEL_UP     = 4147,
+      APPCOMMAND_MEDIA_CHANNEL_DOWN   = 4148,
+    }
+
+    [Flags]
+    public enum SendMessageTimeoutFlags
+    {
+      SMTO_NORMAL             = 0x0000,
+      SMTO_BLOCK              = 0x0001,
+      SMTO_ABORTIFHUNG        = 0x0002,
+      SMTO_NOTIMEOUTIFNOTHUNG = 0x0008,
+    }
+
+    [Flags]
+    public enum ShutdownReason
+    {
+      MajorApplication = 0x00040000,
+      MajorHardware = 0x00010000,
+      MajorLegacyApi = 0x00070000,
+      MajorOperatingSystem = 0x00020000,
+      MajorOther = 0x00000000,
+      MajorPower = 0x00060000,
+      MajorSoftware = 0x00030000,
+      MajorSystem = 0x00050000,
+
+      MinorBlueScreen = 0x0000000F,
+      MinorCordUnplugged = 0x0000000b,
+      MinorDisk = 0x00000007,
+      MinorEnvironment = 0x0000000c,
+      MinorHardwareDriver = 0x0000000d,
+      MinorHotfix = 0x00000011,
+      MinorHung = 0x00000005,
+      MinorInstallation = 0x00000002,
+      MinorMaintenance = 0x00000001,
+      MinorMMC = 0x00000019,
+      MinorNetworkConnectivity = 0x00000014,
+      MinorNetworkCard = 0x00000009,
+      MinorOther = 0x00000000,
+      MinorOtherDriver = 0x0000000e,
+      MinorPowerSupply = 0x0000000a,
+      MinorProcessor = 0x00000008,
+      MinorReconfig = 0x00000004,
+      MinorSecurity = 0x00000013,
+      MinorSecurityFix = 0x00000012,
+      MinorSecurityFixUninstall = 0x00000018,
+      MinorServicePack = 0x00000010,
+      MinorServicePackUninstall = 0x00000016,
+      MinorTermSrv = 0x00000020,
+      MinorUnstable = 0x00000006,
+      MinorUpgrade = 0x00000003,
+      MinorWMI = 0x00000015,
+
+      FlagUserDefined = 0x40000000,
+      //FlagPlanned = 0x80000000,
+    }
+
+    [Flags]
+    public enum ExitWindows
+    {
+      // ONE of the following five:
+      LogOff      = 0x00,
+      ShutDown    = 0x01,
+      Reboot      = 0x02,
+      PowerOff    = 0x08,
+      RestartApps = 0x40,
+      // Optionally include ONE of the following two:
+      Force       = 0x04,
+      ForceIfHung = 0x10,
+    }
+
     #endregion Enumerations
 
+    #region Structures
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct COPYDATASTRUCT
+    {
+      public int dwData;
+      public int cbData;
+      public int lpData;
+    }
+
+    #endregion Structures
+
+    #region Delegates
+
+    public delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
+
+    #endregion Delegates
+
     #region Interop
+
+    [DllImport("user32.dll")]
+    public static extern int EnumWindows(EnumWindowsProc ewp, int lParam); 
 
     [DllImport("user32.dll")]
     public static extern IntPtr GetForegroundWindow();
@@ -251,18 +380,15 @@ namespace IrssUtils
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool SetForegroundWindow(IntPtr hWnd);
 
-    [Flags]
-    public enum SendMessageTimeoutFlags : int
-    {
-      SMTO_NORMAL             = 0x0000,
-      SMTO_BLOCK              = 0x0001,
-      SMTO_ABORTIFHUNG        = 0x0002,
-      SMTO_NOTIMEOUTIFNOTHUNG = 0x0008,
-    }
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    static extern int GetWindowTextLength(IntPtr hWnd);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     public static extern IntPtr SendMessageTimeout(
-      IntPtr windowHandle,
+      IntPtr hWnd,
       int msg,
       IntPtr wParam,
       IntPtr lParam,
@@ -273,8 +399,12 @@ namespace IrssUtils
     //[DllImport("user32.dll", SetLastError = false)]
     //public static extern IntPtr SendMessage(IntPtr windowHandle, int msg, IntPtr wordParam, IntPtr longParam);
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    public static extern int RegisterWindowMessage(string lpString);
+    //[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    //public static extern int RegisterWindowMessage(string lpString);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool ExitWindowsEx(ExitWindows uFlags, ShutdownReason dwReason);
 
     [DllImport("user32.dll", SetLastError = true)]
     public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -313,6 +443,17 @@ namespace IrssUtils
     #endregion Interop
 
     #region Methods
+
+    public static string GetWindowTitle(IntPtr hWnd)
+    {
+      int length = GetWindowTextLength(hWnd);
+      
+      StringBuilder windowTitle = new StringBuilder(length + 1);
+      
+      GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
+      
+      return windowTitle.ToString();
+    }
 
     /// <summary>
     /// Given a 32-bit integer this method returns the High Word (upper 16 bits).
@@ -386,6 +527,46 @@ namespace IrssUtils
         return null;
       }      
     }
+
+    /// <summary>
+    /// Get an IntPtr pointing to any object.
+    /// </summary>
+    /// <param name="o">Object to get pointer for.</param>
+    /// <returns>Pointer to object.</returns>
+    public static IntPtr VarPtr(object o)
+    {
+      GCHandle handle = GCHandle.Alloc(o, GCHandleType.Pinned);
+      IntPtr ptr = handle.AddrOfPinnedObject();
+      handle.Free();
+      return ptr;
+    }
+
+    /*
+    public static void ActivateWindowByHandle(IntPtr hWnd)
+    {
+      WindowPlacement windowPlacement;
+      GetWindowPlacement(hWnd, out windowPlacement);
+
+      switch (windowPlacement.showCmd)
+      {
+        case SW_HIDE:           //Window is hidden
+          ShowWindow(hWnd, SW_RESTORE);
+          break;
+        case SW_SHOWMINIMIZED:  //Window is minimized
+          // if the window is minimized, then we need to restore it to its 
+          // previous size. we also take into account whether it was 
+          // previously maximized. 
+          int showCmd = (windowPlacement.flags == WPF_RESTORETOMAXIMIZED) ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL;
+          ShowWindow(hWnd, showCmd);
+          break;
+        default:
+          // if it's not minimized, then we just call SetForegroundWindow to 
+          // bring it to the front. 
+          SetForegroundWindow(hWnd);
+          break;
+      }
+    }
+    */
 
     #endregion Methods
 

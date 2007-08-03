@@ -173,6 +173,9 @@ namespace Translator
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+      this.tabPageMisc = new System.Windows.Forms.TabPage();
+      this.labelMiscCommand = new System.Windows.Forms.Label();
+      this.comboBoxMiscCommand = new System.Windows.Forms.ComboBox();
       this.groupBoxButton.SuspendLayout();
       this.groupBoxSet.SuspendLayout();
       this.tabControl.SuspendLayout();
@@ -196,6 +199,7 @@ namespace Translator
       this.groupBoxMouseClick.SuspendLayout();
       this.groupBoxMouseMove.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseMove)).BeginInit();
+      this.tabPageMisc.SuspendLayout();
       this.SuspendLayout();
       // 
       // groupBoxButton
@@ -307,6 +311,7 @@ namespace Translator
       this.tabControl.Controls.Add(this.tabPageMessage);
       this.tabControl.Controls.Add(this.tabPageKeystrokes);
       this.tabControl.Controls.Add(this.tabPageMouse);
+      this.tabControl.Controls.Add(this.tabPageMisc);
       this.tabControl.Location = new System.Drawing.Point(8, 24);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
@@ -1671,6 +1676,36 @@ namespace Translator
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
       // 
+      // tabPageMisc
+      // 
+      this.tabPageMisc.Controls.Add(this.labelMiscCommand);
+      this.tabPageMisc.Controls.Add(this.comboBoxMiscCommand);
+      this.tabPageMisc.Location = new System.Drawing.Point(4, 22);
+      this.tabPageMisc.Name = "tabPageMisc";
+      this.tabPageMisc.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageMisc.Size = new System.Drawing.Size(432, 206);
+      this.tabPageMisc.TabIndex = 7;
+      this.tabPageMisc.Text = "Misc";
+      this.tabPageMisc.UseVisualStyleBackColor = true;
+      // 
+      // labelMiscCommand
+      // 
+      this.labelMiscCommand.Location = new System.Drawing.Point(8, 16);
+      this.labelMiscCommand.Name = "labelMiscCommand";
+      this.labelMiscCommand.Size = new System.Drawing.Size(88, 21);
+      this.labelMiscCommand.TabIndex = 0;
+      this.labelMiscCommand.Text = "Command:";
+      this.labelMiscCommand.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // comboBoxMiscCommand
+      // 
+      this.comboBoxMiscCommand.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+      this.comboBoxMiscCommand.FormattingEnabled = true;
+      this.comboBoxMiscCommand.Location = new System.Drawing.Point(96, 16);
+      this.comboBoxMiscCommand.Name = "comboBoxMiscCommand";
+      this.comboBoxMiscCommand.Size = new System.Drawing.Size(328, 21);
+      this.comboBoxMiscCommand.TabIndex = 1;
+      // 
       // ButtonMappingForm
       // 
       this.AcceptButton = this.buttonOK;
@@ -1719,6 +1754,7 @@ namespace Translator
       this.groupBoxMouseClick.ResumeLayout(false);
       this.groupBoxMouseMove.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseMove)).EndInit();
+      this.tabPageMisc.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -1868,6 +1904,9 @@ namespace Translator
     private System.Windows.Forms.ToolStripMenuItem altToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem controlToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem shiftToolStripMenuItem;
+    private System.Windows.Forms.TabPage tabPageMisc;
+    private System.Windows.Forms.Label labelMiscCommand;
+    private System.Windows.Forms.ComboBox comboBoxMiscCommand;
 
   }
 }

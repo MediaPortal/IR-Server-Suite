@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
@@ -111,6 +112,10 @@ namespace Translator
 
     static TransceiverInfo _transceiverInfo = new TransceiverInfo();
 
+    //static Thread _focusWatcher;
+    static IntPtr _ownWindowHandle = IntPtr.Zero;
+    static IntPtr _currentForegroundWindow = IntPtr.Zero;
+
     #endregion Variables
 
     #region Properties
@@ -143,9 +148,49 @@ namespace Translator
 
     #region Main
 
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
     [STAThread]
-    static void Main()
+    static void Main(string[] args)
     {
+      if (args.Length > 0)
+      {
+        for (int index = 0; index < args.Length; index++)
+        {
+          switch (args[index].ToLowerInvariant())
+          {
+            case "-macro":
+              SendCopyDataMessage("Translator", Common.CmdPrefixMacro + args[++index]);
+              continue;
+
+            case "-eject":
+              SendCopyDataMessage("Translator", Common.CmdPrefixEject + args[++index]);
+              continue;
+
+            case "-shutdown":
+              SendCopyDataMessage("Translator", Common.CmdPrefixShutdown);
+              continue;
+
+            case "-reboot":
+              SendCopyDataMessage("Translator", Common.CmdPrefixReboot);
+              continue;
+
+            case "-standby":
+              SendCopyDataMessage("Translator", Common.CmdPrefixStandby);
+              continue;
+
+            case "-hibernate":
+              SendCopyDataMessage("Translator", Common.CmdPrefixHibernate);
+              continue;
+
+            //TODO: Add more command line options.
+          }
+        }
+
+        return;
+      }      
+      
       // Check for multiple instances.
       if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
         return;
@@ -184,6 +229,15 @@ namespace Translator
 
       // Setup main form ...
       _mainForm = new MainForm();
+      _ownWindowHandle = _mainForm.Handle;
+
+      // Start the window focus watcher thread
+      /*
+      _focusWatcher = new Thread(new ThreadStart(FocusWatcherThread));
+      _focusWatcher.Name = "Translator - Focus watcher";
+      _focusWatcher.IsBackground = true;
+      _focusWatcher.Start();
+      */
 
       // Start server communications ...
       if (StartComms())
@@ -204,12 +258,88 @@ namespace Translator
 
       StopComms();
 
+      //if (_focusWatcher.IsAlive)
+        //_focusWatcher.Abort();
+
       IrssLog.Close();
+    }
+
+    static void FocusWatcherThread()
+    {
+      try
+      {
+        while (true)
+        {
+          UpdateForegroundWindow();
+          Thread.Sleep(2000);
+        }
+      }
+      catch
+      {
+      }
+    }
+
+    static void UpdateForegroundWindow()
+    {
+      try
+      {
+        IntPtr hWnd = Win32.GetForegroundWindow();
+
+        if (hWnd == IntPtr.Zero)
+          return;
+        
+        if (hWnd == _mainForm.Handle)
+          return;        
+/*
+        string windowTitle = Win32.GetWindowTitle(hWnd);
+        if (windowTitle.StartsWith("Translator", StringComparison.InvariantCultureIgnoreCase))
+          return;
+
+        int procID;
+        Win32.GetWindowThreadProcessId(hWnd, out procID);
+        Process proc = Process.GetProcessById(procID);
+        if (proc.MainModule.ModuleName.Equals("Translator.exe", StringComparison.InvariantCultureIgnoreCase))
+          return;
+        */
+        _currentForegroundWindow = hWnd;
+      }
+      catch
+      {
+      }
     }
 
     #endregion Main
 
     #region Implementation
+
+    static void ShowTranslatorMenu()
+    {
+      UpdateForegroundWindow();
+      _notifyIcon.ContextMenuStrip.Show(Screen.PrimaryScreen.Bounds.Width / 4, Screen.PrimaryScreen.Bounds.Height / 4);
+      //_notifyIcon.ContextMenuStrip.Focus();
+    }
+
+    static void SendCopyDataMessage(string targetWindow, string data)
+    {
+      Win32.COPYDATASTRUCT copyData;
+
+      copyData.dwData = 24;
+      copyData.lpData = Win32.VarPtr(data).ToInt32();
+      copyData.cbData = data.Length;
+
+      IntPtr windowHandle = Win32.FindWindow(null, targetWindow);
+      if (windowHandle != IntPtr.Zero)
+      {
+        IntPtr result;
+        Win32.SendMessageTimeout(windowHandle, (int)Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero, Win32.VarPtr(copyData), Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
+
+        if (result == IntPtr.Zero)
+        {
+          int lastError = Marshal.GetLastWin32Error();
+          throw new Win32Exception(lastError);
+        }
+      }
+    }
 
     static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
     {
@@ -242,6 +372,9 @@ namespace Translator
     internal static void UpdateNotifyMenu()
     {
       _notifyIcon.ContextMenuStrip.Items.Clear();
+
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel("Translator"));
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 
       if (Config.Programs.Count > 0)
       {
@@ -277,6 +410,7 @@ namespace Translator
         _notifyIcon.ContextMenuStrip.Items.Add(macros);
       }
 
+      /**/
       ToolStripMenuItem actions = new ToolStripMenuItem("&Actions");
       actions.DropDownItems.Add("Next Window", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("Last Window", null, new EventHandler(ClickAction));
@@ -285,24 +419,53 @@ namespace Translator
       actions.DropDownItems.Add("Minimize Window", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("Restore Window", null, new EventHandler(ClickAction));
 
+      actions.DropDownItems.Add(new ToolStripSeparator());
+
       actions.DropDownItems.Add("System Standby", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Hibernate", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Reboot", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Logoff", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Shutdown", null, new EventHandler(ClickAction));
+      
+      actions.DropDownItems.Add(new ToolStripSeparator());
 
       actions.DropDownItems.Add("Volume Up", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("Volume Down", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("Volume Mute", null, new EventHandler(ClickAction));
 
+      actions.DropDownItems.Add(new ToolStripSeparator());
+
+      ToolStripMenuItem ejectMenu = new ToolStripMenuItem("Eject");
+      DriveInfo[] drives = DriveInfo.GetDrives();
+      foreach (DriveInfo drive in drives)
+        if (drive.DriveType == DriveType.CDRom)
+          ejectMenu.DropDownItems.Add(drive.Name, null, new EventHandler(ClickEjectAction));
+      actions.DropDownItems.Add(ejectMenu);
 
       _notifyIcon.ContextMenuStrip.Items.Add(actions);
+      /**/
 
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-
       _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, new EventHandler(ClickSetup));
       _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, new EventHandler(ClickQuit));
     }
+
+    /**/
+    static bool SendMessageToWindow(IntPtr hWnd, Win32.WindowsMessage msg, int wParam, int lParam)
+    {
+      IntPtr result;
+      Win32.SendMessageTimeout(hWnd, (int)msg, new IntPtr(wParam), new IntPtr(lParam), Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
+
+      if (result == IntPtr.Zero)
+      {
+        int lastError = Marshal.GetLastWin32Error();
+        if (lastError != 0)
+          throw new Win32Exception(lastError);
+      }
+
+      return true;
+    }
+    /**/
 
     static void ClickProgram(object sender, EventArgs e)
     {
@@ -371,7 +534,6 @@ namespace Translator
         MessageBox.Show(ex.Message, "Macro failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-
     static void ClickAction(object sender, EventArgs e)
     {
       IrssLog.Info("Click Action");
@@ -385,49 +547,97 @@ namespace Translator
         switch (menuItem.Text)
         {
           case "Next Window":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.SysCommand.SC_NEXTWINDOW,
+              0);
             break;
 
           case "Last Window":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.SysCommand.SC_PREVWINDOW,
+              0);
             break;
 
           case "Close Window":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.SysCommand.SC_CLOSE,
+              0);
             break;
 
           case "Maximize Window":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.SysCommand.SC_MAXIMIZE,
+              0);
             break;
 
           case "Minimize Window":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.SysCommand.SC_MINIMIZE,
+              0);
             break;
 
           case "Restore Window":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.SysCommand.SC_RESTORE,
+              0);
             break;
 
-
           case "System Standby":
+            Application.SetSuspendState(PowerState.Suspend, true, false);
             break;
 
           case "System Hibernate":
+            Application.SetSuspendState(PowerState.Hibernate, true, false);
             break;
 
           case "System Reboot":
+            Win32.ExitWindowsEx(Win32.ExitWindows.Reboot | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReason.FlagUserDefined);
             break;
 
           case "System Logoff":
+            Win32.ExitWindowsEx(Win32.ExitWindows.LogOff | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReason.FlagUserDefined);
             break;
 
           case "System Shutdown":
+            Win32.ExitWindowsEx(Win32.ExitWindows.ShutDown | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReason.FlagUserDefined);
             break;
 
 
           case "Volume Up":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_APPCOMMAND,
+              (int)Win32.AppCommand.APPCOMMAND_VOLUME_UP,
+              0);
             break;
 
           case "Volume Down":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_APPCOMMAND,
+              (int)Win32.AppCommand.APPCOMMAND_VOLUME_DOWN,
+              0);
             break;
 
           case "Volume Mute":
+            SendMessageToWindow(
+              _currentForegroundWindow,
+              Win32.WindowsMessage.WM_APPCOMMAND,
+              (int)Win32.AppCommand.APPCOMMAND_VOLUME_MUTE,
+              0);
             break;
-
 
           default:
             throw new Exception("Unknown action: " + menuItem.Text);
@@ -440,6 +650,16 @@ namespace Translator
       }
     }
 
+    static void ClickEjectAction(object sender, EventArgs e)
+    {
+      IrssLog.Info("Click Eject Action");
+
+      ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+      if (menuItem == null)
+        return;
+
+      CDRom.Open(menuItem.Text);
+    }
     
     static void ClickSetup(object sender, EventArgs e)
     {
@@ -978,7 +1198,10 @@ namespace Translator
           {
             ProcessCommand(mappedEvent.Command);
           }
-          catch (Exception ex) { IrssLog.Error(ex.ToString()); }
+          catch (Exception ex)
+          {
+            IrssLog.Error(ex.ToString());
+          }
         }
       }
     }
@@ -1051,6 +1274,12 @@ namespace Translator
           case Common.XmlTagKeys:
             {
               Common.ProcessKeyCommand(commandProperty);
+              break;
+            }
+
+          case Common.XmlTagEject:
+            {
+              Common.ProcessEjectCommand(commandProperty);
               break;
             }
 
@@ -1180,6 +1409,11 @@ namespace Translator
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         Common.ProcessKeyCommand(keyCommand);
+      }
+      else if (command.StartsWith(Common.CmdPrefixEject)) // Eject Command
+      {
+        string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
+        Common.ProcessEjectCommand(ejectCommand);
       }
       else if (command.StartsWith(Common.CmdPrefixMouse)) // Mouse Command
       {

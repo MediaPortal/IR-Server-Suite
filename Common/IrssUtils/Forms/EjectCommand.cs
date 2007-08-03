@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
 
-  public partial class KeysCommand : Form
+  public partial class EjectCommand : Form
   {
 
     #region Properties
@@ -18,7 +19,7 @@ namespace IrssUtils.Forms
     {
       get
       {
-        return textBoxKeystrokes.Text;
+        return comboBoxDrive.Text;
       }
     }
 
@@ -26,13 +27,22 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
-    public KeysCommand() : this(null) { }
-    public KeysCommand(string command)
+    public EjectCommand() : this(null) { }
+    public EjectCommand(string command)
     {
       InitializeComponent();
 
-      if (!String.IsNullOrEmpty(command))
-        textBoxKeystrokes.Text = command;
+      DriveInfo[] drives = DriveInfo.GetDrives();
+      foreach (DriveInfo drive in drives)
+      {
+        if (drive.DriveType == DriveType.CDRom)
+        {
+          comboBoxDrive.Items.Add(drive.Name);
+          if (drive.Name == command)
+            comboBoxDrive.SelectedItem = drive.Name;
+        }
+      }
+
     }
 
     #endregion

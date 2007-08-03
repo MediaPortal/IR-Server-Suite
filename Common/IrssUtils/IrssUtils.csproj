@@ -42,6 +42,12 @@
   <ItemGroup>
     <Compile Include="CDRom.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Forms\EjectCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EjectCommand.Designer.cs">
+      <DependentUpon>EjectCommand.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MouseCommand.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -117,6 +123,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\EjectCommand.resx">
+      <DependentUpon>EjectCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MouseCommand.resx">
       <DependentUpon>MouseCommand.cs</DependentUpon>
       <SubType>Designer</SubType>

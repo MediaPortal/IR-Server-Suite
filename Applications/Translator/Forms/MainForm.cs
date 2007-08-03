@@ -194,6 +194,8 @@ namespace Translator
       string[] macroList = Program.GetMacroList(false);
       if (macroList != null && macroList.Length > 0)
         listBoxMacro.Items.AddRange(macroList);
+
+      Program.UpdateNotifyMenu();
     }
 
     List<ButtonMapping> GetCurrentSettings()
@@ -305,6 +307,35 @@ namespace Translator
       CommitEvents();
 
       Configuration.Save(Program.Config, Program.ConfigFile);
+    }
+
+    protected override void WndProc(ref Message m)
+    {
+      try
+      {
+        if (m.Msg == (int)Win32.WindowsMessage.WM_COPYDATA)
+        {
+          IrssLog.Info("Received WM_COPYDATA message");
+
+          Win32.COPYDATASTRUCT dataStructure = (Win32.COPYDATASTRUCT)m.GetLParam(typeof(Win32.COPYDATASTRUCT));
+
+          if (dataStructure.dwData != 24)
+            return;
+
+          byte[] dataBytes = new byte[dataStructure.cbData];
+          IntPtr lpData = new IntPtr(dataStructure.lpData);
+          System.Runtime.InteropServices.Marshal.Copy(lpData, dataBytes, 0, dataStructure.cbData);
+          string strData = Encoding.Default.GetString(dataBytes);
+
+          Program.ProcessCommand(strData);
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
+
+      base.WndProc(ref m);
     }
 
     #region Controls

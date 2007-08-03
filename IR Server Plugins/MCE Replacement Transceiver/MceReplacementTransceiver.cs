@@ -17,7 +17,7 @@ namespace MceReplacementTransceiver
 
     #region Constants
 
-    public static readonly string ConfigurationFile =
+    static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\MCE Replacement Transceiver.xml";
 
@@ -28,7 +28,7 @@ namespace MceReplacementTransceiver
 
     #region Variables
 
-    RemoteButtonHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteHandler = null;
 
     MceIrApi.BlasterType  _blasterType  = MceIrApi.BlasterType.Microsoft;
     MceIrApi.BlasterSpeed _blasterSpeed = MceIrApi.BlasterSpeed.None;
@@ -43,7 +43,7 @@ namespace MceReplacementTransceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "MCE Replacement"; } }
-    public string Version       { get { return "1.0.3.2"; } }
+    public string Version       { get { return "1.0.3.3"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Supports the MCE Replacement Driver for accessing the Microsoft MCE transceiver"; } }
     public bool   CanReceive    { get { return true; } }
@@ -51,11 +51,15 @@ namespace MceReplacementTransceiver
     public bool   CanLearn      { get { return true; } }
     public bool   CanConfigure  { get { return true; } }
 
-    public RemoteButtonHandler RemoteButtonCallback
+    public RemoteHandler RemoteCallback
     {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
+      get { return _remoteHandler; }
+      set { _remoteHandler = value; }
     }
+
+    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
+
+    public MouseHandler MouseCallback { get { return null; } set { } }
 
     public string[] AvailablePorts
     {
@@ -154,15 +158,28 @@ namespace MceReplacementTransceiver
 
       return result;    
     }
-    public LearnStatus Learn(string file)
+    public LearnStatus Learn(out byte[] data)
     {
-      FileStream fileStream = new FileStream(file, FileMode.Create);
+      data = null;
+
+      string fileName = Path.GetTempFileName();
+
+      FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
       DateTime start = DateTime.Now;
 
       bool result = MceIrApi.RecordToFile(fileStream.SafeFileHandle, _learnTimeout);
 
+      if (result && fileStream.Length != 0)
+      {
+        fileStream.Seek(0, SeekOrigin.Begin);
+        data = new byte[fileStream.Length];
+        fileStream.Read(data, 0, (int)fileStream.Length);
+      }
+
       fileStream.Close();
+
+      File.Delete(fileName);
 
       TimeSpan timeTaken = start.Subtract(DateTime.Now);
 
@@ -259,8 +276,8 @@ namespace MceReplacementTransceiver
       {
         int keyCode = m.LParam.ToInt32() & 0xFFFF;
 
-        if (_remoteButtonHandler != null)
-          _remoteButtonHandler(keyCode.ToString());
+        if (_remoteHandler != null)
+          _remoteHandler(keyCode.ToString());
       }
 
       base.WndProc(ref m);

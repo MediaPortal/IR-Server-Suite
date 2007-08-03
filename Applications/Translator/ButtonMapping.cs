@@ -5,6 +5,9 @@ using System.Xml.Serialization;
 namespace Translator
 {
 
+  /// <summary>
+  /// Stores the relevant information for mapping a remote button to a command.
+  /// </summary>
   public class ButtonMapping
   {
 
@@ -18,6 +21,9 @@ namespace Translator
 
     #region Properties
 
+    /// <summary>
+    /// Remote button key code.
+    /// </summary>
     [XmlAttribute]
     public string KeyCode
     {
@@ -25,6 +31,9 @@ namespace Translator
       set { _keyCode = value; }
     }
 
+    /// <summary>
+    /// Remote button description.
+    /// </summary>
     [XmlAttribute]
     public string Description
     {
@@ -32,6 +41,9 @@ namespace Translator
       set { _description = value; }
     }
 
+    /// <summary>
+    /// Command to execute for the remote button.
+    /// </summary>
     [XmlAttribute]
     public string Command
     {

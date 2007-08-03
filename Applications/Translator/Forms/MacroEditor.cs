@@ -46,6 +46,8 @@ namespace Translator
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextTcpMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
+      comboBoxCommands.Items.Add(Common.UITextEject);
+      
       //TODO: Add Shutdown and Reboot
       comboBoxCommands.Items.Add(Common.UITextStandby);
       comboBoxCommands.Items.Add(Common.UITextHibernate);
@@ -104,6 +106,11 @@ namespace Translator
           {
             writer.WriteAttributeString("command", Common.XmlTagKeys);
             writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
+          }
+          else if (item.StartsWith(Common.CmdPrefixEject))
+          {
+            writer.WriteAttributeString("command", Common.XmlTagEject);
+            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixEject.Length));
           }
           else if (item.StartsWith(Common.CmdPrefixStandby))
           {
@@ -170,6 +177,10 @@ namespace Translator
 
             case Common.XmlTagKeys:
               listBoxMacro.Items.Add(Common.CmdPrefixKeys + commandProperty);
+              break;
+
+            case Common.XmlTagEject:
+              listBoxMacro.Items.Add(Common.CmdPrefixEject + commandProperty);
               break;
 
             case Common.XmlTagStandby:
@@ -249,6 +260,14 @@ namespace Translator
           return;
 
         listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
+      }
+      else if (selected == Common.UITextEject)
+      {
+        EjectCommand ejectCommand = new EjectCommand();
+        if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
       }
       else if (selected == Common.UITextStandby)
       {
@@ -420,6 +439,17 @@ namespace Translator
           int index = listBoxMacro.SelectedIndex;
           listBoxMacro.Items.RemoveAt(index);
           listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
+          listBoxMacro.SelectedIndex = index;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixEject))
+        {
+          EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
+          if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
+            return;
+
+          int index = listBoxMacro.SelectedIndex;
+          listBoxMacro.Items.RemoveAt(index);
+          listBoxMacro.Items.Insert(index, Common.CmdPrefixEject + ejectCommand.CommandString);
           listBoxMacro.SelectedIndex = index;
         }
         else if (selected.StartsWith(Common.CmdPrefixBlast))

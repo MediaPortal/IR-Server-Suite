@@ -122,6 +122,8 @@ namespace IrssUtils
 
     public const string CmdPrefixMouse        = "Mouse: ";
 
+    public const string CmdPrefixEject        = "Eject: ";
+
     #endregion Command Prefixes
 
     #region XML Tags
@@ -148,6 +150,8 @@ namespace IrssUtils
 
     public const string XmlTagMouse           = "MOUSE";
 
+    public const string XmlTagEject           = "EJECT";
+
     #endregion XML Tags
 
     #region User Interface Text
@@ -172,6 +176,8 @@ namespace IrssUtils
     public const string UITextShutdown        = "Shutdown";
 
     public const string UITextMouse           = "Mouse Command";
+
+    public const string UITextEject           = "Eject CD";
 
     #endregion User Interface Text
 
@@ -479,6 +485,16 @@ namespace IrssUtils
             throw new ApplicationException("Invalid Mouse Command");
           break;
       }
+    }
+
+    /// <summary>
+    /// Given a CD-ROM drive letter this method will eject the CD tray.
+    /// </summary>
+    /// <param name="command">The drive letter of the CD-ROM drive to eject the tray on.</param>
+    public static void ProcessEjectCommand(string command)
+    {
+      if (CDRom.IsCDRom(command))
+        CDRom.Open(command);
     }
 
     #endregion Command Execution

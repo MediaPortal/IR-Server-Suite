@@ -16,74 +16,72 @@ namespace MceReplacementTransceiver
 
     #region Constants
 
-    public const int ID_MCEIR_KEYCODE = 0x37FF0;
+    const int ID_MCEIR_KEYCODE = 0x37FF0;
 
     #endregion
 
     #region Enumerations
 
     /// <summary>
-    /// The blaster port to send IR codes to
+    /// The blaster port to send IR codes to.
     /// </summary>
     public enum BlasterPort
     {
       /// <summary>
-      /// Send IR codes to both blaster ports
+      /// Send IR codes to both blaster ports.
       /// </summary>
       Both = 0,
       /// <summary>
-      /// Send IR codes to blaster port 1 only
+      /// Send IR codes to blaster port 1 only.
       /// </summary>
       Port_1 = 1,
       /// <summary>
-      /// Send IR codes to blaster port 2 only
+      /// Send IR codes to blaster port 2 only.
       /// </summary>
       Port_2 = 2
     }
 
     /// <summary>
-    /// Type of blaster in use
+    /// Type of blaster in use.
     /// </summary>
     public enum BlasterType
     {
       /// <summary>
-      /// Device is a first party Microsoft MCE transceiver
+      /// Device is a first party Microsoft MCE transceiver.
       /// </summary>
       Microsoft = 0,
       /// <summary>
-      /// Device is an third party SMK MCE transceiver
+      /// Device is an third party SMK MCE transceiver.
       /// </summary>
       SMK = 1
     }
 
     /// <summary>
-    /// Speed to transmit IR codes at
+    /// Speed to transmit IR codes at.
     /// </summary>
     public enum BlasterSpeed
     {
       /// <summary>
-      /// None - Do not set the blaster speed
-      /// (Note: If an IR code has been sent with a speed setting previously
-      /// then that speed setting will continue to take effect, until the
-      /// unit's power is cycled)
+      /// None - Do not set the blaster speed.
+      /// (Note: If an IR code has been sent with a speed setting previously then that speed setting will continue to take effect, until the unit's power is cycled)
       /// </summary>
       None    = 0,
       /// <summary>
-      /// Fast - Set blaster speed to fast
+      /// Fast - Set blaster speed to fast.
       /// </summary>
       Fast    = 1,
       /// <summary>
-      /// Medium - Set blaster speed to medium
+      /// Medium - Set blaster speed to medium.
       /// </summary>
       Medium  = 2,
       /// <summary>
-      /// Slow - Set blaster speed to slow
+      /// Slow - Set blaster speed to slow.
       /// </summary>
       Slow    = 3,
     }
 
     /// <summary>
-    /// A list of MCE remote buttons
+    /// A list of MCE remote buttons.
     /// </summary>
     public enum MceButton
     {
@@ -154,6 +152,9 @@ namespace MceReplacementTransceiver
 
     #region Properties
 
+    /// <summary>
+    /// Is the MceIrApi in use?
+    /// </summary>
     public static bool InUse
     {
       get { return _inUse; }

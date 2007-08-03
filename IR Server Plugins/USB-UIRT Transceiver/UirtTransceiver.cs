@@ -139,13 +139,15 @@ namespace UirtTransceiver
 
     #region Variables
 
-    RemoteButtonHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler = null;
 
     string _blastPort = Ports[0];
 
     int _repeatDelay;
     int _blastRepeats;
     int _learnTimeout;
+
+    ulong _learnCarrierFreq;
 
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
@@ -203,7 +205,7 @@ namespace UirtTransceiver
     #region IIRServerPlugin Members
 
     public string Name        { get { return "USB-UIRT"; } }
-    public string Version     { get { return "1.0.3.2"; } }
+    public string Version     { get { return "1.0.3.3"; } }
     public string Author      { get { return "and-81"; } }
     public string Description { get { return "Support for the USB-UIRT transceiver"; } }
     public bool CanReceive    { get { return true; } }
@@ -211,11 +213,15 @@ namespace UirtTransceiver
     public bool CanLearn      { get { return true; } }
     public bool CanConfigure  { get { return true; } }
 
-    public RemoteButtonHandler RemoteButtonCallback
+    public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
+
+    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
+
+    public MouseHandler MouseCallback { get { return null; } set { } }
 
     public string[] AvailablePorts  { get { return Ports; }   }
     public string[] AvailableSpeeds { get { return Speeds; }  }
@@ -302,23 +308,31 @@ namespace UirtTransceiver
 
       return result;
     }
-    public LearnStatus Learn(string file)
+    public LearnStatus Learn(out byte[] data)
     {
       bool result = false;
-      
+
+      data = null;
+
       StringBuilder irCode = new StringBuilder("1", 2048);
       _abortLearn = AllowLearn;
       _learnTimedOut = false;
+      
+      _learnCarrierFreq = 0;
 
       Timer timer = new Timer();
       timer.Interval = _learnTimeout;
       timer.Tick += new EventHandler(timer_Tick);
+      timer.Enabled = true;
+      timer.Start();
+
+      IRLearnCallbackDelegate learnCallback = new IRLearnCallbackDelegate(UUIRTLearnCallback);
 
       result = UirtTransceiver.UUIRTLearnIR(
         _usbUirtHandle,                                     // Handle to USB-UIRT
-        UirtTransceiver.UUIRTDRV_IRFMT_PRONTO,              //  | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FORCERAW
+        UirtTransceiver.UUIRTDRV_IRFMT_PRONTO | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FREQDETECT,              //  | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FORCERAW
         irCode,                                             // Where to put the IR Code
-        null,                                               // Learn status callback
+        learnCallback,                                      // Learn status callback
         0,                                                  // User data
         ref _abortLearn,                                    // Abort flag?
         0,
@@ -327,15 +341,15 @@ namespace UirtTransceiver
 
       timer.Stop();
 
+      MessageBox.Show(_learnCarrierFreq.ToString());
+
       if (_learnTimedOut)
       {
         return LearnStatus.Timeout;
       }
       else if (result)
       {
-        StreamWriter streamWriter = new StreamWriter(file, false);
-        streamWriter.Write(irCode.ToString());
-        streamWriter.Close();
+        data = Encoding.ASCII.GetBytes(irCode.ToString());
 
         return LearnStatus.Success;
       }
@@ -438,6 +452,12 @@ namespace UirtTransceiver
       }
       
       _lastCode = keyCode;
+    }
+
+    void UUIRTLearnCallback(uint progress, uint sigQuality, ulong carrierFreq, IntPtr userData)
+    {
+      _learnCarrierFreq = carrierFreq;
+      //MessageBox.Show(_learnCarrierFreq.ToString());
     }
 
     void timer_Tick(object sender, EventArgs e)

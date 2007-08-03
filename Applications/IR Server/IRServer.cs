@@ -85,8 +85,11 @@ namespace IRServer
       // Setup taskbar icon
       _notifyIcon = new NotifyIcon();
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
-      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
-      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
+
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel("IR Server"));
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+      _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, new EventHandler(ClickSetup));
+      _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, new EventHandler(ClickQuit));
       _notifyIcon.Icon = Properties.Resources.Icon16;
       _notifyIcon.Text = "IR Server";
     }

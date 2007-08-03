@@ -84,7 +84,7 @@ namespace Translator
 
     #endregion Constructors
 
-    #region Methods
+    #region Static Methods
 
     /// <summary>
     /// Save the supplied configuration to file.
@@ -129,7 +129,7 @@ namespace Translator
       }
     }
 
-    #endregion Methods
+    #endregion Static Methods
 
   }
 

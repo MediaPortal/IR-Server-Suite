@@ -49,9 +49,9 @@ namespace Translator
     {
       InitializeComponent();
       
-      _keyCode = keyCode;
-      _description = description;
-      _command = command;
+      _keyCode      = keyCode;
+      _description  = description;
+      _command      = command;
     }
 
     #endregion Constructors
@@ -130,12 +130,27 @@ namespace Translator
       comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof(ProcessWindowStyle)));
       comboBoxWindowStyle.SelectedIndex = 0;
 
+      // Setup Misc tab
+      comboBoxMiscCommand.Items.Clear();
+      comboBoxMiscCommand.Items.Add(Common.UITextEject);
+      comboBoxMiscCommand.Items.Add(Common.UITextStandby);
+      comboBoxMiscCommand.Items.Add(Common.UITextHibernate);
+      comboBoxMiscCommand.Items.Add(Common.UITextReboot);
+      comboBoxMiscCommand.Items.Add(Common.UITextShutdown);
+
+
       if (!String.IsNullOrEmpty(_command))
       {
+        string prefix = _command;
+        string suffix = String.Empty;
+
         int find = _command.IndexOf(": ");
 
-        string prefix = _command.Substring(0, find + 2);
-        string suffix = _command.Substring(find + 2);
+        if (find != -1)
+        {
+          prefix = _command.Substring(0, find + 2);
+          suffix = _command.Substring(find + 2);
+        }
         
         switch (prefix)
         {
@@ -238,6 +253,25 @@ namespace Translator
                   else if (suffix.StartsWith(Common.MouseMoveUp))     checkBoxMouseMoveUp.Checked = true;
 
                   numericUpDownMouseMove.Value = Decimal.Parse(suffix.Substring(suffix.IndexOf(" ")));
+                  break;
+              }
+              break;
+            }
+
+          default:
+            {
+              tabControl.SelectTab(tabPageMisc);
+              switch (_command)
+              {
+                case Common.CmdPrefixHibernate:
+                  comboBoxMiscCommand.SelectedItem = Common.UITextHibernate;
+                  break;
+
+                default:
+                  if (prefix.Equals(Common.CmdPrefixEject, StringComparison.InvariantCultureIgnoreCase))
+                  {
+                    comboBoxMiscCommand.SelectedItem = Common.UITextEject;
+                  }
                   break;
               }
               break;
@@ -391,6 +425,28 @@ namespace Translator
             }
             
             textBoxCommand.Text = _command = newCommand.ToString();
+            break;
+          }
+
+        case "tabPageMisc":
+          {
+            string newCommand = comboBoxMiscCommand.SelectedItem as string;
+
+            switch (newCommand)
+            {
+              case Common.UITextEject:
+                textBoxCommand.Text = _command = Common.CmdPrefixEject;
+                break;
+
+              case Common.UITextHibernate:
+                textBoxCommand.Text = _command = Common.CmdPrefixHibernate;
+                break;
+
+
+            }
+
+
+
             break;
           }
       }
