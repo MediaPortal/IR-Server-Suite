@@ -3,32 +3,64 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace MceTransceiver
+namespace MicrosoftMceTransceiver
 {
 
   /// <summary>
-  /// Phillips Pronto interface class
+  /// Philips Pronto interface class.
   /// </summary>
   public static class Pronto
   {
 
+    #region Enumerations
+
+    enum CodeType : ushort
+    {
+      RawOscillated   = 0x0000,
+      RawUnmodulated  = 0x0100,
+      RC5             = 0x5000,
+      RC5X            = 0x5001,
+      RC6             = 0x6000,
+      RC6A            = 0x6001,
+      VariableLength  = 0x7000,
+      IndexToUDB      = 0x8000,
+      NEC_1           = 0x9000,
+      NEC_2           = 0x900A,
+      NEC_3           = 0x900B,
+      NEC_4           = 0x900C,
+      NEC_5           = 0x900D,
+      NEC_6           = 0x900E,
+      YamahaNEC       = 0x9001,
+    }
+
+    enum CarrierFrequency : ushort
+    {
+      Khz38 = 0x006D,
+      Khz36 = 0x0073,
+    }
+
+    #endregion Enumerations
+
     #region Constants
 
-    const double Clock = 0.241246;
+    const double ProntoClock = 0.241246;
 
-    const ushort DefaultProntoLearnedFrequency = 0x006D; // 38khz
+    const ushort DefaultProntoRawCarrier = (ushort)CarrierFrequency.Khz38;
+
+    static readonly byte[] RC6NativeHeader  = new byte[] { 0xB6, 0x12, 0x89, 0x12, 0x89, 0x09, 0x89, 0x09, 0x89, 0x12 };
+    static readonly byte[] RC6ANativeHeader = new byte[] { 0xBF, 0x12, 0x89, 0x09, 0x89, 0x09, 0x89, 0x12, 0x89, 0x12 };
 
     #endregion Constants
 
     #region Public Methods
 
     /// <summary>
-    /// Write Pronto data to a file
+    /// Write Pronto data to a file.
     /// </summary>
-    /// <param name="fileName">File to write Pronto data to</param>
-    /// <param name="prontoData">Pronto data to write</param>
-    /// <returns>Success</returns>
-    public static bool WriteFile(string fileName, ushort[] prontoData)
+    /// <param name="fileName">File to write Pronto data to.</param>
+    /// <param name="prontoData">Pronto data to write.</param>
+    /// <returns>Success.</returns>
+    public static bool WriteProntoFile(string fileName, ushort[] prontoData)
     {
       try
       {
@@ -52,618 +84,525 @@ namespace MceTransceiver
       return true;
     }
 
-    public static ushort[] ConvertNativeDataToProntoLearned(byte[] nativeData)
+    public static MceIrCode ConvertProntoDataToMceIrCode(ushort[] prontoData)
     {
+      switch ((CodeType)prontoData[0])
+    {
+        case CodeType.RawOscillated:
+        case CodeType.RawUnmodulated:
+          return ConvertProntoRawToMceIrCode(prontoData);
 
-      return null;
+        case CodeType.RC5:
+          return ConvertProntoRC5ToMceIrCode(prontoData);
+
+        case CodeType.RC5X:
+          return ConvertProntoRC5XToMceIrCode(prontoData);
+
+        case CodeType.RC6:
+          return ConvertProntoRC6ToMceIrCode(prontoData);
+
+        case CodeType.RC6A:
+          return ConvertProntoRC6AToMceIrCode(prontoData);
+
+        default:
+          return null;
+      }
     }
 
-    public static byte[] ConvertProntoDataToNativeData(ushort[] prontoData)
-    {
-      byte[] nativeData = null;
-
-      if (prontoData[0] == 0x0000 || prontoData[0] == 0x0100)
-        nativeData = ConvertProntoLearnedToNativeData(prontoData);
-      else if (prontoData[0] == 0x5000)
-        nativeData = ConvertProntoRC5ToNativeData(prontoData);
-      else if (prontoData[0] == 0x5001)
-        nativeData = ConvertProntoRC5XToNativeData(prontoData);
-      else if (prontoData[0] == 0x6000)
-        nativeData = ConvertProntoRC6ToNativeData(prontoData);
-      else if (prontoData[0] == 0x6001)
-        nativeData = ConvertProntoRC6XToNativeData(prontoData);
-
-      return nativeData;
-    }
-
-    public static byte[] ConvertProntoLearnedToNativeData(ushort[] prontoData)
+    static MceIrCode ConvertProntoRawToMceIrCode(ushort[] prontoData)
     {
       int length = prontoData.Length;
       if (length < 5)
         return null;
 
-      ushort clock = prontoData[1];
-      if (clock == 0)
-        clock = DefaultProntoLearnedFrequency;
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = DefaultProntoRawCarrier;
 
-      double carrier = (double)clock * Clock;
+      double carrier = (double)prontoCarrier * ProntoClock;
 
-      ushort sequence;
-      if (prontoData[2] != 0)
-        sequence = (ushort)(prontoData[2] * 2);
-      else
-        sequence = (ushort)(prontoData[3] * 2);
-
-      bool nextIsPulse = true;
-
-      int remaining = 0;
-      int repeatCount = 0;
-
-      int dataPosition;
-      int index = 0;
+      int firstSeq = 2 * prontoData[2];
+      int repeatSeq = 2 * prontoData[3];
 
       List<byte> nativeData = new List<byte>();
 
-      for (; ; )
+      bool pulse = true;
+      int remaining = 0;
+      int repeatCount = 0;
+      int start = 4;
+      bool done = false;
+
+      int index = start;
+      int sequence = firstSeq;
+
+      if (firstSeq == 0)
       {
-        dataPosition = 4 + index;
+        if (repeatSeq == 0)
+          return null;
+
+        sequence = repeatSeq;
+        repeatCount = 1;
+      }
+
+      while (!done)
+      {
+        if (remaining == 0)
+          remaining = (ushort)(((prontoData[index] * carrier) + 25) / 50);
 
         if (remaining != 0)
         {
+
           if (remaining < 0x80)
           {
-            nativeData.Add((byte)(remaining | (nextIsPulse ? 0x00 : 0x80)));
+            nativeData.Add((byte)(remaining | (pulse ? 0x80 : 0x00)));
             remaining = 0;
+            index++;
+            pulse = !pulse;
           }
           else
           {
-            nativeData.Add((byte)(0x7F | (nextIsPulse ? 0x00 : 0x80)));
+            nativeData.Add((byte)(0x7F | (pulse ? 0x80 : 0x00)));
             remaining -= 0x7F;
           }
         }
 
-        if (remaining == 0)
+        if (index == start + sequence)
         {
-          if ((dataPosition >= prontoData.Length) || (sequence == 0))
+          switch (repeatCount)
+        {
+            case 0:
+              if (repeatSeq != 0)
           {
-            if (repeatCount >= 3)
-              return nativeData.ToArray();
-
-            index = 0; // restart
+                start += firstSeq;
+                sequence = repeatSeq;
+                index = start;
+                pulse = true;
             repeatCount++;
-            nextIsPulse = true;
-            continue;
           }
+              else
+                done = true;
+              break;
 
-          index++;
+            case 3:
+              done = true;
+              break;
 
-          if (dataPosition > prontoData.Length)
-            return null;
-
-          sequence--;
-          remaining = (ushort)(((prontoData[dataPosition] * carrier) + 25) / 50);
-          nextIsPulse = !nextIsPulse;
+            default:
+              index = start;
+              pulse = true;
+              repeatCount++;
+              break;
         }
       }
     }
 
-    /*
-     static BOOL MceIrImportProntoLearned(PUCHAR pData, ULONG Length, PUCHAR *pBuf, PULONG pReadCount)
+      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
+    }
+    static MceIrCode ConvertProntoRC5ToMceIrCode(ushort[] prontoData)
 {
-  PCHAR pHeader;
-  double Carrier;
-  ULONG Sequence, Seq;
-  USHORT Clock, Seq1, Seq2;
-  PUCHAR pBuffer = NULL;
-  PUCHAR pData2 = NULL;
-  PUCHAR pPronto;
-  USHORT Remaining = 0;
-  BYTE RepeatCount = 0;
-  BOOL NextIsPulse = TRUE;
-  BOOL Result = FALSE;
+      if (prontoData.Length != 6)
+        return null;
 
-  do
-  {
-    //Read 15 bytes of header
-    if (Length < 20) break;
-    pHeader = (PCHAR)pData + 5;
+      if (prontoData[0] != (ushort)CodeType.RC5)
+        return null;
 
-    if (sscanf_s(pHeader, " %04x %04x %04x", &Clock, &Seq1, &Seq2) != 3) break;
-    if (Clock == 0) break;
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = DefaultProntoRawCarrier;
 
-    pBuffer = pData2 = (PUCHAR) HeapAlloc(GetProcessHeap(), 0, (Length << 4));
-    if (!pBuffer) break;
+      if (prontoData[2] + prontoData[3] != 1)
+        return null;
 
-    Carrier = Clock * .241246;
-    Sequence = Seq = (Seq1 ? Seq1 : Seq2) * 2;
-    NextIsPulse = TRUE;
-    Remaining = 0;
-    RepeatCount = 0;
+      ushort system   = prontoData[4];
+      ushort command  = prontoData[5];
 
-    *pReadCount = 0;
-    pPronto = pData + 15;
+      if (system > 31)
+        return null;
 
-    for(;;)
+      if (command > 127)
+        return null;
+
+      ushort rc5 = 0;
+
+      rc5 |= (1 << 13); //SS1
+      
+      if (command < 64)
+        rc5 |= (1 << 12); //SS2
+
+      rc5 |= (1 << 11); //Toggle
+
+      rc5 |= (ushort)((system << 6) | command);
+
+      List<byte> nativeData = new List<byte>();
+
+      bool lastIsPulse = true;
+      byte current = 0x92;
+
+      for (int i = 13; i > 0; i--)
     {
-      if (Remaining)
+        if ((rc5 & (1 << i)) != 0)
       {
-        if (Remaining < 128)
+          if (lastIsPulse)
         {
-          *pBuffer++ = (UCHAR)Remaining | (NextIsPulse ? 0x00 : 0x80);
-          (*pReadCount)++;
-          Remaining = 0;
+            nativeData.Add(current);
+            current = 0;
+          }
+
+          current += 0x12;
+          nativeData.Add(current);
+
+          current = 0x92;
+          lastIsPulse = true;
         }
         else
         {
-          *pBuffer++ = 0x7F | (NextIsPulse ? 0x00 : 0x80);
-          (*pReadCount)++;
-          Remaining -= 0x7F;
-        }
-      }
-      if (!Remaining)
+          if (!lastIsPulse)
       {
-        if ((pPronto >= pData + Length) || (Seq == 0))
-        {
-          if (RepeatCount >= 3)
-          {
-            Result = TRUE;
-            break;
+            nativeData.Add(current);
+            current = 0;
           }
-          pPronto = pData + 15;
-          RepeatCount++;
-          NextIsPulse = TRUE;
-          Seq = Sequence;
-          continue;
+
+          current |= 0x80;
+          current += 0x12;
+
+          nativeData.Add(current);
+          current = 0x12;
+
+          lastIsPulse = false;
         }
-        pPronto += 5;
-        if (pPronto > pData + Length) break;
-        if (sscanf_s((PCHAR)pPronto, " %04x", &Remaining) != 1)  break;
-        Seq--;
-        Remaining = (USHORT)(((Remaining * Carrier) + 25) / 50);
-        NextIsPulse = !NextIsPulse;
       }
+
+      for (int j = 0; j < 13; j++)
+        nativeData.Add(0x7F);
+
+      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
     }
-    if (!Result)
+    static MceIrCode ConvertProntoRC5XToMceIrCode(ushort[] prontoData)
     {
-      if (pData2) HeapFree(GetProcessHeap(), 0, pData2);
-      pData2 = NULL;
-      break;
-    }
-    HeapFree(GetProcessHeap(), 0, pData);
-    *pBuf = pData2;
+      if (prontoData.Length != 7)
+        return null;
 
-  } while (FALSE);
+      if (prontoData[0] != (ushort)CodeType.RC5X)
+        return null;
 
-  return Result;
-}
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = DefaultProntoRawCarrier;
 
-*/
+      if (prontoData[2] + prontoData[3] != 2)
+        return null;
 
+      ushort system   = prontoData[4];
+      ushort command  = prontoData[5];
+      ushort data     = prontoData[6];
 
-    public static byte[] ConvertProntoRC5ToNativeData(ushort[] prontoData)
-    {
-      return null;
-    }
-    public static byte[] ConvertProntoRC5XToNativeData(ushort[] prontoData)
-    {
-      return null;
-    }
-    public static byte[] ConvertProntoRC6ToNativeData(ushort[] prontoData)
-    {
-      return null;
-    }
-    public static byte[] ConvertProntoRC6XToNativeData(ushort[] prontoData)
-    {
-      return null;
-    }
+      if (system > 31)
+        return null;
 
-/*
-static BOOL MceIrImportProntoRC5(PUCHAR pData, ULONG Length, PUCHAR *pBuf, PULONG pReadCount)
-{
-  USHORT Proto, Clock, Seq1, Seq2;
-  USHORT System, Command;
-  USHORT RC5 = 0;
-  PUCHAR pBuffer = NULL;
-  //  PUCHAR pData2 = NULL;
-  BOOL LastIsPulse = TRUE;
-  int i;
+      if (command > 127)
+        return null;
 
-  //Read 15 bytes of header
-  if (Length < 20)
-    return FALSE;
-  if (sscanf_s((PCHAR)pData, "%04x %04x %04x %04x", &Proto, &Clock, &Seq1, &Seq2) != 4) 
-    return FALSE;
-  if (Proto != PRONTO_PROTO_RC5)
-    return FALSE;
-  if (Seq1 + Seq2 != 1)
-    return FALSE;
+      if (data > 63)
+        return null;
 
-  pData += 20;
-  if (sscanf_s((PCHAR)pData, "%04x %04x", &System, &Command) != 2)
-    return FALSE;
-  if (System > 31)
-    return FALSE;
-  if (Command > 127)
-    return FALSE;
+      uint rc5 = 0;
 
-  BIT_SET(RC5, 13); //SS1
-  if (Command < 64)
-    BIT_SET(RC5, 12); //SS2
-  BIT_SET(RC5, 11); //Toggle
+      rc5 |= (1 << 19); //SS1
 
-  RC5 |= (System << 6) | Command;
+      if (command < 64)
+        rc5 |= (1 << 18); //SS2
 
-  Trace("PLAY_RC5_KEYCODE code:%04X !!!\n", RC5);
+      rc5 |= (1 << 17); //Toggle
 
-  pBuffer = *pBuf = (PUCHAR) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 1000);
-  if (!pBuffer)
-    return FALSE;
+      rc5 |= (uint)((system << 12) | (command << 6) | data);
 
-  *pBuffer = 0x92;
-  for (i = 13 ; i-- ; )
-  {
-    if (BIT_TEST(RC5, i))
-    {
-      if (LastIsPulse)
-        pBuffer++;
+      List<byte> nativeData = new List<byte>();
 
-      *pBuffer += 0x12;
-      pBuffer++;
-      *pBuffer = 0x92;
-      LastIsPulse = TRUE;
-    }
-    else
-    {
-      if (!LastIsPulse)
-        pBuffer++;
+      bool lastIsPulse = true;
+      byte current = 0x92;
 
-      *pBuffer |= 0x80;
-      *pBuffer += 0x12;
-      pBuffer++;
-      *pBuffer = 0x12;
-      LastIsPulse = FALSE;
-    }
-  }
-  pBuffer++;
-
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-  *pBuffer++ = 0x7F;
-
-  memcpy(pBuffer, *pBuf, pBuffer - *pBuf);
-  pBuffer += pBuffer - *pBuf;
-  memcpy(pBuffer, *pBuf, pBuffer - *pBuf);
-  pBuffer += pBuffer - *pBuf;
-
-  *pReadCount = (ULONG) (pBuffer - *pBuf);
-
-  return TRUE;
-}
-
-static BOOL MceIrImportProntoRC5X(PUCHAR pData, ULONG Length, PUCHAR *pBuf, PULONG pReadCount)
-{
-  BOOL Result = FALSE;
-  USHORT Proto, Clock, Seq1, Seq2;
-  USHORT System, Command, Data;
-  ULONG RC5 = 0;
-  PUCHAR pBuffer = NULL;
-  //  PUCHAR pData2 = NULL;
-  BOOL LastIsPulse = TRUE;
-  int i;
-
-  do
-  {
-    //Read 15 bytes of header
-    if (Length < 20)
-      break;
-    if (sscanf_s((PCHAR)pData, "%04x %04x %04x %04x", &Proto, &Clock, &Seq1, &Seq2) != 4) 
-      break;
-    if (Proto != PRONTO_PROTO_RC5X) 
-      break;
-    if (Seq1 + Seq2 != 2) 
-      break;
-
-    pData += 20;
-    if (sscanf_s((PCHAR)pData, "%04x %04x %04x", &System, &Command, &Data) != 3) 
-      break;
-    if (System > 31) 
-      break;
-    if (Command > 127) 
-      break;
-    if (Data > 63) 
-      break;
-
-    BIT_SET(RC5, 19); //SS1
-    if (Command < 64)
-      BIT_SET(RC5, 18); //SS2
-    BIT_SET(RC5, 17); //Toggle
-
-    RC5 |= (System << 12) | (Command << 6) | Data;
-
-    Trace("PLAY_RC5X_KEYCODE code:%08X !!!\n", RC5);
-
-    pBuffer = *pBuf = (PUCHAR) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 1000);
-    if (!pBuffer)
-      break;
-
-    *pBuffer = 0x92;
-    for (i = 19 ; i-- ; )
-    {
-      if (i == 11)
+      for (int i = 19; i > 0; i--)
       {
-        if (LastIsPulse) 
-          pBuffer++;
-        *pBuffer += 0x48;
-        LastIsPulse = FALSE;
+        if (i == 11)
+        {
+          if (lastIsPulse)
+          {
+            nativeData.Add(current);
+            current = 0;
+          }
+          current += 0x48;
+          lastIsPulse = false;
+        }
+        
+        if ((rc5 & (1 << i)) != 0)
+        {
+          if (lastIsPulse)
+          {
+            nativeData.Add(current);
+            current = 0;
+          }
+
+          current += 0x12;
+          nativeData.Add(current);
+
+          current = 0x92;
+          lastIsPulse = true;
+        }
+        else
+        {
+          if (!lastIsPulse)
+          {
+            nativeData.Add(current);
+            current = 0;
+          }
+
+          current |= 0x80;
+          current += 0x12;
+
+          nativeData.Add(current);
+          current = 0x12;
+
+          lastIsPulse = false;
+        }
       }
-      if (BIT_TEST(RC5, i))
+
+      for (int j = 0; j < 13; j++)
+        nativeData.Add(0x7F);
+
+      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
+    }
+    static MceIrCode ConvertProntoRC6ToMceIrCode(ushort[] prontoData)
+    {
+      if (prontoData.Length != 6)
+        return null;
+
+      if (prontoData[0] != (ushort)CodeType.RC6)
+        return null;
+
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = DefaultProntoRawCarrier;
+
+      if (prontoData[2] + prontoData[3] != 1)
+        return null;
+
+      ushort system   = prontoData[4];
+      ushort command  = prontoData[5];
+
+      if (system > 255)
+        return null;
+
+      if (command > 255)
+        return null;
+
+      ushort rc6 = (ushort)((system << 8) | command);
+
+      List<byte> nativeData = new List<byte>();
+      nativeData.AddRange(RC6NativeHeader);
+
+      bool lastIsPulse = true;
+      byte current = 0x92;
+
+      for (int i = 16; i > 0; i--)
       {
-        if (LastIsPulse) 
-          pBuffer++;
-        *pBuffer += 0x12;
-        pBuffer++;
-        *pBuffer = 0x92;
-        LastIsPulse = TRUE;
+        if ((rc6 & (1 << i)) != 0)
+        {
+          if (!lastIsPulse)
+          {
+            nativeData.Add(current);
+            current = 0;
+          }
+
+          current |= 0x80;
+          current += 0x09;
+          nativeData.Add(current);
+
+          current = 0x09;
+          lastIsPulse = false;
+        }
+        else
+        {
+          if (lastIsPulse)
+          {
+            nativeData.Add(current);
+            current = 0;
+          }
+
+          current += 0x09;
+          nativeData.Add(current);
+
+          current = 0x89;
+
+          lastIsPulse = true;
+        }
+      }
+
+      nativeData.Add(current);
+
+      for (int j = 0; j < 13; j++)
+        nativeData.Add(0x7F);
+
+      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
+    }
+    static MceIrCode ConvertProntoRC6AToMceIrCode(ushort[] prontoData)
+    {
+      if (prontoData.Length != 6)
+        return null;
+
+      if (prontoData[0] != (ushort)CodeType.RC6A)
+        return null;
+
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = DefaultProntoRawCarrier;
+
+      if (prontoData[2] + prontoData[3] != 2)
+        return null;
+
+      ushort customer = prontoData[5];
+      ushort system   = prontoData[5];
+      ushort command  = prontoData[6];
+
+      if (system > 255)
+        return null;
+      
+      if (command > 255)
+        return null;
+      
+      if (customer > 127 && customer < 32768)
+        return null;
+
+      uint rc6 = (uint)((customer << 16) | (system << 8) | command);
+
+      List<byte> nativeData = new List<byte>();
+      nativeData.AddRange(RC6ANativeHeader);
+
+      bool lastIsPulse = true;
+      byte current = 0x92;
+
+      for (int i = ((customer >= 32768) ? 32 : 24); i > 0; i--)
+      {
+        if ((rc6 & (1 << i)) != 0)
+        {
+          if (!lastIsPulse)
+          {
+            nativeData.Add(current);
+            current = 0;
+          }
+
+          current |= 0x80;
+          current += 0x09;
+          nativeData.Add(current);
+
+          current = 0x09;
+          lastIsPulse = false;
+        }
+        else
+        {
+          if (lastIsPulse)
+          {
+            nativeData.Add(current);
+            current = 0;
+          }
+
+          current += 0x09;
+          nativeData.Add(current);
+
+          current = 0x89;
+          lastIsPulse = true;
+        }
+      }
+
+      nativeData.Add(current);
+
+      for (int j = 0; j < 13; j++)
+        nativeData.Add(0x7F);
+
+      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
+    }
+
+    public static ushort[] ConvertMceIrCodeToProntoRaw(MceIrCode mceIrCode)
+    {
+      List<ushort> prontoData = new List<ushort>();
+
+      double carrier;
+      ushort prontoCarrier;
+      CodeType codeType;
+      if (mceIrCode.Carrier != 0)
+      {
+        codeType = CodeType.RawOscillated;
+        carrier = mceIrCode.Carrier * ProntoClock;
+        prontoCarrier = ConvertToProntoCarrier(mceIrCode.Carrier);
       }
       else
       {
-        if (!LastIsPulse) 
-          pBuffer++;
-        *pBuffer |= 0x80;
-        *pBuffer += 0x12;
-        pBuffer++;
-        *pBuffer = 0x12;
-        LastIsPulse = FALSE;
+        codeType = CodeType.RawUnmodulated;
+        carrier = DefaultProntoRawCarrier * ProntoClock;
+        prontoCarrier = DefaultProntoRawCarrier;
       }
+
+      double accDuration = 0;
+      bool lastPulse = false;
+
+      for (int index = 0; index < mceIrCode.Data.Length; index++)
+      {
+        int duration = mceIrCode.Data[index] & 0x7F;
+        bool pulse = ((mceIrCode.Data[index] & 0x80) != 0);
+
+        double carrierDuration = (duration * 50) / carrier;
+
+        if (pulse == lastPulse)
+        {
+          accDuration += carrierDuration;
+        }
+        else
+        {
+          if (accDuration != 0)
+            prontoData.Add((ushort)accDuration);
+
+          accDuration = carrierDuration;
+        }
+
+        lastPulse = pulse;
+      }
+
+      prontoData.Add((ushort)accDuration);
+
+      ushort burstPairs = (ushort)(prontoData.Count / 2);
+
+      prontoData.Insert(0, (ushort)codeType); // Pronto Code Type
+      prontoData.Insert(1, prontoCarrier);    // IR Frequency
+      prontoData.Insert(2, burstPairs);       // First Burst Pairs
+      prontoData.Insert(3, 0x0000);           // Repeat Burst Pairs
+
+      return prontoData.ToArray();
     }
-    pBuffer++;
-
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-
-    memcpy(pBuffer, *pBuf, pBuffer - *pBuf);
-    pBuffer += pBuffer - *pBuf;
-    memcpy(pBuffer, *pBuf, pBuffer - *pBuf);
-    pBuffer += pBuffer - *pBuf;
-
-    *pReadCount = (ULONG) (pBuffer - *pBuf);
-
-    Result = TRUE;
-
-  } while (FALSE);
-
-  return Result;
-}
-
-static BOOL MceIrImportProntoRC6(PUCHAR pData, ULONG Length, PUCHAR *pBuf, PULONG pReadCount)
-{
-  BOOL Result = FALSE;
-  USHORT Proto, Clock, Seq1, Seq2;
-  USHORT System, Command;
-  ULONG RC6 = 0;
-  PUCHAR pBuffer = NULL;
-  //  PUCHAR pData2 = NULL;
-  BOOL LastIsPulse = TRUE;
-  int i;
-
-  do
-  {
-    //Read 15 bytes of header
-    if (Length < 20) break;
-    if (sscanf_s((PCHAR)pData, "%04x %04x %04x %04x", &Proto, &Clock, &Seq1, &Seq2) != 4) break;
-    if (Proto != PRONTO_PROTO_RC6) break;
-    if (Seq1 + Seq2 != 1) break;
-
-    pData += 20;
-    if (sscanf_s((PCHAR)pData, "%04x %04x", &System, &Command) != 2) break;
-    if (System > 255) break;
-    if (Command > 255) break;
-
-    RC6 = (System << 8) | Command;
-
-    Trace("PLAY_RC6_KEYCODE code:%08X !!!\n", RC6);
-
-    pBuffer = *pBuf = (PUCHAR) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 1000);
-    if (!pBuffer) break;
-
-    //RC6 header
-    *pBuffer++ = 0xB6;
-    *pBuffer++ = 0x12;
-    *pBuffer++ = 0x89;
-    *pBuffer++ = 0x12;
-    *pBuffer++ = 0x89;
-    *pBuffer++ = 0x09;
-    *pBuffer++ = 0x89;
-    *pBuffer++ = 0x09;
-    *pBuffer++ = 0x89;
-    *pBuffer++ = 0x12;
-    *pBuffer   = 0x92;
-
-    for (i = 16 ; i-- ; )
-    {
-      if (BIT_TEST(RC6, i))
-      {
-        if (!LastIsPulse) pBuffer++;
-        *pBuffer |= 0x80;
-        *pBuffer += 0x09;
-        pBuffer++;
-        *pBuffer = 0x09;
-        LastIsPulse = FALSE;
-      }
-      else
-      {
-        if (LastIsPulse) pBuffer++;
-        *pBuffer += 0x09;
-        pBuffer++;
-        *pBuffer = 0x89;
-        LastIsPulse = TRUE;
-      }
-    }
-    pBuffer++;
-
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-
-    memcpy(pBuffer, *pBuf, pBuffer - *pBuf);
-    pBuffer += pBuffer - *pBuf;
-    memcpy(pBuffer, *pBuf, pBuffer - *pBuf);
-    pBuffer += pBuffer - *pBuf;
-
-    *pReadCount = (ULONG) (pBuffer - *pBuf);
-
-    Result = TRUE;
-
-  } while (FALSE);
-
-  return Result;
-}
-
-static BOOL MceIrImportProntoRC6A(PUCHAR pData, ULONG Length, PUCHAR *pBuf, PULONG pReadCount)
-{
-  BOOL Result = FALSE;
-  USHORT Proto, Clock, Seq1, Seq2;
-  USHORT Customer, System, Command;
-  ULONG RC6 = 0;
-  PUCHAR pBuffer = NULL;
-  //  PUCHAR pData2 = NULL;
-  BOOL LastIsPulse = TRUE;
-  BYTE BitCount;
-  int i;
-
-  do
-  {
-    //Read 15 bytes of header
-    if (Length < 20) break;
-    if (sscanf_s((PCHAR)pData, "%04x %04x %04x %04x", &Proto, &Clock, &Seq1, &Seq2) != 4) break;
-    if (Proto != PRONTO_PROTO_RC6A) break;
-    if (Seq1 + Seq2 != 2) break;
-
-    pData += 20;
-    if (sscanf_s((PCHAR)pData, "%04x %04x %04x", &Customer, &System, &Command) != 3) break;
-    if (System > 255) break;
-    if (Command > 255) break;
-    if ((Customer > 127) && (Customer < 32768)) break;
-
-    RC6 = (Customer << 16) | (System << 8) | Command;
-
-    Trace("PLAY_RC6A_KEYCODE code:%08X !!!\n", RC6);
-
-    pBuffer = *pBuf = (PUCHAR) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 1000);
-    if (!pBuffer) break;
-
-    //RC6A header
-    *pBuffer++ = 0xBF;
-    *pBuffer++ = 0x12;
-    *pBuffer++ = 0x89;
-    *pBuffer++ = 0x09;
-    *pBuffer++ = 0x89;
-    *pBuffer++ = 0x09;
-    *pBuffer++ = 0x89;
-    *pBuffer++ = 0x12;
-    *pBuffer++ = 0x89;
-    *pBuffer++ = 0x12;
-    *pBuffer   = 0x92;
-
-    BitCount = (Customer >= 32768) ? 16 : 8;
-
-    for (i = (Customer >= 32768) ? 32 : 24 ; i-- ; )
-    {
-      if (BIT_TEST(RC6, i))
-      {
-        if (!LastIsPulse) pBuffer++;
-        *pBuffer |= 0x80;
-        *pBuffer += 0x09;
-        pBuffer++;
-        *pBuffer = 0x09;
-        LastIsPulse = FALSE;
-      }
-      else
-      {
-        if (LastIsPulse) pBuffer++;
-        *pBuffer += 0x09;
-        pBuffer++;
-        *pBuffer = 0x89;
-        LastIsPulse = TRUE;
-      }
-    }
-    pBuffer++;
-
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-    *pBuffer++ = 0x7F;
-
-    memcpy(pBuffer, *pBuf, pBuffer - *pBuf);
-    pBuffer += pBuffer - *pBuf;
-    memcpy(pBuffer, *pBuf, pBuffer - *pBuf);
-    pBuffer += pBuffer - *pBuf;
-
-    *pReadCount = (ULONG) (pBuffer - *pBuf);
-
-    Result = TRUE;
-
-  } while (FALSE);
-
-  return Result;
-}
-
-*/
 
     public static bool IsProntoData(byte[] fileBytes)
     {
-      if ((fileBytes[0] == '0' && fileBytes[1] == '0' && fileBytes[2] == '0' && fileBytes[3] == '0' && fileBytes[4] == ' ') ||
-          (fileBytes[0] == '0' && fileBytes[1] == '1' && fileBytes[2] == '0' && fileBytes[3] == '0' && fileBytes[4] == ' ') ||
-          (fileBytes[0] == '5' && fileBytes[1] == '0' && fileBytes[2] == '0' && fileBytes[3] == '0' && fileBytes[4] == ' ') ||
-          (fileBytes[0] == '5' && fileBytes[1] == '0' && fileBytes[2] == '0' && fileBytes[3] == '1' && fileBytes[4] == ' ') ||
-          (fileBytes[0] == '6' && fileBytes[1] == '0' && fileBytes[2] == '0' && fileBytes[3] == '0' && fileBytes[4] == ' ') ||
-          (fileBytes[0] == '6' && fileBytes[1] == '0' && fileBytes[2] == '0' && fileBytes[3] == '1' && fileBytes[4] == ' '))
+      ushort[] prontoData = null;
+
+      try
       {
-        return true;
+        prontoData = ConvertFileBytesToProntoData(fileBytes);
       }
-      else
+      catch
       {
         return false;
+      }
+
+      switch ((CodeType)prontoData[0])
+      {
+        case CodeType.RawOscillated:
+        case CodeType.RawUnmodulated:
+        case CodeType.RC5:
+        case CodeType.RC5X:
+        case CodeType.RC6:
+        case CodeType.RC6A:
+          return true;
+
+        default:
+          return false;
       }
     }
 
@@ -680,6 +619,16 @@ static BOOL MceIrImportProntoRC6A(PUCHAR pData, ULONG Length, PUCHAR *pBuf, PULO
         prontoData[i] = ushort.Parse(stringData[i], System.Globalization.NumberStyles.HexNumber);
 
       return prontoData;
+    }
+
+    public static int ConvertFromProntoCarrier(ushort prontoCarrier)
+    {
+      return (int)(1000000 / (prontoCarrier * ProntoClock));
+    }
+
+    public static ushort ConvertToProntoCarrier(int carrierFrequency)
+    {
+      return (ushort)((1000000 / ProntoClock) / carrierFrequency);
     }
 
     #endregion Public Methods

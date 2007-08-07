@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MceTransceiver
+namespace MicrosoftMceTransceiver
 {
 
   #region Enumerations
 
-  public enum IRCodeType
+  /// <summary>
+  /// Protocol of IR Code.
+  /// </summary>
+  public enum IRProtocol
   {
     None,
     //ITT,
@@ -28,12 +31,15 @@ namespace MceTransceiver
 
   #region Delegates
 
-  public delegate void RemoteCallback(IRCodeType codeType, uint keyCode);
+  public delegate void RemoteCallback(IRProtocol codeType, uint keyCode);
   public delegate void KeyboardCallback(uint keyCode, uint modifiers);
   public delegate void MouseCallback(int deltaX, int deltaY, bool rightButton, bool leftButton);
 
   #endregion Delegates
 
+  /// <summary>
+  /// Used for decoding received IR codes.
+  /// </summary>
   public static class IRDecoder
   {
 
@@ -136,29 +142,35 @@ namespace MceTransceiver
 
     #endregion Detection Data
 
-    public static void DecodeIR(uint[] timingData, RemoteCallback buttonCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
-    {
-      //Console.WriteLine("DecodeIR");
-      //MceTransceiver.Dump(timingData);
+    #region Methods
 
-//    if (_processITT)    DetectITT(timingData, buttonCallback);
-      if (_processJVC)    DetectJVC(timingData, buttonCallback);
-      if (_processNEC)    DetectNEC(timingData, buttonCallback);
-//    if (_processNRC17)  DetectNRC17(timingData, buttonCallback);
-      if (_processRC5)    DetectRC5(timingData, buttonCallback);
-      if (_processRC6)    DetectRC6(timingData, buttonCallback);
-      if (_processRCA)    DetectRCA(timingData, buttonCallback);
-//    if (_processRCMM)   DetectRCMM(timingData, buttonCallback);
-      if (_processRECS80) DetectRECS80(timingData, buttonCallback);
-//    if (_processSharp)  DetectSharp(timingData, buttonCallback);
-      if (_processSIRC)   DetectSIRC(timingData, buttonCallback); // 15 Bit
-//    if (_processXSAT)   DetectXSAT(timingData, buttonCallback);
+    /// <summary>
+    /// Decode timing data to discover IR Protocol and button code.
+    /// </summary>
+    /// <param name="timingData">Input timing data.</param>
+    /// <param name="remoteCallback">Method to call when Remote button decoded.</param>
+    /// <param name="keyboardCallback">Method to call when Keyboard event decoded.</param>
+    /// <param name="mouseCallback">Method to call when Mouse event decoded.</param>
+    public static void DecodeIR(uint[] timingData, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
+    {
+//    if (_processITT)    DetectITT(timingData, remoteCallback);
+      if (_processJVC)    DetectJVC(timingData, remoteCallback);
+      if (_processNEC)    DetectNEC(timingData, remoteCallback);
+//    if (_processNRC17)  DetectNRC17(timingData, remoteCallback);
+      if (_processRC5)    DetectRC5(timingData, remoteCallback);
+      if (_processRC6)    DetectRC6(timingData, remoteCallback);
+      if (_processRCA)    DetectRCA(timingData, remoteCallback);
+//    if (_processRCMM)   DetectRCMM(timingData, remoteCallback);
+      if (_processRECS80) DetectRECS80(timingData, remoteCallback);
+//    if (_processSharp)  DetectSharp(timingData, remoteCallback);
+      if (_processSIRC)   DetectSIRC(timingData, remoteCallback); // 15 Bit
+//    if (_processXSAT)   DetectXSAT(timingData, remoteCallback);
 
       if (_processMCE)
         DetectMCE(timingData, keyboardCallback, mouseCallback);
     }
 
-    public static void DetectJVC(uint[] timingData, RemoteCallback buttonCallback)
+    static void DetectJVC(uint[] timingData, RemoteCallback remoteCallback)
     {
       if (JVC_Data == null || timingData == null)
         JVC_Data = new RemoteDetectionData();
@@ -233,7 +245,7 @@ namespace MceTransceiver
 
             if (JVC_Data.Bit == 16)
             {
-              buttonCallback(IRCodeType.JVC, JVC_Data.Code);
+              remoteCallback(IRProtocol.JVC, JVC_Data.Code);
               JVC_Data.State = RemoteDetectionState.Leading;
             }
             break;
@@ -258,7 +270,7 @@ namespace MceTransceiver
           JVC_Data = new RemoteDetectionData();
       }
     }
-    public static void DetectNEC(uint[] timingData, RemoteCallback buttonCallback)
+    static void DetectNEC(uint[] timingData, RemoteCallback remoteCallback)
     {
       if (NEC_Data == null || timingData == null)
         NEC_Data = new RemoteDetectionData();
@@ -301,7 +313,7 @@ namespace MceTransceiver
             }
             else if (!pulse && duration >= 2050 && duration <= 2450) // For Repeats
             {
-              buttonCallback(IRCodeType.NEC, NEC_Data.Code);
+              remoteCallback(IRProtocol.NEC, NEC_Data.Code);
               NEC_Data.State = RemoteDetectionState.HeaderPulse;
               ignored = false;
             }
@@ -340,7 +352,7 @@ namespace MceTransceiver
 
             if (NEC_Data.Bit == 32)
             {
-              buttonCallback(IRCodeType.NEC, NEC_Data.Code);
+              remoteCallback(IRProtocol.NEC, NEC_Data.Code);
               NEC_Data.State = RemoteDetectionState.HeaderPulse;
             }
             break;
@@ -352,7 +364,7 @@ namespace MceTransceiver
           NEC_Data = new RemoteDetectionData();
       }
     }
-    public static void DetectRC5(uint[] timingData, RemoteCallback buttonCallback)
+    static void DetectRC5(uint[] timingData, RemoteCallback remoteCallback)
     {
       if (RC5_Data == null || timingData == null)
         RC5_Data = new RemoteDetectionData();
@@ -502,7 +514,7 @@ namespace MceTransceiver
           else
             RC5_Data.Code &= ToggleMaskRC5;
 
-          buttonCallback(IRCodeType.RC5, RC5_Data.Code);
+          remoteCallback(IRProtocol.RC5, RC5_Data.Code);
 
           RC5_Data.State = RemoteDetectionState.HeaderPulse;
         }
@@ -512,7 +524,7 @@ namespace MceTransceiver
       }
 
     }
-    public static void DetectRC6(uint[] timingData, RemoteCallback buttonCallback)
+    static void DetectRC6(uint[] timingData, RemoteCallback remoteCallback)
     {
       if (RC6_Data == null || timingData == null)
         RC6_Data = new RemoteDetectionData();
@@ -754,7 +766,7 @@ namespace MceTransceiver
           if ((~RC6_Data.Code >> 16) == CustomerMce)
             RC6_Data.Code &= ToggleMaskMce;
 
-          buttonCallback(IRCodeType.RC6, RC6_Data.Code);
+          remoteCallback(IRProtocol.RC6, RC6_Data.Code);
 
           RC6_Data.State = RemoteDetectionState.HeaderPulse;
         }
@@ -764,7 +776,7 @@ namespace MceTransceiver
       }
 
     }
-    public static void DetectRCA(uint[] timingData, RemoteCallback buttonCallback)
+    static void DetectRCA(uint[] timingData, RemoteCallback remoteCallback)
     {
       if (RCA_Data == null || timingData == null)
         RCA_Data = new RemoteDetectionData();
@@ -839,7 +851,7 @@ namespace MceTransceiver
 
             if (RCA_Data.Bit == 12)
             {
-              buttonCallback(IRCodeType.RCA, RCA_Data.Code);
+              remoteCallback(IRProtocol.RCA, RCA_Data.Code);
               RCA_Data.State = RemoteDetectionState.HeaderPulse;
             }
             break;
@@ -851,7 +863,7 @@ namespace MceTransceiver
           RCA_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    public static void DetectRECS80(uint[] timingData, RemoteCallback buttonCallback)
+    static void DetectRECS80(uint[] timingData, RemoteCallback remoteCallback)
     {
       if (RECS80_Data == null || timingData == null)
         RECS80_Data = new RemoteDetectionData();
@@ -940,7 +952,7 @@ namespace MceTransceiver
               if (RECS80_Data.Bit == 0)
               {
                 RECS80_Data.Code &= 0x0000FFFF;
-                buttonCallback(IRCodeType.RECS80, RECS80_Data.Code);
+                remoteCallback(IRProtocol.RECS80, RECS80_Data.Code);
 
                 RECS80_Data.State = RemoteDetectionState.HeaderPulse;
               }
@@ -954,7 +966,7 @@ namespace MceTransceiver
           RECS80_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    public static void DetectSIRC(uint[] timingData, RemoteCallback buttonCallback)
+    static void DetectSIRC(uint[] timingData, RemoteCallback remoteCallback)
     {
       if (SIRC_Data == null || timingData == null)
         SIRC_Data = new RemoteDetectionData();
@@ -1025,7 +1037,7 @@ namespace MceTransceiver
 
             if (SIRC_Data.Bit == 15)
             {
-              buttonCallback(IRCodeType.SIRC, SIRC_Data.Code);
+              remoteCallback(IRProtocol.SIRC, SIRC_Data.Code);
               SIRC_Data.State = RemoteDetectionState.HeaderPulse;
             }
             break;
@@ -1042,7 +1054,7 @@ namespace MceTransceiver
     //static uint biggest = 0;
     //static uint smallest = 1000000;
 
-    public static void DetectMCE(uint[] timingData, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
+    static void DetectMCE(uint[] timingData, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
     {
       // Mouse:    0 0001 xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
       // Keyboard: 0 0100 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1073,8 +1085,8 @@ namespace MceTransceiver
               else if (duration >= 500 && duration <= 800)
               {
                 //Console.WriteLine("Bad bit sequence double {0}", pulse);
-                //MceKeyboard_Data.HalfBit = (pulse ? 2 : 1);
-                MCE_Data = new MceDetectionData();
+                MCE_Data.HalfBit = (pulse ? 2 : 1);
+                //MCE_Data = new MceDetectionData();
                 return;
               }
               else
@@ -1303,6 +1315,7 @@ namespace MceTransceiver
 
             if (MCE_Data.Bit == 0)
             {
+              //Console.WriteLine("KB DeltaY Set");
               MCE_Data.DeltaY = ScaleMouseDelta(MCE_Data.Working);
 
               MCE_Data.State = MceKeyboardDetectState.DeltaX;
@@ -1318,6 +1331,7 @@ namespace MceTransceiver
 
             if (MCE_Data.Bit == 0)
             {
+              //Console.WriteLine("KB DeltaX Set");
               MCE_Data.DeltaX = ScaleMouseDelta(MCE_Data.Working);
 
               MCE_Data.State = MceKeyboardDetectState.Right;
@@ -1333,6 +1347,7 @@ namespace MceTransceiver
 
             if (MCE_Data.Bit == 0)
             {
+              //Console.WriteLine("KB Right Set");
               MCE_Data.Right = (MCE_Data.Working == 1);
 
               MCE_Data.State = MceKeyboardDetectState.Left;
@@ -1348,6 +1363,7 @@ namespace MceTransceiver
 
             if (MCE_Data.Bit == 0)
             {
+              //Console.WriteLine("KB Left Set");
               MCE_Data.Left = (MCE_Data.Working == 1);
 
               MCE_Data.State = MceKeyboardDetectState.Checksum;
@@ -1363,6 +1379,7 @@ namespace MceTransceiver
 
             if (MCE_Data.Bit == 0)
             {
+              //Console.WriteLine("KB Checksum Set");
               mouseCallback(MCE_Data.DeltaX, MCE_Data.DeltaY, MCE_Data.Right, MCE_Data.Left);
 
               MCE_Data = new MceDetectionData();
@@ -1388,6 +1405,8 @@ namespace MceTransceiver
 
       return scaledDelta;
     }
+
+    #endregion Methods
 
   }
 

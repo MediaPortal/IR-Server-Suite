@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MceTransceiver
+namespace MicrosoftMceTransceiver
 {
 
   /// <summary>
@@ -24,7 +24,7 @@ namespace MceTransceiver
     #region Enumerations
 
     /// <summary>
-    /// Virtual Key Codes
+    /// Virtual Key Codes.
     /// </summary>
     public enum VKey : byte
     {
@@ -171,7 +171,7 @@ namespace MceTransceiver
     }
 
     /// <summary>
-    /// Key Event Types
+    /// Key Event Types.
     /// </summary>
     [Flags]
     public enum KeyEvents : uint
@@ -188,30 +188,30 @@ namespace MceTransceiver
     #region Public Methods
 
     /// <summary>
-    /// Simulate a key being pressed down
+    /// Simulate a key being pressed down.
     /// </summary>
-    /// <param name="vKey">Virtual key to press</param>
+    /// <param name="vKey">Virtual key to press.</param>
     public static void KeyDown(VKey vKey)
     {
       keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyDown, UIntPtr.Zero);
     }
 
     /// <summary>
-    /// Simulate a key being released
+    /// Simulate a key being released.
     /// </summary>
-    /// <param name="vKey">Virtual key to release</param>
+    /// <param name="vKey">Virtual key to release.</param>
     public static void KeyUp(VKey vKey)
     {
       keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyUp, UIntPtr.Zero);
     }
 
     /// <summary>
-    /// Simulate a Virtual Key event
+    /// Simulate a Virtual Key event.
     /// </summary>
-    /// <param name="vKey">Virtual Key</param>
-    /// <param name="scan">Scan code</param>
-    /// <param name="flags">Event type</param>
-    /// <param name="extraInfo">Pointer to additional information</param>
+    /// <param name="vKey">Virtual Key.</param>
+    /// <param name="scan">Scan code.</param>
+    /// <param name="flags">Event type.</param>
+    /// <param name="extraInfo">Pointer to additional information.</param>
     public static void Event(VKey vKey, byte scan, KeyEvents flags, UIntPtr extraInfo)
     {
       keybd_event((byte)vKey, scan, (uint)flags, extraInfo);

@@ -1,6 +1,6 @@
 using System;
 
-namespace MceTransceiver
+namespace MicrosoftMceTransceiver
 {
 
   #region Enumerations

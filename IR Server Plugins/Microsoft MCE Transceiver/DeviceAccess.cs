@@ -6,11 +6,11 @@ using System.Text;
 
 using Microsoft.Win32.SafeHandles;
 
-namespace MceTransceiver
+namespace MicrosoftMceTransceiver
 {
 
   /// <summary>
-  /// Provides access to the MCE driver
+  /// Provides access to the MCE driver.
   /// </summary>
   public static class DeviceAccess
   {
@@ -18,32 +18,33 @@ namespace MceTransceiver
     #region Enumerations
 
     [Flags]
-    enum Digcfs : uint
+    enum Digcfs
     {
-      None            = 0,
-      Present         = 0x00000002,
-      AllClasses      = 0x00000004,
-      Profile         = 0x00000008,
-      DeviceInterface = 0x00000010,
+      None            = 0x00,
+      Default         = 0x01,
+      Present         = 0x02,
+      AllClasses      = 0x04,
+      Profile         = 0x08,
+      DeviceInterface = 0x10,
     }
 
     [Flags]
-    public enum FileShares : uint
+    public enum FileShares
     {
-       None   = 0x00000000,
-       Read   = 0x00000001,
-       Write  = 0x00000002,
-       Delete = 0x00000004
+       None   = 0x00,
+       Read   = 0x01,
+       Write  = 0x02,
+       Delete = 0x04,
     }
 
-    public enum CreationDisposition : uint
+    public enum CreationDisposition
     {
       None              = 0,
       New               = 1,
       CreateAlways      = 2,
       OpenExisting      = 3,
       OpenAlways        = 4,
-      TruncateExisting  = 5
+      TruncateExisting  = 5,
     }
 
     [Flags]
@@ -73,7 +74,7 @@ namespace MceTransceiver
       PosixSemantics    = 0x01000000,
       OpenReparsePoint  = 0x00200000,
       OpenNoRecall      = 0x00100000,
-      FirstPipeInstance = 0x00080000
+      FirstPipeInstance = 0x00080000,
     }
 
     [Flags]
@@ -187,20 +188,18 @@ namespace MceTransceiver
     #region Methods
 
     /// <summary>
-    /// Find the device path for the supplied Device Class Guid
+    /// Find the device path for the supplied Device Class Guid.
     /// </summary>
-    /// <param name="classGuid">GUID to locate device with</param>
-    /// <returns>Device path</returns>
+    /// <param name="classGuid">GUID to locate device with.</param>
+    /// <returns>Device path.</returns>
     public static string FindDevice(Guid classGuid)
     {
       string devicePath = null;
 
       IntPtr handle = SetupDiGetClassDevs(ref classGuid, null, IntPtr.Zero, Digcfs.DeviceInterface | Digcfs.Present);
 
-      int lastError = Marshal.GetLastWin32Error();
-
-      if (lastError != 0)
-        throw new Win32Exception(lastError);
+      if (handle.ToInt32() == -1)
+        return null;
 
       for (int deviceIndex = 0; ; deviceIndex++)
       {
@@ -209,7 +208,7 @@ namespace MceTransceiver
 
         if (!SetupDiEnumDeviceInfo(handle, deviceIndex, ref deviceInfoData))
         {
-          lastError = Marshal.GetLastWin32Error();
+          int lastError = Marshal.GetLastWin32Error();
 
           // out of devices or do we have an error?
           if (lastError != 0x0103 && lastError != 0x007E)
@@ -248,14 +247,21 @@ namespace MceTransceiver
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        if ((deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0471&pid_0815") != -1) ||   // Microsoft/Philips 2005
+        if ((deviceInterfaceDetailData.DevicePath.IndexOf("#vid_03ee&pid_2501") != -1) ||   // Mitsumi MCE remote
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_043e&pid_9803") != -1) ||   // LG
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_045e&pid_00a0") != -1) ||   // Microsoft
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0471&pid_0815") != -1) ||   // Microsoft/Philips 2005
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0471&pid_060c") != -1) ||   // Philips (HP branded)
             (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_045e&pid_006d") != -1) ||   // Microsoft/Philips 2004
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1460&pid_9150") != -1) ||   // HP
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0609&pid_031d") != -1) ||   // SMK/Toshiba G83C0004D410 (Hauppauge)
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0609&pid_0322") != -1) ||   // SMK (Sony VAIO)
             (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_107b&pid_3009") != -1) ||   // FIC Spectra/Mycom Mediacenter
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0609&pid_031d") != -1) ||   // Toshiba/Hauppauge SMK MCE remote
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_03ee&pid_2501") != -1) ||   // Mitsumi MCE remote
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1509&pid_9242") != -1) ||   // Fujitsu Scaleo-E
             (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1308&pid_c001") != -1) ||   // Shuttle
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1460&pid_9150") != -1) ||   // HP
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1509&pid_9242") != -1) ||   // Fujitsu Scaleo-E
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1784&pid_0001") != -1) ||   // Topseed
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_179d&pid_0010") != -1) ||   // Ricavision internal
+            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_195d&pid_7002") != -1) ||   // Itron ione Libra Q-11
             (deviceInterfaceDetailData.DevicePath.StartsWith(@"\\?\hid#irdevice&col01#2"))) // Microsoft/Philips 2005 (Vista)
         {
           SetupDiDestroyDeviceInfoList(handle);
@@ -270,10 +276,10 @@ namespace MceTransceiver
     /// <summary>
     /// Open a handle to the device driver.
     /// </summary>
-    /// <param name="devicePath">Device path</param>
-    /// <param name="access">Access type</param>
-    /// <param name="share">Share type</param>
-    /// <returns>Handle to device driver</returns>
+    /// <param name="devicePath">Device path.</param>
+    /// <param name="access">Access type.</param>
+    /// <param name="share">Share type.</param>
+    /// <returns>Handle to device driver.</returns>
     public static SafeFileHandle OpenHandle(string devicePath, FileAccessTypes access, FileShares share)
     {
       return CreateFile(devicePath, access, share,
@@ -281,10 +287,10 @@ namespace MceTransceiver
     }
 
     /// <summary>
-    /// Cancel IO for device
+    /// Cancel IO for device.
     /// </summary>
-    /// <param name="deviceHandle">Handle to device</param>
-    /// <returns>Success</returns>
+    /// <param name="deviceHandle">Handle to device.</param>
+    /// <returns>Success.</returns>
     public static bool CancelDeviceIo(SafeFileHandle deviceHandle)
     {
       return CancelIo(deviceHandle);

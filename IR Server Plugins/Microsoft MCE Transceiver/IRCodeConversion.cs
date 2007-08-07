@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MceTransceiver
+namespace MicrosoftMceTransceiver
 {
 
   public static class IRCodeConversion
@@ -34,7 +34,7 @@ namespace MceTransceiver
 
         if (packetByte >= 0x81 && packetByte <= 0x84)
         {
-          jump = packetByte - 0x80;
+          jump = packetByte & 0x7F;
 
           if (index + jump + 1 > rawPacket.Length)
           {
@@ -55,29 +55,7 @@ namespace MceTransceiver
       return nativeData.ToArray();
     }
 
-    public static byte[] ConvertNativeDataToRawPacket(byte[] nativeData)
-    {
-      byte bytesToCopy;
-      int dataBytesIndex = 0;
-      List<byte> rawPacket = new List<byte>();
-
-      for (int counter = 0; counter < nativeData.Length; counter += 4)
-      {
-        bytesToCopy = (byte)(nativeData.Length - counter < 4 ? nativeData.Length - counter : 4);
-
-        rawPacket.Add((byte)(0x80 + bytesToCopy));
-
-        for (int index = 0; index < bytesToCopy; index++)
-          rawPacket.Add(nativeData[dataBytesIndex + index]);
-
-        dataBytesIndex += bytesToCopy;
-      }
-
-      rawPacket.Add(0x80);
-
-      return rawPacket.ToArray();
-    }
-
+    // TODO: Rewrite
     public static uint[] ConvertNativeDataToTimingData(byte[] nativeData)
     {
       int index = 0;
@@ -104,7 +82,7 @@ namespace MceTransceiver
         if ((code & 0x80) != 0)
         {
           pulse = true;
-          code -= 0x80;
+          code &= 0x7F;
         }
         code *= 50;
 

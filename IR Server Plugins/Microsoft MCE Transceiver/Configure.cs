@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -20,21 +19,69 @@ namespace MicrosoftMceTransceiver
       set { comboBoxBlasterType.SelectedItem = Enum.GetName(typeof(BlasterType), value); }
     }
 
-    public int RepeatDelay
+    public int LearnTimeout
+    {
+      get { return Decimal.ToInt32(numericUpDownLearnTimeout.Value); }
+      set { numericUpDownLearnTimeout.Value = new Decimal(value); }
+    }
+
+    public bool LearnAsPronto
+    {
+      get { return checkBoxLearnAsPronto.Checked; }
+      set { checkBoxLearnAsPronto.Checked = value; }
+    }
+
+    public bool EnableRemote
+    {
+      get { return checkBoxEnableRemote.Checked; }
+      set { checkBoxEnableRemote.Checked = value; }
+    }
+    public int RemoteRepeatDelay
     {
       get { return Decimal.ToInt32(numericUpDownButtonRepeatDelay.Value); }
       set { numericUpDownButtonRepeatDelay.Value = new Decimal(value); }
     }
-    public int HeldDelay
+    public int RemoteHeldDelay
     {
       get { return Decimal.ToInt32(numericUpDownButtonHeldDelay.Value); }
       set { numericUpDownButtonHeldDelay.Value = new Decimal(value); }
     }
 
-    public int LearnTimeout
+    public bool EnableKeyboard
     {
-      get { return Decimal.ToInt32(numericUpDownLearnTimeout.Value); }
-      set { numericUpDownLearnTimeout.Value = new Decimal(value); }
+      get { return checkBoxEnableKeyboard.Checked; }
+      set { checkBoxEnableKeyboard.Checked = value; }
+    }
+    public int KeyboardRepeatDelay
+    {
+      get { return Decimal.ToInt32(numericUpDownKeyRepeatDelay.Value); }
+      set { numericUpDownKeyRepeatDelay.Value = new Decimal(value); }
+    }
+    public int KeyboardHeldDelay
+    {
+      get { return Decimal.ToInt32(numericUpDownKeyHeldDelay.Value); }
+      set { numericUpDownKeyHeldDelay.Value = new Decimal(value); }
+    }
+    public bool HandleKeyboardLocal
+    {
+      get { return checkBoxHandleKeyboardLocal.Checked; }
+      set { checkBoxHandleKeyboardLocal.Checked = value; }
+    }
+
+    public bool EnableMouse
+    {
+      get { return checkBoxEnableMouse.Checked; }
+      set { checkBoxEnableMouse.Checked = value; }
+    }
+    public double MouseSensitivity
+    {
+      get { return Decimal.ToDouble(numericUpDownMouseSensitivity.Value); }
+      set { numericUpDownMouseSensitivity.Value = new Decimal(value); }
+    }
+    public bool HandleMouseLocal
+    {
+      get { return checkBoxHandleMouseLocal.Checked; }
+      set { checkBoxHandleMouseLocal.Checked = value; }
     }
 
     #endregion Properties

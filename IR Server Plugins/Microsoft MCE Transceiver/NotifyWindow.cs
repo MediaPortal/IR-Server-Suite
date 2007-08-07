@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 using Microsoft.Win32.SafeHandles;
 
-namespace MceTransceiver
+namespace MicrosoftMceTransceiver
 {
 
   internal class NotifyWindow : NativeWindow
