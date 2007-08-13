@@ -23,7 +23,6 @@ namespace CustomHIDReceiver
       "\\IR Server Suite\\IR Server\\Custom HID Receiver.xml";
 
     static readonly string[] Ports  = new string[] { "None" };
-    static readonly string[] Speeds = new string[] { "None" };
 
     const int DeviceBufferSize = 255;
 
@@ -83,7 +82,7 @@ namespace CustomHIDReceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "Custom HID Receiver"; } }
-    public string Version       { get { return "1.0.3.2"; } }
+    public string Version       { get { return "1.0.3.3"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Supports HID USB devices."; } }
     public bool   CanReceive    { get { return true; } }
@@ -98,7 +97,6 @@ namespace CustomHIDReceiver
     }
 
     public string[] AvailablePorts  { get { return Ports; }   }
-    public string[] AvailableSpeeds { get { return Speeds; }  }
 
     public void Configure()
     {
@@ -159,7 +157,6 @@ namespace CustomHIDReceiver
     public LearnStatus Learn(string file) { return LearnStatus.Failure; }
 
     public bool SetPort(string port)    { return true; }
-    public bool SetSpeed(string speed)  { return true; }
 
     #endregion IIRServerPlugin Members
 

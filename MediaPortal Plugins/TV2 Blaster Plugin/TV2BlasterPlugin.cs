@@ -761,7 +761,7 @@ namespace MediaPortal.Plugins
           case Common.XmlTagBlast:
             {
               string[] commands = Common.SplitBlastCommand(commandProperty);
-              BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1], commands[2]);
+              BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
               break;
             }
 
@@ -822,8 +822,7 @@ namespace MediaPortal.Plugins
     /// </summary>
     /// <param name="fileName">File to blast (absolute path).</param>
     /// <param name="port">Port to blast to.</param>
-    /// <param name="speed">Speed to blast at.</param>
-    internal static void BlastIR(string fileName, string port, string speed)
+    internal static void BlastIR(string fileName, string port)
     {
       if (!_registered)
         throw new Exception("Cannot Blast, not registered to an active IR Server");
@@ -832,14 +831,12 @@ namespace MediaPortal.Plugins
       if (file.Length == 0)
         throw new Exception(String.Format("Cannot Blast, IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
-      byte[] outData = new byte[8 + port.Length + speed.Length + file.Length];
+      byte[] outData = new byte[4 + port.Length + file.Length];
 
       BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
       Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
-      BitConverter.GetBytes(speed.Length).CopyTo(outData, 4 + port.Length);
-      Encoding.ASCII.GetBytes(speed).CopyTo(outData, 8 + port.Length);
 
-      file.Read(outData, 8 + port.Length + speed.Length, (int)file.Length);
+      file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
       PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
@@ -863,9 +860,7 @@ namespace MediaPortal.Plugins
       else if (command.StartsWith(Common.CmdPrefixBlast))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-
-        string fileName = Common.FolderIRCommands + commands[0] + Common.FileExtensionIR;
-        BlastIR(fileName, commands[1], commands[2]);
+        BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
       else if (command.StartsWith(Common.CmdPrefixRun)) // External Program
       {

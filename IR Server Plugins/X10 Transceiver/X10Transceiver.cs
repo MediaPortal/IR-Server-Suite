@@ -61,14 +61,7 @@ namespace X10Transceiver
 
     public MouseHandler MouseCallback { get { return null; } set { } }
 
-    public string[] AvailablePorts
-    {
-      get { return Ports; }
-    }
-    public string[] AvailableSpeeds
-    {
-      get { return Speeds; }
-    }
+    public string[] AvailablePorts { get { return Ports; } }
 
     public void Configure() { }
     public bool Start()
@@ -115,14 +108,7 @@ namespace X10Transceiver
       return LearnStatus.Failure;
     }
 
-    public bool SetPort(string port)
-    {
-      return true;
-    }
-    public bool SetSpeed(string speed)
-    {
-      return true;
-    }
+    public bool SetPort(string port) { return true; }
 
     #endregion IIRServerPlugin Members
 

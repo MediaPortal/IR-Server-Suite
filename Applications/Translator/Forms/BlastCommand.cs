@@ -20,10 +20,9 @@ namespace Translator
     {
       get
       {
-        return String.Format("{0}|{1}|{2}",
+        return String.Format("{0}|{1}",
           labelIRCommandFile.Text,
-          comboBoxPort.SelectedItem as string,
-          comboBoxSpeed.SelectedItem as string);
+          comboBoxPort.SelectedItem as string);
       }
     }
 
@@ -35,7 +34,7 @@ namespace Translator
     {
       InitializeComponent();
 
-      SetupPortsAndSpeeds();
+      SetupPorts();
 
       labelIRCommandFile.Text = file;
     }
@@ -43,7 +42,7 @@ namespace Translator
     {
       InitializeComponent();
 
-      SetupPortsAndSpeeds();
+      SetupPorts();
 
       if (commands == null)
         return;
@@ -52,20 +51,14 @@ namespace Translator
 
       if (comboBoxPort.Items.Contains(commands[1]))
         comboBoxPort.SelectedItem = commands[1];
-
-      if (comboBoxSpeed.Items.Contains(commands[2]))
-        comboBoxSpeed.SelectedItem = commands[2];
     }
 
     #endregion Constructors
 
-    void SetupPortsAndSpeeds()
+    void SetupPorts()
     {
       comboBoxPort.Items.AddRange(Program.TransceiverInformation.Ports);
       comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.AddRange(Program.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
     }
 
     #region Buttons
@@ -92,8 +85,7 @@ namespace Translator
       try
       {
         Program.BlastIR(Common.FolderIRCommands + fileName + Common.FileExtensionIR,
-          comboBoxPort.SelectedItem as string,
-          comboBoxSpeed.SelectedItem as string);
+          comboBoxPort.SelectedItem as string);
       }
       catch (Exception ex)
       {

@@ -106,11 +106,6 @@ namespace Translator
       if (comboBoxPort.Items.Count > 0)
         comboBoxPort.SelectedIndex = 0;
 
-      comboBoxSpeed.Items.Clear();
-      comboBoxSpeed.Items.AddRange(Program.TransceiverInformation.Speeds);
-      if (comboBoxSpeed.Items.Count > 0)
-        comboBoxSpeed.SelectedIndex = 0;
-
       // Setup Serial tab
       comboBoxComPort.Items.Clear();
       comboBoxComPort.Items.AddRange(SerialPort.GetPortNames());
@@ -151,7 +146,7 @@ namespace Translator
           prefix = _command.Substring(0, find + 2);
           suffix = _command.Substring(find + 2);
         }
-        
+
         switch (prefix)
         {
           case Common.CmdPrefixBlast:
@@ -161,7 +156,6 @@ namespace Translator
               tabControl.SelectTab(tabPageBlastIR);
               comboBoxIRCode.SelectedItem = commands[0];
               comboBoxPort.SelectedItem = commands[1];
-              comboBoxSpeed.SelectedItem = commands[2];
               break;
             }
 
@@ -323,11 +317,10 @@ namespace Translator
         case "tabPageBlastIR":
           {
             textBoxCommand.Text = _command =
-              String.Format("{0}{1}|{2}|{3}",
+              String.Format("{0}{1}|{2}",
                 Common.CmdPrefixBlast,
                 comboBoxIRCode.SelectedItem as string,
-                comboBoxPort.SelectedItem as string,
-                comboBoxSpeed.SelectedItem as string);
+                comboBoxPort.SelectedItem as string);
             break;
           }
 

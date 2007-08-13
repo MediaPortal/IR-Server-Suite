@@ -19,13 +19,14 @@ namespace IrssUtils.Forms
     {
       get
       {
-        return String.Format("{0}|{1}|{2}|{3}|{4}|{5}",
+        return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}",
           textBoxCommand.Text,
           comboBoxPort.SelectedItem as string,
           numericUpDownBaudRate.Value.ToString(),
           comboBoxParity.SelectedItem as string,
           numericUpDownDataBits.Value.ToString(),
-          comboBoxStopBits.SelectedItem as string);
+          comboBoxStopBits.SelectedItem as string,
+          checkBoxWaitForResponse.Checked.ToString());
       }
     }
 
@@ -64,12 +65,13 @@ namespace IrssUtils.Forms
 
       if (commands != null)
       {
-        textBoxCommand.Text           = commands[0];
-        comboBoxPort.SelectedItem     = commands[1];
-        numericUpDownBaudRate.Value   = new Decimal(int.Parse(commands[2]));
-        comboBoxParity.SelectedItem   = commands[3];
-        numericUpDownDataBits.Value   = new Decimal(int.Parse(commands[4]));
-        comboBoxStopBits.SelectedItem = commands[5];
+        textBoxCommand.Text             = commands[0];
+        comboBoxPort.SelectedItem       = commands[1];
+        numericUpDownBaudRate.Value     = new Decimal(int.Parse(commands[2]));
+        comboBoxParity.SelectedItem     = commands[3];
+        numericUpDownDataBits.Value     = new Decimal(int.Parse(commands[4]));
+        comboBoxStopBits.SelectedItem   = commands[5];
+        checkBoxWaitForResponse.Checked = bool.Parse(commands[6]);
       }
     }
 

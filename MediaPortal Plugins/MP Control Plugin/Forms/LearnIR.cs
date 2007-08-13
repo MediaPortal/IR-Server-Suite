@@ -53,10 +53,6 @@ namespace MediaPortal.Plugins
       comboBoxPort.Items.Clear();
       comboBoxPort.Items.AddRange(MPControlPlugin.TransceiverInformation.Ports);
       comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.Clear();
-      comboBoxSpeed.Items.AddRange(MPControlPlugin.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
     }
 
     #endregion Constructor
@@ -158,8 +154,7 @@ namespace MediaPortal.Plugins
         return;
 
       MPControlPlugin.BlastIR(Common.FolderIRCommands + command + Common.FileExtensionIR,
-        comboBoxPort.SelectedItem as string,
-        comboBoxSpeed.SelectedItem as string);
+        comboBoxPort.SelectedItem as string);
     }
 
   }

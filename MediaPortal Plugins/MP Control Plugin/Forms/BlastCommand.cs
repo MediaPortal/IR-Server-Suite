@@ -20,10 +20,9 @@ namespace MediaPortal.Plugins
     {
       get
       {
-        return String.Format("{0}|{1}|{2}",
+        return String.Format("{0}|{1}",
           labelIRCommandFile.Text,
-          comboBoxPort.SelectedItem as string,
-          comboBoxSpeed.SelectedItem as string);
+          comboBoxPort.SelectedItem as string);
       }
     }
 
@@ -35,7 +34,7 @@ namespace MediaPortal.Plugins
     {
       InitializeComponent();
 
-      SetupPortsAndSpeeds();
+      SetupPorts();
 
       labelIRCommandFile.Text = file;
     }
@@ -43,7 +42,7 @@ namespace MediaPortal.Plugins
     {
       InitializeComponent();
 
-      SetupPortsAndSpeeds();
+      SetupPorts();
       
       if (commands == null)
         return;
@@ -52,20 +51,14 @@ namespace MediaPortal.Plugins
       
       if (comboBoxPort.Items.Contains(commands[1]))
         comboBoxPort.SelectedItem = commands[1];
-
-      if (comboBoxSpeed.Items.Contains(commands[2]))
-        comboBoxSpeed.SelectedItem = commands[2];
     }
 
     #endregion Constructor
 
-    void SetupPortsAndSpeeds()
+    void SetupPorts()
     {
       comboBoxPort.Items.AddRange(MPControlPlugin.TransceiverInformation.Ports);
       comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.AddRange(MPControlPlugin.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
     }
 
     #region Buttons
@@ -92,8 +85,7 @@ namespace MediaPortal.Plugins
       try
       {
         MPControlPlugin.BlastIR(Common.FolderIRCommands + fileName + Common.FileExtensionIR,
-          comboBoxPort.SelectedItem as string,
-          comboBoxSpeed.SelectedItem as string);
+          comboBoxPort.SelectedItem as string);
       }
       catch (Exception ex)
       {

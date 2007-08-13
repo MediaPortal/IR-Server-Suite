@@ -201,9 +201,9 @@ namespace IrssUtils
 
     #region Command Segments
 
-    public const int SegmentsBlastCommand         = 3;
+    public const int SegmentsBlastCommand         = 2;
     public const int SegmentsRunCommand           = 8;
-    public const int SegmentsSerialCommand        = 6;
+    public const int SegmentsSerialCommand        = 7;
     public const int SegmentsWindowMessageCommand = 5;
     public const int SegmentsPopupCommand         = 3;
     public const int SegmentsTcpMessageCommand    = 3;
@@ -341,17 +341,26 @@ namespace IrssUtils
     /// <param name="commands">An array of arguments for the method (the output of SplitSerialCommand).</param>
     public static void ProcessSerialCommand(string[] commands)
     {
-      string command    = Common.ReplaceEscapeCodes(commands[0]);
+      string command        = Common.ReplaceEscapeCodes(commands[0]);
       
-      string comPort    = commands[1];
-      int baudRate      = int.Parse(commands[2]);
-      Parity parity     = (Parity)Enum.Parse(typeof(Parity), commands[3]);
-      int dataBits      = int.Parse(commands[4]);
-      StopBits stopBits = (StopBits)Enum.Parse(typeof(StopBits), commands[5]);
+      string comPort        = commands[1];
+      int baudRate          = int.Parse(commands[2]);
+      Parity parity         = (Parity)Enum.Parse(typeof(Parity), commands[3]);
+      int dataBits          = int.Parse(commands[4]);
+      StopBits stopBits     = (StopBits)Enum.Parse(typeof(StopBits), commands[5]);
+      bool waitForResponse  = bool.Parse(commands[6]);
 
       SerialPort serialPort = new SerialPort(comPort, baudRate, parity, dataBits, stopBits);
+      
       serialPort.Open();
       serialPort.Write(command);
+
+      if (waitForResponse)
+      {
+        serialPort.ReadTimeout = 5000;
+        serialPort.ReadByte();
+      }
+
       serialPort.Close();
     }
 

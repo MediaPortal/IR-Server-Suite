@@ -52,7 +52,6 @@ namespace DebugClient
       this.groupBoxSetup = new System.Windows.Forms.GroupBox();
       this.comboBoxComputer = new System.Windows.Forms.ComboBox();
       this.groupBoxCommands = new System.Windows.Forms.GroupBox();
-      this.comboBoxSpeed = new System.Windows.Forms.ComboBox();
       this.comboBoxPort = new System.Windows.Forms.ComboBox();
       this.toolTip = new System.Windows.Forms.ToolTip(this.components);
       this.buttonHelp = new System.Windows.Forms.Button();
@@ -329,7 +328,6 @@ namespace DebugClient
       // 
       this.groupBoxCommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBoxCommands.Controls.Add(this.comboBoxSpeed);
       this.groupBoxCommands.Controls.Add(this.comboBoxPort);
       this.groupBoxCommands.Controls.Add(this.buttonCrash);
       this.groupBoxCommands.Controls.Add(this.buttonBlast);
@@ -343,16 +341,6 @@ namespace DebugClient
       this.groupBoxCommands.TabIndex = 1;
       this.groupBoxCommands.TabStop = false;
       this.groupBoxCommands.Text = "Commands";
-      // 
-      // comboBoxSpeed
-      // 
-      this.comboBoxSpeed.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxSpeed.FormattingEnabled = true;
-      this.comboBoxSpeed.Location = new System.Drawing.Point(168, 50);
-      this.comboBoxSpeed.Name = "comboBoxSpeed";
-      this.comboBoxSpeed.Size = new System.Drawing.Size(80, 21);
-      this.comboBoxSpeed.TabIndex = 4;
-      this.toolTip.SetToolTip(this.comboBoxSpeed, "Speed to blast IR at");
       // 
       // comboBoxPort
       // 
@@ -429,7 +417,6 @@ namespace DebugClient
     private System.Windows.Forms.GroupBox groupBoxCommands;
     private System.Windows.Forms.ToolTip toolTip;
     private System.Windows.Forms.ComboBox comboBoxPort;
-    private System.Windows.Forms.ComboBox comboBoxSpeed;
     private System.Windows.Forms.ComboBox comboBoxComputer;
     private System.Windows.Forms.Button buttonHelp;
   }

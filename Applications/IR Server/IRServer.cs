@@ -850,13 +850,9 @@ namespace IRServer
         if (portLen > 0)
           _pluginTransmit.SetPort(Encoding.ASCII.GetString(data, 4, portLen));
 
-        int speedLen = BitConverter.ToInt32(data, 4 + portLen);
-        if (speedLen > 0)
-          _pluginTransmit.SetSpeed(Encoding.ASCII.GetString(data, 4 + portLen + 4, speedLen));
-
-        byte[] fileData = new byte[data.Length - (4 + portLen + 4 + speedLen)];
-        for (int index = (4 + portLen + 4 + speedLen); index < data.Length; index++)
-          fileData[index - (4 + portLen + 4 + speedLen)] = data[index];
+        byte[] fileData = new byte[data.Length - (4 + portLen)];
+        for (int index = 4 + portLen; index < data.Length; index++)
+          fileData[index - (4 + portLen)] = data[index];
 
         string tempFile = Path.GetTempFileName();
 
@@ -1086,7 +1082,6 @@ namespace IRServer
                 {
                   transceiverInfo.Name          = _pluginTransmit.Name;
                   transceiverInfo.Ports         = _pluginTransmit.AvailablePorts;
-                  transceiverInfo.Speeds        = _pluginTransmit.AvailableSpeeds;
                   transceiverInfo.CanLearn      = _pluginTransmit.CanLearn;
                   transceiverInfo.CanTransmit   = _pluginTransmit.CanTransmit;
                 }                

@@ -53,10 +53,6 @@ namespace Translator
       comboBoxPort.Items.Clear();
       comboBoxPort.Items.AddRange(Program.TransceiverInformation.Ports);
       comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.Clear();
-      comboBoxSpeed.Items.AddRange(Program.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
     }
 
     #endregion Constructor
@@ -163,8 +159,7 @@ namespace Translator
       try
       {
         Program.BlastIR(Common.FolderIRCommands + command + Common.FileExtensionIR,
-          comboBoxPort.SelectedItem as string,
-          comboBoxSpeed.SelectedItem as string);
+          comboBoxPort.SelectedItem as string);
       }
       catch (Exception ex)
       {

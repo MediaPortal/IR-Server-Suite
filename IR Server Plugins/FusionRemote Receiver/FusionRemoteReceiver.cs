@@ -33,7 +33,6 @@ namespace FusionRemoteReceiver
       "\\IR Server Suite\\IR Server\\FusionRemote Receiver.xml";
 
     static readonly string[] Ports  = new string[] { "None" };
-    static readonly string[] Speeds = new string[] { "None" };
 
     const string DeviceID = "VID_0FE9&PID_9010";
 
@@ -231,10 +230,6 @@ namespace FusionRemoteReceiver
     {
       get { return Ports; }
     }
-    public string[] AvailableSpeeds
-    {
-      get { return Speeds; }
-    }
 
     public void Configure() { }
     public bool Start()
@@ -281,10 +276,6 @@ namespace FusionRemoteReceiver
     }
 
     public bool SetPort(string port)
-    {
-      return true;
-    }
-    public bool SetSpeed(string speed)
     {
       return true;
     }

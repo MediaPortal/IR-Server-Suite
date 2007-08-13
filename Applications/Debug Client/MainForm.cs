@@ -141,10 +141,6 @@ namespace DebugClient
       comboBoxPort.Items.Add("None");
       comboBoxPort.SelectedIndex = 0;
 
-      comboBoxSpeed.Items.Clear();
-      comboBoxSpeed.Items.Add("None");
-      comboBoxSpeed.SelectedIndex = 0;
-
       ArrayList networkPCs = IrssUtils.Win32.GetNetworkComputers();
       if (networkPCs != null)
       {
@@ -192,10 +188,6 @@ namespace DebugClient
             comboBoxPort.Items.Clear();
             comboBoxPort.Items.AddRange(_transceiverInfo.Ports);
             comboBoxPort.SelectedIndex = 0;
-
-            comboBoxSpeed.Items.Clear();
-            comboBoxSpeed.Items.AddRange(_transceiverInfo.Speeds);
-            comboBoxSpeed.SelectedIndex = 0;
             return;
           }
 
@@ -327,7 +319,7 @@ namespace DebugClient
 
       return true;
     }
-    bool BlastIR(string fileName, string port, string speed)
+    bool BlastIR(string fileName, string port)
     {
       try
       {
@@ -336,14 +328,12 @@ namespace DebugClient
 
         FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        byte[] outData = new byte[8 + port.Length + speed.Length + file.Length];
+        byte[] outData = new byte[4 + port.Length + file.Length];
 
         BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
         Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
-        BitConverter.GetBytes(speed.Length).CopyTo(outData, 4 + port.Length);
-        Encoding.ASCII.GetBytes(speed).CopyTo(outData, 8 + port.Length);
 
-        file.Read(outData, 8 + port.Length + speed.Length, (int)file.Length);
+        file.Read(outData, 4 + port.Length, (int)file.Length);
         file.Close();
 
         PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
@@ -433,7 +423,7 @@ namespace DebugClient
         return;
       }
 
-      if (BlastIR(TempIRFile, comboBoxPort.SelectedItem as string, comboBoxSpeed.SelectedItem as string))
+      if (BlastIR(TempIRFile, comboBoxPort.SelectedItem as string))
         AddStatusLine("Blasting");
       else
         AddStatusLine("Can't Blast");

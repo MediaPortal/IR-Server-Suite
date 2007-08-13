@@ -33,7 +33,6 @@ namespace WindowsMessageReceiver
       "\\IR Server Suite\\IR Server\\Windows Messages.xml";
 
     static readonly string[] Ports  = new string[] { "None" };
-    static readonly string[] Speeds = new string[] { "None" };
 
     const int WM_APP            = 0x8000;
     const int DefaultMessageID  = 0x0018;
@@ -73,7 +72,6 @@ namespace WindowsMessageReceiver
     public MouseHandler MouseCallback { get { return null; } set { } }
 
     public string[] AvailablePorts  { get { return Ports; }   }
-    public string[] AvailableSpeeds { get { return Speeds; }  }
 
     public void Configure()
     {
@@ -131,7 +129,6 @@ namespace WindowsMessageReceiver
     }
 
     public bool SetPort(string port)    { return false; }
-    public bool SetSpeed(string speed)  { return false; }
 
     #endregion IIRServerPlugin Members
 

@@ -23,7 +23,6 @@ namespace IRManReceiver
       "\\IR Server Suite\\IR Server\\IRMan Receiver.xml";
 
     static readonly string[] Ports  = new string[] { "None" };
-    static readonly string[] Speeds = new string[] { "None" };
 
     const int DeviceBufferSize = 6;
 
@@ -68,7 +67,6 @@ namespace IRManReceiver
     public MouseHandler MouseCallback { get { return null; } set { } }
 
     public string[] AvailablePorts { get { return Ports; } }
-    public string[] AvailableSpeeds { get { return Speeds; }  }
 
     public void Configure()
     {
@@ -145,7 +143,6 @@ namespace IRManReceiver
     }
 
     public bool SetPort(string port)    { return true; }
-    public bool SetSpeed(string speed)  { return true; }
 
     #endregion IIRServerPlugin Members
 

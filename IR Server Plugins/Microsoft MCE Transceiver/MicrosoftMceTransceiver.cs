@@ -54,30 +54,6 @@ namespace MicrosoftMceTransceiver
     Port_2 = 2
   }
 
-  /// <summary>
-  /// Speed to transmit IR codes at.
-  /// </summary>
-  enum BlasterSpeed
-  {
-    /// <summary>
-    /// None - Do not set the blaster speed.
-    /// (Note: If an IR code has been sent with a speed setting previously then that speed setting will continue to take effect, until the unit's power is cycled)
-    /// </summary>
-    None    = 0,
-    /// <summary>
-    /// Fast - Set blaster speed to fast.
-    /// </summary>
-    Fast    = 1,
-    /// <summary>
-    /// Medium - Set blaster speed to medium.
-    /// </summary>
-    Medium  = 2,
-    /// <summary>
-    /// Slow - Set blaster speed to slow.
-    /// </summary>
-    Slow    = 3,
-  }
-
   #endregion Enumerations
 
   #region Delegates
@@ -97,14 +73,6 @@ namespace MicrosoftMceTransceiver
     
     const int DeviceBufferSize = 255;
     const int PacketTimeout = 100;
-
-    // Speed packets
-    static readonly byte[][] SpeedPackets = new byte[][]
-			{
-				new byte[] { 0x9F, 0x06, 0x01, 0x44 },	// Fast
-				new byte[] { 0x9F, 0x06, 0x01, 0x4A },	// Medium
-				new byte[] { 0x9F, 0x06, 0x01, 0x50 },  // Slow
-			};
 
     // Microsoft Port Packets
     static readonly byte[][] MicrosoftPorts = new byte[][]
@@ -150,7 +118,6 @@ namespace MicrosoftMceTransceiver
     int _learnTimeout           = 10000;
 
     BlasterType  _blasterType   = BlasterType.Microsoft;
-    BlasterSpeed _blasterSpeed  = BlasterSpeed.None;
     BlasterPort _blasterPort    = BlasterPort.Both;
     
     List<byte> _learnedNativeData = null;
@@ -187,7 +154,7 @@ namespace MicrosoftMceTransceiver
     MouseHandler _mouseHandler = null;
 
     #endregion Variables
-   
+
     #region IIRServerPlugin Members
 
     public string Name          { get { return "Microsoft MCE"; } }
@@ -220,10 +187,6 @@ namespace MicrosoftMceTransceiver
     public string[] AvailablePorts
     {
       get { return Enum.GetNames(typeof(BlasterPort)); }
-    }
-    public string[] AvailableSpeeds
-    {
-      get { return Enum.GetNames(typeof(BlasterSpeed)); }
     }
 
     public void Configure()
@@ -392,19 +355,6 @@ namespace MicrosoftMceTransceiver
 
       return true;
     }
-    public bool SetSpeed(string speed)
-    {
-      try
-      {
-        _blasterSpeed = (BlasterSpeed)Enum.Parse(typeof(BlasterSpeed), speed);
-      }
-      catch
-      {
-        return false;
-      }
-
-      return true;
-    }
 
     #endregion IIRServerPlugin Members
 
@@ -413,45 +363,47 @@ namespace MicrosoftMceTransceiver
     void LoadSettings()
     {
       XmlDocument doc = new XmlDocument();
-      doc.Load(ConfigurationFile);
 
-      try {   _blasterType = (BlasterType)Enum.Parse(typeof(BlasterType), doc.DocumentElement.Attributes["BlastType"].Value); }
+      try   { doc.Load(ConfigurationFile); }
+      catch { return; }
+
+      try   { _blasterType = (BlasterType)Enum.Parse(typeof(BlasterType), doc.DocumentElement.Attributes["BlastType"].Value); }
       catch { _blasterType = BlasterType.Microsoft; }
 
-      try {   _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value); }
+      try   { _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value); }
       catch { _learnTimeout = 10000; }
 
 
-      try {   _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); }
+      try   { _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); }
       catch { _enableRemoteInput = true; }
 
-      try {   _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); }
+      try   { _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); }
       catch { _remoteFirstRepeat = 400; }
-      
-      try {   _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value); }
+
+      try   { _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value); }
       catch { _remoteHeldRepeats = 250; }
 
 
-      try {   _enableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value); }
+      try   { _enableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value); }
       catch { _enableKeyboardInput = true; }
 
-      try {   _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value); }
+      try   { _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value); }
       catch { _keyboardFirstRepeat = 350; }
-      
-      try {   _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value); }
+
+      try   { _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value); }
       catch { _keyboardHeldRepeats = 0; }
 
-      try {   _handleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value); }
+      try   { _handleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value); }
       catch { _handleKeyboardLocally = true; }
 
 
-      try {   _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value); }
+      try   { _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value); }
       catch { _enableMouseInput = true; }
 
-      try {   _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); }
+      try   { _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); }
       catch { _handleMouseLocally = true; }
 
-      try {   _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); }
+      try   { _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); }
       catch { _mouseSensitivity = 1.0d; }
 
     }
@@ -1191,21 +1143,15 @@ namespace MicrosoftMceTransceiver
       byte[][] portPackets;
       switch (type)
       {
-        case BlasterType.Microsoft:
-          portPackets = MicrosoftPorts;
-          break;
-        case BlasterType.SMK:
-          portPackets = SmkPorts;
-          break;
-
-        default:
-          return false;
+        case BlasterType.Microsoft:   portPackets = MicrosoftPorts;   break;
+        case BlasterType.SMK:         portPackets = SmkPorts;         break;
+        default:                      return false;
       }
 
       // Set port
       _writeStream.Write(portPackets[(int)port], 0, portPackets[(int)port].Length);
 
-      // Set carrier
+      // Set carrier frequency
       byte[] carrierPacket = code.GetCarrierPacket();
       _writeStream.Write(carrierPacket, 0, carrierPacket.Length);
 
@@ -1213,7 +1159,7 @@ namespace MicrosoftMceTransceiver
       byte[] dataPacket = code.GetDataPacket();
       _writeStream.Write(dataPacket, 0, dataPacket.Length);
 
-      // Flush packet
+      // Flush the data stream
       _writeStream.Flush();
 
       // Wait to ensure the packet had time to be transmitted

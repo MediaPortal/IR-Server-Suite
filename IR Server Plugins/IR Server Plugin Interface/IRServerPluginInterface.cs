@@ -122,11 +122,6 @@ namespace IRServerPluginInterface
     /// </summary>
     string[] AvailablePorts { get; }
 
-    /// <summary>
-    /// Lists the available blaster speeds.
-    /// </summary>
-    string[] AvailableSpeeds { get; }
-
     #endregion
 
     #region Interface
@@ -177,13 +172,6 @@ namespace IRServerPluginInterface
     /// <param name="port">Port to use.</param>
     /// <returns>Success.</returns>
     bool SetPort(string port);
-
-    /// <summary>
-    /// Set the transmit speed to use for infrared command output.
-    /// </summary>
-    /// <param name="speed">Speed to use.</param>
-    /// <returns>Success.</returns>
-    bool SetSpeed(string speed);
 
     #endregion Interface
 

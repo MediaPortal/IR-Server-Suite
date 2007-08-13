@@ -38,8 +38,6 @@ namespace MediaPortal.Plugins
       this.groupBoxStatus = new System.Windows.Forms.GroupBox();
       this.comboBoxPort = new System.Windows.Forms.ComboBox();
       this.labelPort = new System.Windows.Forms.Label();
-      this.labelSpeed = new System.Windows.Forms.Label();
-      this.comboBoxSpeed = new System.Windows.Forms.ComboBox();
       this.groupBoxTest = new System.Windows.Forms.GroupBox();
       this.groupBoxStatus.SuspendLayout();
       this.groupBoxTest.SuspendLayout();
@@ -48,7 +46,7 @@ namespace MediaPortal.Plugins
       // buttonDone
       // 
       this.buttonDone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonDone.Location = new System.Drawing.Point(216, 176);
+      this.buttonDone.Location = new System.Drawing.Point(216, 152);
       this.buttonDone.Name = "buttonDone";
       this.buttonDone.Size = new System.Drawing.Size(56, 24);
       this.buttonDone.TabIndex = 5;
@@ -73,7 +71,7 @@ namespace MediaPortal.Plugins
       // buttonLearn
       // 
       this.buttonLearn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonLearn.Location = new System.Drawing.Point(8, 176);
+      this.buttonLearn.Location = new System.Drawing.Point(8, 152);
       this.buttonLearn.Name = "buttonLearn";
       this.buttonLearn.Size = new System.Drawing.Size(56, 24);
       this.buttonLearn.TabIndex = 4;
@@ -102,10 +100,10 @@ namespace MediaPortal.Plugins
       // buttonTest
       // 
       this.buttonTest.Enabled = false;
-      this.buttonTest.Location = new System.Drawing.Point(200, 40);
+      this.buttonTest.Location = new System.Drawing.Point(200, 16);
       this.buttonTest.Name = "buttonTest";
       this.buttonTest.Size = new System.Drawing.Size(56, 24);
-      this.buttonTest.TabIndex = 4;
+      this.buttonTest.TabIndex = 2;
       this.buttonTest.Text = "Test";
       this.buttonTest.UseVisualStyleBackColor = true;
       this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
@@ -126,7 +124,7 @@ namespace MediaPortal.Plugins
       // 
       this.comboBoxPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxPort.FormattingEnabled = true;
-      this.comboBoxPort.Location = new System.Drawing.Point(8, 40);
+      this.comboBoxPort.Location = new System.Drawing.Point(64, 16);
       this.comboBoxPort.Name = "comboBoxPort";
       this.comboBoxPort.Size = new System.Drawing.Size(88, 21);
       this.comboBoxPort.TabIndex = 1;
@@ -135,41 +133,21 @@ namespace MediaPortal.Plugins
       // 
       this.labelPort.Location = new System.Drawing.Point(8, 16);
       this.labelPort.Name = "labelPort";
-      this.labelPort.Size = new System.Drawing.Size(88, 24);
+      this.labelPort.Size = new System.Drawing.Size(56, 21);
       this.labelPort.TabIndex = 0;
       this.labelPort.Text = "Port:";
       this.labelPort.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // labelSpeed
-      // 
-      this.labelSpeed.Location = new System.Drawing.Point(104, 16);
-      this.labelSpeed.Name = "labelSpeed";
-      this.labelSpeed.Size = new System.Drawing.Size(88, 24);
-      this.labelSpeed.TabIndex = 2;
-      this.labelSpeed.Text = "Speed:";
-      this.labelSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // comboBoxSpeed
-      // 
-      this.comboBoxSpeed.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxSpeed.FormattingEnabled = true;
-      this.comboBoxSpeed.Location = new System.Drawing.Point(104, 40);
-      this.comboBoxSpeed.Name = "comboBoxSpeed";
-      this.comboBoxSpeed.Size = new System.Drawing.Size(88, 21);
-      this.comboBoxSpeed.TabIndex = 3;
       // 
       // groupBoxTest
       // 
       this.groupBoxTest.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxTest.Controls.Add(this.comboBoxPort);
-      this.groupBoxTest.Controls.Add(this.labelSpeed);
       this.groupBoxTest.Controls.Add(this.buttonTest);
-      this.groupBoxTest.Controls.Add(this.comboBoxSpeed);
       this.groupBoxTest.Controls.Add(this.labelPort);
       this.groupBoxTest.Location = new System.Drawing.Point(8, 96);
       this.groupBoxTest.Name = "groupBoxTest";
-      this.groupBoxTest.Size = new System.Drawing.Size(264, 72);
+      this.groupBoxTest.Size = new System.Drawing.Size(264, 48);
       this.groupBoxTest.TabIndex = 3;
       this.groupBoxTest.TabStop = false;
       this.groupBoxTest.Text = "Test";
@@ -179,7 +157,7 @@ namespace MediaPortal.Plugins
       this.AcceptButton = this.buttonDone;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(280, 207);
+      this.ClientSize = new System.Drawing.Size(280, 184);
       this.Controls.Add(this.groupBoxTest);
       this.Controls.Add(this.buttonDone);
       this.Controls.Add(this.groupBoxStatus);
@@ -188,7 +166,7 @@ namespace MediaPortal.Plugins
       this.Controls.Add(this.textBoxName);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(288, 241);
+      this.MinimumSize = new System.Drawing.Size(288, 0);
       this.Name = "LearnIR";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
@@ -212,8 +190,6 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.GroupBox groupBoxStatus;
     private System.Windows.Forms.ComboBox comboBoxPort;
     private System.Windows.Forms.Label labelPort;
-    private System.Windows.Forms.Label labelSpeed;
-    private System.Windows.Forms.ComboBox comboBoxSpeed;
     private System.Windows.Forms.GroupBox groupBoxTest;
   }
 

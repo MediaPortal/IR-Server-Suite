@@ -190,8 +190,7 @@ namespace IRTransTransceiver
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\IRTrans Transceiver.xml";
 
-    static readonly string[] Ports  = new string[] { "None" };  // "Default"
-    static readonly string[] Speeds = new string[] { "None" };  // "Default"
+    static readonly string[] Ports = new string[] { "Default" };
 
     const string  DefaultRemoteModel    = "mediacenter";
     const string  DefaultServerAddress  = "localhost";
@@ -206,7 +205,6 @@ namespace IRTransTransceiver
 
     static RemoteHandler _remoteButtonHandler = null;
 
-    static string _blasterSpeed = Speeds[0];
     static string _blasterPort = Ports[0];
 
     static Socket _socket;
@@ -242,10 +240,6 @@ namespace IRTransTransceiver
     public string[] AvailablePorts
     {
       get { return Ports; }
-    }
-    public string[] AvailableSpeeds
-    {
-      get { return Speeds; }
     }
 
     public void Configure()
@@ -382,10 +376,6 @@ namespace IRTransTransceiver
     }
 
     public bool SetPort(string port)
-    {
-      return true;
-    }
-    public bool SetSpeed(string speed)
     {
       return true;
     }

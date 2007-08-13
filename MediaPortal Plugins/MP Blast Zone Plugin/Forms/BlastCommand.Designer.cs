@@ -30,8 +30,6 @@ namespace MediaPortal.Plugins
     private void InitializeComponent()
     {
       this.labelIRFile = new System.Windows.Forms.Label();
-      this.labelBlasterSpeed = new System.Windows.Forms.Label();
-      this.comboBoxSpeed = new System.Windows.Forms.ComboBox();
       this.labelBlasterPort = new System.Windows.Forms.Label();
       this.comboBoxPort = new System.Windows.Forms.ComboBox();
       this.labelIRCommandFile = new System.Windows.Forms.Label();
@@ -48,24 +46,6 @@ namespace MediaPortal.Plugins
       this.labelIRFile.TabIndex = 0;
       this.labelIRFile.Text = "IR Command:";
       this.labelIRFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // labelBlasterSpeed
-      // 
-      this.labelBlasterSpeed.Location = new System.Drawing.Point(8, 72);
-      this.labelBlasterSpeed.Name = "labelBlasterSpeed";
-      this.labelBlasterSpeed.Size = new System.Drawing.Size(88, 21);
-      this.labelBlasterSpeed.TabIndex = 4;
-      this.labelBlasterSpeed.Text = "Blaster speed:";
-      this.labelBlasterSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // comboBoxSpeed
-      // 
-      this.comboBoxSpeed.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxSpeed.FormattingEnabled = true;
-      this.comboBoxSpeed.Location = new System.Drawing.Point(96, 72);
-      this.comboBoxSpeed.Name = "comboBoxSpeed";
-      this.comboBoxSpeed.Size = new System.Drawing.Size(104, 21);
-      this.comboBoxSpeed.TabIndex = 5;
       // 
       // labelBlasterPort
       // 
@@ -100,10 +80,10 @@ namespace MediaPortal.Plugins
       // buttonTest
       // 
       this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonTest.Location = new System.Drawing.Point(8, 112);
+      this.buttonTest.Location = new System.Drawing.Point(8, 72);
       this.buttonTest.Name = "buttonTest";
       this.buttonTest.Size = new System.Drawing.Size(56, 24);
-      this.buttonTest.TabIndex = 6;
+      this.buttonTest.TabIndex = 4;
       this.buttonTest.Text = "Test";
       this.buttonTest.UseVisualStyleBackColor = true;
       this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
@@ -111,10 +91,10 @@ namespace MediaPortal.Plugins
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(160, 112);
+      this.buttonOK.Location = new System.Drawing.Point(160, 72);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
-      this.buttonOK.TabIndex = 7;
+      this.buttonOK.TabIndex = 5;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -123,10 +103,10 @@ namespace MediaPortal.Plugins
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(224, 112);
+      this.buttonCancel.Location = new System.Drawing.Point(224, 72);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
-      this.buttonCancel.TabIndex = 8;
+      this.buttonCancel.TabIndex = 6;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -137,20 +117,18 @@ namespace MediaPortal.Plugins
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(288, 144);
+      this.ClientSize = new System.Drawing.Size(288, 104);
       this.Controls.Add(this.buttonOK);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonTest);
       this.Controls.Add(this.labelIRCommandFile);
-      this.Controls.Add(this.labelBlasterSpeed);
-      this.Controls.Add(this.comboBoxSpeed);
       this.Controls.Add(this.labelBlasterPort);
       this.Controls.Add(this.comboBoxPort);
       this.Controls.Add(this.labelIRFile);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(294, 176);
+      this.MinimumSize = new System.Drawing.Size(294, 1);
       this.Name = "BlastCommand";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
@@ -163,8 +141,6 @@ namespace MediaPortal.Plugins
     #endregion
 
     private System.Windows.Forms.Label labelIRFile;
-    private System.Windows.Forms.Label labelBlasterSpeed;
-    private System.Windows.Forms.ComboBox comboBoxSpeed;
     private System.Windows.Forms.Label labelBlasterPort;
     private System.Windows.Forms.ComboBox comboBoxPort;
     private System.Windows.Forms.Label labelIRCommandFile;

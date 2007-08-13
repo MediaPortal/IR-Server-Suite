@@ -130,7 +130,6 @@ namespace UirtTransceiver
     const int UUIRTDRV_IRFMT_LEARN_FREQDETECT  = 0x0800;
     
     static readonly string[] Ports  = new string[] { "Default", "Port 1", "Port 2", "Port 3" };
-    static readonly string[] Speeds = new string[] { "Default" };
 
     const int AbortLearn = -1;
     const int AllowLearn = 0;
@@ -147,7 +146,7 @@ namespace UirtTransceiver
     int _blastRepeats;
     int _learnTimeout;
 
-    ulong _learnCarrierFreq;
+    //ulong _learnCarrierFreq;
 
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
@@ -224,7 +223,6 @@ namespace UirtTransceiver
     public MouseHandler MouseCallback { get { return null; } set { } }
 
     public string[] AvailablePorts  { get { return Ports; }   }
-    public string[] AvailableSpeeds { get { return Speeds; }  }
 
     public void Configure()
     {
@@ -318,7 +316,7 @@ namespace UirtTransceiver
       _abortLearn = AllowLearn;
       _learnTimedOut = false;
       
-      _learnCarrierFreq = 0;
+      //_learnCarrierFreq = 0;
 
       Timer timer = new Timer();
       timer.Interval = _learnTimeout;
@@ -326,13 +324,13 @@ namespace UirtTransceiver
       timer.Enabled = true;
       timer.Start();
 
-      IRLearnCallbackDelegate learnCallback = new IRLearnCallbackDelegate(UUIRTLearnCallback);
+      //IRLearnCallbackDelegate learnCallback = new IRLearnCallbackDelegate(UUIRTLearnCallback);
 
       result = UirtTransceiver.UUIRTLearnIR(
         _usbUirtHandle,                                     // Handle to USB-UIRT
         UirtTransceiver.UUIRTDRV_IRFMT_PRONTO | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FREQDETECT,              //  | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FORCERAW
         irCode,                                             // Where to put the IR Code
-        learnCallback,                                      // Learn status callback
+        null,                                               // Learn status callback
         0,                                                  // User data
         ref _abortLearn,                                    // Abort flag?
         0,
@@ -341,7 +339,7 @@ namespace UirtTransceiver
 
       timer.Stop();
 
-      MessageBox.Show(_learnCarrierFreq.ToString());
+      //MessageBox.Show(_learnCarrierFreq.ToString());
 
       if (_learnTimedOut)
       {
@@ -369,14 +367,6 @@ namespace UirtTransceiver
           return true;
         }
       }
-
-      return false;
-    }
-    public bool SetSpeed(string speed)
-    {
-      foreach (string availableSpeed in Speeds)
-        if (speed == availableSpeed)
-          return true;
 
       return false;
     }
@@ -453,13 +443,13 @@ namespace UirtTransceiver
       
       _lastCode = keyCode;
     }
-
+    /*
     void UUIRTLearnCallback(uint progress, uint sigQuality, ulong carrierFreq, IntPtr userData)
     {
       _learnCarrierFreq = carrierFreq;
       //MessageBox.Show(_learnCarrierFreq.ToString());
     }
-
+    */
     void timer_Tick(object sender, EventArgs e)
     {
       _abortLearn = AbortLearn;

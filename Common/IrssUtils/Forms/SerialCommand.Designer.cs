@@ -28,6 +28,7 @@ namespace IrssUtils.Forms
     /// </summary>
     private void InitializeComponent()
     {
+      this.components = new System.ComponentModel.Container();
       this.labelCommand = new System.Windows.Forms.Label();
       this.textBoxCommand = new System.Windows.Forms.TextBox();
       this.buttonParamQuestion = new System.Windows.Forms.Button();
@@ -45,6 +46,8 @@ namespace IrssUtils.Forms
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.buttonTest = new System.Windows.Forms.Button();
+      this.checkBoxWaitForResponse = new System.Windows.Forms.CheckBox();
+      this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.groupBoxPortSetup.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDataBits)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBaudRate)).BeginInit();
@@ -69,6 +72,7 @@ namespace IrssUtils.Forms
       this.textBoxCommand.Name = "textBoxCommand";
       this.textBoxCommand.Size = new System.Drawing.Size(328, 20);
       this.textBoxCommand.TabIndex = 1;
+      this.toolTips.SetToolTip(this.textBoxCommand, "Enter the serial command to transmit here");
       // 
       // buttonParamQuestion
       // 
@@ -78,6 +82,7 @@ namespace IrssUtils.Forms
       this.buttonParamQuestion.Size = new System.Drawing.Size(32, 20);
       this.buttonParamQuestion.TabIndex = 2;
       this.buttonParamQuestion.Text = "?";
+      this.toolTips.SetToolTip(this.buttonParamQuestion, "Click here to see available parameter substitutions");
       this.buttonParamQuestion.UseVisualStyleBackColor = true;
       this.buttonParamQuestion.Click += new System.EventHandler(this.buttonParamQuestion_Click);
       // 
@@ -85,6 +90,7 @@ namespace IrssUtils.Forms
       // 
       this.groupBoxPortSetup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxPortSetup.Controls.Add(this.checkBoxWaitForResponse);
       this.groupBoxPortSetup.Controls.Add(this.comboBoxPort);
       this.groupBoxPortSetup.Controls.Add(this.comboBoxStopBits);
       this.groupBoxPortSetup.Controls.Add(this.labelStopBits);
@@ -110,6 +116,7 @@ namespace IrssUtils.Forms
       this.comboBoxPort.Name = "comboBoxPort";
       this.comboBoxPort.Size = new System.Drawing.Size(96, 21);
       this.comboBoxPort.TabIndex = 1;
+      this.toolTips.SetToolTip(this.comboBoxPort, "Select a port to send the command to");
       // 
       // comboBoxStopBits
       // 
@@ -119,6 +126,7 @@ namespace IrssUtils.Forms
       this.comboBoxStopBits.Name = "comboBoxStopBits";
       this.comboBoxStopBits.Size = new System.Drawing.Size(96, 21);
       this.comboBoxStopBits.TabIndex = 9;
+      this.toolTips.SetToolTip(this.comboBoxStopBits, "Select number of stop bits");
       // 
       // labelStopBits
       // 
@@ -146,6 +154,7 @@ namespace IrssUtils.Forms
       this.numericUpDownDataBits.Size = new System.Drawing.Size(96, 20);
       this.numericUpDownDataBits.TabIndex = 7;
       this.numericUpDownDataBits.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.toolTips.SetToolTip(this.numericUpDownDataBits, "Select number of data bits");
       this.numericUpDownDataBits.Value = new decimal(new int[] {
             8,
             0,
@@ -169,6 +178,7 @@ namespace IrssUtils.Forms
       this.comboBoxParity.Name = "comboBoxParity";
       this.comboBoxParity.Size = new System.Drawing.Size(96, 21);
       this.comboBoxParity.TabIndex = 5;
+      this.toolTips.SetToolTip(this.comboBoxParity, "Select data parity");
       // 
       // labelParity
       // 
@@ -196,6 +206,7 @@ namespace IrssUtils.Forms
       this.numericUpDownBaudRate.Size = new System.Drawing.Size(96, 20);
       this.numericUpDownBaudRate.TabIndex = 3;
       this.numericUpDownBaudRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.toolTips.SetToolTip(this.numericUpDownBaudRate, "Port baud rate");
       this.numericUpDownBaudRate.Value = new decimal(new int[] {
             9600,
             0,
@@ -251,8 +262,19 @@ namespace IrssUtils.Forms
       this.buttonTest.Size = new System.Drawing.Size(64, 24);
       this.buttonTest.TabIndex = 4;
       this.buttonTest.Text = "&Test";
+      this.toolTips.SetToolTip(this.buttonTest, "Test this serial command");
       this.buttonTest.UseVisualStyleBackColor = true;
       this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
+      // 
+      // checkBoxWaitForResponse
+      // 
+      this.checkBoxWaitForResponse.Location = new System.Drawing.Point(192, 88);
+      this.checkBoxWaitForResponse.Name = "checkBoxWaitForResponse";
+      this.checkBoxWaitForResponse.Size = new System.Drawing.Size(168, 21);
+      this.checkBoxWaitForResponse.TabIndex = 10;
+      this.checkBoxWaitForResponse.Text = "Wait for response";
+      this.toolTips.SetToolTip(this.checkBoxWaitForResponse, "Wait up to 5 seconds for a response after the command has been sent");
+      this.checkBoxWaitForResponse.UseVisualStyleBackColor = true;
       // 
       // SerialCommand
       // 
@@ -303,5 +325,7 @@ namespace IrssUtils.Forms
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.Button buttonTest;
     private System.Windows.Forms.ComboBox comboBoxPort;
+    private System.Windows.Forms.ToolTip toolTips;
+    private System.Windows.Forms.CheckBox checkBoxWaitForResponse;
   }
 }

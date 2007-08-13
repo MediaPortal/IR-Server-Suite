@@ -23,7 +23,6 @@ namespace WinLircReceiver
       "\\IR Server Suite\\IR Server\\WinLirc Receiver.xml";
 
     static readonly string[] Ports  = new string[] { "None" };
-    static readonly string[] Speeds = new string[] { "None" };
 
     #endregion Constants
 
@@ -62,7 +61,6 @@ namespace WinLircReceiver
     public MouseHandler MouseCallback { get { return null; } set { } }
 
     public string[] AvailablePorts  { get { return Ports; }   }
-    public string[] AvailableSpeeds { get { return Speeds; }  }
 
     public void Configure()
     {
@@ -140,7 +138,6 @@ namespace WinLircReceiver
     }
 
     public bool SetPort(string port)    { return true; }
-    public bool SetSpeed(string speed)  { return true; }
 
     #endregion IIRServerPlugin Members
 

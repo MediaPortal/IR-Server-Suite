@@ -53,10 +53,6 @@ namespace MediaPortal.Plugins
       comboBoxPort.Items.Clear();
       comboBoxPort.Items.AddRange(TV2BlasterPlugin.TransceiverInformation.Ports);
       comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.Clear();
-      comboBoxSpeed.Items.AddRange(TV2BlasterPlugin.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
     }
 
     #endregion Constructor
@@ -160,8 +156,7 @@ namespace MediaPortal.Plugins
       try
       {
         TV2BlasterPlugin.BlastIR(Common.FolderIRCommands + command + Common.FileExtensionIR,
-          comboBoxPort.SelectedItem as string,
-          comboBoxSpeed.SelectedItem as string);
+          comboBoxPort.SelectedItem as string);
       }
       catch (Exception ex)
       {

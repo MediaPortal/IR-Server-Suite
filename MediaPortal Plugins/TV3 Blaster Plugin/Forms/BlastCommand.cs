@@ -20,10 +20,9 @@ namespace TvEngine
     {
       get
       {
-        return String.Format("{0}|{1}|{2}",
+        return String.Format("{0}|{1}",
           labelIRCommandFile.Text,
-          comboBoxPort.SelectedItem as string,
-          comboBoxSpeed.SelectedItem as string);
+          comboBoxPort.SelectedItem as string);
       }
     }
 
@@ -41,7 +40,7 @@ namespace TvEngine
     {
       InitializeComponent();
 
-      SetupPortsAndSpeeds();
+      SetupPorts();
 
       _baseFolder = baseFolder;
 
@@ -51,7 +50,7 @@ namespace TvEngine
     {
       InitializeComponent();
 
-      SetupPortsAndSpeeds();
+      SetupPorts();
       
       _baseFolder = baseFolder;
 
@@ -62,20 +61,14 @@ namespace TvEngine
 
       if (comboBoxPort.Items.Contains(commands[1]))
         comboBoxPort.SelectedItem = commands[1];
-
-      if (comboBoxSpeed.Items.Contains(commands[2]))
-        comboBoxSpeed.SelectedItem = commands[2];
     }
 
     #endregion Constructors
 
-    void SetupPortsAndSpeeds()
+    void SetupPorts()
     {
       comboBoxPort.Items.AddRange(TV3BlasterPlugin.TransceiverInformation.Ports);
       comboBoxPort.SelectedIndex = 0;
-
-      comboBoxSpeed.Items.AddRange(TV3BlasterPlugin.TransceiverInformation.Speeds);
-      comboBoxSpeed.SelectedIndex = 0;
     }
 
     #region Buttons
@@ -102,8 +95,7 @@ namespace TvEngine
       try
       {
         TV3BlasterPlugin.BlastIR(_baseFolder + fileName + Common.FileExtensionIR,
-          comboBoxPort.SelectedItem as string,
-          comboBoxSpeed.SelectedItem as string);
+          comboBoxPort.SelectedItem as string);
       }
       catch (Exception ex)
       {
