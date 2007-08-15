@@ -210,7 +210,7 @@ namespace Translator
       this.groupBoxButton.Controls.Add(this.textBoxButtonDesc);
       this.groupBoxButton.Location = new System.Drawing.Point(8, 8);
       this.groupBoxButton.Name = "groupBoxButton";
-      this.groupBoxButton.Size = new System.Drawing.Size(456, 80);
+      this.groupBoxButton.Size = new System.Drawing.Size(464, 80);
       this.groupBoxButton.TabIndex = 0;
       this.groupBoxButton.TabStop = false;
       this.groupBoxButton.Text = "Button";
@@ -241,7 +241,7 @@ namespace Translator
       this.textBoxKeyCode.Location = new System.Drawing.Point(88, 16);
       this.textBoxKeyCode.Name = "textBoxKeyCode";
       this.textBoxKeyCode.ReadOnly = true;
-      this.textBoxKeyCode.Size = new System.Drawing.Size(360, 20);
+      this.textBoxKeyCode.Size = new System.Drawing.Size(368, 20);
       this.textBoxKeyCode.TabIndex = 1;
       this.textBoxKeyCode.TabStop = false;
       this.textBoxKeyCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -253,7 +253,7 @@ namespace Translator
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxButtonDesc.Location = new System.Drawing.Point(88, 48);
       this.textBoxButtonDesc.Name = "textBoxButtonDesc";
-      this.textBoxButtonDesc.Size = new System.Drawing.Size(360, 20);
+      this.textBoxButtonDesc.Size = new System.Drawing.Size(368, 20);
       this.textBoxButtonDesc.TabIndex = 3;
       this.toolTips.SetToolTip(this.textBoxButtonDesc, "Provide a description of this button here");
       this.textBoxButtonDesc.TextChanged += new System.EventHandler(this.textBoxButtonDesc_TextChanged);
@@ -269,7 +269,7 @@ namespace Translator
       this.groupBoxSet.Controls.Add(this.buttonTest);
       this.groupBoxSet.Location = new System.Drawing.Point(8, 96);
       this.groupBoxSet.Name = "groupBoxSet";
-      this.groupBoxSet.Size = new System.Drawing.Size(456, 296);
+      this.groupBoxSet.Size = new System.Drawing.Size(464, 296);
       this.groupBoxSet.TabIndex = 1;
       this.groupBoxSet.TabStop = false;
       this.groupBoxSet.Text = "Command";
@@ -282,7 +282,7 @@ namespace Translator
       this.textBoxCommand.Location = new System.Drawing.Point(64, 264);
       this.textBoxCommand.Name = "textBoxCommand";
       this.textBoxCommand.ReadOnly = true;
-      this.textBoxCommand.Size = new System.Drawing.Size(328, 20);
+      this.textBoxCommand.Size = new System.Drawing.Size(336, 20);
       this.textBoxCommand.TabIndex = 2;
       // 
       // buttonSet
@@ -313,7 +313,7 @@ namespace Translator
       this.tabControl.Location = new System.Drawing.Point(8, 24);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(440, 232);
+      this.tabControl.Size = new System.Drawing.Size(448, 232);
       this.tabControl.TabIndex = 0;
       // 
       // tabPageBlastIR
@@ -1626,7 +1626,7 @@ namespace Translator
       this.tabPageMisc.Location = new System.Drawing.Point(4, 22);
       this.tabPageMisc.Name = "tabPageMisc";
       this.tabPageMisc.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMisc.Size = new System.Drawing.Size(432, 206);
+      this.tabPageMisc.Size = new System.Drawing.Size(440, 206);
       this.tabPageMisc.TabIndex = 7;
       this.tabPageMisc.Text = "Misc";
       this.tabPageMisc.UseVisualStyleBackColor = true;
@@ -1652,7 +1652,7 @@ namespace Translator
       // buttonTest
       // 
       this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonTest.Location = new System.Drawing.Point(400, 264);
+      this.buttonTest.Location = new System.Drawing.Point(408, 264);
       this.buttonTest.Name = "buttonTest";
       this.buttonTest.Size = new System.Drawing.Size(48, 20);
       this.buttonTest.TabIndex = 3;
@@ -1665,7 +1665,7 @@ namespace Translator
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(408, 400);
+      this.buttonCancel.Location = new System.Drawing.Point(416, 400);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
       this.buttonCancel.TabIndex = 3;
@@ -1676,7 +1676,7 @@ namespace Translator
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(344, 400);
+      this.buttonOK.Location = new System.Drawing.Point(352, 400);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
       this.buttonOK.TabIndex = 2;
@@ -1690,14 +1690,14 @@ namespace Translator
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(472, 433);
+      this.ClientSize = new System.Drawing.Size(480, 433);
       this.Controls.Add(this.groupBoxButton);
       this.Controls.Add(this.groupBoxSet);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(480, 428);
+      this.MinimumSize = new System.Drawing.Size(488, 428);
       this.Name = "ButtonMappingForm";
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

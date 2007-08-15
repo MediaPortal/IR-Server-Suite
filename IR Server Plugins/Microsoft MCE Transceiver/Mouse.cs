@@ -23,7 +23,7 @@ namespace MicrosoftMceTransceiver
     /// Used to simulate mouse actions.
     /// </summary>
     [Flags]
-    public enum MouseEvents : int
+    public enum MouseEvents
     {
       None        = 0x0000,
       Move        = 0x0001,
@@ -34,17 +34,17 @@ namespace MicrosoftMceTransceiver
       MiddleDown  = 0x0020,
       MiddleUp    = 0x0040,
       Scroll      = 0x0800,
-      Absolute    = 0x8000
+      Absolute    = 0x8000,
     }
 
     /// <summary>
     /// Used to simulate mouse wheel scrolling.
     /// </summary>
-    public enum ScrollDir : int
+    public enum ScrollDir
     {
       None  =    0,
       Up    =  120,
-      Down  = -120
+      Down  = -120,
     }
 
     #endregion Enumerations

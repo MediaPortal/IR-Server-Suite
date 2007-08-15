@@ -12,7 +12,7 @@ namespace MicrosoftMceTransceiver
 
     #region Constants
 
-    public const int DefaultCarrierFrequency = 36000;
+    public const int DefaultCarrierFrequency = 38000;
 
     #endregion Constants
 
@@ -48,11 +48,8 @@ namespace MicrosoftMceTransceiver
     #region Constructors
 
     public MceIrCode() : this(MceIrCode.DefaultCarrierFrequency, null) { }
-
     public MceIrCode(int carrier) : this(carrier, null) { }
-
     public MceIrCode(byte[] data) : this(MceIrCode.DefaultCarrierFrequency, data) { }
-
     public MceIrCode(int carrier, byte[] data)
     {
       _carrier  = carrier;

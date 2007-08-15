@@ -134,7 +134,7 @@ namespace AppModule.NamedPipes {
 		/// </summary>
 		/// <param name="disposing">A boolean indicating how the method is called.</param>
 		#endregion
-		protected void Dispose(bool disposing) {
+		protected virtual void Dispose(bool disposing) {
 			if(!this.disposed) {
 				NamedPipeWrapper.Close(this.Handle);
 			}

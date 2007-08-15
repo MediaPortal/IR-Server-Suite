@@ -292,46 +292,46 @@ namespace IrssUtils
     }
 
     [Flags]
-    public enum ShutdownReason
+    public enum ShutdownReasons
     {
-      MajorApplication = 0x00040000,
-      MajorHardware = 0x00010000,
-      MajorLegacyApi = 0x00070000,
-      MajorOperatingSystem = 0x00020000,
-      MajorOther = 0x00000000,
-      MajorPower = 0x00060000,
-      MajorSoftware = 0x00030000,
-      MajorSystem = 0x00050000,
+      MajorApplication          = 0x00040000,
+      MajorHardware             = 0x00010000,
+      MajorLegacyApi            = 0x00070000,
+      MajorOperatingSystem      = 0x00020000,
+      MajorOther                = 0x00000000,
+      MajorPower                = 0x00060000,
+      MajorSoftware             = 0x00030000,
+      MajorSystem               = 0x00050000,
 
-      MinorBlueScreen = 0x0000000F,
-      MinorCordUnplugged = 0x0000000b,
-      MinorDisk = 0x00000007,
-      MinorEnvironment = 0x0000000c,
-      MinorHardwareDriver = 0x0000000d,
-      MinorHotfix = 0x00000011,
-      MinorHung = 0x00000005,
-      MinorInstallation = 0x00000002,
-      MinorMaintenance = 0x00000001,
-      MinorMMC = 0x00000019,
-      MinorNetworkConnectivity = 0x00000014,
-      MinorNetworkCard = 0x00000009,
-      MinorOther = 0x00000000,
-      MinorOtherDriver = 0x0000000e,
-      MinorPowerSupply = 0x0000000a,
-      MinorProcessor = 0x00000008,
-      MinorReconfig = 0x00000004,
-      MinorSecurity = 0x00000013,
-      MinorSecurityFix = 0x00000012,
+      MinorBlueScreen           = 0x0000000F,
+      MinorCordUnplugged        = 0x0000000b,
+      MinorDisk                 = 0x00000007,
+      MinorEnvironment          = 0x0000000c,
+      MinorHardwareDriver       = 0x0000000d,
+      MinorHotfix               = 0x00000011,
+      MinorHung                 = 0x00000005,
+      MinorInstallation         = 0x00000002,
+      MinorMaintenance          = 0x00000001,
+      MinorMMC                  = 0x00000019,
+      MinorNetworkConnectivity  = 0x00000014,
+      MinorNetworkCard          = 0x00000009,
+      MinorOther                = 0x00000000,
+      MinorOtherDriver          = 0x0000000e,
+      MinorPowerSupply          = 0x0000000a,
+      MinorProcessor            = 0x00000008,
+      MinorReconfig             = 0x00000004,
+      MinorSecurity             = 0x00000013,
+      MinorSecurityFix          = 0x00000012,
       MinorSecurityFixUninstall = 0x00000018,
-      MinorServicePack = 0x00000010,
+      MinorServicePack          = 0x00000010,
       MinorServicePackUninstall = 0x00000016,
-      MinorTermSrv = 0x00000020,
-      MinorUnstable = 0x00000006,
-      MinorUpgrade = 0x00000003,
-      MinorWMI = 0x00000015,
+      MinorTermSrv              = 0x00000020,
+      MinorUnstable             = 0x00000006,
+      MinorUpgrade              = 0x00000003,
+      MinorWMI                  = 0x00000015,
 
-      FlagUserDefined = 0x40000000,
-      //FlagPlanned = 0x80000000,
+      FlagUserDefined           = 0x40000000,
+      //FlagPlanned               = 0x80000000,
     }
 
     [Flags]
@@ -343,7 +343,7 @@ namespace IrssUtils
       Reboot      = 0x02,
       PowerOff    = 0x08,
       RestartApps = 0x40,
-      // Optionally include ONE of the following two:
+      // Optionally include ONE of the following:
       Force       = 0x04,
       ForceIfHung = 0x10,
     }
@@ -376,15 +376,12 @@ namespace IrssUtils
     [DllImport("user32.dll")]
     public static extern IntPtr GetForegroundWindow();
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool SetForegroundWindow(IntPtr hWnd);
+    public static extern bool ExitWindowsEx(ExitWindows uFlags, ShutdownReasons dwReason);
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern int GetWindowTextLength(IntPtr hWnd);
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     public static extern IntPtr SendMessageTimeout(
@@ -402,15 +399,45 @@ namespace IrssUtils
     //[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     //public static extern int RegisterWindowMessage(string lpString);
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool ExitWindowsEx(ExitWindows uFlags, ShutdownReason dwReason);
+    private static extern bool SetFocus(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool BringWindowToTop(IntPtr hWnd);
+
+    //[DllImport("user32.dll")]
+    //[return: MarshalAs(UnmanagedType.Bool)]
+    //private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool AttachThreadInput(int nThreadId, int nThreadIdTo, bool bAttach);
+
+    //[DllImport("user32.dll")]
+    //[return: MarshalAs(UnmanagedType.Bool)]
+    //private static extern bool IsWindowVisible(IntPtr hWnd);
+
+    //[DllImport("user32.dll")]
+    //[return: MarshalAs(UnmanagedType.Bool)]
+    //private static extern bool IsIconic(IntPtr hWnd);
+
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    private static extern int GetWindowTextLength(IntPtr hWnd);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
     [DllImport("user32.dll", SetLastError = true)]
-    public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+    private static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+    [DllImport("kernel32.dll")]
+    private static extern int GetCurrentThreadId();
 
     #region Net API
 
@@ -444,6 +471,11 @@ namespace IrssUtils
 
     #region Methods
 
+    /// <summary>
+    /// Get the window title for a specified window handle.
+    /// </summary>
+    /// <param name="hWnd">Handle to a window.</param>
+    /// <returns>Window title.</returns>
     public static string GetWindowTitle(IntPtr hWnd)
     {
       int length = GetWindowTextLength(hWnd);
@@ -453,6 +485,65 @@ namespace IrssUtils
       GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
       
       return windowTitle.ToString();
+    }
+
+    /// <summary>
+    /// Takes a given window from whatever state it is in and makes it the foreground window.
+    /// </summary>
+    /// <param name="hWnd">Handle to window.</param>
+    /// <param name="force">Force from a minimized or hidden state.</param>
+    /// <returns>Success.</returns>
+    public static bool SetForegroundWindow(IntPtr hWnd, bool force)
+    {
+      IntPtr fgWindow = GetForegroundWindow();
+
+      if (hWnd == fgWindow || SetForegroundWindow(hWnd))
+        return true;
+
+      if (force == false)
+        return false;
+
+      if (fgWindow == IntPtr.Zero)
+        return false;
+
+      int fgWindowPID = -1;
+      GetWindowThreadProcessId(fgWindow, out fgWindowPID);
+
+      if (fgWindowPID == -1)
+        return false;
+
+      int curThreadID = GetCurrentThreadId();
+
+      // if we don't attach successfully to the windows thread then we're out of options
+      if (!AttachThreadInput(curThreadID, fgWindowPID, true))
+        return false;
+
+      SetForegroundWindow(hWnd);
+      BringWindowToTop(hWnd);
+      SetFocus(hWnd);
+
+      AttachThreadInput(curThreadID, fgWindowPID, false);
+
+      // we've done all that we can so base our return value on whether we have succeeded or not
+      return (GetForegroundWindow() == hWnd);
+    }
+
+    /// <summary>
+    /// Get the Process ID of the current foreground window.
+    /// </summary>
+    /// <returns>Process ID.</returns>
+    public static int GetForegroundWindowPID()
+    {
+      int pid = -1;
+      
+      IntPtr active = GetForegroundWindow();
+
+      if (active.Equals(IntPtr.Zero))
+        return pid;
+
+      GetWindowThreadProcessId(active, out pid);
+
+      return pid;
     }
 
     /// <summary>

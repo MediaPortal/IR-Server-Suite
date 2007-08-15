@@ -14,7 +14,7 @@ namespace MicrosoftMceTransceiver
 
     #region Enumerations
 
-    enum CodeType : ushort
+    enum CodeType
     {
       RawOscillated   = 0x0000,
       RawUnmodulated  = 0x0100,
@@ -33,7 +33,7 @@ namespace MicrosoftMceTransceiver
       YamahaNEC       = 0x9001,
     }
 
-    enum CarrierFrequency : ushort
+    enum CarrierFrequency
     {
       Khz38 = 0x006D,
       Khz36 = 0x0073,

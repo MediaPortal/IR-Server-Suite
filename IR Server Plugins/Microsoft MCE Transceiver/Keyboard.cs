@@ -17,7 +17,7 @@ namespace MicrosoftMceTransceiver
       byte bVk,
       byte bScan,
       uint dwFlags,
-      UIntPtr dwExtraInfo);
+      IntPtr dwExtraInfo);
 
     #endregion Interop
 
@@ -26,7 +26,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Virtual Key Codes.
     /// </summary>
-    public enum VKey : byte
+    public enum VKey
     {
       None = 0,
       VK_0 = 0x30,
@@ -174,7 +174,7 @@ namespace MicrosoftMceTransceiver
     /// Key Event Types.
     /// </summary>
     [Flags]
-    public enum KeyEvents : uint
+    public enum KeyEvents
     {
       KeyDown     = 0,
       ExtendedKey = 1,
@@ -193,7 +193,7 @@ namespace MicrosoftMceTransceiver
     /// <param name="vKey">Virtual key to press.</param>
     public static void KeyDown(VKey vKey)
     {
-      keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyDown, UIntPtr.Zero);
+      keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyDown, IntPtr.Zero);
     }
 
     /// <summary>
@@ -202,7 +202,7 @@ namespace MicrosoftMceTransceiver
     /// <param name="vKey">Virtual key to release.</param>
     public static void KeyUp(VKey vKey)
     {
-      keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyUp, UIntPtr.Zero);
+      keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyUp, IntPtr.Zero);
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ namespace MicrosoftMceTransceiver
     /// <param name="scan">Scan code.</param>
     /// <param name="flags">Event type.</param>
     /// <param name="extraInfo">Pointer to additional information.</param>
-    public static void Event(VKey vKey, byte scan, KeyEvents flags, UIntPtr extraInfo)
+    public static void Event(VKey vKey, byte scan, KeyEvents flags, IntPtr extraInfo)
     {
       keybd_event((byte)vKey, scan, (uint)flags, extraInfo);
     }

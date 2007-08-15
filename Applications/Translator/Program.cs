@@ -21,71 +21,6 @@ namespace Translator
   static class Program
   {
 
-    #region Enumerations
-
-    /// <summary>
-    /// A list of MCE remote buttons.
-    /// </summary>
-    internal enum MceButton
-    {
-      Custom        = -1,
-      None          = 0,
-      TV_Power      = 0x7b9a,
-      Blue          = 0x7ba1,
-      Yellow        = 0x7ba2,
-      Green         = 0x7ba3,
-      Red           = 0x7ba4,
-      Teletext      = 0x7ba5,
-      Radio         = 0x7baf,
-      Print         = 0x7bb1,
-      Videos        = 0x7bb5,
-      Pictures      = 0x7bb6,
-      Recorded_TV   = 0x7bb7,
-      Music         = 0x7bb8,
-      TV            = 0x7bb9,
-      Guide         = 0x7bd9,
-      Live_TV       = 0x7bda,
-      DVD_Menu      = 0x7bdb,
-      Back          = 0x7bdc,
-      OK            = 0x7bdd,
-      Right         = 0x7bde,
-      Left          = 0x7bdf,
-      Down          = 0x7be0,
-      Up            = 0x7be1,
-      Star          = 0x7be2,
-      Hash          = 0x7be3,
-      Replay        = 0x7be4,
-      Skip          = 0x7be5,
-      Stop          = 0x7be6,
-      Pause         = 0x7be7,
-      Record        = 0x7be8,
-      Play          = 0x7be9,
-      Rewind        = 0x7bea,
-      Forward       = 0x7beb,
-      Channel_Down  = 0x7bec,
-      Channel_Up    = 0x7bed,
-      Volume_Down   = 0x7bee,
-      Volume_Up     = 0x7bef,
-      Info          = 0x7bf0,
-      Mute          = 0x7bf1,
-      Start         = 0x7bf2,
-      PC_Power      = 0x7bf3,
-      Enter         = 0x7bf4,
-      Escape        = 0x7bf5,
-      Number_9      = 0x7bf6,
-      Number_8      = 0x7bf7,
-      Number_7      = 0x7bf8,
-      Number_6      = 0x7bf9,
-      Number_5      = 0x7bfa,
-      Number_4      = 0x7bfb,
-      Number_3      = 0x7bfc,
-      Number_2      = 0x7bfd,
-      Number_1      = 0x7bfe,
-      Number_0      = 0x7bff,
-    }
-
-    #endregion Enumerations
-
     #region Constants
 
     internal static readonly string ConfigFile = Common.FolderAppData + "Translator\\Translator.xml";
@@ -113,7 +48,6 @@ namespace Translator
     static TransceiverInfo _transceiverInfo = new TransceiverInfo();
 
     //static Thread _focusWatcher;
-    static IntPtr _ownWindowHandle = IntPtr.Zero;
     static IntPtr _currentForegroundWindow = IntPtr.Zero;
 
     #endregion Variables
@@ -156,38 +90,7 @@ namespace Translator
     {
       if (args.Length > 0)
       {
-        for (int index = 0; index < args.Length; index++)
-        {
-          switch (args[index].ToLowerInvariant())
-          {
-            case "-macro":
-              SendCopyDataMessage("Translator", Common.CmdPrefixMacro + args[++index]);
-              continue;
-
-            case "-eject":
-              SendCopyDataMessage("Translator", Common.CmdPrefixEject + args[++index]);
-              continue;
-
-            case "-shutdown":
-              SendCopyDataMessage("Translator", Common.CmdPrefixShutdown);
-              continue;
-
-            case "-reboot":
-              SendCopyDataMessage("Translator", Common.CmdPrefixReboot);
-              continue;
-
-            case "-standby":
-              SendCopyDataMessage("Translator", Common.CmdPrefixStandby);
-              continue;
-
-            case "-hibernate":
-              SendCopyDataMessage("Translator", Common.CmdPrefixHibernate);
-              continue;
-
-            //TODO: Add more command line options.
-          }
-        }
-
+        ProcessCommandLine(args);
         return;
       }      
       
@@ -201,8 +104,6 @@ namespace Translator
       // TODO: Change log level to info for release.
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open(Common.FolderIrssLogs + "Translator.log");
-
-      IrssLog.Debug("Platform is {0}", (IntPtr.Size == 4 ? "32-bit" : "64-bit"));
 
       _config = Configuration.Load(ConfigFile);
       if (_config == null)
@@ -229,7 +130,6 @@ namespace Translator
 
       // Setup main form ...
       _mainForm = new MainForm();
-      _ownWindowHandle = _mainForm.Handle;
 
       // Start the window focus watcher thread
       /*
@@ -264,7 +164,11 @@ namespace Translator
       IrssLog.Close();
     }
 
-    static void FocusWatcherThread()
+    #endregion Main
+
+    #region Implementation
+
+    /*static void FocusWatcherThread()
     {
       try
       {
@@ -277,7 +181,7 @@ namespace Translator
       catch
       {
       }
-    }
+    }*/
 
     static void UpdateForegroundWindow()
     {
@@ -287,20 +191,25 @@ namespace Translator
 
         if (hWnd == IntPtr.Zero)
           return;
-        
+
         if (hWnd == _mainForm.Handle)
-          return;        
-/*
-        string windowTitle = Win32.GetWindowTitle(hWnd);
-        if (windowTitle.StartsWith("Translator", StringComparison.InvariantCultureIgnoreCase))
           return;
 
-        int procID;
-        Win32.GetWindowThreadProcessId(hWnd, out procID);
-        Process proc = Process.GetProcessById(procID);
-        if (proc.MainModule.ModuleName.Equals("Translator.exe", StringComparison.InvariantCultureIgnoreCase))
+        if (hWnd == _notifyIcon.ContextMenuStrip.Handle)
           return;
-        */
+
+        /*
+                string windowTitle = Win32.GetWindowTitle(hWnd);
+                if (windowTitle.StartsWith("Translator", StringComparison.InvariantCultureIgnoreCase))
+                  return;
+
+                int procID;
+                Win32.GetWindowThreadProcessId(hWnd, out procID);
+                Process proc = Process.GetProcessById(procID);
+                if (proc.MainModule.ModuleName.Equals("Translator.exe", StringComparison.InvariantCultureIgnoreCase))
+                  return;
+                */
+
         _currentForegroundWindow = hWnd;
       }
       catch
@@ -308,14 +217,49 @@ namespace Translator
       }
     }
 
-    #endregion Main
+    static void ProcessCommandLine(string[] args)
+    {
+      for (int index = 0; index < args.Length; index++)
+      {
+        switch (args[index].ToLowerInvariant())
+        {
+          case "-macro":
+            SendCopyDataMessage("Translator", Common.CmdPrefixMacro + args[++index]);
+            continue;
 
-    #region Implementation
+          case "-eject":
+            SendCopyDataMessage("Translator", Common.CmdPrefixEject + args[++index]);
+            continue;
+
+          case "-shutdown":
+            SendCopyDataMessage("Translator", Common.CmdPrefixShutdown);
+            continue;
+
+          case "-reboot":
+            SendCopyDataMessage("Translator", Common.CmdPrefixReboot);
+            continue;
+
+          case "-standby":
+            SendCopyDataMessage("Translator", Common.CmdPrefixStandby);
+            continue;
+
+          case "-hibernate":
+            SendCopyDataMessage("Translator", Common.CmdPrefixHibernate);
+            continue;
+
+          //TODO: Add more command line options.
+        }
+      }
+    }
 
     static void ShowTranslatorMenu()
     {
       UpdateForegroundWindow();
+      
       _notifyIcon.ContextMenuStrip.Show(Screen.PrimaryScreen.Bounds.Width / 4, Screen.PrimaryScreen.Bounds.Height / 4);
+      
+      //Win32.SetForegroundWindow(_notifyIcon.ContextMenuStrip.Handle, true);
+      
       //_notifyIcon.ContextMenuStrip.Focus();
     }
 
@@ -424,14 +368,8 @@ namespace Translator
       actions.DropDownItems.Add("System Standby", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Hibernate", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Reboot", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("System Logoff", null, new EventHandler(ClickAction));
+      //actions.DropDownItems.Add("System Logoff", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Shutdown", null, new EventHandler(ClickAction));
-      
-      actions.DropDownItems.Add(new ToolStripSeparator());
-
-      actions.DropDownItems.Add("Volume Up", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Volume Down", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Volume Mute", null, new EventHandler(ClickAction));
 
       actions.DropDownItems.Add(new ToolStripSeparator());
 
@@ -441,6 +379,12 @@ namespace Translator
         if (drive.DriveType == DriveType.CDRom)
           ejectMenu.DropDownItems.Add(drive.Name, null, new EventHandler(ClickEjectAction));
       actions.DropDownItems.Add(ejectMenu);
+
+      actions.DropDownItems.Add(new ToolStripSeparator());
+
+      actions.DropDownItems.Add("Volume Up", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Volume Down", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Volume Mute", null, new EventHandler(ClickAction));
 
       _notifyIcon.ContextMenuStrip.Items.Add(actions);
       /**/
@@ -595,23 +539,25 @@ namespace Translator
             break;
 
           case "System Standby":
-            Application.SetSuspendState(PowerState.Suspend, true, false);
+            Standby();
             break;
 
           case "System Hibernate":
-            Application.SetSuspendState(PowerState.Hibernate, true, false);
+            Hibernate();
             break;
 
           case "System Reboot":
-            Win32.ExitWindowsEx(Win32.ExitWindows.Reboot | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReason.FlagUserDefined);
+            Reboot();
             break;
 
+            /*
           case "System Logoff":
-            Win32.ExitWindowsEx(Win32.ExitWindows.LogOff | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReason.FlagUserDefined);
+            LogOff();
             break;
+            */
 
           case "System Shutdown":
-            Win32.ExitWindowsEx(Win32.ExitWindows.ShutDown | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReason.FlagUserDefined);
+            ShutDown();
             break;
 
 
@@ -1063,16 +1009,12 @@ namespace Translator
     {
       try
       {
-        IntPtr active = Win32.GetForegroundWindow();
-
-        if (active.Equals(IntPtr.Zero))
+        int pid = Win32.GetForegroundWindowPID();
+        if (pid == -1)
         {
-          IrssLog.Debug("No active program (no foreground window)");
+          IrssLog.Debug("Error retreiving foreground window process ID");
           return null;
         }
-
-        int pid = -1;
-        Win32.GetWindowThreadProcessId(active, out pid);
 
         string fileName = Path.GetFileName(Process.GetProcessById(pid).MainModule.FileName);
 
@@ -1171,6 +1113,33 @@ namespace Translator
 
       if (deltaX != 0 || deltaY != 0)
         Mouse.Move(deltaX, deltaY, false);
+    }
+
+
+    static void Hibernate()
+    {
+      IrssLog.Info("Hibernate");
+      Application.SetSuspendState(PowerState.Hibernate, true, false);
+    }
+    static void Standby()
+    {
+      IrssLog.Info("Standby");
+      Application.SetSuspendState(PowerState.Suspend, true, false);
+    }
+    static void Reboot()
+    {
+      IrssLog.Info("Reboot");
+      Win32.ExitWindowsEx(Win32.ExitWindows.Reboot | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
+    }
+    /*static void LogOff()
+    {
+      IrssLog.Info("LogOff");
+      Win32.ExitWindowsEx(Win32.ExitWindows.LogOff | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReason.FlagUserDefined);
+    }*/
+    static void ShutDown()
+    {
+      IrssLog.Info("ShutDown");
+      Win32.ExitWindowsEx(Win32.ExitWindows.ShutDown | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
     }
 
 
@@ -1285,13 +1254,25 @@ namespace Translator
 
           case Common.XmlTagStandby:
             {
-              Application.SetSuspendState(PowerState.Suspend, true, false);
+              Standby();
               break;
             }
 
           case Common.XmlTagHibernate:
             {
-              Application.SetSuspendState(PowerState.Hibernate, true, false);
+              Hibernate();
+              break;
+            }
+
+          case Common.XmlTagShutdown:
+            {
+              ShutDown();
+              break;
+            }
+
+          case Common.XmlTagReboot:
+            {
+              Reboot();
               break;
             }
         }
@@ -1414,6 +1395,26 @@ namespace Translator
       {
         string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
         Common.ProcessMouseCommand(mouseCommand);
+      }
+      else if (command.StartsWith(Common.CmdPrefixHibernate)) // Hibernate Command
+      {
+        Hibernate();
+      }
+      else if (command.StartsWith(Common.CmdPrefixReboot)) // Reboot Command
+      {
+        Reboot();
+      }
+      else if (command.StartsWith(Common.CmdPrefixShutdown)) // Shutdown Command
+      {
+        ShutDown();
+      }
+      else if (command.StartsWith(Common.CmdPrefixStandby)) // Standby Command
+      {
+        Standby();
+      }
+      else if (command.StartsWith(Common.CmdPrefixTranslator)) // Translator Command
+      {
+        ShowTranslatorMenu();
       }
       else
       {

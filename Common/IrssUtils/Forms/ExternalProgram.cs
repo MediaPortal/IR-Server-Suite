@@ -173,7 +173,7 @@ namespace IrssUtils.Forms
             processWindow = process.MainWindowHandle;
             if (processWindow != IntPtr.Zero)
             {
-              Win32.SetForegroundWindow(processWindow);
+              Win32.SetForegroundWindow(processWindow, true);
               break;
             }
 

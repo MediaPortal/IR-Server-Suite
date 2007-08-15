@@ -91,9 +91,9 @@ namespace Translator
 
     private void ButtonMappingForm_Load(object sender, EventArgs e)
     {
-      textBoxKeyCode.Text = _keyCode;
-      textBoxButtonDesc.Text = _description;
-      textBoxCommand.Text = _command;
+      textBoxKeyCode.Text     = _keyCode;
+      textBoxButtonDesc.Text  = _description;
+      textBoxCommand.Text     = _command;
 
       // Setup IR Blast tab
       SetupIRList();
@@ -127,6 +127,7 @@ namespace Translator
 
       // Setup Misc tab
       comboBoxMiscCommand.Items.Clear();
+      comboBoxMiscCommand.Items.Add(Common.UITextTranslator);
       comboBoxMiscCommand.Items.Add(Common.UITextEject);
       comboBoxMiscCommand.Items.Add(Common.UITextStandby);
       comboBoxMiscCommand.Items.Add(Common.UITextHibernate);
@@ -261,11 +262,26 @@ namespace Translator
                   comboBoxMiscCommand.SelectedItem = Common.UITextHibernate;
                   break;
 
+                case Common.CmdPrefixReboot:
+                  comboBoxMiscCommand.SelectedItem = Common.UITextReboot;
+                  break;
+
+                case Common.CmdPrefixShutdown:
+                  comboBoxMiscCommand.SelectedItem = Common.UITextShutdown;
+                  break;
+
+                case Common.CmdPrefixStandby:
+                  comboBoxMiscCommand.SelectedItem = Common.UITextStandby;
+                  break;
+
+                case Common.CmdPrefixTranslator:
+                  comboBoxMiscCommand.SelectedItem = Common.UITextTranslator;
+                  break;
+
                 default:
                   if (prefix.Equals(Common.CmdPrefixEject, StringComparison.InvariantCultureIgnoreCase))
-                  {
                     comboBoxMiscCommand.SelectedItem = Common.UITextEject;
-                  }
+                  //else
                   break;
               }
               break;
@@ -435,10 +451,22 @@ namespace Translator
                 textBoxCommand.Text = _command = Common.CmdPrefixHibernate;
                 break;
 
+              case Common.UITextReboot:
+                textBoxCommand.Text = _command = Common.CmdPrefixReboot;
+                break;
 
+              case Common.CmdPrefixShutdown:
+                textBoxCommand.Text = _command = Common.CmdPrefixShutdown;
+                break;
+
+              case Common.CmdPrefixStandby:
+                textBoxCommand.Text = _command = Common.CmdPrefixStandby;
+                break;
+
+              case Common.CmdPrefixTranslator:
+                textBoxCommand.Text = _command = Common.CmdPrefixTranslator;
+                break;
             }
-
-
 
             break;
           }

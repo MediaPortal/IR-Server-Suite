@@ -55,7 +55,7 @@ namespace FusionRemoteReceiver
     static extern SafeFileHandle CreateFile(
       [MarshalAs(UnmanagedType.LPTStr)] string fileName,
       uint fileAccess,
-      [MarshalAs(UnmanagedType.U4)] EFileShare fileShare,
+      [MarshalAs(UnmanagedType.U4)] EFileShares fileShare,
       //[In, Out, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(SecurityAttributesMarshaler))] SecurityAttributes lpSecurityAttributes,
       IntPtr sa,
       [MarshalAs(UnmanagedType.U4)] ECreationDisposition creationDisposition,
@@ -66,24 +66,22 @@ namespace FusionRemoteReceiver
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool CancelIo(SafeFileHandle handle);
 
-    [CLSCompliant(false)]
     [Flags]
-    public enum EFileShare : uint
+    public enum EFileShares
     {
        None   = 0x00000000,
        Read   = 0x00000001,
        Write  = 0x00000002,
-       Delete = 0x00000004
+       Delete = 0x00000004,
     }
 
-    [CLSCompliant(false)]
-    public enum ECreationDisposition : uint
+    public enum ECreationDisposition
     {
        New              = 1,
        CreateAlways     = 2,
        OpenExisting     = 3,
        OpenAlways       = 4,
-       TruncateExisting = 5
+       TruncateExisting = 5,
     }
 
     [Flags]
@@ -294,7 +292,7 @@ namespace FusionRemoteReceiver
       if (devicePath == null)
         throw new Exception("No device detected");
 
-      SafeFileHandle deviceHandle = CreateFile(devicePath, GENERIC_READ, EFileShare.Read | EFileShare.Write, IntPtr.Zero, ECreationDisposition.OpenExisting, EFileAttributes.Overlapped, IntPtr.Zero);
+      SafeFileHandle deviceHandle = CreateFile(devicePath, GENERIC_READ, EFileShares.Read | EFileShares.Write, IntPtr.Zero, ECreationDisposition.OpenExisting, EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
 
       if (lastError != 0)

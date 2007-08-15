@@ -49,7 +49,7 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Infrared command learning timed out.
     /// </summary>
-    Timeout
+    Timeout,
   }
 
   #endregion Enumerations

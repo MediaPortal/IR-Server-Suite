@@ -124,6 +124,8 @@ namespace IrssUtils
 
     public const string CmdPrefixEject        = "Eject: ";
 
+    public const string CmdPrefixTranslator   = "Show Translator Menu";
+
     #endregion Command Prefixes
 
     #region XML Tags
@@ -152,6 +154,8 @@ namespace IrssUtils
 
     public const string XmlTagEject           = "EJECT";
 
+    public const string XmlTagTranslator      = "TRANSLATOR";
+
     #endregion XML Tags
 
     #region User Interface Text
@@ -174,10 +178,13 @@ namespace IrssUtils
     public const string UITextHibernate       = "Hibernate";
     public const string UITextReboot          = "Reboot";
     public const string UITextShutdown        = "Shutdown";
+    //public const string UITextLogoff
 
     public const string UITextMouse           = "Mouse Command";
 
     public const string UITextEject           = "Eject CD";
+
+    public const string UITextTranslator      = "Show Translator Menu";
 
     #endregion User Interface Text
 
@@ -323,7 +330,7 @@ namespace IrssUtils
           processWindow = process.MainWindowHandle;
           if (processWindow != IntPtr.Zero)
           {
-            Win32.SetForegroundWindow(processWindow);
+            Win32.SetForegroundWindow(processWindow, true);
             break;
           }
 
@@ -372,7 +379,9 @@ namespace IrssUtils
     {
       IntPtr windowHandle = IntPtr.Zero;
 
-      switch (commands[0].ToLowerInvariant())
+      string matchType = commands[0].ToLowerInvariant();
+
+      switch (matchType)
       {
         case "active":
           windowHandle = Win32.GetForegroundWindow();
@@ -383,7 +392,7 @@ namespace IrssUtils
           {
             try
             {
-              if (proc.MainModule.FileName == commands[1])
+              if (commands[1].Equals(proc.MainModule.FileName, StringComparison.InvariantCultureIgnoreCase))
               {
                 windowHandle = proc.MainWindowHandle;
                 break;
@@ -410,15 +419,12 @@ namespace IrssUtils
 
       //Win32.SendMessage(windowHandle, msg, wordParam, longParam);
 
-      IntPtr result;
+      IntPtr result = IntPtr.Zero;
       Win32.SendMessageTimeout(windowHandle, msg, wordParam, longParam, Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
+      int lastError = Marshal.GetLastWin32Error();
 
       if (result == IntPtr.Zero)
-      {
-        int lastError = Marshal.GetLastWin32Error();
         Marshal.ThrowExceptionForHR(lastError);
-      }
-
     }
 
     /// <summary>

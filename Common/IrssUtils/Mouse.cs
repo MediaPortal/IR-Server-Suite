@@ -23,7 +23,7 @@ namespace IrssUtils
     /// Used to simulate mouse actions.
     /// </summary>
     [Flags]
-    public enum MouseEvents : int
+    public enum MouseEvents
     {
       None        = 0x0000,
       Move        = 0x0001,
@@ -40,7 +40,7 @@ namespace IrssUtils
     /// <summary>
     /// Used to simulate mouse wheel scrolling.
     /// </summary>
-    public enum ScrollDir : int
+    public enum ScrollDir
     {
       None  =    0,
       Up    =  120,
