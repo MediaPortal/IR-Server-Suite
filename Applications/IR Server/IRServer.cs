@@ -1005,7 +1005,8 @@ namespace IRServer
                 break;
               }
 
-              SendToRepeaters(received);
+              if (_registeredRepeaters.Count > 0)
+                SendToRepeaters(received);
 
               PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, received.Name + " Failure", null);
 

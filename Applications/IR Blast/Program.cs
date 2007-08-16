@@ -28,7 +28,6 @@ namespace IRBlast
     static string _localPipeName;
 
     static string _blastPort = "None";
-    static string _blastSpeed = "None";
 
     static bool _treatAsChannelNumber = false;
     static int _padChannelNumber = 0;
@@ -64,10 +63,6 @@ namespace IRBlast
 
               case "-port":
                 _blastPort = args[++index];
-                continue;
-
-              case "-speed":
-                _blastSpeed = args[++index];
                 continue;
 
               case "-channel":
@@ -126,14 +121,14 @@ namespace IRBlast
 
                   foreach (char digit in channelNumber.ToString())
                   {
-                    if (digit == '~')
+                    if (digit.Equals('~'))
                     {
                       Thread.Sleep(500);
                     }
                     else
                     {
                       fileName = Common.FolderIRCommands + digit + Common.FileExtensionIR;
-                      BlastIR(fileName, _blastPort, _blastSpeed);
+                      BlastIR(fileName, _blastPort);
                     }
                   }
                 }
@@ -144,7 +139,7 @@ namespace IRBlast
                 else
                 {
                   fileName = Common.FolderIRCommands + command;
-                  BlastIR(fileName, _blastPort, _blastSpeed);
+                  BlastIR(fileName, _blastPort);
                 }
               }
 
@@ -512,18 +507,16 @@ namespace IRBlast
       }
     }
 
-    static void BlastIR(string fileName, string port, string speed)
+    static void BlastIR(string fileName, string port)
     {
       FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-      byte[] outData = new byte[8 + port.Length + speed.Length + file.Length];
+      byte[] outData = new byte[4 + port.Length + file.Length];
 
       BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
       Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
-      BitConverter.GetBytes(speed.Length).CopyTo(outData, 4 + port.Length);
-      Encoding.ASCII.GetBytes(speed).CopyTo(outData, 8 + port.Length);
 
-      file.Read(outData, 8 + port.Length + speed.Length, (int)file.Length);
+      file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
       PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);

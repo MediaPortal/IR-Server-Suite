@@ -33,13 +33,16 @@ namespace NamedPipes
     ForwardMouseEvent,
   }
 
-  public enum MessageType
+  [Flags]
+  public enum MessageTypes
   {
-    Request,
-    Response,
-    Success,
-    Failure,
-    Other,
+    None          = 0,
+    Request       = 1,
+    Response      = 2,
+    Success       = 4,
+    Failure       = 8,
+    DoResponse    = 16,
+    DontRespond   = 32,
   }
   */
   #endregion Enumerations
