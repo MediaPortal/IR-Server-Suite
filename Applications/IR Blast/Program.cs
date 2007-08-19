@@ -42,7 +42,7 @@ namespace IRBlast
     {
       // TODO: Change log level to info for release.
       IrssLog.LogLevel = IrssLog.Level.Debug;
-      IrssLog.Open(Common.FolderIrssLogs + "IR Blast.log");
+      IrssLog.Append(Common.FolderIrssLogs + "IR Blast.log");
 
       ShowHeader();
 

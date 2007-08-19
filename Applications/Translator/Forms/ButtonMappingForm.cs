@@ -81,12 +81,15 @@ namespace Translator
 
     void InsertKeystroke(string keystroke)
     {
-      string clipboardWas = Clipboard.GetText();
+      //string clipboardWas = Clipboard.GetText();
 
-      Clipboard.SetText(keystroke);
-      textBoxKeys.Paste();
+      //Clipboard.SetText(keystroke);
+      textBoxKeys.Paste(keystroke);
 
-      Clipboard.SetText(clipboardWas);
+      //if (String.IsNullOrEmpty(clipboardWas))
+//        Clipboard.SetText(String.Empty);
+      //else
+//        Clipboard.SetText(clipboardWas);
     }
 
     private void ButtonMappingForm_Load(object sender, EventArgs e)

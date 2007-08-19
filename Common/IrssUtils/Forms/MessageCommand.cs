@@ -148,7 +148,7 @@ namespace IrssUtils.Forms
     }
     private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)
     {
-      buttonFindMsgTarget.Enabled = false;
+      buttonFindMsgTarget.Enabled = true;
       textBoxMsgTarget.Enabled = true;
     }
 

@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 using NamedPipes;
@@ -586,6 +588,40 @@ namespace DebugClient
     }
 
     #endregion Controls
+
+    Thread AutoTest;
+
+    private void buttonAutoTest_Click(object sender, EventArgs e)
+    {
+      AutoTest = new Thread(new ThreadStart(AutoTestThread));
+      AutoTest.IsBackground = true;
+      AutoTest.Start();
+    }
+
+    void AutoTestThread()
+    {
+      Random rand = new Random();
+
+      int randomNumber;
+
+      Process process = new Process();
+      process.StartInfo.FileName = "IRBlast-NoWindow.exe";
+      process.StartInfo.WorkingDirectory = "C:\\Program Files\\IR Server Suite\\IR Blast\\";
+
+      while (true)
+      {
+        randomNumber = rand.Next(100000);
+
+        this.Invoke(_AddStatusLine, new Object[] { String.Format("AutoTest: {0}", randomNumber) });
+
+        process.StartInfo.Arguments = "-host localhost -pad 4 -channel " + randomNumber.ToString();
+
+        process.Start();
+        process.WaitForExit();
+
+        Thread.Sleep(10000);
+      }
+    }
 
   }
 

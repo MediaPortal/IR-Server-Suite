@@ -88,6 +88,8 @@ namespace VirtualRemote
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open(Common.FolderIrssLogs + "Virtual Remote.log");
 
+      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+
       LoadSettings();
 
       if (args.Length > 0) // Command Line Start ...
@@ -170,7 +172,19 @@ namespace VirtualRemote
 
       StopComms();
 
+      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+
       IrssLog.Close();
+    }
+
+    /// <summary>
+    /// Handles unhandled exceptions.
+    /// </summary>
+    /// <param name="sender">Sender.</param>
+    /// <param name="e">Event args.</param>
+    public static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+      IrssLog.Error(e.Exception.ToString());
     }
 
     static void LoadSettings()

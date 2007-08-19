@@ -862,6 +862,11 @@ namespace MediaPortal.Plugins
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
+      else if (command.StartsWith(Common.CmdPrefixSTB))  // STB IR Code
+      {
+        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
+        BlastIR(Common.FolderSTB + commands[0], commands[1]);
+      }
       else if (command.StartsWith(Common.CmdPrefixRun)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));

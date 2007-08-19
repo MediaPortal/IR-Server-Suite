@@ -105,6 +105,8 @@ namespace Translator
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open(Common.FolderIrssLogs + "Translator.log");
 
+      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+
       _config = Configuration.Load(ConfigFile);
       if (_config == null)
         _config = new Configuration();
@@ -161,12 +163,24 @@ namespace Translator
       //if (_focusWatcher.IsAlive)
         //_focusWatcher.Abort();
 
+      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+
       IrssLog.Close();
     }
 
     #endregion Main
 
     #region Implementation
+
+    /// <summary>
+    /// Handles unhandled exceptions.
+    /// </summary>
+    /// <param name="sender">Sender.</param>
+    /// <param name="e">Event args.</param>
+    public static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+      IrssLog.Error(e.Exception.ToString());
+    }
 
     /*static void FocusWatcherThread()
     {
@@ -255,11 +269,11 @@ namespace Translator
     static void ShowTranslatorMenu()
     {
       UpdateForegroundWindow();
-      
+
+      //Program._mainForm.Focus();
+
       _notifyIcon.ContextMenuStrip.Show(Screen.PrimaryScreen.Bounds.Width / 4, Screen.PrimaryScreen.Bounds.Height / 4);
-      
-      //Win32.SetForegroundWindow(_notifyIcon.ContextMenuStrip.Handle, true);
-      
+
       //_notifyIcon.ContextMenuStrip.Focus();
     }
 

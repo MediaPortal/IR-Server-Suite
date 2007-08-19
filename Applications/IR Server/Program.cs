@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 using Microsoft.Win32;
@@ -34,18 +35,11 @@ namespace IRServer
         return;
       }
 
-      // Open log file
-      try
-      {
-        // TODO: Change log level to info for release.
-        IrssLog.LogLevel = IrssLog.Level.Debug;
-        IrssLog.Open(Common.FolderIrssLogs + "IR Server.log");
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.Message);
-        return;
-      }
+      // TODO: Change log level to info for release.
+      IrssLog.LogLevel = IrssLog.Level.Debug;
+      IrssLog.Open(Common.FolderIrssLogs + "IR Server.log");
+
+      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
       // Start Server
       IRServer irServer = new IRServer();
@@ -53,8 +47,19 @@ namespace IRServer
       if (irServer.Start())
         Application.Run();
 
+      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+
       IrssLog.Close();
-      return;
+    }
+
+    /// <summary>
+    /// Handles unhandled exceptions.
+    /// </summary>
+    /// <param name="sender">Sender.</param>
+    /// <param name="e">Event args.</param>
+    public static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+      IrssLog.Error(e.Exception.ToString());
     }
 
     /// <summary>

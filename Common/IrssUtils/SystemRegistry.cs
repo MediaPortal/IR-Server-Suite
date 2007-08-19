@@ -6,7 +6,7 @@ namespace IrssUtils
 {
 
   /// <summary>
-  /// Used for accessing the Windows System Registry
+  /// Used for accessing the Windows System Registry.
   /// </summary>
   public static class SystemRegistry
   {

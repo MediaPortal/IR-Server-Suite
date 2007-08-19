@@ -90,6 +90,46 @@ namespace IrssUtils
         }
       }
     }
+
+    /// <summary>
+    /// Open a log file to append log entries to.
+    /// </summary>
+    /// <param name="fileName">File path, absolute.</param>
+    public static void Append(string fileName)
+    {
+      if (_streamWriter == null && _logLevel > Level.Off)
+      {
+        try
+        {
+          if (File.Exists(fileName) && File.GetCreationTime(fileName).Ticks < DateTime.Now.Subtract(TimeSpan.FromDays(7)).Ticks)
+          {
+            string backup = Path.ChangeExtension(fileName, ".bak");
+
+            if (File.Exists(backup))
+              File.Delete(backup);
+
+            File.Move(fileName, backup);
+          }          
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.Message);
+        }
+
+        try
+        {
+          _streamWriter = new StreamWriter(fileName, true);
+          _streamWriter.AutoFlush = true;
+
+          string message = DateTime.Now.ToString() + ":\tLog Opened";
+          _streamWriter.WriteLine(message);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.Message);
+        }
+      }
+    }
     
     /// <summary>
     /// Close the currently open log file.
@@ -100,6 +140,7 @@ namespace IrssUtils
       {
         string message = DateTime.Now.ToString() + ":\tLog Closed";
         _streamWriter.WriteLine(message);
+        _streamWriter.WriteLine();
 
         _streamWriter.Close();
         _streamWriter = null;

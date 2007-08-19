@@ -90,7 +90,7 @@ namespace IrssUtils.Forms
 
       comboBoxStopBits.Items.Clear();
       comboBoxStopBits.Items.AddRange(Enum.GetNames(typeof(StopBits)));
-      comboBoxStopBits.SelectedIndex = 0;
+      comboBoxStopBits.SelectedIndex = 1;
     }
 
     private void buttonParamQuestion_Click(object sender, EventArgs e)

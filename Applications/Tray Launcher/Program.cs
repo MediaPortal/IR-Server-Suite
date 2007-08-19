@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows.Forms;
 
 using IrssUtils;
@@ -9,7 +10,10 @@ namespace TrayLauncher
 
   static class Program
   {
-    
+
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
     [STAThread]
     static void Main()
     {
@@ -24,12 +28,26 @@ namespace TrayLauncher
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open(Common.FolderIrssLogs + "Tray Launcher.log");
 
+      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+
       Tray tray = new Tray();
 
       if (tray.Start())
         Application.Run();
 
+      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+
       IrssLog.Close();
+    }
+
+    /// <summary>
+    /// Handles unhandled exceptions.
+    /// </summary>
+    /// <param name="sender">Sender.</param>
+    /// <param name="e">Event args.</param>
+    public static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+      IrssLog.Error(e.Exception.ToString());
     }
 
   }

@@ -367,45 +367,21 @@ namespace MicrosoftMceTransceiver
       try   { doc.Load(ConfigurationFile); }
       catch { return; }
 
-      try   { _blasterType = (BlasterType)Enum.Parse(typeof(BlasterType), doc.DocumentElement.Attributes["BlastType"].Value); }
-      catch { _blasterType = BlasterType.Microsoft; }
+      try   { _blasterType = (BlasterType)Enum.Parse(typeof(BlasterType), doc.DocumentElement.Attributes["BlastType"].Value); } catch {}
+      try   { _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value); } catch {}
 
-      try   { _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value); }
-      catch { _learnTimeout = 10000; }
+      try   { _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); } catch {}
+      try   { _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); } catch {}
+      try   { _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value); } catch {}
 
+      try   { _enableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value); } catch {}
+      try   { _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value); } catch {}
+      try   { _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value); } catch {}
+      try   { _handleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value); } catch {}
 
-      try   { _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); }
-      catch { _enableRemoteInput = true; }
-
-      try   { _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); }
-      catch { _remoteFirstRepeat = 400; }
-
-      try   { _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value); }
-      catch { _remoteHeldRepeats = 250; }
-
-
-      try   { _enableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value); }
-      catch { _enableKeyboardInput = true; }
-
-      try   { _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value); }
-      catch { _keyboardFirstRepeat = 350; }
-
-      try   { _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value); }
-      catch { _keyboardHeldRepeats = 0; }
-
-      try   { _handleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value); }
-      catch { _handleKeyboardLocally = true; }
-
-
-      try   { _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value); }
-      catch { _enableMouseInput = true; }
-
-      try   { _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); }
-      catch { _handleMouseLocally = true; }
-
-      try   { _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); }
-      catch { _mouseSensitivity = 1.0d; }
-
+      try   { _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value); } catch {}
+      try   { _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); } catch {}
+      try   { _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); } catch {}
     }
     void SaveSettings()
     {
@@ -472,7 +448,7 @@ namespace MicrosoftMceTransceiver
       Guid deviceClass;
       string devicePath = null;
 
-      // Try eHome driver ...
+      // Try XP eHome driver ...
       deviceClass = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
       _replacementDriver = false;
       try
@@ -492,6 +468,17 @@ namespace MicrosoftMceTransceiver
         }
         catch { }
       }
+
+      // Try Vista eHome driver ...
+      /*if (devicePath == null)
+      {
+        deviceClass = new Guid(0x36fc9e60, 0xc465, 0x11cf, 0x80, 0x56, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00);
+        try
+        {
+          devicePath = DeviceAccess.FindDevice(deviceClass);
+        }
+        catch { }
+      }*/
 
       if (devicePath == null)
         throw new Exception("No MCE Transceiver detected");
@@ -692,7 +679,7 @@ namespace MicrosoftMceTransceiver
       if (_remoteButtonHandler != null)
         _remoteButtonHandler(keyCode.ToString());
 
-      //Console.WriteLine("Remote button: {0} - {1}", codeType, keyCode);
+      //String.Format("{0}: {1}", Enum.GetName(typeof(IRProtocol), codeType), keyCode);
     }
     void KeyboardEvent(uint keyCode, uint modifiers)
     {

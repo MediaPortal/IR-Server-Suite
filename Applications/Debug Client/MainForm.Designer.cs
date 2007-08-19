@@ -53,7 +53,8 @@ namespace DebugClient
       this.comboBoxComputer = new System.Windows.Forms.ComboBox();
       this.groupBoxCommands = new System.Windows.Forms.GroupBox();
       this.comboBoxPort = new System.Windows.Forms.ComboBox();
-      this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+      this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+      this.buttonIRBlastAutoTest = new System.Windows.Forms.Button();
       this.buttonHelp = new System.Windows.Forms.Button();
       this.groupBoxGenerateMessage.SuspendLayout();
       this.groupBoxStatus.SuspendLayout();
@@ -70,7 +71,7 @@ namespace DebugClient
       this.buttonBlast.Size = new System.Drawing.Size(64, 24);
       this.buttonBlast.TabIndex = 2;
       this.buttonBlast.Text = "Blast IR";
-      this.toolTip.SetToolTip(this.buttonBlast, "Blast learned IR code");
+      this.toolTips.SetToolTip(this.buttonBlast, "Blast learned IR code");
       this.buttonBlast.UseVisualStyleBackColor = true;
       this.buttonBlast.Click += new System.EventHandler(this.buttonBlast_Click);
       // 
@@ -81,7 +82,7 @@ namespace DebugClient
       this.buttonLearnIR.Size = new System.Drawing.Size(64, 24);
       this.buttonLearnIR.TabIndex = 0;
       this.buttonLearnIR.Text = "Learn IR";
-      this.toolTip.SetToolTip(this.buttonLearnIR, "Learn an IR code");
+      this.toolTips.SetToolTip(this.buttonLearnIR, "Learn an IR code");
       this.buttonLearnIR.UseVisualStyleBackColor = true;
       this.buttonLearnIR.Click += new System.EventHandler(this.buttonLearnIR_Click);
       // 
@@ -103,7 +104,7 @@ namespace DebugClient
       this.buttonConnect.Size = new System.Drawing.Size(80, 24);
       this.buttonConnect.TabIndex = 2;
       this.buttonConnect.Text = "Connect";
-      this.toolTip.SetToolTip(this.buttonConnect, "Connect to server");
+      this.toolTips.SetToolTip(this.buttonConnect, "Connect to server");
       this.buttonConnect.UseVisualStyleBackColor = true;
       this.buttonConnect.Click += new System.EventHandler(this.buttonConnect_Click);
       // 
@@ -115,7 +116,7 @@ namespace DebugClient
       this.buttonDisconnect.Size = new System.Drawing.Size(80, 24);
       this.buttonDisconnect.TabIndex = 3;
       this.buttonDisconnect.Text = "Disconnect";
-      this.toolTip.SetToolTip(this.buttonDisconnect, "Disconnect from server");
+      this.toolTips.SetToolTip(this.buttonDisconnect, "Disconnect from server");
       this.buttonDisconnect.UseVisualStyleBackColor = true;
       this.buttonDisconnect.Click += new System.EventHandler(this.buttonDisconnect_Click);
       // 
@@ -127,7 +128,7 @@ namespace DebugClient
       this.buttonShutdownServer.Size = new System.Drawing.Size(64, 24);
       this.buttonShutdownServer.TabIndex = 5;
       this.buttonShutdownServer.Text = "Shutdown";
-      this.toolTip.SetToolTip(this.buttonShutdownServer, "Shutdown server");
+      this.toolTips.SetToolTip(this.buttonShutdownServer, "Shutdown server");
       this.buttonShutdownServer.UseVisualStyleBackColor = true;
       this.buttonShutdownServer.Click += new System.EventHandler(this.buttonShutdownServer_Click);
       // 
@@ -144,7 +145,7 @@ namespace DebugClient
       this.listBoxStatus.ScrollAlwaysVisible = true;
       this.listBoxStatus.Size = new System.Drawing.Size(424, 192);
       this.listBoxStatus.TabIndex = 0;
-      this.toolTip.SetToolTip(this.listBoxStatus, "Status messages");
+      this.toolTips.SetToolTip(this.listBoxStatus, "Status messages");
       // 
       // buttonCrash
       // 
@@ -154,7 +155,7 @@ namespace DebugClient
       this.buttonCrash.Size = new System.Drawing.Size(64, 24);
       this.buttonCrash.TabIndex = 6;
       this.buttonCrash.Text = "Crash";
-      this.toolTip.SetToolTip(this.buttonCrash, "Crash this program");
+      this.toolTips.SetToolTip(this.buttonCrash, "Crash this program");
       this.buttonCrash.UseVisualStyleBackColor = true;
       this.buttonCrash.Click += new System.EventHandler(this.buttonCrash_Click);
       // 
@@ -166,7 +167,7 @@ namespace DebugClient
       this.buttonListConnected.Size = new System.Drawing.Size(64, 24);
       this.buttonListConnected.TabIndex = 8;
       this.buttonListConnected.Text = "# clients";
-      this.toolTip.SetToolTip(this.buttonListConnected, "Get client count from server");
+      this.toolTips.SetToolTip(this.buttonListConnected, "Get client count from server");
       this.buttonListConnected.UseVisualStyleBackColor = true;
       this.buttonListConnected.Click += new System.EventHandler(this.buttonListConnected_Click);
       // 
@@ -178,7 +179,7 @@ namespace DebugClient
       this.buttonPing.Size = new System.Drawing.Size(64, 24);
       this.buttonPing.TabIndex = 7;
       this.buttonPing.Text = "Ping";
-      this.toolTip.SetToolTip(this.buttonPing, "Ping the server");
+      this.toolTips.SetToolTip(this.buttonPing, "Ping the server");
       this.buttonPing.UseVisualStyleBackColor = true;
       this.buttonPing.Click += new System.EventHandler(this.buttonPing_Click);
       // 
@@ -205,7 +206,7 @@ namespace DebugClient
       this.textBoxCustom.Name = "textBoxCustom";
       this.textBoxCustom.Size = new System.Drawing.Size(352, 56);
       this.textBoxCustom.TabIndex = 0;
-      this.toolTip.SetToolTip(this.textBoxCustom, "Create a custom message to send to the server");
+      this.toolTips.SetToolTip(this.textBoxCustom, "Create a custom message to send to the server");
       // 
       // buttonSendCustom
       // 
@@ -215,7 +216,7 @@ namespace DebugClient
       this.buttonSendCustom.Size = new System.Drawing.Size(56, 24);
       this.buttonSendCustom.TabIndex = 1;
       this.buttonSendCustom.Text = "Send";
-      this.toolTip.SetToolTip(this.buttonSendCustom, "Send custom message to server");
+      this.toolTips.SetToolTip(this.buttonSendCustom, "Send custom message to server");
       this.buttonSendCustom.UseVisualStyleBackColor = true;
       this.buttonSendCustom.Click += new System.EventHandler(this.buttonSendCustom_Click);
       // 
@@ -271,7 +272,7 @@ namespace DebugClient
       this.numericUpDownButton.TabIndex = 2;
       this.numericUpDownButton.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownButton.ThousandsSeparator = true;
-      this.toolTip.SetToolTip(this.numericUpDownButton, "Specify a custom button code to forward to the server");
+      this.toolTips.SetToolTip(this.numericUpDownButton, "Specify a custom button code to forward to the server");
       // 
       // comboBoxRemoteButtons
       // 
@@ -283,7 +284,7 @@ namespace DebugClient
       this.comboBoxRemoteButtons.Name = "comboBoxRemoteButtons";
       this.comboBoxRemoteButtons.Size = new System.Drawing.Size(120, 21);
       this.comboBoxRemoteButtons.TabIndex = 0;
-      this.toolTip.SetToolTip(this.comboBoxRemoteButtons, "Choose a remote control button to forward to the server");
+      this.toolTips.SetToolTip(this.comboBoxRemoteButtons, "Choose a remote control button to forward to the server");
       this.comboBoxRemoteButtons.SelectedIndexChanged += new System.EventHandler(this.comboBoxRemoteButtons_SelectedIndexChanged);
       // 
       // buttonSendRemoteButton
@@ -350,7 +351,20 @@ namespace DebugClient
       this.comboBoxPort.Name = "comboBoxPort";
       this.comboBoxPort.Size = new System.Drawing.Size(80, 21);
       this.comboBoxPort.TabIndex = 3;
-      this.toolTip.SetToolTip(this.comboBoxPort, "Port for blasting IR");
+      this.toolTips.SetToolTip(this.comboBoxPort, "Port for blasting IR");
+      // 
+      // buttonIRBlastAutoTest
+      // 
+      this.buttonIRBlastAutoTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonIRBlastAutoTest.Location = new System.Drawing.Point(336, 536);
+      this.buttonIRBlastAutoTest.Name = "buttonIRBlastAutoTest";
+      this.buttonIRBlastAutoTest.Size = new System.Drawing.Size(112, 24);
+      this.buttonIRBlastAutoTest.TabIndex = 8;
+      this.buttonIRBlastAutoTest.Text = "IRBlast Auto-Test";
+      this.toolTips.SetToolTip(this.buttonIRBlastAutoTest, "Runs a random number blasting test");
+      this.buttonIRBlastAutoTest.UseVisualStyleBackColor = true;
+      this.buttonIRBlastAutoTest.Visible = false;
+      this.buttonIRBlastAutoTest.Click += new System.EventHandler(this.buttonAutoTest_Click);
       // 
       // buttonHelp
       // 
@@ -368,6 +382,7 @@ namespace DebugClient
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(456, 566);
+      this.Controls.Add(this.buttonIRBlastAutoTest);
       this.Controls.Add(this.buttonHelp);
       this.Controls.Add(this.groupBoxCommands);
       this.Controls.Add(this.groupBoxSetup);
@@ -415,10 +430,11 @@ namespace DebugClient
     private System.Windows.Forms.Label labelCustomButton;
     private System.Windows.Forms.GroupBox groupBoxSetup;
     private System.Windows.Forms.GroupBox groupBoxCommands;
-    private System.Windows.Forms.ToolTip toolTip;
+    private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.ComboBox comboBoxPort;
     private System.Windows.Forms.ComboBox comboBoxComputer;
     private System.Windows.Forms.Button buttonHelp;
+    private System.Windows.Forms.Button buttonIRBlastAutoTest;
   }
 }
 

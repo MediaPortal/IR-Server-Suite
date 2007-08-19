@@ -535,7 +535,10 @@ namespace TrayLauncher
           {
             if (Path.GetFileName(process.MainModule.ModuleName).Equals(Path.GetFileName(_programFile), StringComparison.InvariantCultureIgnoreCase))
             {
-              IrssLog.Info("Program already running");
+              IrssLog.Info("Program already running, attempting to give focus.");
+
+              Win32.SetForegroundWindow(process.MainWindowHandle, true);
+
               return;
             }
           }
@@ -545,7 +548,7 @@ namespace TrayLauncher
         // Launch program
         Process launch = new Process();
         launch.StartInfo.FileName = _programFile;
-        launch.StartInfo.UseShellExecute = true;
+        launch.StartInfo.UseShellExecute = false;
         launch.Start();
       }
       catch (Exception ex)

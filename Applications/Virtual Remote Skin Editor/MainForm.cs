@@ -279,10 +279,6 @@ namespace SkinEditor
 
     private void MainForm_Load(object sender, EventArgs e)
     {
-      // TODO: Change log level to info for release.
-      IrssLog.LogLevel = IrssLog.Level.Debug;
-      IrssLog.Open(Common.FolderIrssLogs + "Virtual Remote Skin Editor.log");
-
       UpdateWindowTitle();
 
       comboBoxShortcut.Items.Clear();

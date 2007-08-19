@@ -2,74 +2,232 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{0C209E91-5AD5-4662-AD0E-976A940D4806}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Server", "Applications\IR Server\IR Server.csproj", "{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tray Launcher", "Applications\Tray Launcher\Tray Launcher.csproj", "{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debug Client", "Applications\Debug Client\Debug Client.csproj", "{4CD051F4-F2B5-47B3-8647-F47C2E4DC131}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translator", "Applications\Translator\Translator.csproj", "{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote", "Applications\Virtual Remote\Virtual Remote.csproj", "{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote Skin Editor", "Applications\Virtual Remote Skin Editor\Virtual Remote Skin Editor.csproj", "{D871AB9A-71B3-4D63-8320-084BAD75064E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IR Server Plugins", "IR Server Plugins", "{0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IPC", "IPC", "{0E9CCB69-CEF0-4680-816B-18E949DEA727}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModule.InterProcessComm", "IPC\AppModule.InterProcessComm\AppModule.InterProcessComm.csproj", "{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModule.NamedPipes", "IPC\AppModule.NamedPipes\AppModule.NamedPipes.csproj", "{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Named Pipes", "IPC\Named Pipes\Named Pipes.csproj", "{F4EA6055-7133-4F18-8971-E19ADEB482C1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MediaPortal Plugins", "MediaPortal Plugins", "{6C18D808-E5ED-4CFB-A7CD-E2BDBB1D9BDA}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP Control Plugin", "MediaPortal Plugins\MP Control Plugin\MP Control Plugin.csproj", "{E8BEBBCC-1EE0-488D-8806-98ADCB7F0479}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TV2 Blaster Plugin", "MediaPortal Plugins\TV2 Blaster Plugin\TV2 Blaster Plugin.csproj", "{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TV3 Blaster Plugin", "MediaPortal Plugins\TV3 Blaster Plugin\TV3 Blaster Plugin.csproj", "{CD395FC2-70E2-42C4-8A20-5469A0C5EB50}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IgorPlug USB Receiver", "IR Server Plugins\IgorPlug USB Receiver\IgorPlug USB Receiver.csproj", "{A4023992-CCD6-461E-8E14-219A496734C5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRMan Receiver", "IR Server Plugins\IRMan Receiver\IRMan Receiver.csproj", "{7C686499-7517-4338-8837-7E8617549D9A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft MCE Transceiver", "IR Server Plugins\Microsoft MCE Transceiver\Microsoft MCE Transceiver.csproj", "{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USB-UIRT Transceiver", "IR Server Plugins\USB-UIRT Transceiver\USB-UIRT Transceiver.csproj", "{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows Message Receiver", "IR Server Plugins\Windows Message Receiver\Windows Message Receiver.csproj", "{4CBA81F9-F0C2-4242-8D72-204597285042}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XBCDRC Receiver", "IR Server Plugins\XBCDRC Receiver\XBCDRC Receiver.csproj", "{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP Blast Zone Plugin", "MediaPortal Plugins\MP Blast Zone Plugin\MP Blast Zone Plugin.csproj", "{907DCA39-A5E0-4EFA-B1F6-5FBE2C1BCD25}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRTrans Transceiver", "IR Server Plugins\IRTrans Transceiver\IRTrans Transceiver.csproj", "{883913F6-F4A7-4DE2-846A-C2102FAF499E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "X10 Transceiver", "IR Server Plugins\X10 Transceiver\X10 Transceiver.csproj", "{253FFB14-AB8E-49AB-A005-A42428C3F452}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FusionREMOTE Receiver", "IR Server Plugins\FusionRemote Receiver\FusionREMOTE Receiver.csproj", "{9FDD649E-0502-4FED-9AC1-AA0346394375}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E757F80C-23C5-4AD6-B178-16799E337E03}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssUtils", "Common\IrssUtils\IrssUtils.csproj", "{CA15769C-232E-4CA7-94FD-206A06CA3ABB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPUtils", "Common\MPUtils\MPUtils.csproj", "{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Server Plugin Interface", "IR Server Plugins\IR Server Plugin Interface\IR Server Plugin Interface.csproj", "{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinLirc Receiver", "IR Server Plugins\WinLirc Receiver\WinLirc Receiver.csproj", "{E6A68244-8C31-44A9-9F85-B4A102B5F209}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Custom HID Receiver", "IR Server Plugins\Custom HID Receiver\Custom HID Receiver.csproj", "{0F6576B4-C88E-4E79-B7E9-9480498C5A32}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Blast", "Applications\IR Blast\IR Blast.csproj", "{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Blast (No Window)", "Applications\IR Blast (No Window)\IR Blast (No Window).csproj", "{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssComms", "Common\IrssComms\IrssComms.csproj", "{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage Setup", "Applications\SageSetup\Sage Setup.csproj", "{905131F8-F8AC-4A65-A722-37783902D7B8}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS Keyboard", "Applications\SMS Keyboard\SMS Keyboard.csproj", "{A533F58F-2402-47CF-A258-377A669DB56F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR File Tool", "Applications\IR File Tool\IR File Tool.csproj", "{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -306,11 +464,32 @@ Global
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Release|x86.ActiveCfg = Release|x86
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Release|x86.Build.0 = Release|x86
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|x86.ActiveCfg = Release|Any CPU
+		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|x86.ActiveCfg = Debug|x86
+		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|x86.Build.0 = Debug|x86
+		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|x86.ActiveCfg = Release|x86
+		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|x86.Build.0 = Release|x86
+		{A533F58F-2402-47CF-A258-377A669DB56F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A533F58F-2402-47CF-A258-377A669DB56F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A533F58F-2402-47CF-A258-377A669DB56F}.Debug|x86.ActiveCfg = Debug|x86
+		{A533F58F-2402-47CF-A258-377A669DB56F}.Debug|x86.Build.0 = Debug|x86
+		{A533F58F-2402-47CF-A258-377A669DB56F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A533F58F-2402-47CF-A258-377A669DB56F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A533F58F-2402-47CF-A258-377A669DB56F}.Release|x86.ActiveCfg = Release|x86
+		{A533F58F-2402-47CF-A258-377A669DB56F}.Release|x86.Build.0 = Release|x86
+		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|x86.ActiveCfg = Release|x86
+		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -324,6 +503,9 @@ Global
 		{D871AB9A-71B3-4D63-8320-084BAD75064E} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{905131F8-F8AC-4A65-A722-37783902D7B8} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{A533F58F-2402-47CF-A258-377A669DB56F} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{A4023992-CCD6-461E-8E14-219A496734C5} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{7C686499-7517-4338-8837-7E8617549D9A} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
