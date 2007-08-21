@@ -101,6 +101,8 @@ namespace TvEngine
       }
     }
 
+    #region Buttons
+
     private void buttonLearn_Click(object sender, EventArgs e)
     {
       string command = textBoxName.Text.Trim();
@@ -163,6 +165,8 @@ namespace TvEngine
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+
+    #endregion Buttons
 
   }
 

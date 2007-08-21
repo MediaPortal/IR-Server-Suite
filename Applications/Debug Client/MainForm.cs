@@ -171,7 +171,6 @@ namespace DebugClient
         {
           case "Blast Success":
           case "Blast Failure":
-          case "Start Learn":
           case "Keyboard Event":
           case "Mouse Event":
             return;

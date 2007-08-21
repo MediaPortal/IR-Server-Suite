@@ -823,7 +823,6 @@ namespace MediaPortal.Plugins
       {
         switch (received.Name)
         {
-          case "Start Learn":
           case "Blast Success":
           case "Keyboard Event":
           case "Mouse Event":
@@ -1538,7 +1537,7 @@ namespace MediaPortal.Plugins
       BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
       Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-      file.Read(outData, 8 + port.Length, (int)file.Length);
+      file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
       PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);

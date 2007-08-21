@@ -413,7 +413,6 @@ namespace TvEngine
       {
         switch (received.Name)
         {
-          case "Start Learn":
           case "Blast Success":
           case "Remote Event":
           case "Keyboard Event":

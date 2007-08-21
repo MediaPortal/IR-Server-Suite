@@ -878,13 +878,13 @@ namespace IRServer
     {
       IrssLog.Debug("Learn IR");
 
-      Thread.Sleep(500);
-
       if (_pluginTransmit == null || !_pluginTransmit.CanLearn)
       {
         IrssLog.Debug("Active transceiver doesn't support learn");
         return null;
       }
+
+      Thread.Sleep(500);
 
       byte[] data = null;
 
@@ -902,7 +902,7 @@ namespace IRServer
             break;
 
           case LearnStatus.Timeout:
-            IrssLog.Error("IR Code learn timed out");
+            IrssLog.Warn("IR Code learn timed out");
             break;
         }
       }
@@ -1025,13 +1025,6 @@ namespace IRServer
                 SendTo(received.FromPipe, received.FromServer, reply);
                 break;
               }
-
-              // Pause half a second before instructing the client to start the IR learning ...
-              Thread.Sleep(500);
-
-              // Send back a "Start Learn" trigger ...
-              PipeMessage trigger = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Start Learn", null);
-              SendTo(received.FromPipe, received.FromServer, trigger);
 
               // Prepare response ...
               PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, received.Name + " Failure", null);

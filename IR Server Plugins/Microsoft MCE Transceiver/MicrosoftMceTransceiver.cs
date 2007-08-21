@@ -106,12 +106,12 @@ namespace MicrosoftMceTransceiver
     int _remoteFirstRepeat      = 400;
     int _remoteHeldRepeats      = 250;
 
-    bool _enableKeyboardInput   = true;
+    bool _enableKeyboardInput   = false;
     int _keyboardFirstRepeat    = 350;
     int _keyboardHeldRepeats    = 0;
     bool _handleKeyboardLocally = true;
 
-    bool _enableMouseInput      = true;
+    bool _enableMouseInput      = false;
     bool _handleMouseLocally    = true;
     double _mouseSensitivity    = 1.0d;
 
@@ -315,31 +315,20 @@ namespace MicrosoftMceTransceiver
         Thread.Sleep(100);
       }
 
-      LearnStatus status = LearnStatus.Failure;
-
       if (_learning)
       {
         _learning = false;
 
-        try
-        {
-          DeviceAccess.CancelDeviceIo(_readStream.SafeFileHandle);
-        }
-        catch { }
-
-        status = LearnStatus.Timeout;
+        return LearnStatus.Timeout;
       }
       else if (_learnedNativeData != null && _learnedNativeData.Count > 0)
       {
         data = _learnedNativeData.ToArray();
 
-        status = LearnStatus.Success;
+        return LearnStatus.Success;
       }
-
-      // Start a new read ...
-      _readStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
       
-      return status;
+      return LearnStatus.Failure;
     }
 
     public bool SetPort(string port)
@@ -468,17 +457,6 @@ namespace MicrosoftMceTransceiver
         }
         catch { }
       }
-
-      // Try Vista eHome driver ...
-      /*if (devicePath == null)
-      {
-        deviceClass = new Guid(0x36fc9e60, 0xc465, 0x11cf, 0x80, 0x56, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00);
-        try
-        {
-          devicePath = DeviceAccess.FindDevice(deviceClass);
-        }
-        catch { }
-      }*/
 
       if (devicePath == null)
         throw new Exception("No MCE Transceiver detected");

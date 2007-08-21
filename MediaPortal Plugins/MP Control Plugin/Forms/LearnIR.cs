@@ -101,6 +101,8 @@ namespace MediaPortal.Plugins
       }
     }
 
+    #region Buttons
+
     private void buttonLearn_Click(object sender, EventArgs e)
     {
       string command = textBoxName.Text.Trim();
@@ -153,9 +155,18 @@ namespace MediaPortal.Plugins
       if (command.Length == 0)
         return;
 
-      MPControlPlugin.BlastIR(Common.FolderIRCommands + command + Common.FileExtensionIR,
-        comboBoxPort.SelectedItem as string);
+      try
+      {
+        MPControlPlugin.BlastIR(Common.FolderIRCommands + command + Common.FileExtensionIR,
+          comboBoxPort.SelectedItem as string);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
+    
+    #endregion Buttons
 
   }
 

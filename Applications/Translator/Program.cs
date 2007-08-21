@@ -912,7 +912,6 @@ namespace Translator
       {
         switch (received.Name)
         {
-          case "Start Learn":
           case "Blast Success":
             break;
 

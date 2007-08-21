@@ -104,7 +104,7 @@ namespace IRServer
           }
           catch (Exception ex)
           {
-            MessageBox.Show(ex.ToString(), "IR Server Unexpected Error");
+            MessageBox.Show(ex.ToString(), "IR Server Plugin Error");
           }
         }
 
