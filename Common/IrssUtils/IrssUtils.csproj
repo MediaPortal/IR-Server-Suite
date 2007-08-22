@@ -135,7 +135,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SystemRegistry.cs" />
-    <Compile Include="TransceiverInfo.cs" />
+    <Compile Include="IRServerInfo.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="XML.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -45,7 +45,7 @@ namespace Translator
 
     static bool _inConfiguration;
 
-    static TransceiverInfo _transceiverInfo = new TransceiverInfo();
+    static IRServerInfo _irServerInfo = new IRServerInfo();
 
     //static Thread _focusWatcher;
     static IntPtr _currentForegroundWindow = IntPtr.Zero;
@@ -66,9 +66,9 @@ namespace Translator
       set { _handleMessage = value; }
     }
 
-    internal static TransceiverInfo TransceiverInformation
+    internal static IRServerInfo TransceiverInformation
     {
-      get { return _transceiverInfo; }
+      get { return _irServerInfo; }
     }
 
     #endregion Properties
@@ -949,7 +949,7 @@ namespace Translator
             {
               IrssLog.Info("Registered to IR Server");
               _registered = true;
-              _transceiverInfo = TransceiverInfo.FromBytes(received.Data);
+              _irServerInfo = IRServerInfo.FromBytes(received.Data);
               break;
             }
 

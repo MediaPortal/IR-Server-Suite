@@ -175,13 +175,13 @@ namespace MediaPortal.Plugins
       if (eventStringElements.Length == 1)
       {
         return new MappedEvent(
-          (MappingEvent)Enum.Parse(typeof(MappingEvent), eventStringElements[0]),
+          (MappingEvent)Enum.Parse(typeof(MappingEvent), eventStringElements[0], true),
           commandString);
       }
       else if (eventStringElements.Length == 3)
       {
         return new MappedEvent(
-          (MappingEvent)Enum.Parse(typeof(MappingEvent), eventStringElements[0]),
+          (MappingEvent)Enum.Parse(typeof(MappingEvent), eventStringElements[0], true),
           eventStringElements[1],
           eventStringElements[2],
           commandString);

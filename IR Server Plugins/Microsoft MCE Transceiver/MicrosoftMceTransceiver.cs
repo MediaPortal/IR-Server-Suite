@@ -62,7 +62,8 @@ namespace MicrosoftMceTransceiver
 
   #endregion Delegates
 
-  public class MicrosoftMceTransceiver : IIRServerPlugin
+  public class MicrosoftMceTransceiver :
+    IRServerPlugin, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
 
     #region Constants
@@ -118,7 +119,6 @@ namespace MicrosoftMceTransceiver
     int _learnTimeout           = 10000;
 
     BlasterType  _blasterType   = BlasterType.Microsoft;
-    BlasterPort _blasterPort    = BlasterPort.Both;
     
     List<byte> _learnedNativeData = null;
     //int _learnedCarrier = 0;
@@ -155,84 +155,14 @@ namespace MicrosoftMceTransceiver
 
     #endregion Variables
 
-    #region IIRServerPlugin Members
+    #region Implementation
 
-    public string Name          { get { return "Microsoft MCE"; } }
-    public string Version       { get { return "1.0.3.3"; } }
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "Microsoft MCE Infrared Transceiver"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return true; } }
-    public bool   CanLearn      { get { return true; } }
-    public bool   CanConfigure  { get { return true; } }
+    public override string Name         { get { return "Microsoft MCE"; } }
+    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "Microsoft MCE Infrared Transceiver"; } }
 
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
-    }
-
-    public KeyboardHandler KeyboardCallback
-    {
-      get { return _keyboardHandler; }
-      set { _keyboardHandler = value; }
-    }
-
-    public MouseHandler MouseCallback
-    {
-      get { return _mouseHandler; }
-      set { _mouseHandler = value; }
-    }
-
-    public string[] AvailablePorts
-    {
-      get { return Enum.GetNames(typeof(BlasterPort)); }
-    }
-
-    public void Configure()
-    {
-      LoadSettings();
-
-      Configure config = new Configure();
-
-      config.BlastType            = _blasterType;
-      config.LearnTimeout         = _learnTimeout;
-
-      config.EnableRemote         = _enableRemoteInput;
-      config.RemoteRepeatDelay    = _remoteFirstRepeat;
-      config.RemoteHeldDelay      = _remoteHeldRepeats;
-
-      config.EnableKeyboard       = _enableKeyboardInput;
-      config.KeyboardRepeatDelay  = _keyboardFirstRepeat;
-      config.KeyboardHeldDelay    = _keyboardHeldRepeats;
-      config.HandleKeyboardLocal  = _handleKeyboardLocally;
-
-      config.EnableMouse          = _enableMouseInput;
-      config.HandleMouseLocal     = _handleMouseLocally;
-      config.MouseSensitivity     = _mouseSensitivity;
-
-      if (config.ShowDialog() == DialogResult.OK)
-      {
-        _blasterType            = config.BlastType;
-        _learnTimeout           = config.LearnTimeout;
-
-        _enableRemoteInput      = config.EnableRemote;
-        _remoteFirstRepeat      = config.RemoteRepeatDelay;
-        _remoteHeldRepeats      = config.RemoteHeldDelay;
-
-        _enableKeyboardInput    = config.EnableKeyboard;
-        _keyboardFirstRepeat    = config.KeyboardRepeatDelay;
-        _keyboardHeldRepeats    = config.KeyboardHeldDelay;
-        _handleKeyboardLocally  = config.HandleKeyboardLocal;
-
-        _enableMouseInput       = config.EnableMouse;
-        _handleMouseLocally     = config.HandleMouseLocal;
-        _mouseSensitivity       = config.MouseSensitivity;        
-
-        SaveSettings();
-      }
-    }
-    public bool Start()
+    public override bool Start()
     {
       LoadSettings();
 
@@ -287,20 +217,102 @@ namespace MicrosoftMceTransceiver
 
       return true;
     }
-    public void Suspend() { }
-    public void Resume() { }
-    public void Stop()
+    public override void Suspend()
+    {
+      OnDeviceRemoval();
+    }
+    public override void Resume()
+    {
+      OnDeviceArrival();
+    }
+    public override void Stop()
     {
       OnDeviceRemoval();
     }
 
-    public bool Transmit(string file)
+    public void Configure()
     {
-      MceIrCode code = ReadIRFile(file);
-      if (code == null)
-        return false;
+      LoadSettings();
 
-      return Send(code, _blasterPort, _blasterType);
+      Configure config = new Configure();
+
+      config.BlastType            = _blasterType;
+      config.LearnTimeout         = _learnTimeout;
+
+      config.EnableRemote         = _enableRemoteInput;
+      config.RemoteRepeatDelay    = _remoteFirstRepeat;
+      config.RemoteHeldDelay      = _remoteHeldRepeats;
+
+      config.EnableKeyboard       = _enableKeyboardInput;
+      config.KeyboardRepeatDelay  = _keyboardFirstRepeat;
+      config.KeyboardHeldDelay    = _keyboardHeldRepeats;
+      config.HandleKeyboardLocal  = _handleKeyboardLocally;
+
+      config.EnableMouse          = _enableMouseInput;
+      config.HandleMouseLocal     = _handleMouseLocally;
+      config.MouseSensitivity     = _mouseSensitivity;
+
+      if (config.ShowDialog() == DialogResult.OK)
+      {
+        _blasterType            = config.BlastType;
+        _learnTimeout           = config.LearnTimeout;
+
+        _enableRemoteInput      = config.EnableRemote;
+        _remoteFirstRepeat      = config.RemoteRepeatDelay;
+        _remoteHeldRepeats      = config.RemoteHeldDelay;
+
+        _enableKeyboardInput    = config.EnableKeyboard;
+        _keyboardFirstRepeat    = config.KeyboardRepeatDelay;
+        _keyboardHeldRepeats    = config.KeyboardHeldDelay;
+        _handleKeyboardLocally  = config.HandleKeyboardLocal;
+
+        _enableMouseInput       = config.EnableMouse;
+        _handleMouseLocally     = config.HandleMouseLocal;
+        _mouseSensitivity       = config.MouseSensitivity;        
+
+        SaveSettings();
+      }
+    }
+
+    public RemoteHandler RemoteCallback
+    {
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
+    }
+
+    public KeyboardHandler KeyboardCallback
+    {
+      get { return _keyboardHandler; }
+      set { _keyboardHandler = value; }
+    }
+
+    public MouseHandler MouseCallback
+    {
+      get { return _mouseHandler; }
+      set { _mouseHandler = value; }
+    }
+
+    public string[] AvailablePorts
+    {
+      get { return Enum.GetNames(typeof(BlasterPort)); }
+    }
+
+    public bool Transmit(string port, byte[] data)
+    {
+      BlasterPort blasterPort = BlasterPort.Both;
+      try
+      {
+        blasterPort = (BlasterPort)Enum.Parse(typeof(BlasterPort), port, true);
+      }
+      catch (Exception ex)
+      {
+        throw new ArgumentException("Invalid Blaster Port", "port", ex);
+      }
+
+      MceIrCode code = new MceIrCode(data);
+      Send(code, blasterPort, _blasterType);
+
+      return true;
     }
     public LearnStatus Learn(out byte[] data)
     {
@@ -331,24 +343,6 @@ namespace MicrosoftMceTransceiver
       return LearnStatus.Failure;
     }
 
-    public bool SetPort(string port)
-    {
-      try
-      {
-        _blasterPort = (BlasterPort)Enum.Parse(typeof(BlasterPort), port);
-      }
-      catch
-      {
-        return false;
-      }
-
-      return true;
-    }
-
-    #endregion IIRServerPlugin Members
-
-    #region Implementation
-
     void LoadSettings()
     {
       XmlDocument doc = new XmlDocument();
@@ -356,7 +350,7 @@ namespace MicrosoftMceTransceiver
       try   { doc.Load(ConfigurationFile); }
       catch { return; }
 
-      try   { _blasterType = (BlasterType)Enum.Parse(typeof(BlasterType), doc.DocumentElement.Attributes["BlastType"].Value); } catch {}
+      try   { _blasterType = (BlasterType)Enum.Parse(typeof(BlasterType), doc.DocumentElement.Attributes["BlastType"].Value, true); } catch {}
       try   { _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value); } catch {}
 
       try   { _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); } catch {}
@@ -1099,18 +1093,15 @@ namespace MicrosoftMceTransceiver
     /// <param name="code">MCE IR code data to send.</param>
     /// <param name="port">IR port to send to.</param>
     /// <param name="type">Transceiver type.</param>
-    /// <returns>Success.</returns>
-    bool Send(MceIrCode code, BlasterPort port, BlasterType type)
+    void Send(MceIrCode code, BlasterPort port, BlasterType type)
     {
-      if (_writeStream == null)
-        return false;
-
       byte[][] portPackets;
       switch (type)
       {
         case BlasterType.Microsoft:   portPackets = MicrosoftPorts;   break;
         case BlasterType.SMK:         portPackets = SmkPorts;         break;
-        default:                      return false;
+        default:
+          throw new ArgumentException("Invalid Blaster Type", "type");
       }
 
       // Set port
@@ -1130,8 +1121,6 @@ namespace MicrosoftMceTransceiver
       // Wait to ensure the packet had time to be transmitted
       int packetTime = code.GetPacketTransmitTime() / 1000;
       Thread.Sleep(packetTime);
-
-      return true;
     }
 
     #endregion Implementation

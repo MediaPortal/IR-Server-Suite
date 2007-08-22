@@ -70,7 +70,7 @@ namespace MediaPortal.Plugins
 
     static bool _mpBasicHome;
 
-    static TransceiverInfo _transceiverInfo = new TransceiverInfo();
+    static IRServerInfo _irServerInfo = new IRServerInfo();
 
     #endregion Variables
 
@@ -115,9 +115,9 @@ namespace MediaPortal.Plugins
       get { return _mpBasicHome; }
     }
 
-    internal static TransceiverInfo TransceiverInformation
+    internal static IRServerInfo TransceiverInformation
     {
-      get { return _transceiverInfo; }
+      get { return _irServerInfo; }
     }
 
     #endregion Properties
@@ -581,7 +581,7 @@ namespace MediaPortal.Plugins
                 Log.Info("MPBlastZonePlugin: Registered to IR Server");
 
               _registered = true;
-              _transceiverInfo = TransceiverInfo.FromBytes(received.Data);
+              _irServerInfo = IRServerInfo.FromBytes(received.Data);
               break;
             }
 

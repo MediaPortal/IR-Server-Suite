@@ -310,7 +310,7 @@ namespace IrssUtils
       process.StartInfo.FileName          = commands[0];
       process.StartInfo.WorkingDirectory  = commands[1];
       process.StartInfo.Arguments         = commands[2];
-      process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3]);
+      process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true);
       process.StartInfo.CreateNoWindow    = bool.Parse(commands[4]);
       process.StartInfo.UseShellExecute   = bool.Parse(commands[5]);
 
@@ -352,9 +352,9 @@ namespace IrssUtils
       
       string comPort        = commands[1];
       int baudRate          = int.Parse(commands[2]);
-      Parity parity         = (Parity)Enum.Parse(typeof(Parity), commands[3]);
+      Parity parity         = (Parity)Enum.Parse(typeof(Parity), commands[3], true);
       int dataBits          = int.Parse(commands[4]);
-      StopBits stopBits     = (StopBits)Enum.Parse(typeof(StopBits), commands[5]);
+      StopBits stopBits     = (StopBits)Enum.Parse(typeof(StopBits), commands[5], true);
       bool waitForResponse  = bool.Parse(commands[6]);
 
       SerialPort serialPort = new SerialPort(comPort, baudRate, parity, dataBits, stopBits);

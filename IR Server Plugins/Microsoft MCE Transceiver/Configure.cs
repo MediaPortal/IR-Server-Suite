@@ -15,7 +15,7 @@ namespace MicrosoftMceTransceiver
 
     public BlasterType BlastType
     {
-      get { return (BlasterType)Enum.Parse(typeof(BlasterType), comboBoxBlasterType.SelectedItem as string); }
+      get { return (BlasterType)Enum.Parse(typeof(BlasterType), comboBoxBlasterType.SelectedItem as string, true); }
       set { comboBoxBlasterType.SelectedItem = Enum.GetName(typeof(BlasterType), value); }
     }
 

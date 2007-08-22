@@ -80,7 +80,7 @@ namespace IrssUtils.Forms
         checkBoxWaitForExit.Checked   = bool.Parse(commands[6]);
         checkBoxForceFocus.Checked    = bool.Parse(commands[7]);
 
-        comboBoxWindowStyle.SelectedItem  = ((ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3])).ToString();
+        comboBoxWindowStyle.SelectedItem  = ((ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true)).ToString();
       }
       else
       {
@@ -156,7 +156,7 @@ namespace IrssUtils.Forms
         process.StartInfo.FileName          = textBoxProgram.Text;
         process.StartInfo.WorkingDirectory  = textBoxStartup.Text;
         process.StartInfo.Arguments         = textBoxParameters.Text;
-        process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string);
+        process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true);
         process.StartInfo.CreateNoWindow    = checkBoxNoWindow.Checked;
         process.StartInfo.UseShellExecute   = checkBoxShellExecute.Checked;
 

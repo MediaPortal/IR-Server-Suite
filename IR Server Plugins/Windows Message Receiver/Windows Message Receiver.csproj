@@ -67,6 +67,7 @@
       <DependentUpon>Configure.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReceiverWindow.cs" />
     <Compile Include="Windows Message Receiver.cs">
     </Compile>
   </ItemGroup>

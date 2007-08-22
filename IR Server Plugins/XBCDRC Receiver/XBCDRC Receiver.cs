@@ -11,7 +11,7 @@ using IRServerPluginInterface;
 namespace XBCDRCReceiver
 {
 
-  public class XBCDRCReceiver : IIRServerPlugin, IDisposable
+  public class XBCDRCReceiver : IRServerPlugin, IRemoteReceiver, IDisposable
   {
 
     #region Constants
@@ -183,16 +183,12 @@ namespace XBCDRCReceiver
 
     #endregion
 
-    #region IIRServerPlugin Members
+    #region Implementation
 
-    public string Name          { get { return "XBCDRC"; } }
-    public string Version       { get { return "1.0.3.3"; } }
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "Supports the XBox 1 IR receiver with XBCDRC"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return false; } }
+    public override string Name          { get { return "XBCDRC"; } }
+    public override string Version { get { return "1.0.3.3"; } }
+    public override string Author { get { return "and-81"; } }
+    public override string Description { get { return "Supports the XBox 1 IR receiver with XBCDRC"; } }
 
     public RemoteHandler RemoteCallback
     {
@@ -200,14 +196,7 @@ namespace XBCDRCReceiver
       set { _remoteButtonHandler = value; }
     }
 
-    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
-
-    public MouseHandler MouseCallback { get { return null; } set { } }
-
-    public string[] AvailablePorts { get { return Ports; } }
-
-    public void Configure() { }
-    public bool Start()
+    public override bool Start()
     {
       Guid guid = new Guid();
       HidD_GetHidGuid(ref guid);
@@ -230,9 +219,15 @@ namespace XBCDRCReceiver
 
       return true;
     }
-    public void Suspend()   { }
-    public void Resume()    { }
-    public void Stop()
+    public override void Suspend()
+    {
+      Stop();
+    }
+    public override void Resume()
+    {
+      Start();
+    }
+    public override void Stop()
     {
       if (_deviceStream == null)
         return;
@@ -248,19 +243,6 @@ namespace XBCDRCReceiver
         _deviceStream = null;
       }
     }
-
-    public bool Transmit(string file) { return false; }
-    public LearnStatus Learn(out byte[] data)
-    {
-      data = null;
-      return LearnStatus.Failure;
-    }
-
-    public bool SetPort(string port)    { return true; }
-
-    #endregion IIRServerPlugin Members
-
-    #region Implementation
 
     protected virtual void Dispose(bool disposeManagedResources)
     {

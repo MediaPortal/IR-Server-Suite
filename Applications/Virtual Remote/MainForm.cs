@@ -107,7 +107,7 @@ namespace VirtualRemote
         try
         {
           key = item.Attributes["shortcut"].Value;
-          temp.Shortcut = (Keys)Enum.Parse(typeof(Keys), key);
+          temp.Shortcut = (Keys)Enum.Parse(typeof(Keys), key, true);
         }
         catch (ArgumentException)
         {

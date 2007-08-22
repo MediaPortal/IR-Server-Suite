@@ -13,7 +13,7 @@ using IRServerPluginInterface;
 namespace WinLircReceiver
 {
 
-  public class WinLircReceiver : IIRServerPlugin
+  public class WinLircReceiver : IRServerPlugin, IConfigure, IRemoteReceiver, ITransmitIR
   {
 
     #region Constants
@@ -21,8 +21,6 @@ namespace WinLircReceiver
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\WinLirc Receiver.xml";
-
-    static readonly string[] Ports  = new string[] { "None" };
 
     #endregion Constants
 
@@ -39,28 +37,47 @@ namespace WinLircReceiver
 
     #endregion Variables
 
-    #region IIRServerPlugin Members
+    #region Implementation
 
-    public string Name          { get { return "WinLirc"; } }
-    public string Version       { get { return "1.0.3.3"; } }
-    public string Author        { get { return "and-81, original code for MediaPortal by Sven"; } }
-    public string Description   { get { return "Supports WinLirc as a reciever"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return true; } }
+    public override string Name         { get { return "WinLirc"; } }
+    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Author       { get { return "and-81, original code for MediaPortal by Sven"; } }
+    public override string Description  { get { return "Supports WinLirc as a reciever"; } }
+
+    public override bool Start()
+    {
+      LoadSettings();
+
+      if (_startServer)
+      {
+        if (!WinLircServer.StartServer(_serverPath))
+          return false;
+      }
+
+      _server = new WinLircServer(_serverIP, _serverPort, TimeSpan.FromMilliseconds(_buttonReleaseTime));
+      _server.CommandEvent += new WinLircServer.CommandEventHandler(CommandHandler);
+
+      return true;
+    }
+    public override void Suspend()
+    {
+      Stop();
+    }
+    public override void Resume()
+    {
+      Start();
+    }
+    public override void Stop()
+    {
+      _server.CommandEvent -= new WinLircServer.CommandEventHandler(CommandHandler);
+      _server = null;
+    }
 
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
-
-    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
-
-    public MouseHandler MouseCallback { get { return null; } set { } }
-
-    public string[] AvailablePorts  { get { return Ports; }   }
 
     public void Configure()
     {
@@ -85,63 +102,30 @@ namespace WinLircReceiver
         SaveSettings();
       }
     }
-    public bool Start()
-    {
-      LoadSettings();
 
-      if (_startServer)
-      {
-        if (!WinLircServer.StartServer(_serverPath))
-          return false;
-      }
+    public string[] AvailablePorts { get { return new string[] { "Default" }; } }
 
-      _server = new WinLircServer(_serverIP, _serverPort, TimeSpan.FromMilliseconds(_buttonReleaseTime));
-      _server.CommandEvent += new WinLircServer.CommandEventHandler(CommandHandler);
-
-      return true;
-    }
-    public void Suspend()   { }
-    public void Resume()    { }
-    public void Stop()
-    {
-      _server.CommandEvent -= new WinLircServer.CommandEventHandler(CommandHandler);
-    }
-
-    public bool Transmit(string file)
+    public bool Transmit(string port, byte[] data)
     {
       string password, remoteName, buttonName, repeats;
 
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(file);
+      MemoryStream memoryStream = new MemoryStream(data);
 
-        password    = doc.DocumentElement.Attributes["Password"].Value;
-        remoteName  = doc.DocumentElement.Attributes["RemoteName"].Value;
-        buttonName  = doc.DocumentElement.Attributes["ButtonName"].Value;
-        repeats     = doc.DocumentElement.Attributes["Repeats"].Value;
+      XmlDocument doc = new XmlDocument();
+      doc.Load(memoryStream);
 
-        string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
-        _server.Transmit(output);
+      password    = doc.DocumentElement.Attributes["Password"].Value;
+      remoteName  = doc.DocumentElement.Attributes["RemoteName"].Value;
+      buttonName  = doc.DocumentElement.Attributes["ButtonName"].Value;
+      repeats     = doc.DocumentElement.Attributes["Repeats"].Value;
 
-        return true;
-      }
-      catch
-      {
-        return false;
-      }
+      string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
+      _server.Transmit(output);
+
+      memoryStream.Close();
+
+      return true;
     }
-    public LearnStatus Learn(out byte[] data)
-    {
-      data = null;
-      return LearnStatus.Failure;
-    }
-
-    public bool SetPort(string port)    { return true; }
-
-    #endregion IIRServerPlugin Members
-
-    #region Implementation
 
     void LoadSettings()
     {
@@ -178,11 +162,11 @@ namespace WinLircReceiver
         writer.WriteStartDocument(true);
         writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("ServerIP", _serverIP.ToString());
-        writer.WriteAttributeString("ServerPort", _serverPort.ToString());
-        writer.WriteAttributeString("StartServer", _startServer.ToString());
-        writer.WriteAttributeString("ServerPath", _serverPath);
-        writer.WriteAttributeString("ButtonReleaseTime", _buttonReleaseTime.ToString());
+        writer.WriteAttributeString("ServerIP",           _serverIP.ToString());
+        writer.WriteAttributeString("ServerPort",         _serverPort.ToString());
+        writer.WriteAttributeString("StartServer",        _startServer.ToString());
+        writer.WriteAttributeString("ServerPath",         _serverPath);
+        writer.WriteAttributeString("ButtonReleaseTime",  _buttonReleaseTime.ToString());
 
         writer.WriteEndElement(); // </settings>
         writer.WriteEndDocument();

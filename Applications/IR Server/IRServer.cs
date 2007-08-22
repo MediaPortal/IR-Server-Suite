@@ -69,10 +69,10 @@ namespace IRServer
     bool _registered = false;
 
     string _pluginNameReceive       = String.Empty;
-    IIRServerPlugin _pluginReceive  = null;
+    IRServerPlugin _pluginReceive   = null;
 
     string _pluginNameTransmit      = String.Empty;
-    IIRServerPlugin _pluginTransmit = null;
+    IRServerPlugin _pluginTransmit  = null;
 
     bool _inConfiguration = false;
 
@@ -204,11 +204,16 @@ namespace IRServer
           }
         }
 
-        if (_pluginReceive != null && _pluginReceive.CanReceive)
+        if (_pluginReceive != null)
         {
-          _pluginReceive.RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
-          _pluginReceive.KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
-          _pluginReceive.MouseCallback += new MouseHandler(MouseHandlerCallback);
+          if (_pluginReceive is IRemoteReceiver)
+            (_pluginReceive as IRemoteReceiver).RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
+
+          if (_pluginReceive is IKeyboardReceiver)
+            (_pluginReceive as IKeyboardReceiver).KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
+          
+          if (_pluginReceive is IMouseReceiver)
+            (_pluginReceive as IMouseReceiver).MouseCallback += new MouseHandler(MouseHandlerCallback);
         }
 
         _notifyIcon.Visible = true;
@@ -239,11 +244,16 @@ namespace IRServer
         SendToAll(message);
       }
 
-      if (_pluginReceive != null && _pluginReceive.CanReceive)
+      if (_pluginReceive != null)
       {
-        _pluginReceive.RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
-        _pluginReceive.KeyboardCallback -= new KeyboardHandler(KeyboardHandlerCallback);
-        _pluginReceive.MouseCallback -= new MouseHandler(MouseHandlerCallback);
+        if (_pluginReceive is IRemoteReceiver)
+          (_pluginReceive as IRemoteReceiver).RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
+        
+        if (_pluginReceive is IKeyboardReceiver)
+          (_pluginReceive as IKeyboardReceiver).KeyboardCallback -= new KeyboardHandler(KeyboardHandlerCallback);
+        
+        if (_pluginReceive is IMouseReceiver)
+          (_pluginReceive as IMouseReceiver).MouseCallback -= new MouseHandler(MouseHandlerCallback);
       }
       
       // Stop Plugin(s)
@@ -301,7 +311,7 @@ namespace IRServer
       }
     }
 
-    bool Configure()
+    void Configure()
     {
       _inConfiguration = true;
 
@@ -315,14 +325,23 @@ namespace IRServer
 
         if (config.ShowDialog() == DialogResult.OK)
         {
-          _mode               = config.Mode;
-          _hostComputer       = config.HostComputer;
-          _pluginNameReceive  = config.PluginReceive;
-          _pluginNameTransmit = config.PluginTransmit;
+          if ((_mode               != config.Mode)            ||
+              (_hostComputer       != config.HostComputer)    ||
+              (_pluginNameReceive  != config.PluginReceive)   ||
+              (_pluginNameTransmit != config.PluginTransmit)  )
+          {
+            Stop(); // Shut down communications
 
-          _inConfiguration  = false;
+            // Change settings ...
+            _mode               = config.Mode;
+            _hostComputer       = config.HostComputer;
+            _pluginNameReceive  = config.PluginReceive;
+            _pluginNameTransmit = config.PluginTransmit;
 
-          return true;
+            SaveSettings(); // Save Settings
+
+            Start();  // Restart communications
+          }
         }
       }
       catch (Exception ex)
@@ -331,8 +350,6 @@ namespace IRServer
       }
 
       _inConfiguration = false;
-
-      return false;
     }
 
     void StartMessageQueue()
@@ -843,42 +860,31 @@ namespace IRServer
       {
         IrssLog.Debug("Blast IR");
 
-        if (_pluginTransmit == null || !_pluginTransmit.CanTransmit)
+        if (_pluginTransmit == null || !(_pluginTransmit is ITransmitIR))
           return false;
+
+        string port = "Default";
 
         int portLen = BitConverter.ToInt32(data, 0);
         if (portLen > 0)
-          _pluginTransmit.SetPort(Encoding.ASCII.GetString(data, 4, portLen));
+          port = Encoding.ASCII.GetString(data, 4, portLen);
 
-        byte[] fileData = new byte[data.Length - (4 + portLen)];
-        for (int index = 4 + portLen; index < data.Length; index++)
-          fileData[index - (4 + portLen)] = data[index];
+        byte[] codeData = new byte[data.Length - (4 + portLen)];
+        Array.Copy(data, 4 + portLen, codeData, 0, codeData.Length);
 
-        string tempFile = Path.GetTempFileName();
-
-        FileStream fileStream = new FileStream(tempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-        fileStream.Write(fileData, 0, fileData.Length);
-        fileStream.Flush();
-        fileStream.Close();
-
-        bool result = _pluginTransmit.Transmit(tempFile);
-
-        File.Delete(tempFile);
-
-        return result;
+        return (_pluginTransmit as ITransmitIR).Transmit(port, codeData);
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
+        return false;
       }
-
-      return false;
     }
     byte[] LearnIR()
     {
       IrssLog.Debug("Learn IR");
 
-      if (_pluginTransmit == null || !_pluginTransmit.CanLearn)
+      if (_pluginTransmit == null || !(_pluginTransmit is ILearnIR))
       {
         IrssLog.Debug("Active transceiver doesn't support learn");
         return null;
@@ -890,7 +896,7 @@ namespace IRServer
 
       try
       {
-        LearnStatus status = _pluginTransmit.Learn(out data);
+        LearnStatus status = (_pluginTransmit as ILearnIR).Learn(out data);
         switch (status)
         {
           case LearnStatus.Success:
@@ -1064,23 +1070,19 @@ namespace IRServer
               {
                 response.Name = received.Name + " Success";
 
-                TransceiverInfo transceiverInfo = new TransceiverInfo();
+                IRServerInfo irServerInfo = new IRServerInfo();
 
                 if (_pluginReceive != null)
-                {
-                  transceiverInfo.Name          = _pluginReceive.Name;
-                  transceiverInfo.CanReceive    = _pluginReceive.CanReceive;
-                }
+                  irServerInfo.CanReceive    = true;
 
                 if (_pluginTransmit != null)
                 {
-                  transceiverInfo.Name          = _pluginTransmit.Name;
-                  transceiverInfo.Ports         = _pluginTransmit.AvailablePorts;
-                  transceiverInfo.CanLearn      = _pluginTransmit.CanLearn;
-                  transceiverInfo.CanTransmit   = _pluginTransmit.CanTransmit;
-                }                
+                  irServerInfo.CanLearn      = (_pluginTransmit is ILearnIR);
+                  irServerInfo.CanTransmit   = true;
+                  irServerInfo.Ports         = (_pluginTransmit as ITransmitIR).AvailablePorts;
+                }
 
-                response.Data = TransceiverInfo.ToBytes(transceiverInfo);
+                response.Data = irServerInfo.ToBytes();
               }
 
               SendTo(received.FromPipe, received.FromServer, response);
@@ -1157,14 +1159,9 @@ namespace IRServer
       if (_inConfiguration)
         return;
 
-      Stop();
-
       IrssLog.Info("Setup");
 
-      if (Configure())
-        SaveSettings();
-
-      Start();
+      Configure();
     }
     void ClickQuit(object sender, EventArgs e)
     {
@@ -1184,7 +1181,7 @@ namespace IRServer
         XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
 
-        _mode               = (IRServerMode)Enum.Parse(typeof(IRServerMode), doc.DocumentElement.Attributes["Mode"].Value);
+        _mode               = (IRServerMode)Enum.Parse(typeof(IRServerMode), doc.DocumentElement.Attributes["Mode"].Value, true);
         _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value;
         _pluginNameReceive  = doc.DocumentElement.Attributes["PluginReceive"].Value;
         _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value;

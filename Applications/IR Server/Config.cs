@@ -20,7 +20,7 @@ namespace IRServer
 
     #region Variables
 
-    IIRServerPlugin[] _transceivers;
+    IRServerPlugin[] _transceivers;
 
     #endregion Variables
 
@@ -185,7 +185,7 @@ namespace IRServer
 
       row++;
 
-      foreach (IIRServerPlugin transceiver in _transceivers)
+      foreach (IRServerPlugin transceiver in _transceivers)
       {
         gridPlugins.Rows.Insert(row);
 
@@ -200,7 +200,7 @@ namespace IRServer
 
         gridPlugins[row, 0] = nameCell;
 
-        if (transceiver.CanReceive)
+        if (transceiver is IRemoteReceiver)
         {
           SourceGrid.Cells.CheckBox checkbox = new SourceGrid.Cells.CheckBox();
 
@@ -213,7 +213,7 @@ namespace IRServer
         else
           gridPlugins[row, 1] = new SourceGrid.Cells.Cell();
 
-        if (transceiver.CanTransmit)
+        if (transceiver is ITransmitIR)
         {
           SourceGrid.Cells.CheckBox checkbox = new SourceGrid.Cells.CheckBox();
 
@@ -226,7 +226,7 @@ namespace IRServer
         else
           gridPlugins[row, 2] = new SourceGrid.Cells.Cell();
 
-        if (transceiver.CanConfigure)
+        if (transceiver is IConfigure)
         {
           SourceGrid.Cells.Button button = new SourceGrid.Cells.Button("Configure");
 
@@ -282,9 +282,9 @@ namespace IRServer
 
       string plugin = gridPlugins[cell.Row.Index, 0].DisplayText;
 
-      foreach (IIRServerPlugin transceiver in _transceivers)
+      foreach (IRServerPlugin transceiver in _transceivers)
         if (transceiver.Name == plugin)
-          transceiver.Configure();
+          (transceiver as IConfigure).Configure();
     }
 
     private void ReceiveChanged(object sender, EventArgs e)

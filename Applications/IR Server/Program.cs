@@ -20,10 +20,7 @@ namespace IRServer
     [STAThread]
     static void Main()
     {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
-
-      // Check for multiple instances
+      // Check for multiple instances ...
       try
       {
         if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
@@ -34,6 +31,9 @@ namespace IRServer
         Console.WriteLine(ex.Message);
         return;
       }
+
+      Application.EnableVisualStyles();
+      Application.SetCompatibleTextRenderingDefault(false);
 
       // TODO: Change log level to info for release.
       IrssLog.LogLevel = IrssLog.Level.Debug;
@@ -66,11 +66,11 @@ namespace IRServer
     /// Retreives a list of available IR Server plugins.
     /// </summary>
     /// <returns>Array of plugin instances.</returns>
-    internal static IIRServerPlugin[] AvailablePlugins()
+    internal static IRServerPlugin[] AvailablePlugins()
     {
       try
       {
-        List<IIRServerPlugin> plugins = new List<IIRServerPlugin>();
+        List<IRServerPlugin> plugins = new List<IRServerPlugin>();
 
         string installFolder = SystemRegistry.GetInstallFolder();
         if (String.IsNullOrEmpty(installFolder))
@@ -88,9 +88,9 @@ namespace IRServer
 
             foreach (Type type in types)
             {
-              if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(IIRServerPlugin).Name) == typeof(IIRServerPlugin))
+              if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(IRServerPlugin).Name) == typeof(IRServerPlugin))
               {
-                IIRServerPlugin plugin = (IIRServerPlugin)Activator.CreateInstance(type);
+                IRServerPlugin plugin = (IRServerPlugin)Activator.CreateInstance(type);
                 if (plugin == null)
                   continue;
 
@@ -122,16 +122,16 @@ namespace IRServer
     /// </summary>
     /// <param name="pluginName">Name of plugin to instantiate.</param>
     /// <returns>Plugin instance.</returns>
-    internal static IIRServerPlugin GetPlugin(string pluginName)
+    internal static IRServerPlugin GetPlugin(string pluginName)
     {
       if (String.IsNullOrEmpty(pluginName))
         return null;
 
-      IIRServerPlugin[] serverPlugins = AvailablePlugins();
+      IRServerPlugin[] serverPlugins = AvailablePlugins();
       if (serverPlugins == null)
         return null;
 
-      foreach (IIRServerPlugin plugin in serverPlugins)
+      foreach (IRServerPlugin plugin in serverPlugins)
         if (plugin.Name.Equals(pluginName, StringComparison.InvariantCultureIgnoreCase))
           return plugin;
 

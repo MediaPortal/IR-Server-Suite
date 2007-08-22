@@ -638,11 +638,11 @@ namespace MediaPortal.Plugins
       MPControlPlugin.EventMapperEnabled = checkBoxEventMapper.Checked;
       MPControlPlugin.MouseModeEnabled = checkBoxMouseMode.Checked;
 
-      MPControlPlugin.MouseModeButton = (RemoteButton)Enum.Parse(typeof(RemoteButton), comboBoxMouseModeButton.SelectedItem as string);
+      MPControlPlugin.MouseModeButton = (RemoteButton)Enum.Parse(typeof(RemoteButton), comboBoxMouseModeButton.SelectedItem as string, true);
       MPControlPlugin.MouseModeStep = Decimal.ToInt32(numericUpDownMouseStep.Value);
       MPControlPlugin.MouseModeAcceleration = checkBoxMouseAcceleration.Checked;
 
-      MPControlPlugin.MultiMappingButton = (RemoteButton)Enum.Parse(typeof(RemoteButton), comboBoxMultiButton.SelectedItem as string);
+      MPControlPlugin.MultiMappingButton = (RemoteButton)Enum.Parse(typeof(RemoteButton), comboBoxMultiButton.SelectedItem as string, true);
 
       SaveMultiMappings();
 

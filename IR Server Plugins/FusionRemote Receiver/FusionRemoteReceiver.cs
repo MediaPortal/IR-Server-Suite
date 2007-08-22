@@ -17,13 +17,7 @@ using IRServerPluginInterface;
 namespace FusionRemoteReceiver
 {
 
-  #region Delegates
-
-  delegate void RemoteEventHandler(byte[] data);
-
-  #endregion Delegates
-
-  public class FusionRemoteReceiver : IIRServerPlugin
+  public class FusionRemoteReceiver : IRServerPlugin, IRemoteReceiver
   {
 
     #region Constants
@@ -31,8 +25,6 @@ namespace FusionRemoteReceiver
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\FusionRemote Receiver.xml";
-
-    static readonly string[] Ports  = new string[] { "None" };
 
     const string DeviceID = "VID_0FE9&PID_9010";
 
@@ -51,7 +43,7 @@ namespace FusionRemoteReceiver
 
     #region Interop
 
-    [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     static extern SafeFileHandle CreateFile(
       [MarshalAs(UnmanagedType.LPTStr)] string fileName,
       uint fileAccess,
@@ -62,12 +54,12 @@ namespace FusionRemoteReceiver
       [MarshalAs(UnmanagedType.U4)] EFileAttributes flags,
       IntPtr templateFile);
 
-    [DllImport("kernel32")]
+    [DllImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool CancelIo(SafeFileHandle handle);
 
     [Flags]
-    public enum EFileShares
+    enum EFileShares
     {
        None   = 0x00000000,
        Read   = 0x00000001,
@@ -75,7 +67,7 @@ namespace FusionRemoteReceiver
        Delete = 0x00000004,
     }
 
-    public enum ECreationDisposition
+    enum ECreationDisposition
     {
        New              = 1,
        CreateAlways     = 2,
@@ -140,25 +132,25 @@ namespace FusionRemoteReceiver
       public string DevicePath;
     }
 
-    [DllImport("hid")]
+    [DllImport("hid.dll")]
     static extern void HidD_GetHidGuid(
       ref Guid guid);
 
-    [DllImport("setupapi", CharSet = CharSet.Auto)]
+    [DllImport("setupapi.dll", CharSet = CharSet.Auto)]
     static extern IntPtr SetupDiGetClassDevs(
       ref Guid ClassGuid,
       [MarshalAs(UnmanagedType.LPTStr)] string Enumerator,
       IntPtr hwndParent,
       UInt32 Flags);
 
-    [DllImport("setupapi", SetLastError = true)]
+    [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiEnumDeviceInfo(
       IntPtr handle,
       int Index,
       ref DeviceInfoData deviceInfoData);
 
-    [DllImport("setupapi", SetLastError = true)]
+    [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiEnumDeviceInterfaces(
       IntPtr handle,
@@ -167,7 +159,7 @@ namespace FusionRemoteReceiver
       int MemberIndex,
       ref DeviceInterfaceData deviceInterfaceData);
 
-    [DllImport("setupapi", SetLastError = true)]
+    [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiGetDeviceInterfaceDetail(
       IntPtr handle,
@@ -177,7 +169,7 @@ namespace FusionRemoteReceiver
       ref uint requiredSize,
       IntPtr unused3);
 
-    [DllImport("setupapi", SetLastError = true)]
+    [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiGetDeviceInterfaceDetail(
       IntPtr handle,
@@ -187,7 +179,7 @@ namespace FusionRemoteReceiver
       IntPtr unused1,
       IntPtr unused2);
 
-    [DllImport("setupapi")]
+    [DllImport("setupapi.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiDestroyDeviceInfoList(IntPtr handle);
 
@@ -202,35 +194,15 @@ namespace FusionRemoteReceiver
     static DateTime _lastCodeTime = DateTime.Now;
 
     #endregion Variables
-   
-    #region IIRServerPlugin Members
 
-    public string Name          { get { return "FusionREMOTE"; } }
-    public string Version       { get { return "1.0.3.3"; } }
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "DViCO FusionREMOTE Receiver"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return false; } }
+    #region Implementation
 
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
-    }
+    public override string Name         { get { return "FusionREMOTE"; } }
+    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "DViCO FusionREMOTE Receiver"; } }
 
-    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
-
-    public MouseHandler MouseCallback { get { return null; } set { } }
-
-    public string[] AvailablePorts
-    {
-      get { return Ports; }
-    }
-
-    public void Configure() { }
-    public bool Start()
+    public override bool Start()
     {
       try
       {
@@ -248,9 +220,15 @@ namespace FusionRemoteReceiver
         return false;
       }
     }
-    public void Suspend() { }
-    public void Resume() { }
-    public void Stop()
+    public override void Suspend()
+    {
+      Stop();
+    }
+    public override void Resume()
+    {
+      Start();
+    }
+    public override void Stop()
     {
       try
       {
@@ -263,24 +241,11 @@ namespace FusionRemoteReceiver
       }
     }
 
-    public bool Transmit(string file)
+    public RemoteHandler RemoteCallback
     {
-      return false;
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
     }
-    public LearnStatus Learn(out byte[] data)
-    {
-      data = null;
-      return LearnStatus.Failure;
-    }
-
-    public bool SetPort(string port)
-    {
-      return true;
-    }
-
-    #endregion
-
-    #region Implementation
 
     static void OpenDevice()
     {

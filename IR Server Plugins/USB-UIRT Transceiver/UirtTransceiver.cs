@@ -12,9 +12,10 @@ using IRServerPluginInterface;
 
 namespace UirtTransceiver
 {
-  
+
   [CLSCompliant(false)]
-  public class UirtTransceiver : IIRServerPlugin, IDisposable
+  public class UirtTransceiver :
+    IRServerPlugin, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
   {
 
     #region Interop
@@ -199,30 +200,47 @@ namespace UirtTransceiver
       }
     }
 
-    #endregion
+    #endregion IDisposable Members
 
-    #region IIRServerPlugin Members
+    #region Implementation
 
-    public string Name        { get { return "USB-UIRT"; } }
-    public string Version     { get { return "1.0.3.3"; } }
-    public string Author      { get { return "and-81"; } }
-    public string Description { get { return "Support for the USB-UIRT transceiver"; } }
-    public bool CanReceive    { get { return true; } }
-    public bool CanTransmit   { get { return true; } }
-    public bool CanLearn      { get { return true; } }
-    public bool CanConfigure  { get { return true; } }
+    public override string Name         { get { return "USB-UIRT"; } }
+    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "Support for the USB-UIRT transceiver"; } }
 
-    public RemoteHandler RemoteCallback
+    public override bool Start()
     {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
+      LoadSettings();
+
+      _usbUirtHandle = UUIRTOpen();
+
+      if (_usbUirtHandle != new IntPtr(-1))
+      {
+        _isUsbUirtLoaded = true;
+
+        // Setup callack to receive IR messages
+        _receiveCallback = new UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback);
+        UUIRTSetReceiveCallback(_usbUirtHandle, _receiveCallback, 0);
+      }
+
+      return _isUsbUirtLoaded;
     }
+    public override void Suspend()
+    {
+      Stop();
+    }
+    public override void Resume()
+    {
+      Start();
+    }
+    public override void Stop()
+    {
+      UUIRTClose(_usbUirtHandle);
 
-    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
-
-    public MouseHandler MouseCallback { get { return null; } set { } }
-
-    public string[] AvailablePorts  { get { return Ports; }   }
+      _usbUirtHandle = IntPtr.Zero;
+      _isUsbUirtLoaded = false;
+    }
 
     public void Configure()
     {
@@ -243,66 +261,39 @@ namespace UirtTransceiver
         SaveSettings();
       }
     }
-    public bool Start()
+
+    public RemoteHandler RemoteCallback
     {
-      LoadSettings();
-
-      _usbUirtHandle = UUIRTOpen();
-
-      if (_usbUirtHandle != new IntPtr(-1))
-      {
-        _isUsbUirtLoaded = true;
-
-        // Setup callack to receive IR messages
-        _receiveCallback = new UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback);
-        UUIRTSetReceiveCallback(_usbUirtHandle, _receiveCallback, 0);
-      }
-
-      return _isUsbUirtLoaded;
-    }
-    public void Suspend() { }
-    public void Resume()  { }
-    public void Stop()
-    {
-      UUIRTClose(_usbUirtHandle);
-
-      _usbUirtHandle = IntPtr.Zero;
-      _isUsbUirtLoaded = false;
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
     }
 
-    public bool Transmit(string file)
+    public string[] AvailablePorts { get { return Ports; }   }
+
+    public bool Transmit(string port, byte[] data)
     {
       bool result = false;
 
-      try
-      {
-        StreamReader streamReader = new StreamReader(file);
-        string irCode = streamReader.ReadToEnd();
-        streamReader.Close();
+      string irCode = Encoding.ASCII.GetString(data);
 
-        // Set blaster port ...
-        if (_blastPort == Ports[1])
-          irCode = "Z1" + irCode;
-        else if (_blastPort == Ports[2])
-          irCode = "Z2" + irCode;
-        else if (_blastPort == Ports[3])
-          irCode = "Z3" + irCode;
+      // Set blaster port ...
+      if (port.Equals(Ports[1], StringComparison.InvariantCultureIgnoreCase))
+        irCode = "Z1" + irCode;
+      else if (port.Equals(Ports[2], StringComparison.InvariantCultureIgnoreCase))
+        irCode = "Z2" + irCode;
+      else if (port.Equals(Ports[3], StringComparison.InvariantCultureIgnoreCase))
+        irCode = "Z3" + irCode;
 
-        result = UUIRTTransmitIR(
-          _usbUirtHandle,         // Handle to USB-UIRT
-          irCode,                 // IR Code
-          UUIRTDRV_IRFMT_PRONTO,  // Code Format
-          _blastRepeats,          // Repeat Count
-          0,                      // Inactivity Wait Time
-          IntPtr.Zero,            // hEvent
-          0,                      // reserved1
-          0                       // reserved2
-        );
-      }
-      catch
-      {
-        result = false;
-      }
+      result = UUIRTTransmitIR(
+        _usbUirtHandle,         // Handle to USB-UIRT
+        irCode,                 // IR Code
+        UUIRTDRV_IRFMT_PRONTO,  // Code Format
+        _blastRepeats,          // Repeat Count
+        0,                      // Inactivity Wait Time
+        IntPtr.Zero,            // hEvent
+        0,                      // reserved1
+        0                       // reserved2
+      );
 
       return result;
     }
@@ -356,24 +347,6 @@ namespace UirtTransceiver
         return LearnStatus.Failure;
       }
     }
-    
-    public bool SetPort(string port)
-    {
-      foreach (string availablePort in Ports)
-      {
-        if (port == availablePort)
-        {
-          _blastPort = availablePort;
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    #endregion IIRServerPlugin Members
-
-    #region Implementation
 
     void LoadSettings()
     {

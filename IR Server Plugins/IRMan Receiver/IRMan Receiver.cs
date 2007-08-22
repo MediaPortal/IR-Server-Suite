@@ -13,7 +13,7 @@ using IRServerPluginInterface;
 namespace IRManReceiver
 {
 
-  public class IRManReceiver : IIRServerPlugin
+  public class IRManReceiver : IRServerPlugin, IConfigure, IRemoteReceiver
   {
 
     #region Constants
@@ -21,8 +21,6 @@ namespace IRManReceiver
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\IRMan Receiver.xml";
-
-    static readonly string[] Ports  = new string[] { "None" };
 
     const int DeviceBufferSize = 6;
 
@@ -45,47 +43,14 @@ namespace IRManReceiver
 
     #endregion Variables
 
-    #region IIRServerPlugin Members
+    #region Implementation
 
-    public string Name          { get { return "IRMan"; } }
-    public string Version       { get { return "1.0.3.3"; } }
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "Receiver support for the Serial IRMan device"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return true; } }
+    public override string Name         { get { return "IRMan"; } }
+    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "Receiver support for the Serial IRMan device"; } }
 
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
-    }
-
-    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
-
-    public MouseHandler MouseCallback { get { return null; } set { } }
-
-    public string[] AvailablePorts { get { return Ports; } }
-
-    public void Configure()
-    {
-      LoadSettings();
-
-      Configure config = new Configure();
-
-      config.RepeatDelay  = _repeatDelay;
-      config.CommPort     = _serialPortName;
-
-      if (config.ShowDialog() == DialogResult.OK)
-      {
-        _repeatDelay    = config.RepeatDelay;
-        _serialPortName = config.CommPort;
-
-        SaveSettings();
-      }
-    }
-    public bool Start()
+    public override bool Start()
     {
       LoadSettings();
 
@@ -118,9 +83,15 @@ namespace IRManReceiver
 
       return false;
     }
-    public void Suspend() { }
-    public void Resume()  { }
-    public void Stop()
+    public override void Suspend()
+    {
+      Stop();
+    }
+    public override void Resume()
+    {
+      Start();
+    }
+    public override void Stop()
     {
       if (_serialPort == null)
         return;
@@ -135,18 +106,29 @@ namespace IRManReceiver
       _serialPort = null;
     }
 
-    public bool Transmit(string file) { return false; }
-    public LearnStatus Learn(out byte[] data)
+    public RemoteHandler RemoteCallback
     {
-      data = null;
-      return LearnStatus.Failure;
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
     }
 
-    public bool SetPort(string port)    { return true; }
+    public void Configure()
+    {
+      LoadSettings();
 
-    #endregion IIRServerPlugin Members
+      Configure config = new Configure();
 
-    #region Implementation
+      config.RepeatDelay  = _repeatDelay;
+      config.CommPort     = _serialPortName;
+
+      if (config.ShowDialog() == DialogResult.OK)
+      {
+        _repeatDelay      = config.RepeatDelay;
+        _serialPortName   = config.CommPort;
+
+        SaveSettings();
+      }
+    }
 
     void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
     {
@@ -210,14 +192,14 @@ namespace IRManReceiver
         XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
 
-        _repeatDelay = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
+        _repeatDelay    = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
         _serialPortName = doc.DocumentElement.Attributes["SerialPortName"].Value;
       }
       catch (Exception ex)
       {
         Console.WriteLine(ex.ToString());
 
-        _repeatDelay = 500;
+        _repeatDelay    = 500;
         _serialPortName = "COM1";
       }
     }

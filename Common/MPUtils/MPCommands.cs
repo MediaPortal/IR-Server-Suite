@@ -48,7 +48,7 @@ namespace MPUtils
 
       try
       {
-        window = (int)Enum.Parse(typeof(GUIWindow.Window), "WINDOW_" + screen);
+        window = (int)Enum.Parse(typeof(GUIWindow.Window), "WINDOW_" + screen, true);
       }
       catch
       {

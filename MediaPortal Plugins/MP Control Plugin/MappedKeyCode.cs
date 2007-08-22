@@ -34,7 +34,7 @@ namespace MediaPortal.Plugins
     #region Constructors
 
     public MappedKeyCode() : this(RemoteButton.None, String.Empty) { }
-    public MappedKeyCode(string button, string keyCode) : this((RemoteButton)Enum.Parse(typeof(RemoteButton), button), keyCode) { }
+    public MappedKeyCode(string button, string keyCode) : this((RemoteButton)Enum.Parse(typeof(RemoteButton), button, true), keyCode) { }
     public MappedKeyCode(RemoteButton button, string keyCode)
     {
       _button   = button;

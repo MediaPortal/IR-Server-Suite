@@ -12,7 +12,7 @@ using X10;
 namespace X10Transceiver
 {
 
-  public class X10Transceiver : _DIX10InterfaceEvents, IIRServerPlugin
+  public class X10Transceiver : IRServerPlugin, IRemoteReceiver, _DIX10InterfaceEvents
   {
 
     #region Constants
@@ -21,17 +21,11 @@ namespace X10Transceiver
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\X10 Receiver.xml";
 
-    static readonly string[] Ports  = new string[] { "None" };
-    static readonly string[] Speeds = new string[] { "None" };
-
     #endregion Constants
 
     #region Variables
 
     static RemoteHandler _remoteButtonHandler = null;
-
-    static string _blasterSpeed = Speeds[0];
-    static string _blasterPort  = Ports[0];
 
     X10Interface X10Inter = null;
     IConnectionPointContainer icpc = null;
@@ -42,29 +36,12 @@ namespace X10Transceiver
    
     #region IIRServerPlugin Members
 
-    public string Name          { get { return "X10 (Experimental)"; } }
-    public string Version       { get { return "1.0.3.3"; } }
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "X10 Transceiver (Experimental)"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return false; } }
+    public override string Name         { get { return "X10 (Experimental)"; } }
+    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "X10 Transceiver (Experimental)"; } }
 
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
-    }
-
-    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
-
-    public MouseHandler MouseCallback { get { return null; } set { } }
-
-    public string[] AvailablePorts { get { return Ports; } }
-
-    public void Configure() { }
-    public bool Start()
+    public override bool Start()
     {
       //LoadSettings();
 
@@ -91,26 +68,26 @@ namespace X10Transceiver
         return false;
       }
     }
-    public void Suspend() { }
-    public void Resume() { }
-    public void Stop()
+    public override void Suspend()
+    {
+      Stop();
+    }
+    public override void Resume()
+    {
+      Start();
+    }
+    public override void Stop()
     {
       X10Inter = null;
     }
 
-    public bool Transmit(string file)
+    public RemoteHandler RemoteCallback
     {
-      return false;
-    }
-    public LearnStatus Learn(out byte[] data)
-    {
-      data = null;
-      return LearnStatus.Failure;
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
     }
 
-    public bool SetPort(string port) { return true; }
-
-    #endregion IIRServerPlugin Members
+    #endregion Implementation
 
     #region _DIX10InterfaceEvents Members
 
@@ -135,7 +112,7 @@ namespace X10Transceiver
 
     public void X10HelpEvent(int hwndDialog, int lHelpID) { }
 
-    #endregion
+    #endregion _DIX10InterfaceEvents Members
 
   }
 

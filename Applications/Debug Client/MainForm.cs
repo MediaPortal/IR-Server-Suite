@@ -110,7 +110,7 @@ namespace DebugClient
     //static bool _keepAlive  = true;
     static int _echoID      = -1;
 
-    TransceiverInfo _transceiverInfo = new TransceiverInfo();
+    IRServerInfo _irServerInfo = new IRServerInfo();
 
     #endregion Variables
 
@@ -184,10 +184,10 @@ namespace DebugClient
 
           case "Register Success":
           {
-            _transceiverInfo = TransceiverInfo.FromBytes(received.Data);
+            _irServerInfo = IRServerInfo.FromBytes(received.Data);
 
             comboBoxPort.Items.Clear();
-            comboBoxPort.Items.AddRange(_transceiverInfo.Ports);
+            comboBoxPort.Items.AddRange(_irServerInfo.Ports);
             comboBoxPort.SelectedIndex = 0;
             return;
           }
@@ -418,9 +418,9 @@ namespace DebugClient
         return;
       }
 
-      if (!_transceiverInfo.CanTransmit)
+      if (!_irServerInfo.CanTransmit)
       {
-        AddStatusLine(String.Format("Transceiver: \"{0}\" doesn't blast.", _transceiverInfo.Name));
+        AddStatusLine("IR Server is not setup to blast");
         return;
       }
 
@@ -437,9 +437,9 @@ namespace DebugClient
         return;
       }
 
-      if (!_transceiverInfo.CanLearn)
+      if (!_irServerInfo.CanLearn)
       {
-        AddStatusLine(String.Format("Transceiver: \"{0}\" doesn't support learning", _transceiverInfo.Name));
+        AddStatusLine("IR Server is not setup to support learning");
         return;
       }
 
@@ -556,7 +556,7 @@ namespace DebugClient
           return;
         }
 
-        int keyCode = (int)Enum.Parse(typeof(MceButton), comboBoxRemoteButtons.SelectedItem.ToString());
+        int keyCode = (int)Enum.Parse(typeof(MceButton), comboBoxRemoteButtons.SelectedItem.ToString(), true);
         if (keyCode == -1)
           keyCode = Decimal.ToInt32(numericUpDownButton.Value);
 

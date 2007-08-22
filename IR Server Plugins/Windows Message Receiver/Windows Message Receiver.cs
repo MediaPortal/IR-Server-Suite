@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
+//using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -10,7 +10,7 @@ using IRServerPluginInterface;
 namespace WindowsMessageReceiver
 {
 
-  public class WindowsMessageReceiver : NativeWindow, IIRServerPlugin
+  public class WindowsMessageReceiver : IRServerPlugin, IConfigure, IRemoteReceiver
   {
     
     // TODO: Add Learn/Blast ability
@@ -32,8 +32,6 @@ namespace WindowsMessageReceiver
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\Windows Messages.xml";
 
-    static readonly string[] Ports  = new string[] { "None" };
-
     const int WM_APP            = 0x8000;
     const int DefaultMessageID  = 0x0018;
 
@@ -48,30 +46,40 @@ namespace WindowsMessageReceiver
 
     RemoteHandler _remoteButtonHandler = null;
 
+    ReceiverWindow _receiverWindow = null;
+
     #endregion Variables
 
-    #region IIRServerPlugin Members
+    #region Implementation
 
-    public string Name          { get { return "Windows Messages"; } }
-    public string Version       { get { return "1.0.3.3"; } }
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "Supports receiving simulated button presses through Windows Messages"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return true; } }
+    public override string Name         { get { return "Windows Messages"; } }
+    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "Supports receiving simulated button presses through Windows Messages"; } }
 
-    public RemoteHandler RemoteCallback
+    public override bool Start()
     {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
+      LoadSettings();
+
+      _receiverWindow = new ReceiverWindow(WindowTitle);
+      _receiverWindow.ProcMsg += new ProcessMessage(ProcMsg);
+
+      return true;
     }
-
-    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
-
-    public MouseHandler MouseCallback { get { return null; } set { } }
-
-    public string[] AvailablePorts  { get { return Ports; }   }
+    public override void Suspend()
+    {
+      Stop();
+    }
+    public override void Resume()
+    {
+      Start();
+    }
+    public override void Stop()
+    {
+      _receiverWindow.ProcMsg -= new ProcessMessage(ProcMsg);
+      _receiverWindow.ReleaseHandle();
+      _receiverWindow = null;
+    }
 
     public void Configure()
     {
@@ -84,55 +92,18 @@ namespace WindowsMessageReceiver
 
       if (config.ShowDialog() == DialogResult.OK)
       {
-        _messageType  = config.MessageType;
-        _wParam       = config.WParam;
+        _messageType      = config.MessageType;
+        _wParam           = config.WParam;
 
         SaveSettings();
       }
     }
-    public bool Start()
+
+    public RemoteHandler RemoteCallback
     {
-      LoadSettings();
-
-      CreateParams createParams = new CreateParams();
-      createParams.Caption = WindowTitle;
-      createParams.ExStyle = 0x80;
-      createParams.Style = unchecked((int)0x80000000);
-      CreateHandle(createParams);
-
-      return true;
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
     }
-    public void Suspend()   { }
-    public void Resume()    { }
-    public void Stop()      { }
-
-    public bool Transmit(string file)
-    {
-      /*
-      StreamReader reader = new StreamReader(file);
-
-      int msg = int.Parse(reader.ReadLine());
-      IntPtr wordParam = new IntPtr(int.Parse(reader.ReadLine()));
-      IntPtr longParam = new IntPtr(int.Parse(reader.ReadLine()));
-
-      reader.Close();
-
-      IntPtr windowHandle = GetForegroundWindow();
-      SendMessage(windowHandle, msg, wordParam, longParam);
-      */
-      return false;
-    }
-    public LearnStatus Learn(out byte[] data)
-    {
-      data = null;
-      return LearnStatus.Failure;
-    }
-
-    public bool SetPort(string port)    { return false; }
-
-    #endregion IIRServerPlugin Members
-
-    #region Implementation
 
     void LoadSettings()
     {
@@ -141,8 +112,8 @@ namespace WindowsMessageReceiver
         XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
 
-        _messageType = int.Parse(doc.DocumentElement.Attributes["MessageType"].Value);
-        _wParam = int.Parse(doc.DocumentElement.Attributes["WParam"].Value);
+        _messageType  = int.Parse(doc.DocumentElement.Attributes["MessageType"].Value);
+        _wParam       = int.Parse(doc.DocumentElement.Attributes["WParam"].Value);
       }
       catch (Exception ex)
       {
@@ -176,7 +147,7 @@ namespace WindowsMessageReceiver
       }
     }
 
-    protected override void WndProc(ref Message m)
+    void ProcMsg(ref Message m)
     {
       if (m.Msg == _messageType && m.WParam.ToInt32() == _wParam)
       {
@@ -184,8 +155,6 @@ namespace WindowsMessageReceiver
         if (_remoteButtonHandler != null)
           _remoteButtonHandler(longParam.ToString());
       }
-      
-      base.WndProc(ref m);
     }
 
     #endregion Implementation

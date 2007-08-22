@@ -41,7 +41,7 @@ namespace Translator
     }
     public ProcessWindowStyle StartState
     {
-      get { return (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string); }
+      get { return (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true); }
       set { comboBoxWindowStyle.SelectedItem = Enum.GetName(typeof(ProcessWindowStyle), value); }
     }
     public bool UseShellExecute

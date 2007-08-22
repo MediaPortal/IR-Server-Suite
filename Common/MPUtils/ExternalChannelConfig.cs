@@ -149,16 +149,16 @@ namespace MPUtils
       writer.WriteStartDocument(true);
       writer.WriteStartElement("config"); // <config>
 
-      writer.WriteElementString("PauseTime", PauseTime.ToString());
-      writer.WriteElementString("UsePreChangeCommand", UsePreChangeCommand.ToString());
-      writer.WriteElementString("SendSelect", SendSelect.ToString());
-      writer.WriteElementString("DoubleChannelSelect", DoubleChannelSelect.ToString());
-      writer.WriteElementString("ChannelDigits", ChannelDigits.ToString());
-      writer.WriteElementString("RepeatChannelCommands", RepeatChannelCommands.ToString());
-      writer.WriteElementString("RepeatDelay", RepeatPauseTime.ToString());
+      writer.WriteElementString("PauseTime",              PauseTime.ToString());
+      writer.WriteElementString("UsePreChangeCommand",    UsePreChangeCommand.ToString());
+      writer.WriteElementString("SendSelect",             SendSelect.ToString());
+      writer.WriteElementString("DoubleChannelSelect",    DoubleChannelSelect.ToString());
+      writer.WriteElementString("ChannelDigits",          ChannelDigits.ToString());
+      writer.WriteElementString("RepeatChannelCommands",  RepeatChannelCommands.ToString());
+      writer.WriteElementString("RepeatDelay",            RepeatPauseTime.ToString());
 
-      writer.WriteElementString("SelectCommand", SelectCommand);
-      writer.WriteElementString("PreChangeCommand", PreChangeCommand);
+      writer.WriteElementString("SelectCommand",          SelectCommand);
+      writer.WriteElementString("PreChangeCommand",       PreChangeCommand);
 
       for (int i = 0; i < 10; i++)
         writer.WriteElementString("Digit" + i.ToString(), Digits[i]);
@@ -217,19 +217,19 @@ namespace MPUtils
       XmlDocument doc = new XmlDocument();
       doc.Load(fileName);
 
-      newECC.PauseTime = GetInt(doc, "PauseTime", DefaultPauseTime);
-      newECC.UsePreChangeCommand = GetBool(doc, "UsePreChangeCommand", DefaultUsePreChangeCommand);
-      newECC.SendSelect = GetBool(doc, "SendSelect", DefaultSendSelect);
-      newECC.DoubleChannelSelect = GetBool(doc, "DoubleChannelSelect", DefaultDoubleChannelSelect);
-      newECC.RepeatChannelCommands = GetInt(doc, "RepeatChannelCommands", DefaultRepeatChannelCommands);
-      newECC.ChannelDigits = GetInt(doc, "ChannelDigits", DefaultChannelDigits);
-      newECC.RepeatPauseTime = GetInt(doc, "RepeatDelay", DefaultRepeatPauseTime);
+      newECC.PauseTime              = GetInt(doc, "PauseTime", DefaultPauseTime);
+      newECC.UsePreChangeCommand    = GetBool(doc, "UsePreChangeCommand", DefaultUsePreChangeCommand);
+      newECC.SendSelect             = GetBool(doc, "SendSelect", DefaultSendSelect);
+      newECC.DoubleChannelSelect    = GetBool(doc, "DoubleChannelSelect", DefaultDoubleChannelSelect);
+      newECC.RepeatChannelCommands  = GetInt(doc, "RepeatChannelCommands", DefaultRepeatChannelCommands);
+      newECC.ChannelDigits          = GetInt(doc, "ChannelDigits", DefaultChannelDigits);
+      newECC.RepeatPauseTime        = GetInt(doc, "RepeatDelay", DefaultRepeatPauseTime);
 
-      newECC.SelectCommand = GetString(doc, "SelectCommand", String.Empty);
-      newECC.PreChangeCommand = GetString(doc, "PreChangeCommand", String.Empty);
+      newECC.SelectCommand          = GetString(doc, "SelectCommand", String.Empty);
+      newECC.PreChangeCommand       = GetString(doc, "PreChangeCommand", String.Empty);
       
       for (int index = 0; index < 10; index++)
-        newECC.Digits[index] = GetString(doc, "Digit" + index.ToString(), String.Empty);
+        newECC.Digits[index]        = GetString(doc, "Digit" + index.ToString(), String.Empty);
 
       return newECC;
     }

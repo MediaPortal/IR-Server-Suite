@@ -486,7 +486,7 @@ namespace VirtualRemote
             {
               IrssLog.Info("Registered to IR Server");
               _registered = true;
-              //_transceiverInfo = TransceiverInfo.FromBytes(received.Data);
+              //_irServerInfo = TransceiverInfo.FromBytes(received.Data);
               break;
             }
 

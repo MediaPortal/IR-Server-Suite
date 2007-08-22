@@ -35,8 +35,8 @@ namespace WinLircReceiver
 {
 
   /// <summary>
-  /// WinLIRC server class implementing communication with WinLIRC
-  /// all remotes are supported as long as WinLIRC supports them
+  /// WinLIRC server class implementing communication with WinLIRC.
+  /// All remotes are supported as long as WinLIRC supports them.
   /// </summary>
   public class WinLircServer
   {

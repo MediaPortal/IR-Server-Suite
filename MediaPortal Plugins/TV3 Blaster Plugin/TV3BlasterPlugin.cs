@@ -57,7 +57,7 @@ namespace TvEngine
 
     TvServerEventHandler _eventHandler;
 
-    static TransceiverInfo _transceiverInfo = new TransceiverInfo();
+    static IRServerInfo _irServerInfo = new IRServerInfo();
 
     #endregion Variables
 
@@ -115,9 +115,9 @@ namespace TvEngine
       set { _inConfiguration = value; }
     }
 
-    internal static TransceiverInfo TransceiverInformation
+    internal static IRServerInfo TransceiverInformation
     {
-      get { return _transceiverInfo; }
+      get { return _irServerInfo; }
     }
 
     #endregion Properties
@@ -431,7 +431,7 @@ namespace TvEngine
                 Log.Info("TV3BlasterPlugin: Registered to IR Server");
 
               _registered = true;
-              _transceiverInfo = TransceiverInfo.FromBytes(received.Data);
+              _irServerInfo = IRServerInfo.FromBytes(received.Data);
               break;
             }
 

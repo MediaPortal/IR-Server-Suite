@@ -18,12 +18,6 @@ using IRServerPluginInterface;
 namespace IRTransTransceiver
 {
 
-  #region Delegates
-
-  delegate void RemoteEventHandler(byte[] data);
-
-  #endregion Delegates
-
   #region Enumerations
 
   public enum IrTransStatus
@@ -181,7 +175,7 @@ namespace IRTransTransceiver
   */
   #endregion Interop Structures
 
-  public class IRTransTransceiver : IIRServerPlugin
+  public class IRTransTransceiver : IRServerPlugin, IConfigure, IRemoteReceiver
   {
 
     #region Constants
@@ -189,8 +183,6 @@ namespace IRTransTransceiver
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\IRTrans Transceiver.xml";
-
-    static readonly string[] Ports = new string[] { "Default" };
 
     const string  DefaultRemoteModel    = "mediacenter";
     const string  DefaultServerAddress  = "localhost";
@@ -205,8 +197,6 @@ namespace IRTransTransceiver
 
     static RemoteHandler _remoteButtonHandler = null;
 
-    static string _blasterPort = Ports[0];
-
     static Socket _socket;
     static IAsyncResult _asynResult;
     static AsyncCallback _pfnCallBack;
@@ -215,31 +205,51 @@ namespace IRTransTransceiver
     static int _irTransServerPort;
 
     #endregion Variables
-   
-    #region IIRServerPlugin Members
 
-    public string Name          { get { return "IRTrans (Experimental)"; } }
-    public string Version       { get { return "1.0.3.3"; } }
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "IRTrans Transceiver (Experimental)"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return true; } }
+    #region Implementation
+
+    public override string Name         { get { return "IRTrans (Experimental)"; } }
+    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "IRTrans Transceiver (Experimental)"; } }
+
+    public override bool Start()
+    {
+      LoadSettings();
+
+      if (Connect(_irTransServerAddress, _irTransServerPort))
+      {
+        BeginReceive();
+        return true;
+      }
+
+      return false;
+    }
+    public override void Suspend()
+    {
+      Stop();
+    }
+    public override void Resume()
+    {
+      Start();
+    }
+    public override void Stop()
+    {
+      try
+      {
+        _socket.Close();
+      }
+      catch (SocketException ex)
+      {
+        // Nothing to worry about
+        Console.WriteLine(ex.ToString());
+      }
+    }
 
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
-    }
-
-    public KeyboardHandler KeyboardCallback { get { return null; } set { } }
-
-    public MouseHandler MouseCallback { get { return null; } set { } }
-
-    public string[] AvailablePorts
-    {
-      get { return Ports; }
     }
 
     public void Configure()
@@ -261,128 +271,6 @@ namespace IRTransTransceiver
         SaveSettings();
       }
     }
-    public bool Start()
-    {
-      LoadSettings();
-
-      if (Connect(_irTransServerAddress, _irTransServerPort))
-      {
-        BeginReceive();
-        return true;
-      }
-
-      return false;
-    }
-    public void Suspend() { }
-    public void Resume() { }
-    public void Stop()
-    {
-      try
-      {
-        _socket.Close();
-      }
-      catch (SocketException ex)
-      {
-        // Nothing to worry about
-        Console.WriteLine(ex.ToString());
-      }
-    }
-
-    public bool Transmit(string file)
-    {
-      return false;
-      /*
-      try
-      {
-        StreamReader streamReader = new StreamReader(file);
-        string fileContents = streamReader.ReadToEnd();
-        streamReader.Close();
-
-        NETWORKCOMMAND networkCommand = new NETWORKCOMMAND();
-        networkCommand.address = 0;
-        networkCommand.command = fileContents;
-        networkCommand.mode = (byte)'*';
-        networkCommand.netcommand = (byte)IrTransCommand.COMMAND_SENDCCFSTR;
-        networkCommand.protocol_version = IRTransProtocolVer;
-        networkCommand.remote = _irTransRemoteModel;
-        networkCommand.timeout = 0;
-        networkCommand.trasmit_freq = 0;
-
-        byte[] sendData = StructToByteArray(networkCommand, Marshal.SizeOf(networkCommand));
-        _socket.Send(sendData, sendData.Length, SocketFlags.None);
-
-        return true;
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-        return false;
-      }
-      */
-    }
-    public LearnStatus Learn(out byte[] data)
-    {
-      data = null;
-
-      /*
-      try
-      {
-
-        NETWORKCOMMAND networkCommand = new NETWORKCOMMAND();
-        networkCommand.address = 0;
-        networkCommand.command = "";
-        networkCommand.mode = (byte)'*';
-        networkCommand.netcommand = (byte)IrTransCommand.COMMAND_LRNRAW;
-        networkCommand.protocol_version = IRTransProtocolVer;
-        networkCommand.remote = _irTransRemoteModel;
-        networkCommand.timeout = 0;
-        networkCommand.trasmit_freq = 0;
-
-        byte[] sendData = StructToByteArray(networkCommand, Marshal.SizeOf(networkCommand));
-        _socket.Send(sendData, sendData.Length, SocketFlags.None);
-
-        return LearnStatus.Success;
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-        return LearnStatus.Failure;
-      }
-      */
-
-      /*
-      _irData = null;
-
-      BeginLearn(new RemoteEventHandler(LearnIRDone));
-
-      // Wait for the learning to finish ...
-      while (_learning && Environment.TickCount < _learnStartTick + timeout)
-        Thread.Sleep(100);
-
-      if (Environment.TickCount >= _learnStartTick + timeout)
-        return LearnStatus.Timeout;
-
-      if (_irData != null)
-      {
-        FileStream fileStream = new FileStream(file, FileMode.Create);
-        fileStream.Write(_irData, 0, _irData.Length);
-        fileStream.Flush();
-        fileStream.Close();
-
-        return LearnStatus.Success;
-      }
-      */
-      return LearnStatus.Failure;
-    }
-
-    public bool SetPort(string port)
-    {
-      return true;
-    }
-
-    #endregion IIRServerPlugin Members
-
-    #region Implementation
 
     static void LoadSettings()
     {
@@ -524,10 +412,6 @@ namespace IRTransTransceiver
         Console.WriteLine(ex.ToString());
       }
     }
-
-
-
-
 
     static byte[] StructToByteArray(object structure, int size)
     {

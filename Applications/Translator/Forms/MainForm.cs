@@ -290,7 +290,7 @@ namespace Translator
       {
         try
         {
-          eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), item.SubItems[0].Text);
+          eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), item.SubItems[0].Text, true);
           command = item.SubItems[1].Text;
 
           Program.Config.Events.Add(new MappedEvent(eventType, command));
@@ -459,7 +459,7 @@ namespace Translator
         string description = String.Empty;
         try
         {
-          MceButton temp = (MceButton)Enum.Parse(typeof(MceButton), keyCode);
+          MceButton temp = (MceButton)Enum.Parse(typeof(MceButton), keyCode, true);
           description = Enum.GetName(typeof(MceButton), temp);
         }
         catch
