@@ -28,9 +28,19 @@ namespace WinLircTransceiver
     /// </summary>
     private void InitializeComponent()
     {
-      this.components = new System.ComponentModel.Container();
+      this.SuspendLayout();
+      // 
+      // CreateIRFile
+      // 
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.Text = "CreateIRFile";
+      this.ClientSize = new System.Drawing.Size(284, 264);
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+      this.Name = "CreateIRFile";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+      this.Text = "Create IR File";
+      this.ResumeLayout(false);
+
     }
 
     #endregion

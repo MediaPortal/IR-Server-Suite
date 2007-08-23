@@ -181,12 +181,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Server Plugin Interface"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinLirc Receiver", "IR Server Plugins\WinLirc Receiver\WinLirc Receiver.csproj", "{E6A68244-8C31-44A9-9F85-B4A102B5F209}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Custom HID Receiver", "IR Server Plugins\Custom HID Receiver\Custom HID Receiver.csproj", "{0F6576B4-C88E-4E79-B7E9-9480498C5A32}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -224,6 +218,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS Keyboard", "Application
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR File Tool", "Applications\IR File Tool\IR File Tool.csproj", "{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCW Transceiver", "IR Server Plugins\HCW Transceiver\HCW Transceiver.csproj", "{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinLirc Transceiver", "IR Server Plugins\WinLirc Transceiver\WinLirc Transceiver.csproj", "{E6A68244-8C31-44A9-9F85-B4A102B5F209}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -435,14 +441,6 @@ Global
 		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Release|x86.ActiveCfg = Release|x86
 		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Release|x86.Build.0 = Release|x86
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|x86.ActiveCfg = Debug|x86
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|x86.Build.0 = Debug|x86
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|x86.ActiveCfg = Release|x86
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|x86.Build.0 = Release|x86
 		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -490,6 +488,22 @@ Global
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|x86.ActiveCfg = Release|x86
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|x86.Build.0 = Release|x86
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|x86.ActiveCfg = Debug|x86
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|x86.Build.0 = Debug|x86
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|x86.ActiveCfg = Release|x86
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|x86.Build.0 = Release|x86
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|x86.ActiveCfg = Debug|x86
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|x86.Build.0 = Debug|x86
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|x86.ActiveCfg = Release|x86
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -516,8 +530,9 @@ Global
 		{253FFB14-AB8E-49AB-A005-A42428C3F452} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{9FDD649E-0502-4FED-9AC1-AA0346394375} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{0F6576B4-C88E-4E79-B7E9-9480498C5A32} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
+		{E6A68244-8C31-44A9-9F85-B4A102B5F209} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{E98F1F7E-40B6-44C8-AC66-EC867B141FA1} = {0E9CCB69-CEF0-4680-816B-18E949DEA727}
 		{077B53BB-404A-4B2F-BA17-AAE98C5E9C66} = {0E9CCB69-CEF0-4680-816B-18E949DEA727}
 		{F4EA6055-7133-4F18-8971-E19ADEB482C1} = {0E9CCB69-CEF0-4680-816B-18E949DEA727}
