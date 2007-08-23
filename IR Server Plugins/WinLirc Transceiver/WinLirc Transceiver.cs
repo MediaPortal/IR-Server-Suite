@@ -10,10 +10,10 @@ using System.Xml;
 
 using IRServerPluginInterface;
 
-namespace WinLircReceiver
+namespace WinLircTransceiver
 {
 
-  public class WinLircReceiver : IRServerPlugin, IConfigure, IRemoteReceiver, ITransmitIR
+  public class WinLircTransceiver : IRServerPlugin, IConfigure, IRemoteReceiver, ITransmitIR
   {
 
     #region Constants
@@ -42,7 +42,7 @@ namespace WinLircReceiver
     public override string Name         { get { return "WinLirc"; } }
     public override string Version      { get { return "1.0.3.3"; } }
     public override string Author       { get { return "and-81, original code for MediaPortal by Sven"; } }
-    public override string Description  { get { return "Supports WinLirc as a reciever"; } }
+    public override string Description  { get { return "Supports WinLirc as a Transciever"; } }
 
     public override bool Start()
     {
@@ -120,6 +120,8 @@ namespace WinLircReceiver
       repeats     = doc.DocumentElement.Attributes["Repeats"].Value;
 
       string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
+
+      MessageBox.Show(output);
       _server.Transmit(output);
 
       memoryStream.Close();

@@ -20,100 +20,25 @@ namespace HcwTransceiver
 
     #region Interop
 
-    [StructLayout(LayoutKind.Sequential)]
-    struct UUINFO
-    {
-      public int fwVersion;
-      public int protVersion;
-      public char fwDateDay;
-      public char fwDateMonth;
-      public char fwDateYear;
-    }
 
-    //Not used
-    //[StructLayout(LayoutKind.Sequential)]
-    //internal struct UUGPIO
-    //{
-    //  public byte[] irCode;
-    //  public byte action;
-    //  public byte duration;
-    //}
+    const int WM_ACTIVATE = 0x0006;
+    const int WM_POWERBROADCAST = 0x0218;
+    const int WA_INACTIVE = 0;
+    const int WA_ACTIVE = 1;
+    const int WA_CLICKACTIVE = 2;
 
-    [DllImport("uuirtdrv.dll")]
-    static extern IntPtr UUIRTOpen();
+    const int PBT_APMRESUMEAUTOMATIC = 0x0012;
+    const int PBT_APMRESUMECRITICAL = 0x0006;
 
-    [DllImport("uuirtdrv.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool UUIRTClose(
-      IntPtr hHandle);
 
-    //[DllImport("uuirtdrv.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //internal static extern bool UUIRTGetDrvInfo(ref int puDrvVersion);
-
-    //[DllImport("uuirtdrv.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //internal static extern bool UUIRTGetUUIRTInfo(
-    //  IntPtr hHandle,
-    //  ref UUINFO puuInfo);
-
-    //[DllImport("uuirtdrv.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //internal static extern bool UUIRTGetUUIRTConfig(
-    //  IntPtr hHandle,
-    //  ref uint puConfig);
-
-    //[DllImport("uuirtdrv.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //internal static extern bool UUIRTSetUUIRTConfig(
-    //  IntPtr hHandle,
-    //  uint uConfig);
-
-    [DllImport("uuirtdrv.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool UUIRTTransmitIR(
-      IntPtr hHandle,
-      string IRCode,
-      int codeFormat,
-      int repeatCount,
-      int inactivityWaitTime,
-      IntPtr hEvent,
-      int res1,
-      int res2);
-
-    [DllImport("uuirtdrv.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool UUIRTLearnIR(
-      IntPtr hHandle,
-      int codeFormat,
-      [MarshalAs(UnmanagedType.LPStr)] StringBuilder ircode,
-      IRLearnCallbackDelegate progressProc,
-      int userData,
-      ref int pAbort,
-      int param1,
-      [MarshalAs(UnmanagedType.AsAny)] Object o,
-      [MarshalAs(UnmanagedType.AsAny)] Object oo);
-
-    [DllImport("uuirtdrv.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool UUIRTSetReceiveCallback(
-      IntPtr hHandle,
-      UUIRTReceiveCallbackDelegate receiveProc,
-      int none);
-
-    //[DllImport("uuirtdrv.dll")]
-    //static extern bool UUIRTSetUUIRTGPIOCfg(IntPtr hHandle, int index, ref UUGPIO GpioSt);
-
-    //[DllImport("uuirtdrv.dll")]
-    //static extern bool UUIRTGetUUIRTGPIOCfg(IntPtr hHandle, ref int numSlots, ref uint dwPortPins,
-    //                                                ref UUGPIO GpioSt);
 
     #endregion
 
     #region Delegates
 
-    delegate void UUIRTReceiveCallbackDelegate(string irCode, IntPtr userData);
-    delegate void IRLearnCallbackDelegate(uint progress, uint sigQuality, ulong carrierFreq, IntPtr userData);
+    //Sets up callback so that other forms can catch a key press
+    public delegate void HCWEvent(int keypress);
+    public event HCWEvent HCWKeyPressed;
 
     #endregion Delegates
 

@@ -1,4 +1,4 @@
-namespace WinLircReceiver
+namespace WinLircTransceiver
 {
   partial class Configure
   {
@@ -43,6 +43,7 @@ namespace WinLircReceiver
       this.groupBoxServerDetails = new System.Windows.Forms.GroupBox();
       this.labelButtonReleaseTime = new System.Windows.Forms.Label();
       this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+      this.buttonCreateIRFiles = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownServerPort)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonReleaseTime)).BeginInit();
       this.groupBoxServerDetails.SuspendLayout();
@@ -51,10 +52,10 @@ namespace WinLircReceiver
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(104, 208);
+      this.buttonOK.Location = new System.Drawing.Point(104, 240);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
-      this.buttonOK.TabIndex = 3;
+      this.buttonOK.TabIndex = 4;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -63,10 +64,10 @@ namespace WinLircReceiver
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(176, 208);
+      this.buttonCancel.Location = new System.Drawing.Point(176, 240);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
-      this.buttonCancel.TabIndex = 4;
+      this.buttonCancel.TabIndex = 5;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -187,13 +188,25 @@ namespace WinLircReceiver
       this.openFileDialog.Filter = "All Files|*.*";
       this.openFileDialog.Title = "Locate WinLirc server application";
       // 
+      // buttonCreateIRFiles
+      // 
+      this.buttonCreateIRFiles.Location = new System.Drawing.Point(8, 208);
+      this.buttonCreateIRFiles.Name = "buttonCreateIRFiles";
+      this.buttonCreateIRFiles.Size = new System.Drawing.Size(104, 24);
+      this.buttonCreateIRFiles.TabIndex = 3;
+      this.buttonCreateIRFiles.Text = "Create IR files";
+      this.toolTips.SetToolTip(this.buttonCreateIRFiles, "Click here to make IR Command files for use with this plugin");
+      this.buttonCreateIRFiles.UseVisualStyleBackColor = true;
+      this.buttonCreateIRFiles.Click += new System.EventHandler(this.buttonCreateIRFiles_Click);
+      // 
       // Configure
       // 
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(248, 241);
+      this.ClientSize = new System.Drawing.Size(248, 272);
+      this.Controls.Add(this.buttonCreateIRFiles);
       this.Controls.Add(this.numericUpDownButtonReleaseTime);
       this.Controls.Add(this.labelButtonReleaseTime);
       this.Controls.Add(this.groupBoxServerDetails);
@@ -231,5 +244,6 @@ namespace WinLircReceiver
     private System.Windows.Forms.Label labelButtonReleaseTime;
     private System.Windows.Forms.NumericUpDown numericUpDownButtonReleaseTime;
     private System.Windows.Forms.OpenFileDialog openFileDialog;
+    private System.Windows.Forms.Button buttonCreateIRFiles;
   }
 }

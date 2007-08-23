@@ -66,6 +66,7 @@
       <DependentUpon>Configure.cs</DependentUpon>
     </Compile>
     <Compile Include="HcwTransceiver.cs" />
+    <Compile Include="irremote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

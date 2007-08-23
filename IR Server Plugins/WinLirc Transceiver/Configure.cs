@@ -7,7 +7,7 @@ using System.Text;
 using System.Net;
 using System.Windows.Forms;
 
-namespace WinLircReceiver
+namespace WinLircTransceiver
 {
 
   public partial class Configure : Form
@@ -72,8 +72,12 @@ namespace WinLircReceiver
         textBoxServerPath.Text = openFileDialog.FileName;
     }
 
-    #endregion Buttons
+    private void buttonCreateIRFiles_Click(object sender, EventArgs e)
+    {
 
+    }
+
+    #endregion Buttons
 
   }
 
