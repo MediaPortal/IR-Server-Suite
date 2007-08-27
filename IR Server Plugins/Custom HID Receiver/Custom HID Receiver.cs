@@ -13,7 +13,7 @@ using IRServerPluginInterface;
 namespace CustomHIDReceiver
 {
 
-  public class CustomHIDReceiver: IIRServerPlugin, IDisposable
+  public class CustomHIDReceiver: IRServerPlugin, IDisposable
   {
 
     #region Constants
@@ -82,7 +82,7 @@ namespace CustomHIDReceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "Custom HID Receiver"; } }
-    public string Version       { get { return "1.0.3.3"; } }
+    public string Version       { get { return "1.0.3.4"; } }
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "Supports HID USB devices."; } }
     public bool   CanReceive    { get { return true; } }

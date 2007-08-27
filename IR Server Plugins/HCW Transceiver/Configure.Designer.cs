@@ -1,4 +1,4 @@
-namespace UirtTransceiver
+namespace HcwTransceiver
 {
   partial class Configure
   {
@@ -29,58 +29,19 @@ namespace UirtTransceiver
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
-      this.labelButtonRepeatDelay = new System.Windows.Forms.Label();
-      this.numericUpDownButtonRepeatDelay = new System.Windows.Forms.NumericUpDown();
       this.buttonOK = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.labelRepeatCount = new System.Windows.Forms.Label();
+      this.numericUpDownButtonRepeatDelay = new System.Windows.Forms.NumericUpDown();
       this.numericUpDownRepeatCount = new System.Windows.Forms.NumericUpDown();
-      this.labelLearnIRTimeout = new System.Windows.Forms.Label();
+      this.labelButtonRepeatDelay = new System.Windows.Forms.Label();
       this.numericUpDownLearnTimeout = new System.Windows.Forms.NumericUpDown();
+      this.labelLearnIRTimeout = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRepeatCount)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLearnTimeout)).BeginInit();
       this.SuspendLayout();
-      // 
-      // labelButtonRepeatDelay
-      // 
-      this.labelButtonRepeatDelay.Location = new System.Drawing.Point(8, 8);
-      this.labelButtonRepeatDelay.Name = "labelButtonRepeatDelay";
-      this.labelButtonRepeatDelay.Size = new System.Drawing.Size(144, 20);
-      this.labelButtonRepeatDelay.TabIndex = 0;
-      this.labelButtonRepeatDelay.Text = "Button repeat delay:";
-      this.labelButtonRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // numericUpDownButtonRepeatDelay
-      // 
-      this.numericUpDownButtonRepeatDelay.Increment = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-      this.numericUpDownButtonRepeatDelay.Location = new System.Drawing.Point(152, 8);
-      this.numericUpDownButtonRepeatDelay.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-      this.numericUpDownButtonRepeatDelay.Minimum = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-      this.numericUpDownButtonRepeatDelay.Name = "numericUpDownButtonRepeatDelay";
-      this.numericUpDownButtonRepeatDelay.Size = new System.Drawing.Size(88, 20);
-      this.numericUpDownButtonRepeatDelay.TabIndex = 1;
-      this.numericUpDownButtonRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-      this.numericUpDownButtonRepeatDelay.ThousandsSeparator = true;
-      this.toolTips.SetToolTip(this.numericUpDownButtonRepeatDelay, "How long between repeated buttons (in milliseconds)");
-      this.numericUpDownButtonRepeatDelay.Value = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
       // 
       // buttonOK
       // 
@@ -114,6 +75,36 @@ namespace UirtTransceiver
       this.labelRepeatCount.Text = "IR blast repeat count:";
       this.labelRepeatCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
+      // numericUpDownButtonRepeatDelay
+      // 
+      this.numericUpDownButtonRepeatDelay.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+      this.numericUpDownButtonRepeatDelay.Location = new System.Drawing.Point(152, 8);
+      this.numericUpDownButtonRepeatDelay.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+      this.numericUpDownButtonRepeatDelay.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+      this.numericUpDownButtonRepeatDelay.Name = "numericUpDownButtonRepeatDelay";
+      this.numericUpDownButtonRepeatDelay.Size = new System.Drawing.Size(88, 20);
+      this.numericUpDownButtonRepeatDelay.TabIndex = 1;
+      this.numericUpDownButtonRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.numericUpDownButtonRepeatDelay.ThousandsSeparator = true;
+      this.toolTips.SetToolTip(this.numericUpDownButtonRepeatDelay, "How long between repeated buttons (in milliseconds)");
+      this.numericUpDownButtonRepeatDelay.Value = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+      // 
       // numericUpDownRepeatCount
       // 
       this.numericUpDownRepeatCount.Location = new System.Drawing.Point(152, 40);
@@ -133,14 +124,14 @@ namespace UirtTransceiver
             0,
             0});
       // 
-      // labelLearnIRTimeout
+      // labelButtonRepeatDelay
       // 
-      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 72);
-      this.labelLearnIRTimeout.Name = "labelLearnIRTimeout";
-      this.labelLearnIRTimeout.Size = new System.Drawing.Size(144, 20);
-      this.labelLearnIRTimeout.TabIndex = 6;
-      this.labelLearnIRTimeout.Text = "Learn IR timeout:";
-      this.labelLearnIRTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.labelButtonRepeatDelay.Location = new System.Drawing.Point(8, 8);
+      this.labelButtonRepeatDelay.Name = "labelButtonRepeatDelay";
+      this.labelButtonRepeatDelay.Size = new System.Drawing.Size(144, 20);
+      this.labelButtonRepeatDelay.TabIndex = 0;
+      this.labelButtonRepeatDelay.Text = "Button repeat delay:";
+      this.labelButtonRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // numericUpDownLearnTimeout
       // 
@@ -172,12 +163,19 @@ namespace UirtTransceiver
             0,
             0});
       // 
+      // labelLearnIRTimeout
+      // 
+      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 72);
+      this.labelLearnIRTimeout.Name = "labelLearnIRTimeout";
+      this.labelLearnIRTimeout.Size = new System.Drawing.Size(144, 20);
+      this.labelLearnIRTimeout.TabIndex = 6;
+      this.labelLearnIRTimeout.Text = "Learn IR timeout:";
+      this.labelLearnIRTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
       // Configure
       // 
-      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(248, 137);
       this.Controls.Add(this.labelLearnIRTimeout);
       this.Controls.Add(this.numericUpDownLearnTimeout);
@@ -194,7 +192,7 @@ namespace UirtTransceiver
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-      this.Text = "USB-UIRT Configuration";
+      this.Text = "HCW Configuration";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRepeatCount)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLearnTimeout)).EndInit();
@@ -204,14 +202,14 @@ namespace UirtTransceiver
 
     #endregion
 
-    private System.Windows.Forms.Label labelButtonRepeatDelay;
-    private System.Windows.Forms.NumericUpDown numericUpDownButtonRepeatDelay;
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.Label labelRepeatCount;
+    private System.Windows.Forms.NumericUpDown numericUpDownButtonRepeatDelay;
     private System.Windows.Forms.NumericUpDown numericUpDownRepeatCount;
-    private System.Windows.Forms.Label labelLearnIRTimeout;
+    private System.Windows.Forms.Label labelButtonRepeatDelay;
     private System.Windows.Forms.NumericUpDown numericUpDownLearnTimeout;
+    private System.Windows.Forms.Label labelLearnIRTimeout;
   }
 }

@@ -27,7 +27,7 @@ namespace MediaPortal.Plugins
 
     #region Constants
 
-    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.3 for IR Server";
+    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.4 for IR Server";
 
     internal static readonly string MPConfigFile = Config.GetFolder(Config.Dir.Config) + "\\MediaPortal.xml";
 

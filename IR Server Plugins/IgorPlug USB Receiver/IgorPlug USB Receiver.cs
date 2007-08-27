@@ -13,7 +13,7 @@ using IRServerPluginInterface;
 namespace IgorPlugUSBReceiver
 {
 
-  public class IgorPlugUSBReceiver : IIRServerPlugin
+  public class IgorPlugUSBReceiver : IRServerPlugin
   {
 
     #region Constants
@@ -62,7 +62,7 @@ namespace IgorPlugUSBReceiver
     #region IIRServerPlugin Members
 
     public string Name          { get { return "IgorPlug USB"; } }
-    public string Version       { get { return "1.0.3.3"; } } 
+    public string Version       { get { return "1.0.3.4"; } } 
     public string Author        { get { return "and-81"; } }
     public string Description   { get { return "IgorPlug USB Receiver"; } }
     public bool   CanReceive    { get { return true; } }

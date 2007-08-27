@@ -366,14 +366,15 @@ namespace Translator
         case "tabPageProgram":
           {
             textBoxCommand.Text = _command =
-              String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|False",
+              String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|False|{7}",
                 Common.CmdPrefixRun,
                 textBoxApp.Text,
                 textBoxAppStartFolder.Text,
                 textBoxApplicationParameters.Text,
                 comboBoxWindowStyle.SelectedItem as string,
                 checkBoxNoWindow.Checked.ToString(),
-                checkBoxShellExecute.Checked.ToString());
+                checkBoxShellExecute.Checked.ToString(),
+                checkBoxForceFocus.Checked.ToString());
             break;
           }
 

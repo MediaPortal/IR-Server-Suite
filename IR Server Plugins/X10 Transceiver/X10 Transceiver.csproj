@@ -85,6 +85,6 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>copy "Interop.X10.dll" "\MediaPortal Development\Plugin Releases\IR Server Suite\IR Server Plugins\"
-copy "$(TargetFileName)" "\MediaPortal Development\Plugin Releases\IR Server Suite\IR Server Plugins\"</PostBuildEvent>
+copy "$(TargetName).*" "\MediaPortal Development\Plugin Releases\IR Server Suite\IR Server Plugins\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

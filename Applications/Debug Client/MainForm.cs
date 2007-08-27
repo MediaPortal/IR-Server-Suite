@@ -97,7 +97,7 @@ namespace DebugClient
 
     #region Constants
 
-    const string TempIRFile = "test.IR";
+    static readonly string DebugIRFile = IrssUtils.Common.FolderIRCommands + "DebugClient.IR";
 
     #endregion
 
@@ -424,7 +424,7 @@ namespace DebugClient
         return;
       }
 
-      if (BlastIR(TempIRFile, comboBoxPort.SelectedItem as string))
+      if (BlastIR(DebugIRFile, comboBoxPort.SelectedItem as string))
         AddStatusLine("Blasting");
       else
         AddStatusLine("Can't Blast");
@@ -443,7 +443,7 @@ namespace DebugClient
         return;
       }
 
-      if (LearnIR(TempIRFile))
+      if (LearnIR(DebugIRFile))
         AddStatusLine("Learning IR");
       else
         AddStatusLine("Learn IR Busy");

@@ -209,7 +209,7 @@ namespace IRTransTransceiver
     #region Implementation
 
     public override string Name         { get { return "IRTrans (Experimental)"; } }
-    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "IRTrans Transceiver (Experimental)"; } }
 

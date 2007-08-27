@@ -38,7 +38,7 @@ namespace MediaPortal.Plugins
 
     #region Constants
 
-    internal const string PluginVersion = "MP Control Plugin 1.0.3.3 for IR Server";
+    internal const string PluginVersion = "MP Control Plugin 1.0.3.4 for IR Server";
 
     internal static readonly string CustomInputDevice = Config.GetFolder(Config.Dir.CustomInputDevice) + "\\";
     internal static readonly string CustomInputDefault = Config.GetFolder(Config.Dir.CustomInputDefault) + "\\";

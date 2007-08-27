@@ -39,7 +39,7 @@ namespace MediaPortal.Plugins
 
     const int WindowID = 248101;
 
-    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.3.3 for IR Server";
+    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.3.4 for IR Server";
 
     internal static readonly string MenuFile = Common.FolderAppData + "MP Blast Zone Plugin\\Menu.xml";
 

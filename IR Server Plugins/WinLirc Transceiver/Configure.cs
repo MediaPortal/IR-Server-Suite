@@ -74,7 +74,8 @@ namespace WinLircTransceiver
 
     private void buttonCreateIRFiles_Click(object sender, EventArgs e)
     {
-
+      CreateIRFile createIRFile = new CreateIRFile();
+      createIRFile.ShowDialog(this);
     }
 
     #endregion Buttons

@@ -174,6 +174,7 @@ namespace Translator
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+      this.checkBoxForceFocus = new System.Windows.Forms.CheckBox();
       this.groupBoxButton.SuspendLayout();
       this.groupBoxSet.SuspendLayout();
       this.tabControl.SuspendLayout();
@@ -326,7 +327,7 @@ namespace Translator
       this.tabPageBlastIR.Location = new System.Drawing.Point(4, 22);
       this.tabPageBlastIR.Name = "tabPageBlastIR";
       this.tabPageBlastIR.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageBlastIR.Size = new System.Drawing.Size(432, 206);
+      this.tabPageBlastIR.Size = new System.Drawing.Size(440, 206);
       this.tabPageBlastIR.TabIndex = 0;
       this.tabPageBlastIR.Text = "Blast IR";
       this.tabPageBlastIR.UseVisualStyleBackColor = true;
@@ -389,7 +390,7 @@ namespace Translator
       this.tabPageMacro.Location = new System.Drawing.Point(4, 22);
       this.tabPageMacro.Name = "tabPageMacro";
       this.tabPageMacro.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMacro.Size = new System.Drawing.Size(432, 206);
+      this.tabPageMacro.Size = new System.Drawing.Size(440, 206);
       this.tabPageMacro.TabIndex = 1;
       this.tabPageMacro.Text = "Macro";
       this.tabPageMacro.UseVisualStyleBackColor = true;
@@ -428,6 +429,7 @@ namespace Translator
       // 
       // tabPageProgram
       // 
+      this.tabPageProgram.Controls.Add(this.checkBoxForceFocus);
       this.tabPageProgram.Controls.Add(this.checkBoxNoWindow);
       this.tabPageProgram.Controls.Add(this.checkBoxShellExecute);
       this.tabPageProgram.Controls.Add(this.comboBoxWindowStyle);
@@ -443,14 +445,14 @@ namespace Translator
       this.tabPageProgram.Location = new System.Drawing.Point(4, 22);
       this.tabPageProgram.Name = "tabPageProgram";
       this.tabPageProgram.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageProgram.Size = new System.Drawing.Size(432, 206);
+      this.tabPageProgram.Size = new System.Drawing.Size(440, 206);
       this.tabPageProgram.TabIndex = 3;
       this.tabPageProgram.Text = "Run";
       this.tabPageProgram.UseVisualStyleBackColor = true;
       // 
       // checkBoxNoWindow
       // 
-      this.checkBoxNoWindow.Location = new System.Drawing.Point(216, 112);
+      this.checkBoxNoWindow.Location = new System.Drawing.Point(232, 112);
       this.checkBoxNoWindow.Name = "checkBoxNoWindow";
       this.checkBoxNoWindow.Size = new System.Drawing.Size(104, 21);
       this.checkBoxNoWindow.TabIndex = 10;
@@ -460,9 +462,10 @@ namespace Translator
       // checkBoxShellExecute
       // 
       this.checkBoxShellExecute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.checkBoxShellExecute.AutoSize = true;
       this.checkBoxShellExecute.Location = new System.Drawing.Point(8, 144);
       this.checkBoxShellExecute.Name = "checkBoxShellExecute";
-      this.checkBoxShellExecute.Size = new System.Drawing.Size(168, 20);
+      this.checkBoxShellExecute.Size = new System.Drawing.Size(141, 17);
       this.checkBoxShellExecute.TabIndex = 11;
       this.checkBoxShellExecute.Text = "Start using ShellExecute";
       this.checkBoxShellExecute.UseVisualStyleBackColor = true;
@@ -575,7 +578,7 @@ namespace Translator
       this.tabPageSerial.Location = new System.Drawing.Point(4, 22);
       this.tabPageSerial.Name = "tabPageSerial";
       this.tabPageSerial.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageSerial.Size = new System.Drawing.Size(432, 206);
+      this.tabPageSerial.Size = new System.Drawing.Size(440, 206);
       this.tabPageSerial.TabIndex = 2;
       this.tabPageSerial.Text = "Serial";
       this.tabPageSerial.UseVisualStyleBackColor = true;
@@ -757,7 +760,7 @@ namespace Translator
       this.tabPageMessage.Location = new System.Drawing.Point(4, 22);
       this.tabPageMessage.Name = "tabPageMessage";
       this.tabPageMessage.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMessage.Size = new System.Drawing.Size(432, 206);
+      this.tabPageMessage.Size = new System.Drawing.Size(440, 206);
       this.tabPageMessage.TabIndex = 4;
       this.tabPageMessage.Text = "Window Message";
       this.tabPageMessage.UseVisualStyleBackColor = true;
@@ -936,7 +939,7 @@ namespace Translator
       this.tabPageKeystrokes.Location = new System.Drawing.Point(4, 22);
       this.tabPageKeystrokes.Name = "tabPageKeystrokes";
       this.tabPageKeystrokes.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageKeystrokes.Size = new System.Drawing.Size(432, 206);
+      this.tabPageKeystrokes.Size = new System.Drawing.Size(440, 206);
       this.tabPageKeystrokes.TabIndex = 5;
       this.tabPageKeystrokes.Text = "Keystrokes";
       this.tabPageKeystrokes.UseVisualStyleBackColor = true;
@@ -1427,7 +1430,7 @@ namespace Translator
       this.tabPageMouse.Location = new System.Drawing.Point(4, 22);
       this.tabPageMouse.Name = "tabPageMouse";
       this.tabPageMouse.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMouse.Size = new System.Drawing.Size(432, 206);
+      this.tabPageMouse.Size = new System.Drawing.Size(440, 206);
       this.tabPageMouse.TabIndex = 6;
       this.tabPageMouse.Text = "Mouse";
       this.tabPageMouse.UseVisualStyleBackColor = true;
@@ -1684,6 +1687,16 @@ namespace Translator
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
       // 
+      // checkBoxForceFocus
+      // 
+      this.checkBoxForceFocus.AutoSize = true;
+      this.checkBoxForceFocus.Location = new System.Drawing.Point(232, 144);
+      this.checkBoxForceFocus.Name = "checkBoxForceFocus";
+      this.checkBoxForceFocus.Size = new System.Drawing.Size(121, 17);
+      this.checkBoxForceFocus.TabIndex = 12;
+      this.checkBoxForceFocus.Text = "Force window focus";
+      this.checkBoxForceFocus.UseVisualStyleBackColor = true;
+      // 
       // ButtonMappingForm
       // 
       this.AcceptButton = this.buttonOK;
@@ -1883,6 +1896,7 @@ namespace Translator
     private System.Windows.Forms.TabPage tabPageMisc;
     private System.Windows.Forms.Label labelMiscCommand;
     private System.Windows.Forms.ComboBox comboBoxMiscCommand;
+    private System.Windows.Forms.CheckBox checkBoxForceFocus;
 
   }
 }

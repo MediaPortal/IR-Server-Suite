@@ -28,7 +28,7 @@ namespace TvEngine
 
     #region Constants
 
-    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.3.3 for IR Server";
+    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.3.4 for IR Server";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "TV3 Blaster Plugin\\Macro\\";
 
@@ -70,7 +70,7 @@ namespace TvEngine
     /// <summary>
     /// Returns the version of the plugin.
     /// </summary>
-    public string Version { get { return "1.0.3.3"; } }
+    public string Version { get { return "1.0.3.4"; } }
     /// <summary>
     /// Returns the author of the plugin.
     /// </summary>

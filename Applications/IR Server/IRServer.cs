@@ -218,6 +218,8 @@ namespace IRServer
 
         _notifyIcon.Visible = true;
 
+        SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
+
         IrssLog.Info("IR Server started");
 
         return true;
@@ -235,6 +237,8 @@ namespace IRServer
     internal void Stop()
     {
       IrssLog.Info("Stopping IR Server ...");
+
+      SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
 
       _notifyIcon.Visible = false;
 
@@ -268,7 +272,7 @@ namespace IRServer
       }
       try
       {
-        if (_pluginTransmit != null)
+        if (_pluginTransmit != null && _pluginTransmit != _pluginReceive)
           _pluginTransmit.Stop();
       }
       catch (Exception ex)
@@ -609,6 +613,44 @@ namespace IRServer
       }
     }
 
+    void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    {
+      switch (e.Mode)
+      {
+        case PowerModes.Resume:
+          {
+            IrssLog.Info("Resume from standby ...");
+
+            if (_pluginReceive != null)
+              _pluginReceive.Resume();
+            if (_pluginTransmit != null && _pluginTransmit != _pluginReceive)
+              _pluginTransmit.Resume();
+
+            // TODO: Inform clients
+            break;
+          }
+
+        case PowerModes.Suspend:
+          {
+            IrssLog.Info("Enter low-power standby ...");
+
+            if (_pluginReceive != null)
+              _pluginReceive.Suspend();
+            if (_pluginTransmit != null && _pluginTransmit != _pluginReceive)
+              _pluginTransmit.Suspend();
+
+            // TODO: Inform clients
+            /*
+            if (_mode == IRServerMode.ServerMode)
+            {
+              PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Server Shutdown", null);
+              SendToAll(message);
+            }
+            */
+            break;
+          }
+      }
+    }
 
     void SendToAll(PipeMessage message)
     {

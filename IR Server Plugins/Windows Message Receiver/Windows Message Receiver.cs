@@ -53,7 +53,7 @@ namespace WindowsMessageReceiver
     #region Implementation
 
     public override string Name         { get { return "Windows Messages"; } }
-    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "Supports receiving simulated button presses through Windows Messages"; } }
 

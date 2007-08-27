@@ -88,7 +88,7 @@ namespace IRServer
 
             foreach (Type type in types)
             {
-              if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(IRServerPlugin).Name) == typeof(IRServerPlugin))
+              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(IRServerPlugin)))
               {
                 IRServerPlugin plugin = (IRServerPlugin)Activator.CreateInstance(type);
                 if (plugin == null)

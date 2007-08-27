@@ -158,6 +158,7 @@ namespace Translator
     }
 
     #endregion Members
+
   }
 
 }

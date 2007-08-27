@@ -147,11 +147,10 @@ namespace Translator
             Thread.Sleep(500);
           }
         }
-
       }
       catch (Exception ex)
       {
-        IrssLog.Error("TestApplication: {0}", ex.Message);
+        IrssLog.Error("Test Application: {0}", ex.Message);
       }
 
     }

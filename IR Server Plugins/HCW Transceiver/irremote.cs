@@ -26,14 +26,16 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using MediaPortal.GUI.Library;
+//using MediaPortal.GUI.Library;
 using System.IO;
 
 namespace HcwTransceiver
 {
+
   /// <summary>
   /// Wrapper class for irremote.dll
   /// </summary>
+  [CLSCompliant(false)]
   public static class irremote
   {
     #region DLL-Imports
@@ -112,7 +114,7 @@ namespace HcwTransceiver
       }
       catch (Exception ex)
       {
-        Log.Info("HCW: Exception while querying remote: {0}", ex.Message);
+        Console.WriteLine("HCW: Exception while querying remote: {0}", ex.Message);
       }
       return result;
     }

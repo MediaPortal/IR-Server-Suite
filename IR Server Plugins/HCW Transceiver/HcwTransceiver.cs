@@ -15,7 +15,7 @@ namespace HcwTransceiver
 
   [CLSCompliant(false)]
   public class HcwTransceiver :
-    IRServerPlugin, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
+    IRServerPlugin, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver
   {
 
     #region Interop
@@ -81,75 +81,21 @@ namespace HcwTransceiver
 
     int _abortLearn = AllowLearn;
     bool _learnTimedOut;
-    UUIRTReceiveCallbackDelegate _receiveCallback = null;
-    bool _isUsbUirtLoaded = false;
-    IntPtr _usbUirtHandle = IntPtr.Zero;
-    bool _disposed = false;
 
     #endregion Variables
 
-    #region Deconstructor
-
-    ~HcwTransceiver()
-    {
-      Dispose(false);
-    }
-
-    #endregion Deconstructor
-
-    #region IDisposable Members
-
-    public void Dispose()
-    {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposeManagedResources)
-    {
-      if (!_disposed)
-      {
-        _disposed = true;
-
-        if (disposeManagedResources)
-        {
-          // Dispose any managed resources.
-        }
-
-        if (_isUsbUirtLoaded && _usbUirtHandle != new IntPtr(-1) && _usbUirtHandle != IntPtr.Zero)
-        {
-          UUIRTClose(_usbUirtHandle);
-          _usbUirtHandle = IntPtr.Zero;
-          _isUsbUirtLoaded = false;
-        }
-      }
-    }
-
-    #endregion IDisposable Members
-
     #region Implementation
 
-    public override string Name         { get { return "USB-UIRT"; } }
-    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Name         { get { return "HCW Transceiver"; } }
+    public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
-    public override string Description  { get { return "Support for the USB-UIRT transceiver"; } }
+    public override string Description  { get { return "Support for the HCW transceiver"; } }
 
     public override bool Start()
     {
       LoadSettings();
-
-      _usbUirtHandle = UUIRTOpen();
-
-      if (_usbUirtHandle != new IntPtr(-1))
-      {
-        _isUsbUirtLoaded = true;
-
-        // Setup callack to receive IR messages
-        _receiveCallback = new UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback);
-        UUIRTSetReceiveCallback(_usbUirtHandle, _receiveCallback, 0);
-      }
-
-      return _isUsbUirtLoaded;
+      
+      return true;
     }
     public override void Suspend()
     {
@@ -161,10 +107,7 @@ namespace HcwTransceiver
     }
     public override void Stop()
     {
-      UUIRTClose(_usbUirtHandle);
 
-      _usbUirtHandle = IntPtr.Zero;
-      _isUsbUirtLoaded = false;
     }
 
     public void Configure()
@@ -197,80 +140,13 @@ namespace HcwTransceiver
 
     public bool Transmit(string port, byte[] data)
     {
-      bool result = false;
 
-      string irCode = Encoding.ASCII.GetString(data);
-
-      // Set blaster port ...
-      if (port.Equals(Ports[1], StringComparison.InvariantCultureIgnoreCase))
-        irCode = "Z1" + irCode;
-      else if (port.Equals(Ports[2], StringComparison.InvariantCultureIgnoreCase))
-        irCode = "Z2" + irCode;
-      else if (port.Equals(Ports[3], StringComparison.InvariantCultureIgnoreCase))
-        irCode = "Z3" + irCode;
-
-      result = UUIRTTransmitIR(
-        _usbUirtHandle,         // Handle to USB-UIRT
-        irCode,                 // IR Code
-        UUIRTDRV_IRFMT_PRONTO,  // Code Format
-        _blastRepeats,          // Repeat Count
-        0,                      // Inactivity Wait Time
-        IntPtr.Zero,            // hEvent
-        0,                      // reserved1
-        0                       // reserved2
-      );
-
-      return result;
+      return false;
     }
     public LearnStatus Learn(out byte[] data)
     {
-      bool result = false;
-
       data = null;
-
-      StringBuilder irCode = new StringBuilder("1", 2048);
-      _abortLearn = AllowLearn;
-      _learnTimedOut = false;
-      
-      //_learnCarrierFreq = 0;
-
-      Timer timer = new Timer();
-      timer.Interval = _learnTimeout;
-      timer.Tick += new EventHandler(timer_Tick);
-      timer.Enabled = true;
-      timer.Start();
-
-      //IRLearnCallbackDelegate learnCallback = new IRLearnCallbackDelegate(UUIRTLearnCallback);
-
-      result = UirtTransceiver.UUIRTLearnIR(
-        _usbUirtHandle,                                     // Handle to USB-UIRT
-        UirtTransceiver.UUIRTDRV_IRFMT_PRONTO | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FREQDETECT,              //  | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FORCERAW
-        irCode,                                             // Where to put the IR Code
-        null,                                               // Learn status callback
-        0,                                                  // User data
-        ref _abortLearn,                                    // Abort flag?
-        0,
-        null,
-        null);
-
-      timer.Stop();
-
-      //MessageBox.Show(_learnCarrierFreq.ToString());
-
-      if (_learnTimedOut)
-      {
-        return LearnStatus.Timeout;
-      }
-      else if (result)
-      {
-        data = Encoding.ASCII.GetBytes(irCode.ToString());
-
-        return LearnStatus.Success;
-      }
-      else
-      {
-        return LearnStatus.Failure;
-      }
+      return LearnStatus.Failure;
     }
 
     void LoadSettings()
@@ -316,44 +192,6 @@ namespace HcwTransceiver
       {
         Console.WriteLine(ex.ToString());
       }
-    }
-
-    void UUIRTReceiveCallback(string keyCode, IntPtr userData)
-    {
-      if (_remoteButtonHandler == null)
-        return;
-
-      TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
-
-      if (keyCode == _lastCode) // Repeated button
-      {
-        if (timeSpan.Milliseconds > _repeatDelay)
-        {
-          _remoteButtonHandler(keyCode);
-          _lastCodeTime = DateTime.Now;
-        }
-      }
-      else
-      {
-        _remoteButtonHandler(keyCode);
-        _lastCodeTime = DateTime.Now;
-      }
-      
-      _lastCode = keyCode;
-    }
-    /*
-    void UUIRTLearnCallback(uint progress, uint sigQuality, ulong carrierFreq, IntPtr userData)
-    {
-      _learnCarrierFreq = carrierFreq;
-      //MessageBox.Show(_learnCarrierFreq.ToString());
-    }
-    */
-    void timer_Tick(object sender, EventArgs e)
-    {
-      _abortLearn = AbortLearn;
-      _learnTimedOut = true;
-
-      ((Timer)sender).Stop();
     }
 
     #endregion Implementation

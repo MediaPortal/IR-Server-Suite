@@ -93,6 +93,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetFileName)" "\MediaPortal Development\Plugin Releases\IR Server Suite\IR Server Plugins\"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetName).*" "\MediaPortal Development\Plugin Releases\IR Server Suite\IR Server Plugins\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
