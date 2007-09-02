@@ -16,12 +16,15 @@ namespace MicrosoftMceTransceiver
 
     enum CodeType
     {
+      // Can use ...
       RawOscillated   = 0x0000,
       RawUnmodulated  = 0x0100,
       RC5             = 0x5000,
       RC5X            = 0x5001,
       RC6             = 0x6000,
       RC6A            = 0x6001,
+      
+      // Can't use ...
       VariableLength  = 0x7000,
       IndexToUDB      = 0x8000,
       NEC_1           = 0x9000,
@@ -33,22 +36,32 @@ namespace MicrosoftMceTransceiver
       YamahaNEC       = 0x9001,
     }
 
-    enum CarrierFrequency
-    {
-      Khz38 = 0x006D,
-      Khz36 = 0x0073,
-    }
-
     #endregion Enumerations
 
     #region Constants
 
-    const double ProntoClock = 0.241246;
+    const double ProntoClock  = 0.241246;
 
-    const ushort DefaultProntoRawCarrier = (ushort)CarrierFrequency.Khz38;
+    const int CarrierRC5 = 36000;
+    const int CarrierRC6 = 36000;
+    /*
+    const int CarrierITT      = 0;
+    const int CarrierJVC      = 38000;
+    const int CarrierNEC      = 38000;
+    const int CarrierNrc17    = 38000;
+    const int CarrierRCA      = 56000;
+    const int CarrierRCMM     = 36000;
+    const int CarrierRecs80   = 38000;
+    const int CarrierSharp    = 38000;
+    const int CarrierSirc     = 40000;
+    const int CarrierXSat     = 38000;
+    */
 
-    static readonly byte[] RC6NativeHeader  = new byte[] { 0xB6, 0x12, 0x89, 0x12, 0x89, 0x09, 0x89, 0x09, 0x89, 0x12 };
-    static readonly byte[] RC6ANativeHeader = new byte[] { 0xBF, 0x12, 0x89, 0x09, 0x89, 0x09, 0x89, 0x12, 0x89, 0x12 };
+    static readonly int[] RC6Header   = new int[] { 2700, -900, 450, -900, 450, -450, 450, -450, 450, -900 };
+    static readonly int[] RC6AHeader  = new int[] { 3150, -900, 450, -450, 450, -450, 450, -900, 450, -900 };
+
+    const int SignalFree    = 10000;
+    const int SignalFreeRC6 = 2700;
 
     #endregion Constants
 
@@ -82,500 +95,6 @@ namespace MicrosoftMceTransceiver
       }
 
       return true;
-    }
-
-    public static MceIrCode ConvertProntoDataToMceIrCode(ushort[] prontoData)
-    {
-      switch ((CodeType)prontoData[0])
-    {
-        case CodeType.RawOscillated:
-        case CodeType.RawUnmodulated:
-          return ConvertProntoRawToMceIrCode(prontoData);
-
-        case CodeType.RC5:
-          return ConvertProntoRC5ToMceIrCode(prontoData);
-
-        case CodeType.RC5X:
-          return ConvertProntoRC5XToMceIrCode(prontoData);
-
-        case CodeType.RC6:
-          return ConvertProntoRC6ToMceIrCode(prontoData);
-
-        case CodeType.RC6A:
-          return ConvertProntoRC6AToMceIrCode(prontoData);
-
-        default:
-          return null;
-      }
-    }
-
-    static MceIrCode ConvertProntoRawToMceIrCode(ushort[] prontoData)
-    {
-      int length = prontoData.Length;
-      if (length < 5)
-        return null;
-
-      ushort prontoCarrier = prontoData[1];
-      if (prontoCarrier == 0x0000)
-        prontoCarrier = DefaultProntoRawCarrier;
-
-      double carrier = (double)prontoCarrier * ProntoClock;
-
-      int firstSeq = 2 * prontoData[2];
-      int repeatSeq = 2 * prontoData[3];
-
-      List<byte> nativeData = new List<byte>();
-
-      bool pulse = true;
-      int remaining = 0;
-      int repeatCount = 0;
-      int start = 4;
-      bool done = false;
-
-      int index = start;
-      int sequence = firstSeq;
-
-      if (firstSeq == 0)
-      {
-        if (repeatSeq == 0)
-          return null;
-
-        sequence = repeatSeq;
-        repeatCount = 1;
-      }
-
-      while (!done)
-      {
-        if (remaining == 0)
-          remaining = (ushort)(((prontoData[index] * carrier) + 25) / 50);
-
-        if (remaining != 0)
-        {
-
-          if (remaining < 0x80)
-          {
-            nativeData.Add((byte)(remaining | (pulse ? 0x80 : 0x00)));
-            remaining = 0;
-            index++;
-            pulse = !pulse;
-          }
-          else
-          {
-            nativeData.Add((byte)(0x7F | (pulse ? 0x80 : 0x00)));
-            remaining -= 0x7F;
-          }
-        }
-
-        if (index == start + sequence)
-        {
-          switch (repeatCount)
-        {
-            case 0:
-              if (repeatSeq != 0)
-          {
-                start += firstSeq;
-                sequence = repeatSeq;
-                index = start;
-                pulse = true;
-            repeatCount++;
-          }
-              else
-                done = true;
-              break;
-
-            case 3:
-              done = true;
-              break;
-
-            default:
-              index = start;
-              pulse = true;
-              repeatCount++;
-              break;
-        }
-      }
-    }
-
-      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
-    }
-    static MceIrCode ConvertProntoRC5ToMceIrCode(ushort[] prontoData)
-{
-      if (prontoData.Length != 6)
-        return null;
-
-      if (prontoData[0] != (ushort)CodeType.RC5)
-        return null;
-
-      ushort prontoCarrier = prontoData[1];
-      if (prontoCarrier == 0x0000)
-        prontoCarrier = DefaultProntoRawCarrier;
-
-      if (prontoData[2] + prontoData[3] != 1)
-        return null;
-
-      ushort system   = prontoData[4];
-      ushort command  = prontoData[5];
-
-      if (system > 31)
-        return null;
-
-      if (command > 127)
-        return null;
-
-      ushort rc5 = 0;
-
-      rc5 |= (1 << 13); //SS1
-      
-      if (command < 64)
-        rc5 |= (1 << 12); //SS2
-
-      rc5 |= (1 << 11); //Toggle
-
-      rc5 |= (ushort)((system << 6) | command);
-
-      List<byte> nativeData = new List<byte>();
-
-      bool lastIsPulse = true;
-      byte current = 0x92;
-
-      for (int i = 13; i > 0; i--)
-    {
-        if ((rc5 & (1 << i)) != 0)
-      {
-          if (lastIsPulse)
-        {
-            nativeData.Add(current);
-            current = 0;
-          }
-
-          current += 0x12;
-          nativeData.Add(current);
-
-          current = 0x92;
-          lastIsPulse = true;
-        }
-        else
-        {
-          if (!lastIsPulse)
-      {
-            nativeData.Add(current);
-            current = 0;
-          }
-
-          current |= 0x80;
-          current += 0x12;
-
-          nativeData.Add(current);
-          current = 0x12;
-
-          lastIsPulse = false;
-        }
-      }
-
-      for (int j = 0; j < 13; j++)
-        nativeData.Add(0x7F);
-
-      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
-    }
-    static MceIrCode ConvertProntoRC5XToMceIrCode(ushort[] prontoData)
-    {
-      if (prontoData.Length != 7)
-        return null;
-
-      if (prontoData[0] != (ushort)CodeType.RC5X)
-        return null;
-
-      ushort prontoCarrier = prontoData[1];
-      if (prontoCarrier == 0x0000)
-        prontoCarrier = DefaultProntoRawCarrier;
-
-      if (prontoData[2] + prontoData[3] != 2)
-        return null;
-
-      ushort system   = prontoData[4];
-      ushort command  = prontoData[5];
-      ushort data     = prontoData[6];
-
-      if (system > 31)
-        return null;
-
-      if (command > 127)
-        return null;
-
-      if (data > 63)
-        return null;
-
-      uint rc5 = 0;
-
-      rc5 |= (1 << 19); //SS1
-
-      if (command < 64)
-        rc5 |= (1 << 18); //SS2
-
-      rc5 |= (1 << 17); //Toggle
-
-      rc5 |= (uint)((system << 12) | (command << 6) | data);
-
-      List<byte> nativeData = new List<byte>();
-
-      bool lastIsPulse = true;
-      byte current = 0x92;
-
-      for (int i = 19; i > 0; i--)
-      {
-        if (i == 11)
-        {
-          if (lastIsPulse)
-          {
-            nativeData.Add(current);
-            current = 0;
-          }
-          current += 0x48;
-          lastIsPulse = false;
-        }
-        
-        if ((rc5 & (1 << i)) != 0)
-        {
-          if (lastIsPulse)
-          {
-            nativeData.Add(current);
-            current = 0;
-          }
-
-          current += 0x12;
-          nativeData.Add(current);
-
-          current = 0x92;
-          lastIsPulse = true;
-        }
-        else
-        {
-          if (!lastIsPulse)
-          {
-            nativeData.Add(current);
-            current = 0;
-          }
-
-          current |= 0x80;
-          current += 0x12;
-
-          nativeData.Add(current);
-          current = 0x12;
-
-          lastIsPulse = false;
-        }
-      }
-
-      for (int j = 0; j < 13; j++)
-        nativeData.Add(0x7F);
-
-      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
-    }
-    static MceIrCode ConvertProntoRC6ToMceIrCode(ushort[] prontoData)
-    {
-      if (prontoData.Length != 6)
-        return null;
-
-      if (prontoData[0] != (ushort)CodeType.RC6)
-        return null;
-
-      ushort prontoCarrier = prontoData[1];
-      if (prontoCarrier == 0x0000)
-        prontoCarrier = DefaultProntoRawCarrier;
-
-      if (prontoData[2] + prontoData[3] != 1)
-        return null;
-
-      ushort system   = prontoData[4];
-      ushort command  = prontoData[5];
-
-      if (system > 255)
-        return null;
-
-      if (command > 255)
-        return null;
-
-      ushort rc6 = (ushort)((system << 8) | command);
-
-      List<byte> nativeData = new List<byte>();
-      nativeData.AddRange(RC6NativeHeader);
-
-      bool lastIsPulse = true;
-      byte current = 0x92;
-
-      for (int i = 16; i > 0; i--)
-      {
-        if ((rc6 & (1 << i)) != 0)
-        {
-          if (!lastIsPulse)
-          {
-            nativeData.Add(current);
-            current = 0;
-          }
-
-          current |= 0x80;
-          current += 0x09;
-          nativeData.Add(current);
-
-          current = 0x09;
-          lastIsPulse = false;
-        }
-        else
-        {
-          if (lastIsPulse)
-          {
-            nativeData.Add(current);
-            current = 0;
-          }
-
-          current += 0x09;
-          nativeData.Add(current);
-
-          current = 0x89;
-
-          lastIsPulse = true;
-        }
-      }
-
-      nativeData.Add(current);
-
-      for (int j = 0; j < 13; j++)
-        nativeData.Add(0x7F);
-
-      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
-    }
-    static MceIrCode ConvertProntoRC6AToMceIrCode(ushort[] prontoData)
-    {
-      if (prontoData.Length != 6)
-        return null;
-
-      if (prontoData[0] != (ushort)CodeType.RC6A)
-        return null;
-
-      ushort prontoCarrier = prontoData[1];
-      if (prontoCarrier == 0x0000)
-        prontoCarrier = DefaultProntoRawCarrier;
-
-      if (prontoData[2] + prontoData[3] != 2)
-        return null;
-
-      ushort customer = prontoData[5];
-      ushort system   = prontoData[5];
-      ushort command  = prontoData[6];
-
-      if (system > 255)
-        return null;
-      
-      if (command > 255)
-        return null;
-      
-      if (customer > 127 && customer < 32768)
-        return null;
-
-      uint rc6 = (uint)((customer << 16) | (system << 8) | command);
-
-      List<byte> nativeData = new List<byte>();
-      nativeData.AddRange(RC6ANativeHeader);
-
-      bool lastIsPulse = true;
-      byte current = 0x92;
-
-      for (int i = ((customer >= 32768) ? 32 : 24); i > 0; i--)
-      {
-        if ((rc6 & (1 << i)) != 0)
-        {
-          if (!lastIsPulse)
-          {
-            nativeData.Add(current);
-            current = 0;
-          }
-
-          current |= 0x80;
-          current += 0x09;
-          nativeData.Add(current);
-
-          current = 0x09;
-          lastIsPulse = false;
-        }
-        else
-        {
-          if (lastIsPulse)
-          {
-            nativeData.Add(current);
-            current = 0;
-          }
-
-          current += 0x09;
-          nativeData.Add(current);
-
-          current = 0x89;
-          lastIsPulse = true;
-        }
-      }
-
-      nativeData.Add(current);
-
-      for (int j = 0; j < 13; j++)
-        nativeData.Add(0x7F);
-
-      return new MceIrCode(ConvertFromProntoCarrier(prontoCarrier), nativeData.ToArray());
-    }
-
-    public static ushort[] ConvertMceIrCodeToProntoRaw(MceIrCode mceIrCode)
-    {
-      List<ushort> prontoData = new List<ushort>();
-
-      double carrier;
-      ushort prontoCarrier;
-      CodeType codeType;
-      if (mceIrCode.Carrier != 0)
-      {
-        codeType = CodeType.RawOscillated;
-        carrier = mceIrCode.Carrier * ProntoClock;
-        prontoCarrier = ConvertToProntoCarrier(mceIrCode.Carrier);
-      }
-      else
-      {
-        codeType = CodeType.RawUnmodulated;
-        carrier = DefaultProntoRawCarrier * ProntoClock;
-        prontoCarrier = DefaultProntoRawCarrier;
-      }
-
-      double accDuration = 0;
-      bool lastPulse = false;
-
-      for (int index = 0; index < mceIrCode.Data.Length; index++)
-      {
-        int duration = mceIrCode.Data[index] & 0x7F;
-        bool pulse = ((mceIrCode.Data[index] & 0x80) != 0);
-
-        double carrierDuration = (duration * 50) / carrier;
-
-        if (pulse == lastPulse)
-        {
-          accDuration += carrierDuration;
-        }
-        else
-        {
-          if (accDuration != 0)
-            prontoData.Add((ushort)accDuration);
-
-          accDuration = carrierDuration;
-        }
-
-        lastPulse = pulse;
-      }
-
-      prontoData.Add((ushort)accDuration);
-
-      ushort burstPairs = (ushort)(prontoData.Count / 2);
-
-      prontoData.Insert(0, (ushort)codeType); // Pronto Code Type
-      prontoData.Insert(1, prontoCarrier);    // IR Frequency
-      prontoData.Insert(2, burstPairs);       // First Burst Pairs
-      prontoData.Insert(3, 0x0000);           // Repeat Burst Pairs
-
-      return prontoData.ToArray();
     }
 
     public static bool IsProntoData(byte[] fileBytes)
@@ -621,6 +140,488 @@ namespace MicrosoftMceTransceiver
       return prontoData;
     }
 
+
+
+    public static IrCode ConvertProntoDataToIrCode(ushort[] prontoData)
+    {
+      switch ((CodeType)prontoData[0])
+      {
+        case CodeType.RawOscillated:
+        case CodeType.RawUnmodulated:
+          return ConvertProntoRawToIrCode(prontoData);
+
+        case CodeType.RC5:
+          return ConvertProntoRC5ToIrCode(prontoData);
+
+        case CodeType.RC5X:
+          return ConvertProntoRC5XToIrCode(prontoData);
+
+        case CodeType.RC6:
+          return ConvertProntoRC6ToIrCode(prontoData);
+
+        case CodeType.RC6A:
+          return ConvertProntoRC6AToIrCode(prontoData);
+
+        default:
+          return null;
+      }
+    }
+
+    static IrCode ConvertProntoRawToIrCode(ushort[] prontoData)
+    {
+      int length = prontoData.Length;
+      if (length < 5)
+        return null;
+
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = ConvertToProntoCarrier(IrCode.CarrierFrequencyDefault);
+
+      double carrier = (double)prontoCarrier * ProntoClock;
+
+      int firstSeq = 2 * prontoData[2];
+      int repeatSeq = 2 * prontoData[3];
+
+      List<int> timingData = new List<int>();
+
+      bool pulse = true;
+      int repeatCount = 0;
+      int start = 4;
+      bool done = false;
+
+      int index = start;
+      int sequence = firstSeq;
+
+      if (firstSeq == 0)
+      {
+        if (repeatSeq == 0)
+          return null;
+
+        sequence = repeatSeq;
+        repeatCount = 1;
+      }
+
+      while (!done)
+      {
+        int time = (int)(prontoData[index] * carrier);
+
+        if (pulse)
+          timingData.Add(time);
+        else
+          timingData.Add(-time);
+
+        index++;
+        pulse = !pulse;
+
+        if (index == start + sequence)
+        {
+          switch (repeatCount)
+          {
+            case 0:
+              if (repeatSeq != 0)
+              {
+                start += firstSeq;
+                sequence = repeatSeq;
+                index = start;
+                pulse = true;
+                repeatCount++;
+              }
+              else
+                done = true;
+              break;
+
+            case 1:
+              done = true;
+              break;
+
+            default:
+              index = start;
+              pulse = true;
+              repeatCount++;
+              break;
+          }
+        }
+      }
+
+      return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
+    }
+
+    static IrCode ConvertProntoRC5ToIrCode(ushort[] prontoData)
+    {
+      if (prontoData.Length != 6)
+        return null;
+
+      if (prontoData[0] != (ushort)CodeType.RC5)
+        return null;
+
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = ConvertToProntoCarrier(CarrierRC5);
+
+      if (prontoData[2] + prontoData[3] != 1)
+        return null;
+
+      ushort system   = prontoData[4];
+      ushort command  = prontoData[5];
+
+      if (system > 31)
+        return null;
+
+      if (command > 127)
+        return null;
+
+      ushort rc5 = 0;
+
+      rc5 |= (1 << 13);   // Start Bit 1
+
+      if (command < 64)
+        rc5 |= (1 << 12); // Start Bit 2
+
+      rc5 |= (1 << 11);   // Toggle Bit
+
+      rc5 |= (ushort)((system << 6) | command);
+
+      List<int> timingData = new List<int>();
+
+      int currentTime = 0;
+
+      for (int i = 13; i > 0; i--)
+      {
+        if ((rc5 & (1 << i)) != 0)  // Logic 1 (S, P)
+        {
+          if (currentTime > 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+          
+          currentTime -= 900;
+          timingData.Add(currentTime);
+          
+          currentTime = 900;
+        }
+        else  // Logic 0 (P, S)
+        {
+          if (currentTime < 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+
+          currentTime += 900;
+          timingData.Add(currentTime);
+
+          currentTime = -900;
+        }
+      }
+
+      if (currentTime > 0)
+      {
+        timingData.Add(currentTime);
+        timingData.Add(-SignalFree);
+      }
+      else
+      {
+        timingData.Add(currentTime - SignalFree);
+      }
+
+      return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
+    }
+    static IrCode ConvertProntoRC5XToIrCode(ushort[] prontoData)
+    {
+      if (prontoData.Length != 7)
+        return null;
+
+      if (prontoData[0] != (ushort)CodeType.RC5X)
+        return null;
+
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = ConvertToProntoCarrier(CarrierRC5);
+
+      if (prontoData[2] + prontoData[3] != 2)
+        return null;
+
+      ushort system   = prontoData[4];
+      ushort command  = prontoData[5];
+      ushort data     = prontoData[6];
+
+      if (system > 31)
+        return null;
+
+      if (command > 127)
+        return null;
+
+      if (data > 63)
+        return null;
+
+      uint rc5 = 0;
+
+      rc5 |= (1 << 19);     // Start Bit 1
+
+      if (command < 64)
+        rc5 |= (1 << 18);   // Start Bit 2 (Inverted Command Bit 6)
+
+      rc5 |= (1 << 17);     // Toggle Bit
+
+      rc5 |= (uint)((system << 12) | (command << 6) | data);
+
+      List<int> timingData = new List<int>();
+      int currentTime = 0;
+
+      for (int i = 19; i > 0; i--)
+      {
+        if (i == 11)
+        {
+          if (currentTime < 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+          currentTime += 3600;
+        }
+
+        if ((rc5 & (1 << i)) != 0)  // Logic 1 (S, P)
+        {
+          if (currentTime > 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+
+          currentTime -= 900;
+          timingData.Add(currentTime);
+
+          currentTime = 900;
+        }
+        else  // Logic 0 (P, S)
+        {
+          if (currentTime < 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+
+          currentTime += 900;
+          timingData.Add(currentTime);
+
+          currentTime = -900;
+        }
+      }
+
+      if (currentTime > 0)
+      {
+        timingData.Add(currentTime);
+        timingData.Add(-SignalFree);
+      }
+      else
+      {
+        timingData.Add(currentTime - SignalFree);
+      }
+
+      return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
+    }
+    static IrCode ConvertProntoRC6ToIrCode(ushort[] prontoData)
+    {
+      if (prontoData.Length != 6)
+        return null;
+
+      if (prontoData[0] != (ushort)CodeType.RC6)
+        return null;
+
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = ConvertToProntoCarrier(CarrierRC6);
+
+      if (prontoData[2] + prontoData[3] != 1)
+        return null;
+
+      ushort system   = prontoData[4];
+      ushort command  = prontoData[5];
+
+      if (system > 255)
+        return null;
+
+      if (command > 255)
+        return null;
+
+      ushort rc6 = (ushort)((system << 8) | command);
+
+      List<int> timingData = new List<int>();
+      timingData.AddRange(RC6Header);
+
+      int currentTime = 900; // Second half of Trailer Bit (0)
+
+      for (int i = 16; i > 0; i--)
+      {
+        if ((rc6 & (1 << i)) != 0)  // Logic 1 (S, P)
+        {
+          if (currentTime > 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+
+          currentTime -= 450;
+          timingData.Add(currentTime);
+
+          currentTime = 450;
+        }
+        else  // Logic 0 (P, S)
+        {
+          if (currentTime < 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+
+          currentTime += 450;
+          timingData.Add(currentTime);
+
+          currentTime = -450;
+        }
+      }
+
+      if (currentTime > 0)
+      {
+        timingData.Add(currentTime);
+        timingData.Add(-SignalFreeRC6);
+      }
+      else
+      {
+        timingData.Add(currentTime - SignalFreeRC6);
+      }
+
+      return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
+    }
+    static IrCode ConvertProntoRC6AToIrCode(ushort[] prontoData)
+    {
+      if (prontoData.Length != 6)
+        return null;
+
+      if (prontoData[0] != (ushort)CodeType.RC6A)
+        return null;
+
+      ushort prontoCarrier = prontoData[1];
+      if (prontoCarrier == 0x0000)
+        prontoCarrier = ConvertToProntoCarrier(CarrierRC6);
+
+      if (prontoData[2] + prontoData[3] != 2)
+        return null;
+
+      ushort customer = prontoData[5];
+      ushort system   = prontoData[5];
+      ushort command  = prontoData[6];
+
+      if (system > 255)
+        return null;
+
+      if (command > 255)
+        return null;
+
+      if (customer > 127 && customer < 32768)
+        return null;
+
+      uint rc6 = (uint)((customer << 16) | (system << 8) | command);
+
+      List<int> timingData = new List<int>();
+      timingData.AddRange(RC6AHeader);
+
+      int currentTime = 900;
+
+      for (int i = ((customer >= 32768) ? 32 : 24); i > 0; i--)
+      {
+        if ((rc6 & (1 << i)) != 0)  // Logic 1 (S, P)
+        {
+          if (currentTime > 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+
+          currentTime -= 450;
+          timingData.Add(currentTime);
+
+          currentTime = 450;
+        }
+        else  // Logic 0 (P, S)
+        {
+          if (currentTime < 0)
+          {
+            timingData.Add(currentTime);
+            currentTime = 0;
+          }
+
+          currentTime += 450;
+          timingData.Add(currentTime);
+
+          currentTime = -450;
+        }
+      }
+
+      if (currentTime > 0)
+      {
+        timingData.Add(currentTime);
+        timingData.Add(-SignalFreeRC6);
+      }
+      else
+      {
+        timingData.Add(currentTime - SignalFreeRC6);
+      }
+
+      return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
+    }
+
+    public static ushort[] ConvertIrCodeToProntoRaw(IrCode irCode)
+    {
+      List<ushort> prontoData = new List<ushort>();
+
+      double carrier;
+      ushort prontoCarrier;
+      CodeType codeType;
+
+      int irCodeCarrier = IrCode.CarrierFrequencyDefault;
+
+      switch (irCode.Carrier)
+      {
+        case IrCode.CarrierFrequencyPulseMode:
+          codeType = CodeType.RawUnmodulated;
+          irCodeCarrier = IrCode.CarrierFrequencyDefault;
+          break;
+
+        case IrCode.CarrierFrequencyUnknown:
+          codeType = CodeType.RawOscillated;
+          irCodeCarrier = IrCode.CarrierFrequencyDefault;
+          break;
+
+        default:
+          codeType = CodeType.RawOscillated;
+          irCodeCarrier = irCode.Carrier;
+          break;
+      }
+
+      prontoCarrier = ConvertToProntoCarrier(irCodeCarrier);
+      carrier = prontoCarrier * ProntoClock;
+
+      for (int index = 0; index < irCode.TimingData.Length; index++)
+      {
+        int duration = Math.Abs(irCode.TimingData[index]);
+        prontoData.Add((ushort)Math.Round(duration / carrier));
+      }
+
+      if (prontoData.Count % 2 != 0)
+        prontoData.Add(SignalFree);
+
+      ushort burstPairs = (ushort)(prontoData.Count / 2);
+
+      prontoData.Insert(0, (ushort)codeType); // Pronto Code Type
+      prontoData.Insert(1, prontoCarrier);    // IR Frequency
+      prontoData.Insert(2, burstPairs);       // First Burst Pairs
+      prontoData.Insert(3, 0x0000);           // Repeat Burst Pairs
+
+      return prontoData.ToArray();
+    }
+
     public static int ConvertFromProntoCarrier(ushort prontoCarrier)
     {
       return (int)(1000000 / (prontoCarrier * ProntoClock));
@@ -628,7 +629,7 @@ namespace MicrosoftMceTransceiver
 
     public static ushort ConvertToProntoCarrier(int carrierFrequency)
     {
-      return (ushort)((1000000 / ProntoClock) / carrierFrequency);
+      return (ushort)(1000000 / (carrierFrequency * ProntoClock));
     }
 
     #endregion Public Methods

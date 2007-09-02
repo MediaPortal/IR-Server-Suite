@@ -16,8 +16,6 @@ namespace XBCDRCReceiver
 
     #region Constants
 
-    static readonly string[] Ports  = new string[] { "None" };
-
     const int DeviceBufferSize = 7;
 
     #endregion Constants
@@ -184,10 +182,10 @@ namespace XBCDRCReceiver
 
     #region Implementation
 
-    public override string Name          { get { return "XBCDRC"; } }
-    public override string Version { get { return "1.0.3.4"; } }
-    public override string Author { get { return "and-81"; } }
-    public override string Description { get { return "Supports the XBox 1 IR receiver with XBCDRC"; } }
+    public override string Name         { get { return "XBCDRC"; } }
+    public override string Version      { get { return "1.0.3.4"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "Supports the XBox 1 IR receiver with XBCDRC"; } }
 
     public RemoteHandler RemoteCallback
     {

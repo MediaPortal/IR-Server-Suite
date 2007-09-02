@@ -187,7 +187,7 @@ namespace FusionRemoteReceiver
 
     #region Variables
 
-    static RemoteHandler _remoteButtonHandler = null;
+    static RemoteHandler _remoteHandler = null;
 
     static FileStream _deviceStream;
     static byte[] _deviceBuffer;
@@ -243,8 +243,8 @@ namespace FusionRemoteReceiver
 
     public RemoteHandler RemoteCallback
     {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
+      get { return _remoteHandler; }
+      set { _remoteHandler = value; }
     }
 
     static void OpenDevice()
@@ -354,8 +354,8 @@ namespace FusionRemoteReceiver
         {
           _lastCodeTime = DateTime.Now;
 
-          if (_remoteButtonHandler != null)
-            _remoteButtonHandler(keyCode.ToString());
+          if (_remoteHandler != null)
+            _remoteHandler(keyCode.ToString());
         }
         else
         {
@@ -366,8 +366,8 @@ namespace FusionRemoteReceiver
           {
             _lastCodeTime = DateTime.Now;
 
-            if (_remoteButtonHandler != null)
-              _remoteButtonHandler(keyCode.ToString());
+            if (_remoteHandler != null)
+              _remoteHandler(keyCode.ToString());
           }
         }
 

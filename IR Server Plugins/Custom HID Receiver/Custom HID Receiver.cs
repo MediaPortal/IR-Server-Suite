@@ -30,7 +30,7 @@ namespace CustomHIDReceiver
 
     #region Variables
 
-    RemoteButtonHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteHandler = null;
     FileStream _deviceStream;
     byte[] _deviceBuffer;
 
@@ -79,21 +79,17 @@ namespace CustomHIDReceiver
 
     #endregion
 
-    #region IIRServerPlugin Members
+    #region Implementation
 
-    public string Name          { get { return "Custom HID Receiver"; } }
-    public string Version       { get { return "1.0.3.4"; } }
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "Supports HID USB devices."; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return true; } }
+    public override string Name { get { return "Custom HID Receiver"; } }
+    public override string Version { get { return "1.0.3.4"; } }
+    public override string Author { get { return "and-81"; } }
+    public override string Description { get { return "Supports HID USB devices."; } }
 
-    public RemoteButtonHandler RemoteButtonCallback
+    public RemoteHandler RemoteCallback
     {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
+      get { return _remoteHandler; }
+      set { _remoteHandler = value; }
     }
 
     public string[] AvailablePorts  { get { return Ports; }   }
@@ -108,7 +104,7 @@ namespace CustomHIDReceiver
       }
     }
 
-    public bool Start()
+    public override bool Start()
     {
       if (String.IsNullOrEmpty(_deviceID))
         throw new Exception("No HID Device selected for use");
@@ -134,9 +130,9 @@ namespace CustomHIDReceiver
 
       return true;
     }
-    public void Suspend()   { }
-    public void Resume()    { }
-    public void Stop()
+    public override void Suspend() { }
+    public override void Resume() { }
+    public override void Stop()
     {
       if (_deviceStream == null)
         return;
@@ -155,12 +151,6 @@ namespace CustomHIDReceiver
 
     public bool Transmit(string file) { return false; }
     public LearnStatus Learn(string file) { return LearnStatus.Failure; }
-
-    public bool SetPort(string port)    { return true; }
-
-    #endregion IIRServerPlugin Members
-
-    #region Implementation
 
     protected virtual void Dispose(bool disposeManagedResources)
     {
@@ -312,7 +302,7 @@ namespace CustomHIDReceiver
         if (bytesRead == 0)
           throw new Exception("Error reading from HID Device, zero bytes read");
 
-        if (_remoteButtonHandler != null)
+        if (_remoteHandler != null)
         {
           string keyCode = String.Empty;
 
@@ -333,13 +323,13 @@ namespace CustomHIDReceiver
 
             if (timeSpan.Milliseconds >= _repeatDelay)
             {
-              _remoteButtonHandler(keyCode);
+              _remoteHandler(keyCode);
               _lastCodeTime = DateTime.Now;
             }
           }
           else
           {
-            _remoteButtonHandler(keyCode);
+            _remoteHandler(keyCode);
             _lastCodeTime = DateTime.Now;
             _lastKeyCode = keyCode;
           }          

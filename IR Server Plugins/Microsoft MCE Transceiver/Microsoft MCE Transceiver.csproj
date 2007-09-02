@@ -55,32 +55,46 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Advanced.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Advanced.Designer.cs">
+      <DependentUpon>Advanced.cs</DependentUpon>
+    </Compile>
     <Compile Include="Configure.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Configure.Designer.cs">
       <DependentUpon>Configure.cs</DependentUpon>
     </Compile>
-    <Compile Include="DeviceAccess.cs" />
-    <Compile Include="IRCodeConversion.cs" />
-    <Compile Include="IRDecoder.cs" />
+    <Compile Include="Driver.cs" />
+    <Compile Include="DriverReplacement.cs" />
+    <Compile Include="DriverVista.cs" />
+    <Compile Include="DriverXP.cs" />
+    <Compile Include="IrDecoder.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="MceDetectionData.cs" />
-    <Compile Include="MceIrCode.cs" />
+    <Compile Include="IrCode.cs" />
     <Compile Include="MicrosoftMceTransceiver.cs" />
     <Compile Include="Mouse.cs" />
     <Compile Include="NotifyWindow.cs" />
     <Compile Include="Pronto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteDetectionData.cs" />
+    <Compile Include="Win32ErrorCodes.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Advanced.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Advanced.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Configure.resx">
       <DependentUpon>Configure.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -102,6 +116,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetFileName)" "\MediaPortal Development\Plugin Releases\IR Server Suite\IR Server Plugins\"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetName).*" "\MediaPortal Development\Plugin Releases\IR Server Suite\IR Server Plugins\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

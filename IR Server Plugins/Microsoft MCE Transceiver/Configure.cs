@@ -13,22 +13,15 @@ namespace MicrosoftMceTransceiver
 
     #region Properties
 
-    public BlasterType BlastType
-    {
-      get { return (BlasterType)Enum.Parse(typeof(BlasterType), comboBoxBlasterType.SelectedItem as string, true); }
-      set { comboBoxBlasterType.SelectedItem = Enum.GetName(typeof(BlasterType), value); }
-    }
-
     public int LearnTimeout
     {
       get { return Decimal.ToInt32(numericUpDownLearnTimeout.Value); }
       set { numericUpDownLearnTimeout.Value = new Decimal(value); }
     }
-
-    public bool LearnAsPronto
+    public bool DisableMceServices
     {
-      get { return checkBoxLearnAsPronto.Checked; }
-      set { checkBoxLearnAsPronto.Checked = value; }
+      get { return checkBoxDisableMCEServices.Checked; }
+      set { checkBoxDisableMCEServices.Checked = value; }
     }
 
     public bool EnableRemote
@@ -91,14 +84,17 @@ namespace MicrosoftMceTransceiver
     public Configure()
     {
       InitializeComponent();
-
-      comboBoxBlasterType.Items.Clear();
-      comboBoxBlasterType.Items.AddRange(Enum.GetNames(typeof(BlasterType)));
     }
 
     #endregion Constructor
 
     #region Buttons
+
+    private void buttonAdvanced_Click(object sender, EventArgs e)
+    {
+      Advanced advanced = new Advanced();
+      advanced.ShowDialog(this);
+    }
 
     private void buttonOK_Click(object sender, EventArgs e)
     {

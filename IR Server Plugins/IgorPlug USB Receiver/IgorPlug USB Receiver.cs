@@ -13,7 +13,7 @@ using IRServerPluginInterface;
 namespace IgorPlugUSBReceiver
 {
 
-  public class IgorPlugUSBReceiver : IRServerPlugin
+  public class IgorPlugUSBReceiver : IRServerPlugin, IRemoteReceiver
   {
 
     #region Constants
@@ -59,16 +59,27 @@ namespace IgorPlugUSBReceiver
 
     #endregion Interop
 
-    #region IIRServerPlugin Members
+    #region Implementation
 
-    public string Name          { get { return "IgorPlug USB"; } }
-    public string Version       { get { return "1.0.3.4"; } } 
-    public string Author        { get { return "and-81"; } }
-    public string Description   { get { return "IgorPlug USB Receiver"; } }
-    public bool   CanReceive    { get { return true; } }
-    public bool   CanTransmit   { get { return false; } }
-    public bool   CanLearn      { get { return false; } }
-    public bool   CanConfigure  { get { return false; } }
+    public override string Name         { get { return "IgorPlug USB"; } }
+    public override string Version      { get { return "1.0.3.4"; } }
+    public override string Author       { get { return "and-81"; } }
+    public override string Description  { get { return "IgorPlug USB Receiver"; } }
+
+    public override bool Start()
+    {
+      ThreadStart readThreadStart = new ThreadStart(ReadThread);
+      _readThread = new Thread(readThreadStart);
+      _readThread.Start();
+
+      return true;
+    }
+    public override void Suspend() { }
+    public override void Resume() { }
+    public override void Stop()
+    {
+      _readThread.Abort();
+    }
 
     public RemoteHandler RemoteCallback
     {
@@ -83,20 +94,6 @@ namespace IgorPlugUSBReceiver
     public string[] AvailablePorts { get { return Ports; } }
 
     public void Configure() { }
-    public bool Start()
-    {
-      ThreadStart readThreadStart = new ThreadStart(ReadThread);
-      _readThread = new Thread(readThreadStart);
-      _readThread.Start();
-
-      return true;
-    }
-    public void Suspend()   { }
-    public void Resume()    { }
-    public void Stop()
-    {
-      _readThread.Abort();
-    }
 
     public bool Transmit(string file) { return false; }
     public LearnStatus Learn(out byte[] data)
@@ -104,12 +101,6 @@ namespace IgorPlugUSBReceiver
       data = null;
       return LearnStatus.Failure;
     }
-
-    public bool SetPort(string port)    { return true; }
-
-    #endregion IIRServerPlugin Members
-
-    #region Implementation
 
     void ReadThread()
     {

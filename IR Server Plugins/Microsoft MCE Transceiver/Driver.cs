@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 using Microsoft.Win32.SafeHandles;
 
 namespace MicrosoftMceTransceiver
 {
 
-  /// <summary>
-  /// Provides access to the MCE driver.
-  /// </summary>
-  public static class DeviceAccess
+  public abstract class Driver
   {
 
     #region Enumerations
@@ -112,44 +111,28 @@ namespace MicrosoftMceTransceiver
     struct DeviceInterfaceDetailData
     {
       public int Size;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-      public string DevicePath;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string DevicePath;
     }
 
     #endregion Structures
 
     #region Interop
 
-    [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern SafeFileHandle CreateFile(
-      [MarshalAs(UnmanagedType.LPTStr)] string fileName,
-      [MarshalAs(UnmanagedType.U4)] FileAccessTypes fileAccess,
-      [MarshalAs(UnmanagedType.U4)] FileShares fileShare,
-      IntPtr securityAttributes,
-      [MarshalAs(UnmanagedType.U4)] CreationDisposition creationDisposition,
-      [MarshalAs(UnmanagedType.U4)] FileAttributes flags,
-      IntPtr templateFile);
-
-    [DllImport("kernel32")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CancelIo(
-      SafeFileHandle handle);
-
-    [DllImport("setupapi", CharSet = CharSet.Auto)]
+    [DllImport("setupapi.dll", CharSet = CharSet.Auto)]
     static extern IntPtr SetupDiGetClassDevs(
       ref Guid classGuid,
       [MarshalAs(UnmanagedType.LPTStr)] string enumerator,
       IntPtr hwndParent,
       [MarshalAs(UnmanagedType.U4)] Digcfs flags);
 
-    [DllImport("setupapi", SetLastError = true)]
+    [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiEnumDeviceInfo(
       IntPtr handle,
       int index,
       ref DeviceInfoData deviceInfoData);
 
-    [DllImport("setupapi", SetLastError = true)]
+    [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiEnumDeviceInterfaces(
       IntPtr handle,
@@ -158,7 +141,7 @@ namespace MicrosoftMceTransceiver
       int memberIndex,
       ref DeviceInterfaceData deviceInterfaceData);
 
-    [DllImport("setupapi", SetLastError = true)]
+    [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiGetDeviceInterfaceDetail(
       IntPtr handle,
@@ -168,7 +151,7 @@ namespace MicrosoftMceTransceiver
       ref uint requiredSize,
       IntPtr unused3);
 
-    [DllImport("setupapi", SetLastError = true)]
+    [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiGetDeviceInterfaceDetail(
       IntPtr handle,
@@ -178,24 +161,60 @@ namespace MicrosoftMceTransceiver
       IntPtr unused1,
       IntPtr unused2);
 
-    [DllImport("setupapi")]
+    [DllImport("setupapi.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool SetupDiDestroyDeviceInfoList(
       IntPtr handle);
 
     #endregion Interop
 
-    #region Methods
+    #region Variables
+
+    protected Guid _deviceGuid;
+    protected string _devicePath;
+
+    protected RemoteCallback _remoteCallback      = null;
+    protected KeyboardCallback _keyboardCallback  = null;
+    protected MouseCallback _mouseCallback        = null;
+
+    #endregion Variables
+
+    #region Constructors
+
+    public Driver() { }
+    public Driver(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
+    {
+      _deviceGuid = deviceGuid;
+      _devicePath = devicePath;
+
+      _remoteCallback   = remoteCallback;
+      _keyboardCallback = keyboardCallback;
+      _mouseCallback    = mouseCallback;
+    }
+
+    #endregion Constructors
+
+    #region Abstract Methods
+
+    public abstract void Start();
+
+    public abstract void Stop();
+
+    public abstract IrCode Learn(int learnTimeout);
+
+    public abstract void Send(IrCode code, uint port);
+
+    #endregion Abstract Methods
+
+    #region Static Methods
 
     /// <summary>
     /// Find the device path for the supplied Device Class Guid.
     /// </summary>
     /// <param name="classGuid">GUID to locate device with.</param>
     /// <returns>Device path.</returns>
-    public static string FindDevice(Guid classGuid)
+    public static string Find(Guid classGuid)
     {
-      string devicePath = null;
-
       IntPtr handle = SetupDiGetClassDevs(ref classGuid, null, IntPtr.Zero, Digcfs.DeviceInterface | Digcfs.Present);
 
       if (handle.ToInt32() == -1)
@@ -211,7 +230,7 @@ namespace MicrosoftMceTransceiver
           int lastError = Marshal.GetLastWin32Error();
 
           // out of devices or do we have an error?
-          if (lastError != 0x0103 && lastError != 0x007E)
+          if (lastError != Win32ErrorCodes.ERROR_NO_MORE_ITEMS && lastError != Win32ErrorCodes.ERROR_MOD_NOT_FOUND)
           {
             SetupDiDestroyDeviceInfoList(handle);
             throw new Win32Exception(lastError);
@@ -247,56 +266,17 @@ namespace MicrosoftMceTransceiver
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        if ((deviceInterfaceDetailData.DevicePath.IndexOf("#vid_03ee&pid_2501") != -1) ||   // Mitsumi MCE remote
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_043e&pid_9803") != -1) ||   // LG
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_045e&pid_00a0") != -1) ||   // Microsoft
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0471&pid_0815") != -1) ||   // Microsoft/Philips 2005
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0471&pid_060c") != -1) ||   // Philips (HP branded)
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_045e&pid_006d") != -1) ||   // Microsoft/Philips 2004
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0609&pid_031d") != -1) ||   // SMK/Toshiba G83C0004D410 (Hauppauge)
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_0609&pid_0322") != -1) ||   // SMK (Sony VAIO)
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_107b&pid_3009") != -1) ||   // FIC Spectra/Mycom Mediacenter
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1308&pid_c001") != -1) ||   // Shuttle
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1460&pid_9150") != -1) ||   // HP
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1509&pid_9242") != -1) ||   // Fujitsu Scaleo-E
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_1784&pid_0001") != -1) ||   // Topseed
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_179d&pid_0010") != -1) ||   // Ricavision internal
-            (deviceInterfaceDetailData.DevicePath.IndexOf("#vid_195d&pid_7002") != -1) ||   // Itron ione Libra Q-11
-            (deviceInterfaceDetailData.DevicePath.StartsWith(@"\\?\hid#irdevice&col01#2"))) // Microsoft/Philips 2005 (Vista)
+        if (!String.IsNullOrEmpty(deviceInterfaceDetailData.DevicePath))
         {
           SetupDiDestroyDeviceInfoList(handle);
-          devicePath = deviceInterfaceDetailData.DevicePath;
-          break;
+          return deviceInterfaceDetailData.DevicePath;
         }
       }
 
-      return devicePath;
+      return null;
     }
 
-    /// <summary>
-    /// Open a handle to the device driver.
-    /// </summary>
-    /// <param name="devicePath">Device path.</param>
-    /// <param name="access">Access type.</param>
-    /// <param name="share">Share type.</param>
-    /// <returns>Handle to device driver.</returns>
-    public static SafeFileHandle OpenHandle(string devicePath, FileAccessTypes access, FileShares share)
-    {
-      return CreateFile(devicePath, access, share,
-        IntPtr.Zero, CreationDisposition.OpenExisting, FileAttributes.Overlapped, IntPtr.Zero);
-    }
-
-    /// <summary>
-    /// Cancel IO for device.
-    /// </summary>
-    /// <param name="deviceHandle">Handle to device.</param>
-    /// <returns>Success.</returns>
-    public static bool CancelDeviceIo(SafeFileHandle deviceHandle)
-    {
-      return CancelIo(deviceHandle);
-    }
-
-    #endregion Methods
+    #endregion Static Methods
 
   }
 

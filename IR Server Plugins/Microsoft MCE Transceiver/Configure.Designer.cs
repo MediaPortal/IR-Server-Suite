@@ -37,14 +37,14 @@ namespace MicrosoftMceTransceiver
       this.buttonCancel = new System.Windows.Forms.Button();
       this.groupBoxTimes = new System.Windows.Forms.GroupBox();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-      this.comboBoxBlasterType = new System.Windows.Forms.ComboBox();
       this.numericUpDownLearnTimeout = new System.Windows.Forms.NumericUpDown();
       this.numericUpDownKeyHeldDelay = new System.Windows.Forms.NumericUpDown();
       this.numericUpDownKeyRepeatDelay = new System.Windows.Forms.NumericUpDown();
       this.checkBoxHandleKeyboardLocal = new System.Windows.Forms.CheckBox();
       this.checkBoxHandleMouseLocal = new System.Windows.Forms.CheckBox();
       this.numericUpDownMouseSensitivity = new System.Windows.Forms.NumericUpDown();
-      this.labelBlasterType = new System.Windows.Forms.Label();
+      this.checkBoxDisableMCEServices = new System.Windows.Forms.CheckBox();
+      this.buttonAdvanced = new System.Windows.Forms.Button();
       this.labelLearnIRTimeout = new System.Windows.Forms.Label();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageBasic = new System.Windows.Forms.TabPage();
@@ -58,7 +58,6 @@ namespace MicrosoftMceTransceiver
       this.tabPageMouse = new System.Windows.Forms.TabPage();
       this.labelMouseSensitivity = new System.Windows.Forms.Label();
       this.checkBoxEnableMouse = new System.Windows.Forms.CheckBox();
-      this.checkBoxLearnAsPronto = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).BeginInit();
       this.groupBoxTimes.SuspendLayout();
@@ -148,7 +147,7 @@ namespace MicrosoftMceTransceiver
       this.buttonOK.Location = new System.Drawing.Point(120, 208);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
-      this.buttonOK.TabIndex = 1;
+      this.buttonOK.TabIndex = 2;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -159,7 +158,7 @@ namespace MicrosoftMceTransceiver
       this.buttonCancel.Location = new System.Drawing.Point(192, 208);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
-      this.buttonCancel.TabIndex = 2;
+      this.buttonCancel.TabIndex = 3;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -177,16 +176,6 @@ namespace MicrosoftMceTransceiver
       this.groupBoxTimes.TabStop = false;
       this.groupBoxTimes.Text = "Remote button timing (in milliseconds)";
       // 
-      // comboBoxBlasterType
-      // 
-      this.comboBoxBlasterType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxBlasterType.FormattingEnabled = true;
-      this.comboBoxBlasterType.Location = new System.Drawing.Point(144, 40);
-      this.comboBoxBlasterType.Name = "comboBoxBlasterType";
-      this.comboBoxBlasterType.Size = new System.Drawing.Size(88, 21);
-      this.comboBoxBlasterType.TabIndex = 1;
-      this.toolTips.SetToolTip(this.comboBoxBlasterType, "Choose between Microsoft or SMK manufactured MCE IR transceivers");
-      // 
       // numericUpDownLearnTimeout
       // 
       this.numericUpDownLearnTimeout.Increment = new decimal(new int[] {
@@ -194,7 +183,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             0});
-      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(144, 72);
+      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(144, 40);
       this.numericUpDownLearnTimeout.Maximum = new decimal(new int[] {
             60000,
             0,
@@ -207,7 +196,7 @@ namespace MicrosoftMceTransceiver
             0});
       this.numericUpDownLearnTimeout.Name = "numericUpDownLearnTimeout";
       this.numericUpDownLearnTimeout.Size = new System.Drawing.Size(88, 20);
-      this.numericUpDownLearnTimeout.TabIndex = 3;
+      this.numericUpDownLearnTimeout.TabIndex = 1;
       this.numericUpDownLearnTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownLearnTimeout.ThousandsSeparator = true;
       this.toolTips.SetToolTip(this.numericUpDownLearnTimeout, "When teaching IR commands this is how long before the process times out");
@@ -321,21 +310,36 @@ namespace MicrosoftMceTransceiver
             0,
             65536});
       // 
-      // labelBlasterType
+      // checkBoxDisableMCEServices
       // 
-      this.labelBlasterType.Location = new System.Drawing.Point(8, 40);
-      this.labelBlasterType.Name = "labelBlasterType";
-      this.labelBlasterType.Size = new System.Drawing.Size(136, 21);
-      this.labelBlasterType.TabIndex = 0;
-      this.labelBlasterType.Text = "Blaster manufacturer:";
-      this.labelBlasterType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.checkBoxDisableMCEServices.Checked = true;
+      this.checkBoxDisableMCEServices.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxDisableMCEServices.Location = new System.Drawing.Point(8, 80);
+      this.checkBoxDisableMCEServices.Name = "checkBoxDisableMCEServices";
+      this.checkBoxDisableMCEServices.Size = new System.Drawing.Size(224, 24);
+      this.checkBoxDisableMCEServices.TabIndex = 2;
+      this.checkBoxDisableMCEServices.Text = "Disable Windows Media Center services";
+      this.toolTips.SetToolTip(this.checkBoxDisableMCEServices, "Disable Microsoft Windows Media Center services to prevent interference with IR S" +
+              "erver");
+      this.checkBoxDisableMCEServices.UseVisualStyleBackColor = true;
+      // 
+      // buttonAdvanced
+      // 
+      this.buttonAdvanced.Location = new System.Drawing.Point(8, 208);
+      this.buttonAdvanced.Name = "buttonAdvanced";
+      this.buttonAdvanced.Size = new System.Drawing.Size(72, 24);
+      this.buttonAdvanced.TabIndex = 1;
+      this.buttonAdvanced.Text = "Advanced";
+      this.toolTips.SetToolTip(this.buttonAdvanced, "Click here for advanced driver settings");
+      this.buttonAdvanced.UseVisualStyleBackColor = true;
+      this.buttonAdvanced.Click += new System.EventHandler(this.buttonAdvanced_Click);
       // 
       // labelLearnIRTimeout
       // 
-      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 72);
+      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 40);
       this.labelLearnIRTimeout.Name = "labelLearnIRTimeout";
       this.labelLearnIRTimeout.Size = new System.Drawing.Size(136, 20);
-      this.labelLearnIRTimeout.TabIndex = 2;
+      this.labelLearnIRTimeout.TabIndex = 0;
       this.labelLearnIRTimeout.Text = "Learn IR timeout:";
       this.labelLearnIRTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -353,11 +357,9 @@ namespace MicrosoftMceTransceiver
       // 
       // tabPageBasic
       // 
-      this.tabPageBasic.Controls.Add(this.checkBoxLearnAsPronto);
+      this.tabPageBasic.Controls.Add(this.checkBoxDisableMCEServices);
       this.tabPageBasic.Controls.Add(this.labelLearnIRTimeout);
-      this.tabPageBasic.Controls.Add(this.labelBlasterType);
       this.tabPageBasic.Controls.Add(this.numericUpDownLearnTimeout);
-      this.tabPageBasic.Controls.Add(this.comboBoxBlasterType);
       this.tabPageBasic.Location = new System.Drawing.Point(4, 22);
       this.tabPageBasic.Name = "tabPageBasic";
       this.tabPageBasic.Padding = new System.Windows.Forms.Padding(3);
@@ -478,17 +480,6 @@ namespace MicrosoftMceTransceiver
       this.checkBoxEnableMouse.Text = "Enable mouse input";
       this.checkBoxEnableMouse.UseVisualStyleBackColor = true;
       // 
-      // checkBoxLearnAsPronto
-      // 
-      this.checkBoxLearnAsPronto.Enabled = false;
-      this.checkBoxLearnAsPronto.Location = new System.Drawing.Point(8, 104);
-      this.checkBoxLearnAsPronto.Name = "checkBoxLearnAsPronto";
-      this.checkBoxLearnAsPronto.Size = new System.Drawing.Size(224, 24);
-      this.checkBoxLearnAsPronto.TabIndex = 4;
-      this.checkBoxLearnAsPronto.Text = "Store learned codes in Pronto format";
-      this.toolTips.SetToolTip(this.checkBoxLearnAsPronto, "Store learned IR commands in Philips Pronto format");
-      this.checkBoxLearnAsPronto.UseVisualStyleBackColor = true;
-      // 
       // Configure
       // 
       this.AcceptButton = this.buttonOK;
@@ -497,6 +488,7 @@ namespace MicrosoftMceTransceiver
       this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(264, 239);
       this.ControlBox = false;
+      this.Controls.Add(this.buttonAdvanced);
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
@@ -531,8 +523,6 @@ namespace MicrosoftMceTransceiver
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.GroupBox groupBoxTimes;
     private System.Windows.Forms.ToolTip toolTips;
-    private System.Windows.Forms.ComboBox comboBoxBlasterType;
-    private System.Windows.Forms.Label labelBlasterType;
     private System.Windows.Forms.Label labelLearnIRTimeout;
     private System.Windows.Forms.NumericUpDown numericUpDownLearnTimeout;
     private System.Windows.Forms.TabControl tabControl;
@@ -552,6 +542,7 @@ namespace MicrosoftMceTransceiver
     private System.Windows.Forms.NumericUpDown numericUpDownMouseSensitivity;
     private System.Windows.Forms.CheckBox checkBoxHandleMouseLocal;
     private System.Windows.Forms.CheckBox checkBoxEnableMouse;
-    private System.Windows.Forms.CheckBox checkBoxLearnAsPronto;
+    private System.Windows.Forms.CheckBox checkBoxDisableMCEServices;
+    private System.Windows.Forms.Button buttonAdvanced;
   }
 }

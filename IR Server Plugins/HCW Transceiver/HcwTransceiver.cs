@@ -38,7 +38,7 @@ namespace HcwTransceiver
 
     //Sets up callback so that other forms can catch a key press
     public delegate void HCWEvent(int keypress);
-    public event HCWEvent HCWKeyPressed;
+    //public event HCWEvent HCWKeyPressed;
 
     #endregion Delegates
 
@@ -76,11 +76,6 @@ namespace HcwTransceiver
 
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
-
-    // -------
-
-    int _abortLearn = AllowLearn;
-    bool _learnTimedOut;
 
     #endregion Variables
 

@@ -21,21 +21,6 @@ namespace MicrosoftMceTransceiver
   #region Enumerations
 
   /// <summary>
-  /// Type of blaster in use.
-  /// </summary>
-  public enum BlasterType
-  {
-    /// <summary>
-    /// Device is a first party Microsoft MCE transceiver.
-    /// </summary>
-    Microsoft = 0,
-    /// <summary>
-    /// Device is an third party SMK MCE transceiver.
-    /// </summary>
-    SMK = 1
-  }
-
-  /// <summary>
   /// The blaster port to send IR codes to.
   /// </summary>
   enum BlasterPort
@@ -72,36 +57,19 @@ namespace MicrosoftMceTransceiver
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\Microsoft MCE Transceiver.xml";
     
-    const int DeviceBufferSize = 255;
-    const int PacketTimeout = 100;
+    Guid MicrosoftGuid    = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
+    Guid ReplacementGuid  = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f, 0xb1, 0x72, 0x8b);
 
-    // Microsoft Port Packets
-    static readonly byte[][] MicrosoftPorts = new byte[][]
-			{
-				new byte[] { 0x9F, 0x08, 0x06 },        // Both
-				new byte[] { 0x9F, 0x08, 0x04 },	      // 1
-				new byte[] { 0x9F, 0x08, 0x02 },	      // 2
-			};
-
-    // SMK (or Topseed) Port Packets
-    static readonly byte[][] SmkPorts = new byte[][]
-			{
-				new byte[] { 0x9F, 0x08, 0x00 },	      // Both
-				new byte[] { 0x9F, 0x08, 0x01 },	      // 1
-				new byte[] { 0x9F, 0x08, 0x02 },        // 2
-			};
-
-    // Device Initialization Packets
-    static readonly byte[] InitPacket1  = { 0x00, 0xFF, 0xAA, 0xFF, 0x0B };
-    static readonly byte[] InitPacket2  = { 0xFF, 0x18 };
-
-    // Learn Initialization Packets
-    static readonly byte[] LearnPacket1 = { 0x9F, 0x0C, 0x0F, 0xA0 };
-    static readonly byte[] LearnPacket2 = { 0x9F, 0x14, 0x01 };
+    const int VistaVersionNumber  = 6;
 
     #endregion Constants
 
     #region Variables
+
+    #region Configuration
+
+    int _learnTimeout           = 10000;
+    bool _disableMceServices    = true;
 
     bool _enableRemoteInput     = true;
     int _remoteFirstRepeat      = 400;
@@ -116,12 +84,9 @@ namespace MicrosoftMceTransceiver
     bool _handleMouseLocally    = true;
     double _mouseSensitivity    = 1.0d;
 
-    int _learnTimeout           = 10000;
+    #endregion Configuration
 
-    BlasterType  _blasterType   = BlasterType.Microsoft;
-    
-    List<byte> _learnedNativeData = null;
-    //int _learnedCarrier = 0;
+    Driver _driver;
 
     IRProtocol _lastRemoteButtonCodeType = IRProtocol.None;
     uint _lastRemoteButtonKeyCode = 0;
@@ -135,21 +100,10 @@ namespace MicrosoftMceTransceiver
     uint _lastKeyboardModifiers = 0;
 
     Mouse.MouseEvents _mouseButtons = Mouse.MouseEvents.None;
-    
-    Guid _deviceClass;
-    SafeFileHandle _deviceHandle;
-    FileStream _readStream;
-    FileStream _writeStream;
-    byte[] _deviceBuffer;
-    NotifyWindow _notifyWindow;
-    int _learnStartTick;
-    bool _learning;
 
     DateTime _lastPacketTime = DateTime.Now;
 
-    bool _replacementDriver = false;
-
-    RemoteHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteHandler = null;
     KeyboardHandler _keyboardHandler = null;
     MouseHandler _mouseHandler = null;
 
@@ -158,7 +112,7 @@ namespace MicrosoftMceTransceiver
     #region Implementation
 
     public override string Name         { get { return "Microsoft MCE"; } }
-    public override string Version      { get { return "1.0.3.3"; } }
+    public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "Microsoft MCE Infrared Transceiver"; } }
 
@@ -166,68 +120,44 @@ namespace MicrosoftMceTransceiver
     {
       LoadSettings();
 
-      // Stop Microsoft MCE ehRecvr, mcrdsvc and ehSched processes (if they exist)
-      try
+      if (_disableMceServices)
+        DisableMceServices();
+
+      Guid deviceGuid;
+      string devicePath;
+
+      if (FindDevice(out deviceGuid, out devicePath))
       {
-        ServiceController[] services = ServiceController.GetServices();
-        foreach (ServiceController service in services)
+        if (deviceGuid == MicrosoftGuid)
         {
-          if (service.ServiceName.Equals("ehRecvr", StringComparison.InvariantCultureIgnoreCase))
-          {
-            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
-            {
-              service.Stop();
-            }
-          }
-          else if (service.ServiceName.Equals("ehSched", StringComparison.InvariantCultureIgnoreCase))
-          {
-            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
-            {
-              service.Stop();
-            }
-          }
-          else if (service.ServiceName.Equals("mcrdsvc", StringComparison.InvariantCultureIgnoreCase))
-          {
-            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
-            {
-              service.Stop();
-            }
-          }
+          if (Environment.OSVersion.Version.Major == VistaVersionNumber)
+            _driver = new DriverVista(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+          else
+            _driver = new DriverXP(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+        }
+        else
+        {
+          _driver = new DriverReplacement(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
         }
       }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
+      else
+        return false;
 
-      // Kill Microsoft MCE ehtray process (if it exists)
-      try
-      {
-        Process[] processes = Process.GetProcesses();
-        foreach (Process proc in processes)
-          if (proc.ProcessName.Equals("ehtray", StringComparison.InvariantCultureIgnoreCase))
-            proc.Kill();
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-      
-      Init();
+      _driver.Start();
 
       return true;
     }
     public override void Suspend()
     {
-      OnDeviceRemoval();
+      _driver.Stop();
     }
     public override void Resume()
     {
-      OnDeviceArrival();
+      _driver.Start();
     }
     public override void Stop()
     {
-      OnDeviceRemoval();
+      _driver.Stop();
     }
 
     public void Configure()
@@ -236,8 +166,8 @@ namespace MicrosoftMceTransceiver
 
       Configure config = new Configure();
 
-      config.BlastType            = _blasterType;
       config.LearnTimeout         = _learnTimeout;
+      config.DisableMceServices   = _disableMceServices;
 
       config.EnableRemote         = _enableRemoteInput;
       config.RemoteRepeatDelay    = _remoteFirstRepeat;
@@ -254,8 +184,8 @@ namespace MicrosoftMceTransceiver
 
       if (config.ShowDialog() == DialogResult.OK)
       {
-        _blasterType            = config.BlastType;
         _learnTimeout           = config.LearnTimeout;
+        _disableMceServices     = config.DisableMceServices;
 
         _enableRemoteInput      = config.EnableRemote;
         _remoteFirstRepeat      = config.RemoteRepeatDelay;
@@ -276,26 +206,21 @@ namespace MicrosoftMceTransceiver
 
     public RemoteHandler RemoteCallback
     {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
+      get { return _remoteHandler; }
+      set { _remoteHandler = value; }
     }
-
     public KeyboardHandler KeyboardCallback
     {
       get { return _keyboardHandler; }
       set { _keyboardHandler = value; }
     }
-
     public MouseHandler MouseCallback
     {
       get { return _mouseHandler; }
       set { _mouseHandler = value; }
     }
 
-    public string[] AvailablePorts
-    {
-      get { return Enum.GetNames(typeof(BlasterPort)); }
-    }
+    public string[] AvailablePorts { get { return Enum.GetNames(typeof(BlasterPort)); } }
 
     public bool Transmit(string port, byte[] data)
     {
@@ -309,38 +234,28 @@ namespace MicrosoftMceTransceiver
         throw new ArgumentException("Invalid Blaster Port", "port", ex);
       }
 
-      MceIrCode code = new MceIrCode(data);
-      Send(code, blasterPort, _blasterType);
+      IrCode code = IrCode.FromString(Encoding.ASCII.GetString(data));
+
+      //code.Finalize();
+
+      _driver.Send(code, (uint)blasterPort);
 
       return true;
     }
     public LearnStatus Learn(out byte[] data)
     {
-      _learnedNativeData = new List<byte>();
-      data = null;
-
-      BeginLearn();
-
-      // Wait for the learning to finish ...
-      while (_learning && Environment.TickCount < _learnStartTick + _learnTimeout)
+      IrCode code = _driver.Learn(_learnTimeout);
+      
+      if (code != null)
       {
-        Thread.Sleep(100);
-      }
-
-      if (_learning)
-      {
-        _learning = false;
-
-        return LearnStatus.Timeout;
-      }
-      else if (_learnedNativeData != null && _learnedNativeData.Count > 0)
-      {
-        data = _learnedNativeData.ToArray();
-
+        data = Encoding.ASCII.GetBytes(code.ToString());
         return LearnStatus.Success;
       }
-      
-      return LearnStatus.Failure;
+      else
+      {
+        data = null;
+        return LearnStatus.Failure;
+      }
     }
 
     void LoadSettings()
@@ -350,9 +265,9 @@ namespace MicrosoftMceTransceiver
       try   { doc.Load(ConfigurationFile); }
       catch { return; }
 
-      try   { _blasterType = (BlasterType)Enum.Parse(typeof(BlasterType), doc.DocumentElement.Attributes["BlastType"].Value, true); } catch {}
       try   { _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value); } catch {}
-
+      try   { _disableMceServices = bool.Parse(doc.DocumentElement.Attributes["DisableMceServices"].Value); } catch {}
+      
       try   { _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); } catch {}
       try   { _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); } catch {}
       try   { _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value); } catch {}
@@ -377,8 +292,8 @@ namespace MicrosoftMceTransceiver
         writer.WriteStartDocument(true);
         writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("BlastType",              Enum.GetName(typeof(BlasterType), _blasterType));
         writer.WriteAttributeString("LearnTimeout",           _learnTimeout.ToString());
+        writer.WriteAttributeString("DisableMceServices",     _disableMceServices.ToString());
 
         writer.WriteAttributeString("EnableRemoteInput",      _enableRemoteInput.ToString());
         writer.WriteAttributeString("RemoteFirstRepeat",      _remoteFirstRepeat.ToString());
@@ -403,219 +318,78 @@ namespace MicrosoftMceTransceiver
       }
     }
 
-    void Init()
+    bool FindDevice(out Guid deviceGuid, out string devicePath)
     {
-      _deviceBuffer = new byte[DeviceBufferSize];
+      devicePath = null;
 
-      _notifyWindow = new NotifyWindow();
-      _notifyWindow.Create();
-
-      Open();
-
-      _notifyWindow.Class = _deviceClass;
-      _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
-      _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
-
-      _notifyWindow.RegisterDeviceRemoval(_deviceHandle.DangerousGetHandle());
-
-      _writeStream.Write(InitPacket1, 0, InitPacket1.Length);
-      _writeStream.Write(InitPacket2, 0, InitPacket2.Length);
-      _writeStream.Flush();
-
-      _readStream.Flush();
-      _readStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
-    }
-
-    void Open()
-    {
-      Guid deviceClass;
-      string devicePath = null;
-
-      // Try XP eHome driver ...
-      deviceClass = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
-      _replacementDriver = false;
+      // Try eHome driver ...
+      deviceGuid = MicrosoftGuid;
       try
       {
-        devicePath = DeviceAccess.FindDevice(deviceClass);
+        devicePath = Driver.Find(deviceGuid);
+
+        if (!String.IsNullOrEmpty(devicePath))
+          return true;
       }
       catch { }
 
-      // Try replacement driver ...
-      if (devicePath == null)
-      {
-        deviceClass = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f, 0xb1, 0x72, 0x8b);
-        _replacementDriver = true;
-        try
-        {
-          devicePath = DeviceAccess.FindDevice(deviceClass);
-        }
-        catch { }
-      }
-
-      if (devicePath == null)
-        throw new Exception("No MCE Transceiver detected");
-
-      int lastError;
-
-      if (_replacementDriver)
-      {
-        SafeFileHandle deviceHandleRead = DeviceAccess.OpenHandle(devicePath + "\\Pipe01", DeviceAccess.FileAccessTypes.GenericRead, DeviceAccess.FileShares.Read | DeviceAccess.FileShares.Write);
-        lastError = Marshal.GetLastWin32Error();
-
-        if (lastError != 0)
-          throw new Win32Exception(lastError);
-
-        SafeFileHandle deviceHandleWrite = DeviceAccess.OpenHandle(devicePath + "\\Pipe00", DeviceAccess.FileAccessTypes.GenericWrite, DeviceAccess.FileShares.Read | DeviceAccess.FileShares.Write);
-        lastError = Marshal.GetLastWin32Error();
-
-        if (lastError != 0)
-          throw new Win32Exception(lastError);
-
-        _deviceHandle = deviceHandleRead;
-
-        _readStream = new FileStream(deviceHandleRead, FileAccess.Read, _deviceBuffer.Length, true);
-        _writeStream = new FileStream(deviceHandleWrite, FileAccess.Write, _deviceBuffer.Length, true);
-      }
-      else
-      {
-        SafeFileHandle deviceHandleReadWrite = DeviceAccess.OpenHandle(devicePath + "\\Pipe01", DeviceAccess.FileAccessTypes.GenericRead | DeviceAccess.FileAccessTypes.GenericWrite, DeviceAccess.FileShares.Read | DeviceAccess.FileShares.Write);
-        lastError = Marshal.GetLastWin32Error();
-
-        if (lastError != 0)
-          throw new Win32Exception(lastError);
-
-        _deviceHandle = deviceHandleReadWrite;
-
-        _readStream = _writeStream = new FileStream(deviceHandleReadWrite, FileAccess.ReadWrite, _deviceBuffer.Length, true);
-      }
-
-      _deviceClass = deviceClass;
-    }
-
-    void OnDeviceArrival()
-    {
-      _notifyWindow.UnregisterDeviceArrival();
-
-      if (_readStream != null)
-        return;
-
-      Open();
-
-      _notifyWindow.RegisterDeviceRemoval(_deviceHandle.DangerousGetHandle());
-    }
-    void OnDeviceRemoval()
-    {
-      _notifyWindow.UnregisterDeviceRemoval();
-      _notifyWindow.RegisterDeviceArrival();
-
-      if (_readStream == null)
-        return;
-
+      // Try Replacement driver ...
+      deviceGuid = ReplacementGuid;
       try
       {
-        _readStream.Close();
-        _readStream = null;
+        devicePath = Driver.Find(deviceGuid);
 
-        if (_writeStream != null)
-        {
-          _writeStream.Close();
-          _writeStream = null;
-        }
+        if (!String.IsNullOrEmpty(devicePath))
+          return true;
       }
-      catch (IOException)
-      {
-        // we are closing the stream so ignore this
-      }
+      catch { }
+
+      return false;
     }
 
-    void BeginLearn()
+    static void DisableMceServices()
     {
+      // Vista ...
+      // Stop Microsoft MCE ehRecvr, mcrdsvc and ehSched processes (if they exist)
       try
       {
-        _writeStream.Write(LearnPacket1, 0, LearnPacket1.Length);
-        _writeStream.Write(LearnPacket2, 0, LearnPacket2.Length);
-        _writeStream.Flush();
-
-        _learnStartTick = Environment.TickCount;
-        _learning = true;
-        _readStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
-      }
-      catch
-      {
-        _learning = false;
-      }
-    }
-
-    void OnReadComplete(IAsyncResult asyncResult)
-    {
-      if (_readStream == null)
-        return;
-
-      int bytesRead = 0;
-      try
-      {
-        bytesRead = _readStream.EndRead(asyncResult);
-      }
-      catch
-      {
-        return;
-      }
-      if (bytesRead == 0)
-        return;
-
-      TimeSpan sinceLastPacket = DateTime.Now.Subtract(_lastPacketTime);
-      if (sinceLastPacket.TotalMilliseconds >= PacketTimeout)
-      {
-        IRCodeConversion.ConvertNativeDataToTimingData(null);
-        IRDecoder.DecodeIR(null, null, null, null);
-      }
-
-      _lastPacketTime = DateTime.Now;
-
-      byte[] packetBytes = new byte[bytesRead];
-      Array.Copy(_deviceBuffer, packetBytes, bytesRead);
-
-      if (packetBytes[0] >= 0x81 && packetBytes[0] <= 0x84)
-        HandlePacket(packetBytes);
-
-      // begin another asynchronous read from the device
-      _readStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
-    }
-
-    void HandlePacket(byte[] rawPacket)
-    {
-      byte[] nativeData = IRCodeConversion.ConvertRawPacketToNativeData(rawPacket);
-
-      if (_learning)
-      {
-        if (nativeData == null)
+        ServiceController[] services = ServiceController.GetServices();
+        foreach (ServiceController service in services)
         {
-          if (_learnedNativeData.Count > 0)
+          if (service.ServiceName.Equals("ehRecvr", StringComparison.InvariantCultureIgnoreCase))
           {
-            _learnedNativeData = null;
-            _learning = false;
+            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
+              service.Stop();
           }
-
-          return;
+          else if (service.ServiceName.Equals("ehSched", StringComparison.InvariantCultureIgnoreCase))
+          {
+            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
+              service.Stop();
+          }
+          else if (service.ServiceName.Equals("mcrdsvc", StringComparison.InvariantCultureIgnoreCase))
+          {
+            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
+              service.Stop();
+          }
         }
-
-        _learnedNativeData.AddRange(nativeData);
-
-        if (Array.IndexOf(rawPacket, (byte)0x9F) != -1)
-          _learning = false;
       }
-      else
+      catch (Exception ex)
       {
-        if (nativeData == null)
-          return;
+        Console.WriteLine(ex.ToString());
+      }
 
-        uint[] timingData = IRCodeConversion.ConvertNativeDataToTimingData(nativeData);
-
-        IRDecoder.DecodeIR(
-          timingData,
-          new RemoteCallback(RemoteEvent),
-          new KeyboardCallback(KeyboardEvent),
-          new MouseCallback(MouseEvent));
+      // XP ...
+      // Kill Microsoft MCE ehtray process (if it exists)
+      try
+      {
+        Process[] processes = Process.GetProcesses();
+        foreach (Process proc in processes)
+          if (proc.ProcessName.Equals("ehtray", StringComparison.InvariantCultureIgnoreCase))
+            proc.Kill();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
       }
     }
 
@@ -648,8 +422,8 @@ namespace MicrosoftMceTransceiver
 
       _lastRemoteButtonTime = DateTime.Now;
 
-      if (_remoteButtonHandler != null)
-        _remoteButtonHandler(keyCode.ToString());
+      if (_remoteHandler != null)
+        _remoteHandler(keyCode.ToString());
 
       //String.Format("{0}: {1}", Enum.GetName(typeof(IRProtocol), codeType), keyCode);
     }
@@ -1023,104 +797,6 @@ namespace MicrosoftMceTransceiver
         Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
         _keyboardHandler((int)vKey, false);
       }
-    }
-
-    /// <summary>
-    /// Reads in an IR file (either Native or Pronto).
-    /// </summary>
-    /// <param name="fileName">IR file to load.</param>
-    /// <returns>MCE IR Code.</returns>
-    static MceIrCode ReadIRFile(string fileName)
-    {
-      try
-      {
-        FileStream irFile = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        int length = (int)irFile.Length;
-
-        byte[] fileData = new byte[length];
-
-        irFile.Read(fileData, 0, length);
-
-        irFile.Close();
-
-        if (Pronto.IsProntoData(fileData))
-        {
-          ushort[] prontoData = Pronto.ConvertFileBytesToProntoData(fileData);
-
-          return Pronto.ConvertProntoDataToMceIrCode(prontoData);
-        }
-        else
-        {
-          return new MceIrCode(fileData);
-        }
-      }
-      catch
-      {
-        return null;
-      }
-    }
-
-    /// <summary>
-    /// Writes an IR file with the supplied data.
-    /// </summary>
-    /// <param name="fileName">Path to file.</param>
-    /// <param name="MceIrCode">IR code data.</param>
-    /// <returns>Success.</returns>
-    static bool WriteIRFile(string fileName, MceIrCode code)
-    {
-      try
-      {
-        FileStream file = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read);
-
-        foreach (byte dataByte in code.Data)
-          file.WriteByte(dataByte);
-
-        file.Flush();
-        file.Close();
-      }
-      catch
-      {
-        return false;
-      }
-
-      return true;
-    }
-
-    /// <summary>
-    /// Send an IR code.
-    /// </summary>
-    /// <param name="code">MCE IR code data to send.</param>
-    /// <param name="port">IR port to send to.</param>
-    /// <param name="type">Transceiver type.</param>
-    void Send(MceIrCode code, BlasterPort port, BlasterType type)
-    {
-      byte[][] portPackets;
-      switch (type)
-      {
-        case BlasterType.Microsoft:   portPackets = MicrosoftPorts;   break;
-        case BlasterType.SMK:         portPackets = SmkPorts;         break;
-        default:
-          throw new ArgumentException("Invalid Blaster Type", "type");
-      }
-
-      // Set port
-      _writeStream.Write(portPackets[(int)port], 0, portPackets[(int)port].Length);
-
-      // Set carrier frequency
-      byte[] carrierPacket = code.GetCarrierPacket();
-      _writeStream.Write(carrierPacket, 0, carrierPacket.Length);
-
-      // Send packet
-      byte[] dataPacket = code.GetDataPacket();
-      _writeStream.Write(dataPacket, 0, dataPacket.Length);
-
-      // Flush the data stream
-      _writeStream.Flush();
-
-      // Wait to ensure the packet had time to be transmitted
-      int packetTime = code.GetPacketTransmitTime() / 1000;
-      Thread.Sleep(packetTime);
     }
 
     #endregion Implementation
