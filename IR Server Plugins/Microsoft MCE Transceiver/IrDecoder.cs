@@ -10,7 +10,7 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// Protocol of IR Code.
   /// </summary>
-  public enum IRProtocol
+  public enum IrProtocol
   {
     None,
     //ITT,
@@ -31,7 +31,7 @@ namespace MicrosoftMceTransceiver
 
   #region Delegates
 
-  public delegate void RemoteCallback(IRProtocol codeType, uint keyCode);
+  public delegate void RemoteCallback(IrProtocol codeType, uint keyCode);
   public delegate void KeyboardCallback(uint keyCode, uint modifiers);
   public delegate void MouseCallback(int deltaX, int deltaY, bool rightButton, bool leftButton);
 
@@ -80,7 +80,7 @@ namespace MicrosoftMceTransceiver
     #region Methods
 
     /// <summary>
-    /// Decode timing data to discover IR Protocol and button code.
+    /// Decode timing data to discover IR Protocol and packet payload.
     /// </summary>
     /// <param name="timingData">Input timing data.</param>
     /// <param name="remoteCallback">Method to call when Remote button decoded.</param>
@@ -179,7 +179,7 @@ namespace MicrosoftMceTransceiver
 
             if (JVC_Data.Bit == 16)
             {
-              remoteCallback(IRProtocol.JVC, JVC_Data.Code);
+              remoteCallback(IrProtocol.JVC, JVC_Data.Code);
               JVC_Data.State = RemoteDetectionState.Leading;
             }
             break;
@@ -247,7 +247,7 @@ namespace MicrosoftMceTransceiver
             }
             else if (!pulse && duration >= 2050 && duration <= 2450) // For Repeats
             {
-              remoteCallback(IRProtocol.NEC, NEC_Data.Code);
+              remoteCallback(IrProtocol.NEC, NEC_Data.Code);
               NEC_Data.State = RemoteDetectionState.HeaderPulse;
               ignored = false;
             }
@@ -286,7 +286,7 @@ namespace MicrosoftMceTransceiver
 
             if (NEC_Data.Bit == 32)
             {
-              remoteCallback(IRProtocol.NEC, NEC_Data.Code);
+              remoteCallback(IrProtocol.NEC, NEC_Data.Code);
               NEC_Data.State = RemoteDetectionState.HeaderPulse;
             }
             break;
@@ -448,7 +448,7 @@ namespace MicrosoftMceTransceiver
           else
             RC5_Data.Code &= ToggleMaskRC5;
 
-          remoteCallback(IRProtocol.RC5, RC5_Data.Code);
+          remoteCallback(IrProtocol.RC5, RC5_Data.Code);
 
           RC5_Data.State = RemoteDetectionState.HeaderPulse;
         }
@@ -512,7 +512,7 @@ namespace MicrosoftMceTransceiver
 
             if (pulse)
             {
-              if ((duration >= 350) && (duration <= 600))
+              if ((duration >= 300) && (duration <= 600))
               {
                 ignored = false;
                 if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint)(1 << --RC6_Data.Bit);
@@ -602,7 +602,7 @@ namespace MicrosoftMceTransceiver
 
             if ((RC6_Data.HalfBit % 2) == 0)
             {
-              if (pulse && (duration >= 350) && (duration <= 600))
+              if (pulse && (duration >= 300) && (duration <= 600))
               {
                 ignored = false;
                 RC6_Data.LongPulse = true;
@@ -675,7 +675,7 @@ namespace MicrosoftMceTransceiver
                 if (RC6_Data.Bit == 1)
                   RC6_Data.State = RemoteDetectionState.KeyCode;
               }
-              else if ((duration >= 350) && (duration <= 600))
+              else if ((duration >= 300) && (duration <= 600))
               {
                 RC6_Data.Bit--;
                 RC6_Data.Code |= (uint)1 << RC6_Data.Bit;
@@ -700,7 +700,7 @@ namespace MicrosoftMceTransceiver
           if ((~RC6_Data.Code >> 16) == CustomerMce)
             RC6_Data.Code &= ToggleMaskMce;
 
-          remoteCallback(IRProtocol.RC6, RC6_Data.Code);
+          remoteCallback(IrProtocol.RC6, RC6_Data.Code);
 
           RC6_Data.State = RemoteDetectionState.HeaderPulse;
         }
@@ -785,7 +785,7 @@ namespace MicrosoftMceTransceiver
 
             if (RCA_Data.Bit == 12)
             {
-              remoteCallback(IRProtocol.RCA, RCA_Data.Code);
+              remoteCallback(IrProtocol.RCA, RCA_Data.Code);
               RCA_Data.State = RemoteDetectionState.HeaderPulse;
             }
             break;
@@ -886,7 +886,7 @@ namespace MicrosoftMceTransceiver
               if (RECS80_Data.Bit == 0)
               {
                 RECS80_Data.Code &= 0x0000FFFF;
-                remoteCallback(IRProtocol.RECS80, RECS80_Data.Code);
+                remoteCallback(IrProtocol.RECS80, RECS80_Data.Code);
 
                 RECS80_Data.State = RemoteDetectionState.HeaderPulse;
               }
@@ -971,7 +971,7 @@ namespace MicrosoftMceTransceiver
 
             if (SIRC_Data.Bit == 15)
             {
-              remoteCallback(IRProtocol.SIRC, SIRC_Data.Code);
+              remoteCallback(IrProtocol.SIRC, SIRC_Data.Code);
               SIRC_Data.State = RemoteDetectionState.HeaderPulse;
             }
             break;

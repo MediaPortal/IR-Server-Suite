@@ -11,6 +11,9 @@ using Microsoft.Win32.SafeHandles;
 namespace MicrosoftMceTransceiver
 {
 
+  /// <summary>
+  /// Base class for the different MCE device driver access classes.
+  /// </summary>
   public abstract class Driver
   {
 
@@ -111,7 +114,8 @@ namespace MicrosoftMceTransceiver
     struct DeviceInterfaceDetailData
     {
       public int Size;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string DevicePath;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+      public string DevicePath;
     }
 
     #endregion Structures
@@ -196,12 +200,28 @@ namespace MicrosoftMceTransceiver
 
     #region Abstract Methods
 
+    /// <summary>
+    /// Start using the device.
+    /// </summary>
     public abstract void Start();
 
+    /// <summary>
+    /// Stop access to the device.
+    /// </summary>
     public abstract void Stop();
-
+    // TODO: Change learn interface to return LearnStatus
+    /// <summary>
+    /// Learn an IR Command.
+    /// </summary>
+    /// <param name="learnTimeout">How long to wait before aborting learn.</param>
+    /// <returns>Newly learned IR Command.</returns>
     public abstract IrCode Learn(int learnTimeout);
 
+    /// <summary>
+    /// Send an IR Command.
+    /// </summary>
+    /// <param name="code">IR code data to send.</param>
+    /// <param name="port">IR port to send to.</param>
     public abstract void Send(IrCode code, uint port);
 
     #endregion Abstract Methods

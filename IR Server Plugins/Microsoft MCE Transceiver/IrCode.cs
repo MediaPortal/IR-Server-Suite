@@ -15,11 +15,23 @@ namespace MicrosoftMceTransceiver
   {
 
     #region Constants
-    
-    public const int CarrierFrequencyUnknown    = -1;
-    public const int CarrierFrequencyPulseMode  = 0;
-    public const int CarrierFrequencyDefault    = 36000;
 
+    /// <summary>
+    /// The carrier frequency for this code is Unknown.
+    /// </summary>
+    public const int CarrierFrequencyUnknown  = -1;
+    /// <summary>
+    /// This code does not use a carrier wave.
+    /// </summary>
+    public const int CarrierFrequencyDCMode   = 0;
+    /// <summary>
+    /// Default carrier frequency, 36kHz. (This is the carrier frequency for RC5, RC6 and RC-MM
+    /// </summary>
+    public const int CarrierFrequencyDefault  = 36000;
+
+    /// <summary>
+    /// How long the longest IR code space should be.
+    /// </summary>
     const int LongestSpace = -10000;
 
     #endregion Constants
@@ -68,7 +80,11 @@ namespace MicrosoftMceTransceiver
 
     #region Methods
 
-    public bool Finalize()
+    /// <summary>
+    /// Locates the gap between button presses and reduces the data down to just the first press.
+    /// </summary>
+    /// <returns>Success.</returns>
+    public bool FinalizeData()
     {
       if (_timingData.Length == 0)
         return false;
@@ -79,15 +95,10 @@ namespace MicrosoftMceTransceiver
       {
         int time = _timingData[index];
 
+        newData.Add(time);
+
         if (time < LongestSpace)
-        {
-          newData.Add(LongestSpace);
           break;
-        }
-        else
-        {
-          newData.Add(time);
-        }
       }
 
       _timingData = newData.ToArray();
@@ -138,7 +149,11 @@ namespace MicrosoftMceTransceiver
       _timingData = newTimingData.ToArray();
     }
 
-    public override string ToString()
+    /// <summary>
+    /// Creates a byte array representation of this IR code for sending in a message.
+    /// </summary>
+    /// <returns>Byte array representation.</returns>
+    public byte[] ToByteArray()
     {
       ushort[] prontoData = Pronto.ConvertIrCodeToProntoRaw(this);
 
@@ -151,7 +166,7 @@ namespace MicrosoftMceTransceiver
           output.Append(' ');
       }
 
-      return output.ToString();
+      return Encoding.ASCII.GetBytes(output.ToString());
     }
 
     #endregion Methods
@@ -163,7 +178,7 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     /// <param name="data">IR file bytes.</param>
     /// <returns>New IrCode object.</returns>
-    public static IrCode FromBytes(byte[] data)
+    static IrCode FromOldData(byte[] data)
     {
       List<int> timingData = new List<int>();
 
@@ -176,7 +191,7 @@ namespace MicrosoftMceTransceiver
         if ((curByte & 0x80) != 0)
           len += (int)(curByte & 0x7F);
         else
-          len -= (int)(curByte & 0x7F);
+          len -= (int)curByte;
 
         if ((curByte & 0x7F) != 0x7F)
         {
@@ -185,11 +200,24 @@ namespace MicrosoftMceTransceiver
         }
       }
 
+      if (len != 0)
+        timingData.Add(len * 50);
+
       return new IrCode(timingData.ToArray());
     }
 
-    public static IrCode FromString(string code)
+    /// <summary>
+    /// Create a new IrCode object from byte array data.
+    /// </summary>
+    /// <param name="data">Byte array to create from.</param>
+    /// <returns>New IrCode.</returns>
+    public static IrCode FromByteArray(byte[] data)
     {
+      if (data[4] != ' ')
+        return FromOldData(data);
+
+      string code = Encoding.ASCII.GetString(data);
+
       string[] stringData = code.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
       ushort[] prontoData = new ushort[stringData.Length];

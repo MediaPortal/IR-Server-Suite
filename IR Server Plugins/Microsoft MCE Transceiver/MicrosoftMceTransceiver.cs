@@ -88,7 +88,7 @@ namespace MicrosoftMceTransceiver
 
     Driver _driver;
 
-    IRProtocol _lastRemoteButtonCodeType = IRProtocol.None;
+    IrProtocol _lastRemoteButtonCodeType = IrProtocol.None;
     uint _lastRemoteButtonKeyCode = 0;
     DateTime _lastRemoteButtonTime = DateTime.Now;
     bool _remoteButtonRepeated = false;
@@ -234,7 +234,10 @@ namespace MicrosoftMceTransceiver
         throw new ArgumentException("Invalid Blaster Port", "port", ex);
       }
 
-      IrCode code = IrCode.FromString(Encoding.ASCII.GetString(data));
+      IrCode code = IrCode.FromByteArray(data);
+
+      if (code == null)
+        throw new Exception("Invalid IR Command data");
 
       //code.Finalize();
 
@@ -248,7 +251,7 @@ namespace MicrosoftMceTransceiver
       
       if (code != null)
       {
-        data = Encoding.ASCII.GetBytes(code.ToString());
+        data = code.ToByteArray();
         return LearnStatus.Success;
       }
       else
@@ -393,7 +396,7 @@ namespace MicrosoftMceTransceiver
       }
     }
 
-    void RemoteEvent(IRProtocol codeType, uint keyCode)
+    void RemoteEvent(IrProtocol codeType, uint keyCode)
     {
       if (!_enableRemoteInput)
         return;

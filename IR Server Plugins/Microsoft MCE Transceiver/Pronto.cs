@@ -14,6 +14,9 @@ namespace MicrosoftMceTransceiver
 
     #region Enumerations
 
+    /// <summary>
+    /// Pronto IR code type identifier.
+    /// </summary>
     enum CodeType
     {
       // Can use ...
@@ -40,6 +43,9 @@ namespace MicrosoftMceTransceiver
 
     #region Constants
 
+    /// <summary>
+    /// Pronto clock multiplier.
+    /// </summary>
     const double ProntoClock  = 0.241246;
 
     const int CarrierRC5 = 36000;
@@ -96,51 +102,6 @@ namespace MicrosoftMceTransceiver
 
       return true;
     }
-
-    public static bool IsProntoData(byte[] fileBytes)
-    {
-      ushort[] prontoData = null;
-
-      try
-      {
-        prontoData = ConvertFileBytesToProntoData(fileBytes);
-      }
-      catch
-      {
-        return false;
-      }
-
-      switch ((CodeType)prontoData[0])
-      {
-        case CodeType.RawOscillated:
-        case CodeType.RawUnmodulated:
-        case CodeType.RC5:
-        case CodeType.RC5X:
-        case CodeType.RC6:
-        case CodeType.RC6A:
-          return true;
-
-        default:
-          return false;
-      }
-    }
-
-    public static ushort[] ConvertFileBytesToProntoData(byte[] fileBytes)
-    {
-      StringBuilder dataStringBuilder = new StringBuilder(fileBytes.Length);
-      foreach (char dataByte in fileBytes)
-        dataStringBuilder.Append((char)dataByte);
-
-      string[] stringData = dataStringBuilder.ToString().Split(new char[] { ' ' });
-
-      ushort[] prontoData = new ushort[stringData.Length];
-      for (int i = 0; i < stringData.Length; i++)
-        prontoData[i] = ushort.Parse(stringData[i], System.Globalization.NumberStyles.HexNumber);
-
-      return prontoData;
-    }
-
-
 
     public static IrCode ConvertProntoDataToIrCode(ushort[] prontoData)
     {
@@ -584,7 +545,7 @@ namespace MicrosoftMceTransceiver
 
       switch (irCode.Carrier)
       {
-        case IrCode.CarrierFrequencyPulseMode:
+        case IrCode.CarrierFrequencyDCMode:
           codeType = CodeType.RawUnmodulated;
           irCodeCarrier = IrCode.CarrierFrequencyDefault;
           break;
