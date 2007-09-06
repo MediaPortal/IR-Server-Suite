@@ -220,30 +220,20 @@ namespace MicrosoftMceTransceiver
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool DeviceIoControl(
-      SafeFileHandle handle,
-      [MarshalAs(UnmanagedType.U4)] IoCtrl ioControlCode,
-      IntPtr inBuffer, int inBufferSize,
-      IntPtr outBuffer, int outBufferSize,
-      out int bytesReturned,
-      IntPtr overlapped);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool GetOverlappedResult(
       SafeFileHandle handle,
       ref NativeOverlapped overlapped,
       out int bytesTransferred,
-      bool wait);
+      [MarshalAs(UnmanagedType.Bool)] bool wait);
 
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     static extern SafeFileHandle CreateFile(
       [MarshalAs(UnmanagedType.LPTStr)] string fileName,
-      [MarshalAs(UnmanagedType.U4)] FileAccessTypes fileAccess,
-      [MarshalAs(UnmanagedType.U4)] FileShares fileShare,
+      [MarshalAs(UnmanagedType.U4)] CreateFileAccessTypes fileAccess,
+      [MarshalAs(UnmanagedType.U4)] CreateFileShares fileShare,
       IntPtr securityAttributes,
-      [MarshalAs(UnmanagedType.U4)] CreationDisposition creationDisposition,
-      [MarshalAs(UnmanagedType.U4)] FileAttributes flags,
+      [MarshalAs(UnmanagedType.U4)] CreateFileDisposition creationDisposition,
+      [MarshalAs(UnmanagedType.U4)] CreateFileAttributes flags,
       IntPtr templateFile);
 
     [DllImport("kernel32.dll")]
@@ -262,16 +252,16 @@ namespace MicrosoftMceTransceiver
 
     #region Device Details
 
-    uint _numTxPorts = 0;
-    uint _numRxPorts = 0;
+    uint _numTxPorts    = 0;
+    //uint _numRxPorts    = 0;
     uint _learnPortMask = 0;
-    bool _legacyDevice = false;
-    bool _canFlashLed = false;
+    //bool _legacyDevice  = false;
+    //bool _canFlashLed   = false;
 
     bool[] _blasters;
 
-    uint _receivePort = 0;
-    uint _learnPort = 0;
+    uint _receivePort   = 0;
+    uint _learnPort     = 0;
 
     #endregion Device Details
 
@@ -358,7 +348,7 @@ namespace MicrosoftMceTransceiver
       }
 
       _numTxPorts = structure.TransmitPorts;
-      _numRxPorts = structure.ReceivePorts;
+      //_numRxPorts = structure.ReceivePorts;
       _learnPortMask = structure.LearningMask;
 
       int receivePort = FirstLowBit(_learnPortMask);
@@ -371,9 +361,9 @@ namespace MicrosoftMceTransceiver
       else
         _learnPort = _receivePort;
 
-      DeviceCapabilityFlags flags = structure.DetailsFlags;
-      _legacyDevice = (int)(flags & DeviceCapabilityFlags.Legacy) != 0;
-      _canFlashLed = (int)(flags & DeviceCapabilityFlags.FlashLed) != 0;
+      //DeviceCapabilityFlags flags = structure.DetailsFlags;
+      //_legacyDevice = (int)(flags & DeviceCapabilityFlags.Legacy) != 0;
+      //_canFlashLed = (int)(flags & DeviceCapabilityFlags.FlashLed) != 0;
     }
 
     void GetBlasters()
@@ -520,7 +510,7 @@ namespace MicrosoftMceTransceiver
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
 
-      _eHomeHandle = CreateFile(_devicePath, FileAccessTypes.GenericRead | FileAccessTypes.GenericWrite, FileShares.None, IntPtr.Zero, CreationDisposition.OpenExisting, FileAttributes.Overlapped, IntPtr.Zero);
+      _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
       if (_eHomeHandle.IsInvalid)
         throw new Win32Exception(lastError);
@@ -613,7 +603,7 @@ namespace MicrosoftMceTransceiver
 
     #region Implementation
 
-    byte[] DataPacket(IrCode code)
+    static byte[] DataPacket(IrCode code)
     {
       if (code.TimingData.Length == 0)
         return null;
@@ -755,7 +745,7 @@ namespace MicrosoftMceTransceiver
           }
         }
       }
-      catch
+      catch (Exception)
       {
         CancelIo(_eHomeHandle);
       }
@@ -790,12 +780,7 @@ namespace MicrosoftMceTransceiver
       return rawData;
     }
 
-    static byte ConvertBcdToByte(byte b)
-    {
-      return (byte)(((b >> 4) * 10) + (b & 15));
-    }
-
-    int FirstHighBit(uint mask)
+    static int FirstHighBit(uint mask)
     {
       for (int i = 0; i < 32; i++)
         if ((mask & (1 << i)) != 0)
@@ -803,7 +788,7 @@ namespace MicrosoftMceTransceiver
 
       return -1;
     }
-    int FirstLowBit(uint mask)
+    static int FirstLowBit(uint mask)
     {
       for (int i = 0; i < 32; i++)
         if ((mask & (1 << i)) == 0)

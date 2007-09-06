@@ -23,16 +23,16 @@ namespace MicrosoftMceTransceiver
       SafeFileHandle handle,
       ref NativeOverlapped overlapped,
       out int bytesTransferred,
-      bool wait);
+      [MarshalAs(UnmanagedType.Bool)] bool wait);
 
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     static extern SafeFileHandle CreateFile(
       [MarshalAs(UnmanagedType.LPTStr)] string fileName,
-      [MarshalAs(UnmanagedType.U4)] FileAccessTypes fileAccess,
-      [MarshalAs(UnmanagedType.U4)] FileShares fileShare,
+      [MarshalAs(UnmanagedType.U4)] CreateFileAccessTypes fileAccess,
+      [MarshalAs(UnmanagedType.U4)] CreateFileShares fileShare,
       IntPtr securityAttributes,
-      [MarshalAs(UnmanagedType.U4)] CreationDisposition creationDisposition,
-      [MarshalAs(UnmanagedType.U4)] FileAttributes flags,
+      [MarshalAs(UnmanagedType.U4)] CreateFileDisposition creationDisposition,
+      [MarshalAs(UnmanagedType.U4)] CreateFileAttributes flags,
       IntPtr templateFile);
 
     [DllImport("kernel32.dll", SetLastError = true)]
@@ -109,8 +109,8 @@ namespace MicrosoftMceTransceiver
     #region Constants
 
     // Vendor ID's for SMK and Topseed devices.
-    const string VidSMK     = "vid_1784";
-    const string VidTopseed = "vid_0609";
+    const string VidSMK       = "vid_1784";
+    const string VidTopseed   = "vid_0609";
 
     // Device variables
     const int DeviceBufferSize  = 100;
@@ -187,7 +187,7 @@ namespace MicrosoftMceTransceiver
 
       int lastError;
 
-      _eHomeHandle = CreateFile(_devicePath, FileAccessTypes.GenericRead | FileAccessTypes.GenericWrite, FileShares.None, IntPtr.Zero, CreationDisposition.OpenExisting, FileAttributes.Overlapped, IntPtr.Zero);
+      _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
       lastError = Marshal.GetLastWin32Error();
       if (_eHomeHandle.IsInvalid)
         throw new Win32Exception(lastError);
@@ -274,7 +274,7 @@ namespace MicrosoftMceTransceiver
           throw new Exception("Invalid device type");
       }
 
-      //_debugFile.WriteLine(code.ToByteArray());
+      //Dump(code.ToByteArray());
 
       // Set port
       WriteSync(portPacket);
@@ -290,7 +290,7 @@ namespace MicrosoftMceTransceiver
 
     #region Implementation
 
-    byte[] CarrierPacket(IrCode code)
+    static byte[] CarrierPacket(IrCode code)
     {
       byte[] carrierPacket = new byte[SetCarrierFreqPacket.Length];
       SetCarrierFreqPacket.CopyTo(carrierPacket, 0);
@@ -313,7 +313,7 @@ namespace MicrosoftMceTransceiver
       return carrierPacket;
     }
 
-    byte[] DataPacket(IrCode code)
+    static byte[] DataPacket(IrCode code)
     {
       if (code.TimingData.Length == 0)
         return null;
@@ -600,7 +600,7 @@ namespace MicrosoftMceTransceiver
 
         }
       }
-      catch
+      catch (Exception)
       {
         CancelIo(_eHomeHandle);
       }
@@ -684,7 +684,7 @@ namespace MicrosoftMceTransceiver
       }
     }
 
-    int[] GetTimingDataFromPacket(byte[] packet)
+    static int[] GetTimingDataFromPacket(byte[] packet)
     {
       List<int> timingData = new List<int>();
 
@@ -728,7 +728,7 @@ namespace MicrosoftMceTransceiver
       return timingData.ToArray();
     }
 
-    void GetIrCodeLengths(IrCode code, out int onTime, out int onCount)
+    static void GetIrCodeLengths(IrCode code, out int onTime, out int onCount)
     {
       onTime  = 0;
       onCount = 0;

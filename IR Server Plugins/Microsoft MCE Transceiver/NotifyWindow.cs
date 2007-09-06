@@ -68,7 +68,8 @@ namespace MicrosoftMceTransceiver
 
     [DllImport("kernel32")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CancelIo(IntPtr handle);
+    static extern bool CancelIo(
+      IntPtr handle);
 
     #endregion Interop
 

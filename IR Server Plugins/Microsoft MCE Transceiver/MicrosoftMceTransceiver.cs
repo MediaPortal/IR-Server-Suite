@@ -101,8 +101,6 @@ namespace MicrosoftMceTransceiver
 
     Mouse.MouseEvents _mouseButtons = Mouse.MouseEvents.None;
 
-    DateTime _lastPacketTime = DateTime.Now;
-
     RemoteHandler _remoteHandler = null;
     KeyboardHandler _keyboardHandler = null;
     MouseHandler _mouseHandler = null;

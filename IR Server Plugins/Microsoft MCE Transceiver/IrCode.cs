@@ -108,8 +108,8 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Add timing data to this IR code.
     /// </summary>
-    /// <param name="addTimingData">Addition timing data.</param>
-    public void AddTimingData(int[] addTimingData)
+    /// <param name="timingData">Addition timing data.</param>
+    public void AddTimingData(int[] timingData)
     {
       List<int> newTimingData = new List<int>();
 
@@ -122,28 +122,25 @@ namespace MicrosoftMceTransceiver
       }
       else if (_timingData.Length == 0)
       {
-        _timingData = new int[addTimingData.Length];
-        addTimingData.CopyTo(_timingData, 0);
+        _timingData = new int[timingData.Length];
+        timingData.CopyTo(_timingData, 0);
         return;
       }
 
-      if (addTimingData.Length == 0 || index >= _timingData.Length)
-      {
+      if (timingData.Length == 0 || index >= _timingData.Length)
         return;
-      }
 
-
-      if (Math.Sign(addTimingData[0]) == Math.Sign(_timingData[index]))
+      if (Math.Sign(timingData[0]) == Math.Sign(_timingData[index]))
       {
-        newTimingData.Add(_timingData[index] + addTimingData[0]);
+        newTimingData.Add(_timingData[index] + timingData[0]);
 
-        for (index = 1; index < addTimingData.Length; index++)
-          newTimingData.Add(addTimingData[index]);
+        for (index = 1; index < timingData.Length; index++)
+          newTimingData.Add(timingData[index]);
       }
       else
       {
         newTimingData.Add(_timingData[index]);
-        newTimingData.AddRange(addTimingData);
+        newTimingData.AddRange(timingData);
       }
 
       _timingData = newTimingData.ToArray();

@@ -78,33 +78,31 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     /// <param name="fileName">File to write Pronto data to.</param>
     /// <param name="prontoData">Pronto data to write.</param>
-    /// <returns>Success.</returns>
-    public static bool WriteProntoFile(string fileName, ushort[] prontoData)
+    public static void WriteProntoFile(string fileName, ushort[] prontoData)
     {
-      try
-      {
-        StreamWriter file = new StreamWriter(fileName, false);
+      if (String.IsNullOrEmpty(fileName))
+        throw new ArgumentException("Null or Empty filename provided.", "fileName");
 
-        for (int index = 0; index < prontoData.Length; index++)
-        {
-          file.Write(String.Format("{0:X4}", prontoData[index]));
-          if (index != prontoData.Length - 1)
-            file.Write(' ');
-        }
+      if (prontoData == null || prontoData.Length == 0)
+        throw new ArgumentException("Null or Empty pronto data provided.", "prontoData");
 
-        file.Flush();
-        file.Close();
-      }
-      catch
+      StreamWriter file = new StreamWriter(fileName, false);
+
+      for (int index = 0; index < prontoData.Length; index++)
       {
-        return false;
+        file.Write(String.Format("{0:X4}", prontoData[index]));
+        if (index != prontoData.Length - 1)
+          file.Write(' ');
       }
 
-      return true;
+      file.Close();
     }
 
     public static IrCode ConvertProntoDataToIrCode(ushort[] prontoData)
     {
+      if (prontoData == null || prontoData.Length == 0)
+        throw new ArgumentException("Null or Empty pronto data provided.", "prontoData");
+
       switch ((CodeType)prontoData[0])
       {
         case CodeType.RawOscillated:

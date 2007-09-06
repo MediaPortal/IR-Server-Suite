@@ -20,7 +20,7 @@ namespace MicrosoftMceTransceiver
     #region Enumerations
 
     [Flags]
-    enum Digcfs
+    enum Digcfs : uint
     {
       None            = 0x00,
       Default         = 0x01,
@@ -31,7 +31,16 @@ namespace MicrosoftMceTransceiver
     }
 
     [Flags]
-    public enum FileShares
+    protected enum CreateFileAccessTypes : uint
+    {
+      GenericRead     = 0x80000000,
+      GenericWrite    = 0x40000000,
+      GenericExecute  = 0x20000000,
+      GenericAll      = 0x10000000,
+    }
+
+    [Flags]
+    protected enum CreateFileShares : uint
     {
        None   = 0x00,
        Read   = 0x01,
@@ -39,7 +48,7 @@ namespace MicrosoftMceTransceiver
        Delete = 0x04,
     }
 
-    public enum CreationDisposition
+    protected enum CreateFileDisposition : uint
     {
       None              = 0,
       New               = 1,
@@ -50,7 +59,7 @@ namespace MicrosoftMceTransceiver
     }
 
     [Flags]
-    public enum FileAttributes : uint
+    protected enum CreateFileAttributes : uint
     {
       Readonly          = 0x00000001,
       Hidden            = 0x00000002,
@@ -77,15 +86,6 @@ namespace MicrosoftMceTransceiver
       OpenReparsePoint  = 0x00200000,
       OpenNoRecall      = 0x00100000,
       FirstPipeInstance = 0x00080000,
-    }
-
-    [Flags]
-    public enum FileAccessTypes : uint
-    {
-      GenericRead     = 0x80000000,
-      GenericWrite    = 0x40000000,
-      GenericExecute  = 0x20000000,
-      GenericAll      = 0x10000000,
     }
 
     #endregion Enumerations
@@ -185,9 +185,12 @@ namespace MicrosoftMceTransceiver
 
     #region Constructors
 
-    public Driver() { }
-    public Driver(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
+    protected Driver() { }
+    protected Driver(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
     {
+      if (String.IsNullOrEmpty(devicePath))
+        throw new ArgumentException("Null or Empty device path supplied", "devicePath");
+
       _deviceGuid = deviceGuid;
       _devicePath = devicePath;
 
