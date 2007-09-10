@@ -132,8 +132,8 @@ namespace TrayLauncher
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
+          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         }
       }
       catch { }
@@ -259,8 +259,8 @@ namespace TrayLauncher
     {
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         return true;
       }
       catch (AppModule.NamedPipes.NamedPipeIOException)
@@ -356,8 +356,8 @@ namespace TrayLauncher
 
           try
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Ping", BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
+            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
           }
           catch
           {
@@ -409,62 +409,43 @@ namespace TrayLauncher
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      IrssLog.Debug("Received Message \"{0}\"", received.Name);
+      IrssLog.Debug("Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Keyboard Event":
-          case "Mouse Event":
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+            {
+              //_irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
+              _registered = true;
+
+              IrssLog.Info("Registered to IR Server");
+            }
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            {
+              _registered = false;
+              IrssLog.Warn("IR Server refused to register");
+            }
             break;
 
-          case "Register Success":
-            {
-              IrssLog.Info("Registered to IR Server");
-              _registered = true;
-              //_irServerInfo = TransceiverInfo.FromBytes(received.Data);
-              break;
-            }
+          case PipeMessageType.RemoteEvent:
+            RemoteHandlerCallback(received.DataAsString);
+            break;
 
-          case "Register Failure":
-            {
-              IrssLog.Warn("IR Server refused to register");
-              _registered = false;
-              break;
-            }
+          case PipeMessageType.ServerShutdown:
+            IrssLog.Warn("IR Server Shutdown - Tray Launcher disabled until IR Server returns");
+            _registered = false;
+            break;
 
-          case "Remote Event":
-            {
-              string keyCode = Encoding.ASCII.GetString(received.Data);
-              RemoteHandlerCallback(keyCode);
-              break;
-            }
+          case PipeMessageType.Echo:
+            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
+            break;
 
-          case "Server Shutdown":
-            {
-              IrssLog.Warn("IR Server Shutdown - Tray Launcher disabled until IR Server returns");
-              _registered = false;
-              break;
-            }
-
-          case "Echo":
-            {
-              _echoID = BitConverter.ToInt32(received.Data, 0);
-              break;
-            }
-
-          case "Error":
-            {
-              IrssLog.Info(Encoding.ASCII.GetString(received.Data));
-              break;
-            }
-
-          default:
-            {
-              IrssLog.Info("Unknown message received: " + received.Name);
-              break;
-            }
+          case PipeMessageType.Error:
+            IrssLog.Error("Received error: {0}", received.DataAsString);
+            break;
         }
 
         // If another module of the program has registered to receive messages too ...

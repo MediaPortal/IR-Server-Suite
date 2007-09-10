@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Virtual Remote Skin Editor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("Virtual Remote Skin Editor")]
 [assembly: AssemblyCopyright("Copyright © Aaron Dinnage 2007")]
 [assembly: AssemblyTrademark("")]

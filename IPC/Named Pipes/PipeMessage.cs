@@ -5,12 +5,12 @@ using System.Text;
 namespace NamedPipes
 {
 
-  // TODO: Switch to typed messages
-
   #region Enumerations
-  /*
-  public enum MessageName
+
+  public enum PipeMessageType
   {
+    Unknown,
+
     RegisterClient,
     UnregisterClient,
 
@@ -21,7 +21,10 @@ namespace NamedPipes
     BlastIR,
 
     Error,
+
     Ping,
+    Echo,
+
     ServerShutdown,
 
     RemoteEvent,
@@ -34,17 +37,26 @@ namespace NamedPipes
   }
 
   [Flags]
-  public enum MessageTypes
+  public enum PipeMessageFlags
   {
-    None          = 0,
-    Request       = 1,
-    Response      = 2,
-    Success       = 4,
-    Failure       = 8,
-    DoResponse    = 16,
-    DontRespond   = 32,
+    None            = 0x0000,
+    
+    Request         = 0x0001,
+    Response        = 0x0002,
+    Notify          = 0x0004,
+    
+    Success         = 0x0008,
+    Failure         = 0x0010,
+    Timeout         = 0x0020,
+    Error           = 0x0040,
+
+    DataString      = 0x0080,
+    DataBytes       = 0x0100,
+
+    ForceRespond    = 0x0200,
+    ForceNotRespond = 0x0400,
   }
-  */
+
   #endregion Enumerations
 
   /// <summary>
@@ -55,14 +67,26 @@ namespace NamedPipes
 
     #region Members
 
-    string _fromPipe;
     string _fromServer;
-    string _name;
+    string _fromPipe;
+    
+    PipeMessageType _type;
+    PipeMessageFlags _flags;
+    
     byte[] _data;
 
     #endregion Members
 
     #region Properties
+
+    /// <summary>
+    /// Name of sending server.
+    /// </summary>
+    public string FromServer
+    {
+      get { return _fromServer; }
+      set { _fromServer = value; }
+    }
 
     /// <summary>
     /// Name of sending pipe.
@@ -74,70 +98,100 @@ namespace NamedPipes
     }
     
     /// <summary>
-    /// Name of sending server.
-    /// </summary>
-    public string FromServer
-    {
-      get { return _fromServer; }
-      set { _fromServer = value; }
-    }
-    
-    /// <summary>
     /// Type of message.
     /// </summary>
-    public string Name
+    public PipeMessageType Type
     {
-      get { return _name; }
-      set { _name = value; }
+      get { return _type; }
+      set { _type = value; }
     }
-    
+
     /// <summary>
-    /// Message data.
+    /// Message flags.
     /// </summary>
-    public byte[] Data
+    public PipeMessageFlags Flags
+    {
+      get { return _flags; }
+      set { _flags = value; }
+    }
+
+    /// <summary>
+    /// Message data as bytes.
+    /// </summary>
+    public byte[] DataAsBytes
     {
       get { return _data; }
       set { _data = value; }
+    }
+
+    /// <summary>
+    /// Message data as string.
+    /// </summary>
+    public string DataAsString
+    {
+      get { return Encoding.ASCII.GetString(_data); }
+      set { _data = Encoding.ASCII.GetBytes(value); }
     }
 
     #endregion Properties
 
     #region Constructors
 
-    public PipeMessage(string fromPipe, string fromServer, string name, byte[] data)
+    public PipeMessage()
     {
-      _fromPipe   = fromPipe;
+      _fromServer = String.Empty;
+      _fromPipe   = String.Empty;
+      _type       = PipeMessageType.Unknown;
+      _flags      = PipeMessageFlags.None;
+      _data       = null;
+    }
+
+    public PipeMessage(string fromServer, string fromPipe, PipeMessageType type)
+      : this()
+    {
       _fromServer = fromServer;
-      _name       = name;
-      _data       = data;
+      _fromPipe   = fromPipe;
+      _type       = type;
+    }
+
+    public PipeMessage(string fromServer, string fromPipe, PipeMessageType type, PipeMessageFlags flags)
+      : this(fromServer, fromPipe, type)
+    {
+      _flags = flags;
+    }
+
+    public PipeMessage(string fromServer, string fromPipe, PipeMessageType type, PipeMessageFlags flags, byte[] data)
+      : this(fromServer, fromPipe, type)
+    {
+      _flags  = flags;
+      _data   = data;
+    }
+
+    public PipeMessage(string fromServer, string fromPipe, PipeMessageType type, PipeMessageFlags flags, string data)
+      : this(fromServer, fromPipe, type)
+    {
+      _flags  = flags;
+      _data   = Encoding.ASCII.GetBytes(data);
     }
 
     #endregion Constructors
 
     public override string ToString()
     {
-      StringBuilder stringBuilder = new StringBuilder();
+      string data = ByteArrayToByteString(_data);
 
-      stringBuilder.Append(_fromPipe);
-      stringBuilder.Append(',');
+      string messageType = Enum.GetName(typeof(PipeMessageType), _type);
 
-      stringBuilder.Append(_fromServer);
-      stringBuilder.Append(',');
+      string flags = _flags.ToString();
 
-      stringBuilder.Append(_name);
-      stringBuilder.Append(',');
-
-      if (_data == null)
-      {
-        stringBuilder.Append("null");
-      }
-      else
-      {
-        foreach (byte dataByte in _data)
-          stringBuilder.Append(dataByte.ToString("X2"));
-      }
-      
-      return stringBuilder.ToString();
+      return String.Format(
+        "{0},{1},{2},{3},{4}",
+        _fromServer,
+        _fromPipe,
+        messageType,
+        flags,
+        data
+      );
     }
 
     /// <summary>
@@ -154,24 +208,49 @@ namespace NamedPipes
 
         string[] stringItems = from.Split(new char[] { ',' }, StringSplitOptions.None);
 
-        if (stringItems.Length != 4)
+        if (stringItems.Length != 5)
           return null;
 
-        byte[] data = null;
+        PipeMessageType type    = (PipeMessageType)Enum.Parse(typeof(PipeMessageType), stringItems[2]);
+        PipeMessageFlags flags  = (PipeMessageFlags)Enum.Parse(typeof(PipeMessageFlags), stringItems[3]);
+        byte[] data         = ByteStringToByteArray(stringItems[4]);
 
-        if (!String.IsNullOrEmpty(stringItems[3]) && stringItems[3] != "null")
-        {
-          data = new byte[stringItems[3].Length / 2];
-          for (int index = 0; index < stringItems[3].Length; index += 2)
-            data[index / 2] = byte.Parse(stringItems[3].Substring(index, 2), System.Globalization.NumberStyles.HexNumber);
-        }
-        
-        return new PipeMessage(stringItems[0], stringItems[1], stringItems[2], data);
+        return new PipeMessage(stringItems[0], stringItems[1], type, flags, data);
       }
       catch
       {
         return null;
       }
+    }
+
+    public static string ByteArrayToByteString(byte[] data)
+    {
+      if (data == null || data.Length == 0)
+        throw new ArgumentException("Null or Empty byte array supplied", "data");
+
+      StringBuilder outputString = new StringBuilder(2 * data.Length);
+
+      foreach (byte b in data)
+        outputString.Append(b.ToString("X2"));
+
+      return outputString.ToString();
+    }
+
+    public static byte[] ByteStringToByteArray(string data)
+    {
+      if (String.IsNullOrEmpty(data))
+        throw new ArgumentException("Null or Empty data string supplied", "data");
+
+      List<byte> byteArray = new List<byte>(data.Length / 2);
+
+      for (int index = 0; index < data.Length; index += 2)
+      {
+        byte byteValue = byte.Parse(data.Substring(index, 2), System.Globalization.NumberStyles.HexNumber);
+
+        byteArray.Add(byteValue);
+      }
+
+      return byteArray.ToArray();
     }
 
   }

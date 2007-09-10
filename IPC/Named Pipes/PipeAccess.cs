@@ -43,11 +43,15 @@ namespace NamedPipes
       return NamedPipeNative.WaitNamedPipe(pipe, 2000);
     }
 
-    public static void SendMessage(string pipeName, string server, string message)
+    public static void SendMessage(string pipeName, string server, PipeMessage message)
     {
+      string messageString = message.ToString();
+
       ClientPipeConnection writePipe = new ClientPipeConnection(pipeName, server);
       writePipe.Connect();
-      writePipe.Write(message);
+
+      writePipe.Write(messageString);
+
       writePipe.Close();
     }
     

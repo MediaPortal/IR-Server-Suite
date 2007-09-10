@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("IR File Tool")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("IR File Tool")]
-[assembly: AssemblyCopyright("Copyright ©  2007")]
+[assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

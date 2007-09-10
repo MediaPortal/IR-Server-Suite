@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("IR Server - Sage Setup")]
 [assembly: AssemblyDescription("Setup the Sage EXE Tuner plugins for use with IR Server")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("SageSetup")]
 [assembly: AssemblyCopyright("Copyright © Aaron Dinnage, 2007")]
 [assembly: AssemblyTrademark("")]

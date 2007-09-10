@@ -73,31 +73,21 @@ namespace TvEngine
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      switch (received.Name)
+      if (received.Type == PipeMessageType.LearnIR)
       {
-        case "Learn Success":
-          {
-            if (_learnStatus != null)
-            {
-              this.Invoke(_learnStatus, new Object[] { "Learned IR", true });
-              _learnStatus = null;
-            }
+        if (_learnStatus != null)
+        {
+          if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+            this.Invoke(_learnStatus, new Object[] { "Learned IR", true });
+          else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            this.Invoke(_learnStatus, new Object[] { "Failed to learn IR", false });
+          else if ((received.Flags & PipeMessageFlags.Timeout) == PipeMessageFlags.Timeout)
+            this.Invoke(_learnStatus, new Object[] { "Learn IR timed-out", false });
 
-            TV3BlasterPlugin.HandleMessage -= new Common.MessageHandler(MessageReceiver);
-            return;
-          }
+          _learnStatus = null;
+        }
 
-        case "Learn Failure":
-          {
-            if (_learnStatus != null)
-            {
-              this.Invoke(_learnStatus, new Object[] { "Failed to learn IR", false });
-              _learnStatus = null;
-            }
-
-            TV3BlasterPlugin.HandleMessage -= new Common.MessageHandler(MessageReceiver);
-            return;
-          }
+        TV3BlasterPlugin.HandleMessage -= new Common.MessageHandler(MessageReceiver);
       }
     }
 

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("IRTrans Transceiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the IRTrans system")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("IRTransTransceiver")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
@@ -33,3 +33,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.3.4")]
 
 [assembly: CLSCompliant(true)]
+[assembly: GuidAttribute("fef45a20-12af-4750-b7fa-8c8b6ea42a15")]

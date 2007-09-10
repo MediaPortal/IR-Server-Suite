@@ -208,8 +208,8 @@ namespace TvEngine
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient);
+          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         }
       }
       catch { }
@@ -264,8 +264,8 @@ namespace TvEngine
     {
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         return true;
       }
       catch (AppModule.NamedPipes.NamedPipeIOException)
@@ -353,8 +353,8 @@ namespace TvEngine
 
           try
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Ping", BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
+            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
           }
           catch
           {
@@ -407,87 +407,77 @@ namespace TvEngine
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Debug("TV3BlasterPlugin: Received Message \"{0}\"", received.Name);
+        Log.Debug("TV3BlasterPlugin: Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Blast Success":
-          case "Remote Event":
-          case "Keyboard Event":
-          case "Mouse Event":
-            break;
-
-          case "Blast Failure":
+          case PipeMessageType.BlastIR:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+            {
+              if (LogVerbose)
+                Log.Info("TV3BlasterPlugin: Blast successful");
+            }
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
               Log.Error("TV3BlasterPlugin: Failed to blast IR command");
-              break;
             }
+            break;
 
-          case "Register Success":
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
+              _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
+              _registered = true;
+
               if (LogVerbose)
                 Log.Info("TV3BlasterPlugin: Registered to IR Server");
-
-              _registered = true;
-              _irServerInfo = IRServerInfo.FromBytes(received.Data);
-              break;
             }
-
-          case "Register Failure":
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
-              Log.Error("TV3BlasterPlugin: IR Server refused to register");
               _registered = false;
-              break;
+              Log.Error("TV3BlasterPlugin: IR Server refused to register");
             }
+            break;
 
-          case "Learn Success":
+          case PipeMessageType.LearnIR:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
               if (LogVerbose)
-                Log.Info("TV3BlasterPlugin: Learned IR Successfully \"{0}\"", _learnIRFilename);
+                Log.Info("TV3BlasterPlugin: Learned IR Successfully");
 
-              FileStream file = new FileStream(_learnIRFilename, FileMode.Create, FileAccess.Write, FileShare.None);
-              file.Write(received.Data, 0, received.Data.Length);
-              file.Flush();
+              byte[] dataBytes = received.DataAsBytes;
+
+              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
+              file.Write(dataBytes, 0, dataBytes.Length);
               file.Close();
-
-              _learnIRFilename = null;
-              break;
             }
-
-          case "Learn Failure":
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
               Log.Error("TV3BlasterPlugin: Failed to learn IR command");
-
-              _learnIRFilename = null;
-              break;
             }
-
-          case "Server Shutdown":
+            else if ((received.Flags & PipeMessageFlags.Timeout) == PipeMessageFlags.Timeout)
             {
-              Log.Error("TV3BlasterPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
-              _registered = false;
-              break;
+              Log.Error("TV3BlasterPlugin: Learn IR command timed-out");
             }
+            
+            _learnIRFilename = null;
+            break;
 
-          case "Echo":
-            {
-              _echoID = BitConverter.ToInt32(received.Data, 0);
-              break;
-            }
+          case PipeMessageType.ServerShutdown:
+            Log.Info("TV3BlasterPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
+            _registered = false;
+            break;
 
-          case "Error":
-            {
-              Log.Error("TV3BlasterPlugin: Received error: {0}", Encoding.ASCII.GetString(received.Data));
-              break;
-            }
+          case PipeMessageType.Echo:
+            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
+            break;
 
-          default:
-            {
-              Log.Debug("TV3BlasterPlugin: Unknown message received: {0}", received.Name);
-              break;
-            }
+          case PipeMessageType.Error:
+            _learnIRFilename = null;
+            Log.Error("TV3BlasterPlugin: Received error: {0}", received.DataAsString);
+            break;
         }
 
         if (_handleMessage != null)
@@ -778,8 +768,8 @@ namespace TvEngine
       file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
-      PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
-      PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message.ToString());
+      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
+      PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message);
     }
 
     /// <summary>
@@ -864,8 +854,8 @@ namespace TvEngine
 
         _learnIRFilename = fileName;
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Learn", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.LearnIR, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message);
 
         return true;
       }

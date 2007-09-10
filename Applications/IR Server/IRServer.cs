@@ -116,21 +116,33 @@ namespace IRServer
 
         if (String.IsNullOrEmpty(_pluginNameReceive) && String.IsNullOrEmpty(_pluginNameTransmit))
         {
-          IrssLog.Warn("No transmit/receive plugin loaded");
+          IrssLog.Warn("No transmit or receive plugin loaded");
         }
         else
         {
-          if (!String.IsNullOrEmpty(_pluginNameReceive))
-            _pluginReceive = Program.GetPlugin(_pluginNameReceive);
-          else
+          if (String.IsNullOrEmpty(_pluginNameReceive))
+          {
             IrssLog.Warn("No receiver plugin loaded");
+          }
+          else
+          {
+            _pluginReceive = Program.GetPlugin(_pluginNameReceive);
+          }
 
           if (_pluginNameTransmit.Equals(_pluginNameReceive, StringComparison.InvariantCultureIgnoreCase))
+          {
             _pluginTransmit = _pluginReceive;
-          else if (!String.IsNullOrEmpty(_pluginNameTransmit))
-            _pluginTransmit = Program.GetPlugin(_pluginNameTransmit);
-          else
+            IrssLog.Info("Using the same plugin for transmit and receive");
+          }
+          else if (String.IsNullOrEmpty(_pluginNameTransmit))
+          {
             IrssLog.Warn("No transmit plugin loaded");
+          }
+          else
+          {
+            _pluginTransmit = Program.GetPlugin(_pluginNameTransmit);
+          }
+            
         }
 
         StartMessageQueue();
@@ -185,6 +197,7 @@ namespace IRServer
             IrssLog.Error(ex.ToString());
           }
         }
+
         if (!_pluginNameTransmit.Equals(_pluginNameReceive, StringComparison.InvariantCultureIgnoreCase))
         {
           if (_pluginTransmit != null)
@@ -244,7 +257,7 @@ namespace IRServer
 
       if (_mode == IRServerMode.ServerMode)
       {
-        PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Server Shutdown", null);
+        PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.ServerShutdown, PipeMessageFlags.Request);
         SendToAll(message);
       }
 
@@ -418,8 +431,8 @@ namespace IRServer
         }
         while (retry);
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _hostComputer, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _hostComputer, message);
       }
       catch (Exception ex)
       {
@@ -437,8 +450,8 @@ namespace IRServer
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _hostComputer, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
+          PipeAccess.SendMessage(Common.ServerPipeName, _hostComputer, message);
         }
       }
       catch { }
@@ -485,8 +498,8 @@ namespace IRServer
         }
         while (retry);
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register Repeater", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _hostComputer, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterRepeater);
+        PipeAccess.SendMessage(Common.ServerPipeName, _hostComputer, message);
       }
       catch (Exception ex)
       {
@@ -504,8 +517,8 @@ namespace IRServer
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister Repeater", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _hostComputer, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterRepeater);
+          PipeAccess.SendMessage(Common.ServerPipeName, _hostComputer, message);
         }
       }
       catch { }
@@ -528,14 +541,14 @@ namespace IRServer
       {
         case IRServerMode.ServerMode:
           {
-            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Remote Event", bytes);
+            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.RemoteEvent, PipeMessageFlags.None, bytes);
             SendToAll(message);
             break;
           }
 
         case IRServerMode.RelayMode:
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Remote Event", bytes);
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.None, bytes);
             SendTo(Common.ServerPipeName, _hostComputer, message);
             break;
           }
@@ -560,14 +573,14 @@ namespace IRServer
       {
         case IRServerMode.ServerMode:
           {
-            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Keyboard Event", bytes);
+            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.KeyboardEvent, PipeMessageFlags.None, bytes);
             SendToAll(message);
             break;
           }
 
         case IRServerMode.RelayMode:
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Keyboard Event", bytes);
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ForwardKeyboardEvent, PipeMessageFlags.None, bytes);
             SendTo(Common.ServerPipeName, _hostComputer, message);
             break;
           }
@@ -593,14 +606,14 @@ namespace IRServer
       {
         case IRServerMode.ServerMode:
           {
-            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Mouse Event", bytes);
+            PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.MouseEvent, PipeMessageFlags.None, bytes);
             SendToAll(message);
             break;
           }
 
         case IRServerMode.RelayMode:
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Mouse Event", bytes);
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ForwardMouseEvent, PipeMessageFlags.None, bytes);
             SendTo(Common.ServerPipeName, _hostComputer, message);
             break;
           }
@@ -623,10 +636,11 @@ namespace IRServer
 
             if (_pluginReceive != null)
               _pluginReceive.Resume();
+
             if (_pluginTransmit != null && _pluginTransmit != _pluginReceive)
               _pluginTransmit.Resume();
 
-            // TODO: Inform clients
+            // TODO: Inform clients ?
             break;
           }
 
@@ -636,17 +650,16 @@ namespace IRServer
 
             if (_pluginReceive != null)
               _pluginReceive.Suspend();
+
             if (_pluginTransmit != null && _pluginTransmit != _pluginReceive)
               _pluginTransmit.Suspend();
 
-            // TODO: Inform clients
-            /*
+            // Inform clients ...
             if (_mode == IRServerMode.ServerMode)
             {
-              PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Server Shutdown", null);
+              PipeMessage message = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.ServerShutdown);
               SendToAll(message);
             }
-            */
             break;
           }
       }
@@ -654,7 +667,7 @@ namespace IRServer
 
     void SendToAll(PipeMessage message)
     {
-      IrssLog.Debug("SendToAll({0})", message.ToString());
+      IrssLog.Debug("SendToAll({0})", message);
 
       List<Client> unregister = new List<Client>();
 
@@ -664,7 +677,7 @@ namespace IRServer
         {
           try
           {
-            PipeAccess.SendMessage(client.Pipe, client.Server, message.ToString());
+            PipeAccess.SendMessage(client.Pipe, client.Server, message);
           }
           catch (Exception ex)
           {
@@ -686,7 +699,7 @@ namespace IRServer
     }
     void SendToAllExcept(string exceptPipe, string exceptServer, PipeMessage message)
     {
-      IrssLog.Debug("SendToAllExcept({0}, {1}, {2})", exceptPipe, exceptServer, message.ToString());
+      IrssLog.Debug("SendToAllExcept({0}, {1}, {2})", exceptPipe, exceptServer, message);
 
       List<Client> unregister = new List<Client>();
 
@@ -699,7 +712,7 @@ namespace IRServer
             if (client.Pipe == exceptPipe && client.Server == exceptServer)
               continue;
 
-            PipeAccess.SendMessage(client.Pipe, client.Server, message.ToString());
+            PipeAccess.SendMessage(client.Pipe, client.Server, message);
           }
           catch (Exception ex)
           {
@@ -721,11 +734,11 @@ namespace IRServer
     }
     void SendTo(string pipe, string server, PipeMessage message)
     {
-      IrssLog.Debug("SendTo({0}, {1}, {2})", pipe, server, message.ToString());
+      IrssLog.Debug("SendTo({0}, {1}, {2})", pipe, server, message);
 
       try
       {
-        PipeAccess.SendMessage(pipe, server, message.ToString());
+        PipeAccess.SendMessage(pipe, server, message);
       }
       catch (Exception ex)
       {
@@ -737,7 +750,7 @@ namespace IRServer
     }
     void SendToRepeaters(PipeMessage message)
     {
-      IrssLog.Debug("SendToRepeaters({0})", message.ToString());
+      IrssLog.Debug("SendToRepeaters({0})", message);
 
       List<Client> unregister = new List<Client>();
 
@@ -747,7 +760,7 @@ namespace IRServer
         {
           try
           {
-            PipeAccess.SendMessage(client.Pipe, client.Server, message.ToString());
+            PipeAccess.SendMessage(client.Pipe, client.Server, message);
           }
           catch (Exception ex)
           {
@@ -968,203 +981,189 @@ namespace IRServer
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Remote Event":
-          case "Keyboard Event":
-          case "Mouse Event":
+          case PipeMessageType.ForwardRemoteEvent:
+          {
+            PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.RemoteEvent, PipeMessageFlags.None, received.DataAsBytes);
+            if (_mode == IRServerMode.RelayMode)
+            {
+              forward.Type = received.Type;
+              SendTo(Common.ServerPipeName, _hostComputer, forward);
+            }
+            else
+            {
+              SendToAllExcept(received.FromPipe, received.FromServer, forward);
+            }
             break;
+          }
 
-          case "Register Success":
+          case PipeMessageType.ForwardKeyboardEvent:
+          {
+            PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.KeyboardEvent, PipeMessageFlags.None, received.DataAsBytes);
+            if (_mode == IRServerMode.RelayMode)
             {
-              IrssLog.Info("Registered with host server");
-              _registered = true;
-              break;
+              forward.Type = received.Type;
+              SendTo(Common.ServerPipeName, _hostComputer, forward);
             }
-
-          case "Register Failure":
+            else
             {
-              IrssLog.Warn("Host server refused registration"); 
-              _registered = false;
-              break;
+              SendToAllExcept(received.FromPipe, received.FromServer, forward);
             }
+            break;
+          }
 
-          case "Forward Remote Event":
+          case PipeMessageType.ForwardMouseEvent:
+          {
+            PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.MouseEvent, PipeMessageFlags.None, received.DataAsBytes);
+            if (_mode == IRServerMode.RelayMode)
             {
-              PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Remote Event", received.Data);
-              if (_mode == IRServerMode.RelayMode)
-              {
-                forward.Name = received.Name;
-                SendTo(Common.ServerPipeName, _hostComputer, forward);
-              }
-              else
-              {
-                SendToAllExcept(received.FromPipe, received.FromServer, forward);
-              }
-              break;
+              forward.Type = received.Type;
+              SendTo(Common.ServerPipeName, _hostComputer, forward);
             }
-
-          case "Forward Keyboard Event":
+            else
             {
-              PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Keyboard Event", received.Data);
-              if (_mode == IRServerMode.RelayMode)
-              {
-                forward.Name = received.Name;
-                SendTo(Common.ServerPipeName, _hostComputer, forward);
-              }
-              else
-              {
-                SendToAllExcept(received.FromPipe, received.FromServer, forward);
-              }
-              break;
+              SendToAllExcept(received.FromPipe, received.FromServer, forward);
             }
+            break;
+          }
 
-          case "Forward Mouse Event":
+          case PipeMessageType.BlastIR:
+          {
+            PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.BlastIR, PipeMessageFlags.Response);
+
+            if (_mode == IRServerMode.RelayMode)
             {
-              PipeMessage forward = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Mouse Event", received.Data);
-              if (_mode == IRServerMode.RelayMode)
-              {
-                forward.Name = received.Name;
-                SendTo(Common.ServerPipeName, _hostComputer, forward);
-              }
-              else
-              {
-                SendToAllExcept(received.FromPipe, received.FromServer, forward);
-              }
-              break;
+              response.Flags |= PipeMessageFlags.Failure;
             }
-
-          case "List":
+            else
             {
-              if (_mode != IRServerMode.RelayMode)
-              {
-                PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Clients", BitConverter.GetBytes(_registeredClients.Count));
-                SendTo(received.FromPipe, received.FromServer, response);
-              }
-              break;
-            }
-
-          case "Blast":
-            {
-              if (_mode == IRServerMode.RelayMode)
-              {
-                PipeMessage reply = new PipeMessage(Common.ServerPipeName, Environment.MachineName, received.Name + " Failure", null);
-                SendTo(received.FromPipe, received.FromServer, reply);
-                break;
-              }
-
               if (_registeredRepeaters.Count > 0)
                 SendToRepeaters(received);
 
-              PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, received.Name + " Failure", null);
-
-              if (BlastIR(received.Data))
-                response.Name = received.Name + " Success";
-
-              SendTo(received.FromPipe, received.FromServer, response);
-              break;
+              if (BlastIR(received.DataAsBytes))
+                response.Flags |= PipeMessageFlags.Success;
+              else
+                response.Flags |= PipeMessageFlags.Failure;
             }
 
-          case "Learn":
-            {
-              if (_mode == IRServerMode.RelayMode)
-              {
-                PipeMessage reply = new PipeMessage(Common.ServerPipeName, Environment.MachineName, received.Name + " Failure", null);
-                SendTo(received.FromPipe, received.FromServer, reply);
-                break;
-              }
+            SendTo(received.FromPipe, received.FromServer, response);
+            break;
+          }
 
-              // Prepare response ...
-              PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, received.Name + " Failure", null);
-              
+          case PipeMessageType.LearnIR:
+          {
+            PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.LearnIR, PipeMessageFlags.Response);
+
+            if (_mode == IRServerMode.RelayMode)
+            {
+              response.Flags |= PipeMessageFlags.Failure;
+            }
+            else
+            {
               byte[] bytes = LearnIR();
 
-              if (bytes != null)
-              {
-                response.Name = received.Name + " Success";
-                response.Data = bytes;
-              }
-
-              SendTo(received.FromPipe, received.FromServer, response);
-              break;
+              if (bytes == null)
+                response.Flags |= PipeMessageFlags.Failure;
+              else
+                response.Flags |= PipeMessageFlags.Success;
             }
 
-          case "Shutdown":
+            SendTo(received.FromPipe, received.FromServer, response);
+            break;
+          }
+
+          case PipeMessageType.ServerShutdown:
+            if (_mode == IRServerMode.ServerMode)
             {
               IrssLog.Info("Shutdown command received");
-
               Stop();
               Application.Exit();
-              break;
             }
-
-          case "Ping":
+            else
             {
-              PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Echo", received.Data);
-              SendTo(received.FromPipe, received.FromServer, response);
-              break;
+              IrssLog.Warn("Host server has shut down");
+              _registered = false;
             }
+            break;
 
-          case "Register":
+          case PipeMessageType.Ping:
+          {
+            PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.Echo, PipeMessageFlags.Response, received.DataAsBytes);
+            SendTo(received.FromPipe, received.FromServer, response);
+            break;
+          }
+
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Response) == PipeMessageFlags.Response)
             {
-              PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, received.Name + " Failure", null);
+              if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+              {
+                IrssLog.Info("Registered with host server");
+                _registered = true;
+              }
+              else
+              {
+                IrssLog.Warn("Host server refused registration");
+                _registered = false;
+              }
+            }
+            else if ((received.Flags & PipeMessageFlags.Request) == PipeMessageFlags.Request)
+            {
+              PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.RegisterClient, PipeMessageFlags.Response);
+
               if (RegisterClient(received.FromPipe, received.FromServer))
               {
-                response.Name = received.Name + " Success";
-
                 IRServerInfo irServerInfo = new IRServerInfo();
 
                 if (_pluginReceive != null)
-                  irServerInfo.CanReceive    = true;
+                  irServerInfo.CanReceive = true;
 
                 if (_pluginTransmit != null)
                 {
-                  irServerInfo.CanLearn      = (_pluginTransmit is ILearnIR);
-                  irServerInfo.CanTransmit   = true;
-                  irServerInfo.Ports         = (_pluginTransmit as ITransmitIR).AvailablePorts;
+                  irServerInfo.CanLearn = (_pluginTransmit is ILearnIR);
+                  irServerInfo.CanTransmit = true;
+                  irServerInfo.Ports = (_pluginTransmit as ITransmitIR).AvailablePorts;
                 }
 
-                response.Data = irServerInfo.ToBytes();
+                response.DataAsBytes = irServerInfo.ToBytes();
+                response.Flags |= PipeMessageFlags.Success;
+              }
+              else
+              {
+                response.Flags |= PipeMessageFlags.Failure;
               }
 
               SendTo(received.FromPipe, received.FromServer, response);
-              break;
             }
+            break;
 
-          case "Unregister":
-            {
-              UnregisterClient(received.FromPipe, received.FromServer);
-              break;
-            }
+          case PipeMessageType.UnregisterClient:
+            UnregisterClient(received.FromPipe, received.FromServer);
+            break;
 
-          case "Register Repeater":
+          case PipeMessageType.RegisterRepeater:
             {
-              PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, received.Name + " Failure", null);
+              PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.RegisterRepeater, PipeMessageFlags.Response);
+              
               if (RegisterRepeater(received.FromPipe, received.FromServer))
-                response.Name = received.Name + " Success";
+                response.Flags |= PipeMessageFlags.Success;
+              else
+                response.Flags |= PipeMessageFlags.Failure;
 
               SendTo(received.FromPipe, received.FromServer, response);
               break;
             }
 
-          case "Unregister Repeater":
-            {
-              UnregisterRepeater(received.FromPipe, received.FromServer);
-              break;
-            }
-
-          case "Server Shutdown":
-            {
-              IrssLog.Info("Host server shut down");
-              _registered = false;
-              break;
-            }
+          case PipeMessageType.UnregisterRepeater:
+            UnregisterRepeater(received.FromPipe, received.FromServer);
+            break;
         }
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
-        PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, "Error", Encoding.ASCII.GetBytes(ex.Message));
+        PipeMessage response = new PipeMessage(Common.ServerPipeName, Environment.MachineName, PipeMessageType.Error, PipeMessageFlags.None, ex.Message);
         SendTo(received.FromPipe, received.FromServer, response);
       }
 

@@ -103,6 +103,10 @@ namespace MediaPortal.Plugins
             writer.WriteAttributeString("command", Common.XmlTagPopup);
             writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
           }
+          else
+          {
+            Log.Error("Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
+          }
 
           writer.WriteEndElement();
         }

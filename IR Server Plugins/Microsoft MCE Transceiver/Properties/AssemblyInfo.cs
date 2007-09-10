@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Microsoft MCE Transceiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the Microsoft MCE Driver")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("MicrosoftMceTransceiver")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
@@ -34,3 +34,4 @@ using System.Runtime.InteropServices;
 
 [assembly: CLSCompliant(false)]
 
+[assembly: GuidAttribute("f5a747ab-cc15-476c-a36b-36145ef5069d")]

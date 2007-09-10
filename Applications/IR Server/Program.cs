@@ -125,11 +125,11 @@ namespace IRServer
     internal static IRServerPlugin GetPlugin(string pluginName)
     {
       if (String.IsNullOrEmpty(pluginName))
-        return null;
+        throw new ArgumentException("Null or Empty plugin name supplied.", "pluginName");
 
       IRServerPlugin[] serverPlugins = AvailablePlugins();
       if (serverPlugins == null)
-        return null;
+        throw new Exception("No available plugins found.");
 
       foreach (IRServerPlugin plugin in serverPlugins)
         if (plugin.Name.Equals(pluginName, StringComparison.InvariantCultureIgnoreCase))

@@ -510,8 +510,8 @@ namespace SkinEditor
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient);
+          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         }
       }
       catch { }
@@ -528,60 +528,44 @@ namespace SkinEditor
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      IrssLog.Debug("Received Message \"{0}\"", received.Name);
+      IrssLog.Debug("Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Keyboard Event":
-          case "Mouse Event":
-            break;
-
-          case "Remote Event":
+          case PipeMessageType.RemoteEvent:
             if (listViewButtons.SelectedItems.Count == 1)
-              listViewButtons.SelectedItems[0].SubItems[1].Text = Encoding.ASCII.GetString(received.Data);
+              listViewButtons.SelectedItems[0].SubItems[1].Text = received.DataAsString;
             return;
 
-          case "Register Success":
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
               _registered = true;
-              return;
             }
-
-          case "Register Failure":
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
+              _registered = false;
               PipeAccess.StopServer();
               MessageBox.Show(this, "Failed to register with server", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
               Application.Exit();
-              return;
             }
+            return;
 
-          case "Server Shutdown":
-            {
-              PipeAccess.StopServer();
-              MessageBox.Show(this, "Server has been shut down", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              Application.Exit();
-              return;
-            }
+          case PipeMessageType.ServerShutdown:
+            PipeAccess.StopServer();
+            MessageBox.Show(this, "Server has been shut down", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Application.Exit();
+            return;
 
-          case "Echo":
-            {
-              _echoID = BitConverter.ToInt32(received.Data, 0);
-              break;
-            }
+          case PipeMessageType.Echo:
+            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
+            return;
 
-          case "Error":
-            {
-              MessageBox.Show(this, Encoding.ASCII.GetString(received.Data), "Virtual Remote Skin Editor Error from Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              return;
-            }
-
-          default:
-            {
-              MessageBox.Show(this, "Unknown message received from server: " + received.Name, "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              return;
-            }
+          case PipeMessageType.Error:
+            MessageBox.Show(this, received.DataAsString, "Virtual Remote Skin Editor Error from Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
         }
       }
       catch (Exception ex)
@@ -625,8 +609,8 @@ namespace SkinEditor
         }
         while (retry);
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, serverHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, serverHost, message);
 
       }
       catch

@@ -1,4 +1,4 @@
-namespace IR_File_Tool
+namespace IrFileTool
 {
   partial class FormMain
   {
@@ -28,9 +28,17 @@ namespace IR_File_Tool
     /// </summary>
     private void InitializeComponent()
     {
-      this.components = new System.ComponentModel.Container();
+      this.SuspendLayout();
+      // 
+      // FormMain
+      // 
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.Text = "Form1";
+      this.ClientSize = new System.Drawing.Size(284, 264);
+      this.Name = "FormMain";
+      this.Text = "IR File Tool";
+      this.ResumeLayout(false);
+
     }
 
     #endregion

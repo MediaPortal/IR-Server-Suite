@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("USB-UIRT Transceiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the USB-UIRT transceiver")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("UirtTransceiver")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
@@ -33,3 +33,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.3.4")]
 
 [assembly: CLSCompliant(true)]
+[assembly: GuidAttribute("f06073d3-d682-4962-83ea-56f1d4cffc95")]

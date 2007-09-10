@@ -140,8 +140,8 @@ namespace VirtualRemote
               }
               else
               {
-                PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, "Forward Remote Event", Encoding.ASCII.GetBytes(button));
-                PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message.ToString());
+                PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.None, button);
+                PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message);
               }
             }
 
@@ -279,8 +279,8 @@ namespace VirtualRemote
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
+          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         }
       }
       catch { }
@@ -335,8 +335,8 @@ namespace VirtualRemote
     {
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         return true;
       }
       catch (AppModule.NamedPipes.NamedPipeIOException)
@@ -418,8 +418,8 @@ namespace VirtualRemote
 
           try
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Ping", BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
+            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
           }
           catch
           {
@@ -471,56 +471,39 @@ namespace VirtualRemote
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      IrssLog.Debug("Received Message \"{0}\"", received.Name);
+      IrssLog.Debug("Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Remote Event":
-          case "Keyboard Event":
-          case "Mouse Event":
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+            {
+              //_irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
+              _registered = true;
+
+              IrssLog.Info("Registered to IR Server");
+            }
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            {
+              _registered = false;
+              IrssLog.Warn("IR Server refused to register");
+            }
             break;
 
-          case "Register Success":
-            {
-              IrssLog.Info("Registered to IR Server");
-              _registered = true;
-              //_irServerInfo = TransceiverInfo.FromBytes(received.Data);
-              break;
-            }
+          case PipeMessageType.ServerShutdown:
+            IrssLog.Warn("IR Server Shutdown - Virtual Remote disabled until IR Server returns");
+            _registered = false;
+            break;
 
-          case "Register Failure":
-            {
-              IrssLog.Warn("IR Server refused to register");
-              _registered = false;
-              break;
-            }
+          case PipeMessageType.Echo:
+            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
+            return;
 
-          case "Server Shutdown":
-            {
-              IrssLog.Warn("IR Server Shutdown - Virtual Remote disabled until IR Server returns");
-              _registered = false;
-              break;
-            }
-
-          case "Echo":
-            {
-              _echoID = BitConverter.ToInt32(received.Data, 0);
-              break;
-            }
-
-          case "Error":
-            {
-              IrssLog.Error(Encoding.ASCII.GetString(received.Data));
-              break;
-            }
-
-          default:
-            {
-              IrssLog.Warn("Unknown message received from server: " + received.Name);
-              break;
-            }
+          case PipeMessageType.Error:
+            IrssLog.Error(received.DataAsString);
+            break;
         }
       }
       catch (Exception ex)

@@ -211,8 +211,8 @@ Refer to IR Blast help for more information.",
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
+          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         }
       }
       catch { }
@@ -267,8 +267,8 @@ Refer to IR Blast help for more information.",
     {
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         return true;
       }
       catch (AppModule.NamedPipes.NamedPipeIOException)
@@ -350,8 +350,8 @@ Refer to IR Blast help for more information.",
 
           try
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Ping", BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
+            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
           }
           catch
           {
@@ -403,64 +403,45 @@ Refer to IR Blast help for more information.",
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      IrssLog.Debug("Received Message \"{0}\"", received.Name);
+      IrssLog.Debug("Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Remote Event":
-          case "Keyboard Event":
-          case "Mouse Event":
+          case PipeMessageType.BlastIR:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+              IrssLog.Info("Blast Success");
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+              IrssLog.Warn("Blast Failed!");
             break;
 
-          case "Blast Success":
-            IrssLog.Info("Blast Success");
-            break;
-
-          case "Blast Failure":
-            IrssLog.Warn("Blast Failed!");
-            break;
-
-          case "Register Success":
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
               IrssLog.Info("Registered to IR Server");
               _registered = true;
-              //_irServerInfo = TransceiverInfo.FromBytes(received.Data);
-              break;
+              //_irServerInfo = TransceiverInfo.FromString(received.Data);
             }
-
-          case "Register Failure":
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
+              _registered = false;
               IrssLog.Warn("IR Server refused to register");
-              _registered = false;
-              break;
             }
+            break;
 
-          case "Server Shutdown":
-            {
-              IrssLog.Warn("IR Server Shutdown - Blasting disabled until IR Server returns");
-              _registered = false;
-              break;
-            }
+          case PipeMessageType.ServerShutdown:
+            _registered = false;
+            IrssLog.Warn("IR Server Shutdown - Blasting disabled until IR Server returns");
+            break;
 
-          case "Echo":
-            {
-              _echoID = BitConverter.ToInt32(received.Data, 0);
-              break;
-            }
+          case PipeMessageType.Echo:
+            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
+            break;
 
-          case "Error":
-            {
-              IrssLog.Warn(Encoding.ASCII.GetString(received.Data));
-              break;
-            }
-
-          default:
-            {
-              IrssLog.Warn("Unknown message received from server: " + received.Name);
-              break;
-            }
+          case PipeMessageType.Error:
+            IrssLog.Warn(received.DataAsString);
+            break;
         }
       }
       catch (Exception ex)
@@ -481,8 +462,8 @@ Refer to IR Blast help for more information.",
       file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
-      PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
-      PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
+      PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
     }
 
   }

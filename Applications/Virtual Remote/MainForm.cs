@@ -188,8 +188,8 @@ namespace VirtualRemote
       if (!PipeAccess.ServerRunning)
         return;
 
-      PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, "Forward Remote Event", Encoding.ASCII.GetBytes(keyCode));
-      PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message.ToString());
+      PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.None, keyCode);
+      PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message);
     }
 
     void SetLabel()

@@ -692,8 +692,8 @@ namespace Translator
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
+          PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
         }
       }
       catch { }
@@ -748,8 +748,8 @@ namespace Translator
     {
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
         return true;
       }
       catch (AppModule.NamedPipes.NamedPipeIOException)
@@ -853,8 +853,8 @@ namespace Translator
 
           try
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Ping", BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
+            PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
           }
           catch
           {
@@ -906,106 +906,97 @@ namespace Translator
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      IrssLog.Debug("Received Message \"{0}\"", received.Name);
+      IrssLog.Debug("Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Blast Success":
+          case PipeMessageType.RemoteEvent:
+            RemoteHandlerCallback(received.DataAsString);
             break;
 
-          case "Remote Event":
-            {
-              string keyCode = Encoding.ASCII.GetString(received.Data);
-              RemoteHandlerCallback(keyCode);
-              break;
-            }
+          case PipeMessageType.KeyboardEvent:
+          {
+            byte[] dataBytes = received.DataAsBytes;
 
-          case "Keyboard Event":
-            {
-              int vKey = BitConverter.ToInt32(received.Data, 0);
-              bool keyUp = BitConverter.ToBoolean(received.Data, 4);
-              KeyboardHandlerCallback(vKey, keyUp);
-              break;
-            }
+            int vKey = BitConverter.ToInt32(dataBytes, 0);
+            bool keyUp = BitConverter.ToBoolean(dataBytes, 4);
 
-          case "Mouse Event":
-            {
-              int deltaX = BitConverter.ToInt32(received.Data, 0);
-              int deltaY = BitConverter.ToInt32(received.Data, 4);
-              int buttons = BitConverter.ToInt32(received.Data, 8);
-              MouseHandlerCallback(deltaX, deltaY, buttons);
-              break;
-            }
+            KeyboardHandlerCallback(vKey, keyUp);
+            break;
+          }
 
-          case "Blast Failure":
-            {
+          case PipeMessageType.MouseEvent:
+          {
+            byte[] dataBytes = received.DataAsBytes;
+
+            int deltaX = BitConverter.ToInt32(dataBytes, 0);
+            int deltaY = BitConverter.ToInt32(dataBytes, 4);
+            int buttons = BitConverter.ToInt32(dataBytes, 8);
+
+            MouseHandlerCallback(deltaX, deltaY, buttons);
+            break;
+          }
+
+          case PipeMessageType.BlastIR:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+              IrssLog.Debug("Blast successful");
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
               IrssLog.Error("Failed to blast IR command");
-              break;
-            }
+            break;
 
-          case "Register Success":
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
-              IrssLog.Info("Registered to IR Server");
+              _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
               _registered = true;
-              _irServerInfo = IRServerInfo.FromBytes(received.Data);
-              break;
-            }
 
-          case "Register Failure":
+              IrssLog.Info("Registered to IR Server");
+            }
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
-              IrssLog.Warn("IR Server refused to register");
               _registered = false;
-              break;
+              IrssLog.Warn("IR Server refused to register");
             }
+            break;
 
-          case "Learn Success":
+          case PipeMessageType.LearnIR:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
               IrssLog.Info("Learned IR Successfully");
 
-              FileStream file = new FileStream(_learnIRFilename, FileMode.Create, FileAccess.Write, FileShare.None);
-              file.Write(received.Data, 0, received.Data.Length);
-              file.Flush();
+              byte[] dataBytes = received.DataAsBytes;
+
+              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
+              file.Write(dataBytes, 0, dataBytes.Length);
               file.Close();
-
-              _learnIRFilename = null;
-              break;
             }
-
-          case "Learn Failure":
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
               IrssLog.Error("Failed to learn IR command");
-
-              _learnIRFilename = null;
-              break;
             }
-
-          case "Server Shutdown":
+            else if ((received.Flags & PipeMessageFlags.Timeout) == PipeMessageFlags.Timeout)
             {
-              IrssLog.Warn("IR Server Shutdown - Translator disabled until IR Server returns");
-              _registered = false;
-              break;
+              IrssLog.Warn("Learn IR command timed-out");
             }
 
-          case "Echo":
-            {
-              _echoID = BitConverter.ToInt32(received.Data, 0);
-              break;
-            }
+            _learnIRFilename = null;
+            break;
 
-          case "Error":
-            {
-              _learnIRFilename = null;
-              IrssLog.Error("Received error: {0}", Encoding.ASCII.GetString(received.Data));
-              break;
-            }
+          case PipeMessageType.ServerShutdown:
+            IrssLog.Warn("IR Server Shutdown - Translator disabled until IR Server returns");
+            _registered = false;
+            break;
 
-          default:
-            {
-              IrssLog.Warn("Unknown message received: {0}", received.Name);
-              break;
-            }
+          case PipeMessageType.Echo:
+            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
+            break;
+
+          case PipeMessageType.Error:
+            _learnIRFilename = null;
+            IrssLog.Error("Received error: {0}", received.DataAsString);
+            break;
         }
 
         if (_handleMessage != null)
@@ -1321,8 +1312,8 @@ namespace Translator
 
         _learnIRFilename = fileName;
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Learn", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.LearnIR, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
       }
       catch (Exception ex)
       {
@@ -1356,8 +1347,8 @@ namespace Translator
       file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
-      PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
-      PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message.ToString());
+      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
+      PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
     }
 
     /// <summary>

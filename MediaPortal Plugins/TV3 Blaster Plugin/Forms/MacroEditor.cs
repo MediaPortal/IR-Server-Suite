@@ -96,6 +96,10 @@ namespace TvEngine
             writer.WriteAttributeString("command", Common.XmlTagKeys);
             writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
           }
+          else
+          {
+            Log.Error("Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
+          }
 
           writer.WriteEndElement();
         }

@@ -163,91 +163,57 @@ namespace DebugClient
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      this.Invoke(_AddStatusLine, new Object[] { String.Format("Received Message: \"{0}\"", received.Name) });
+      this.Invoke(_AddStatusLine, new Object[] { String.Format("Received Message: \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type)) });
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Blast Success":
-          case "Blast Failure":
-          case "Keyboard Event":
-          case "Mouse Event":
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+            {
+              _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
+              comboBoxPort.Items.Clear();
+              comboBoxPort.Items.AddRange(_irServerInfo.Ports);
+              comboBoxPort.SelectedIndex = 0;
+            }
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            {
+              if (PipeAccess.ServerRunning)
+                PipeAccess.StopServer();
+            }
             return;
 
-          case "Clients":
-          {
-            string clients = String.Format("There are {0} client(s) attached to the server", BitConverter.ToInt32(received.Data, 0));
-            this.Invoke(_AddStatusLine, new Object[] { clients });
+          case PipeMessageType.RemoteEvent:
+            RemoteHandlerCallback(received.DataAsString);
             return;
-          }
 
-          case "Register Success":
-          {
-            _irServerInfo = IRServerInfo.FromBytes(received.Data);
+          case PipeMessageType.LearnIR:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+            {
+              byte[] dataBytes = received.DataAsBytes;
 
-            comboBoxPort.Items.Clear();
-            comboBoxPort.Items.AddRange(_irServerInfo.Ports);
-            comboBoxPort.SelectedIndex = 0;
-            return;
-          }
-
-          case "Register Failure":
-          {
-            if (PipeAccess.ServerRunning)
-              PipeAccess.StopServer();
-            return;
-          }
-
-          case "Remote Event":
-          {
-            string keyCode = Encoding.ASCII.GetString(received.Data);
-            RemoteHandlerCallback(keyCode);
-            return;
-          }
-
-          case "Learn Success":
-          {
-            FileStream file = new FileStream(_learnIRFilename, FileMode.Create, FileAccess.Write, FileShare.None);
-            file.Write(received.Data, 0, received.Data.Length);
-            file.Flush();
-            file.Close();
+              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
+              file.Write(dataBytes, 0, dataBytes.Length);
+              file.Close();
+            }
 
             _learnIRFilename = null;
-            return;
-          }
-
-          case "Learn Failure":
-          {
-            _learnIRFilename = null;
-            return;
-          }
-
-
-          case "Server Shutdown":
-          {
-            if (PipeAccess.ServerRunning)
-              PipeAccess.StopServer();
-            return;
-          }
-
-          case "Echo":
-          {
-            _echoID = BitConverter.ToInt32(received.Data, 0);
             break;
-          }
-          
-          case "Error":
-          {
-            this.Invoke(_AddStatusLine, new Object[] { Encoding.ASCII.GetString(received.Data) });
-            return;
-          }
 
-          default:
-          {
-            this.Invoke(_AddStatusLine, new Object[] { "Unknown message received: " + received.Name });
+          case PipeMessageType.ServerShutdown:
+            if (PipeAccess.ServerRunning)
+              PipeAccess.StopServer();
             return;
-          }
+
+          case PipeMessageType.Echo:
+            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
+            return;
+
+          case PipeMessageType.Error:
+            _learnIRFilename = null;
+            this.Invoke(_AddStatusLine, new Object[] { received.DataAsString });
+            return;
         }
       }
       catch (Exception ex)
@@ -292,8 +258,8 @@ namespace DebugClient
       }
       while (retry);
 
-      PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-      PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
+      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+      PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
 
       return true;
     }
@@ -307,8 +273,8 @@ namespace DebugClient
 
         _learnIRFilename = fileName;
         
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Learn", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.LearnIR, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
 
         AddStatusLine("Learning");
       }
@@ -337,8 +303,8 @@ namespace DebugClient
         file.Read(outData, 4 + port.Length, (int)file.Length);
         file.Close();
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
       }
       catch (Exception ex)
       {
@@ -392,8 +358,8 @@ namespace DebugClient
 
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
       }
       catch (Exception ex)
       {
@@ -460,8 +426,8 @@ namespace DebugClient
 
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Shutdown", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ServerShutdown, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
       }
       catch (Exception ex)
       {
@@ -471,26 +437,6 @@ namespace DebugClient
     private void buttonCrash_Click(object sender, EventArgs e)
     {
       throw new System.InvalidOperationException("User initiated exception thrown");
-    }
-    private void buttonListConnected_Click(object sender, EventArgs e)
-    {
-      AddStatusLine("List Clients");
-
-      if (!PipeAccess.ServerRunning)
-      {
-        AddStatusLine(" - Not connected");
-        return;
-      }
-
-      try
-      {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "List", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
-      }
-      catch (Exception ex)
-      {
-        AddStatusLine(ex.Message);
-      }
     }
     private void buttonPing_Click(object sender, EventArgs e)
     {
@@ -504,8 +450,8 @@ namespace DebugClient
 
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Ping", BitConverter.GetBytes(24));
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(24));
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
       }
       catch (Exception ex)
       {
@@ -522,7 +468,9 @@ namespace DebugClient
         if (PipeMessage.FromString(textBoxCustom.Text) == null)
           AddStatusLine("Warning: The specified custom message is not a valid message structure");
 
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, textBoxCustom.Text);
+        PipeMessage customMessage = PipeMessage.FromString(textBoxCustom.Text);
+
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, customMessage);
 
         AddStatusLine("Custom message sent");
       }
@@ -565,8 +513,8 @@ namespace DebugClient
         BitConverter.GetBytes(keyCode).CopyTo(data, 0);
         BitConverter.GetBytes(0).CopyTo(data, 4);
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Forward Remote Event", data);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.None, data);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
       }
       catch (Exception ex)
       {

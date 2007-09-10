@@ -156,6 +156,10 @@ namespace MediaPortal.Plugins
           writer.WriteAttributeString("command", Common.XmlTagShutdown);
           writer.WriteAttributeString("cmdproperty", String.Empty);
         }
+        else
+        {
+          Log.Error("Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
+        }
 
         writer.WriteEndElement();
       }

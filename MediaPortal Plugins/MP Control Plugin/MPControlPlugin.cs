@@ -618,8 +618,8 @@ namespace MediaPortal.Plugins
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Unregister", null);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient);
+          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         }
       }
       catch { }
@@ -674,8 +674,8 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Register", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         return true;
       }
       catch (AppModule.NamedPipes.NamedPipeIOException)
@@ -763,8 +763,8 @@ namespace MediaPortal.Plugins
 
           try
           {
-            PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Ping", BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message.ToString());
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
+            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
           }
           catch
           {
@@ -817,95 +817,84 @@ namespace MediaPortal.Plugins
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Debug("MPControlPlugin: Received Message \"{0}\"", received.Name);
+        Log.Debug("MPControlPlugin: Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
 
       try
       {
-        switch (received.Name)
+        switch (received.Type)
         {
-          case "Blast Success":
-          case "Keyboard Event":
-          case "Mouse Event":
+          case PipeMessageType.RemoteEvent:
+            if (RemoteCallback != null)
+              RemoteCallback(received.DataAsString);
             break;
 
-          case "Remote Event":
-            {
-              string keyCode = Encoding.ASCII.GetString(received.Data);
-              if (RemoteCallback != null)
-                RemoteCallback(keyCode);
 
-              break;
+          case PipeMessageType.BlastIR:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+            {
+              if (LogVerbose)
+                Log.Info("MPControlPlugin: Blast successful");
             }
-
-          case "Blast Failure":
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
-              Log.Error("MPControlPlugin: Failed to blast IR command");
-              break;
+              Log.Warn("MPControlPlugin: Failed to blast IR command");
             }
+            break;
 
-          case "Register Success":
+
+          case PipeMessageType.RegisterClient:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
+              _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
+              _registered = true;
+
               if (LogVerbose)
                 Log.Info("MPControlPlugin: Registered to IR Server");
-
-              _registered = true;
-              _irServerInfo = IRServerInfo.FromBytes(received.Data);
-              break;
             }
-
-          case "Register Failure":
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
-              Log.Warn("MPControlPlugin: IR Server refused to register");
               _registered = false;
-              break;
+              Log.Warn("MPControlPlugin: IR Server refused to register");
             }
+            break;
 
-          case "Learn Success":
+          case PipeMessageType.LearnIR:
+            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
               if (LogVerbose)
-                Log.Info("MPControlPlugin: Learned IR Successfully \"{0}\"", _learnIRFilename);
+                Log.Info("MPControlPlugin: Learned IR Successfully");
 
-              FileStream file = new FileStream(_learnIRFilename, FileMode.Create, FileAccess.Write, FileShare.None);
-              file.Write(received.Data, 0, received.Data.Length);
-              file.Flush();
+              byte[] dataBytes = received.DataAsBytes;
+
+              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
+              file.Write(dataBytes, 0, dataBytes.Length);
               file.Close();
-
-              _learnIRFilename = null;
-              break;
             }
-
-          case "Learn Failure":
+            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
               Log.Error("MPControlPlugin: Failed to learn IR command");
-
-              _learnIRFilename = null;
-              break;
             }
-
-          case "Server Shutdown":
+            else if ((received.Flags & PipeMessageFlags.Timeout) == PipeMessageFlags.Timeout)
             {
-              Log.Warn("MPControlPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
-              _registered = false;
-              break;
+              Log.Error("MPControlPlugin: Learn IR command timed-out");
             }
 
-          case "Echo":
-            {
-              _echoID = BitConverter.ToInt32(received.Data, 0);
-              break;
-            }
+            _learnIRFilename = null;
+            break;
 
-          case "Error":
-            {
-              Log.Error("MPControlPlugin: Received error: {0}", Encoding.ASCII.GetString(received.Data));
-              break;
-            }
+          case PipeMessageType.ServerShutdown:
+            Log.Warn("MPControlPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
+            _registered = false;
+            break;
 
-          default:
-            {
-              Log.Debug("MPControlPlugin: Unknown message received: {0}", received.Name);
-              break;
-            }
+          case PipeMessageType.Echo:
+            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
+            break;
+
+          case PipeMessageType.Error:
+            _learnIRFilename = null;
+            Log.Error("MPControlPlugin: Received error: {0}", received.DataAsString);
+            break;
         }
 
         if (_handleMessage != null)
@@ -1540,8 +1529,8 @@ namespace MediaPortal.Plugins
       file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
-      PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Blast", outData);
-      PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message.ToString());
+      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
+      PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message);
     }
 
     /// <summary>
@@ -1625,8 +1614,8 @@ namespace MediaPortal.Plugins
 
         _learnIRFilename = fileName;
 
-        PipeMessage message = new PipeMessage(_localPipeName, Environment.MachineName, "Learn", null);
-        PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message.ToString());
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.LearnIR, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, ServerHost, message);
 
         return true;
       }

@@ -144,8 +144,9 @@ namespace IRServer
       {
         checkBoxRunAtBoot.Checked = SystemRegistry.GetAutoRun("IR Server");
       }
-      catch
+      catch (Exception ex)
       {
+        IrssLog.Error(ex.ToString());
       }
 
       ArrayList networkPCs = IrssUtils.Win32.GetNetworkComputers();

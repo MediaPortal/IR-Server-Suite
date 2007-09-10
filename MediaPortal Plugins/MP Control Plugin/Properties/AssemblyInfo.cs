@@ -69,3 +69,4 @@ using System.Security.Permissions;
 [assembly: CLSCompliant(true)]
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]
+[assembly: GuidAttribute("0f4a15ea-ff0f-4031-87bd-eebfd5d0e7da")]

@@ -62,3 +62,4 @@ using System.Runtime.InteropServices;
 //
 
 [assembly: CLSCompliant(false)]
+[assembly: GuidAttribute("e0f1bb71-9f62-44e5-85c1-a918891901d7")]

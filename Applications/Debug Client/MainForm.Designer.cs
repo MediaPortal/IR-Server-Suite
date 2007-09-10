@@ -38,7 +38,6 @@ namespace DebugClient
       this.buttonShutdownServer = new System.Windows.Forms.Button();
       this.listBoxStatus = new System.Windows.Forms.ListBox();
       this.buttonCrash = new System.Windows.Forms.Button();
-      this.buttonListConnected = new System.Windows.Forms.Button();
       this.buttonPing = new System.Windows.Forms.Button();
       this.groupBoxGenerateMessage = new System.Windows.Forms.GroupBox();
       this.textBoxCustom = new System.Windows.Forms.TextBox();
@@ -69,7 +68,7 @@ namespace DebugClient
       this.buttonBlast.Location = new System.Drawing.Point(8, 48);
       this.buttonBlast.Name = "buttonBlast";
       this.buttonBlast.Size = new System.Drawing.Size(64, 24);
-      this.buttonBlast.TabIndex = 2;
+      this.buttonBlast.TabIndex = 1;
       this.buttonBlast.Text = "Blast IR";
       this.toolTips.SetToolTip(this.buttonBlast, "Blast learned IR code");
       this.buttonBlast.UseVisualStyleBackColor = true;
@@ -123,10 +122,10 @@ namespace DebugClient
       // buttonShutdownServer
       // 
       this.buttonShutdownServer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonShutdownServer.Location = new System.Drawing.Point(296, 16);
+      this.buttonShutdownServer.Location = new System.Drawing.Point(296, 48);
       this.buttonShutdownServer.Name = "buttonShutdownServer";
       this.buttonShutdownServer.Size = new System.Drawing.Size(64, 24);
-      this.buttonShutdownServer.TabIndex = 5;
+      this.buttonShutdownServer.TabIndex = 4;
       this.buttonShutdownServer.Text = "Shutdown";
       this.toolTips.SetToolTip(this.buttonShutdownServer, "Shutdown server");
       this.buttonShutdownServer.UseVisualStyleBackColor = true;
@@ -150,34 +149,22 @@ namespace DebugClient
       // buttonCrash
       // 
       this.buttonCrash.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonCrash.Location = new System.Drawing.Point(368, 16);
+      this.buttonCrash.Location = new System.Drawing.Point(368, 48);
       this.buttonCrash.Name = "buttonCrash";
       this.buttonCrash.Size = new System.Drawing.Size(64, 24);
-      this.buttonCrash.TabIndex = 6;
+      this.buttonCrash.TabIndex = 5;
       this.buttonCrash.Text = "Crash";
       this.toolTips.SetToolTip(this.buttonCrash, "Crash this program");
       this.buttonCrash.UseVisualStyleBackColor = true;
       this.buttonCrash.Click += new System.EventHandler(this.buttonCrash_Click);
       // 
-      // buttonListConnected
-      // 
-      this.buttonListConnected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonListConnected.Location = new System.Drawing.Point(368, 48);
-      this.buttonListConnected.Name = "buttonListConnected";
-      this.buttonListConnected.Size = new System.Drawing.Size(64, 24);
-      this.buttonListConnected.TabIndex = 8;
-      this.buttonListConnected.Text = "# clients";
-      this.toolTips.SetToolTip(this.buttonListConnected, "Get client count from server");
-      this.buttonListConnected.UseVisualStyleBackColor = true;
-      this.buttonListConnected.Click += new System.EventHandler(this.buttonListConnected_Click);
-      // 
       // buttonPing
       // 
       this.buttonPing.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonPing.Location = new System.Drawing.Point(296, 48);
+      this.buttonPing.Location = new System.Drawing.Point(368, 16);
       this.buttonPing.Name = "buttonPing";
       this.buttonPing.Size = new System.Drawing.Size(64, 24);
-      this.buttonPing.TabIndex = 7;
+      this.buttonPing.TabIndex = 3;
       this.buttonPing.Text = "Ping";
       this.toolTips.SetToolTip(this.buttonPing, "Ping the server");
       this.buttonPing.UseVisualStyleBackColor = true;
@@ -334,7 +321,6 @@ namespace DebugClient
       this.groupBoxCommands.Controls.Add(this.buttonBlast);
       this.groupBoxCommands.Controls.Add(this.buttonLearnIR);
       this.groupBoxCommands.Controls.Add(this.buttonShutdownServer);
-      this.groupBoxCommands.Controls.Add(this.buttonListConnected);
       this.groupBoxCommands.Controls.Add(this.buttonPing);
       this.groupBoxCommands.Location = new System.Drawing.Point(8, 80);
       this.groupBoxCommands.Name = "groupBoxCommands";
@@ -350,7 +336,7 @@ namespace DebugClient
       this.comboBoxPort.Location = new System.Drawing.Point(80, 50);
       this.comboBoxPort.Name = "comboBoxPort";
       this.comboBoxPort.Size = new System.Drawing.Size(80, 21);
-      this.comboBoxPort.TabIndex = 3;
+      this.comboBoxPort.TabIndex = 2;
       this.toolTips.SetToolTip(this.comboBoxPort, "Port for blasting IR");
       // 
       // buttonIRBlastAutoTest
@@ -417,7 +403,6 @@ namespace DebugClient
     private System.Windows.Forms.Button buttonShutdownServer;
     private System.Windows.Forms.ListBox listBoxStatus;
     private System.Windows.Forms.Button buttonCrash;
-    private System.Windows.Forms.Button buttonListConnected;
     private System.Windows.Forms.Button buttonPing;
     private System.Windows.Forms.GroupBox groupBoxGenerateMessage;
     private System.Windows.Forms.TextBox textBoxCustom;
