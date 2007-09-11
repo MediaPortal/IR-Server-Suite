@@ -43,18 +43,18 @@ namespace NamedPipes
     
     Request         = 0x0001,
     Response        = 0x0002,
-    Notify          = 0x0004,
+    //Notify          = 0x0004,
     
     Success         = 0x0008,
     Failure         = 0x0010,
     Timeout         = 0x0020,
     Error           = 0x0040,
 
-    DataString      = 0x0080,
-    DataBytes       = 0x0100,
+    //DataString      = 0x0080,
+    //DataBytes       = 0x0100,
 
-    ForceRespond    = 0x0200,
-    ForceNotRespond = 0x0400,
+    //ForceRespond    = 0x0200,
+    //ForceNotRespond = 0x0400,
   }
 
   #endregion Enumerations
@@ -178,7 +178,9 @@ namespace NamedPipes
 
     public override string ToString()
     {
-      string data = ByteArrayToByteString(_data);
+      string data = String.Empty;
+      if (_data != null && _data.Length != 0)
+        data = ByteArrayToByteString(_data);
 
       string messageType = Enum.GetName(typeof(PipeMessageType), _type);
 
@@ -213,9 +215,17 @@ namespace NamedPipes
 
         PipeMessageType type    = (PipeMessageType)Enum.Parse(typeof(PipeMessageType), stringItems[2]);
         PipeMessageFlags flags  = (PipeMessageFlags)Enum.Parse(typeof(PipeMessageFlags), stringItems[3]);
-        byte[] data         = ByteStringToByteArray(stringItems[4]);
 
-        return new PipeMessage(stringItems[0], stringItems[1], type, flags, data);
+        if (String.IsNullOrEmpty(stringItems[4]))
+        {
+          return new PipeMessage(stringItems[0], stringItems[1], type, flags);
+        }
+        else
+        {
+          byte[] data = ByteStringToByteArray(stringItems[4]);
+
+          return new PipeMessage(stringItems[0], stringItems[1], type, flags, data);
+        }
       }
       catch
       {
@@ -223,7 +233,7 @@ namespace NamedPipes
       }
     }
 
-    public static string ByteArrayToByteString(byte[] data)
+    static string ByteArrayToByteString(byte[] data)
     {
       if (data == null || data.Length == 0)
         throw new ArgumentException("Null or Empty byte array supplied", "data");
@@ -236,7 +246,7 @@ namespace NamedPipes
       return outputString.ToString();
     }
 
-    public static byte[] ByteStringToByteArray(string data)
+    static byte[] ByteStringToByteArray(string data)
     {
       if (String.IsNullOrEmpty(data))
         throw new ArgumentException("Null or Empty data string supplied", "data");
