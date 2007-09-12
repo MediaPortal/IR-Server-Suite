@@ -28,7 +28,7 @@ namespace MicrosoftMceTransceiver
 
     #region Enumerations
 
-    public enum IoCtrl : uint
+    enum IoCtrl : uint
     {
       StartReceive  = 0x0F608028,
       StopReceive   = 0x0F60802C,
@@ -42,7 +42,7 @@ namespace MicrosoftMceTransceiver
     /// IR Device Capability Flags.
     /// </summary>
     [Flags]
-    public enum DeviceCapabilityFlags : uint
+    enum DeviceCapabilityFlags : uint
     {
       /// <summary>
       /// Hardware supports legacy key signing.
@@ -83,7 +83,7 @@ namespace MicrosoftMceTransceiver
     }
 
     [Flags]
-    public enum TransmitFlags : uint
+    enum TransmitFlags : uint
     {
       /// <summary>
       /// Pulse Mode.
@@ -112,7 +112,7 @@ namespace MicrosoftMceTransceiver
     #region Structures
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct TransmitChunk
+    struct TransmitChunk
     {
       /// <summary>
       /// Next chunk offset.
@@ -129,7 +129,7 @@ namespace MicrosoftMceTransceiver
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct TransmitParams
+    struct TransmitParams
     {
       /// <summary>
       /// Bitmask containing ports to transmit on.
@@ -151,7 +151,7 @@ namespace MicrosoftMceTransceiver
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReceiveParams
+    struct ReceiveParams
     {
       /// <summary>
       /// Last packet in block?
@@ -168,7 +168,7 @@ namespace MicrosoftMceTransceiver
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct StartReceiveParams
+    struct StartReceiveParams
     {
       /// <summary>
       /// Index of the receiver to use.
@@ -181,7 +181,7 @@ namespace MicrosoftMceTransceiver
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct DeviceCapabilities
+    struct DeviceCapabilities
     {
       /// <summary>
       /// Protocol version.  Currently must be 100 (1.0).
@@ -306,7 +306,7 @@ namespace MicrosoftMceTransceiver
       {
         Marshal.StructureToPtr(structure, structPtr, false);
 
-        IoControlSync(IoCtrl.StartReceive, structPtr, Marshal.SizeOf(structure), IntPtr.Zero, 0, out bytesReturned);
+        IoControl(IoCtrl.StartReceive, structPtr, Marshal.SizeOf(structure), IntPtr.Zero, 0, out bytesReturned);
       }
       catch
       {
@@ -321,7 +321,7 @@ namespace MicrosoftMceTransceiver
     void StopReceive()
     {
       int bytesReturned;
-      IoControlSync(IoCtrl.StopReceive, IntPtr.Zero, 0, IntPtr.Zero, 0, out bytesReturned);
+      IoControl(IoCtrl.StopReceive, IntPtr.Zero, 0, IntPtr.Zero, 0, out bytesReturned);
     }
 
     void GetDeviceCapabilities()
@@ -336,7 +336,7 @@ namespace MicrosoftMceTransceiver
       {
         Marshal.StructureToPtr(structure, structPtr, false);
 
-        IoControlSync(IoCtrl.GetDetails, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
+        IoControl(IoCtrl.GetDetails, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
 
         structure = (DeviceCapabilities)Marshal.PtrToStructure(structPtr, typeof(DeviceCapabilities));
       }
@@ -387,7 +387,7 @@ namespace MicrosoftMceTransceiver
       {
         Marshal.StructureToPtr(data, pointerToData, false);
 
-        IoControlSync(IoCtrl.GetBlasters, IntPtr.Zero, 0, pointerToData, sizeof(uint), out bytesReturned);
+        IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, pointerToData, sizeof(uint), out bytesReturned);
 
         data = (uint)Marshal.PtrToStructure(pointerToData, typeof(uint));
       }
@@ -447,7 +447,7 @@ namespace MicrosoftMceTransceiver
 
         Marshal.Copy(buffer, 0, bufferPtr, buffer.Length);
 
-        IoControlSync(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(typeof(TransmitParams)), bufferPtr, bufferSize, out bytesReturned);
+        IoControl(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(typeof(TransmitParams)), bufferPtr, bufferSize, out bytesReturned);
       }
       catch
       {
@@ -460,7 +460,7 @@ namespace MicrosoftMceTransceiver
       }
     }
 
-    void IoControlSync(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
+    void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
     {
       NativeOverlapped overlapped;
       overlapped.InternalLow = IntPtr.Zero;
@@ -708,7 +708,7 @@ namespace MicrosoftMceTransceiver
 
         while (_readThreadMode != ReadThreadMode.Stop)
         {
-          IoControlSync(IoCtrl.Receive, IntPtr.Zero, 0, receiveParamsPtr, receiveParamsSize, out bytesRead);
+          IoControl(IoCtrl.Receive, IntPtr.Zero, 0, receiveParamsPtr, receiveParamsSize, out bytesRead);
 
           if (bytesRead > Marshal.SizeOf(receiveParams))
           {

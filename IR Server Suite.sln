@@ -253,6 +253,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Named Pipes Tool", "Applica
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MediaPortal 2 Plugins", "MediaPortal 2 Plugins", "{925C6589-16EF-4B2B-A184-FA44FF04C2F6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP2 Control Plugin", "MediaPortal 2 Plugins\MP2 Control Plugin\MP2 Control Plugin.csproj", "{E5A37205-4AA5-4697-BF16-D2F560F2314E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -546,6 +558,12 @@ Global
 		{6E7C6F27-DA95-4F2F-A97D-1EA8E1517A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E7C6F27-DA95-4F2F-A97D-1EA8E1517A4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6E7C6F27-DA95-4F2F-A97D-1EA8E1517A4C}.Release|x86.ActiveCfg = Release|Any CPU
+		{E5A37205-4AA5-4697-BF16-D2F560F2314E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5A37205-4AA5-4697-BF16-D2F560F2314E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5A37205-4AA5-4697-BF16-D2F560F2314E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E5A37205-4AA5-4697-BF16-D2F560F2314E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5A37205-4AA5-4697-BF16-D2F560F2314E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5A37205-4AA5-4697-BF16-D2F560F2314E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -587,5 +605,6 @@ Global
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB} = {E757F80C-23C5-4AD6-B178-16799E337E03}
 		{08F57DD7-2C6E-484E-9CC5-835F70C5BC64} = {E757F80C-23C5-4AD6-B178-16799E337E03}
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2} = {E757F80C-23C5-4AD6-B178-16799E337E03}
+		{E5A37205-4AA5-4697-BF16-D2F560F2314E} = {925C6589-16EF-4B2B-A184-FA44FF04C2F6}
 	EndGlobalSection
 EndGlobal

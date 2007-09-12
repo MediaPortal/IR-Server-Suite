@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
 
 //
 // General Information about an assembly is controlled through the following 
@@ -39,5 +38,4 @@ using System.Security.Permissions;
 
 [assembly: CLSCompliant(true)]
 
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]
 [assembly: GuidAttribute("00506894-d61e-47b9-9039-879c543a73e1")]
