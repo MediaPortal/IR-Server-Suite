@@ -8,6 +8,8 @@ using System.Threading;
 
 using Microsoft.Win32.SafeHandles;
 
+using IRServerPluginInterface;
+
 namespace MicrosoftMceTransceiver
 {
 
@@ -212,13 +214,14 @@ namespace MicrosoftMceTransceiver
     /// Stop access to the device.
     /// </summary>
     public abstract void Stop();
-    // TODO: Change learn interface to return LearnStatus
+
     /// <summary>
     /// Learn an IR Command.
     /// </summary>
     /// <param name="learnTimeout">How long to wait before aborting learn.</param>
-    /// <returns>Newly learned IR Command.</returns>
-    public abstract IrCode Learn(int learnTimeout);
+    /// <param name="learned">Newly learned IR Command.</param>
+    /// <returns>Learn status.</returns>
+    public abstract LearnStatus Learn(int learnTimeout, out IrCode learned);
 
     /// <summary>
     /// Send an IR Command.

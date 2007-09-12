@@ -557,7 +557,7 @@ namespace MediaPortal.Plugins
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Debug("MPBlastZonePlugin: Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
+        Log.Debug("MPBlastZonePlugin: Received Message \"{0}\"", received.Type);
 
       try
       {

@@ -86,13 +86,14 @@ namespace UirtTransceiver
     static extern bool UUIRTLearnIR(
       IntPtr hHandle,
       int codeFormat,
-      [MarshalAs(UnmanagedType.LPStr)] StringBuilder ircode,
+      //[MarshalAs(UnmanagedType.LPStr)]
+      StringBuilder ircode,
       IRLearnCallbackDelegate progressProc,
-      int userData,
-      ref int pAbort,
+      IntPtr userData,
+      IntPtr abort,
       int param1,
-      [MarshalAs(UnmanagedType.AsAny)] Object o,
-      [MarshalAs(UnmanagedType.AsAny)] Object oo);
+      IntPtr reserved1,
+      IntPtr reserved2);
 
     [DllImport("uuirtdrv.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -132,7 +133,7 @@ namespace UirtTransceiver
     
     static readonly string[] Ports  = new string[] { "Default", "Port 1", "Port 2", "Port 3" };
 
-    const int AbortLearn = -1;
+    const int AbortLearn = 1;
     const int AllowLearn = 0;
 
     #endregion Constants
@@ -147,14 +148,12 @@ namespace UirtTransceiver
     int _blastRepeats;
     int _learnTimeout;
 
-    //ulong _learnCarrierFreq;
-
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
 
     // -------
 
-    int _abortLearn = AllowLearn;
+    IntPtr _abortLearn = IntPtr.Zero;
     bool _learnTimedOut;
     UUIRTReceiveCallbackDelegate _receiveCallback = null;
     bool _isUsbUirtLoaded = false;
@@ -236,7 +235,11 @@ namespace UirtTransceiver
     }
     public override void Stop()
     {
-      UUIRTClose(_usbUirtHandle);
+      if (_abortLearn != IntPtr.Zero)
+        Marshal.WriteInt32(_abortLearn, AbortLearn);
+      
+      if (_usbUirtHandle != new IntPtr(-1))
+        UUIRTClose(_usbUirtHandle);
 
       _usbUirtHandle = IntPtr.Zero;
       _isUsbUirtLoaded = false;
@@ -303,34 +306,33 @@ namespace UirtTransceiver
 
       data = null;
 
-      StringBuilder irCode = new StringBuilder("1", 2048);
-      _abortLearn = AllowLearn;
+      StringBuilder irCode = new StringBuilder(4096);
       _learnTimedOut = false;
       
-      //_learnCarrierFreq = 0;
-
       Timer timer = new Timer();
       timer.Interval = _learnTimeout;
       timer.Tick += new EventHandler(timer_Tick);
       timer.Enabled = true;
       timer.Start();
 
-      //IRLearnCallbackDelegate learnCallback = new IRLearnCallbackDelegate(UUIRTLearnCallback);
-
+      _abortLearn = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(int)));
+      Marshal.WriteInt32(_abortLearn, AllowLearn);
+      
       result = UirtTransceiver.UUIRTLearnIR(
         _usbUirtHandle,                                     // Handle to USB-UIRT
-        UirtTransceiver.UUIRTDRV_IRFMT_PRONTO | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FREQDETECT,              //  | UirtTransceiver.UUIRTDRV_IRFMT_LEARN_FORCERAW
+        UirtTransceiver.UUIRTDRV_IRFMT_PRONTO,
         irCode,                                             // Where to put the IR Code
         null,                                               // Learn status callback
-        0,                                                  // User data
-        ref _abortLearn,                                    // Abort flag?
+        IntPtr.Zero,                                        // User data
+        _abortLearn,                                        // Abort flag?
         0,
-        null,
-        null);
+        IntPtr.Zero,
+        IntPtr.Zero);
+
+      Marshal.FreeHGlobal(_abortLearn);
+      _abortLearn = IntPtr.Zero;
 
       timer.Stop();
-
-      //MessageBox.Show(_learnCarrierFreq.ToString());
 
       if (_learnTimedOut)
       {
@@ -364,7 +366,7 @@ namespace UirtTransceiver
         Console.WriteLine(ex.ToString());
 
         _repeatDelay  = 500;
-        _blastRepeats = 4;
+        _blastRepeats = 3;
         _learnTimeout = 10000;
       }
     }
@@ -425,7 +427,9 @@ namespace UirtTransceiver
     */
     void timer_Tick(object sender, EventArgs e)
     {
-      _abortLearn = AbortLearn;
+      if (_abortLearn != IntPtr.Zero)
+        Marshal.WriteInt32(_abortLearn, AbortLearn);
+
       _learnTimedOut = true;
 
       ((Timer)sender).Stop();

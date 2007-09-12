@@ -9,6 +9,8 @@ using System.Threading;
 
 using Microsoft.Win32.SafeHandles;
 
+using IRServerPluginInterface;
+
 namespace MicrosoftMceTransceiver
 {
 
@@ -537,12 +539,13 @@ namespace MicrosoftMceTransceiver
       //_debugFile.Close();
     }
 
-    public override IrCode Learn(int learnTimeout)
+    public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
       //_debugFile.WriteLine("Learn");
 
       StopReadThread();
 
+      learned = null;
       _learningCode = new IrCode();
 
       StartReceive(_learnPort, PacketTimeout);
@@ -569,29 +572,33 @@ namespace MicrosoftMceTransceiver
 
       StartReadThread();
 
+      LearnStatus status = LearnStatus.Failure;
+
       switch (modeWas)
       {
         case ReadThreadMode.Learning:
-          // Timeout.
-          return null;
+          status = LearnStatus.Timeout;
+          break;
 
         case ReadThreadMode.LearningFailed:
-          // Failure.
-          return null;
+          status = LearnStatus.Failure;
+          break;
 
         case ReadThreadMode.LearningDone:
           //_debugFile.WriteLine(_learningCode.ToByteArray());
 
           if (_learningCode.FinalizeData())
-            return _learningCode; // Success.
-          else
-            return null; // Failure.
-
-        default:
-          return null;
+          {
+            learned = _learningCode;
+            status = LearnStatus.Success;
+          }
+          break;
       }
+      
+      _learningCode = null;
+      return status;
     }
-
+    
     public override void Send(IrCode code, uint port)
     {
       byte[] data = DataPacket(code);

@@ -441,7 +441,7 @@ namespace IRBlast
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      IrssLog.Debug("Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
+      IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
       try
       {
@@ -500,7 +500,7 @@ namespace IRBlast
       file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
-      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
+      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request | PipeMessageFlags.ForceNotRespond, outData);
       PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
     }
 

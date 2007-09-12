@@ -349,7 +349,6 @@ namespace DebugClient
       this.buttonIRBlastAutoTest.Text = "IRBlast Auto-Test";
       this.toolTips.SetToolTip(this.buttonIRBlastAutoTest, "Runs a random number blasting test");
       this.buttonIRBlastAutoTest.UseVisualStyleBackColor = true;
-      this.buttonIRBlastAutoTest.Visible = false;
       this.buttonIRBlastAutoTest.Click += new System.EventHandler(this.buttonAutoTest_Click);
       // 
       // buttonHelp

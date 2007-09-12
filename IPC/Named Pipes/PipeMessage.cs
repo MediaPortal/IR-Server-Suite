@@ -43,18 +43,18 @@ namespace NamedPipes
     
     Request         = 0x0001,
     Response        = 0x0002,
-    //Notify          = 0x0004,
+    Notify          = 0x0004,
     
     Success         = 0x0008,
     Failure         = 0x0010,
     Timeout         = 0x0020,
-    Error           = 0x0040,
+    //Error           = 0x0040,
 
     //DataString      = 0x0080,
     //DataBytes       = 0x0100,
 
     //ForceRespond    = 0x0200,
-    //ForceNotRespond = 0x0400,
+    ForceNotRespond = 0x0400,
   }
 
   #endregion Enumerations
@@ -182,9 +182,8 @@ namespace NamedPipes
       if (_data != null && _data.Length != 0)
         data = ByteArrayToByteString(_data);
 
-      string messageType = Enum.GetName(typeof(PipeMessageType), _type);
-
-      string flags = _flags.ToString();
+      string messageType  = ((int)_type).ToString();
+      string flags        = ((int)_flags).ToString();
 
       return String.Format(
         "{0},{1},{2},{3},{4}",
@@ -213,8 +212,8 @@ namespace NamedPipes
         if (stringItems.Length != 5)
           return null;
 
-        PipeMessageType type    = (PipeMessageType)Enum.Parse(typeof(PipeMessageType), stringItems[2]);
-        PipeMessageFlags flags  = (PipeMessageFlags)Enum.Parse(typeof(PipeMessageFlags), stringItems[3]);
+        PipeMessageType type    = (PipeMessageType)int.Parse(stringItems[2]);
+        PipeMessageFlags flags  = (PipeMessageFlags)int.Parse(stringItems[3]);
 
         if (String.IsNullOrEmpty(stringItems[4]))
         {

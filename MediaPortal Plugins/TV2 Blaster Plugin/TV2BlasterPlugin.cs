@@ -152,7 +152,7 @@ namespace MediaPortal.Plugins
 
     public bool CanEnable()       { return true; }
     public bool HasSetup()        { return true; }
-    public string PluginName()    { return "TV2 STB Blaster Plugin for IR Server"; }
+    public string PluginName()    { return "TV2 Blaster Plugin for IR Server"; }
     public bool DefaultEnabled()  { return true; }
     public int GetWindowId()      { return 0; }
     public string Author()        { return "and-81"; }
@@ -430,7 +430,7 @@ namespace MediaPortal.Plugins
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Debug("TV2BlasterPlugin: Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
+        Log.Debug("TV2BlasterPlugin: Received Message \"{0}\"", received.Type);
 
       try
       {

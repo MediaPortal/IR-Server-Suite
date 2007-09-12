@@ -163,7 +163,7 @@ namespace DebugClient
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      this.Invoke(_AddStatusLine, new Object[] { String.Format("Received Message: \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type)) });
+      this.Invoke(_AddStatusLine, new Object[] { String.Format("Received Message: \"{0}, {1}\"", received.Type, received.Flags) });
 
       try
       {

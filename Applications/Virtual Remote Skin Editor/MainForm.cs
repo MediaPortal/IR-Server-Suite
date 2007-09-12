@@ -528,7 +528,7 @@ namespace SkinEditor
     {
       PipeMessage received = PipeMessage.FromString(message);
 
-      IrssLog.Debug("Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
+      IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
       try
       {

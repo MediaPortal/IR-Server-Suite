@@ -66,7 +66,7 @@ namespace TvEngine
     /// <summary>
     /// Returns the name of the plugin.
     /// </summary>
-    public string Name { get { return "TV3 STB Blaster Plugin for IR Server"; } }
+    public string Name { get { return "TV3 Blaster Plugin for IR Server"; } }
     /// <summary>
     /// Returns the version of the plugin.
     /// </summary>
@@ -407,7 +407,7 @@ namespace TvEngine
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Debug("TV3BlasterPlugin: Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
+        Log.Debug("TV3BlasterPlugin: Received Message \"{0}\"", received.Type);
 
       try
       {

@@ -817,7 +817,7 @@ namespace MediaPortal.Plugins
       PipeMessage received = PipeMessage.FromString(message);
 
       if (LogVerbose)
-        Log.Debug("MPControlPlugin: Received Message \"{0}\"", Enum.GetName(typeof(PipeMessageType), received.Type));
+        Log.Debug("MPControlPlugin: Received Message \"{0}\"", received.Type);
 
       try
       {
