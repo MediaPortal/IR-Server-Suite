@@ -362,7 +362,7 @@ namespace XBCDRCReceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
     

@@ -72,7 +72,7 @@ namespace IrssUtils
           }
           catch (Exception ex)
           {
-            Console.WriteLine(ex.Message);
+            Trace.WriteLine(ex.Message);
           }
         }
 
@@ -86,7 +86,7 @@ namespace IrssUtils
         }
         catch (Exception ex)
         {
-          Console.WriteLine(ex.Message);
+          Trace.WriteLine(ex.Message);
         }
       }
     }
@@ -113,7 +113,7 @@ namespace IrssUtils
         }
         catch (Exception ex)
         {
-          Console.WriteLine(ex.Message);
+          Trace.WriteLine(ex.Message);
         }
 
         try
@@ -126,7 +126,7 @@ namespace IrssUtils
         }
         catch (Exception ex)
         {
-          Console.WriteLine(ex.Message);
+          Trace.WriteLine(ex.Message);
         }
       }
     }

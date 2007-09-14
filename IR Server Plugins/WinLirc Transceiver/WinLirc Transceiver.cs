@@ -144,7 +144,7 @@ namespace WinLircTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
 
         _serverIP           = IPAddress.Parse("127.0.0.1");
         _serverPort         = 8765;
@@ -176,7 +176,7 @@ namespace WinLircTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 

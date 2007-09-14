@@ -140,7 +140,7 @@ namespace VirtualRemote
               }
               else
               {
-                PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.None, button);
+                PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, button);
                 PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message);
               }
             }

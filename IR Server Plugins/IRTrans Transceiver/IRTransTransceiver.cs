@@ -242,7 +242,7 @@ namespace IRTransTransceiver
       catch (SocketException ex)
       {
         // Nothing to worry about
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 
@@ -285,7 +285,7 @@ namespace IRTransTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
 
         _irTransRemoteModel   = DefaultRemoteModel;
         _irTransServerAddress = DefaultServerAddress;
@@ -313,7 +313,7 @@ namespace IRTransTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 
@@ -330,7 +330,7 @@ namespace IRTransTransceiver
       }
       catch (SocketException ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
         return false;
       }
 
@@ -350,7 +350,7 @@ namespace IRTransTransceiver
       }
       catch (SocketException ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
     static void OnDataReceived(IAsyncResult asyn)
@@ -390,7 +390,7 @@ namespace IRTransTransceiver
               }
               catch (Exception ex)
               {
-                Console.WriteLine(ex.ToString());
+                Trace.WriteLine(ex.ToString());
               }
             }
             break;
@@ -409,7 +409,7 @@ namespace IRTransTransceiver
       }
       catch (SocketException ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 

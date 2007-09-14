@@ -64,7 +64,7 @@ namespace X10Transceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
         return false;
       }
     }
@@ -105,7 +105,7 @@ namespace X10Transceiver
         }
         catch (Exception ex)
         {
-          Console.WriteLine(ex.ToString());
+          Trace.WriteLine(ex.ToString());
         }
       }
     }

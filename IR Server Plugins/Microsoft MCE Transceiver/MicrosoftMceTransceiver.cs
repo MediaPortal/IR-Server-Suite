@@ -313,7 +313,7 @@ namespace MicrosoftMceTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 
@@ -374,7 +374,7 @@ namespace MicrosoftMceTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
 
       // XP ...
@@ -388,7 +388,7 @@ namespace MicrosoftMceTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 
@@ -508,7 +508,7 @@ namespace MicrosoftMceTransceiver
         }
       }
 
-      //Console.WriteLine("Keyboard button: {0}, {1}", keyCode, modifiers);
+      //Trace.WriteLine("Keyboard button: {0}, {1}", keyCode, modifiers);
 
       _lastKeyboardKeyCode = keyCode;
       _lastKeyboardModifiers = modifiers;
@@ -580,7 +580,7 @@ namespace MicrosoftMceTransceiver
       if (!_handleMouseLocally)
         _mouseHandler(deltaX, deltaY, (int)buttons);
 
-      //Console.WriteLine("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left);
+      //Trace.WriteLine("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left);
     }
 
     static Keyboard.VKey ConvertMceKeyCodeToVKey(uint keyCode)

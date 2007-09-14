@@ -618,7 +618,7 @@ namespace MediaPortal.Plugins
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient);
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
           PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         }
       }
@@ -674,7 +674,7 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient);
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
         PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         return true;
       }

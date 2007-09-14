@@ -146,7 +146,7 @@ namespace NamedPipes
       _data       = null;
     }
 
-    public PipeMessage(string fromServer, string fromPipe, PipeMessageType type)
+    PipeMessage(string fromServer, string fromPipe, PipeMessageType type)
       : this()
     {
       _fromServer = fromServer;

@@ -160,7 +160,7 @@ namespace IRManReceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 
@@ -197,7 +197,7 @@ namespace IRManReceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
 
         _repeatDelay    = 500;
         _serialPortName = "COM1";
@@ -223,7 +223,7 @@ namespace IRManReceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
     

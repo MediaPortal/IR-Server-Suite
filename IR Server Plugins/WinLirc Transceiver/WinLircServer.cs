@@ -81,7 +81,7 @@ namespace WinLircTransceiver
       }
       catch (SocketException se)
       {
-        Console.WriteLine("WLirc: Error listening to socket: " + se.Message);
+        Trace.WriteLine("WLirc: Error listening to socket: " + se.Message);
       }
 
     }
@@ -92,17 +92,17 @@ namespace WinLircTransceiver
     public static bool StartServer(String path)
     {
       if (IsServerRunning())
-        Console.WriteLine("WLirc: WinLIRC server was not started (already running)");
+        Trace.WriteLine("WLirc: WinLIRC server was not started (already running)");
       else
       {
-        Console.WriteLine("WLirc: Starting WinLIRC server...");
+        Trace.WriteLine("WLirc: Starting WinLIRC server...");
         try
         {
           Process.Start(path);
         }
         catch (Exception)
         {
-          Console.WriteLine("WLirc: WinLIRC server start failed");
+          Trace.WriteLine("WLirc: WinLIRC server start failed");
           return false;
         }
       }
@@ -148,11 +148,11 @@ namespace WinLircTransceiver
       }
       catch (ObjectDisposedException)
       {
-        Console.WriteLine("WLirc: OnDataReceived: Socket has been closed");
+        Trace.WriteLine("WLirc: OnDataReceived: Socket has been closed");
       }
       catch (SocketException se)
       {
-        Console.WriteLine("WLirc: OnDataReceived: Socket exception: " + se.Message);
+        Trace.WriteLine("WLirc: OnDataReceived: Socket exception: " + se.Message);
       }
     }
 
@@ -171,12 +171,12 @@ namespace WinLircTransceiver
       if (_lastCommand.IsSameCommand(command))
         if ((command.Time - _lastCommand.Time) < _buttonReleaseTime)
         {
-          Console.WriteLine("WLirc: Command '" + command.Button + "' ignored because of repeat filter");
+          Trace.WriteLine("WLirc: Command '" + command.Button + "' ignored because of repeat filter");
           return;
         }
       #endregion
 
-      Console.WriteLine("WLirc: Command '" + command.Button + "' accepted");
+      Trace.WriteLine("WLirc: Command '" + command.Button + "' accepted");
       _lastCommand = command;
 
       if (CommandEvent != null)

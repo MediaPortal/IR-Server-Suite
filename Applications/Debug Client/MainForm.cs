@@ -513,7 +513,7 @@ namespace DebugClient
         BitConverter.GetBytes(keyCode).CopyTo(data, 0);
         BitConverter.GetBytes(0).CopyTo(data, 4);
 
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.None, data);
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, data);
         PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
       }
       catch (Exception ex)

@@ -363,7 +363,7 @@ namespace UirtTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
 
         _repeatDelay  = 500;
         _blastRepeats = 3;
@@ -391,7 +391,7 @@ namespace UirtTransceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 

@@ -28,7 +28,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.Message);
+        Trace.WriteLine(ex.Message);
         return;
       }
 
@@ -112,7 +112,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
         return null;
       }
     }

@@ -510,7 +510,7 @@ namespace SkinEditor
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient);
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
           PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
         }
       }

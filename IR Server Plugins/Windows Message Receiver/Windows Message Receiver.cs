@@ -117,7 +117,7 @@ namespace WindowsMessageReceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
 
         _messageType  = WM_APP;
         _wParam       = DefaultMessageID;
@@ -143,7 +143,7 @@ namespace WindowsMessageReceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 

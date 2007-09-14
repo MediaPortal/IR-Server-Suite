@@ -57,16 +57,13 @@ namespace IRServer
     List<Client> _registeredClients;
     List<Client> _registeredRepeaters;
 
-    Thread _messageHandlerThread;
-
-    Queue _messageQueue;
-    bool _processMessageQueue;
+    MessageQueue _messageQueue;
 
     IRServerMode _mode;
     string _hostComputer;
 
     string _localPipeName = String.Empty;
-    bool _registered = false;
+    bool _registered = false; // Used for relay and repeater modes.
 
     string _pluginNameReceive       = String.Empty;
     IRServerPlugin _pluginReceive   = null;
@@ -82,6 +79,8 @@ namespace IRServer
 
     public IRServer()
     {
+      _messageQueue = new MessageQueue(new MessageQueueSink(HandlePipeMessage));
+
       // Setup taskbar icon
       _notifyIcon = new NotifyIcon();
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
@@ -145,7 +144,7 @@ namespace IRServer
             
         }
 
-        StartMessageQueue();
+        _messageQueue.Start();
 
         switch (_mode)
         {
@@ -156,7 +155,7 @@ namespace IRServer
               _registeredRepeaters = new List<Client>();
 
               // Start server pipe
-              PipeAccess.StartServer(Common.ServerPipeName, new PipeMessageHandler(QueueMessage));
+              PipeAccess.StartServer(Common.ServerPipeName, new PipeMessageHandler(_messageQueue.Enqueue));
 
               IrssLog.Info("Server Mode: \\\\" + Environment.MachineName + "\\pipe\\" + Common.ServerPipeName);
               break;
@@ -293,15 +292,7 @@ namespace IRServer
         IrssLog.Error(ex.ToString());
       }
 
-      // Stop Message Queue
-      try
-      {
-        StopMessageQueue();
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-      }
+      _messageQueue.Stop();
 
       // Stop Server
       try
@@ -369,34 +360,6 @@ namespace IRServer
       _inConfiguration = false;
     }
 
-    void StartMessageQueue()
-    {
-      _processMessageQueue = true;
-      
-      // Create a FIFO message queue
-      _messageQueue = Queue.Synchronized(new Queue());
-
-      // Start message queue handling thread
-      _messageHandlerThread = new Thread(new ThreadStart(MessageHandlerThread));
-      _messageHandlerThread.IsBackground = true;
-      _messageHandlerThread.Name = "IR Server Message Queue";
-      _messageHandlerThread.Start();
-    }
-    void StopMessageQueue()
-    {
-      _processMessageQueue = false;
-
-      try
-      {
-        if (_messageHandlerThread != null && _messageHandlerThread.IsAlive)
-          _messageHandlerThread.Abort();
-      }
-      catch { }
-
-      _messageQueue.Clear();
-      _messageQueue = null;
-    }
-
     bool StartRelay()
     {
       bool retry = false;
@@ -424,7 +387,7 @@ namespace IRServer
           }
           else
           {
-            PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(QueueMessage));
+            PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue));
             _localPipeName = localPipeTest;
             retry = false;
           }
@@ -491,7 +454,7 @@ namespace IRServer
           }
           else
           {
-            PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(QueueMessage));
+            PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue));
             _localPipeName = localPipeTest;
             retry = false;
           }
@@ -822,23 +785,14 @@ namespace IRServer
       if (_mode != IRServerMode.ServerMode)
         return false;
 
-      Client removeClient = null;
+      Client removeClient = new Client(pipe, server);
 
       lock (_registeredClients)
       {
-        foreach (Client client in _registeredClients)
-        {
-          if (client.Pipe == pipe && client.Server == server)
-          {
-            removeClient = client;
-            break;
-          }
-        }
-
-        if (removeClient != null)
-          _registeredClients.Remove(removeClient);
-        else
+        if (!_registeredClients.Contains(removeClient))
           return false;
+
+        _registeredClients.Remove(removeClient);
       }
 
       IrssLog.Info("Unregistered: \\\\{0}\\pipe\\{1}", server, pipe);
@@ -883,26 +837,17 @@ namespace IRServer
       if (String.IsNullOrEmpty(pipe) || String.IsNullOrEmpty(server))
         return false;
 
-      if (_mode != IRServerMode.ServerMode)
+      if (_mode != IRServerMode.RepeaterMode)
         return false;
 
-      Client removeClient = null;
+      Client removeClient = new Client(pipe, server);
 
       lock (_registeredRepeaters)
       {
-        foreach (Client client in _registeredRepeaters)
-        {
-          if (client.Pipe == pipe && client.Server == server)
-          {
-            removeClient = client;
-            break;
-          }
-        }
-
-        if (removeClient != null)
-          _registeredRepeaters.Remove(removeClient);
-        else
+        if (!_registeredRepeaters.Contains(removeClient))
           return false;
+
+        _registeredRepeaters.Remove(removeClient);
       }
 
       IrssLog.Info("Unregistered Repeater: \\\\{0}\\pipe\\{1}", server, pipe);
@@ -982,9 +927,16 @@ namespace IRServer
       return status;
     }
 
-    void HandlePipeMessage(PipeMessage received)
+    void HandlePipeMessage(string message)
     {
-      IrssLog.Debug("Message received from client \\\\{0}\\pipe\\{1} = {2}", received.FromServer, received.FromPipe, received.ToString());
+      PipeMessage received = PipeMessage.FromString(message);
+      if (received == null)
+      {
+        IrssLog.Warn("Invalid message received: {0}", message);
+        return;
+      }
+
+      IrssLog.Debug("Message received from client \\\\{0}\\pipe\\{1} = {2}", received.FromServer, received.FromPipe, message);
 
       try
       {
@@ -1193,32 +1145,6 @@ namespace IRServer
         SendTo(received.FromPipe, received.FromServer, response);
       }
 
-    }
-    void QueueMessage(string message)
-    {
-      PipeMessage pipeMessage = PipeMessage.FromString(message);
-      if (pipeMessage == null)
-        return;
-
-      lock (((ICollection)_messageQueue).SyncRoot)
-        _messageQueue.Enqueue(pipeMessage);
-    }
-    void MessageHandlerThread()
-    {
-      try
-      {
-        while (_processMessageQueue)
-        {
-          Thread.Sleep(50);
-          
-          lock (((ICollection)_messageQueue).SyncRoot)
-          {
-            if (_messageQueue.Count > 0)
-              HandlePipeMessage((PipeMessage)_messageQueue.Dequeue());
-          }
-        }
-      }
-      catch { }
     }
 
     void ClickSetup(object sender, EventArgs e)

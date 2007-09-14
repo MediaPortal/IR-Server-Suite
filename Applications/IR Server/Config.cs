@@ -22,44 +22,24 @@ namespace IRServer
 
     IRServerPlugin[] _transceivers;
 
+    IRServerMode _mode = IRServerMode.ServerMode;
+    string _hostComputer = String.Empty;
+
     #endregion Variables
 
     #region Properties
 
     public IRServerMode Mode
     {
-      get
-      {
-        if (radioButtonRelay.Checked)
-          return IRServerMode.RelayMode;
-        else if (radioButtonRepeater.Checked)
-          return IRServerMode.RepeaterMode;
-        else
-          return IRServerMode.ServerMode;
-      }
-      set
-      {
-        switch (value)
-        {
-          case IRServerMode.ServerMode:
-            radioButtonServer.Checked = true;
-            break;
-
-          case IRServerMode.RelayMode:
-            radioButtonRelay.Checked = true;
-            break;
-
-          case IRServerMode.RepeaterMode:
-            radioButtonRepeater.Checked = true;
-            break;
-        }
-      }
+      get { return _mode; }
+      set { _mode = value; }
     }
     public string HostComputer
     {
-      get { return comboBoxComputer.Text; }
-      set { comboBoxComputer.Text = value; }
+      get { return _hostComputer; }
+      set { _hostComputer = value; }
     }
+
     public string PluginReceive
     {
       get
@@ -147,14 +127,6 @@ namespace IRServer
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
-      }
-
-      ArrayList networkPCs = IrssUtils.Win32.GetNetworkComputers();
-      if (networkPCs != null)
-      {
-        foreach (string computer in networkPCs.ToArray(typeof(string)))
-          if (computer != Environment.MachineName)
-            comboBoxComputer.Items.Add(computer);
       }
     }
 
@@ -347,21 +319,23 @@ namespace IRServer
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+    
+    private void buttonAdvanced_Click(object sender, EventArgs e)
+    {
+      Advanced advanced = new Advanced();
+      
+      advanced.Mode         = _mode;
+      advanced.HostComputer = _hostComputer;
 
-    private void radioButtonServer_CheckedChanged(object sender, EventArgs e)
-    {
-      comboBoxComputer.Enabled = false;
-    }
-    private void radioButtonRelay_CheckedChanged(object sender, EventArgs e)
-    {
-      comboBoxComputer.Enabled = true;
-    }
-    private void radioButtonRepeater_CheckedChanged(object sender, EventArgs e)
-    {
-      comboBoxComputer.Enabled = true;
+      if (advanced.ShowDialog(this) == DialogResult.OK)
+      {
+        _mode         = advanced.Mode;
+        _hostComputer = advanced.HostComputer;
+      }
     }
 
     #endregion Controls
+
 
   }
 

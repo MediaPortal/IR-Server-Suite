@@ -123,7 +123,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Console.WriteLine("JVC HeaderPulse");
+            //Trace.WriteLine("JVC HeaderPulse");
 
             if (pulse && duration >= 8200 && duration <= 8600)
             {
@@ -135,7 +135,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Console.WriteLine("JVC HeaderSpace");
+            //Trace.WriteLine("JVC HeaderSpace");
 
             if (!pulse && duration >= 4000 && duration <= 4400)
             {
@@ -150,7 +150,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Console.WriteLine("JVC Data");
+            //Trace.WriteLine("JVC Data");
 
             if (pulse && duration >= 350 && duration <= 750)
             {
@@ -174,7 +174,7 @@ namespace MicrosoftMceTransceiver
             }
             else
             {
-              //Console.WriteLine("JVC Error");
+              //Trace.WriteLine("JVC Error");
             }
 
             if (JVC_Data.Bit == 16)
@@ -187,7 +187,7 @@ namespace MicrosoftMceTransceiver
 
           #region Leading
           case RemoteDetectionState.Leading:
-            //Console.WriteLine("JVC Leading");
+            //Trace.WriteLine("JVC Leading");
 
             if (pulse && duration >= 350 && duration <= 750)
             {
@@ -223,7 +223,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Console.WriteLine("NEC HeaderPulse");
+            //Trace.WriteLine("NEC HeaderPulse");
 
             if (pulse && duration >= 8800 && duration <= 9200)
             {
@@ -235,7 +235,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Console.WriteLine("NEC HeaderSpace");
+            //Trace.WriteLine("NEC HeaderSpace");
 
             if (!pulse && duration >= 4300 && duration <= 4700)
             {
@@ -257,7 +257,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Console.WriteLine("NEC Data");
+            //Trace.WriteLine("NEC Data");
 
             if (pulse && duration >= 350 && duration <= 750)
             {
@@ -281,7 +281,7 @@ namespace MicrosoftMceTransceiver
             }
             else
             {
-              //Console.WriteLine("NEC Error");
+              //Trace.WriteLine("NEC Error");
             }
 
             if (NEC_Data.Bit == 32)
@@ -317,7 +317,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Console.WriteLine("RC5 HeaderPulse");
+            //Trace.WriteLine("RC5 HeaderPulse");
 
             if (pulse)
             {
@@ -342,7 +342,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Console.WriteLine("RC5 HeaderSpace");
+            //Trace.WriteLine("RC5 HeaderSpace");
 
             if (!pulse && (duration >= 750) && (duration <= 1000))
             {
@@ -355,7 +355,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Console.WriteLine("RC5 Data");
+            //Trace.WriteLine("RC5 Data");
 
             if (RC5_Data.HalfBit == 0)
             {
@@ -373,7 +373,7 @@ namespace MicrosoftMceTransceiver
                 }
                 else
                 {
-                  //Console.WriteLine("RC5 Error  {0} on bit {1}", duration, bit);
+                  //Trace.WriteLine("RC5 Error  {0} on bit {1}", duration, bit);
                 }
               }
               else
@@ -396,7 +396,7 @@ namespace MicrosoftMceTransceiver
                 }
                 else
                 {
-                  //Console.WriteLine("RC5 Space Error  {0} on bit {1}", duration, bit);
+                  //Trace.WriteLine("RC5 Space Error  {0} on bit {1}", duration, bit);
                 }
               }
               break;
@@ -419,14 +419,14 @@ namespace MicrosoftMceTransceiver
             }
             else
             {
-              //Console.WriteLine("RC5 Duration Error  {0} on bit {1}", duration, bit);
+              //Trace.WriteLine("RC5 Duration Error  {0} on bit {1}", duration, bit);
             }
             break;
           #endregion Data
 
           #region Leading
           case RemoteDetectionState.Leading:
-            //Console.WriteLine("RC5 Leading");
+            //Trace.WriteLine("RC5 Leading");
 
             if (pulse)
               break;
@@ -477,7 +477,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Console.WriteLine("RC6 HeaderPulse");
+            //Trace.WriteLine("RC6 HeaderPulse");
 
             if (pulse && (duration >= 2600) && (duration <= 3300))
             {
@@ -495,7 +495,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Console.WriteLine("RC6 HeaderSpace");
+            //Trace.WriteLine("RC6 HeaderSpace");
 
             if (!pulse && (duration >= 750) && (duration <= 1000))
             {
@@ -508,7 +508,7 @@ namespace MicrosoftMceTransceiver
 
           #region PreData
           case RemoteDetectionState.PreData:
-            //Console.WriteLine("RC6 PreData");
+            //Trace.WriteLine("RC6 PreData");
 
             if (pulse)
             {
@@ -537,7 +537,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Console.WriteLine(string.Format("RC6 Error Bit {0} {1} {2}", bit, pulse ? "Pulse" : "Space", duration));
+                //Trace.WriteLine(string.Format("RC6 Error Bit {0} {1} {2}", bit, pulse ? "Pulse" : "Space", duration));
               }
             }
             else
@@ -571,7 +571,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Console.WriteLine(string.Format("RC6 Error Bit {0} {1} {2}", bit, pulse ? "Pulse" : "Space", duration));
+                //Trace.WriteLine(string.Format("RC6 Error Bit {0} {1} {2}", bit, pulse ? "Pulse" : "Space", duration));
               }
             }
 
@@ -598,7 +598,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Console.WriteLine("RC6 Data");
+            //Trace.WriteLine("RC6 Data");
 
             if ((RC6_Data.HalfBit % 2) == 0)
             {
@@ -619,7 +619,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Console.WriteLine(string.Format("RC6 Error Halfbit0 {0} {1}", pulse ? "Pulse" : "Space", duration));
+                //Trace.WriteLine(string.Format("RC6 Error Halfbit0 {0} {1}", pulse ? "Pulse" : "Space", duration));
               }
               break;
             }
@@ -629,7 +629,7 @@ namespace MicrosoftMceTransceiver
               RC6_Data.LongPulse = false;
               if (pulse)
               {
-                //Console.WriteLine(string.Format("RC6 Error Pulse after LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
+                //Trace.WriteLine(string.Format("RC6 Error Pulse after LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
                 break;
               }
 
@@ -648,7 +648,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Console.WriteLine(string.Format("RC6 Error Pulse LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
+                //Trace.WriteLine(string.Format("RC6 Error Pulse LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
               }
             }
             else if (RC6_Data.LongSpace)
@@ -657,7 +657,7 @@ namespace MicrosoftMceTransceiver
 
               if (!pulse)
               {
-                //Console.WriteLine(string.Format("RC6 Error Pulse after LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
+                //Trace.WriteLine(string.Format("RC6 Error Pulse after LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
                 break;
               }
 
@@ -687,7 +687,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Console.WriteLine(string.Format("RC6 Error LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
+                //Trace.WriteLine(string.Format("RC6 Error LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
               }
             }
             break;
@@ -729,7 +729,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Console.WriteLine("RCA HeaderPulse");
+            //Trace.WriteLine("RCA HeaderPulse");
 
             if (pulse && duration >= 3800 && duration <= 4200)
             {
@@ -741,7 +741,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Console.WriteLine("RCA HeaderSpace");
+            //Trace.WriteLine("RCA HeaderSpace");
 
             if (!pulse && duration >= 3800 && duration <= 4200)
             {
@@ -756,7 +756,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Console.WriteLine("RCA Data");
+            //Trace.WriteLine("RCA Data");
 
             if (pulse && duration >= 300 && duration <= 700)
             {
@@ -780,7 +780,7 @@ namespace MicrosoftMceTransceiver
             }
             else
             {
-              //Console.WriteLine("RCA Error");
+              //Trace.WriteLine("RCA Error");
             }
 
             if (RCA_Data.Bit == 12)
@@ -816,7 +816,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Console.WriteLine("RECS80 HeaderPulse");
+            //Trace.WriteLine("RECS80 HeaderPulse");
 
             if (pulse && (duration >= 3300) && (duration <= 4100))
             {
@@ -828,7 +828,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Console.WriteLine("RECS80 HeaderSpace");
+            //Trace.WriteLine("RECS80 HeaderSpace");
 
             if (!pulse && (duration >= 1400) && (duration <= 1800))
             {
@@ -844,7 +844,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Console.WriteLine("RECS80 Data");
+            //Trace.WriteLine("RECS80 Data");
 
             if ((RECS80_Data.HalfBit % 2) == 0)
             {
@@ -919,7 +919,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Console.WriteLine("SIRC HeaderPulse");
+            //Trace.WriteLine("SIRC HeaderPulse");
 
             if (pulse && duration >= 2200 && duration <= 2600)
             {
@@ -931,7 +931,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Console.WriteLine("SIRC HeaderSpace");
+            //Trace.WriteLine("SIRC HeaderSpace");
 
             if (!pulse && duration >= 400 && duration <= 800)
             {
@@ -945,7 +945,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Console.WriteLine("SIRC Data");
+            //Trace.WriteLine("SIRC Data");
 
             if (pulse && duration >= 400 && duration <= 800)
             {
@@ -966,7 +966,7 @@ namespace MicrosoftMceTransceiver
             }
             else
             {
-              //Console.WriteLine("SIRC Error");
+              //Trace.WriteLine("SIRC Error");
             }
 
             if (SIRC_Data.Bit == 15)
@@ -1024,7 +1024,7 @@ namespace MicrosoftMceTransceiver
                 MCE_Data.HalfBit = (pulse ? 2 : 1);
               else if (duration >= 500 && duration <= 800)
               {
-                //Console.WriteLine("Bad bit sequence double {0}", pulse);
+                //Trace.WriteLine("Bad bit sequence double {0}", pulse);
                 MCE_Data.HalfBit = (pulse ? 2 : 1);
                 //MCE_Data = new MceDetectionData();
                 return;
@@ -1032,7 +1032,7 @@ namespace MicrosoftMceTransceiver
               else
               {
                 // Over Length duration (Treat as a Zero bit)
-                //Console.WriteLine("Bad duration {0}", duration);
+                //Trace.WriteLine("Bad duration {0}", duration);
                 MCE_Data.Working <<= 1;
                 MCE_Data.Bit--;
               }
@@ -1049,7 +1049,7 @@ namespace MicrosoftMceTransceiver
                 }
                 else
                 {
-                  //Console.WriteLine("Bad bit sequence 00");
+                  //Trace.WriteLine("Bad bit sequence 00");
                   MCE_Data = new MceDetectionData();
                   //return;
                 }
@@ -1064,14 +1064,14 @@ namespace MicrosoftMceTransceiver
                 }
                 else
                 {
-                  //Console.WriteLine("Bad bit sequence 00 0");
+                  //Trace.WriteLine("Bad bit sequence 00 0");
                   MCE_Data = new MceDetectionData();
                   //return;
                 }
               }
               else
               {
-                //Console.WriteLine("Bad duration {0}", duration);
+                //Trace.WriteLine("Bad duration {0}", duration);
                 if (MCE_Data.Bit == 1)
                 {
                   MCE_Data.Working <<= 1;
@@ -1098,7 +1098,7 @@ namespace MicrosoftMceTransceiver
                 }
                 else
                 {
-                  //Console.WriteLine("Bad bit sequence 11");
+                  //Trace.WriteLine("Bad bit sequence 11");
                   MCE_Data = new MceDetectionData();
                   //return;
                 }
@@ -1114,14 +1114,14 @@ namespace MicrosoftMceTransceiver
                 }
                 else
                 {
-                  //Console.WriteLine("Bad bit sequence 11 1");
+                  //Trace.WriteLine("Bad bit sequence 11 1");
                   MCE_Data = new MceDetectionData();
                   //return;
                 }
               }
               else
               {
-                //Console.WriteLine("Bad duration {0}", duration);
+                //Trace.WriteLine("Bad duration {0}", duration);
                 if (MCE_Data.Bit == 1)
                 {
                   MCE_Data.Working <<= 1;
@@ -1144,7 +1144,7 @@ namespace MicrosoftMceTransceiver
 
           #region Header
           case MceKeyboardDetectState.Header:
-            //Console.WriteLine("KB Header");
+            //Trace.WriteLine("KB Header");
 
             if (pulse && (duration >= 2600) && (duration <= 3300))
             {
@@ -1158,7 +1158,7 @@ namespace MicrosoftMceTransceiver
 
           #region CodeType
           case MceKeyboardDetectState.CodeType:
-            //Console.WriteLine("KB CodeType");
+            //Trace.WriteLine("KB CodeType");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1178,7 +1178,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Console.WriteLine("KB: Invalid Type {0}", MceKeyboard_Data.Type);
+                //Trace.WriteLine("KB: Invalid Type {0}", MceKeyboard_Data.Type);
                 return;
               }
             }
@@ -1191,7 +1191,7 @@ namespace MicrosoftMceTransceiver
 
           #region KeyboardIgnore
           case MceKeyboardDetectState.KeyboardIgnore:
-            //Console.WriteLine("KB KeyboardIgnore");
+            //Trace.WriteLine("KB KeyboardIgnore");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1204,7 +1204,7 @@ namespace MicrosoftMceTransceiver
 
           #region KeyCode
           case MceKeyboardDetectState.KeyCode:
-            //Console.WriteLine("KB KeyCode");
+            //Trace.WriteLine("KB KeyCode");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1219,7 +1219,7 @@ namespace MicrosoftMceTransceiver
 
           #region Modifiers
           case MceKeyboardDetectState.Modifiers:
-            //Console.WriteLine("KB Modifiers");
+            //Trace.WriteLine("KB Modifiers");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1238,7 +1238,7 @@ namespace MicrosoftMceTransceiver
 
           #region MouseIgnore
           case MceKeyboardDetectState.MouseIgnore:
-            //Console.WriteLine("KB MouseIgnore");
+            //Trace.WriteLine("KB MouseIgnore");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1251,11 +1251,11 @@ namespace MicrosoftMceTransceiver
 
           #region DeltaY
           case MceKeyboardDetectState.DeltaY:
-            //Console.WriteLine("KB DeltaY");
+            //Trace.WriteLine("KB DeltaY");
 
             if (MCE_Data.Bit == 0)
             {
-              //Console.WriteLine("KB DeltaY Set");
+              //Trace.WriteLine("KB DeltaY Set");
               MCE_Data.DeltaY = ScaleMouseDelta((int)MCE_Data.Working);
 
               MCE_Data.State = MceKeyboardDetectState.DeltaX;
@@ -1267,11 +1267,11 @@ namespace MicrosoftMceTransceiver
 
           #region DeltaX
           case MceKeyboardDetectState.DeltaX:
-            //Console.WriteLine("KB DeltaX");
+            //Trace.WriteLine("KB DeltaX");
 
             if (MCE_Data.Bit == 0)
             {
-              //Console.WriteLine("KB DeltaX Set");
+              //Trace.WriteLine("KB DeltaX Set");
               MCE_Data.DeltaX = ScaleMouseDelta((int)MCE_Data.Working);
 
               MCE_Data.State = MceKeyboardDetectState.Right;
@@ -1283,11 +1283,11 @@ namespace MicrosoftMceTransceiver
 
           #region Right
           case MceKeyboardDetectState.Right:
-            //Console.WriteLine("KB Right");
+            //Trace.WriteLine("KB Right");
 
             if (MCE_Data.Bit == 0)
             {
-              //Console.WriteLine("KB Right Set");
+              //Trace.WriteLine("KB Right Set");
               MCE_Data.Right = (MCE_Data.Working == 1);
 
               MCE_Data.State = MceKeyboardDetectState.Left;
@@ -1299,11 +1299,11 @@ namespace MicrosoftMceTransceiver
 
           #region Left
           case MceKeyboardDetectState.Left:
-            //Console.WriteLine("KB Left");
+            //Trace.WriteLine("KB Left");
 
             if (MCE_Data.Bit == 0)
             {
-              //Console.WriteLine("KB Left Set");
+              //Trace.WriteLine("KB Left Set");
               MCE_Data.Left = (MCE_Data.Working == 1);
 
               MCE_Data.State = MceKeyboardDetectState.Checksum;
@@ -1315,11 +1315,11 @@ namespace MicrosoftMceTransceiver
 
           #region Checksum
           case MceKeyboardDetectState.Checksum:
-            //Console.WriteLine("KB Checksum");
+            //Trace.WriteLine("KB Checksum");
 
             if (MCE_Data.Bit == 0)
             {
-              //Console.WriteLine("KB Checksum Set");
+              //Trace.WriteLine("KB Checksum Set");
               mouseCallback(MCE_Data.DeltaX, MCE_Data.DeltaY, MCE_Data.Right, MCE_Data.Left);
 
               MCE_Data = new MceDetectionData();

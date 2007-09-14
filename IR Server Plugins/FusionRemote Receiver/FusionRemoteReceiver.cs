@@ -216,7 +216,7 @@ namespace FusionRemoteReceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.Message);
+        Trace.WriteLine(ex.Message);
         return false;
       }
     }
@@ -377,7 +377,7 @@ namespace FusionRemoteReceiver
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Trace.WriteLine(ex.ToString());
       }
     }
 
