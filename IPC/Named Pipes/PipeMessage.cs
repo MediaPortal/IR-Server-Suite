@@ -137,7 +137,7 @@ namespace NamedPipes
 
     #region Constructors
 
-    public PipeMessage()
+    PipeMessage()
     {
       _fromServer = String.Empty;
       _fromPipe   = String.Empty;
