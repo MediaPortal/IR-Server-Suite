@@ -336,7 +336,6 @@ namespace IRServer
 
     #endregion Controls
 
-
   }
 
 }

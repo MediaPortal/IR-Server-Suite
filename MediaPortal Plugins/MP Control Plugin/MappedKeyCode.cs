@@ -5,8 +5,7 @@ using MediaPortal.Hardware;
 namespace MediaPortal.Plugins
 {
 
-  [CLSCompliant(false)]
-  public class MappedKeyCode
+  class MappedKeyCode
   {
 
     #region Variables

@@ -29,6 +29,8 @@ namespace VirtualRemote
 
     #region Variables
 
+    static MessageQueue _messageQueue;
+
     static bool _registered = false;
     static bool _keepAlive = true;
     static int _echoID = -1;
@@ -92,6 +94,8 @@ namespace VirtualRemote
 
       LoadSettings();
 
+      _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
+
       if (args.Length > 0) // Command Line Start ...
       {
         List<String> virtualButtons = new List<string>();
@@ -140,7 +144,7 @@ namespace VirtualRemote
               }
               else
               {
-                PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, button);
+                PipeMessage message = new PipeMessage(Environment.MachineName, Program.LocalPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, button);
                 PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message);
               }
             }
@@ -250,6 +254,8 @@ namespace VirtualRemote
       {
         if (OpenLocalPipe())
         {
+          _messageQueue.Start();
+
           _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
           _keepAliveThread.Start();
           return true;
@@ -285,6 +291,8 @@ namespace VirtualRemote
       }
       catch { }
 
+      _messageQueue.Stop();
+
       try
       {
         if (PipeAccess.ServerRunning)
@@ -302,9 +310,9 @@ namespace VirtualRemote
 
         do
         {
-          string localPipeTest = String.Format(Common.LocalPipeFormat, pipeNumber);
+          string localPipeTest = String.Format("irserver\\remote{0:00}", pipeNumber);
 
-          if (PipeAccess.PipeExists(String.Format("\\\\.\\pipe\\{0}", localPipeTest)))
+          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
           {
             if (++pipeNumber <= Common.MaximumLocalClientCount)
               retry = true;
@@ -313,7 +321,7 @@ namespace VirtualRemote
           }
           else
           {
-            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(ReceivedMessage)))
+            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
               throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
 
             _localPipeName = localPipeTest;

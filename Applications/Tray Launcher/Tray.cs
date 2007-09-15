@@ -30,6 +30,8 @@ namespace TrayLauncher
 
     static Common.MessageHandler _handleMessage = null;
 
+    MessageQueue _messageQueue;
+
     bool _registered = false;
     bool _keepAlive = true;
     int _echoID = -1;
@@ -71,6 +73,8 @@ namespace TrayLauncher
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
       _notifyIcon.Text = "Tray Launcher - Connecting ...";
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
+
+      _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
     }
 
     #endregion Constructor
@@ -95,6 +99,8 @@ namespace TrayLauncher
         if (OpenLocalPipe())
         {
           _notifyIcon.Visible = true;
+
+          _messageQueue.Start();
 
           _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
           _keepAliveThread.Start();
@@ -137,6 +143,8 @@ namespace TrayLauncher
         }
       }
       catch { }
+
+      _messageQueue.Stop();
 
       try
       {
@@ -226,9 +234,9 @@ namespace TrayLauncher
 
         do
         {
-          string localPipeTest = String.Format(Common.LocalPipeFormat, pipeNumber);
+          string localPipeTest = String.Format("irserver\\tray{0:00}", pipeNumber);
 
-          if (PipeAccess.PipeExists(String.Format("\\\\.\\pipe\\{0}", localPipeTest)))
+          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
           {
             if (++pipeNumber <= Common.MaximumLocalClientCount)
               retry = true;
@@ -237,7 +245,7 @@ namespace TrayLauncher
           }
           else
           {
-            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(ReceivedMessage)))
+            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
               throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
 
             _localPipeName = localPipeTest;

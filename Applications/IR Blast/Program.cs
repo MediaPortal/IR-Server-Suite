@@ -19,6 +19,8 @@ namespace IRBlast
 
     #region Variables
 
+    static MessageQueue _messageQueue;
+
     static bool _registered = false;
     static bool _keepAlive = true;
     static int _echoID = -1;
@@ -78,6 +80,8 @@ namespace IRBlast
                 continue;
             }
           }
+
+          _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
 
           if (String.IsNullOrEmpty(_serverHost) || irCommands.Count == 0)
           {
@@ -220,6 +224,8 @@ namespace IRBlast
       {
         if (OpenLocalPipe())
         {
+          _messageQueue.Start();
+
           _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
           _keepAliveThread.Start();
           return true;
@@ -255,6 +261,8 @@ namespace IRBlast
       }
       catch { }
 
+      _messageQueue.Stop();
+
       try
       {
         if (PipeAccess.ServerRunning)
@@ -272,9 +280,9 @@ namespace IRBlast
 
         do
         {
-          string localPipeTest = String.Format(Common.LocalPipeFormat, pipeNumber);
+          string localPipeTest = String.Format("irserver\\blast{0:00}", pipeNumber);
 
-          if (PipeAccess.PipeExists(String.Format("\\\\.\\pipe\\{0}", localPipeTest)))
+          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
           {
             if (++pipeNumber <= Common.MaximumLocalClientCount)
               retry = true;
@@ -283,7 +291,7 @@ namespace IRBlast
           }
           else
           {
-            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(ReceivedMessage)))
+            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
               throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
 
             _localPipeName = localPipeTest;

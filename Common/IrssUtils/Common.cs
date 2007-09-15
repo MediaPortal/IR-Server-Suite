@@ -48,9 +48,9 @@ namespace IrssUtils
     public const string ServerPipeName        = "irserver\\server";
 
     /// <summary>
-    /// Client Named Pipe name string format.
+    /// Named Pipe address prefix for local pipes.
     /// </summary>
-    public const string LocalPipeFormat       = "irserver\\client{0:00}";
+    public const string LocalPipePrefix       = "\\\\.\\pipe\\";
 
     #endregion Named Pipe Constants
 

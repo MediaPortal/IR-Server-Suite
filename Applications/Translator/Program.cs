@@ -31,6 +31,8 @@ namespace Translator
 
     #region Variables
 
+    static MessageQueue _messageQueue;
+
     static Configuration _config;
 
     static string _localPipeName = String.Empty;
@@ -140,6 +142,8 @@ namespace Translator
       _focusWatcher.IsBackground = true;
       _focusWatcher.Start();
       */
+
+      _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
 
       // Start server communications ...
       if (StartComms())
@@ -660,6 +664,8 @@ namespace Translator
         {
           _notifyIcon.Visible = true;
 
+          _messageQueue.Start();
+
           _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
           _keepAliveThread.Start();
 
@@ -698,6 +704,8 @@ namespace Translator
       }
       catch { }
 
+      _messageQueue.Stop();
+
       try
       {
         if (PipeAccess.ServerRunning)
@@ -715,9 +723,9 @@ namespace Translator
 
         do
         {
-          string localPipeTest = String.Format(Common.LocalPipeFormat, pipeNumber);
+          string localPipeTest = String.Format("irserver\\trans{0:00}", pipeNumber);
 
-          if (PipeAccess.PipeExists(String.Format("\\\\.\\pipe\\{0}", localPipeTest)))
+          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
           {
             if (++pipeNumber <= Common.MaximumLocalClientCount)
               retry = true;
@@ -726,7 +734,7 @@ namespace Translator
           }
           else
           {
-            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(ReceivedMessage)))
+            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
               throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
 
             _localPipeName = localPipeTest;

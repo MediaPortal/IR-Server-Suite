@@ -253,6 +253,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Named Pipes Tool", "Applica
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "TestServer\TestServer.csproj", "{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{DDB52A4D-A670-411A-8273-8B1707C67028}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -481,7 +493,8 @@ Global
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Release|x86.ActiveCfg = Release|x86
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Release|x86.Build.0 = Release|x86
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|x86.ActiveCfg = Debug|x86
+		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|x86.Build.0 = Debug|x86
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|x86.ActiveCfg = Release|Any CPU
 		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -546,6 +559,20 @@ Global
 		{6E7C6F27-DA95-4F2F-A97D-1EA8E1517A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E7C6F27-DA95-4F2F-A97D-1EA8E1517A4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6E7C6F27-DA95-4F2F-A97D-1EA8E1517A4C}.Release|x86.ActiveCfg = Release|Any CPU
+		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Debug|x86.ActiveCfg = Debug|x86
+		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Debug|x86.Build.0 = Debug|x86
+		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Release|x86.ActiveCfg = Release|Any CPU
+		{DDB52A4D-A670-411A-8273-8B1707C67028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDB52A4D-A670-411A-8273-8B1707C67028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDB52A4D-A670-411A-8273-8B1707C67028}.Debug|x86.ActiveCfg = Debug|x86
+		{DDB52A4D-A670-411A-8273-8B1707C67028}.Debug|x86.Build.0 = Debug|x86
+		{DDB52A4D-A670-411A-8273-8B1707C67028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDB52A4D-A670-411A-8273-8B1707C67028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDB52A4D-A670-411A-8273-8B1707C67028}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -587,5 +614,7 @@ Global
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB} = {E757F80C-23C5-4AD6-B178-16799E337E03}
 		{08F57DD7-2C6E-484E-9CC5-835F70C5BC64} = {E757F80C-23C5-4AD6-B178-16799E337E03}
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2} = {E757F80C-23C5-4AD6-B178-16799E337E03}
+		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1} = {E757F80C-23C5-4AD6-B178-16799E337E03}
+		{DDB52A4D-A670-411A-8273-8B1707C67028} = {E757F80C-23C5-4AD6-B178-16799E337E03}
 	EndGlobalSection
 EndGlobal

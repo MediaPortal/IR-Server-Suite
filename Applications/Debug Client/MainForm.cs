@@ -91,6 +91,8 @@ namespace DebugClient
     public MainForm()
     {
       InitializeComponent();
+
+      _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
     }
 
     #endregion
@@ -103,12 +105,16 @@ namespace DebugClient
 
     #region Variables
 
-    string _serverAddress   = Environment.MachineName;
+    MessageQueue _messageQueue;
+
+    string _serverHost      = Environment.MachineName;
     string _localPipeName   = null;
     string _learnIRFilename = null;
 
-    //static bool _keepAlive  = true;
-    static int _echoID      = -1;
+    bool _registered = false;
+    bool _keepAlive = true;
+    int _echoID = -1;
+    Thread _keepAliveThread;
 
     IRServerInfo _irServerInfo = new IRServerInfo();
 
@@ -131,9 +137,6 @@ namespace DebugClient
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open(Common.FolderIrssLogs + "Debug Client.log");
 
-      string customTemp = String.Format(Common.LocalPipeFormat, 1);
-      textBoxCustom.Text = String.Format("{0},{1},Register,null", customTemp, Environment.MachineName);
-
       _AddStatusLine = new DelegateAddStatusLine(AddStatusLine);
 
       comboBoxRemoteButtons.Items.AddRange(Enum.GetNames(typeof(MceButton)));
@@ -147,7 +150,7 @@ namespace DebugClient
       if (networkPCs != null)
       {
         comboBoxComputer.Items.AddRange(networkPCs.ToArray());
-        comboBoxComputer.Text = _serverAddress;
+        comboBoxComputer.Text = _serverHost;
       }
     }
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -172,6 +175,7 @@ namespace DebugClient
           case PipeMessageType.RegisterClient:
             if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
             {
+              _registered = true;
               _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
               comboBoxPort.Items.Clear();
               comboBoxPort.Items.AddRange(_irServerInfo.Ports);
@@ -179,8 +183,7 @@ namespace DebugClient
             }
             else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
             {
-              if (PipeAccess.ServerRunning)
-                PipeAccess.StopServer();
+              _registered = false;
             }
             return;
 
@@ -202,8 +205,7 @@ namespace DebugClient
             break;
 
           case PipeMessageType.ServerShutdown:
-            if (PipeAccess.ServerRunning)
-              PipeAccess.StopServer();
+            _registered = false;
             return;
 
           case PipeMessageType.Echo:
@@ -222,48 +224,6 @@ namespace DebugClient
       }
     }
 
-    bool ConnectToServer(string server)
-    {
-      _serverAddress = server;
-
-      bool retry = false;
-      int pipeNumber = 1;
-      string localPipeTest;
-
-      do
-      {
-        localPipeTest = String.Format(Common.LocalPipeFormat, pipeNumber);
-        AddStatusLine("Trying pipe: " + localPipeTest);
-        listBoxStatus.Update();
-
-        if (PipeAccess.PipeExists(String.Format("\\\\.\\pipe\\{0}", localPipeTest)))
-        {
-          pipeNumber++;
-          if (pipeNumber <= Common.MaximumLocalClientCount)
-          {
-            retry = true;
-          }
-          else
-          {
-            AddStatusLine("Maximum local client limit reached");
-            return false;
-          }
-        }
-        else
-        {
-          PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(ReceivedMessage));
-          _localPipeName = localPipeTest;
-          retry = false;
-        }
-      }
-      while (retry);
-
-      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
-      PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
-
-      return true;
-    }
-
     bool LearnIR(string fileName)
     {
       try
@@ -274,7 +234,7 @@ namespace DebugClient
         _learnIRFilename = fileName;
         
         PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.LearnIR, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
 
         AddStatusLine("Learning");
       }
@@ -304,7 +264,7 @@ namespace DebugClient
         file.Close();
 
         PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
       }
       catch (Exception ex)
       {
@@ -321,6 +281,235 @@ namespace DebugClient
       this.Invoke(_AddStatusLine, new Object[] { text });
     }
 
+    bool StartComms()
+    {
+      try
+      {
+        if (OpenLocalPipe())
+        {
+          _messageQueue.Start();
+
+          _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
+          _keepAliveThread.Start();
+          return true;
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
+
+      return false;
+    }
+    void StopComms()
+    {
+      _keepAlive = false;
+
+      try
+      {
+        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
+          _keepAliveThread.Abort();
+      }
+      catch { }
+
+      try
+      {
+        if (_registered)
+        {
+          _registered = false;
+
+          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
+          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+        }
+      }
+      catch { }
+
+      _messageQueue.Stop();
+
+      try
+      {
+        if (PipeAccess.ServerRunning)
+          PipeAccess.StopServer();
+      }
+      catch { }
+    }
+
+    bool OpenLocalPipe()
+    {
+      try
+      {
+        int pipeNumber = 1;
+        bool retry = false;
+
+        do
+        {
+          string localPipeTest = String.Format("irserver\\debug{0:00}", pipeNumber);
+
+          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
+          {
+            if (++pipeNumber <= Common.MaximumLocalClientCount)
+              retry = true;
+            else
+              throw new Exception(String.Format("Maximum local client limit ({0}) reached", Common.MaximumLocalClientCount));
+          }
+          else
+          {
+            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
+              throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
+
+            _localPipeName = localPipeTest;
+            retry = false;
+          }
+        }
+        while (retry);
+
+        return true;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        return false;
+      }
+    }
+
+    bool ConnectToServer()
+    {
+      try
+      {
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+        return true;
+      }
+      catch (AppModule.NamedPipes.NamedPipeIOException)
+      {
+        return false;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        return false;
+      }
+    }
+
+    void KeepAliveThread()
+    {
+      Random random = new Random((int)DateTime.Now.Ticks);
+      bool reconnect;
+      int attempt;
+
+      _registered = false;
+      _keepAlive = true;
+      while (_keepAlive)
+      {
+        reconnect = true;
+
+        #region Connect to server
+
+        IrssLog.Info("Connecting ({0}) ...", _serverHost);
+        attempt = 0;
+        while (_keepAlive && reconnect)
+        {
+          if (ConnectToServer())
+          {
+            reconnect = false;
+          }
+          else
+          {
+            int wait;
+
+            if (attempt <= 50)
+              attempt++;
+
+            if (attempt > 50)
+              wait = 30;      // 30 seconds
+            else if (attempt > 20)
+              wait = 10;      // 10 seconds
+            else if (attempt > 10)
+              wait = 5;       // 5 seconds
+            else
+              wait = 1;       // 1 second
+
+            for (int sleeps = 0; sleeps < wait && _keepAlive; sleeps++)
+              Thread.Sleep(1000);
+          }
+        }
+
+        #endregion Connect to server
+
+        #region Wait for registered
+
+        // Give up after 10 seconds ...
+        attempt = 0;
+        while (_keepAlive && !_registered && !reconnect)
+        {
+          if (++attempt >= 10)
+            reconnect = true;
+          else
+            Thread.Sleep(1000);
+        }
+
+        #endregion Wait for registered
+
+        #region Ping the server repeatedly
+
+        while (_keepAlive && _registered && !reconnect)
+        {
+          int pingID = random.Next();
+          long pingTime = DateTime.Now.Ticks;
+
+          try
+          {
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
+            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+          }
+          catch
+          {
+            // Failed to ping ... reconnect ...
+            IrssLog.Warn("Failed to ping, attempting to reconnect ...");
+            _registered = false;
+            reconnect = true;
+            break;
+          }
+
+          // Wait 10 seconds for a ping echo ...
+          bool receivedEcho = false;
+          while (_keepAlive && _registered && !reconnect &&
+            !receivedEcho && DateTime.Now.Ticks - pingTime < 10 * 1000 * 10000)
+          {
+            if (_echoID == pingID)
+            {
+              receivedEcho = true;
+            }
+            else
+            {
+              Thread.Sleep(1000);
+            }
+          }
+
+          if (receivedEcho) // Received ping echo ...
+          {
+            // Wait 60 seconds before re-pinging ...
+            for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
+              Thread.Sleep(1000);
+          }
+          else // Didn't receive ping echo ...
+          {
+            IrssLog.Warn("No echo to ping, attempting to reconnect ...");
+
+            // Break out of pinging cycle ...
+            _registered = false;
+            reconnect = true;
+          }
+        }
+
+        #endregion Ping the server repeatedly
+
+      }
+
+    }
+
+
+
     #region Controls
 
     private void buttonConnect_Click(object sender, EventArgs e)
@@ -336,40 +525,28 @@ namespace DebugClient
           return;
         }
 
-        ConnectToServer(comboBoxComputer.Text);
+        _serverHost = comboBoxComputer.Text;
+
+        StartComms();
       }
       catch (Exception ex)
       {
         AddStatusLine(ex.Message);
-
-        if (PipeAccess.ServerRunning)
-          PipeAccess.StopServer();
       }
     }
     private void buttonDisconnect_Click(object sender, EventArgs e)
     {
       AddStatusLine("Disconnect");
 
-      if (!PipeAccess.ServerRunning)
-      {
-        AddStatusLine(" - Not connected");
-        return;
-      }
-
       try
       {
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
-      }
-      catch (Exception ex)
-      {
-        AddStatusLine(ex.Message);
-      }
+        if (!PipeAccess.ServerRunning)
+        {
+          AddStatusLine(" - Not connected");
+          return;
+        }
 
-      try
-      {
-        if (PipeAccess.ServerRunning)
-          PipeAccess.StopServer();
+        StopComms();
       }
       catch (Exception ex)
       {
@@ -427,16 +604,12 @@ namespace DebugClient
       try
       {
         PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ServerShutdown, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
       }
       catch (Exception ex)
       {
         AddStatusLine(ex.Message);
       }
-    }
-    private void buttonCrash_Click(object sender, EventArgs e)
-    {
-      throw new System.InvalidOperationException("User initiated exception thrown");
     }
     private void buttonPing_Click(object sender, EventArgs e)
     {
@@ -451,28 +624,7 @@ namespace DebugClient
       try
       {
         PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(24));
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
-      }
-      catch (Exception ex)
-      {
-        AddStatusLine(ex.Message);
-      }
-    }
-
-    private void buttonSendCustom_Click(object sender, EventArgs e)
-    {
-      try
-      {
-        AddStatusLine("Sending custom message to server ...");
-
-        if (PipeMessage.FromString(textBoxCustom.Text) == null)
-          AddStatusLine("Warning: The specified custom message is not a valid message structure");
-
-        PipeMessage customMessage = PipeMessage.FromString(textBoxCustom.Text);
-
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, customMessage);
-
-        AddStatusLine("Custom message sent");
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
       }
       catch (Exception ex)
       {
@@ -514,7 +666,7 @@ namespace DebugClient
         BitConverter.GetBytes(0).CopyTo(data, 4);
 
         PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, data);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverAddress, message);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
       }
       catch (Exception ex)
       {
@@ -535,6 +687,8 @@ namespace DebugClient
     }
 
     #endregion Controls
+
+
 
     Thread AutoTest;
 

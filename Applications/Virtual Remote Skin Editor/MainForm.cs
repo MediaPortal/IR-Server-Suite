@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -25,13 +26,15 @@ namespace SkinEditor
 
     #region Variables
 
-    //static bool _keepAlive = true;
-    static int _echoID = -1;
-
-    string _serverHost = String.Empty;
-    string _localPipeName = String.Empty;
+    MessageQueue _messageQueue;
 
     bool _registered = false;
+    bool _keepAlive = true;
+    int _echoID = -1;
+    Thread _keepAliveThread;
+
+    string _serverHost    = String.Empty;
+    string _localPipeName = String.Empty;
 
     bool _unsavedChanges = false;
     //bool _fileOpen = false;
@@ -73,6 +76,8 @@ namespace SkinEditor
       pictureBoxRemote.Controls.Add(_currentButton);
 
       timerFlash.Start();
+
+      _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
     }
 
     #endregion Constructor
@@ -459,11 +464,11 @@ namespace SkinEditor
 
     private void connectToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      Connect();
+      StartComms();
     }
     private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      Disconnect();
+      StopComms();
     }
     private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -474,36 +479,37 @@ namespace SkinEditor
       SaveSettings();
     }
 
-    void Connect()
+    bool StartComms()
     {
-      if (_registered)
-        return;
-
-      IrssUtils.Forms.ServerAddress serverAddress;
-
-      if (String.IsNullOrEmpty(_serverHost))
+      try
       {
-        serverAddress = new IrssUtils.Forms.ServerAddress(Environment.MachineName);
-        serverAddress.ShowDialog(this);
-        _serverHost = serverAddress.ServerHost;
-      }
+        if (OpenLocalPipe())
+        {
+          _messageQueue.Start();
 
-      while (!ConnectToServer(_serverHost))
-      {
-        if (DialogResult.Retry == MessageBox.Show(this, "Could not connect to server", "Virtual Remote Skin Editor Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error))
-        {
-          serverAddress = new IrssUtils.Forms.ServerAddress(_serverHost);
-          serverAddress.ShowDialog(this);
-          _serverHost = serverAddress.ServerHost;
-        }
-        else
-        {
-          return;
+          _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
+          _keepAliveThread.Start();
+          return true;
         }
       }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
+
+      return false;
     }
-    void Disconnect()
+    void StopComms()
     {
+      _keepAlive = false;
+
+      try
+      {
+        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
+          _keepAliveThread.Abort();
+      }
+      catch { }
+
       try
       {
         if (_registered)
@@ -516,12 +522,188 @@ namespace SkinEditor
       }
       catch { }
 
+      _messageQueue.Stop();
+
       try
       {
         if (PipeAccess.ServerRunning)
           PipeAccess.StopServer();
       }
       catch { }
+    }
+
+    bool OpenLocalPipe()
+    {
+      try
+      {
+        int pipeNumber = 1;
+        bool retry = false;
+
+        do
+        {
+          string localPipeTest = String.Format("irserver\\skined{0:00}", pipeNumber);
+
+          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
+          {
+            if (++pipeNumber <= Common.MaximumLocalClientCount)
+              retry = true;
+            else
+              throw new Exception(String.Format("Maximum local client limit ({0}) reached", Common.MaximumLocalClientCount));
+          }
+          else
+          {
+            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
+              throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
+
+            _localPipeName = localPipeTest;
+            retry = false;
+          }
+        }
+        while (retry);
+
+        return true;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        return false;
+      }
+    }
+
+    bool ConnectToServer()
+    {
+      try
+      {
+        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
+        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+        return true;
+      }
+      catch (AppModule.NamedPipes.NamedPipeIOException)
+      {
+        return false;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        return false;
+      }
+    }
+
+    void KeepAliveThread()
+    {
+      Random random = new Random((int)DateTime.Now.Ticks);
+      bool reconnect;
+      int attempt;
+
+      _registered = false;
+      _keepAlive = true;
+      while (_keepAlive)
+      {
+        reconnect = true;
+
+        #region Connect to server
+
+        IrssLog.Info("Connecting ({0}) ...", _serverHost);
+        attempt = 0;
+        while (_keepAlive && reconnect)
+        {
+          if (ConnectToServer())
+          {
+            reconnect = false;
+          }
+          else
+          {
+            int wait;
+
+            if (attempt <= 50)
+              attempt++;
+
+            if (attempt > 50)
+              wait = 30;      // 30 seconds
+            else if (attempt > 20)
+              wait = 10;      // 10 seconds
+            else if (attempt > 10)
+              wait = 5;       // 5 seconds
+            else
+              wait = 1;       // 1 second
+
+            for (int sleeps = 0; sleeps < wait && _keepAlive; sleeps++)
+              Thread.Sleep(1000);
+          }
+        }
+
+        #endregion Connect to server
+
+        #region Wait for registered
+
+        // Give up after 10 seconds ...
+        attempt = 0;
+        while (_keepAlive && !_registered && !reconnect)
+        {
+          if (++attempt >= 10)
+            reconnect = true;
+          else
+            Thread.Sleep(1000);
+        }
+
+        #endregion Wait for registered
+
+        #region Ping the server repeatedly
+
+        while (_keepAlive && _registered && !reconnect)
+        {
+          int pingID = random.Next();
+          long pingTime = DateTime.Now.Ticks;
+
+          try
+          {
+            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
+            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+          }
+          catch
+          {
+            // Failed to ping ... reconnect ...
+            IrssLog.Warn("Failed to ping, attempting to reconnect ...");
+            _registered = false;
+            reconnect = true;
+            break;
+          }
+
+          // Wait 10 seconds for a ping echo ...
+          bool receivedEcho = false;
+          while (_keepAlive && _registered && !reconnect &&
+            !receivedEcho && DateTime.Now.Ticks - pingTime < 10 * 1000 * 10000)
+          {
+            if (_echoID == pingID)
+            {
+              receivedEcho = true;
+            }
+            else
+            {
+              Thread.Sleep(1000);
+            }
+          }
+
+          if (receivedEcho) // Received ping echo ...
+          {
+            // Wait 60 seconds before re-pinging ...
+            for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
+              Thread.Sleep(1000);
+          }
+          else // Didn't receive ping echo ...
+          {
+            IrssLog.Warn("No echo to ping, attempting to reconnect ...");
+
+            // Break out of pinging cycle ...
+            _registered = false;
+            reconnect = true;
+          }
+        }
+
+        #endregion Ping the server repeatedly
+
+      }
+
     }
 
     void ReceivedMessage(string message)
@@ -574,56 +756,10 @@ namespace SkinEditor
       }
     }
 
-    bool ConnectToServer(string serverHost)
-    {
-      bool retry = false;
-      int pipeNumber = 1;
-      string localPipeTest;
-
-      try
-      {
-
-        do
-        {
-          localPipeTest = String.Format(Common.LocalPipeFormat, pipeNumber);
-
-          if (PipeAccess.PipeExists(String.Format("\\\\.\\pipe\\{0}", localPipeTest)))
-          {
-            pipeNumber++;
-            if (pipeNumber <= Common.MaximumLocalClientCount)
-            {
-              retry = true;
-            }
-            else
-            {
-              MessageBox.Show(this, "Maximum local client limit reached", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              return false;
-            }
-          }
-          else
-          {
-            PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(ReceivedMessage));
-            _localPipeName = localPipeTest;
-            retry = false;
-          }
-        }
-        while (retry);
-
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, serverHost, message);
-
-      }
-      catch
-      {
-        return false;
-      }
-
-      return true;
-    }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-      Disconnect();
+      StopComms();
 
       IrssLog.Close();
     }

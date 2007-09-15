@@ -23,7 +23,7 @@ namespace VirtualRemote
 
     RemoteButton []_buttons;
 
-    Thread _updateThread;
+    //Thread _updateThread;
 
     #endregion Variables
 
@@ -41,13 +41,13 @@ namespace VirtualRemote
       SetSkinList();
       SetSkin(Program.RemoteSkin);
 
-      _updateThread = new Thread(new ThreadStart(SetLabel));
-      _updateThread.Start();
+      //_updateThread = new Thread(new ThreadStart(SetLabel));
+      //_updateThread.Start();
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-      _updateThread.Abort();
+      //_updateThread.Abort();
     }
 
     private void MainForm_MouseClick(object sender, MouseEventArgs e)
@@ -185,10 +185,10 @@ namespace VirtualRemote
 
     void ButtonPress(string keyCode)
     {
-      if (!PipeAccess.ServerRunning)
+      if (!Program.Registered)
         return;
 
-      PipeMessage message = new PipeMessage(Program.LocalPipeName, Environment.MachineName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, keyCode);
+      PipeMessage message = new PipeMessage(Environment.MachineName, Program.LocalPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, keyCode);
       PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message);
     }
 
