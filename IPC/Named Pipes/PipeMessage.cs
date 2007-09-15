@@ -235,7 +235,7 @@ namespace NamedPipes
     static string ByteArrayToByteString(byte[] data)
     {
       if (data == null || data.Length == 0)
-        throw new ArgumentException("Null or Empty byte array supplied", "data");
+        throw new ArgumentNullException("data");
 
       StringBuilder outputString = new StringBuilder(2 * data.Length);
 
@@ -248,7 +248,7 @@ namespace NamedPipes
     static byte[] ByteStringToByteArray(string data)
     {
       if (String.IsNullOrEmpty(data))
-        throw new ArgumentException("Null or Empty data string supplied", "data");
+        throw new ArgumentNullException("data");
 
       List<byte> byteArray = new List<byte>(data.Length / 2);
 
