@@ -1,0 +1,227 @@
+    static bool StartComms()
+    {
+      try
+      {
+        if (OpenLocalPipe())
+        {
+          _messageQueue.Start();
+
+          _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
+          _keepAliveThread.Start();
+          return true;
+        }
+      }
+      catch (Exception ex)
+      {
+        Error(ex);
+      }
+
+      return false;
+    }
+    static void StopComms()
+    {
+      _keepAlive = false;
+
+      try
+      {
+        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
+          _keepAliveThread.Abort();
+      }
+      catch { }
+
+      try
+      {
+        if (_registered)
+        {
+          _registered = false;
+
+          IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
+          _client.Send(message);
+        }
+      }
+      catch { }
+
+      _messageQueue.Stop();
+
+      try
+      {
+        if (PipeAccess.ServerRunning)
+          PipeAccess.StopServer();
+      }
+      catch { }
+    }
+
+    static bool OpenLocalPipe()
+    {
+      try
+      {
+        int pipeNumber = 1;
+        bool retry = false;
+
+        do
+        {
+          string localPipeTest = String.Format("irserver\\blast{0:00}", pipeNumber);
+
+          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
+          {
+            if (++pipeNumber <= Common.MaximumLocalClientCount)
+              retry = true;
+            else
+              throw new Exception(String.Format("Maximum local client limit ({0}) reached", Common.MaximumLocalClientCount));
+          }
+          else
+          {
+            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
+              throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
+
+            _localPipeName = localPipeTest;
+            retry = false;
+          }
+        }
+        while (retry);
+
+        return true;
+      }
+      catch (Exception ex)
+      {
+        Error(ex);
+        return false;
+      }
+    }
+
+    static bool ConnectToServer()
+    {
+      try
+      {
+        IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
+        _client.Send(message);
+        return true;
+      }
+      catch (AppModule.NamedPipes.NamedPipeIOException)
+      {
+        return false;
+      }
+      catch (Exception ex)
+      {
+        Error(ex);
+        return false;
+      }
+    }
+
+    static void KeepAliveThread()
+    {
+      Random random = new Random((int)DateTime.Now.Ticks);
+      bool reconnect;
+      int attempt;
+
+      _registered = false;
+      _keepAlive = true;
+      while (_keepAlive)
+      {
+        reconnect = true;
+
+        #region Connect to server
+
+        Info("Connecting ({0}) ...", _serverHost);
+        attempt = 0;
+        while (_keepAlive && reconnect)
+        {
+          if (ConnectToServer())
+          {
+            reconnect = false;
+          }
+          else
+          {
+            int wait;
+
+            if (attempt <= 50)
+              attempt++;
+
+            if (attempt > 50)
+              wait = 30;      // 30 seconds
+            else if (attempt > 20)
+              wait = 10;      // 10 seconds
+            else if (attempt > 10)
+              wait = 5;       // 5 seconds
+            else
+              wait = 1;       // 1 second
+
+            for (int sleeps = 0; sleeps < wait && _keepAlive; sleeps++)
+              Thread.Sleep(1000);
+          }
+        }
+
+        #endregion Connect to server
+
+        #region Wait for registered
+
+        // Give up after 10 seconds ...
+        attempt = 0;
+        while (_keepAlive && !_registered && !reconnect)
+        {
+          if (++attempt >= 10)
+            reconnect = true;
+          else
+            Thread.Sleep(1000);
+        }
+
+        #endregion Wait for registered
+
+        #region Ping the server repeatedly
+
+        while (_keepAlive && _registered && !reconnect)
+        {
+          int pingID = random.Next();
+          long pingTime = DateTime.Now.Ticks;
+
+          try
+          {
+            IrssMessage message = new IrssMessage(MessageType.Ping, MessageFlags.Request, BitConverter.GetBytes(pingID));
+            _client.Send(message);
+          }
+          catch
+          {
+            // Failed to ping ... reconnect ...
+            Warn("Failed to ping, attempting to reconnect ...");
+            _registered = false;
+            reconnect = true;
+            break;
+          }
+
+          // Wait 10 seconds for a ping echo ...
+          bool receivedEcho = false;
+          while (_keepAlive && _registered && !reconnect &&
+            !receivedEcho && DateTime.Now.Ticks - pingTime < 10 * 1000 * 10000)
+          {
+            if (_echoID == pingID)
+            {
+              receivedEcho = true;
+            }
+            else
+            {
+              Thread.Sleep(1000);
+            }
+          }
+
+          if (receivedEcho) // Received ping echo ...
+          {
+            // Wait 60 seconds before re-pinging ...
+            for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
+              Thread.Sleep(1000);
+          }
+          else // Didn't receive ping echo ...
+          {
+            Warn("No echo to ping, attempting to reconnect ...");
+
+            // Break out of pinging cycle ...
+            _registered = false;
+            reconnect = true;
+          }
+        }
+
+        #endregion Ping the server repeatedly
+
+      }
+
+    }
+
