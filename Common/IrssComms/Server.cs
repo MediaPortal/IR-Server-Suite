@@ -46,7 +46,7 @@ namespace IrssComms
 
     List<ClientManager> _clientManagers;
 
-    GenericMessageQueue<MessageManagerCombo> _messageQueue;
+    GenericPCQueue<MessageManagerCombo> _messageQueue;
 
     #endregion Variables
 
@@ -63,7 +63,7 @@ namespace IrssComms
 
       _messageSink = messageSink;
 
-      _messageQueue = new GenericMessageQueue<MessageManagerCombo>(new GenericMessageQueueSink<MessageManagerCombo>(QueueMessageSink));
+      _messageQueue = new GenericPCQueue<MessageManagerCombo>(new GenericPCQueueSink<MessageManagerCombo>(QueueMessageSink));
     }
 
     #endregion Constructor

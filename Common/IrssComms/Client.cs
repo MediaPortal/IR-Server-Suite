@@ -31,7 +31,7 @@ namespace IrssComms
     volatile bool _processConnectionThread = false;
     volatile bool _connected = false;
 
-    GenericMessageQueue<IrssMessage> _messageQueue;
+    GenericPCQueue<IrssMessage> _messageQueue;
 
     ClientMessageSink _messageSink;
     
@@ -93,7 +93,7 @@ namespace IrssComms
       
       _messageSink = messageSink;
 
-      _messageQueue = new GenericMessageQueue<IrssMessage>(new GenericMessageQueueSink<IrssMessage>(QueueMessageSink));
+      _messageQueue = new GenericPCQueue<IrssMessage>(new GenericPCQueueSink<IrssMessage>(QueueMessageSink));
     }
 
     #endregion Constructor

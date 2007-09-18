@@ -10,17 +10,17 @@ namespace IrssComms
   #region Delegates
 
   /// <summary>
-  /// Delegate for MessageQueue sink.
+  /// Delegate for GenericPCQueue sink.
   /// </summary>
   /// <param name="obj">Generic object to process.</param>
-  public delegate void GenericMessageQueueSink<T>(T obj);
+  public delegate void GenericPCQueueSink<T>(T obj);
 
   #endregion Delegates
 
   /// <summary>
-  /// Implements a thread-safe Producer/Consumer Queue for messages.
+  /// Implements a thread-safe Producer/Consumer Queue for generics.
   /// </summary>
-  public class GenericMessageQueue<T> : IDisposable
+  public class GenericPCQueue<T> : IDisposable
   {
 
     #region Variables
@@ -31,7 +31,7 @@ namespace IrssComms
     EventWaitHandle _queueWaitHandle;
     volatile bool _processQueue;
 
-    GenericMessageQueueSink<T> _messageSink;
+    GenericPCQueueSink<T> _sink;
 
     #endregion Variables
 
@@ -41,18 +41,18 @@ namespace IrssComms
     /// Create a new MessageQueue.
     /// </summary>
     /// <param name="sink">Where to send dequeued messages.</param>
-    public GenericMessageQueue(GenericMessageQueueSink<T> sink)
+    public GenericPCQueue(GenericPCQueueSink<T> sink)
     {
       if (sink == null)
         throw new ArgumentNullException("sink");
 
-      _messageSink = sink;
+      _sink = sink;
 
       // Create locking and control mechanisms ...
       _queueLock = new object();
       _queueWaitHandle = new AutoResetEvent(false);
 
-      // Create FIFO message queue
+      // Create FIFO generic queue
       _queue = new Queue<T>();
     }
 
@@ -105,7 +105,7 @@ namespace IrssComms
       // Create the worker thread  ...
       _workerThread = new Thread(new ThreadStart(WorkerThread));
       _workerThread.IsBackground = true;
-      _workerThread.Name = "Message Queue";
+      _workerThread.Name = "IrssComms.GenericPCQueue";
 
       _workerThread.Start();
     }
@@ -182,7 +182,7 @@ namespace IrssComms
           }
 
           if (didDequeue)
-            _messageSink(obj);
+            _sink(obj);
           else
             _queueWaitHandle.WaitOne();
         }
