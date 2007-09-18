@@ -19,40 +19,7 @@ namespace IrssUtils
   public static class Common
   {
 
-    #region Delegates
-
-    #region Named Pipes
-
-    /// <summary>
-    /// Message handler method for pipe messages.
-    /// </summary>
-    /// <param name="message">Pipe message as string.</param>
-    public delegate void MessageHandler(string message);
-
-    #endregion Named Pipes
-
-    #endregion Delegates
-
     #region Constants
-
-    #region Named Pipe Constants
-
-    /// <summary>
-    /// Maximum number of local server clients.
-    /// </summary>
-    public const int MaximumLocalClientCount  = 25;
-
-    /// <summary>
-    /// Named Pipe name for IR Server.
-    /// </summary>
-    public const string ServerPipeName        = "irserver\\server";
-
-    /// <summary>
-    /// Named Pipe address prefix for local pipes.
-    /// </summary>
-    public const string LocalPipePrefix       = "\\\\.\\pipe\\";
-
-    #endregion Named Pipe Constants
 
     #region Folders
 
@@ -286,7 +253,7 @@ namespace IrssUtils
     static string[] SplitCommand(string command, int elements)
     {
       if (String.IsNullOrEmpty(command))
-        throw new ArgumentException("Null or empty command", "command");
+        throw new ArgumentNullException("command");
 
       string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
 
@@ -545,7 +512,7 @@ namespace IrssUtils
     public static string ReplaceEscapeCodes(string input)
     {
       if (String.IsNullOrEmpty(input))
-        throw new ArgumentException("Null or empty escape code string", "input");
+        throw new ArgumentNullException("input");
 
       bool inEscapeCode = false;
       bool inHexCode = false;
@@ -604,7 +571,7 @@ namespace IrssUtils
               if (byte.TryParse(hexCode.ToString(), System.Globalization.NumberStyles.HexNumber, null, out hexParsed))
                 output.Append((char)hexParsed);
               else
-                throw new ArgumentException(String.Format("Bad Hex Code \"{0}\"", hexCode.ToString()));
+                throw new ArgumentException(String.Format("Bad Hex Code \"{0}\"", hexCode.ToString()), "input");
 
               inHexCode = false;
               break;

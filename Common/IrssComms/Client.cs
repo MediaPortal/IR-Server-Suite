@@ -13,28 +13,72 @@ namespace IrssComms
   /// Message handling delegate for client.
   /// </summary>
   /// <param name="message">Message received.</param>
-  public delegate void ClientMessageSink(Message message);
+  public delegate void ClientMessageSink(IrssMessage message);
 
   #endregion Delegates
 
   /// <summary>
   /// TCP communications client class.
   /// </summary>
-  public class Client
+  public class Client : IDisposable
   {
 
     #region Variables
 
     IPEndPoint _serverEndPoint;
-
     Socket _serverSocket = null;
 
-    bool _processReceiveThread = false;
-    Thread _receiveThread;
+    volatile bool _processConnectionThread = false;
+    volatile bool _connected = false;
+
+    GenericMessageQueue<IrssMessage> _messageQueue;
 
     ClientMessageSink _messageSink;
+    
+    WaitCallback _connectCallback       = null;
+    WaitCallback _disconnectCallback    = null;
+    WaitCallback _commsFailureCallback  = null;
 
     #endregion Variables
+
+    #region Properties
+
+    /// <summary>
+    /// Is this client connected?
+    /// </summary>
+    public bool Connected
+    {
+      get { return _connected; }
+    }
+
+    /// <summary>
+    /// Gets or Sets the Connect callback.
+    /// </summary>
+    public WaitCallback ConnectCallback
+    {
+      get { return _connectCallback; }
+      set { _connectCallback = value; }
+    }
+
+    /// <summary>
+    /// Gets or Sets the Disconnect callback.
+    /// </summary>
+    public WaitCallback DisconnectCallback
+    {
+      get { return _disconnectCallback; }
+      set { _disconnectCallback = value; }
+    }
+
+    /// <summary>
+    /// Gets or Sets the Communications Failure callback.
+    /// </summary>
+    public WaitCallback CommsFailureCallback
+    {
+      get { return _commsFailureCallback; }
+      set { _commsFailureCallback = value; }
+    }
+
+    #endregion Properties
 
     #region Constructor
 
@@ -43,15 +87,41 @@ namespace IrssComms
     /// </summary>
     /// <param name="server">IP Address of Server.</param>
     /// <param name="port">Port to open on Server.</param>
-    /// <param name="messageSink">Where to send incoming messages.</param>
     public Client(IPAddress server, int port, ClientMessageSink messageSink)
     {
       _serverEndPoint = new IPEndPoint(server, port);
+      
+      _messageSink = messageSink;
 
-      _messageSink  = messageSink;
+      _messageQueue = new GenericMessageQueue<IrssMessage>(new GenericMessageQueueSink<IrssMessage>(QueueMessageSink));
     }
 
     #endregion Constructor
+
+    #region IDisposable
+
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        // Dispose managed resources ...
+        if (_processConnectionThread)
+          Stop();
+
+        _messageQueue.Dispose();
+      }
+
+      // Free native resources ...
+
+    }
+
+    #endregion IDisposable
 
     #region Implementation
 
@@ -61,26 +131,38 @@ namespace IrssComms
     /// <returns>Success.</returns>
     public bool Start()
     {
-      if (_processReceiveThread)
+      if (_processConnectionThread)
         return false;
 
-      _processReceiveThread = true;
-
-      _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+      _processConnectionThread = true;
+      _connected = false;
 
       try
       {
-        _serverSocket.Connect(_serverEndPoint);
+        _messageQueue.ClearQueue();
+        _messageQueue.Start();
       }
-      catch (SocketException)
+      catch
       {
-        return false;
+        _processConnectionThread = false;
+        
+        throw;
       }
 
-      _receiveThread = new Thread(new ThreadStart(ReceiveThread));
-      _receiveThread.Name = "IrssComms.Client";
-      _receiveThread.IsBackground = true;
-      _receiveThread.Start();
+      try
+      {
+        Thread connectionThread = new Thread(new ThreadStart(ConnectionThread));
+        connectionThread.Name = "IrssComms.Client.ConnectionThread";
+        connectionThread.IsBackground = true;
+        connectionThread.Start();
+      }
+      catch
+      {
+        _processConnectionThread = false;
+        _messageQueue.Stop();
+
+        throw;
+      }
 
       return true;
     }
@@ -90,17 +172,16 @@ namespace IrssComms
     /// </summary>
     public void Stop()
     {
-      if (!_processReceiveThread)
+      if (!_processConnectionThread)
         return;
 
-      _processReceiveThread = false;
+      _messageQueue.Stop();
+
+      _processConnectionThread = false;
+      _connected = false;
 
       _serverSocket.Close();
       _serverSocket = null;
-
-      _receiveThread.Abort();
-      _receiveThread.Join();
-      _receiveThread = null;
     }
 
     /// <summary>
@@ -108,16 +189,28 @@ namespace IrssComms
     /// </summary>
     /// <param name="message">Message to send.</param>
     /// <returns>Success.</returns>
-    public bool Send(Message message)
+    public bool Send(IrssMessage message)
     {
+      if (message == null)
+        throw new ArgumentNullException("message");
+
       if (_serverSocket == null)
         return false;
       
       byte[] data = message.ToBytes();
 
+      int dataLength = IPAddress.HostToNetworkOrder(data.Length);
+
+      byte[] dataLengthBytes = BitConverter.GetBytes(dataLength);
+
       try
       {
+        // Send packet size ...
+        _serverSocket.Send(dataLengthBytes);
+
+        // Send packet ...
         _serverSocket.Send(data);
+        
         return true;
       }
       catch (SocketException)
@@ -126,28 +219,152 @@ namespace IrssComms
       }
     }
 
-    void ReceiveThread()
+    void QueueMessageSink(IrssMessage message)
     {
-      byte[] buffer = new byte[4096];
+      _messageSink(message);
+    }
 
-      try
+    void ConnectionThread()
+    {
+      // Outer loop is for reconnection attempts ...
+      while (_processConnectionThread)
       {
-        while (_processReceiveThread)
+        _connected = false;
+
+        _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+        #region Attempt to connect
+
+        while (_processConnectionThread)
         {
-          int bytesRead = _serverSocket.Receive(buffer);
+          try
+          {
+            _serverSocket.Connect(_serverEndPoint);
+            break;
+          }
+          catch (SocketException socketException)
+          {
+            if (!_processConnectionThread)
+              return;
 
-          byte[] packet = new byte[bytesRead];
-          Array.Copy(buffer, 0, packet, 0, bytesRead);
+            if (socketException.SocketErrorCode == SocketError.ConnectionRefused)
+            {
+              Thread.Sleep(1000);
+              continue;
+            }
 
-          Message message = Message.FromBytes(packet);
+            if (_commsFailureCallback != null)
+              _commsFailureCallback(socketException);
+            else
+              throw;
+          }
+          catch (Exception ex)
+          {
+            if (!_processConnectionThread)
+              return;
 
-          _messageSink(message);
+            if (_commsFailureCallback != null)
+              _commsFailureCallback(ex);
+            else
+              throw;
+          }
         }
-      }
-      catch (SocketException)
-      {
+
+        #endregion Attempt to connect
+
+        if (!_processConnectionThread)
+          return;
+
+        _connected = true;
+
+        if (_connectCallback != null)
+          _connectCallback(null);
+
+        #region Read from socket
+
+        try
+        {
+          byte[] buffer = new byte[4];
+
+          int bytesRead;
+
+          // Read data from socket ...
+          while (_processConnectionThread)
+          {
+            bytesRead = _serverSocket.Receive(buffer, 4, SocketFlags.None);
+            if (bytesRead == 0)
+              break;
+
+            int readSize = BitConverter.ToInt32(buffer, 0);
+            readSize = IPAddress.NetworkToHostOrder(readSize);
+
+            byte[] packet = new byte[readSize];
+
+            bytesRead = _serverSocket.Receive(packet, readSize, SocketFlags.None);
+            if (bytesRead == 0)
+              break;
+
+            IrssMessage message = IrssMessage.FromBytes(packet);
+
+            _messageQueue.Enqueue(message);
+          }
+
+          if (!_processConnectionThread)
+            return;
+
+          if (_disconnectCallback != null)
+            _disconnectCallback(null);
+
+        }
+        catch (SocketException socketException)
+        {
+          if (!_processConnectionThread)
+            return;
+
+          if (socketException.SocketErrorCode == SocketError.ConnectionReset)
+          {
+            if (_disconnectCallback != null)
+              _disconnectCallback(null);
+          }
+          else
+          {
+            if (_commsFailureCallback != null)
+              _commsFailureCallback(socketException);
+            else
+              throw;
+          }
+        }
+        catch (Exception ex)
+        {
+          if (!_processConnectionThread)
+            return;
+
+          if (_commsFailureCallback != null)
+            _commsFailureCallback(ex);
+          else
+            throw;
+        }
+
+        #endregion Read from socket
 
       }
+    }
+
+
+    /// <summary>
+    /// Translates a host name or address into an IPAddress object.
+    /// </summary>
+    /// <param name="name">Host name or IP address.</param>
+    /// <returns>IPAddress object.</returns>
+    public static IPAddress GetIPFromName(string name)
+    {
+      IPAddress[] addresses = Dns.GetHostAddresses(name);
+
+      foreach (IPAddress address in addresses)
+        if (address.AddressFamily == AddressFamily.InterNetwork)
+          return address;
+
+      return null;
     }
 
     #endregion Implementation

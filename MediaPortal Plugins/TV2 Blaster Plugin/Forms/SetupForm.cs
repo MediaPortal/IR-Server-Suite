@@ -38,7 +38,7 @@ namespace MediaPortal.Plugins
         TV2BlasterPlugin.ServerHost = serverAddress.ServerHost;
       }
 
-      if (!TV2BlasterPlugin.StartComms())
+      if (!TV2BlasterPlugin.StartClient())
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "TV2 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       checkBoxLogVerbose.Checked = TV2BlasterPlugin.LogVerbose;
@@ -201,13 +201,13 @@ namespace MediaPortal.Plugins
 
     private void buttonChangeServer_Click(object sender, EventArgs e)
     {
-      TV2BlasterPlugin.StopComms();
+      TV2BlasterPlugin.StopClient();
       
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(TV2BlasterPlugin.ServerHost);
       serverAddress.ShowDialog();
       TV2BlasterPlugin.ServerHost = serverAddress.ServerHost;
 
-      TV2BlasterPlugin.StartComms();
+      TV2BlasterPlugin.StartClient();
     }
 
     private void buttonHelp_Click(object sender, EventArgs e)

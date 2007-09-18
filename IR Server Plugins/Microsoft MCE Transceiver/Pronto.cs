@@ -81,10 +81,10 @@ namespace MicrosoftMceTransceiver
     public static void WriteProntoFile(string fileName, ushort[] prontoData)
     {
       if (String.IsNullOrEmpty(fileName))
-        throw new ArgumentException("Null or Empty filename provided.", "fileName");
+        throw new ArgumentNullException("fileName");
 
       if (prontoData == null || prontoData.Length == 0)
-        throw new ArgumentException("Null or Empty pronto data provided.", "prontoData");
+        throw new ArgumentNullException("prontoData");
 
       StreamWriter file = new StreamWriter(fileName, false);
 
@@ -101,7 +101,7 @@ namespace MicrosoftMceTransceiver
     public static IrCode ConvertProntoDataToIrCode(ushort[] prontoData)
     {
       if (prontoData == null || prontoData.Length == 0)
-        throw new ArgumentException("Null or Empty pronto data provided.", "prontoData");
+        throw new ArgumentNullException("prontoData");
 
       switch ((CodeType)prontoData[0])
       {

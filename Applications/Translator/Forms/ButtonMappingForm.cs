@@ -9,7 +9,7 @@ using System.IO.Ports;
 using System.Text;
 using System.Windows.Forms;
 
-using NamedPipes;
+using IrssComms;
 using IrssUtils;
 
 namespace Translator

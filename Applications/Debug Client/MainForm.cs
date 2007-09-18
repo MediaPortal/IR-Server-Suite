@@ -6,13 +6,15 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-using NamedPipes;
+using IrssComms;
 using IrssUtils;
 
 namespace DebugClient
@@ -91,8 +93,6 @@ namespace DebugClient
     public MainForm()
     {
       InitializeComponent();
-
-      _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
     }
 
     #endregion
@@ -105,23 +105,20 @@ namespace DebugClient
 
     #region Variables
 
-    MessageQueue _messageQueue;
+    Client _client = null;
 
     string _serverHost      = Environment.MachineName;
-    string _localPipeName   = null;
     string _learnIRFilename = null;
 
     bool _registered = false;
-    bool _keepAlive = true;
     int _echoID = -1;
-    Thread _keepAliveThread;
 
     IRServerInfo _irServerInfo = new IRServerInfo();
 
     #endregion Variables
 
     delegate void DelegateAddStatusLine(string status);
-    DelegateAddStatusLine _AddStatusLine = null;
+    DelegateAddStatusLine _addStatusLine = null;
 
     void AddStatusLine(string status)
     {
@@ -137,7 +134,7 @@ namespace DebugClient
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open(Common.FolderIrssLogs + "Debug Client.log");
 
-      _AddStatusLine = new DelegateAddStatusLine(AddStatusLine);
+      _addStatusLine = new DelegateAddStatusLine(AddStatusLine);
 
       comboBoxRemoteButtons.Items.AddRange(Enum.GetNames(typeof(MceButton)));
       comboBoxRemoteButtons.SelectedIndex = 0;
@@ -157,23 +154,22 @@ namespace DebugClient
     {
       buttonDisconnect_Click(null, null);
       
-      _AddStatusLine = null;
+      _addStatusLine = null;
 
       IrssLog.Close();
     }
 
-    void ReceivedMessage(string message)
+    void ReceivedMessage(IrssMessage received)
     {
-      PipeMessage received = PipeMessage.FromString(message);
 
-      this.Invoke(_AddStatusLine, new Object[] { String.Format("Received Message: \"{0}, {1}\"", received.Type, received.Flags) });
+      this.Invoke(_addStatusLine, new Object[] { String.Format("Received Message: \"{0}, {1}\"", received.Type, received.Flags) });
 
       try
       {
         switch (received.Type)
         {
-          case PipeMessageType.RegisterClient:
-            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+          case MessageType.RegisterClient:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
               _registered = true;
               _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
@@ -181,18 +177,18 @@ namespace DebugClient
               comboBoxPort.Items.AddRange(_irServerInfo.Ports);
               comboBoxPort.SelectedIndex = 0;
             }
-            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
             }
             return;
 
-          case PipeMessageType.RemoteEvent:
+          case MessageType.RemoteEvent:
             RemoteHandlerCallback(received.DataAsString);
             return;
 
-          case PipeMessageType.LearnIR:
-            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+          case MessageType.LearnIR:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
               byte[] dataBytes = received.DataAsBytes;
 
@@ -204,23 +200,23 @@ namespace DebugClient
             _learnIRFilename = null;
             break;
 
-          case PipeMessageType.ServerShutdown:
+          case MessageType.ServerShutdown:
             _registered = false;
             return;
 
-          case PipeMessageType.Echo:
+          case MessageType.Echo:
             _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             return;
 
-          case PipeMessageType.Error:
+          case MessageType.Error:
             _learnIRFilename = null;
-            this.Invoke(_AddStatusLine, new Object[] { received.DataAsString });
+            this.Invoke(_addStatusLine, new Object[] { received.DataAsString });
             return;
         }
       }
       catch (Exception ex)
       {
-        this.Invoke(_AddStatusLine, new Object[] { ex.Message });
+        this.Invoke(_addStatusLine, new Object[] { ex.Message });
       }
     }
 
@@ -232,14 +228,15 @@ namespace DebugClient
           return false;
 
         _learnIRFilename = fileName;
-        
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.LearnIR, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+
+        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
+        _client.Send(message);
 
         AddStatusLine("Learning");
       }
       catch (Exception ex)
       {
+        _learnIRFilename = null;
         AddStatusLine(ex.Message);
         return false;
       }
@@ -253,7 +250,7 @@ namespace DebugClient
         if (!File.Exists(fileName))
           return false;
 
-        FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+        FileStream file = new FileStream(fileName, FileMode.Open);
 
         byte[] outData = new byte[4 + port.Length + file.Length];
 
@@ -263,8 +260,8 @@ namespace DebugClient
         file.Read(outData, 4 + port.Length, (int)file.Length);
         file.Close();
 
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+        _client.Send(message);
       }
       catch (Exception ex)
       {
@@ -278,237 +275,66 @@ namespace DebugClient
     {
       string text = String.Format("Remote Event \"{0}\"", keyCode);
 
-      this.Invoke(_AddStatusLine, new Object[] { text });
+      this.Invoke(_addStatusLine, new Object[] { text });
     }
 
-    bool StartComms()
+    void CommsFailure(object obj)
     {
-      try
-      {
-        if (OpenLocalPipe())
-        {
-          _messageQueue.Start();
+      Exception ex = obj as Exception;
+      
+      if (ex != null)
+        this.Invoke(_addStatusLine, new Object[] { String.Format("Communications failure: {0}", ex.Message) });
+      else
+        this.Invoke(_addStatusLine, new Object[] { "Communications failure" });
 
-          _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
-          _keepAliveThread.Start();
-          return true;
-        }
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-      }
-
-      return false;
+      StopClient();
     }
-    void StopComms()
+    void Connected(object obj)
     {
-      _keepAlive = false;
+      IrssLog.Info("Connected to server");
 
-      try
-      {
-        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
-          _keepAliveThread.Abort();
-      }
-      catch { }
+      IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
+      _client.Send(message);
+    }
+    void Disconnected(object obj)
+    {
+      IrssLog.Warn("Communications with server has been lost");
 
-      try
-      {
-        if (_registered)
-        {
-          _registered = false;
-
-          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
-        }
-      }
-      catch { }
-
-      _messageQueue.Stop();
-
-      try
-      {
-        if (PipeAccess.ServerRunning)
-          PipeAccess.StopServer();
-      }
-      catch { }
+      Thread.Sleep(1000);
     }
 
-    bool OpenLocalPipe()
+    bool StartClient()
     {
-      try
+      if (_client != null)
+        return false;
+
+      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+
+      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
+
+      _client = new Client(serverAddress, 24000, sink);
+      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
+      _client.ConnectCallback       = new WaitCallback(Connected);
+      _client.DisconnectCallback    = new WaitCallback(Disconnected);
+      
+      if (_client.Start())
       {
-        int pipeNumber = 1;
-        bool retry = false;
-
-        do
-        {
-          string localPipeTest = String.Format("irserver\\debug{0:00}", pipeNumber);
-
-          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
-          {
-            if (++pipeNumber <= Common.MaximumLocalClientCount)
-              retry = true;
-            else
-              throw new Exception(String.Format("Maximum local client limit ({0}) reached", Common.MaximumLocalClientCount));
-          }
-          else
-          {
-            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
-              throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
-
-            _localPipeName = localPipeTest;
-            retry = false;
-          }
-        }
-        while (retry);
-
         return true;
       }
-      catch (Exception ex)
+      else
       {
-        IrssLog.Error(ex.ToString());
+        _client = null;
         return false;
       }
     }
-
-    bool ConnectToServer()
+    void StopClient()
     {
-      try
-      {
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
-        return true;
-      }
-      catch (AppModule.NamedPipes.NamedPipeIOException)
-      {
-        return false;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-        return false;
-      }
+      if (_client == null)
+        return;
+
+      _client.Stop();
+      _client = null;
     }
-
-    void KeepAliveThread()
-    {
-      Random random = new Random((int)DateTime.Now.Ticks);
-      bool reconnect;
-      int attempt;
-
-      _registered = false;
-      _keepAlive = true;
-      while (_keepAlive)
-      {
-        reconnect = true;
-
-        #region Connect to server
-
-        IrssLog.Info("Connecting ({0}) ...", _serverHost);
-        attempt = 0;
-        while (_keepAlive && reconnect)
-        {
-          if (ConnectToServer())
-          {
-            reconnect = false;
-          }
-          else
-          {
-            int wait;
-
-            if (attempt <= 50)
-              attempt++;
-
-            if (attempt > 50)
-              wait = 30;      // 30 seconds
-            else if (attempt > 20)
-              wait = 10;      // 10 seconds
-            else if (attempt > 10)
-              wait = 5;       // 5 seconds
-            else
-              wait = 1;       // 1 second
-
-            for (int sleeps = 0; sleeps < wait && _keepAlive; sleeps++)
-              Thread.Sleep(1000);
-          }
-        }
-
-        #endregion Connect to server
-
-        #region Wait for registered
-
-        // Give up after 10 seconds ...
-        attempt = 0;
-        while (_keepAlive && !_registered && !reconnect)
-        {
-          if (++attempt >= 10)
-            reconnect = true;
-          else
-            Thread.Sleep(1000);
-        }
-
-        #endregion Wait for registered
-
-        #region Ping the server repeatedly
-
-        while (_keepAlive && _registered && !reconnect)
-        {
-          int pingID = random.Next();
-          long pingTime = DateTime.Now.Ticks;
-
-          try
-          {
-            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
-          }
-          catch
-          {
-            // Failed to ping ... reconnect ...
-            IrssLog.Warn("Failed to ping, attempting to reconnect ...");
-            _registered = false;
-            reconnect = true;
-            break;
-          }
-
-          // Wait 10 seconds for a ping echo ...
-          bool receivedEcho = false;
-          while (_keepAlive && _registered && !reconnect &&
-            !receivedEcho && DateTime.Now.Ticks - pingTime < 10 * 1000 * 10000)
-          {
-            if (_echoID == pingID)
-            {
-              receivedEcho = true;
-            }
-            else
-            {
-              Thread.Sleep(1000);
-            }
-          }
-
-          if (receivedEcho) // Received ping echo ...
-          {
-            // Wait 60 seconds before re-pinging ...
-            for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
-              Thread.Sleep(1000);
-          }
-          else // Didn't receive ping echo ...
-          {
-            IrssLog.Warn("No echo to ping, attempting to reconnect ...");
-
-            // Break out of pinging cycle ...
-            _registered = false;
-            reconnect = true;
-          }
-        }
-
-        #endregion Ping the server repeatedly
-
-      }
-
-    }
-
-
 
     #region Controls
 
@@ -519,15 +345,15 @@ namespace DebugClient
         AddStatusLine("Connect");
         listBoxStatus.Update();
 
-        if (PipeAccess.ServerRunning)
+        if (_client != null)
         {
-          AddStatusLine("Already connected");
+          AddStatusLine("Already connected/connecting");
           return;
         }
 
         _serverHost = comboBoxComputer.Text;
 
-        StartComms();
+        StartClient();
       }
       catch (Exception ex)
       {
@@ -540,13 +366,19 @@ namespace DebugClient
 
       try
       {
-        if (!PipeAccess.ServerRunning)
+        if (_client == null)
         {
           AddStatusLine(" - Not connected");
           return;
         }
 
-        StopComms();
+        if (_registered)
+        {
+          IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
+          _client.Send(message);
+        }
+
+        StopClient();
       }
       catch (Exception ex)
       {
@@ -555,56 +387,78 @@ namespace DebugClient
     }
     private void buttonBlast_Click(object sender, EventArgs e)
     {
-      if (!PipeAccess.ServerRunning)
-      {
-        AddStatusLine("Not connected");
-        return;
-      }
+      AddStatusLine("Blast IR");
 
-      if (!_irServerInfo.CanTransmit)
-      {
-        AddStatusLine("IR Server is not setup to blast");
-        return;
-      }
-
-      if (BlastIR(DebugIRFile, comboBoxPort.SelectedItem as string))
-        AddStatusLine("Blasting");
-      else
-        AddStatusLine("Can't Blast");
-    }
-    private void buttonLearnIR_Click(object sender, EventArgs e)
-    {
-      if (!PipeAccess.ServerRunning)
-      {
-        AddStatusLine("Not connected");
-        return;
-      }
-
-      if (!_irServerInfo.CanLearn)
-      {
-        AddStatusLine("IR Server is not setup to support learning");
-        return;
-      }
-
-      if (LearnIR(DebugIRFile))
-        AddStatusLine("Learning IR");
-      else
-        AddStatusLine("Learn IR Busy");
-    }
-    private void buttonShutdownServer_Click(object sender, EventArgs e)
-    {
-      AddStatusLine("Shutdown");
-
-      if (!PipeAccess.ServerRunning)
+      if (_client == null)
       {
         AddStatusLine(" - Not connected");
         return;
       }
 
+      if (!_client.Connected)
+      {
+        AddStatusLine(" - Connecting...");
+        return;
+      }
+
+      if (!_irServerInfo.CanTransmit)
+      {
+        AddStatusLine(" - IR Server is not setup to blast");
+        return;
+      }
+
+      if (BlastIR(DebugIRFile, comboBoxPort.SelectedItem as string))
+        AddStatusLine(" - Blasting ...");
+      else
+        AddStatusLine(" - Can't Blast");
+    }
+    private void buttonLearnIR_Click(object sender, EventArgs e)
+    {
+      AddStatusLine("Learn IR");
+
+      if (_client == null)
+      {
+        AddStatusLine(" - Not connected");
+        return;
+      }
+
+      if (!_client.Connected)
+      {
+        AddStatusLine(" - Connecting...");
+        return;
+      }
+
+      if (!_irServerInfo.CanLearn)
+      {
+        AddStatusLine(" - IR Server is not setup to support learning");
+        return;
+      }
+
+      if (LearnIR(DebugIRFile))
+        AddStatusLine(" - Learning IR ...");
+      else
+        AddStatusLine(" - Learn IR Busy");
+    }
+    private void buttonShutdownServer_Click(object sender, EventArgs e)
+    {
+      AddStatusLine("Shutdown");
+
+      if (_client == null)
+      {
+        AddStatusLine(" - Not connected");
+        return;
+      }
+
+      if (!_client.Connected)
+      {
+        AddStatusLine(" - Connecting...");
+        return;
+      }
+
       try
       {
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ServerShutdown, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+        IrssMessage message = new IrssMessage(MessageType.ServerShutdown, MessageFlags.Request);
+        _client.Send(message);
       }
       catch (Exception ex)
       {
@@ -615,16 +469,22 @@ namespace DebugClient
     {
       AddStatusLine("Ping Server");
 
-      if (!PipeAccess.ServerRunning)
+      if (_client == null)
       {
         AddStatusLine(" - Not connected");
         return;
       }
 
+      if (!_client.Connected)
+      {
+        AddStatusLine(" - Connecting...");
+        return;
+      }
+
       try
       {
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(24));
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+        IrssMessage message = new IrssMessage(MessageType.Ping, MessageFlags.Request, BitConverter.GetBytes(24));
+        _client.Send(message);
       }
       catch (Exception ex)
       {
@@ -635,13 +495,9 @@ namespace DebugClient
     private void comboBoxRemoteButtons_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (comboBoxRemoteButtons.SelectedItem.ToString() == "Custom")
-      {
         numericUpDownButton.Enabled = true;
-      }
       else
-      {
         numericUpDownButton.Enabled = false;
-      }
     }
 
     private void buttonSendRemoteButton_Click(object sender, EventArgs e)
@@ -650,9 +506,15 @@ namespace DebugClient
 
       try
       {
-        if (!PipeAccess.ServerRunning)
+        if (_client == null)
         {
           AddStatusLine(" - Not connected");
+          return;
+        }
+
+        if (!_client.Connected)
+        {
+          AddStatusLine(" - Connecting...");
           return;
         }
 
@@ -660,13 +522,8 @@ namespace DebugClient
         if (keyCode == -1)
           keyCode = Decimal.ToInt32(numericUpDownButton.Value);
 
-        byte[] data = new byte[8];
-        
-        BitConverter.GetBytes(keyCode).CopyTo(data, 0);
-        BitConverter.GetBytes(0).CopyTo(data, 4);
-
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, data);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+        IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, keyCode.ToString());
+        _client.Send(message);
       }
       catch (Exception ex)
       {
@@ -687,8 +544,6 @@ namespace DebugClient
     }
 
     #endregion Controls
-
-
 
     Thread AutoTest;
 
@@ -713,7 +568,7 @@ namespace DebugClient
       {
         randomNumber = rand.Next(100000);
 
-        this.Invoke(_AddStatusLine, new Object[] { String.Format("AutoTest: {0}", randomNumber) });
+        this.Invoke(_addStatusLine, new Object[] { String.Format("AutoTest: {0}", randomNumber) });
 
         process.StartInfo.Arguments = "-host localhost -pad 4 -channel " + randomNumber.ToString();
 

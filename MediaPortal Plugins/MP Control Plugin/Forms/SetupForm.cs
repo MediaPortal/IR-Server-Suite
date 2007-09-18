@@ -40,7 +40,7 @@ namespace MediaPortal.Plugins
         MPControlPlugin.ServerHost = serverAddress.ServerHost;
       }
 
-      if (!MPControlPlugin.StartComms())
+      if (!MPControlPlugin.StartClient())
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "MP Control Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       checkBoxLogVerbose.Checked      = MPControlPlugin.LogVerbose;
@@ -661,13 +661,13 @@ namespace MediaPortal.Plugins
 
     private void buttonChangeServer_Click(object sender, EventArgs e)
     {
-      MPControlPlugin.StopComms();
+      MPControlPlugin.StopClient();
       
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(MPControlPlugin.ServerHost);
       serverAddress.ShowDialog();
       MPControlPlugin.ServerHost = serverAddress.ServerHost;
 
-      MPControlPlugin.StartComms();
+      MPControlPlugin.StartClient();
     }
 
     private void buttonLoadPreset_Click(object sender, EventArgs e)

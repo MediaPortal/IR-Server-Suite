@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
+using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 
@@ -890,9 +891,9 @@ namespace Translator
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Program.Config.ServerHost);
       if (serverAddress.ShowDialog(this) == DialogResult.OK)
       {
-        Program.StopComms();
+        Program.StopClient();
         Program.Config.ServerHost = serverAddress.ServerHost;
-        Program.StartComms();
+        Program.StartClient();
       }
     }
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)

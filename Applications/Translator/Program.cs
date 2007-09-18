@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -12,7 +14,7 @@ using System.Xml;
 
 using Microsoft.Win32;
 
-using NamedPipes;
+using IrssComms;
 using IrssUtils;
 
 namespace Translator
@@ -31,19 +33,16 @@ namespace Translator
 
     #region Variables
 
-    static MessageQueue _messageQueue;
+    static Client _client = null;
 
     static Configuration _config;
 
-    static string _localPipeName = String.Empty;
     static string _learnIRFilename = null;
 
     static bool _registered = false;
-    static bool _keepAlive = true;
     static int _echoID = -1;
-    static Thread _keepAliveThread;
 
-    static Common.MessageHandler _handleMessage;
+    static ClientMessageSink _handleMessage;
 
     static bool _inConfiguration;
 
@@ -62,7 +61,7 @@ namespace Translator
       set { _config = value; }
     }
 
-    internal static Common.MessageHandler HandleMessage
+    internal static ClientMessageSink HandleMessage
     {
       get { return _handleMessage; }
       set { _handleMessage = value; }
@@ -143,10 +142,8 @@ namespace Translator
       _focusWatcher.Start();
       */
 
-      _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
-
       // Start server communications ...
-      if (StartComms())
+      if (StartClient())
       {
         // Setup event notification ...
         SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
@@ -162,7 +159,7 @@ namespace Translator
         MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Translator - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
-      StopComms();
+      StopClient();
 
       //if (_focusWatcher.IsAlive)
         //_focusWatcher.Abort();
@@ -655,322 +652,137 @@ namespace Translator
 
       Application.Exit();
     }
-
-    internal static bool StartComms()
+    
+    static void CommsFailure(object obj)
     {
-      try
-      {
-        if (OpenLocalPipe())
-        {
-          _notifyIcon.Visible = true;
-
-          _messageQueue.Start();
-
-          _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
-          _keepAliveThread.Start();
-
-          return true;
-        }
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-      }
-
-      return false;
-    }
-    internal static void StopComms()
-    {
-      _notifyIcon.Visible = false;
-
-      _keepAlive = false;
+      Exception ex = obj as Exception;
       
-      try
-      {
-        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
-          _keepAliveThread.Abort();
-      }
-      catch { }
+      if (ex != null)
+        IrssLog.Error("Communications failure: {0}", ex.Message);
+      else
+        IrssLog.Error("Communications failure");
 
-      try
-      {
-        if (_registered)
-        {
-          _registered = false;
+      _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+      _notifyIcon.Text = "Translator - Serious Communications Failure";
 
-          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
-          PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
-        }
-      }
-      catch { }
+      StopClient();
 
-      _messageQueue.Stop();
+      MessageBox.Show("Please report this error.", "Translator - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+    static void Connected(object obj)
+    {
+      IrssLog.Info("Connected to server");
 
-      try
-      {
-        if (PipeAccess.ServerRunning)
-          PipeAccess.StopServer();
-      }
-      catch { }
+      IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
+      _client.Send(message);
+
+      _notifyIcon.Icon = Properties.Resources.Icon16;
+      _notifyIcon.Text = "Translator";
+
+      MapEvent(MappingEvent.Translator_Start);
+    }
+    static void Disconnected(object obj)
+    {
+      IrssLog.Warn("Communications with server has been lost");
+
+      _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+      _notifyIcon.Text = "Translator - Reconnecting ...";
+
+      Thread.Sleep(1000);
     }
 
-    static bool OpenLocalPipe()
+    internal static bool StartClient()
     {
-      try
+      if (_client != null)
+        return false;
+
+      _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+      _notifyIcon.Text = "Translator - Reconnecting ...";
+      _notifyIcon.Visible = true;
+
+      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+
+      IPAddress serverAddress = Client.GetIPFromName(_config.ServerHost);
+
+      _client = new Client(serverAddress, 24000, sink);
+      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
+      _client.ConnectCallback       = new WaitCallback(Connected);
+      _client.DisconnectCallback    = new WaitCallback(Disconnected);
+      
+      if (_client.Start())
       {
-        int pipeNumber = 1;
-        bool retry = false;
-
-        do
-        {
-          string localPipeTest = String.Format("irserver\\trans{0:00}", pipeNumber);
-
-          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
-          {
-            if (++pipeNumber <= Common.MaximumLocalClientCount)
-              retry = true;
-            else
-              throw new Exception(String.Format("Maximum local client limit ({0}) reached", Common.MaximumLocalClientCount));
-          }
-          else
-          {
-            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
-              throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
-
-            _localPipeName = localPipeTest;
-            retry = false;
-          }
-        }
-        while (retry);
-
         return true;
       }
-      catch (Exception ex)
+      else
       {
-        IrssLog.Error(ex.ToString());
+        _client = null;
         return false;
       }
     }
-
-    static bool ConnectToServer()
+    internal static void StopClient()
     {
-      try
-      {
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
-        return true;
-      }
-      catch (AppModule.NamedPipes.NamedPipeIOException)
-      {
-        return false;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-        return false;
-      }
+      if (_client == null)
+        return;
+
+      _client.Stop();
+      _client = null;
     }
 
-    static void KeepAliveThread()
+    static void ReceivedMessage(IrssMessage received)
     {
-      bool firstConnect = true;
-
-      Random random = new Random((int)DateTime.Now.Ticks);
-      bool reconnect;
-      int attempt;
-
-      _keepAlive = true;
-      while (_keepAlive)
-      {
-        reconnect = true;
-
-        _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
-        _notifyIcon.Text = "Translator - Connecting ...";
-
-        #region Connect to server
-
-        IrssLog.Info("Connecting ({0}) ...", _config.ServerHost);
-        attempt = 0;
-        while (_keepAlive && reconnect)
-        {
-          if (ConnectToServer())
-          {
-            reconnect = false;
-          }
-          else
-          {
-            int wait;
-
-            if (attempt <= 50)
-              attempt++;
-
-            if (attempt > 50)
-              wait = 30;      // 30 seconds
-            else if (attempt > 20)
-              wait = 10;      // 10 seconds
-            else if (attempt > 10)
-              wait = 5;       // 5 seconds
-            else
-              wait = 1;       // 1 second
-
-            for (int sleeps = 0; sleeps < wait && _keepAlive; sleeps++)
-              Thread.Sleep(1000);
-          }
-        }
-
-        #endregion Connect to server
-
-        #region Wait for registered
-
-        // Give up after 10 seconds ...
-        attempt = 0;
-        while (_keepAlive && !_registered && !reconnect)
-        {
-          if (++attempt >= 10)
-            reconnect = true;
-          else
-            Thread.Sleep(1000);
-        }
-
-        #endregion Wait for registered
-
-        #region Registered ...
-
-        if (_keepAlive && _registered && !reconnect)
-        {
-          IrssLog.Info("Connected ({0})", _config.ServerHost);
-
-          _notifyIcon.Icon = Properties.Resources.Icon16;
-          _notifyIcon.Text = "Translator";
-
-          if (firstConnect)
-          {
-            MapEvent(MappingEvent.Translator_Start);
-            firstConnect = false;
-          }
-        }
-
-        #endregion Registered ...
-
-        #region Ping the server repeatedly
-
-        while (_keepAlive && _registered && !reconnect)
-        {
-          int pingID = random.Next();
-          long pingTime = DateTime.Now.Ticks;
-
-          try
-          {
-            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
-          }
-          catch
-          {
-            // Failed to ping ... reconnect ...
-            IrssLog.Warn("Failed to ping, attempting to reconnect ...");
-            _registered = false;
-            reconnect = true;
-            break;
-          }
-
-          // Wait 10 seconds for a ping echo ...
-          bool receivedEcho = false;
-          while (_keepAlive && _registered && !reconnect &&
-            !receivedEcho && DateTime.Now.Ticks - pingTime < 10 * 1000 * 10000)
-          {
-            if (_echoID == pingID)
-            {
-              receivedEcho = true;
-            }
-            else
-            {
-              Thread.Sleep(1000);
-            }
-          }
-
-          if (receivedEcho) // Received ping echo ...
-          {
-            // Wait 60 seconds before re-pinging ...
-            for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
-              Thread.Sleep(1000);
-          }
-          else // Didn't receive ping echo ...
-          {
-            IrssLog.Warn("No echo to ping, attempting to reconnect ...");
-
-            // Break out of pinging cycle ...
-            _registered = false;
-            reconnect = true;
-          }
-        }
-
-        #endregion Ping the server repeatedly
-
-      }
-
-    }
-
-    static void ReceivedMessage(string message)
-    {
-      PipeMessage received = PipeMessage.FromString(message);
-
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
       try
       {
         switch (received.Type)
         {
-          case PipeMessageType.RemoteEvent:
+          case MessageType.RemoteEvent:
             RemoteHandlerCallback(received.DataAsString);
             break;
 
-          case PipeMessageType.KeyboardEvent:
+          case MessageType.KeyboardEvent:
           {
-            byte[] dataBytes = received.DataAsBytes;
-
-            int vKey = BitConverter.ToInt32(dataBytes, 0);
-            bool keyUp = BitConverter.ToBoolean(dataBytes, 4);
+            int vKey    = BitConverter.ToInt32(received.DataAsBytes, 0);
+            bool keyUp  = BitConverter.ToBoolean(received.DataAsBytes, 4);
 
             KeyboardHandlerCallback(vKey, keyUp);
             break;
           }
 
-          case PipeMessageType.MouseEvent:
+          case MessageType.MouseEvent:
           {
-            byte[] dataBytes = received.DataAsBytes;
-
-            int deltaX = BitConverter.ToInt32(dataBytes, 0);
-            int deltaY = BitConverter.ToInt32(dataBytes, 4);
-            int buttons = BitConverter.ToInt32(dataBytes, 8);
+            int deltaX  = BitConverter.ToInt32(received.DataAsBytes, 0);
+            int deltaY  = BitConverter.ToInt32(received.DataAsBytes, 4);
+            int buttons = BitConverter.ToInt32(received.DataAsBytes, 8);
 
             MouseHandlerCallback(deltaX, deltaY, buttons);
             break;
           }
 
-          case PipeMessageType.BlastIR:
-            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+          case MessageType.BlastIR:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
               IrssLog.Debug("Blast successful");
-            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
               IrssLog.Error("Failed to blast IR command");
             break;
 
-          case PipeMessageType.RegisterClient:
-            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+          case MessageType.RegisterClient:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
               _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
               _registered = true;
 
               IrssLog.Info("Registered to IR Server");
             }
-            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
               IrssLog.Warn("IR Server refused to register");
             }
             break;
 
-          case PipeMessageType.LearnIR:
-            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+          case MessageType.LearnIR:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
               IrssLog.Info("Learned IR Successfully");
 
@@ -980,11 +792,11 @@ namespace Translator
               file.Write(dataBytes, 0, dataBytes.Length);
               file.Close();
             }
-            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               IrssLog.Error("Failed to learn IR command");
             }
-            else if ((received.Flags & PipeMessageFlags.Timeout) == PipeMessageFlags.Timeout)
+            else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
             {
               IrssLog.Warn("Learn IR command timed-out");
             }
@@ -992,23 +804,27 @@ namespace Translator
             _learnIRFilename = null;
             break;
 
-          case PipeMessageType.ServerShutdown:
+          case MessageType.ServerShutdown:
             IrssLog.Warn("IR Server Shutdown - Translator disabled until IR Server returns");
             _registered = false;
+
+            _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+            _notifyIcon.Text = "Translator - Connecting ...";
+            
             break;
 
-          case PipeMessageType.Echo:
+          case MessageType.Echo:
             _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             break;
 
-          case PipeMessageType.Error:
+          case MessageType.Error:
             _learnIRFilename = null;
             IrssLog.Error("Received error: {0}", received.DataAsString);
             break;
         }
 
         if (_handleMessage != null)
-          _handleMessage(message);
+          _handleMessage(received);
       }
       catch (Exception ex)
       {
@@ -1320,8 +1136,8 @@ namespace Translator
 
         _learnIRFilename = fileName;
 
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.LearnIR, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
+        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
+        _client.Send(message);
       }
       catch (Exception ex)
       {
@@ -1343,7 +1159,7 @@ namespace Translator
       if (!_registered)
         throw new Exception("Cannot Blast, not registered to an active IR Server");
 
-      FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+      FileStream file = new FileStream(fileName, FileMode.Open);
       if (file.Length == 0)
         throw new Exception(String.Format("Cannot Blast, IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
@@ -1355,8 +1171,8 @@ namespace Translator
       file.Read(outData, 4 + port.Length, (int)file.Length);
       file.Close();
 
-      PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.BlastIR, PipeMessageFlags.Request, outData);
-      PipeAccess.SendMessage(Common.ServerPipeName, _config.ServerHost, message);
+      IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+      _client.Send(message);
     }
 
     /// <summary>
@@ -1366,7 +1182,7 @@ namespace Translator
     internal static void ProcessCommand(string command)
     {
       if (String.IsNullOrEmpty(command))
-        throw new ArgumentException("Null or empty argument", "command");
+        throw new ArgumentNullException("command");
 
       if (command.StartsWith(Common.CmdPrefixMacro)) // Macro
       {

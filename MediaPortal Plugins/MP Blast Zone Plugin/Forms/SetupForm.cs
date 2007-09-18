@@ -39,7 +39,7 @@ namespace MediaPortal.Plugins
         MPBlastZonePlugin.ServerHost = serverAddress.ServerHost;
       }
 
-      if (!MPBlastZonePlugin.StartComms())
+      if (!MPBlastZonePlugin.StartClient())
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "MP Blast Zone Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       checkBoxLogVerbose.Checked = MPBlastZonePlugin.LogVerbose;
@@ -401,13 +401,13 @@ namespace MediaPortal.Plugins
 
     private void buttonChangeServer_Click(object sender, EventArgs e)
     {
-      MPBlastZonePlugin.StopComms();
+      MPBlastZonePlugin.StopClient();
 
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(MPBlastZonePlugin.ServerHost);
       serverAddress.ShowDialog();
       MPBlastZonePlugin.ServerHost = serverAddress.ServerHost;
 
-      MPBlastZonePlugin.StartComms();
+      MPBlastZonePlugin.StartClient();
     }
 
     private void buttonHelp_Click(object sender, EventArgs e)

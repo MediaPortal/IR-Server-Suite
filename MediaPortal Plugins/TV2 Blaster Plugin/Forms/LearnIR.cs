@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-using NamedPipes;
+using IrssComms;
 using IrssUtils;
 
 namespace MediaPortal.Plugins
@@ -69,25 +69,23 @@ namespace MediaPortal.Plugins
       buttonDone.Enabled = true;
     }
 
-    void MessageReceiver(string message)
+    void MessageReceiver(IrssMessage received)
     {
-      PipeMessage received = PipeMessage.FromString(message);
-
-      if (received.Type == PipeMessageType.LearnIR)
+      if (received.Type == MessageType.LearnIR)
       {
         if (_learnStatus != null)
         {
-          if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+          if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             this.Invoke(_learnStatus, new Object[] { "Learned IR", true });
-          else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+          else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             this.Invoke(_learnStatus, new Object[] { "Failed to learn IR", false });
-          else if ((received.Flags & PipeMessageFlags.Timeout) == PipeMessageFlags.Timeout)
+          else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
             this.Invoke(_learnStatus, new Object[] { "Learn IR timed-out", false });
 
           _learnStatus = null;
         }
 
-        TV2BlasterPlugin.HandleMessage -= new Common.MessageHandler(MessageReceiver);
+        TV2BlasterPlugin.HandleMessage -= new ClientMessageSink(MessageReceiver);
       }
     }
 
@@ -104,7 +102,7 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      TV2BlasterPlugin.HandleMessage += new Common.MessageHandler(MessageReceiver);
+      TV2BlasterPlugin.HandleMessage += new ClientMessageSink(MessageReceiver);
       _learnStatus = new DelegateLearnStatus(LearnStatus);
 
       textBoxName.Enabled = false;
@@ -120,7 +118,7 @@ namespace MediaPortal.Plugins
       }
       else
       {
-        TV2BlasterPlugin.HandleMessage -= new Common.MessageHandler(MessageReceiver);
+        TV2BlasterPlugin.HandleMessage -= new ClientMessageSink(MessageReceiver);
         _learnStatus = null;
 
         labelLearned.Text = "Failed to learn IR";

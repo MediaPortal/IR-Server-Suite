@@ -64,21 +64,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">
+      <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
+      <Name>IrssComms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\irssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IPC\AppModule.InterProcessComm\AppModule.InterProcessComm.csproj">
-      <Project>{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}</Project>
-      <Name>AppModule.InterProcessComm</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IPC\AppModule.NamedPipes\AppModule.NamedPipes.csproj">
-      <Project>{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}</Project>
-      <Name>AppModule.NamedPipes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IPC\Named Pipes\Named Pipes.csproj">
-      <Project>{F4EA6055-7133-4F18-8971-E19ADEB482C1}</Project>
-      <Name>Named Pipes</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -4,12 +4,14 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using NamedPipes;
+using IrssComms;
 using IrssUtils;
 
 namespace TrayLauncher
@@ -28,14 +30,12 @@ namespace TrayLauncher
 
     #region Variables
 
-    static Common.MessageHandler _handleMessage = null;
+    static ClientMessageSink _handleMessage = null;
 
-    MessageQueue _messageQueue;
+    Client _client;
 
-    bool _registered = false;
-    bool _keepAlive = true;
+    static bool _registered = false;
     int _echoID = -1;
-    Thread _keepAliveThread;
 
     string _serverHost;
     string _programFile;
@@ -43,18 +43,21 @@ namespace TrayLauncher
     bool _launchOnLoad;
     string _launchKeyCode;
 
-    string _localPipeName = null;
-
     NotifyIcon _notifyIcon;
 
     #endregion Variables
 
     #region Properties
 
-    internal static Common.MessageHandler HandleMessage
+    internal static ClientMessageSink HandleMessage
     {
       get { return _handleMessage; }
       set { _handleMessage = value; }
+    }
+
+    internal static bool Registered
+    {
+      get { return _registered; }
     }
 
     #endregion Properties
@@ -73,8 +76,6 @@ namespace TrayLauncher
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
       _notifyIcon.Text = "Tray Launcher - Connecting ...";
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
-
-      _messageQueue = new MessageQueue(new MessageQueueSink(ReceivedMessage));
     }
 
     #endregion Constructor
@@ -96,14 +97,9 @@ namespace TrayLauncher
           didSetup = true;
         }
 
-        if (OpenLocalPipe())
+        if (StartClient())
         {
           _notifyIcon.Visible = true;
-
-          _messageQueue.Start();
-
-          _keepAliveThread = new Thread(new ThreadStart(KeepAliveThread));
-          _keepAliveThread.Start();
 
           if (!didSetup && _launchOnLoad)
             ClickLaunch(null, null);
@@ -123,35 +119,19 @@ namespace TrayLauncher
     {
       _notifyIcon.Visible = false;
 
-      _keepAlive = false;
-
-      try
-      {
-        if (_keepAliveThread != null && _keepAliveThread.IsAlive)
-          _keepAliveThread.Abort();
-      }
-      catch { }
-
       try
       {
         if (_registered)
         {
           _registered = false;
 
-          PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.UnregisterClient, PipeMessageFlags.Request);
-          PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
+          IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
+          _client.Send(message);
         }
       }
       catch { }
-
-      _messageQueue.Stop();
-
-      try
-      {
-        if (PipeAccess.ServerRunning)
-          PipeAccess.StopServer();
-      }
-      catch { }
+      
+      StopClient();
     }
 
     void LoadSettings()
@@ -225,240 +205,110 @@ namespace TrayLauncher
       }
     }
 
-    bool OpenLocalPipe()
+    void CommsFailure(object obj)
     {
-      try
+      Exception ex = obj as Exception;
+
+      if (ex != null)
+        IrssLog.Error("Communications failure: {0}", ex.Message);
+      else
+        IrssLog.Error("Communications failure");
+
+      StopClient();
+
+      MessageBox.Show("Please report this error.", "Tray Launcher - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+    void Connected(object obj)
+    {
+      IrssLog.Info("Connected to server");
+
+      IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
+      _client.Send(message);
+    }
+    void Disconnected(object obj)
+    {
+      IrssLog.Warn("Communications with server has been lost");
+
+      Thread.Sleep(1000);
+    }
+
+    bool StartClient()
+    {
+      if (_client != null)
+        return false;
+
+      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+
+      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
+
+      _client = new Client(serverAddress, 24000, sink);
+      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
+      _client.ConnectCallback       = new WaitCallback(Connected);
+      _client.DisconnectCallback    = new WaitCallback(Disconnected);
+      
+      if (_client.Start())
       {
-        int pipeNumber = 1;
-        bool retry = false;
-
-        do
-        {
-          string localPipeTest = String.Format("irserver\\tray{0:00}", pipeNumber);
-
-          if (PipeAccess.PipeExists(Common.LocalPipePrefix + localPipeTest))
-          {
-            if (++pipeNumber <= Common.MaximumLocalClientCount)
-              retry = true;
-            else
-              throw new Exception(String.Format("Maximum local client limit ({0}) reached", Common.MaximumLocalClientCount));
-          }
-          else
-          {
-            if (!PipeAccess.StartServer(localPipeTest, new PipeMessageHandler(_messageQueue.Enqueue)))
-              throw new Exception(String.Format("Failed to start local pipe server \"{0}\"", localPipeTest));
-
-            _localPipeName = localPipeTest;
-            retry = false;
-          }
-        }
-        while (retry);
-
         return true;
       }
-      catch (Exception ex)
+      else
       {
-        IrssLog.Error(ex.ToString());
+        _client = null;
         return false;
       }
     }
-
-    bool ConnectToServer()
+    void StopClient()
     {
-      try
-      {
-        PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.RegisterClient, PipeMessageFlags.Request);
-        PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
-        return true;
-      }
-      catch (AppModule.NamedPipes.NamedPipeIOException)
-      {
-        return false;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-        return false;
-      }
+      if (_client == null)
+        return;
+
+      _client.Stop();
+      _client = null;
     }
 
-    void KeepAliveThread()
+    void ReceivedMessage(IrssMessage received)
     {
-      Random random = new Random((int)DateTime.Now.Ticks);
-      bool reconnect;
-      int attempt;
-
-      _keepAlive = true;
-      while (_keepAlive)
-      {
-        reconnect = true;
-
-        _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
-        _notifyIcon.Text = "Tray Launcher - Connecting ...";
-
-        #region Connect to server
-
-        IrssLog.Info("Connecting ({0}) ...", _serverHost);
-        attempt = 0;
-        while (_keepAlive && reconnect)
-        {
-          if (ConnectToServer())
-          {
-            reconnect = false;
-          }
-          else
-          {
-            int wait;
-
-            if (attempt <= 50)
-              attempt++;
-
-            if (attempt > 50)
-              wait = 30;      // 30 seconds
-            else if (attempt > 20)
-              wait = 10;      // 10 seconds
-            else if (attempt > 10)
-              wait = 5;       // 5 seconds
-            else
-              wait = 1;       // 1 second
-
-            for (int sleeps = 0; sleeps < wait && _keepAlive; sleeps++)
-              Thread.Sleep(1000);
-          }
-        }
-
-        #endregion Connect to server
-
-        #region Wait for registered
-
-        // Give up after 10 seconds ...
-        attempt = 0;
-        while (_keepAlive && !_registered && !reconnect)
-        {
-          if (++attempt >= 10)
-            reconnect = true;
-          else
-            Thread.Sleep(1000);
-        }
-
-        #endregion Wait for registered
-
-        #region Registered ...
-
-        if (_keepAlive && _registered && !reconnect)
-        {
-          IrssLog.Info("Connected ({0})", _serverHost);
-
-          _notifyIcon.Icon = Properties.Resources.Icon16;
-          _notifyIcon.Text = "Tray Launcher";
-        }
-
-        #endregion Registered ...
-
-        #region Ping the server repeatedly
-
-        while (_keepAlive && _registered && !reconnect)
-        {
-          int pingID = random.Next();
-          long pingTime = DateTime.Now.Ticks;
-
-          try
-          {
-            PipeMessage message = new PipeMessage(Environment.MachineName, _localPipeName, PipeMessageType.Ping, PipeMessageFlags.Request, BitConverter.GetBytes(pingID));
-            PipeAccess.SendMessage(Common.ServerPipeName, _serverHost, message);
-          }
-          catch
-          {
-            // Failed to ping ... reconnect ...
-            IrssLog.Warn("Failed to ping, attempting to reconnect ...");
-            _registered = false;
-            reconnect = true;
-            break;
-          }
-
-          // Wait 10 seconds for a ping echo ...
-          bool receivedEcho = false;
-          while (_keepAlive && _registered && !reconnect &&
-            !receivedEcho && DateTime.Now.Ticks - pingTime < 10 * 1000 * 10000)
-          {
-            if (_echoID == pingID)
-            {
-              receivedEcho = true;
-            }
-            else
-            {
-              Thread.Sleep(1000);
-            }
-          }
-
-          if (receivedEcho) // Received ping echo ...
-          {
-            // Wait 60 seconds before re-pinging ...
-            for (int sleeps = 0; sleeps < 60 && _keepAlive && _registered; sleeps++)
-              Thread.Sleep(1000);
-          }
-          else // Didn't receive ping echo ...
-          {
-            IrssLog.Warn("No echo to ping, attempting to reconnect ...");
-
-            // Break out of pinging cycle ...
-            _registered = false;
-            reconnect = true;
-          }
-        }
-
-        #endregion Ping the server repeatedly
-
-      }
-
-    }
-
-    void ReceivedMessage(string message)
-    {
-      PipeMessage received = PipeMessage.FromString(message);
-
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
       try
       {
         switch (received.Type)
         {
-          case PipeMessageType.RegisterClient:
-            if ((received.Flags & PipeMessageFlags.Success) == PipeMessageFlags.Success)
+          case MessageType.RegisterClient:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
               //_irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
               _registered = true;
 
               IrssLog.Info("Registered to IR Server");
             }
-            else if ((received.Flags & PipeMessageFlags.Failure) == PipeMessageFlags.Failure)
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
               IrssLog.Warn("IR Server refused to register");
             }
             break;
 
-          case PipeMessageType.RemoteEvent:
+          case MessageType.RemoteEvent:
             RemoteHandlerCallback(received.DataAsString);
             break;
 
-          case PipeMessageType.ServerShutdown:
+          case MessageType.ServerShutdown:
             IrssLog.Warn("IR Server Shutdown - Tray Launcher disabled until IR Server returns");
             _registered = false;
             break;
 
-          case PipeMessageType.Echo:
+          case MessageType.Echo:
             _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             break;
 
-          case PipeMessageType.Error:
+          case MessageType.Error:
             IrssLog.Error("Received error: {0}", received.DataAsString);
             break;
         }
 
         // If another module of the program has registered to receive messages too ...
         if (_handleMessage != null)
-          _handleMessage(message);
+          _handleMessage(received);
       }
       catch (Exception ex)
       {

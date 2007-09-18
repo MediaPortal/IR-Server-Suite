@@ -10,7 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using NamedPipes;
+using IrssComms;
 using IrssUtils;
 
 namespace VirtualRemote
@@ -188,8 +188,8 @@ namespace VirtualRemote
       if (!Program.Registered)
         return;
 
-      PipeMessage message = new PipeMessage(Environment.MachineName, Program.LocalPipeName, PipeMessageType.ForwardRemoteEvent, PipeMessageFlags.Notify, keyCode);
-      PipeAccess.SendMessage(Common.ServerPipeName, Program.ServerHost, message);
+      IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, keyCode);
+      Program.SendMessage(message);
     }
 
     void SetLabel()
@@ -216,13 +216,13 @@ namespace VirtualRemote
 
     private void changeServerHostToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      Program.StopComms();
+      Program.StopClient();
 
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Program.ServerHost);
       serverAddress.ShowDialog(this);
       Program.ServerHost = serverAddress.ServerHost;
 
-      Program.StartComms();
+      Program.StartClient();
     }
 
     private void toolStripMenuItemHelp_Click(object sender, EventArgs e)

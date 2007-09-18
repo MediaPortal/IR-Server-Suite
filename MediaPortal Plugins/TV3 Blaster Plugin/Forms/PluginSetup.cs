@@ -49,7 +49,7 @@ namespace SetupTv.Sections
         buttonHostSetup_Click(null, null);
       }
 
-      if (!TV3BlasterPlugin.StartComms())
+      if (!TV3BlasterPlugin.StartClient())
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "TV3 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       TV3BlasterPlugin.LoadExternalConfigs();
@@ -78,7 +78,7 @@ namespace SetupTv.Sections
 
       //TV3BlasterPlugin.LoadExternalConfigs();
 
-      TV3BlasterPlugin.StopComms();
+      TV3BlasterPlugin.StopClient();
 
       TV3BlasterPlugin.InConfiguration = false;
 
@@ -245,13 +245,13 @@ namespace SetupTv.Sections
 
     private void buttonHostSetup_Click(object sender, EventArgs e)
     {
-      TV3BlasterPlugin.StopComms();
+      TV3BlasterPlugin.StopClient();
 
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(TV3BlasterPlugin.ServerHost);
       serverAddress.ShowDialog();
       TV3BlasterPlugin.ServerHost = serverAddress.ServerHost;
 
-      TV3BlasterPlugin.StartComms();
+      TV3BlasterPlugin.StartClient();
     }
 
     private void buttonHelp_Click(object sender, EventArgs e)

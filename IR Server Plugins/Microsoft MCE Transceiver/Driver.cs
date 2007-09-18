@@ -191,7 +191,7 @@ namespace MicrosoftMceTransceiver
     protected Driver(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
     {
       if (String.IsNullOrEmpty(devicePath))
-        throw new ArgumentException("Null or Empty device path supplied", "devicePath");
+        throw new ArgumentNullException("devicePath");
 
       _deviceGuid = deviceGuid;
       _devicePath = devicePath;

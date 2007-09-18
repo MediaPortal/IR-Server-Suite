@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-using NamedPipes;
+using IrssComms;
 using IrssUtils;
 
 namespace TrayLauncher
@@ -35,7 +35,7 @@ namespace TrayLauncher
     {
       timer.Stop();
 
-      Tray.HandleMessage -= new Common.MessageHandler(MessageReceiver);
+      Tray.HandleMessage -= new ClientMessageSink(MessageReceiver);
 
       this.Close();
     }
@@ -51,16 +51,14 @@ namespace TrayLauncher
 
       _keyCodeSet = new DelegateKeyCodeSet(KeyCodeSet);
 
-      Tray.HandleMessage += new Common.MessageHandler(MessageReceiver);
+      Tray.HandleMessage += new ClientMessageSink(MessageReceiver);
 
       timer.Start();
     }
     
-    void MessageReceiver(string message)
+    void MessageReceiver(IrssMessage received)
     {
-      PipeMessage received = PipeMessage.FromString(message);
-
-      if (received.Type == PipeMessageType.RemoteEvent)
+      if (received.Type == MessageType.RemoteEvent)
       {
         _keyCode = received.DataAsString;
 

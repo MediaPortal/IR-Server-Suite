@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -8,6 +9,9 @@ using System.Threading;
 namespace IrssComms
 {
 
+  /// <summary>
+  /// Manages Server socket connections.
+  /// </summary>
   public class ClientManager
   {
 
@@ -54,39 +58,58 @@ namespace IrssComms
 
       _processReceiveThread = false;
 
-      _receiveThread.Abort();
-      _receiveThread.Join();
+      _connection.Close();
+
+      //_receiveThread.Abort();
+      //_receiveThread.Join();
       _receiveThread = null;
     }
 
-    internal void Send(Message message)
+    internal void Send(IrssMessage message)
     {
       byte[] data = message.ToBytes();
 
+      int dataLength = IPAddress.HostToNetworkOrder(data.Length);
+
+      byte[] dataLengthBytes = BitConverter.GetBytes(dataLength);
+
+      // Send packet size ...
+      _connection.Send(dataLengthBytes);
+
+      // Send packet ...
       _connection.Send(data);
     }
     
     void ReceiveThread()
     {
-      byte[] buffer = new byte[8192];
-
       try
       {
+        byte[] buffer = new byte[4];
+        int bytesRead;
+
         while (_processReceiveThread)
         {
-          int bytesRead = _connection.Receive(buffer);
+          bytesRead = _connection.Receive(buffer, 4, SocketFlags.None);
+          if (bytesRead == 0)
+            break; // TODO: Inform server to remove clientmanager from list? (Low)
 
-          byte[] packet = new byte[bytesRead];
-          Array.Copy(buffer, 0, packet, 0, bytesRead);
+          int readSize = BitConverter.ToInt32(buffer, 0);
+          readSize = IPAddress.NetworkToHostOrder(readSize);
 
-          Message message = Message.FromBytes(packet);
+          byte[] packet = new byte[readSize];
 
-          _messageSink(message, this);
+          bytesRead = _connection.Receive(packet, readSize, SocketFlags.None);
+          if (bytesRead == 0)
+            break;
+
+          IrssMessage message = IrssMessage.FromBytes(packet);
+          MessageManagerCombo combo = new MessageManagerCombo(message, this);
+          _messageSink(combo);
         }
       }
-      catch (SocketException)
+      catch (SocketException socketException)
       {
-
+        Trace.WriteLine(socketException.ToString());
       }
     }
 

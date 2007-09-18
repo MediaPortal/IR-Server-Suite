@@ -6,7 +6,7 @@ using System.Text;
 
 namespace IrssUtils
 {
-  
+
   /// <summary>
   /// Win32 native method class.
   /// </summary>
@@ -371,17 +371,23 @@ namespace IrssUtils
     #region Interop
 
     [DllImport("user32.dll")]
-    public static extern int EnumWindows(EnumWindowsProc ewp, int lParam); 
+    public static extern int EnumWindows(
+      EnumWindowsProc ewp,
+      int lParam); 
 
     [DllImport("user32.dll")]
     public static extern IntPtr GetForegroundWindow();
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool ExitWindowsEx(ExitWindows uFlags, ShutdownReasons dwReason);
+    public static extern bool ExitWindowsEx(
+      ExitWindows flags,
+      ShutdownReasons reasons);
 
     [DllImport("user32.dll", SetLastError = true)]
-    public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+    public static extern IntPtr FindWindow(
+      string className,
+      string windowName);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     public static extern IntPtr SendMessageTimeout(
@@ -417,7 +423,11 @@ namespace IrssUtils
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool AttachThreadInput(int nThreadId, int nThreadIdTo, bool bAttach);
+    private static extern bool AttachThreadInput(
+      int threadId,
+      int threadIdTo,
+      [MarshalAs(UnmanagedType.Bool)]
+      bool attach);
 
     //[DllImport("user32.dll")]
     //[return: MarshalAs(UnmanagedType.Bool)]
@@ -431,10 +441,15 @@ namespace IrssUtils
     private static extern int GetWindowTextLength(IntPtr hWnd);
 
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+    private static extern int GetWindowText(
+      IntPtr hWnd,
+      StringBuilder lpString,
+      int maxCount);
 
     [DllImport("user32.dll", SetLastError = true)]
-    private static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+    private static extern int GetWindowThreadProcessId(
+      IntPtr hWnd,
+      out int processId);
 
     [DllImport("kernel32.dll")]
     private static extern int GetCurrentThreadId();
@@ -443,15 +458,15 @@ namespace IrssUtils
 
     [DllImport("netapi32.dll", CharSet = CharSet.Auto, SetLastError = true), SuppressUnmanagedCodeSecurityAttribute]
     static extern int NetServerEnum(
-      string ServerNane, // must be null
-      int dwLevel,
-      ref IntPtr pBuf,
-      int dwPrefMaxLen,
-      out int dwEntriesRead,
-      out int dwTotalEntries,
-      int dwServerType,
-      string domain, // null for login domain
-      out int dwResumeHandle
+      string ServerName, // must be null
+      int Level,
+      ref IntPtr Buf,
+      int PrefMaxLen,
+      out int EntriesRead,
+      out int TotalEntries,
+      int ServerType,
+      string Domain, // null for login domain
+      out int ResumeHandle
     );
 
     [DllImport("netapi32.dll", SetLastError = true), SuppressUnmanagedCodeSecurityAttribute]

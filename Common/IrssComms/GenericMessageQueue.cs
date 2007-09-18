@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
-namespace NamedPipes
+namespace IrssComms
 {
 
   #region Delegates
@@ -10,28 +12,26 @@ namespace NamedPipes
   /// <summary>
   /// Delegate for MessageQueue sink.
   /// </summary>
-  /// <param name="message">Message to process.</param>
-  public delegate void MessageQueueSink(string message);
+  /// <param name="obj">Generic object to process.</param>
+  public delegate void GenericMessageQueueSink<T>(T obj);
 
   #endregion Delegates
 
   /// <summary>
   /// Implements a thread-safe Producer/Consumer Queue for messages.
   /// </summary>
-  public class MessageQueue : IDisposable
+  public class GenericMessageQueue<T> : IDisposable
   {
 
     #region Variables
 
-    //bool disposed = false;
-
     Thread _workerThread;
-    Queue<string> _queue;
+    Queue<T> _queue;
     object _queueLock;
     EventWaitHandle _queueWaitHandle;
     volatile bool _processQueue;
 
-    MessageQueueSink _messageSink;
+    GenericMessageQueueSink<T> _messageSink;
 
     #endregion Variables
 
@@ -41,7 +41,7 @@ namespace NamedPipes
     /// Create a new MessageQueue.
     /// </summary>
     /// <param name="sink">Where to send dequeued messages.</param>
-    public MessageQueue(MessageQueueSink sink)
+    public GenericMessageQueue(GenericMessageQueueSink<T> sink)
     {
       if (sink == null)
         throw new ArgumentNullException("sink");
@@ -53,32 +53,42 @@ namespace NamedPipes
       _queueWaitHandle = new AutoResetEvent(false);
 
       // Create FIFO message queue
-      _queue = new Queue<string>();
+      _queue = new Queue<T>();
     }
 
     #endregion Constructor
 
-    #region IDisposable Members
+    #region IDisposable
 
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
     public void Dispose()
     {
-      if (_processQueue)
-        Stop();
-
-      _workerThread = null;
-
-      _queue.Clear();
-      _queue = null;
-
-      _queueLock = null;
-
-      _queueWaitHandle.Close();
+      Dispose(true);
+      GC.SuppressFinalize(this);
     }
 
-    #endregion IDisposable Members
+    protected virtual void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        // Dispose managed resources ...
+        if (_processQueue)
+          Stop();
+
+        _workerThread = null;
+
+        _queue.Clear();
+        _queue = null;
+
+        _queueLock = null;
+
+        _queueWaitHandle.Close();
+      }
+
+      // Free native resources ...
+
+    }
+
+    #endregion IDisposable
 
     #region Implementation
 
@@ -113,7 +123,7 @@ namespace NamedPipes
       _queueWaitHandle.Set();
 
       // Join the worker thread and wait for it to finish ...
-      if (_workerThread.IsAlive && !_workerThread.Join(1000))
+      if (_workerThread != null && _workerThread.IsAlive && !_workerThread.Join(1000))
       {
         _workerThread.Abort();
         _workerThread.Join();
@@ -123,16 +133,16 @@ namespace NamedPipes
     }
     
     /// <summary>
-    /// Add a message to the queue.
+    /// Add a generic object to the queue.
     /// </summary>
-    /// <param name="message">Message to place in the queue.</param>
-    public void Enqueue(string message)
+    /// <param name="obj">Generic object to place in the queue.</param>
+    public void Enqueue(T obj)
     {
-      if (String.IsNullOrEmpty(message))
-        return;
+      if (obj == null)
+        throw new ArgumentNullException("obj");
 
       lock (_queueLock)
-        _queue.Enqueue(message);
+        _queue.Enqueue(obj);
 
       _queueWaitHandle.Set();
     }
@@ -155,27 +165,31 @@ namespace NamedPipes
     {
       try
       {
-        string message;
+        T obj = default(T);
+        bool didDequeue;
 
         while (_processQueue)
         {
-          message = null;
+          didDequeue = false;
 
           lock (_queueLock)
           {
             if (_queue.Count > 0)
-              message = _queue.Dequeue();
+            {
+              obj = _queue.Dequeue();
+              didDequeue = true;
+            }
           }
 
-          if (String.IsNullOrEmpty(message))
-            _queueWaitHandle.WaitOne();
+          if (didDequeue)
+            _messageSink(obj);
           else
-            _messageSink(message);
+            _queueWaitHandle.WaitOne();
         }
       }
-      catch (ThreadAbortException)
+      catch (ThreadAbortException threadAbortException)
       {
-
+        Trace.WriteLine(threadAbortException.ToString());
       }
     }
 

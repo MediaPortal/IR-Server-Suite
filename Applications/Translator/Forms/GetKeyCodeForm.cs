@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-using NamedPipes;
+using IrssComms;
 using IrssUtils;
 
 namespace Translator
@@ -52,16 +52,14 @@ namespace Translator
 
       _keyCodeSet = new DelegateKeyCodeSet(KeyCodeSet);
 
-      Program.HandleMessage += new Common.MessageHandler(MessageReceiver);
+      Program.HandleMessage += new ClientMessageSink(MessageReceiver);
 
       timer.Start();
     }
 
-    void MessageReceiver(string message)
+    void MessageReceiver(IrssMessage received)
     {
-      PipeMessage received = PipeMessage.FromString(message);
-
-      if (received.Type == PipeMessageType.RemoteEvent)
+      if (received.Type == MessageType.RemoteEvent)
       {
         _keyCode = received.DataAsString;
 
@@ -73,7 +71,7 @@ namespace Translator
     {
       timer.Stop();
 
-      Program.HandleMessage -= new Common.MessageHandler(MessageReceiver);
+      Program.HandleMessage -= new ClientMessageSink(MessageReceiver);
 
       this.Close();
     }

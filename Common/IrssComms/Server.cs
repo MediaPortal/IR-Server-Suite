@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,16 +14,15 @@ namespace IrssComms
   /// <summary>
   /// Message handling delegate for server.
   /// </summary>
-  /// <param name="message"></param>
-  /// <param name="from"></param>
-  public delegate void ServerMessageSink(Message message, ClientManager from);
+  /// <param name="combo">Combination of Message and ClientManager objects.</param>
+  public delegate void ServerMessageSink(MessageManagerCombo combo);
 
   #endregion Delegates
 
   /// <summary>
   /// TCP communications server class.
   /// </summary>
-  public class Server
+  public class Server : IDisposable
   {
 
     #region Constants
@@ -41,10 +41,12 @@ namespace IrssComms
 
     Socket _serverSocket;
 
-    bool _processConnectThread = false;
-    Thread _connectThread;
+    bool _processConnectionThread = false;
+    Thread _connectionThread;
 
     List<ClientManager> _clientManagers;
+
+    GenericMessageQueue<MessageManagerCombo> _messageQueue;
 
     #endregion Variables
 
@@ -60,9 +62,34 @@ namespace IrssComms
       _localEndPoint = new IPEndPoint(IPAddress.Any, port);
 
       _messageSink = messageSink;
+
+      _messageQueue = new GenericMessageQueue<MessageManagerCombo>(new GenericMessageQueueSink<MessageManagerCombo>(QueueMessageSink));
     }
 
     #endregion Constructor
+    
+    #region IDisposable
+
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        // Dispose managed resources ...
+        if (_processConnectionThread)
+          Stop();
+      }
+
+      // Free native resources ...
+
+    }
+
+    #endregion IDisposable
 
     #region Implementation
 
@@ -72,21 +99,55 @@ namespace IrssComms
     /// <returns>Success.</returns>
     public bool Start()
     {
-      if (_processConnectThread)
+      if (_processConnectionThread)
         return false;
 
-      _processConnectThread = true;
+      _processConnectionThread = true;
 
-      _clientManagers = new List<ClientManager>();
+      try
+      {
+        _messageQueue.ClearQueue();
+        _messageQueue.Start();
+      }
+      catch
+      {
+        _processConnectionThread = false;
 
-      _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-      _serverSocket.Bind(_localEndPoint);
-      _serverSocket.Listen(SocketBacklog);
+        throw;
+      }
 
-      _connectThread = new Thread(new ThreadStart(ConnectionThread));
-      _connectThread.Name = "IrssComms.Server";
-      _connectThread.IsBackground = true;
-      _connectThread.Start();
+      try
+      {
+        _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        _serverSocket.Bind(_localEndPoint);
+        _serverSocket.Listen(SocketBacklog);
+      }
+      catch
+      {
+        _processConnectionThread = false;
+        _serverSocket = null;
+
+        throw;
+      }
+
+      try
+      {
+        _clientManagers = new List<ClientManager>();
+
+        _connectionThread = new Thread(new ThreadStart(ConnectionThread));
+        _connectionThread.Name = "IrssComms.Server.ConnectionThread";
+        _connectionThread.IsBackground = true;
+        _connectionThread.Start();
+      }
+      catch
+      {
+        _processConnectionThread = false;
+        _serverSocket = null;
+        _clientManagers = null;
+        _connectionThread = null;
+
+        throw;
+      }
 
       return true;
     }
@@ -96,10 +157,12 @@ namespace IrssComms
     /// </summary>
     public void Stop()
     {
-      if (!_processConnectThread)
+      if (!_processConnectionThread)
         return;
 
-      _processConnectThread = false;
+      _messageQueue.Stop();
+
+      _processConnectionThread = false;
 
       _serverSocket.Close();
       _serverSocket = null;
@@ -113,9 +176,9 @@ namespace IrssComms
         _clientManagers = null;
       }
 
-      _connectThread.Abort();
-      _connectThread.Join();
-      _connectThread = null;
+      //_connectThread.Abort();
+      //_connectThread.Join();
+      _connectionThread = null;
     }
 
     /// <summary>
@@ -124,7 +187,7 @@ namespace IrssComms
     /// <param name="sendTo">Client to send to.</param>
     /// <param name="message">Message to send.</param>
     /// <returns>Success.</returns>
-    public bool Send(ClientManager sendTo, Message message)
+    public bool Send(ClientManager sendTo, IrssMessage message)
     {
       if (!_clientManagers.Contains(sendTo))
         return false;
@@ -141,15 +204,27 @@ namespace IrssComms
       }
     }
 
+    void ClientManagerMessageSink(MessageManagerCombo combo)
+    {
+      _messageQueue.Enqueue(combo);
+    }
+
+    void QueueMessageSink(MessageManagerCombo combo)
+    {
+      _messageSink(combo);
+    }
+
     void ConnectionThread()
     {
       try
       {
-        while (_processConnectThread)
+        ServerMessageSink clientManagerMessageSink = new ServerMessageSink(ClientManagerMessageSink);
+
+        while (_processConnectionThread)
         {
           Socket socket = _serverSocket.Accept();
 
-          ClientManager manager = new ClientManager(socket, _messageSink);
+          ClientManager manager = new ClientManager(socket, clientManagerMessageSink);
 
           lock (_clientManagers)
             _clientManagers.Add(manager);
@@ -157,9 +232,9 @@ namespace IrssComms
           manager.Start();          
         }
       }
-      catch (SocketException)
+      catch (SocketException socketException)
       {
-
+        Trace.Write(socketException.ToString());
       }
     }
 

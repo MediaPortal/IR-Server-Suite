@@ -101,7 +101,6 @@
     <Compile Include="Advanced.Designer.cs">
       <DependentUpon>Advanced.cs</DependentUpon>
     </Compile>
-    <Compile Include="Client.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -145,13 +144,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">
+      <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
+      <Name>IrssComms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\irssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IPC\Named Pipes\Named Pipes.csproj">
-      <Project>{F4EA6055-7133-4F18-8971-E19ADEB482C1}</Project>
-      <Name>Named Pipes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\IR Server Plugins\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
       <Project>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</Project>

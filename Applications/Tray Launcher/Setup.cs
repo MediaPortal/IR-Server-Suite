@@ -8,7 +8,7 @@ using System.Security;
 using System.Text;
 using System.Windows.Forms;
 
-using NamedPipes;
+using IrssComms;
 
 namespace TrayLauncher
 {
@@ -94,7 +94,7 @@ namespace TrayLauncher
     }
     private void buttonRemoteButton_Click(object sender, EventArgs e)
     {
-      if (!PipeAccess.ServerRunning)
+      if (!Tray.Registered)
       {
         MessageBox.Show(this, "Cannot learn a new launch button without being connected to an active IR Server", "Can't learn button", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         return;
