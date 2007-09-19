@@ -49,6 +49,7 @@ namespace InputService
     /// <summary>
     /// Used to set the "Allow service to interact with the desktop" setting.
     /// </summary>
+    /*
     void InputServiceInstaller_Committing(object sender, InstallEventArgs e)
     {
       ManagementBaseObject InParam  = null;
@@ -71,9 +72,9 @@ namespace InputService
           OutParam = wmiService.InvokeMethod("Change", InParam, null);
         }
       }
-      catch (Exception ex)
+      catch
       {
-        Trace.WriteLine(ex.ToString());
+        throw;
       }
       finally
       {
@@ -84,7 +85,7 @@ namespace InputService
           OutParam.Dispose();
       }
     }
-
+    */
   }
 
 }

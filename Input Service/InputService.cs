@@ -96,14 +96,28 @@ namespace InputService
 
     #endregion Constructor
 
-    #region Dispose
+    #region IDisposable
 
     protected override void Dispose(bool disposing)
     {
-      base.Dispose(disposing);
+      try
+      {
+        if (disposing)
+        {
+          if (_server != null)
+            _server.Dispose();
+
+          if (_client != null)
+            _client.Dispose();
+        }
+      }
+      finally
+      {
+        base.Dispose(disposing);
+      }
     }
 
-    #endregion Dispose
+    #endregion IDisposable
 
     #region Service Methods
 
