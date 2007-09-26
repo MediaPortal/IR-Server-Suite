@@ -20,7 +20,7 @@ using IrssUtils;
 namespace DebugClient
 {
 
-  public partial class MainForm : Form
+  partial class MainForm : Form
   {
 
     #region Enumerations
@@ -107,11 +107,10 @@ namespace DebugClient
 
     Client _client = null;
 
-    string _serverHost      = Environment.MachineName;
+    string _serverHost      = "localhost";
     string _learnIRFilename = null;
 
     bool _registered = false;
-    int _echoID = -1;
 
     IRServerInfo _irServerInfo = new IRServerInfo();
 
@@ -143,12 +142,14 @@ namespace DebugClient
       comboBoxPort.Items.Add("None");
       comboBoxPort.SelectedIndex = 0;
 
+      comboBoxComputer.Items.Clear();
+      comboBoxComputer.Items.Add("localhost");
+
       ArrayList networkPCs = IrssUtils.Win32.GetNetworkComputers();
       if (networkPCs != null)
-      {
         comboBoxComputer.Items.AddRange(networkPCs.ToArray());
-        comboBoxComputer.Text = _serverHost;
-      }
+
+      comboBoxComputer.Text = _serverHost;
     }
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
@@ -192,9 +193,8 @@ namespace DebugClient
             {
               byte[] dataBytes = received.DataAsBytes;
 
-              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
-              file.Write(dataBytes, 0, dataBytes.Length);
-              file.Close();
+              using (FileStream file = File.Create(_learnIRFilename))
+                file.Write(dataBytes, 0, dataBytes.Length);
             }
 
             _learnIRFilename = null;
@@ -202,10 +202,6 @@ namespace DebugClient
 
           case MessageType.ServerShutdown:
             _registered = false;
-            return;
-
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             return;
 
           case MessageType.Error:
@@ -247,21 +243,21 @@ namespace DebugClient
     {
       try
       {
-        if (!File.Exists(fileName))
-          return false;
+        using (FileStream file = File.OpenRead(fileName))
+        {
+          if (file.Length == 0)
+            throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
-        FileStream file = new FileStream(fileName, FileMode.Open);
+          byte[] outData = new byte[4 + port.Length + file.Length];
 
-        byte[] outData = new byte[4 + port.Length + file.Length];
+          BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+          Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-        BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
-        Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+          file.Read(outData, 4 + port.Length, (int)file.Length);
 
-        file.Read(outData, 4 + port.Length, (int)file.Length);
-        file.Close();
-
-        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
-        _client.Send(message);
+          IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+          _client.Send(message);
+        }
       }
       catch (Exception ex)
       {
@@ -303,16 +299,14 @@ namespace DebugClient
       Thread.Sleep(1000);
     }
 
-    bool StartClient()
+    bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -332,7 +326,7 @@ namespace DebugClient
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
@@ -353,7 +347,10 @@ namespace DebugClient
 
         _serverHost = comboBoxComputer.Text;
 
-        StartClient();
+        IPAddress serverIP = Client.GetIPFromName(_serverHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+        StartClient(endPoint);
       }
       catch (Exception ex)
       {
@@ -458,32 +455,6 @@ namespace DebugClient
       try
       {
         IrssMessage message = new IrssMessage(MessageType.ServerShutdown, MessageFlags.Request);
-        _client.Send(message);
-      }
-      catch (Exception ex)
-      {
-        AddStatusLine(ex.Message);
-      }
-    }
-    private void buttonPing_Click(object sender, EventArgs e)
-    {
-      AddStatusLine("Ping Server");
-
-      if (_client == null)
-      {
-        AddStatusLine(" - Not connected");
-        return;
-      }
-
-      if (!_client.Connected)
-      {
-        AddStatusLine(" - Connecting...");
-        return;
-      }
-
-      try
-      {
-        IrssMessage message = new IrssMessage(MessageType.Ping, MessageFlags.Request, BitConverter.GetBytes(24));
         _client.Send(message);
       }
       catch (Exception ex)

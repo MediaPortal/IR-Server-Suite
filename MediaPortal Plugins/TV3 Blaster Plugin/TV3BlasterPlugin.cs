@@ -46,7 +46,6 @@ namespace TvEngine
     static string _learnIRFilename = null;
 
     static bool _registered = false;
-    static int _echoID = -1;
 
     static bool _logVerbose;
 
@@ -86,16 +85,15 @@ namespace TvEngine
       get { return _registered; }
     }
 
-    internal static bool LogVerbose
-    {
-      get { return _logVerbose; }
-      set { _logVerbose = value; }
-    }
-
     internal static string ServerHost
     {
       get { return _serverHost; }
       set { _serverHost = value; }
+    }
+    internal static bool LogVerbose
+    {
+      get { return _logVerbose; }
+      set { _logVerbose = value; }
     }
 
     internal static ClientMessageSink HandleMessage
@@ -122,7 +120,7 @@ namespace TvEngine
     [CLSCompliant(false)]
     public void Start(IController controller)
     {
-      Log.Info("TV3BlasterPlugin: Version {0}", PluginVersion);
+      Log.Info("TV3BlasterPlugin: Starting ({0})", PluginVersion);
 
       InConfiguration = false;
 
@@ -136,13 +134,15 @@ namespace TvEngine
       _eventHandler = new TvServerEventHandler(events_OnTvServerEvent);
       events.OnTvServerEvent += _eventHandler;
 
-      if (!StartClient())
+      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      if (!StartClient(endPoint))
         Log.Error("TV3BlasterPlugin: Failed to start local comms, IR blasting is disabled for this session");
 
       if (LogVerbose)
         Log.Info("TV3BlasterPlugin: Started");
     }
-
     public void Stop()
     {
       ITvServerEvent events = GlobalServiceProvider.Instance.Get<ITvServerEvent>();
@@ -180,7 +180,10 @@ namespace TvEngine
 
       Log.Info("TV3BlasterPlugin: Attempting communications restart ...");
 
-      StartClient();
+      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      StartClient(endPoint);
     }
     static void Connected(object obj)
     {
@@ -196,16 +199,14 @@ namespace TvEngine
       Thread.Sleep(1000);
     }
 
-    internal static bool StartClient()
+    internal static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -225,7 +226,7 @@ namespace TvEngine
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
@@ -274,9 +275,8 @@ namespace TvEngine
 
               byte[] dataBytes = received.DataAsBytes;
 
-              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
-              file.Write(dataBytes, 0, dataBytes.Length);
-              file.Close();
+              using (FileStream file = File.Create(_learnIRFilename))
+                file.Write(dataBytes, 0, dataBytes.Length);
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -295,10 +295,6 @@ namespace TvEngine
             _registered = false;
             break;
 
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
-            break;
-
           case MessageType.Error:
             _learnIRFilename = null;
             Log.Error("TV3BlasterPlugin: Received error: {0}", received.DataAsString);
@@ -314,6 +310,11 @@ namespace TvEngine
       }
     }
 
+    /// <summary>
+    /// events_OnTvServerEvent is used to receive requests to Tune External Channels.
+    /// </summary>
+    /// <param name="sender">Sender.</param>
+    /// <param name="eventArgs">Event arguments.</param>
     void events_OnTvServerEvent(object sender, EventArgs eventArgs)
     {
       TvServerEventArgs tvEvent = (TvServerEventArgs)eventArgs;
@@ -329,6 +330,54 @@ namespace TvEngine
 
         ProcessExternalChannel(analogChannel.ChannelNumber.ToString(), tvEvent.Card.Id);
       }
+    }
+
+    /// <summary>
+    /// Load external channel configurations.
+    /// </summary>
+    internal static void LoadExternalConfigs()
+    {
+      IList cards = TvDatabase.Card.ListAll();
+
+      if (cards.Count == 0)
+        return;
+
+      _externalChannelConfigs = new ExternalChannelConfig[cards.Count];
+
+      int index = 0;
+      string fileName;
+      foreach (TvDatabase.Card card in cards)
+      {
+        fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, card.IdCard);
+        try
+        {
+          _externalChannelConfigs[index] = ExternalChannelConfig.Load(fileName);
+        }
+        catch (Exception ex)
+        {
+          _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
+          Log.Error(ex.ToString());
+        }
+        _externalChannelConfigs[index].CardId = card.IdCard;
+        index++;
+      }
+    }
+
+    /// <summary>
+    /// Given a card ID returns the configuration for that card.
+    /// </summary>
+    /// <param name="cardId">ID of card to retreive configuration for.</param>
+    /// <returns>Card configuration, null if it doesn't exist.</returns>
+    internal static ExternalChannelConfig GetExternalChannelConfig(int cardId)
+    {
+      if (_externalChannelConfigs == null)
+        return null;
+
+      foreach (ExternalChannelConfig config in _externalChannelConfigs)
+        if (config.CardId == cardId)
+          return config;
+
+      return null;
     }
 
     static void ProcessExternalChannel(string externalChannel, int cardId)
@@ -457,54 +506,6 @@ namespace TvEngine
     }
 
     /// <summary>
-    /// Load external channel configurations.
-    /// </summary>
-    internal static void LoadExternalConfigs()
-    {
-      IList cards = TvDatabase.Card.ListAll();
-
-      if (cards.Count == 0)
-        return;
-
-      _externalChannelConfigs = new ExternalChannelConfig[cards.Count];
-
-      int index = 0;
-      string fileName;
-      foreach (TvDatabase.Card card in cards)
-      {
-        fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, card.IdCard);
-        try
-        {
-          _externalChannelConfigs[index] = ExternalChannelConfig.Load(fileName);
-        }
-        catch (Exception ex)
-        {
-          _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
-          Log.Error(ex.ToString());
-        }
-        _externalChannelConfigs[index].CardId = card.IdCard;
-        index++;
-      }
-    }
-
-    /// <summary>
-    /// Given a card ID returns the configuration for that card.
-    /// </summary>
-    /// <param name="cardId">ID of card to retreive configuration for.</param>
-    /// <returns>Card configuration, null if it doesn't exist.</returns>
-    internal static ExternalChannelConfig GetExternalChannelConfig(int cardId)
-    {
-      if (_externalChannelConfigs == null)
-        return null;
-
-      foreach (ExternalChannelConfig config in _externalChannelConfigs)
-        if (config.CardId == cardId)
-          return config;
-
-      return null;
-    }
-
-    /// <summary>
     /// Process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
@@ -581,20 +582,21 @@ namespace TvEngine
       if (!_registered)
         throw new Exception("Cannot Blast, not registered to an active IR Server");
 
-      FileStream file = new FileStream(fileName, FileMode.Open);
-      if (file.Length == 0)
-        throw new Exception(String.Format("Cannot Blast, IR file \"{0}\" has no data, possible IR learn failure", fileName));
+      using (FileStream file = File.OpenRead(fileName))
+      {
+        if (file.Length == 0)
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
-      byte[] outData = new byte[4 + port.Length + file.Length];
+        byte[] outData = new byte[4 + port.Length + file.Length];
 
-      BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
-      Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+        BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+        Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-      file.Read(outData, 4 + port.Length, (int)file.Length);
-      file.Close();
+        file.Read(outData, 4 + port.Length, (int)file.Length);
 
-      IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
-      _client.Send(message);
+        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+        _client.Send(message);
+      }
     }
 
     /// <summary>
@@ -619,7 +621,7 @@ namespace TvEngine
       else if (command.StartsWith(Common.CmdPrefixSTB))  // STB IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
-        BlastIR(Common.FolderSTB + commands[0], commands[1]);
+        BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
       }
       else if (command.StartsWith(Common.CmdPrefixRun)) // External Program
       {

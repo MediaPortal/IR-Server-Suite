@@ -61,7 +61,6 @@ namespace MediaPortal.Plugins
     static string _learnIRFilename = null;
 
     static bool _registered = false;
-    static int _echoID = -1;
 
     static bool _logVerbose;
 
@@ -195,7 +194,10 @@ namespace MediaPortal.Plugins
 
       Log.Info("MPBlastZonePlugin: Starting ({0})", PluginVersion);
 
-      if (!StartClient())
+      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      if (!StartClient(endPoint))
         Log.Error("MPBlastZonePlugin: Failed to start local comms, IR blasting is disabled for this session");
 
       if (Load(GUIGraphicsContext.Skin + "\\BlastZone.xml"))
@@ -336,7 +338,10 @@ namespace MediaPortal.Plugins
 
       Log.Warn("MPBlastZonePlugin: Attempting communications restart ...");
 
-      StartClient();
+      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      StartClient(endPoint);
     }
     static void Connected(object obj)
     {
@@ -352,16 +357,14 @@ namespace MediaPortal.Plugins
       Thread.Sleep(1000);
     }
 
-    internal static bool StartClient()
+    internal static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -381,7 +384,7 @@ namespace MediaPortal.Plugins
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
@@ -430,9 +433,8 @@ namespace MediaPortal.Plugins
 
               byte[] dataBytes = received.DataAsBytes;
 
-              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
-              file.Write(dataBytes, 0, dataBytes.Length);
-              file.Close();
+              using (FileStream file = File.Create(_learnIRFilename))
+                file.Write(dataBytes, 0, dataBytes.Length);
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -449,10 +451,6 @@ namespace MediaPortal.Plugins
           case MessageType.ServerShutdown:
             Log.Warn("MPBlastZonePlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
             _registered = false;
-            break;
-
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             break;
 
           case MessageType.Error:
@@ -692,20 +690,21 @@ namespace MediaPortal.Plugins
       if (!_registered)
         throw new Exception("Cannot Blast, not registered to an active IR Server");
 
-      FileStream file = new FileStream(fileName, FileMode.Open);
-      if (file.Length == 0)
-        throw new Exception(String.Format("Cannot Blast, IR file \"{0}\" has no data, possible IR learn failure", fileName));
+      using (FileStream file = File.OpenRead(fileName))
+      {
+        if (file.Length == 0)
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
-      byte[] outData = new byte[4 + port.Length + file.Length];
+        byte[] outData = new byte[4 + port.Length + file.Length];
 
-      BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
-      Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+        BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+        Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-      file.Read(outData, 4 + port.Length, (int)file.Length);
-      file.Close();
+        file.Read(outData, 4 + port.Length, (int)file.Length);
 
-      IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
-      _client.Send(message);
+        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+        _client.Send(message);
+      }
     }
 
     /// <summary>

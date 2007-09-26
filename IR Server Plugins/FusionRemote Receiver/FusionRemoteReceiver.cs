@@ -230,14 +230,20 @@ namespace FusionRemoteReceiver
     }
     public override void Stop()
     {
+      if (_deviceStream == null)
+        return;
+
       try
       {
-        _deviceStream.Close();
-        _deviceStream = null;
+        _deviceStream.Dispose();
       }
       catch (IOException)
       {
         // we are closing the stream so ignore this
+      }
+      finally
+      {
+        _deviceStream = null;
       }
     }
 
@@ -343,7 +349,7 @@ namespace FusionRemoteReceiver
         int bytesRead = _deviceStream.EndRead(asyncResult);
         if (bytesRead == 0)
         {
-          _deviceStream.Close();
+          _deviceStream.Dispose();
           _deviceStream = null;
           return;
         }

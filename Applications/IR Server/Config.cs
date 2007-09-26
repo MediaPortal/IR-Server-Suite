@@ -15,7 +15,7 @@ using IrssUtils;
 namespace IRServer
 {
 
-  public partial class Config : Form
+  partial class Config : Form
   {
 
     #region Variables
@@ -40,19 +40,24 @@ namespace IRServer
       set { _hostComputer = value; }
     }
 
-    public string PluginReceive
+    public string[] PluginReceive
     {
       get
       {
+        List<string> receivers = new List<string>();
+
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
           checkBox = gridPlugins[row, 1] as SourceGrid.Cells.CheckBox;
           if (checkBox != null && checkBox.Checked)
-            return gridPlugins[row, 0].DisplayText;
+            receivers.Add(gridPlugins[row, 0].DisplayText);
         }
 
-        return String.Empty;
+        if (receivers.Count == 0)
+          return null;
+        else
+          return receivers.ToArray();
       }
       set
       {
@@ -63,7 +68,9 @@ namespace IRServer
           if (checkBox == null)
             continue;
 
-          if (gridPlugins[row, 0].DisplayText.Equals(value, StringComparison.InvariantCultureIgnoreCase))
+          if (value == null)
+            checkBox.Checked = false;
+          else if (Array.IndexOf<string>(value, gridPlugins[row, 0].DisplayText) != -1)
             checkBox.Checked = true;
           else
             checkBox.Checked = false;
@@ -173,13 +180,13 @@ namespace IRServer
 
         gridPlugins[row, 0] = nameCell;
 
-        if (transceiver is IRemoteReceiver)
+        if (transceiver is IRemoteReceiver || transceiver is IMouseReceiver || transceiver is IKeyboardReceiver)
         {
           SourceGrid.Cells.CheckBox checkbox = new SourceGrid.Cells.CheckBox();
 
-          SourceGrid.Cells.Controllers.CustomEvents checkboxcontroller = new SourceGrid.Cells.Controllers.CustomEvents();
-          checkboxcontroller.ValueChanged += new EventHandler(ReceiveChanged);
-          checkbox.Controller.AddController(checkboxcontroller);
+          //SourceGrid.Cells.Controllers.CustomEvents checkboxcontroller = new SourceGrid.Cells.Controllers.CustomEvents();
+          //checkboxcontroller.ValueChanged += new EventHandler(ReceiveChanged);
+          //checkbox.Controller.AddController(checkboxcontroller);
 
           gridPlugins[row, 1] = checkbox;
         }
@@ -259,7 +266,7 @@ namespace IRServer
         if (transceiver.Name == plugin)
           (transceiver as IConfigure).Configure();
     }
-
+    /*
     private void ReceiveChanged(object sender, EventArgs e)
     {
       SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
@@ -277,6 +284,7 @@ namespace IRServer
           checkBox.Checked = false;
       }
     }
+    */
     private void TransmitChanged(object sender, EventArgs e)
     {
       SourceGrid.CellContext context = (SourceGrid.CellContext)sender;

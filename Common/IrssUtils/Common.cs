@@ -13,6 +13,24 @@ using System.Windows.Forms;
 namespace IrssUtils
 {
 
+  #region Delegates
+
+  /// <summary>
+  /// Provides a delegate to call to test a command.
+  /// </summary>
+  /// <param name="fileName">Full file path to the IR Command file.</param>
+  /// <param name="port">IR Blaster port to transmit on.</param>
+  public delegate void BlastIrDelegate(string fileName, string port);
+
+  /// <summary>
+  /// Provides a delegate to call to learn a new IR Command.
+  /// </summary>
+  /// <param name="fileName">Full file path to the IR Command file.</param>
+  /// <returns>Successfully started IR learn process.</returns>
+  public delegate bool LearnIrDelegate(string fileName);
+
+  #endregion Delegates
+
   /// <summary>
   /// Common code class.
   /// </summary>
@@ -325,17 +343,24 @@ namespace IrssUtils
       bool waitForResponse  = bool.Parse(commands[6]);
 
       SerialPort serialPort = new SerialPort(comPort, baudRate, parity, dataBits, stopBits);
-      
       serialPort.Open();
-      serialPort.Write(command);
 
-      if (waitForResponse)
+      try
       {
-        serialPort.ReadTimeout = 5000;
-        serialPort.ReadByte();
+        serialPort.Write(command);
+
+        if (waitForResponse)
+        {
+          serialPort.ReadTimeout = 5000;
+          serialPort.ReadByte();
+        }
+      }
+      finally
+      {
+        serialPort.Close();
       }
 
-      serialPort.Close();
+      serialPort.Dispose();
     }
 
     /// <summary>
@@ -409,18 +434,21 @@ namespace IrssUtils
     /// <param name="commands">An array of arguments for the method (the output of SplitTcpMessageCommand).</param>
     public static void ProcessTcpMessageCommand(string[] commands)
     {
-      TcpClient tcpClient = new TcpClient();
-      tcpClient.Connect(commands[0], int.Parse(commands[1]));
-      NetworkStream networkStream = tcpClient.GetStream();
-      
-      StreamWriter streamWriter = new StreamWriter(networkStream);
-      streamWriter.Write(ReplaceEscapeCodes(commands[2]));
-      streamWriter.Flush();
+      using (TcpClient tcpClient = new TcpClient())
+      {
+        tcpClient.Connect(commands[0], int.Parse(commands[1]));
 
-      Thread.Sleep(1000);
+        using (NetworkStream networkStream = tcpClient.GetStream())
+        {
+          using (StreamWriter streamWriter = new StreamWriter(networkStream))
+          {
+            streamWriter.Write(ReplaceEscapeCodes(commands[2]));
+            streamWriter.Flush();
 
-      streamWriter.Close();
-      tcpClient.Close();
+            Thread.Sleep(1000);
+          }
+        }
+      }
     }
 
     /// <summary>

@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace IRTransTransceiver
 {
 
-  public partial class Configure : Form
+  partial class Configure : Form
   {
 
     #region Properties

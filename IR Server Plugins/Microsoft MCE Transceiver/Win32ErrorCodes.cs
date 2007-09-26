@@ -3,7 +3,7 @@ using System;
 namespace MicrosoftMceTransceiver
 {
 
-  public static class Win32ErrorCodes
+  static class Win32ErrorCodes
   {
 
     /// <summary>

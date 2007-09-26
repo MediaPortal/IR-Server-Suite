@@ -61,6 +61,7 @@ namespace IRManReceiver
       _serialPort.DtrEnable       = true;
       _serialPort.RtsEnable       = true;
       _serialPort.ReadBufferSize  = DeviceBufferSize;
+      _serialPort.ReadTimeout     = 1000;
 
       _serialPort.Open();
       Thread.Sleep(100);
@@ -98,12 +99,16 @@ namespace IRManReceiver
 
       try
       {
-        if (_serialPort.IsOpen)
-          _serialPort.Close();
+        _serialPort.Dispose();
       }
-      catch { }
-
-      _serialPort = null;
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+      finally
+      {
+        _serialPort = null;
+      }
     }
 
     public RemoteHandler RemoteCallback
@@ -173,11 +178,7 @@ namespace IRManReceiver
         if (disposeManagedResources)
         {
           // dispose managed resources
-          if (_serialPort != null)
-          {
-            _serialPort.Dispose();
-            _serialPort = null;
-          }
+          Stop();
         }
 
         // dispose unmanaged resources
@@ -207,19 +208,20 @@ namespace IRManReceiver
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
-        writer.WriteAttributeString("SerialPortName", _serialPortName);
+          writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
+          writer.WriteAttributeString("SerialPortName", _serialPortName);
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {

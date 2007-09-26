@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -12,14 +13,21 @@ using System.Xml;
 using MediaPortal.GUI.Library;
 using MediaPortal.Util;
 
+using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 
 namespace MediaPortal.Plugins
 {
 
-  public partial class SetupForm : Form
+  partial class SetupForm : Form
   {
+
+    #region Variables
+
+    IrssUtils.Forms.LearnIR _learnIR = null;
+
+    #endregion Variables
 
     #region Constructor
 
@@ -34,12 +42,16 @@ namespace MediaPortal.Plugins
     {
       if (String.IsNullOrEmpty(MPBlastZonePlugin.ServerHost))
       {
-        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Environment.MachineName);
-        serverAddress.ShowDialog();
+        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress();
+        serverAddress.ShowDialog(this);
+
         MPBlastZonePlugin.ServerHost = serverAddress.ServerHost;
       }
 
-      if (!MPBlastZonePlugin.StartClient())
+      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      if (!MPBlastZonePlugin.StartClient(endPoint))
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "MP Blast Zone Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       checkBoxLogVerbose.Checked = MPBlastZonePlugin.LogVerbose;
@@ -66,9 +78,34 @@ namespace MediaPortal.Plugins
           commandNode.Nodes.Add(commandValueNode);
         }
       }
+
+      MPBlastZonePlugin.HandleMessage += new ClientMessageSink(ReceivedMessage);
+    }
+    private void SetupForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      MPBlastZonePlugin.HandleMessage -= new ClientMessageSink(ReceivedMessage);
     }
 
     #region Local Methods
+
+    void ReceivedMessage(IrssMessage received)
+    {
+      if (_learnIR != null && received.Type == MessageType.LearnIR)
+      {
+        if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+        {
+          _learnIR.LearnStatus("Learned IR successfully", true);
+        }
+        else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
+        {
+          _learnIR.LearnStatus("Learn IR timed out", false);
+        }
+        else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+        {
+          _learnIR.LearnStatus("Learn IR failed", false);
+        }
+      }
+    }
 
     void RefreshIRList()
     {
@@ -100,8 +137,15 @@ namespace MediaPortal.Plugins
 
         if (File.Exists(fileName))
         {
-          LearnIR learnIR = new LearnIR(false, command);
-          learnIR.ShowDialog(this);
+          _learnIR = new IrssUtils.Forms.LearnIR(
+            new LearnIrDelegate(MPBlastZonePlugin.LearnIRCommand),
+            new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
+            MPBlastZonePlugin.TransceiverInformation.Ports,
+            command);
+
+          _learnIR.ShowDialog(this);
+
+          _learnIR = null;
         }
         else
         {
@@ -265,7 +309,12 @@ namespace MediaPortal.Plugins
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
-        BlastCommand blastCommand = new BlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
+          Common.FolderIRCommands,
+          MPBlastZonePlugin.TransceiverInformation.Ports,
+          selected.Substring(Common.CmdPrefixBlast.Length));
+
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -287,8 +336,14 @@ namespace MediaPortal.Plugins
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      LearnIR learnIR = new LearnIR(true, String.Empty);
-      learnIR.ShowDialog(this);
+      _learnIR = new IrssUtils.Forms.LearnIR(
+        new LearnIrDelegate(MPBlastZonePlugin.LearnIRCommand),
+        new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
+        MPBlastZonePlugin.TransceiverInformation.Ports);
+
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
 
       RefreshIRList();
       RefreshCommandsCombo();
@@ -404,10 +459,14 @@ namespace MediaPortal.Plugins
       MPBlastZonePlugin.StopClient();
 
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(MPBlastZonePlugin.ServerHost);
-      serverAddress.ShowDialog();
+      serverAddress.ShowDialog(this);
+
       MPBlastZonePlugin.ServerHost = serverAddress.ServerHost;
 
-      MPBlastZonePlugin.StartClient();
+      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      MPBlastZonePlugin.StartClient(endPoint);
     }
 
     private void buttonHelp_Click(object sender, EventArgs e)
@@ -632,7 +691,13 @@ namespace MediaPortal.Plugins
       else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixBlast))
       {
         string[] commands = Common.SplitBlastCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixBlast.Length));
-        BlastCommand blastCommand = new BlastCommand(commands);
+
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
+          Common.FolderIRCommands,
+          MPBlastZonePlugin.TransceiverInformation.Ports,
+          commands);
+
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 

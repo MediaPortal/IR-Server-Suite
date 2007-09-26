@@ -4,7 +4,7 @@ using System.Windows.Forms;
 namespace VirtualRemote
 {
 
-  public class RemoteButton
+  struct RemoteButton
   {
 
     #region Variables
@@ -58,21 +58,6 @@ namespace VirtualRemote
     }
 
     #endregion Properties
-
-    #region Constructor
-
-    public RemoteButton()
-    {
-      _name     = "New Button";
-      _code     = String.Empty;
-      _shortcut = Keys.None;
-      _top      = 0;
-      _left     = 0;
-      _width    = 10;
-      _height   = 10;
-    }
-
-    #endregion Constructor
 
   }
 

@@ -17,7 +17,7 @@ using IrssUtils;
 namespace TrayLauncher
 {
 
-  public class Tray
+  class Tray
   {
 
     #region Constants
@@ -35,7 +35,6 @@ namespace TrayLauncher
     Client _client;
 
     static bool _registered = false;
-    int _echoID = -1;
 
     string _serverHost;
     string _programFile;
@@ -61,7 +60,7 @@ namespace TrayLauncher
     }
 
     #endregion Properties
-    
+
     #region Constructor
 
     public Tray()
@@ -73,14 +72,26 @@ namespace TrayLauncher
 
       _notifyIcon = new NotifyIcon();
       _notifyIcon.ContextMenuStrip = contextMenu;
-      _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
-      _notifyIcon.Text = "Tray Launcher - Connecting ...";
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
+
+      UpdateTrayIcon("Tray Launcher - Connecting ...", Properties.Resources.Icon16Connecting);
     }
 
     #endregion Constructor
 
     #region Implementation
+
+    void UpdateTrayIcon(string text, Icon icon)
+    {
+      if (String.IsNullOrEmpty(text))
+        throw new ArgumentNullException("text");
+
+      if (icon == null)
+        throw new ArgumentNullException("icon");
+
+      _notifyIcon.Text = text;
+      _notifyIcon.Icon = icon;
+    }
 
     internal bool Start()
     {
@@ -97,7 +108,23 @@ namespace TrayLauncher
           didSetup = true;
         }
 
-        if (StartClient())
+        bool clientStarted = false;
+        
+        IPAddress serverIP = Client.GetIPFromName(_serverHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+        try
+        {
+          clientStarted = StartClient(endPoint);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex.ToString());
+          MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Tray Launcher - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          clientStarted = false;
+        }
+
+        if (clientStarted)
         {
           _notifyIcon.Visible = true;
 
@@ -105,6 +132,10 @@ namespace TrayLauncher
             ClickLaunch(null, null);
 
           return true;
+        }
+        else
+        {
+          Configure();
         }
       }
       catch (Exception ex)
@@ -183,21 +214,22 @@ namespace TrayLauncher
 
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("ServerHost", _serverHost);
-        writer.WriteAttributeString("ProgramFile", _programFile);
-        writer.WriteAttributeString("LaunchOnLoad", _launchOnLoad.ToString());
-        writer.WriteAttributeString("LaunchKeyCode", _launchKeyCode);
+          writer.WriteAttributeString("ServerHost", _serverHost);
+          writer.WriteAttributeString("ProgramFile", _programFile);
+          writer.WriteAttributeString("LaunchOnLoad", _launchOnLoad.ToString());
+          writer.WriteAttributeString("LaunchKeyCode", _launchKeyCode);
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {
@@ -222,6 +254,8 @@ namespace TrayLauncher
     {
       IrssLog.Info("Connected to server");
 
+      UpdateTrayIcon("Tray Launcher", Properties.Resources.Icon16);
+
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
@@ -229,19 +263,19 @@ namespace TrayLauncher
     {
       IrssLog.Warn("Communications with server has been lost");
 
+      UpdateTrayIcon("Tray Launcher - Re-Connecting ...", Properties.Resources.Icon16Connecting);
+
       Thread.Sleep(1000);
     }
 
-    bool StartClient()
+    bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -261,7 +295,7 @@ namespace TrayLauncher
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
@@ -295,10 +329,6 @@ namespace TrayLauncher
           case MessageType.ServerShutdown:
             IrssLog.Warn("IR Server Shutdown - Tray Launcher disabled until IR Server returns");
             _registered = false;
-            break;
-
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             break;
 
           case MessageType.Error:

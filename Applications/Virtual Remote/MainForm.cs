@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -16,7 +17,7 @@ using IrssUtils;
 namespace VirtualRemote
 {
 
-  public partial class MainForm : Form
+  partial class MainForm : Form
   {
 
     #region Variables
@@ -220,9 +221,13 @@ namespace VirtualRemote
 
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Program.ServerHost);
       serverAddress.ShowDialog(this);
+
       Program.ServerHost = serverAddress.ServerHost;
 
-      Program.StartClient();
+      IPAddress serverIP = Client.GetIPFromName(Program.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      Program.StartClient(endPoint);
     }
 
     private void toolStripMenuItemHelp_Click(object sender, EventArgs e)

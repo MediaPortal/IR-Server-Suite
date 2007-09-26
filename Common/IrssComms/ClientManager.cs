@@ -79,7 +79,7 @@ namespace IrssComms
       // Send packet ...
       _connection.Send(data);
     }
-    
+
     void ReceiveThread()
     {
       try

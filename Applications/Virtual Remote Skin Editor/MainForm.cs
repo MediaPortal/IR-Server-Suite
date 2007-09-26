@@ -17,7 +17,7 @@ using IrssUtils;
 namespace SkinEditor
 {
 
-  public partial class MainForm : Form
+  partial class MainForm : Form
   {
 
     #region Constants
@@ -31,7 +31,6 @@ namespace SkinEditor
     Client _client = null;
 
     bool _registered = false;
-    int _echoID = -1;
 
     string _serverHost    = String.Empty;
 
@@ -313,7 +312,10 @@ namespace SkinEditor
 
     private void connectToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      StartClient();
+      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      StartClient(endPoint);
     }
     private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -329,8 +331,9 @@ namespace SkinEditor
     }
     private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Environment.MachineName);
+      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(_serverHost);
       serverAddress.ShowDialog(this);
+      
       _serverHost = serverAddress.ServerHost;
 
       SaveSettings();
@@ -386,29 +389,29 @@ namespace SkinEditor
     {
       IrssLog.Info("Saving Skin: {0}", fileName);
 
-      XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8);
-      writer.Formatting = Formatting.Indented;
-      writer.Indentation = 1;
-      writer.IndentChar = (char)9;
-      writer.WriteStartDocument(true);
-      writer.WriteStartElement("skin"); // <skin>
-
-      foreach (ListViewItem item in listViewButtons.Items)
+      using (XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8))
       {
-        writer.WriteStartElement("button");
-        writer.WriteAttributeString("name", item.Text);
-        writer.WriteAttributeString("code", item.SubItems[1].Text);
-        writer.WriteAttributeString("shortcut", item.SubItems[2].Text);
-        writer.WriteAttributeString("top", item.SubItems[3].Text);
-        writer.WriteAttributeString("left", item.SubItems[4].Text);
-        writer.WriteAttributeString("height", item.SubItems[5].Text);
-        writer.WriteAttributeString("width", item.SubItems[6].Text);
-        writer.WriteEndElement(); // </button>
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("skin"); // <skin>
+
+        foreach (ListViewItem item in listViewButtons.Items)
+        {
+          writer.WriteStartElement("button");
+          writer.WriteAttributeString("name", item.Text);
+          writer.WriteAttributeString("code", item.SubItems[1].Text);
+          writer.WriteAttributeString("shortcut", item.SubItems[2].Text);
+          writer.WriteAttributeString("top", item.SubItems[3].Text);
+          writer.WriteAttributeString("left", item.SubItems[4].Text);
+          writer.WriteAttributeString("height", item.SubItems[5].Text);
+          writer.WriteAttributeString("width", item.SubItems[6].Text);
+          writer.WriteEndElement(); // </button>
+        }
+
+        writer.WriteEndElement(); // </skin>
       }
-
-      writer.WriteEndElement(); // </skin>
-
-      writer.Close();
 
       IrssLog.Info("Saved Skin: {0}", fileName);
     }
@@ -490,18 +493,19 @@ namespace SkinEditor
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("ServerHost", _serverHost);
+          writer.WriteAttributeString("ServerHost", _serverHost);
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {
@@ -536,16 +540,14 @@ namespace SkinEditor
       Thread.Sleep(1000);
     }
 
-    bool StartClient()
+    bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -565,7 +567,7 @@ namespace SkinEditor
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
@@ -598,10 +600,6 @@ namespace SkinEditor
           case MessageType.ServerShutdown:
             MessageBox.Show(this, "Server has been shut down", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             Application.Exit();
-            return;
-
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             return;
 
           case MessageType.Error:

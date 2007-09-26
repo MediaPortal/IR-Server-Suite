@@ -38,7 +38,7 @@ namespace MicrosoftMceTransceiver
 
   #endregion Enumerations
 
-  public class MceDetectionData
+  class MceDetectionData
   {
 
     #region Members

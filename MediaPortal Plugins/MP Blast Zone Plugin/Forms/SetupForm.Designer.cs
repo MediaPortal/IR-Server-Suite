@@ -463,6 +463,7 @@ namespace MediaPortal.Plugins
       this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "MediaPortal Blast Zone Plugin";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SetupForm_FormClosing);
       this.Load += new System.EventHandler(this.SetupForm_Load);
       this.tabControl.ResumeLayout(false);
       this.tabPageMenuSetup.ResumeLayout(false);

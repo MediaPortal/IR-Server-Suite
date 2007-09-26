@@ -1,8 +1,6 @@
 namespace IRServerPluginInterface
 {
 
-  // TODO: Implement Async learning with callbacks (LearnStart, LearnStatus, LearnDone) or...
-
   #region Delegates
 
   /// <summary>

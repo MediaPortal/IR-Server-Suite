@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -16,12 +17,19 @@ using TvControl;
 using TvDatabase;
 
 using IrssUtils;
+using IrssComms;
 
 namespace SetupTv.Sections
 {
 
-  public partial class PluginSetup : SetupTv.SectionSettings
+  partial class PluginSetup : SetupTv.SectionSettings
   {
+
+    #region Variables
+
+    IrssUtils.Forms.LearnIR _learnIR = null;
+
+    #endregion Variables
 
     #region Constructor
 
@@ -49,7 +57,10 @@ namespace SetupTv.Sections
         buttonHostSetup_Click(null, null);
       }
 
-      if (!TV3BlasterPlugin.StartClient())
+      IPAddress serverIP = Client.GetIPFromName(TV3BlasterPlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      if (!TV3BlasterPlugin.StartClient(endPoint))
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "TV3 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       TV3BlasterPlugin.LoadExternalConfigs();
@@ -57,11 +68,15 @@ namespace SetupTv.Sections
       RefreshIRList();
       RefreshMacroList();
 
+      TV3BlasterPlugin.HandleMessage += new ClientMessageSink(ReceivedMessage);
+
       base.OnSectionActivated();
     }
     public override void OnSectionDeActivated()
     {
       Log.Info("TV3BlasterPlugin: Configuration deactivated");
+
+      TV3BlasterPlugin.HandleMessage -= new ClientMessageSink(ReceivedMessage);
 
       TvBusinessLayer layer = new TvBusinessLayer();
       Setting setting;
@@ -89,6 +104,25 @@ namespace SetupTv.Sections
 
     #region Implementation
 
+    void ReceivedMessage(IrssMessage received)
+    {
+      if (_learnIR != null && received.Type == MessageType.LearnIR)
+      {
+        if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+        {
+          _learnIR.LearnStatus("Learned IR successfully", true);
+        }
+        else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
+        {
+          _learnIR.LearnStatus("Learn IR timed out", false);
+        }
+        else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+        {
+          _learnIR.LearnStatus("Learn IR failed", false);
+        }
+      }
+    }
+
     void RefreshIRList()
     {
       listBoxIR.Items.Clear();
@@ -109,8 +143,15 @@ namespace SetupTv.Sections
         
         if (File.Exists(fileName))
         {
-          LearnIR learnIR = new LearnIR(false, command);
-          learnIR.ShowDialog(this);
+          _learnIR = new IrssUtils.Forms.LearnIR(
+            new LearnIrDelegate(TV3BlasterPlugin.LearnIRCommand),
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            TV3BlasterPlugin.TransceiverInformation.Ports,
+            command);
+
+          _learnIR.ShowDialog(this);
+
+          _learnIR = null;
         }
         else
         {
@@ -158,8 +199,14 @@ namespace SetupTv.Sections
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      LearnIR learnIR = new LearnIR(true, String.Empty);
-      learnIR.ShowDialog(this);
+      _learnIR = new IrssUtils.Forms.LearnIR(
+        new LearnIrDelegate(TV3BlasterPlugin.LearnIRCommand),
+        new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+        TV3BlasterPlugin.TransceiverInformation.Ports);
+
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
 
       RefreshIRList();
     }
@@ -248,10 +295,14 @@ namespace SetupTv.Sections
       TV3BlasterPlugin.StopClient();
 
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(TV3BlasterPlugin.ServerHost);
-      serverAddress.ShowDialog();
+      serverAddress.ShowDialog(this);
+
       TV3BlasterPlugin.ServerHost = serverAddress.ServerHost;
 
-      TV3BlasterPlugin.StartClient();
+      IPAddress serverIP = Client.GetIPFromName(TV3BlasterPlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      TV3BlasterPlugin.StartClient(endPoint);
     }
 
     private void buttonHelp_Click(object sender, EventArgs e)

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace IRManReceiver
 {
 
-  public partial class Configure : Form
+  partial class Configure : Form
   {
 
     #region Variables

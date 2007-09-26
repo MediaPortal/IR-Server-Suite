@@ -18,8 +18,19 @@ using MPUtils;
 namespace MediaPortal.Plugins
 {
 
-  public partial class StbSetup : UserControl
+  partial class StbSetup : UserControl
   {
+
+    #region Variables
+
+    const string parameterInfo =
+@"%1 = Current channel number digit (-1 for Select/Pre-Change)
+%2 = Full channel number string
+%3 = Blaster port (0 = Both, 1 = Port 1, 2 = Port 2)";
+
+    int _cardId;
+
+    #endregion Variables
 
     #region Properties
 
@@ -79,24 +90,13 @@ namespace MediaPortal.Plugins
 
     #endregion Properties
 
-    #region Variables
-
-    const string parameterInfo =
-@"%1 = Current channel number digit (-1 for Select/Pre-Change)
-%2 = Full channel number string
-%3 = Blaster port (0 = Both, 1 = Port 1, 2 = Port 2)";
-
-    int _card;
-
-    #endregion Variables
-
     #region Constructor
 
-    public StbSetup(int card)
+    public StbSetup(int cardId)
     {
       InitializeComponent();
 
-      _card = card;
+      _cardId = cardId;
 
       // Setup commands combo box
       comboBoxCommands.Items.Add(Common.UITextRun);
@@ -128,16 +128,19 @@ namespace MediaPortal.Plugins
       item = new ListViewItem(subItems);
       listViewExternalCommands.Items.Add(item);
 
-      SetToCard(_card);
+      SetToCard(_cardId);
     }
 
     #endregion Constructor
 
     #region Public Methods
 
-    public void SetToCard(int card)
+    public void SetToCard(int cardId)
     {
-      ExternalChannelConfig config = TV2BlasterPlugin.ExternalChannelConfigs[card];
+      ExternalChannelConfig config = TV2BlasterPlugin.GetExternalChannelConfig(cardId);
+
+      if (config == null)
+        return;
 
       // Setup command list.
       for (int i = 0; i < 10; i++)
@@ -163,9 +166,11 @@ namespace MediaPortal.Plugins
       numericUpDownRepeatDelay.Value = new Decimal(config.RepeatPauseTime);
     }
 
-    public void SetToConfig(int card)
+    public void SetToConfig(int cardId)
     {
-      ExternalChannelConfig config = TV2BlasterPlugin.ExternalChannelConfigs[card];
+      ExternalChannelConfig config = TV2BlasterPlugin.GetExternalChannelConfig(cardId);
+
+      config.CardId = cardId;
 
       config.PauseTime = Decimal.ToInt32(numericUpDownPauseTime.Value);
       config.SendSelect = checkBoxSendSelect.Checked;
@@ -209,6 +214,23 @@ namespace MediaPortal.Plugins
         string command;
         BlastCommand blastCommand;
 
+        bool useForAllBlastCommands = false;
+        string useForAllBlasterPort = String.Empty;
+
+        int blastCommandCount = 0;
+        for (int i = 0; i < 12; i++)
+        {
+          if (i == 10)
+            command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
+          else if (i == 11)
+            command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
+          else
+            command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
+
+          if (command.StartsWith(Common.CmdPrefixSTB))
+            blastCommandCount++;
+        }
+
         for (int i = 0; i < 12; i++)
         {
           if (i == 10)
@@ -220,8 +242,41 @@ namespace MediaPortal.Plugins
 
           if (command.StartsWith(Common.CmdPrefixSTB))
           {
-            blastCommand = new BlastCommand(Common.FolderSTB, command.Substring(Common.CmdPrefixSTB.Length));
-            listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+            blastCommand = new BlastCommand(
+              new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+              Common.FolderSTB,
+              TV2BlasterPlugin.TransceiverInformation.Ports,
+              command.Substring(Common.CmdPrefixSTB.Length),
+              true,
+              blastCommandCount--);
+
+            if (useForAllBlastCommands)
+            {
+              blastCommand.BlasterPort = useForAllBlasterPort;
+              listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+            }
+            else
+            {
+              if (blastCommand.ShowDialog(this) == DialogResult.OK)
+              {
+                if (blastCommand.UseForAll)
+                {
+                  useForAllBlastCommands = true;
+                  useForAllBlasterPort = blastCommand.BlasterPort;
+                }
+                listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+              }
+              else
+              {
+                blastCommand = new BlastCommand(
+                  new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+                  Common.FolderSTB,
+                  TV2BlasterPlugin.TransceiverInformation.Ports,
+                  command.Substring(Common.CmdPrefixSTB.Length));
+
+                listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+              }
+            }
           }
           else
           {
@@ -252,7 +307,7 @@ namespace MediaPortal.Plugins
 
     public void Save()
     {
-      SetToConfig(_card);
+      SetToConfig(_cardId);
     }
 
     #endregion Public Methods
@@ -280,14 +335,26 @@ namespace MediaPortal.Plugins
         if (selected.StartsWith(Common.CmdPrefixBlast))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
-          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, commands);
+
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            Common.FolderIRCommands,
+            TV2BlasterPlugin.TransceiverInformation.Ports,
+            commands);
+
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixSTB))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixSTB.Length));
-          BlastCommand blastCommand = new BlastCommand(Common.FolderSTB, commands);
+
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            Common.FolderSTB,
+            TV2BlasterPlugin.TransceiverInformation.Ports,
+            commands);
+
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
         }
@@ -366,7 +433,12 @@ namespace MediaPortal.Plugins
         }
         else if (selected.StartsWith(Common.CmdPrefixBlast))
         {
-          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, selected.Substring(Common.CmdPrefixBlast.Length));
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            Common.FolderIRCommands,
+            TV2BlasterPlugin.TransceiverInformation.Ports,
+            selected.Substring(Common.CmdPrefixBlast.Length));
+
           if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
             return;
 

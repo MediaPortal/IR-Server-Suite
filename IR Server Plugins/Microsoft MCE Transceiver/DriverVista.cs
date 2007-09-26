@@ -14,7 +14,7 @@ using IRServerPluginInterface;
 namespace MicrosoftMceTransceiver
 {
 
-  public class DriverVista : Driver
+  class DriverVista : Driver
   {
 
     #region Constants
@@ -276,7 +276,7 @@ namespace MicrosoftMceTransceiver
 
     IrCode _learningCode;
 
-    //StreamWriter _debugFile;
+    StreamWriter _debugFile;
 
     #endregion Variables
 
@@ -506,8 +506,8 @@ namespace MicrosoftMceTransceiver
 
     public override void Start()
     {
-      //_debugFile = new StreamWriter("\\DriverVista.log", false);
-      //_debugFile.AutoFlush = true;
+      _debugFile = new StreamWriter("\\IRServer_DriverVista.log", false);
+      _debugFile.AutoFlush = true;
 
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
@@ -536,12 +536,12 @@ namespace MicrosoftMceTransceiver
 
       CloseDevice();
 
-      //_debugFile.Close();
+      _debugFile.Dispose();
     }
 
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
-      //_debugFile.WriteLine("Learn");
+      _debugFile.WriteLine("Learn");
 
       StopReadThread();
 
@@ -560,7 +560,7 @@ namespace MicrosoftMceTransceiver
       while (_readThreadMode == ReadThreadMode.Learning && Environment.TickCount < learnStartTick + learnTimeout)
         Thread.Sleep(PacketTimeout);
 
-      //_debugFile.WriteLine("End Learn");
+      _debugFile.WriteLine("End Learn");
 
       ReadThreadMode modeWas = _readThreadMode;
 
@@ -585,7 +585,7 @@ namespace MicrosoftMceTransceiver
           break;
 
         case ReadThreadMode.LearningDone:
-          //_debugFile.WriteLine(_learningCode.ToByteArray());
+          _debugFile.WriteLine(_learningCode.ToByteArray());
 
           if (_learningCode.FinalizeData())
           {
@@ -730,7 +730,7 @@ namespace MicrosoftMceTransceiver
 
             int[] timingData = GetTimingDataFromPacket(packetBytes);
 
-            //_debugFile.WriteLine("Received:");
+            _debugFile.WriteLine("Received:");
             //Dump(timingData);
 
             if (_readThreadMode == ReadThreadMode.Learning)

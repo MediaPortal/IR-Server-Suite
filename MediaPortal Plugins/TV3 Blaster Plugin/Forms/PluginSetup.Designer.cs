@@ -1,7 +1,6 @@
 namespace SetupTv.Sections
 {
 
-  [System.CLSCompliant(false)]
   partial class PluginSetup
   {
     /// <summary>

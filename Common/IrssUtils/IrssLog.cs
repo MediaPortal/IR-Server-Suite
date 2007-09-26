@@ -136,13 +136,22 @@ namespace IrssUtils
     /// </summary>
     public static void Close()
     {
-      if (_streamWriter != null)
+      if (_streamWriter == null)
+        return;
+
+      try
       {
         string message = DateTime.Now.ToString() + ":\tLog Closed";
         _streamWriter.WriteLine(message);
         _streamWriter.WriteLine();
-
-        _streamWriter.Close();
+      }
+      catch
+      {
+        throw;
+      }
+      finally
+      {
+        _streamWriter.Dispose();
         _streamWriter = null;
       }
     }

@@ -582,7 +582,7 @@ namespace IrssUtils
     }
 
     /// <summary>
-    /// Get a list of all computer names on the LAN.
+    /// Get a list of all computer names on the LAN, except for the local host.
     /// </summary>
     /// <returns>List of LAN computer names.</returns>
     public static ArrayList GetNetworkComputers()
@@ -620,7 +620,8 @@ namespace IrssUtils
             tmpBuffer = new IntPtr((int)buffer + (i * sizeofINFO));
             _SERVER_INFO_100 svrInfo = (_SERVER_INFO_100)Marshal.PtrToStructure(tmpBuffer, typeof(_SERVER_INFO_100));
 
-            networkComputers.Add(svrInfo.sv100_name);
+            if (!svrInfo.sv100_name.Equals(Environment.MachineName, StringComparison.InvariantCultureIgnoreCase))
+              networkComputers.Add(svrInfo.sv100_name);
           }
         }
 

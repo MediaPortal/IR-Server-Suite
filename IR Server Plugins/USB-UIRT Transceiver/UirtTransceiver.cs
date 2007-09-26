@@ -166,6 +166,7 @@ namespace UirtTransceiver
 
     ~UirtTransceiver()
     {
+      // Call Dispose with false.  Since we're in the destructor call, the managed resources will be disposed of anyway.
       Dispose(false);
     }
 
@@ -175,7 +176,10 @@ namespace UirtTransceiver
 
     public void Dispose()
     {
+      // Dispose of the managed and unmanaged resources
       Dispose(true);
+
+      // Tell the GC that the Finalize process no longer needs to be run for this object.
       GC.SuppressFinalize(this);
     }
 
@@ -187,8 +191,10 @@ namespace UirtTransceiver
 
         if (disposeManagedResources)
         {
-          // Dispose any managed resources.
+          // Dispose managed resources ...
         }
+
+        // Free native resources ...
 
         if (_isUsbUirtLoaded && _usbUirtHandle != new IntPtr(-1) && _usbUirtHandle != IntPtr.Zero)
         {
@@ -374,20 +380,21 @@ namespace UirtTransceiver
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
-        writer.WriteAttributeString("BlastRepeats", _blastRepeats.ToString());
-        writer.WriteAttributeString("LearnTimeout", _learnTimeout.ToString());
+          writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
+          writer.WriteAttributeString("BlastRepeats", _blastRepeats.ToString());
+          writer.WriteAttributeString("LearnTimeout", _learnTimeout.ToString());
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {

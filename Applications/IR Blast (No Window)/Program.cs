@@ -25,7 +25,6 @@ namespace IRBlast
     static Client _client = null;
 
     static bool _registered = false;
-    static int _echoID = -1;
 
     static string _serverHost = null;
 
@@ -86,68 +85,76 @@ namespace IRBlast
 
             ShowHelp();
           }
-          else if (StartClient())
+          else
           {
-            Thread.Sleep(250);
+            IPAddress serverIP = Client.GetIPFromName(_serverHost);
 
-            // Wait for registered ... Give up after 10 seconds ...
-            int attempt = 0;
-            while (!_registered)
-            {
-              if (++attempt >= 10)
-                break;
-              else
-                Thread.Sleep(1000);
-            }
+            IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
 
-            if (_registered)
+            if (StartClient(endPoint))
             {
-              string fileName;
-              foreach (String command in irCommands)
+              Thread.Sleep(250);
+
+              // Wait for registered ... Give up after 10 seconds ...
+              int attempt = 0;
+              while (!_registered)
               {
-                if (_treatAsChannelNumber)
-                {
-                  IrssLog.Info("Processing channel: {0}", command);
-
-                  StringBuilder channelNumber = new StringBuilder(command);
-
-                  if (_padChannelNumber > 0)
-                  {
-                    for (int index = 0; index < _padChannelNumber - command.Length; index++)
-                      channelNumber.Insert(0, '0');
-
-                    IrssLog.Info("Padding channel number: {0} becomes {1}", command, channelNumber.ToString());
-                  }
-
-                  foreach (char digit in channelNumber.ToString())
-                  {
-                    if (digit.Equals('~'))
-                    {
-                      Thread.Sleep(500);
-                    }
-                    else
-                    {
-                      fileName = Common.FolderIRCommands + digit + Common.FileExtensionIR;
-                      BlastIR(fileName, _blastPort);
-                    }
-                  }
-                }
-                else if (command.StartsWith("~"))
-                {
-                  Thread.Sleep(command.Length * 500);
-                }
+                if (++attempt >= 10)
+                  break;
                 else
-                {
-                  fileName = Common.FolderIRCommands + command;
-                  BlastIR(fileName, _blastPort);
-                }
+                  Thread.Sleep(1000);
               }
 
-              Thread.Sleep(500);
-            }
-            else
-            {
-              IrssLog.Warn("Failed to register with server host \"{0}\", blasting not sent", _serverHost);
+              if (_registered)
+              {
+                string fileName;
+                foreach (String command in irCommands)
+                {
+                  if (_treatAsChannelNumber)
+                  {
+                    IrssLog.Info("Processing channel: {0}", command);
+
+                    StringBuilder channelNumber = new StringBuilder(command);
+
+                    if (_padChannelNumber > 0)
+                    {
+                      for (int index = 0; index < _padChannelNumber - command.Length; index++)
+                        channelNumber.Insert(0, '0');
+
+                      IrssLog.Info("Padding channel number: {0} becomes {1}", command, channelNumber.ToString());
+                    }
+
+                    foreach (char digit in channelNumber.ToString())
+                    {
+                      if (digit.Equals('~'))
+                      {
+                        Thread.Sleep(500);
+                      }
+                      else
+                      {
+                        fileName = Common.FolderIRCommands + digit + Common.FileExtensionIR;
+                        BlastIR(fileName, _blastPort);
+                      }
+                    }
+                  }
+                  else if (command.StartsWith("~"))
+                  {
+                    Thread.Sleep(command.Length * 500);
+                  }
+                  else
+                  {
+                    fileName = Common.FolderIRCommands + command;
+                    BlastIR(fileName, _blastPort);
+                  }
+                }
+
+                Thread.Sleep(500);
+              }
+              else
+              {
+                IrssLog.Warn("Failed to register with server host \"{0}\", blasting not sent", _serverHost);
+              }
+
             }
 
           }
@@ -202,16 +209,14 @@ Refer to IR Blast help for more information.",
       Thread.Sleep(1000);
     }
 
-    static bool StartClient()
+    static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -231,7 +236,7 @@ Refer to IR Blast help for more information.",
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
@@ -269,10 +274,6 @@ Refer to IR Blast help for more information.",
             IrssLog.Warn("IR Server Shutdown - Blasting disabled until IR Server returns");
             break;
 
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
-            break;
-
           case MessageType.Error:
             IrssLog.Warn(received.DataAsString);
             break;
@@ -286,18 +287,21 @@ Refer to IR Blast help for more information.",
 
     static void BlastIR(string fileName, string port)
     {
-      FileStream file = new FileStream(fileName, FileMode.Open);
+      using (FileStream file = File.OpenRead(fileName))
+      {
+        if (file.Length == 0)
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
-      byte[] outData = new byte[4 + port.Length + file.Length];
+        byte[] outData = new byte[4 + port.Length + file.Length];
 
-      BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
-      Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+        BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+        Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-      file.Read(outData, 4 + port.Length, (int)file.Length);
-      file.Close();
+        file.Read(outData, 4 + port.Length, (int)file.Length);
 
-      IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request | MessageFlags.ForceNotRespond, outData);
-      _client.Send(message);
+        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request | MessageFlags.ForceNotRespond, outData);
+        _client.Send(message);
+      }
     }
 
   }

@@ -83,18 +83,16 @@ namespace IRServer
           try
           {
             Assembly assembly = Assembly.LoadFrom(file);
-
             Type[] types = assembly.GetExportedTypes();
 
             foreach (Type type in types)
             {
               if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(IRServerPlugin)))
               {
-                IRServerPlugin plugin = (IRServerPlugin)Activator.CreateInstance(type);
-                if (plugin == null)
-                  continue;
-
-                plugins.Add(plugin);
+                IRServerPlugin plugin = (IRServerPlugin)assembly.CreateInstance(type.FullName);
+  
+                if (plugin != null)
+                  plugins.Add(plugin);
               }
             }
           }

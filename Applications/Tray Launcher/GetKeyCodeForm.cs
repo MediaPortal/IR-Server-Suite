@@ -11,7 +11,7 @@ using IrssUtils;
 namespace TrayLauncher
 {
 
-  public partial class GetKeyCodeForm : Form
+  partial class GetKeyCodeForm : Form
   {
 
     #region Variables

@@ -11,7 +11,7 @@ using Microsoft.Win32;
 namespace MicrosoftMceTransceiver
 {
 
-  public partial class Advanced : Form
+  partial class Advanced : Form
   {
 
     #region Constants

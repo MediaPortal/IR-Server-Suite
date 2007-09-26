@@ -18,7 +18,7 @@ using IrssUtils.Forms;
 namespace MediaPortal.Plugins
 {
 
-  public partial class MacroEditor : Form
+  partial class MacroEditor : Form
   {
 
     #region Constructor
@@ -57,63 +57,64 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("macro"); // <macro>
-
-        foreach (string item in listBoxMacro.Items)
+        using (XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8))
         {
-          writer.WriteStartElement("action");
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("macro"); // <macro>
 
-          if (item.StartsWith(Common.CmdPrefixBlast))
+          foreach (string item in listBoxMacro.Items)
           {
-            writer.WriteAttributeString("command", Common.XmlTagBlast);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixPause))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagPause);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPause.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixRun))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagRun);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixRun.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixSerial))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagSerial);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixSerial.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixWindowMsg))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixKeys))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagKeys);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixPopup))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagPopup);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
-          }
-          else
-          {
-            Log.Error("Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
+            writer.WriteStartElement("action");
+
+            if (item.StartsWith(Common.CmdPrefixBlast))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagBlast);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixPause))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagPause);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPause.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixRun))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagRun);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixRun.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixSerial))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagSerial);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixSerial.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixWindowMsg))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixKeys))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagKeys);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixPopup))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagPopup);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
+            }
+            else
+            {
+              Log.Error("Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
+            }
+
+            writer.WriteEndElement();
           }
 
-          writer.WriteEndElement();
+          writer.WriteEndElement(); // </macro>
+          writer.WriteEndDocument();
         }
-
-        writer.WriteEndElement(); // </macro>
-        writer.WriteEndDocument();
-        writer.Close();
       }
       catch (Exception ex)
       {
@@ -237,7 +238,12 @@ namespace MediaPortal.Plugins
       }
       else
       {
-        BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, selected.Substring(Common.CmdPrefixBlast.Length));
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+          Common.FolderIRCommands,
+          TV2BlasterPlugin.TransceiverInformation.Ports,
+          selected.Substring(Common.CmdPrefixBlast.Length));
+
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -402,7 +408,13 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixBlast))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
-          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, commands);
+
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            Common.FolderIRCommands,
+            TV2BlasterPlugin.TransceiverInformation.Ports,
+            commands);
+
           if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
             return;
 

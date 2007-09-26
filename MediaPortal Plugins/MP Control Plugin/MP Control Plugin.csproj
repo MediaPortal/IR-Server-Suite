@@ -64,12 +64,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Compile Include="Forms\BlastCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\BlastCommand.Designer.cs">
-      <DependentUpon>BlastCommand.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MacroEditor.cs">
       <SubType>Form</SubType>
@@ -86,12 +80,6 @@
     <Compile Include="InputMapper\InputHandler.cs" />
     <Compile Include="InputMapper\InputMappingForm.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\LearnIR.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\LearnIR.Designer.cs">
-      <DependentUpon>LearnIR.cs</DependentUpon>
     </Compile>
     <Compile Include="MappedEvent.cs" />
     <Compile Include="MappedKeyCode.cs" />
@@ -145,10 +133,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\BlastCommand.resx">
-      <DependentUpon>BlastCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MacroEditor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MacroEditor.cs</DependentUpon>
@@ -159,10 +143,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="InputMapper\InputMappingForm.resx">
       <DependentUpon>InputMappingForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LearnIR.resx">
-      <DependentUpon>LearnIR.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MultiMapNameBox.resx">

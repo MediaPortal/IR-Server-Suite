@@ -127,19 +127,20 @@ namespace WindowsMessageReceiver
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("MessageType", _messageType.ToString());
-        writer.WriteAttributeString("WParam", _wParam.ToString());
+          writer.WriteAttributeString("MessageType", _messageType.ToString());
+          writer.WriteAttributeString("WParam", _wParam.ToString());
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {

@@ -17,7 +17,7 @@ using MPUtils;
 namespace TvEngine
 {
 
-  public partial class StbSetup : UserControl
+  partial class StbSetup : UserControl
   {
 
     #region Constants
@@ -233,6 +233,23 @@ namespace TvEngine
         string command;
         BlastCommand blastCommand;
 
+        bool useForAllBlastCommands = false;
+        string useForAllBlasterPort = String.Empty;
+
+        int blastCommandCount = 0;
+        for (int i = 0; i < 12; i++)
+        {
+          if (i == 10)
+            command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
+          else if (i == 11)
+            command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
+          else
+            command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
+
+          if (command.StartsWith(Common.CmdPrefixSTB))
+            blastCommandCount++;
+        }
+
         for (int i = 0; i < 12; i++)
         {
           if (i == 10)
@@ -244,8 +261,41 @@ namespace TvEngine
 
           if (command.StartsWith(Common.CmdPrefixSTB))
           {
-            blastCommand = new BlastCommand(Common.FolderSTB, command.Substring(Common.CmdPrefixSTB.Length));
-            listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+            blastCommand = new BlastCommand(
+              new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+              Common.FolderSTB, 
+              TV3BlasterPlugin.TransceiverInformation.Ports, 
+              command.Substring(Common.CmdPrefixSTB.Length), 
+              true, 
+              blastCommandCount--);
+
+            if (useForAllBlastCommands)
+            {
+              blastCommand.BlasterPort = useForAllBlasterPort;
+              listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+            }
+            else
+            {
+              if (blastCommand.ShowDialog(this) == DialogResult.OK)
+              {
+                if (blastCommand.UseForAll)
+                {
+                  useForAllBlastCommands = true;
+                  useForAllBlasterPort = blastCommand.BlasterPort;
+                }
+                listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+              }
+              else
+              {
+                blastCommand = new BlastCommand(
+                  new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+                  Common.FolderSTB,
+                  TV3BlasterPlugin.TransceiverInformation.Ports,
+                  command.Substring(Common.CmdPrefixSTB.Length));
+
+                listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+              }
+            }            
           }
           else
           {
@@ -304,14 +354,24 @@ namespace TvEngine
         if (selected.StartsWith(Common.CmdPrefixBlast))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
-          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, commands);
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            Common.FolderIRCommands,
+            TV3BlasterPlugin.TransceiverInformation.Ports,
+            commands);
+
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixSTB))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixSTB.Length));
-          BlastCommand blastCommand = new BlastCommand(Common.FolderSTB, commands);
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            Common.FolderSTB,
+            TV3BlasterPlugin.TransceiverInformation.Ports,
+            commands);
+
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
         }
@@ -390,7 +450,12 @@ namespace TvEngine
         }
         else if (selected.StartsWith(Common.CmdPrefixBlast))
         {
-          BlastCommand blastCommand = new BlastCommand(Common.FolderIRCommands, selected.Substring(Common.CmdPrefixBlast.Length));
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR), 
+            Common.FolderIRCommands,
+            TV3BlasterPlugin.TransceiverInformation.Ports,
+            selected.Substring(Common.CmdPrefixBlast.Length));
+
           if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
             return;
 

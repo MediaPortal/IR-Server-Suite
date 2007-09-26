@@ -7,7 +7,7 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// Win32 native method wrapper for Keyboard control functions.
   /// </summary>
-  public static class Keyboard
+  static class Keyboard
   {
 
     #region Interop

@@ -85,11 +85,10 @@ namespace IrssComms
     /// <summary>
     /// Create a TCP communications client.
     /// </summary>
-    /// <param name="server">IP Address of Server.</param>
-    /// <param name="port">Port to open on Server.</param>
-    public Client(IPAddress server, int port, ClientMessageSink messageSink)
+    /// <param name="serverEndPoint">IP Address and Port combination of Server.</param>
+    public Client(IPEndPoint serverEndPoint, ClientMessageSink messageSink)
     {
-      _serverEndPoint = new IPEndPoint(server, port);
+      _serverEndPoint = serverEndPoint;
       
       _messageSink = messageSink;
 

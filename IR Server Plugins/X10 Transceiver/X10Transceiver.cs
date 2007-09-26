@@ -36,10 +36,10 @@ namespace X10Transceiver
    
     #region IIRServerPlugin Members
 
-    public override string Name         { get { return "X10 (Experimental)"; } }
+    public override string Name         { get { return "X10"; } }
     public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
-    public override string Description  { get { return "X10 Transceiver (Experimental)"; } }
+    public override string Description  { get { return "X10 Transceiver"; } }
 
     public override bool Start()
     {

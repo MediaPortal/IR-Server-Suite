@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace UirtTransceiver
 {
 
-  public partial class Configure : Form
+  partial class Configure : Form
   {
 
     #region Properties

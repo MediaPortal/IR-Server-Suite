@@ -14,7 +14,7 @@ using IRServerPluginInterface;
 namespace MicrosoftMceTransceiver
 {
 
-  public class DriverReplacement : Driver
+  class DriverReplacement : Driver
   {
 
     #region Interop
@@ -161,7 +161,7 @@ namespace MicrosoftMceTransceiver
 
     DeviceType _deviceType = DeviceType.Microsoft;
 
-    //StreamWriter _debugFile;
+    StreamWriter _debugFile;
 
     #endregion Variables
 
@@ -182,8 +182,8 @@ namespace MicrosoftMceTransceiver
 
     public override void Start()
     {
-      //_debugFile = new StreamWriter("\\DriverReplacement.log", false);
-      //_debugFile.AutoFlush = true;
+      _debugFile = new StreamWriter("\\IRServer_DriverReplacement.log", false);
+      _debugFile.AutoFlush = true;
       
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
@@ -221,12 +221,12 @@ namespace MicrosoftMceTransceiver
 
       CloseDevice();
 
-      //_debugFile.Close();
+      _debugFile.Dispose();
     }
 
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
-      //_debugFile.WriteLine("Start Learn");
+      _debugFile.WriteLine("Start Learn");
 
       learned = null;
       _learningCode = new IrCode();
@@ -240,7 +240,7 @@ namespace MicrosoftMceTransceiver
       while (_readThreadMode == ReadThreadMode.Learning && Environment.TickCount < learnStartTick + learnTimeout)
         Thread.Sleep(100);
 
-      //_debugFile.WriteLine("End Learn");
+      _debugFile.WriteLine("End Learn");
 
       ReadThreadMode modeWas = _readThreadMode;
 
@@ -260,7 +260,7 @@ namespace MicrosoftMceTransceiver
           break;
 
         case ReadThreadMode.LearningDone:
-          //_debugFile.WriteLine(_learningCode.ToByteArray());
+          _debugFile.WriteLine(_learningCode.ToByteArray());
 
           if (_learningCode.FinalizeData())
           {
@@ -276,7 +276,7 @@ namespace MicrosoftMceTransceiver
 
     public override void Send(IrCode code, uint port)
     {
-      //_debugFile.WriteLine("Send");
+      _debugFile.WriteLine("Send");
 
       byte[] portPacket;
       switch (_deviceType)
@@ -595,7 +595,7 @@ namespace MicrosoftMceTransceiver
                         _learningCode.Carrier = (int)carrier;
                     }
 
-                    //_debugFile.WriteLine(String.Format("Carrier Freq ({0:X2}, {1:X2}): {2}", b1, b2, _learningCode.Carrier));
+                    _debugFile.WriteLine(String.Format("Carrier Freq ({0:X2}, {1:X2}): {2}", b1, b2, _learningCode.Carrier));
 
                     _readThreadMode = ReadThreadMode.LearningDone;
                     break;

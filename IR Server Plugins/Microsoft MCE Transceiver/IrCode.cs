@@ -11,7 +11,7 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// Encapsulates an MCE compatible IR code.
   /// </summary>
-  public class IrCode
+  class IrCode
   {
 
     #region Constants

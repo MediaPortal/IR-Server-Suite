@@ -10,7 +10,7 @@ namespace MediaPortal.Plugins
   /// <summary>
   /// MappedEvent class is used to pass events into the Event Mapper feature.
   /// </summary>
-  public class MappedEvent
+  class MappedEvent
   {
 
     #region Enumerations
@@ -115,7 +115,6 @@ namespace MediaPortal.Plugins
     /// </summary>
     /// <param name="messageType">MediaPortal GUIMessage.MessageType.</param>
     /// <returns>MappingEvent equivalent of GUIMessage.MessageType.</returns>
-    [CLSCompliant(false)]
     public static MappingEvent GetEventType(GUIMessage.MessageType messageType)
     {
       switch (messageType)

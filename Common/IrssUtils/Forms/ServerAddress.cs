@@ -19,16 +19,25 @@ namespace IrssUtils.Forms
 
     #region Constructor
 
-    public ServerAddress(string serverHost)
+    public ServerAddress()
     {
       InitializeComponent();
 
+      comboBoxComputer.Items.Clear();
+      comboBoxComputer.Items.Add("localhost");
+
       ArrayList networkPCs = Win32.GetNetworkComputers();
       if (networkPCs != null)
-      {
         comboBoxComputer.Items.AddRange(networkPCs.ToArray());
+
+      comboBoxComputer.SelectedIndex = 0;
+    }
+
+    public ServerAddress(string serverHost)
+      : this()
+    {
+      if (!String.IsNullOrEmpty(serverHost))
         comboBoxComputer.Text = serverHost;
-      }
     }
 
     #endregion Constructor

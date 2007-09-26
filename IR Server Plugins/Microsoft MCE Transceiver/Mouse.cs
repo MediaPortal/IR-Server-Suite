@@ -7,7 +7,7 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// Win32 native method wrapper for Mouse control functions.
   /// </summary>
-  public static class Mouse
+  static class Mouse
   {
 
     #region Interop

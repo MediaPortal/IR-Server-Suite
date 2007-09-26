@@ -142,30 +142,31 @@ namespace MPUtils
 
     public void Save()
     {
-      XmlTextWriter writer = new XmlTextWriter(_fileName, System.Text.Encoding.UTF8);
-      writer.Formatting = Formatting.Indented;
-      writer.Indentation = 1;
-      writer.IndentChar = (char)9;
-      writer.WriteStartDocument(true);
-      writer.WriteStartElement("config"); // <config>
+      using (XmlTextWriter writer = new XmlTextWriter(_fileName, System.Text.Encoding.UTF8))
+      {
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("config"); // <config>
 
-      writer.WriteElementString("PauseTime",              PauseTime.ToString());
-      writer.WriteElementString("UsePreChangeCommand",    UsePreChangeCommand.ToString());
-      writer.WriteElementString("SendSelect",             SendSelect.ToString());
-      writer.WriteElementString("DoubleChannelSelect",    DoubleChannelSelect.ToString());
-      writer.WriteElementString("ChannelDigits",          ChannelDigits.ToString());
-      writer.WriteElementString("RepeatChannelCommands",  RepeatChannelCommands.ToString());
-      writer.WriteElementString("RepeatDelay",            RepeatPauseTime.ToString());
+        writer.WriteElementString("PauseTime", PauseTime.ToString());
+        writer.WriteElementString("UsePreChangeCommand", UsePreChangeCommand.ToString());
+        writer.WriteElementString("SendSelect", SendSelect.ToString());
+        writer.WriteElementString("DoubleChannelSelect", DoubleChannelSelect.ToString());
+        writer.WriteElementString("ChannelDigits", ChannelDigits.ToString());
+        writer.WriteElementString("RepeatChannelCommands", RepeatChannelCommands.ToString());
+        writer.WriteElementString("RepeatDelay", RepeatPauseTime.ToString());
 
-      writer.WriteElementString("SelectCommand",          SelectCommand);
-      writer.WriteElementString("PreChangeCommand",       PreChangeCommand);
+        writer.WriteElementString("SelectCommand", SelectCommand);
+        writer.WriteElementString("PreChangeCommand", PreChangeCommand);
 
-      for (int i = 0; i < 10; i++)
-        writer.WriteElementString("Digit" + i.ToString(), Digits[i]);
+        for (int i = 0; i < 10; i++)
+          writer.WriteElementString("Digit" + i.ToString(), Digits[i]);
 
-      writer.WriteEndElement(); // </config>
-      writer.WriteEndDocument();
-      writer.Close();
+        writer.WriteEndElement(); // </config>
+        writer.WriteEndDocument();
+      }
     }
 
     static string GetString(XmlDocument doc, string element, string defaultValue)

@@ -28,8 +28,10 @@ namespace IrssUtils.Forms
     /// </summary>
     private void InitializeComponent()
     {
+      this.components = new System.ComponentModel.Container();
       this.buttonOK = new System.Windows.Forms.Button();
       this.comboBoxComputer = new System.Windows.Forms.ComboBox();
+      this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.SuspendLayout();
       // 
       // buttonOK
@@ -53,6 +55,7 @@ namespace IrssUtils.Forms
       this.comboBoxComputer.Name = "comboBoxComputer";
       this.comboBoxComputer.Size = new System.Drawing.Size(232, 21);
       this.comboBoxComputer.TabIndex = 0;
+      this.toolTips.SetToolTip(this.comboBoxComputer, "Choose a network computer or type a host name or IP address here");
       // 
       // ServerAddress
       // 
@@ -78,5 +81,6 @@ namespace IrssUtils.Forms
 
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.ComboBox comboBoxComputer;
+    private System.Windows.Forms.ToolTip toolTips;
   }
 }

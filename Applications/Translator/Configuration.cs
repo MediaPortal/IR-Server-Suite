@@ -75,7 +75,7 @@ namespace Translator
 
     public Configuration()
     {
-      _serverHost = String.Empty;
+      _serverHost = "localhost";
 
       _systemWideMappings = new List<ButtonMapping>();
       _programSettings = new List<ProgramSettings>();
@@ -121,6 +121,11 @@ namespace Translator
         XmlSerializer reader = new XmlSerializer(typeof(Configuration));
         using (StreamReader file = new StreamReader(fileName))
           return (Configuration)reader.Deserialize(file);
+      }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("No configuration file found ({0}), using default configuration", fileName);
+        return new Configuration();
       }
       catch (Exception ex)
       {

@@ -229,6 +229,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\Te
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCEReplacement", "..\MCEReplacement\MCEReplacement.csproj", "{B45E87BC-AC5A-4923-A911-79C95DCC5602}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -502,6 +508,13 @@ Global
 		{DDB52A4D-A670-411A-8273-8B1707C67028}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DDB52A4D-A670-411A-8273-8B1707C67028}.Release|x86.ActiveCfg = Release|x86
 		{DDB52A4D-A670-411A-8273-8B1707C67028}.Release|x86.Build.0 = Release|x86
+		{B45E87BC-AC5A-4923-A911-79C95DCC5602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B45E87BC-AC5A-4923-A911-79C95DCC5602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B45E87BC-AC5A-4923-A911-79C95DCC5602}.Debug|x86.ActiveCfg = Debug|x86
+		{B45E87BC-AC5A-4923-A911-79C95DCC5602}.Debug|x86.Build.0 = Debug|x86
+		{B45E87BC-AC5A-4923-A911-79C95DCC5602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B45E87BC-AC5A-4923-A911-79C95DCC5602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B45E87BC-AC5A-4923-A911-79C95DCC5602}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

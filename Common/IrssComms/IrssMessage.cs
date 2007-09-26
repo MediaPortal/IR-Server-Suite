@@ -22,10 +22,9 @@ namespace IrssComms
 
     Error,
 
-    Ping,
-    Echo,
-
     ServerShutdown,
+    ServerSuspend,
+    ServerResume,
 
     RemoteEvent,
     KeyboardEvent,

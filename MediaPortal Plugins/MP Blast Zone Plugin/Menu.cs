@@ -9,7 +9,7 @@ namespace MediaPortal.Plugins
   /// <summary>
   /// Represents the root element of the menu tree
   /// </summary>
-  public class MenuRoot
+  class MenuRoot
   {
 
     #region Variables
@@ -50,33 +50,34 @@ namespace MediaPortal.Plugins
 
     public void Save(string fileName)
     {
-      XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8);
-      writer.Formatting = Formatting.Indented;
-      writer.Indentation = 1;
-      writer.IndentChar = (char)9;
-      writer.WriteStartDocument(true);
-      writer.WriteStartElement("menu"); // <menu>
-
-      foreach (MenuFolder collection in _items)
+      using (XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8))
       {
-        writer.WriteStartElement("collection"); // <collection>
-        writer.WriteAttributeString("name", collection.Name);
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("menu"); // <menu>
 
-        foreach (string command in collection.GetAllItems())
+        foreach (MenuFolder collection in _items)
         {
-          writer.WriteStartElement("command"); // <command>
-          writer.WriteAttributeString("name", collection.GetItem(command).Name);
-          writer.WriteAttributeString("value", collection.GetItem(command).Command);
+          writer.WriteStartElement("collection"); // <collection>
+          writer.WriteAttributeString("name", collection.Name);
 
-          writer.WriteEndElement(); // </command>
+          foreach (string command in collection.GetAllItems())
+          {
+            writer.WriteStartElement("command"); // <command>
+            writer.WriteAttributeString("name", collection.GetItem(command).Name);
+            writer.WriteAttributeString("value", collection.GetItem(command).Command);
+
+            writer.WriteEndElement(); // </command>
+          }
+
+          writer.WriteEndElement(); // </collection>
         }
 
-        writer.WriteEndElement(); // </collection>
+        writer.WriteEndElement(); // </menu>
+        writer.WriteEndDocument();
       }
-
-      writer.WriteEndElement(); // </menu>
-      writer.WriteEndDocument();
-      writer.Close();
     }
 
     public MenuFolder GetItem(string name)
@@ -119,7 +120,7 @@ namespace MediaPortal.Plugins
   /// <summary>
   /// Represents a folder of commands
   /// </summary>
-  public class MenuFolder
+  class MenuFolder
   {
 
     #region Variables
@@ -193,7 +194,7 @@ namespace MediaPortal.Plugins
   /// <summary>
   /// Represents a menu item and it's command
   /// </summary>
-  public class MenuCommand
+  class MenuCommand
   {
 
     #region Variables

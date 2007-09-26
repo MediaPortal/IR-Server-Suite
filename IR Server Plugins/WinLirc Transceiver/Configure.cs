@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace WinLircTransceiver
 {
 
-  public partial class Configure : Form
+  partial class Configure : Form
   {
 
     #region Properties

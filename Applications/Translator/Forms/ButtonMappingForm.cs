@@ -15,14 +15,31 @@ using IrssUtils;
 namespace Translator
 {
 
-  public partial class ButtonMappingForm : Form
+  partial class ButtonMappingForm : Form
   {
+
+    #region Constants
+
+    const string Parameters = 
+@"\a = Alert (ascii 7)
+\b = Backspace (ascii 8)
+\f = Form Feed (ascii 12)
+\n = Line Feed (ascii 10)
+\r = Carriage Return (ascii 13)
+\t = Tab (ascii 9)
+\v = Vertical Tab (ascii 11)
+\x = Hex Value (\x0Fh = ascii char 15, \x8h = ascii char 8)
+\0 = Null (ascii 0)";
+
+    #endregion Constants
 
     #region Variables
 
     string _keyCode;
     string _description;
     string _command;
+
+    IrssUtils.Forms.LearnIR _learnIR;
 
     #endregion Variables
 
@@ -81,15 +98,7 @@ namespace Translator
 
     void InsertKeystroke(string keystroke)
     {
-      //string clipboardWas = Clipboard.GetText();
-
-      //Clipboard.SetText(keystroke);
       textBoxKeys.Paste(keystroke);
-
-      //if (String.IsNullOrEmpty(clipboardWas))
-//        Clipboard.SetText(String.Empty);
-      //else
-//        Clipboard.SetText(clipboardWas);
     }
 
     private void ButtonMappingForm_Load(object sender, EventArgs e)
@@ -121,7 +130,7 @@ namespace Translator
 
       comboBoxStopBits.Items.Clear();
       comboBoxStopBits.Items.AddRange(Enum.GetNames(typeof(StopBits)));
-      comboBoxStopBits.SelectedIndex = 0;
+      comboBoxStopBits.SelectedIndex = 1;
 
       // Setup Run tab
       comboBoxWindowStyle.Items.Clear();
@@ -191,10 +200,12 @@ namespace Translator
               tabControl.SelectTab(tabPageSerial);
               textBoxSerialCommand.Text = commands[0];
               comboBoxComPort.SelectedItem = commands[1];
-              comboBoxParity.SelectedItem = commands[2];
-              comboBoxStopBits.SelectedItem = commands[3];
-              numericUpDownBaudRate.Value = decimal.Parse(commands[4]);
-              numericUpDownDataBits.Value = decimal.Parse(commands[5]);
+              numericUpDownBaudRate.Value = decimal.Parse(commands[2]);
+              comboBoxParity.SelectedItem = commands[3];
+              numericUpDownDataBits.Value = decimal.Parse(commands[4]);
+              comboBoxStopBits.SelectedItem = commands[5];
+              checkBoxWaitForResponse.Checked = bool.Parse(commands[6]);
+              
               break;
             }
 
@@ -315,18 +326,7 @@ namespace Translator
 
     private void buttonParamQuestion_Click(object sender, EventArgs e)
     {
-      MessageBox.Show(this, 
-@"\a = Alert (ascii 7)
-\b = Backspace (ascii 8)
-\f = Form Feed (ascii 12)
-\n = Line Feed (ascii 10)
-\r = Carriage Return (ascii 13)
-\t = Tab (ascii 9)
-\v = Vertical Tab (ascii 11)
-\x = Hex Value (\x0Fh = ascii char 15, \x8h = ascii char 8)
-\0 = Null (ascii 0)
-
-", "Parameters", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(this, Parameters, "Parameters", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void buttonSet_Click(object sender, EventArgs e)
@@ -352,14 +352,15 @@ namespace Translator
         case "tabPageSerial":
           {
             textBoxCommand.Text = _command =
-              String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}",
+              String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|{7}",
                 Common.CmdPrefixSerial,
                 textBoxSerialCommand.Text,
                 comboBoxComPort.SelectedItem as string,
                 numericUpDownBaudRate.Value.ToString(),
                 comboBoxParity.SelectedItem as string,
                 numericUpDownDataBits.Value.ToString(),
-                comboBoxStopBits.SelectedItem as string);
+                comboBoxStopBits.SelectedItem as string,
+                checkBoxWaitForResponse.Checked.ToString());
             break;
           }
 
@@ -565,9 +566,15 @@ namespace Translator
 
     private void buttonLearnIR_Click(object sender, EventArgs e)
     {
-      LearnIR learnIR = new LearnIR(true, String.Empty);
-      learnIR.ShowDialog(this);
-      
+      _learnIR = new IrssUtils.Forms.LearnIR(
+        new LearnIrDelegate(Program.LearnIR),
+        new BlastIrDelegate(Program.BlastIR),
+        Program.TransceiverInformation.Ports);
+
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
+
       SetupIRList();
     }
 

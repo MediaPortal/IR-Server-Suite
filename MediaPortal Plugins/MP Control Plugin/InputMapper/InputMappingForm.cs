@@ -37,14 +37,14 @@ using System.Threading;
 using MediaPortal.InputDevices;
 using MediaPortal.Configuration;
 
-
+using IrssUtils.Forms;
 
 namespace MediaPortal.Plugins
 {
   /// <summary>
   /// Summary description for ButtonMappingForm.
   /// </summary>
-  public class InputMappingForm : System.Windows.Forms.Form
+  class InputMappingForm : System.Windows.Forms.Form
   {
     Array nativeWindowsList = Enum.GetValues(typeof(GUIWindow.Window));
     ArrayList windowsList = new ArrayList();
@@ -951,107 +951,108 @@ namespace MediaPortal.Plugins
       //try
 #endif
       {
-        XmlTextWriter writer = new XmlTextWriter(Config.GetFile(Config.Dir.CustomInputDevice, xmlFile), System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("mappings"); // <mappings>
-        writer.WriteAttributeString("version", "3");
-        if (treeMapping.Nodes.Count > 0)
-          foreach (TreeNode remoteNode in treeMapping.Nodes)
-          {
-            writer.WriteStartElement("remote"); // <remote>
-            writer.WriteAttributeString("family", (string)((Data)remoteNode.Tag).Value);
-            if (remoteNode.Nodes.Count > 0)
-              foreach (TreeNode buttonNode in remoteNode.Nodes)
-              {
-                writer.WriteStartElement("button"); // <button>
-                writer.WriteAttributeString("name", (string)((Data)buttonNode.Tag).Parameter);
-                writer.WriteAttributeString("code", (string)((Data)buttonNode.Tag).Value);
+        using (XmlTextWriter writer = new XmlTextWriter(Config.GetFile(Config.Dir.CustomInputDevice, xmlFile), System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("mappings"); // <mappings>
+          writer.WriteAttributeString("version", "3");
+          if (treeMapping.Nodes.Count > 0)
+            foreach (TreeNode remoteNode in treeMapping.Nodes)
+            {
+              writer.WriteStartElement("remote"); // <remote>
+              writer.WriteAttributeString("family", (string)((Data)remoteNode.Tag).Value);
+              if (remoteNode.Nodes.Count > 0)
+                foreach (TreeNode buttonNode in remoteNode.Nodes)
+                {
+                  writer.WriteStartElement("button"); // <button>
+                  writer.WriteAttributeString("name", (string)((Data)buttonNode.Tag).Parameter);
+                  writer.WriteAttributeString("code", (string)((Data)buttonNode.Tag).Value);
 
-                if (buttonNode.Nodes.Count > 0)
-                  foreach (TreeNode layerNode in buttonNode.Nodes)
-                  {
-                    foreach (TreeNode conditionNode in layerNode.Nodes)
+                  if (buttonNode.Nodes.Count > 0)
+                    foreach (TreeNode layerNode in buttonNode.Nodes)
                     {
-                      string layer;
-                      string condition;
-                      string conProperty;
-                      string command = String.Empty;
-                      string cmdProperty = String.Empty;
-                      string cmdKeyChar = String.Empty;
-                      string cmdKeyCode = String.Empty;
-                      string sound = String.Empty;
-                      bool focus = false;
-                      foreach (TreeNode commandNode in conditionNode.Nodes)
+                      foreach (TreeNode conditionNode in layerNode.Nodes)
                       {
-                        switch (((Data)commandNode.Tag).Type)
+                        string layer;
+                        string condition;
+                        string conProperty;
+                        string command = String.Empty;
+                        string cmdProperty = String.Empty;
+                        string cmdKeyChar = String.Empty;
+                        string cmdKeyCode = String.Empty;
+                        string sound = String.Empty;
+                        bool focus = false;
+                        foreach (TreeNode commandNode in conditionNode.Nodes)
                         {
-                          case "COMMAND":
-                            {
-                              command = (string)((Data)commandNode.Tag).Parameter;
-                              focus = ((Data)commandNode.Tag).Focus;
-                              if (command != "KEY")
-                                cmdProperty = ((Data)commandNode.Tag).Value.ToString();
-                              else
+                          switch (((Data)commandNode.Tag).Type)
+                          {
+                            case "COMMAND":
                               {
-                                command = "ACTION";
-                                Key key = (Key)((Data)commandNode.Tag).Value;
-                                cmdProperty = "93";
-                                cmdKeyChar = key.KeyChar.ToString();
-                                cmdKeyCode = key.KeyCode.ToString();
+                                command = (string)((Data)commandNode.Tag).Parameter;
+                                focus = ((Data)commandNode.Tag).Focus;
+                                if (command != "KEY")
+                                  cmdProperty = ((Data)commandNode.Tag).Value.ToString();
+                                else
+                                {
+                                  command = "ACTION";
+                                  Key key = (Key)((Data)commandNode.Tag).Value;
+                                  cmdProperty = "93";
+                                  cmdKeyChar = key.KeyChar.ToString();
+                                  cmdKeyCode = key.KeyCode.ToString();
+                                }
                               }
-                            }
-                            break;
-                          case "SOUND":
-                            sound = (string)((Data)commandNode.Tag).Value;
-                            break;
+                              break;
+                            case "SOUND":
+                              sound = (string)((Data)commandNode.Tag).Value;
+                              break;
+                          }
                         }
-                      }
-                      condition = (string)((Data)conditionNode.Tag).Parameter;
-                      conProperty = ((Data)conditionNode.Tag).Value.ToString();
-                      layer = Convert.ToString(((Data)layerNode.Tag).Value);
-                      writer.WriteStartElement("action"); // <action>
-                      writer.WriteAttributeString("layer", layer);
-                      writer.WriteAttributeString("condition", condition);
-                      writer.WriteAttributeString("conproperty", conProperty);
-                      writer.WriteAttributeString("command", command);
-                      writer.WriteAttributeString("cmdproperty", cmdProperty);
-                      if (cmdProperty == Convert.ToInt32(Action.ActionType.ACTION_KEY_PRESSED).ToString())
-                      {
-                        if (!String.IsNullOrEmpty(cmdKeyChar))
+                        condition = (string)((Data)conditionNode.Tag).Parameter;
+                        conProperty = ((Data)conditionNode.Tag).Value.ToString();
+                        layer = Convert.ToString(((Data)layerNode.Tag).Value);
+                        writer.WriteStartElement("action"); // <action>
+                        writer.WriteAttributeString("layer", layer);
+                        writer.WriteAttributeString("condition", condition);
+                        writer.WriteAttributeString("conproperty", conProperty);
+                        writer.WriteAttributeString("command", command);
+                        writer.WriteAttributeString("cmdproperty", cmdProperty);
+                        if (cmdProperty == Convert.ToInt32(Action.ActionType.ACTION_KEY_PRESSED).ToString())
                         {
-                          writer.WriteAttributeString("cmdkeychar", cmdKeyChar);
-                        }
-                        else
-                        {
-                          writer.WriteAttributeString("cmdkeychar", "0");
-                        }
-                        if (!String.IsNullOrEmpty(cmdKeyCode))
-                        {
-                          writer.WriteAttributeString("cmdkeycode", cmdKeyCode);
-                        }
-                        else
-                        {
-                          writer.WriteAttributeString("cmdkeychar", "0");
-                        }
+                          if (!String.IsNullOrEmpty(cmdKeyChar))
+                          {
+                            writer.WriteAttributeString("cmdkeychar", cmdKeyChar);
+                          }
+                          else
+                          {
+                            writer.WriteAttributeString("cmdkeychar", "0");
+                          }
+                          if (!String.IsNullOrEmpty(cmdKeyCode))
+                          {
+                            writer.WriteAttributeString("cmdkeycode", cmdKeyCode);
+                          }
+                          else
+                          {
+                            writer.WriteAttributeString("cmdkeychar", "0");
+                          }
 
+                        }
+                        if (!String.IsNullOrEmpty(sound))
+                          writer.WriteAttributeString("sound", sound);
+                        if (focus)
+                          writer.WriteAttributeString("focus", focus.ToString());
+                        writer.WriteEndElement(); // </action>
                       }
-                      if (!String.IsNullOrEmpty(sound))
-                        writer.WriteAttributeString("sound", sound);
-                      if (focus)
-                        writer.WriteAttributeString("focus", focus.ToString());
-                      writer.WriteEndElement(); // </action>
                     }
-                  }
-                writer.WriteEndElement(); // </button>
-              }
-            writer.WriteEndElement(); // </remote>
-          }
-        writer.WriteEndElement(); // </mapping>
-        writer.WriteEndDocument();
-        writer.Close();
+                  writer.WriteEndElement(); // </button>
+                }
+              writer.WriteEndElement(); // </remote>
+            }
+          writer.WriteEndElement(); // </mapping>
+          writer.WriteEndDocument();
+        }
         changedSettings = false;
         return true;
       }
@@ -1878,7 +1879,12 @@ namespace MediaPortal.Plugins
             string text = (string)comboBoxCmdProperty.SelectedItem;
             if (text.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))
             {
-              BlastCommand blastCommand = new BlastCommand(text.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
+              BlastCommand blastCommand = new BlastCommand(
+                new IrssUtils.BlastIrDelegate(MPControlPlugin.BlastIR),
+                IrssUtils.Common.FolderIRCommands,
+                MPControlPlugin.TransceiverInformation.Ports,
+                text.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
+              
               if (blastCommand.ShowDialog(this) == DialogResult.OK)
               {
                 string command = IrssUtils.Common.CmdPrefixBlast + blastCommand.CommandString;

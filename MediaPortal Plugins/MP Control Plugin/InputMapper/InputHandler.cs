@@ -42,7 +42,7 @@ namespace MediaPortal.Plugins
   /// Expects an XML file with mappings on construction
   /// Maps button code numbers to conditions and actions
   /// </summary>
-  public class InputHandler
+  class InputHandler
   {
     int _xmlVersion = 3;
     ArrayList _remote;

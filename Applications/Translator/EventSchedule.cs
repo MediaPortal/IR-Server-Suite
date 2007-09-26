@@ -51,7 +51,7 @@ namespace Translator
 
   #endregion Enumerations
 
-  public class EventSchedule
+  class EventSchedule
   {
     //DateTime _start;
 

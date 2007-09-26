@@ -34,7 +34,6 @@ namespace VirtualRemote
     static Client _client;
 
     static bool _registered = false;
-    static int _echoID = -1;
 
     static string _serverHost;
     static string _lastKeyCode = String.Empty;
@@ -112,7 +111,10 @@ namespace VirtualRemote
           IrssLog.Error("Error processing command line parameters: {0}", ex.ToString());
         }
 
-        if (virtualButtons.Count != 0 && StartClient())
+        IPAddress serverIP = Client.GetIPFromName(_serverHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+        if (virtualButtons.Count != 0 && StartClient(endPoint))
         {
           Thread.Sleep(250);
 
@@ -154,21 +156,31 @@ namespace VirtualRemote
       {
         if (String.IsNullOrEmpty(_serverHost))
         {
-          IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Environment.MachineName);
+          IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress();
           serverAddress.ShowDialog();
 
           _serverHost = serverAddress.ServerHost;
         }
 
-        if (StartClient())
+        bool clientStarted = false;
+
+        IPAddress serverIP = Client.GetIPFromName(_serverHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+        try
+        {
+          clientStarted = StartClient(endPoint);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex.ToString());
+          clientStarted = false;
+        }
+
+        if (clientStarted)
           Application.Run(new MainForm());
 
         SaveSettings();
-      }
-
-      if (_client != null)
-      {
-
       }
 
       StopClient();
@@ -225,19 +237,20 @@ namespace VirtualRemote
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("ServerHost", _serverHost);
-        writer.WriteAttributeString("RemoteSkin", _remoteSkin);
+          writer.WriteAttributeString("ServerHost", _serverHost);
+          writer.WriteAttributeString("RemoteSkin", _remoteSkin);
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {
@@ -272,16 +285,14 @@ namespace VirtualRemote
       Thread.Sleep(1000);
     }
 
-    internal static bool StartClient()
+    internal static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -301,13 +312,17 @@ namespace VirtualRemote
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
     internal static void SendMessage(IrssMessage message)
     {
-      _client.Send(message);
+      if (message == null)
+        throw new ArgumentNullException("message");
+
+      if (_client != null)
+        _client.Send(message);
     }
 
     static void ReceivedMessage(IrssMessage received)
@@ -337,10 +352,6 @@ namespace VirtualRemote
             IrssLog.Warn("IR Server Shutdown - Virtual Remote disabled until IR Server returns");
             _registered = false;
             break;
-
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
-            return;
 
           case MessageType.Error:
             IrssLog.Error(received.DataAsString);

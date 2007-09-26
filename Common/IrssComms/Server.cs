@@ -28,6 +28,11 @@ namespace IrssComms
     #region Constants
 
     /// <summary>
+    /// The default port that Server sockets will be opened on.
+    /// </summary>
+    public const int DefaultPort = 24000;
+
+    /// <summary>
     /// Backlog of Socket requests that can build up on the server socket.
     /// </summary>
     const int SocketBacklog = 10;
@@ -83,6 +88,8 @@ namespace IrssComms
         // Dispose managed resources ...
         if (_processConnectionThread)
           Stop();
+        
+        _messageQueue.Dispose();
       }
 
       // Free native resources ...

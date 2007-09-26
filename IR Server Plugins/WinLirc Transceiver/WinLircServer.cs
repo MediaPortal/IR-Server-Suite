@@ -38,7 +38,7 @@ namespace WinLircTransceiver
   /// WinLIRC server class implementing communication with WinLIRC.
   /// All remotes are supported as long as WinLIRC supports them.
   /// </summary>
-  public class WinLircServer
+  class WinLircServer
   {
     #region Variables
 

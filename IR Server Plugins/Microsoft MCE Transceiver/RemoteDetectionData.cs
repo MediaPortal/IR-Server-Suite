@@ -17,7 +17,7 @@ namespace MicrosoftMceTransceiver
 
   #endregion Enumerations
 
-  public class RemoteDetectionData
+  class RemoteDetectionData
   {
 
     #region Member Variables

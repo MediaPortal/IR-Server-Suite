@@ -69,8 +69,11 @@ namespace WinLircTransceiver
     }
     public override void Stop()
     {
-      _server.CommandEvent -= new WinLircServer.CommandEventHandler(CommandHandler);
-      _server = null;
+      if (_server != null)
+      {
+        _server.CommandEvent -= new WinLircServer.CommandEventHandler(CommandHandler);
+        _server = null;
+      }
     }
 
     public RemoteHandler RemoteCallback
@@ -109,22 +112,19 @@ namespace WinLircTransceiver
     {
       string password, remoteName, buttonName, repeats;
 
-      MemoryStream memoryStream = new MemoryStream(data);
+      using (MemoryStream memoryStream = new MemoryStream(data))
+      {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(memoryStream);
 
-      XmlDocument doc = new XmlDocument();
-      doc.Load(memoryStream);
+        password = doc.DocumentElement.Attributes["Password"].Value;
+        remoteName = doc.DocumentElement.Attributes["RemoteName"].Value;
+        buttonName = doc.DocumentElement.Attributes["ButtonName"].Value;
+        repeats = doc.DocumentElement.Attributes["Repeats"].Value;
 
-      password    = doc.DocumentElement.Attributes["Password"].Value;
-      remoteName  = doc.DocumentElement.Attributes["RemoteName"].Value;
-      buttonName  = doc.DocumentElement.Attributes["ButtonName"].Value;
-      repeats     = doc.DocumentElement.Attributes["Repeats"].Value;
-
-      string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
-
-      MessageBox.Show(output);
-      _server.Transmit(output);
-
-      memoryStream.Close();
+        string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
+        _server.Transmit(output);
+      }
 
       return true;
     }
@@ -157,22 +157,23 @@ namespace WinLircTransceiver
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("ServerIP",           _serverIP.ToString());
-        writer.WriteAttributeString("ServerPort",         _serverPort.ToString());
-        writer.WriteAttributeString("StartServer",        _startServer.ToString());
-        writer.WriteAttributeString("ServerPath",         _serverPath);
-        writer.WriteAttributeString("ButtonReleaseTime",  _buttonReleaseTime.ToString());
+          writer.WriteAttributeString("ServerIP", _serverIP.ToString());
+          writer.WriteAttributeString("ServerPort", _serverPort.ToString());
+          writer.WriteAttributeString("StartServer", _startServer.ToString());
+          writer.WriteAttributeString("ServerPath", _serverPath);
+          writer.WriteAttributeString("ButtonReleaseTime", _buttonReleaseTime.ToString());
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {

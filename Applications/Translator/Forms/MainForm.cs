@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 
@@ -82,6 +83,12 @@ namespace Translator
     }
 
     #endregion Enumerations
+
+    #region Variables
+
+    IrssUtils.Forms.LearnIR _learnIR;
+
+    #endregion Variables
 
     #region Constructor
 
@@ -251,8 +258,15 @@ namespace Translator
 
         if (File.Exists(fileName))
         {
-          LearnIR learnIR = new LearnIR(false, command);
-          learnIR.ShowDialog(this);
+          _learnIR = new IrssUtils.Forms.LearnIR(
+            new LearnIrDelegate(Program.LearnIR),
+            new BlastIrDelegate(Program.BlastIR),
+            Program.TransceiverInformation.Ports,
+            command);
+
+          _learnIR.ShowDialog(this);
+
+          _learnIR = null;
         }
         else
         {
@@ -586,8 +600,14 @@ namespace Translator
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      LearnIR learnIR = new LearnIR(true, String.Empty);
-      learnIR.ShowDialog(this);
+      _learnIR = new IrssUtils.Forms.LearnIR(
+        new LearnIrDelegate(Program.LearnIR),
+        new BlastIrDelegate(Program.BlastIR),
+        Program.TransceiverInformation.Ports);
+
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
       
       RefreshIRList();
     }
@@ -596,8 +616,15 @@ namespace Translator
       if (listBoxIR.SelectedIndex == -1)
         return;
 
-      LearnIR learnIR = new LearnIR(false, listBoxIR.SelectedItem as string);
-      learnIR.ShowDialog(this);
+      _learnIR = new IrssUtils.Forms.LearnIR(
+        new LearnIrDelegate(Program.LearnIR),
+        new BlastIrDelegate(Program.BlastIR),
+        Program.TransceiverInformation.Ports,
+        listBoxIR.SelectedItem as string);
+
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
     }
     private void buttonDeleteIR_Click(object sender, EventArgs e)
     {
@@ -737,7 +764,12 @@ namespace Translator
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
-        BlastCommand blastCommand = new BlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(Program.BlastIR),
+          Common.FolderIRCommands,
+          Program.TransceiverInformation.Ports,
+          selected.Substring(Common.CmdPrefixBlast.Length));
+
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -809,7 +841,13 @@ namespace Translator
       else if (command.StartsWith(Common.CmdPrefixBlast))
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-        BlastCommand blastCommand = new BlastCommand(commands);
+
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(Program.BlastIR),
+          Common.FolderIRCommands,
+          Program.TransceiverInformation.Ports,
+          commands);
+
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -892,8 +930,13 @@ namespace Translator
       if (serverAddress.ShowDialog(this) == DialogResult.OK)
       {
         Program.StopClient();
+
         Program.Config.ServerHost = serverAddress.ServerHost;
-        Program.StartClient();
+
+        IPAddress serverIP = Client.GetIPFromName(Program.Config.ServerHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+        Program.StartClient(endPoint);
       }
     }
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)

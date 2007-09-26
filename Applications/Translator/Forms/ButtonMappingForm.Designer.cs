@@ -50,6 +50,7 @@ namespace Translator
       this.comboBoxMacro = new System.Windows.Forms.ComboBox();
       this.labelMacro = new System.Windows.Forms.Label();
       this.tabPageProgram = new System.Windows.Forms.TabPage();
+      this.checkBoxForceFocus = new System.Windows.Forms.CheckBox();
       this.checkBoxNoWindow = new System.Windows.Forms.CheckBox();
       this.checkBoxShellExecute = new System.Windows.Forms.CheckBox();
       this.comboBoxWindowStyle = new System.Windows.Forms.ComboBox();
@@ -174,7 +175,7 @@ namespace Translator
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-      this.checkBoxForceFocus = new System.Windows.Forms.CheckBox();
+      this.checkBoxWaitForResponse = new System.Windows.Forms.CheckBox();
       this.groupBoxButton.SuspendLayout();
       this.groupBoxSet.SuspendLayout();
       this.tabControl.SuspendLayout();
@@ -450,6 +451,16 @@ namespace Translator
       this.tabPageProgram.Text = "Run";
       this.tabPageProgram.UseVisualStyleBackColor = true;
       // 
+      // checkBoxForceFocus
+      // 
+      this.checkBoxForceFocus.AutoSize = true;
+      this.checkBoxForceFocus.Location = new System.Drawing.Point(232, 144);
+      this.checkBoxForceFocus.Name = "checkBoxForceFocus";
+      this.checkBoxForceFocus.Size = new System.Drawing.Size(121, 17);
+      this.checkBoxForceFocus.TabIndex = 12;
+      this.checkBoxForceFocus.Text = "Force window focus";
+      this.checkBoxForceFocus.UseVisualStyleBackColor = true;
+      // 
       // checkBoxNoWindow
       // 
       this.checkBoxNoWindow.Location = new System.Drawing.Point(232, 112);
@@ -588,6 +599,7 @@ namespace Translator
       this.groupBoxPortSetup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxPortSetup.Controls.Add(this.checkBoxWaitForResponse);
       this.groupBoxPortSetup.Controls.Add(this.comboBoxComPort);
       this.groupBoxPortSetup.Controls.Add(this.comboBoxStopBits);
       this.groupBoxPortSetup.Controls.Add(this.labelStopBits);
@@ -1687,15 +1699,15 @@ namespace Translator
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
       // 
-      // checkBoxForceFocus
+      // checkBoxWaitForResponse
       // 
-      this.checkBoxForceFocus.AutoSize = true;
-      this.checkBoxForceFocus.Location = new System.Drawing.Point(232, 144);
-      this.checkBoxForceFocus.Name = "checkBoxForceFocus";
-      this.checkBoxForceFocus.Size = new System.Drawing.Size(121, 17);
-      this.checkBoxForceFocus.TabIndex = 12;
-      this.checkBoxForceFocus.Text = "Force window focus";
-      this.checkBoxForceFocus.UseVisualStyleBackColor = true;
+      this.checkBoxWaitForResponse.Location = new System.Drawing.Point(232, 88);
+      this.checkBoxWaitForResponse.Name = "checkBoxWaitForResponse";
+      this.checkBoxWaitForResponse.Size = new System.Drawing.Size(176, 21);
+      this.checkBoxWaitForResponse.TabIndex = 10;
+      this.checkBoxWaitForResponse.Text = "Wait for response";
+      this.toolTips.SetToolTip(this.checkBoxWaitForResponse, "Wait up to 5 seconds for a response after the command has been sent");
+      this.checkBoxWaitForResponse.UseVisualStyleBackColor = true;
       // 
       // ButtonMappingForm
       // 
@@ -1897,6 +1909,7 @@ namespace Translator
     private System.Windows.Forms.Label labelMiscCommand;
     private System.Windows.Forms.ComboBox comboBoxMiscCommand;
     private System.Windows.Forms.CheckBox checkBoxForceFocus;
+    private System.Windows.Forms.CheckBox checkBoxWaitForResponse;
 
   }
 }

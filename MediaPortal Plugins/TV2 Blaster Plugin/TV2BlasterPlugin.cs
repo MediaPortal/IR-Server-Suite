@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Net;
@@ -31,11 +29,11 @@ namespace MediaPortal.Plugins
 
     internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.4 for IR Server";
 
-    internal static readonly string MPConfigFile = Config.GetFolder(Config.Dir.Config) + "\\MediaPortal.xml";
-
     internal static readonly string FolderMacros = Common.FolderAppData + "TV2 Blaster Plugin\\Macro\\";
 
     internal static readonly string ExtCfgFolder = Common.FolderAppData + "TV2 Blaster Plugin\\";
+
+    internal static readonly string MPConfigFile = Config.GetFolder(Config.Dir.Config) + "\\MediaPortal.xml";
 
     #endregion Constants
 
@@ -47,10 +45,7 @@ namespace MediaPortal.Plugins
     static string _learnIRFilename = null;
 
     static bool _registered = false;
-    static int _echoID = -1;
 
-    static string _blasterSpeed;
-    static string _blasterPort;
     static bool _logVerbose;
 
     static ExternalChannelConfig[] _externalChannelConfigs;
@@ -75,25 +70,10 @@ namespace MediaPortal.Plugins
       get { return _serverHost; }
       set { _serverHost = value; }
     }
-    internal static string BlastSpeed
-    {
-      get { return _blasterSpeed; }
-      set { _blasterSpeed = value; }
-    }
-    internal static string BlastPort
-    {
-      get { return _blasterPort; }
-      set { _blasterPort = value; }
-    }
     internal static bool LogVerbose
     {
       get { return _logVerbose; }
       set { _logVerbose = value; }
-    }
-
-    internal static ExternalChannelConfig[] ExternalChannelConfigs
-    {
-      get { return _externalChannelConfigs; }
     }
 
     internal static ClientMessageSink HandleMessage
@@ -113,6 +93,21 @@ namespace MediaPortal.Plugins
       get { return _irServerInfo; }
     }
 
+    internal static int TvCardCount
+    {
+      get
+      {
+        ArrayList cards = new ArrayList();
+        MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
+
+        int cardCount = cards.Count;
+        if (cardCount == 0)
+          cardCount = 1;
+
+        return cardCount;
+      }
+    }
+
     #endregion Properties
 
     #region IPlugin methods
@@ -128,7 +123,10 @@ namespace MediaPortal.Plugins
 
       LoadExternalConfigs();
 
-      if (!StartClient())
+      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      if (!StartClient(endPoint))
         Log.Error("TV2BlasterPlugin: Failed to start local comms, IR blasting is disabled for this session");
 
       // Register with MediaPortal to receive GUI Messages ...
@@ -209,7 +207,10 @@ namespace MediaPortal.Plugins
 
       Log.Warn("TV2BlasterPlugin: Attempting communications restart ...");
 
-      StartClient();
+      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      StartClient(endPoint);
     }
     static void Connected(object obj)
     {
@@ -225,16 +226,14 @@ namespace MediaPortal.Plugins
       Thread.Sleep(1000);
     }
 
-    internal static bool StartClient()
+    internal static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_serverHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -254,7 +253,7 @@ namespace MediaPortal.Plugins
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
@@ -303,9 +302,8 @@ namespace MediaPortal.Plugins
 
               byte[] dataBytes = received.DataAsBytes;
 
-              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
-              file.Write(dataBytes, 0, dataBytes.Length);
-              file.Close();
+              using (FileStream file = File.Create(_learnIRFilename))
+                file.Write(dataBytes, 0, dataBytes.Length);
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -322,10 +320,6 @@ namespace MediaPortal.Plugins
           case MessageType.ServerShutdown:
             Log.Info("TV2BlasterPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
             _registered = false;
-            break;
-
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             break;
 
           case MessageType.Error:
@@ -358,6 +352,9 @@ namespace MediaPortal.Plugins
       }
     }
 
+    /// <summary>
+    /// Load external channel configurations.
+    /// </summary>
     static void LoadExternalConfigs()
     {
       ArrayList cards = new ArrayList();
@@ -375,53 +372,33 @@ namespace MediaPortal.Plugins
         fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, Convert.ToString(index + 1));
         try
         {
-          ExternalChannelConfigs[index] = ExternalChannelConfig.Load(fileName);
+          _externalChannelConfigs[index] = ExternalChannelConfig.Load(fileName);
         }
         catch (Exception ex)
         {
-          ExternalChannelConfigs[index] = new ExternalChannelConfig(fileName);
+          _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
           Log.Error(ex);
         }
-        
-        ExternalChannelConfigs[index].CardId = index;
+
+        _externalChannelConfigs[index].CardId = index;
       }
     }
 
-    static void LoadSettings()
+    /// <summary>
+    /// Given a card ID returns the configuration for that card.
+    /// </summary>
+    /// <param name="cardId">ID of card to retreive configuration for.</param>
+    /// <returns>Card configuration, null if it doesn't exist.</returns>
+    internal static ExternalChannelConfig GetExternalChannelConfig(int cardId)
     {
-      try
-      {
-        using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPConfigFile))
-        {
-          ServerHost = xmlreader.GetValueAsString("TV2BlasterPlugin", "ServerHost", String.Empty);
+      if (_externalChannelConfigs == null)
+        return null;
 
-          BlastSpeed = xmlreader.GetValueAsString("TV2BlasterPlugin", "BlastSpeed", "None");
-          BlastPort = xmlreader.GetValueAsString("TV2BlasterPlugin", "BlastPort", "None");
-          LogVerbose = xmlreader.GetValueAsBool("TV2BlasterPlugin", "LogVerbose", false);
-        }
-      }
-      catch (Exception ex)
-      {
-        Log.Error("TV2BlasterPlugin: LoadSettings() {0}", ex.Message);
-      }
-    }
-    static void SaveSettings()
-    {
-      try
-      {
-        using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MPConfigFile))
-        {
-          xmlwriter.SetValue("TV2BlasterPlugin", "ServerHost", ServerHost);
+      foreach (ExternalChannelConfig config in _externalChannelConfigs)
+        if (config.CardId == cardId)
+          return config;
 
-          xmlwriter.SetValue("TV2BlasterPlugin", "BlastSpeed", BlastSpeed);
-          xmlwriter.SetValue("TV2BlasterPlugin", "BlastPort", BlastPort);
-          xmlwriter.SetValueAsBool("TV2BlasterPlugin", "LogVerbose", LogVerbose);
-        }
-      }
-      catch (Exception ex)
-      {
-        Log.Error("TV2BlasterPlugin: SaveSettings() {0}", ex.Message);
-      }
+      return null;
     }
 
     static void ProcessExternalChannel(string externalChannel, string tunerCard)
@@ -432,10 +409,10 @@ namespace MediaPortal.Plugins
       if (card < 0)
         card = 0;
 
-      if (card >= ExternalChannelConfigs.Length)
+      if (card >= _externalChannelConfigs.Length)
         throw new ArgumentException("Card number is higher than last card in list, reconfigure plugin TV cards.", "tunerCard");
 
-      ExternalChannelConfig config = ExternalChannelConfigs[card];
+      ExternalChannelConfig config = _externalChannelConfigs[card];
 
       // Clean up the "externalChannel" string into "channel".
       StringBuilder channel = new StringBuilder();
@@ -647,20 +624,21 @@ namespace MediaPortal.Plugins
       if (!_registered)
         throw new Exception("Cannot Blast, not registered to an active IR Server");
 
-      FileStream file = new FileStream(fileName, FileMode.Open);
-      if (file.Length == 0)
-        throw new Exception(String.Format("Cannot Blast, IR file \"{0}\" has no data, possible IR learn failure", fileName));
+      using (FileStream file = File.OpenRead(fileName))
+      {
+        if (file.Length == 0)
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
-      byte[] outData = new byte[4 + port.Length + file.Length];
+        byte[] outData = new byte[4 + port.Length + file.Length];
 
-      BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
-      Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+        BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+        Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-      file.Read(outData, 4 + port.Length, (int)file.Length);
-      file.Close();
+        file.Read(outData, 4 + port.Length, (int)file.Length);
 
-      IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
-      _client.Send(message);
+        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+        _client.Send(message);
+      }
     }
 
     /// <summary>
@@ -685,7 +663,7 @@ namespace MediaPortal.Plugins
       else if (command.StartsWith(Common.CmdPrefixSTB))  // STB IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
-        BlastIR(Common.FolderSTB + commands[0], commands[1]);
+        BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
       }
       else if (command.StartsWith(Common.CmdPrefixRun)) // External Program
       {
@@ -807,6 +785,37 @@ namespace MediaPortal.Plugins
       }
 
       return list;
+    }
+
+    static void LoadSettings()
+    {
+      try
+      {
+        using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPConfigFile))
+        {
+          ServerHost = xmlreader.GetValueAsString("TV2BlasterPlugin", "ServerHost", String.Empty);
+          LogVerbose = xmlreader.GetValueAsBool("TV2BlasterPlugin", "LogVerbose", false);
+        }
+      }
+      catch (Exception ex)
+      {
+        Log.Error("TV2BlasterPlugin: LoadSettings() {0}", ex.Message);
+      }
+    }
+    static void SaveSettings()
+    {
+      try
+      {
+        using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MPConfigFile))
+        {
+          xmlwriter.SetValue("TV2BlasterPlugin", "ServerHost", ServerHost);
+          xmlwriter.SetValueAsBool("TV2BlasterPlugin", "LogVerbose", LogVerbose);
+        }
+      }
+      catch (Exception ex)
+      {
+        Log.Error("TV2BlasterPlugin: SaveSettings() {0}", ex.Message);
+      }
     }
 
     #endregion Implementation

@@ -16,7 +16,7 @@ using IrssUtils;
 namespace TvEngine
 {
 
-  public partial class ExternalChannels : Form
+  partial class ExternalChannels : Form
   {
 
     #region Variables

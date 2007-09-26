@@ -979,13 +979,6 @@ namespace InputService
 
             break;
 
-          case MessageType.Ping:
-          {
-            IrssMessage response = new IrssMessage(MessageType.Echo, MessageFlags.Response, combo.Message.DataAsBytes);
-            SendTo(combo.Manager, response);
-            break;
-          }
-
           case MessageType.RegisterClient:
           {
             IrssMessage response = new IrssMessage(MessageType.RegisterClient, MessageFlags.Response);

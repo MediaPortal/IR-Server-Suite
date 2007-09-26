@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -13,12 +14,19 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Util;
 
 using IrssUtils;
+using IrssComms;
 
 namespace MediaPortal.Plugins
 {
 
-  public partial class SetupForm : Form
+  partial class SetupForm : Form
   {
+
+    #region Variables
+
+    IrssUtils.Forms.LearnIR _learnIR = null;
+
+    #endregion Variables
 
     #region Constructor
 
@@ -33,21 +41,50 @@ namespace MediaPortal.Plugins
     {
       if (String.IsNullOrEmpty(TV2BlasterPlugin.ServerHost))
       {
-        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Environment.MachineName);
-        serverAddress.ShowDialog();
+        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress();
+        serverAddress.ShowDialog(this);
+
         TV2BlasterPlugin.ServerHost = serverAddress.ServerHost;
       }
 
-      if (!TV2BlasterPlugin.StartClient())
+      IPAddress serverIP = Client.GetIPFromName(TV2BlasterPlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      if (!TV2BlasterPlugin.StartClient(endPoint))
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "TV2 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       checkBoxLogVerbose.Checked = TV2BlasterPlugin.LogVerbose;
 
       RefreshIRList();
       RefreshMacroList();
+
+      TV2BlasterPlugin.HandleMessage += new ClientMessageSink(ReceivedMessage);
+    }
+    private void SetupForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      TV2BlasterPlugin.HandleMessage -= new ClientMessageSink(ReceivedMessage);
     }
 
     #region Local Methods
+
+    void ReceivedMessage(IrssMessage received)
+    {
+      if (_learnIR != null && received.Type == MessageType.LearnIR)
+      {
+        if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+        {
+          _learnIR.LearnStatus("Learned IR successfully", true);
+        }
+        else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
+        {
+          _learnIR.LearnStatus("Learn IR timed out", false);
+        }
+        else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+        {
+          _learnIR.LearnStatus("Learn IR failed", false);
+        }
+      }
+    }
 
     void RefreshIRList()
     {
@@ -69,8 +106,15 @@ namespace MediaPortal.Plugins
 
         if (File.Exists(fileName))
         {
-          LearnIR learnIR = new LearnIR(false, command);
-          learnIR.ShowDialog(this);
+          _learnIR = new IrssUtils.Forms.LearnIR(
+            new LearnIrDelegate(TV2BlasterPlugin.LearnIRCommand),
+            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            TV2BlasterPlugin.TransceiverInformation.Ports,
+            command);
+          
+          _learnIR.ShowDialog(this);
+
+          _learnIR = null;
         }
         else
         {
@@ -105,8 +149,14 @@ namespace MediaPortal.Plugins
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      LearnIR learnIR = new LearnIR(true, String.Empty);
-      learnIR.ShowDialog(this);
+      _learnIR = new IrssUtils.Forms.LearnIR(
+        new LearnIrDelegate(TV2BlasterPlugin.LearnIRCommand),
+        new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+        TV2BlasterPlugin.TransceiverInformation.Ports);
+      
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
 
       RefreshIRList();
     }
@@ -204,10 +254,14 @@ namespace MediaPortal.Plugins
       TV2BlasterPlugin.StopClient();
       
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(TV2BlasterPlugin.ServerHost);
-      serverAddress.ShowDialog();
+      serverAddress.ShowDialog(this);
+
       TV2BlasterPlugin.ServerHost = serverAddress.ServerHost;
 
-      TV2BlasterPlugin.StartClient();
+      IPAddress serverIP = Client.GetIPFromName(TV2BlasterPlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      TV2BlasterPlugin.StartClient(endPoint);
     }
 
     private void buttonHelp_Click(object sender, EventArgs e)

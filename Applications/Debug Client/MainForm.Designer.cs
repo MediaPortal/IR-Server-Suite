@@ -37,7 +37,6 @@ namespace DebugClient
       this.buttonDisconnect = new System.Windows.Forms.Button();
       this.buttonShutdownServer = new System.Windows.Forms.Button();
       this.listBoxStatus = new System.Windows.Forms.ListBox();
-      this.buttonPing = new System.Windows.Forms.Button();
       this.groupBoxStatus = new System.Windows.Forms.GroupBox();
       this.groupBoxRemoteButton = new System.Windows.Forms.GroupBox();
       this.labelCustomButton = new System.Windows.Forms.Label();
@@ -140,18 +139,6 @@ namespace DebugClient
       this.listBoxStatus.Size = new System.Drawing.Size(424, 185);
       this.listBoxStatus.TabIndex = 0;
       this.toolTips.SetToolTip(this.listBoxStatus, "Status messages");
-      // 
-      // buttonPing
-      // 
-      this.buttonPing.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonPing.Location = new System.Drawing.Point(296, 16);
-      this.buttonPing.Name = "buttonPing";
-      this.buttonPing.Size = new System.Drawing.Size(64, 24);
-      this.buttonPing.TabIndex = 3;
-      this.buttonPing.Text = "Ping";
-      this.toolTips.SetToolTip(this.buttonPing, "Ping the server");
-      this.buttonPing.UseVisualStyleBackColor = true;
-      this.buttonPing.Click += new System.EventHandler(this.buttonPing_Click);
       // 
       // groupBoxStatus
       // 
@@ -266,7 +253,6 @@ namespace DebugClient
       this.groupBoxCommands.Controls.Add(this.buttonBlast);
       this.groupBoxCommands.Controls.Add(this.buttonLearnIR);
       this.groupBoxCommands.Controls.Add(this.buttonShutdownServer);
-      this.groupBoxCommands.Controls.Add(this.buttonPing);
       this.groupBoxCommands.Location = new System.Drawing.Point(8, 80);
       this.groupBoxCommands.Name = "groupBoxCommands";
       this.groupBoxCommands.Size = new System.Drawing.Size(440, 48);
@@ -343,7 +329,6 @@ namespace DebugClient
     private System.Windows.Forms.Button buttonDisconnect;
     private System.Windows.Forms.Button buttonShutdownServer;
     private System.Windows.Forms.ListBox listBoxStatus;
-    private System.Windows.Forms.Button buttonPing;
     private System.Windows.Forms.GroupBox groupBoxStatus;
     private System.Windows.Forms.GroupBox groupBoxRemoteButton;
     private System.Windows.Forms.NumericUpDown numericUpDownButton;

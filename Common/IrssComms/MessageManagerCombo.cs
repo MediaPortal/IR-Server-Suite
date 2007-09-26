@@ -6,7 +6,7 @@ namespace IrssComms
   /// <summary>
   /// Encapsulates an IrssMessage and a ClientManager object instance for queueing.
   /// </summary>
-  public class MessageManagerCombo
+  public struct MessageManagerCombo : IEquatable<MessageManagerCombo>
   {
 
     #region Variables
@@ -19,7 +19,7 @@ namespace IrssComms
     #region Constructor
 
     /// <summary>
-    /// Create a new MessageManagerCombo class instance.
+    /// Create a new MessageManagerCombo structure instance.
     /// </summary>
     /// <param name="message">The IrssMessage to encapsulate.</param>
     /// <param name="manager">The ClientManager to encapsulate.</param>
@@ -52,6 +52,58 @@ namespace IrssComms
     }
 
     #endregion Properties
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="obj">An object to compare with this object.</param>
+    /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
+    public override bool Equals(object obj)
+    {
+      if (!(obj is MessageManagerCombo))
+        return false;
+
+      return Equals((MessageManagerCombo)obj);
+    }
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="obj">An object to compare with this object.</param>
+    /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
+    public bool Equals(MessageManagerCombo other)
+    {
+      return (this.Message == other.Message && this.Manager == other.Manager);
+    }
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="obj">An object to compare with this object.</param>
+    /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
+    public static bool operator ==(MessageManagerCombo obj1, MessageManagerCombo obj2)
+    {
+      return obj1.Equals(obj2);
+    }
+
+    /// <summary>
+    /// Indicates whether the current object is not equal to another object of the same type.
+    /// </summary>
+    /// <param name="obj">An object to compare with this object.</param>
+    /// <returns>true if the current object is not equal to the other parameter; otherwise, false.</returns>
+    public static bool operator !=(MessageManagerCombo obj1, MessageManagerCombo obj2)
+    {
+      return !obj1.Equals(obj2);
+    }
+
+    /// <summary>
+    /// Serves as a hash function for a particular type.
+    /// </summary>
+    /// <returns>A hash code for the current object.</returns>
+    public override int GetHashCode()
+    {
+      return _message.GetHashCode() + _manager.GetHashCode();
+    }
 
   }
 

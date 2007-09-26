@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -15,13 +16,20 @@ using MediaPortal.Util;
 
 using IrssUtils;
 using IrssUtils.Forms;
+using IrssComms;
 
 namespace MediaPortal.Plugins
 {
 
-  public partial class SetupForm : Form
+  partial class SetupForm : Form
   {
-     
+
+    #region Variables
+
+    IrssUtils.Forms.LearnIR _learnIR = null;
+
+    #endregion Variables
+
     #region Constructor
 
     public SetupForm()
@@ -35,12 +43,16 @@ namespace MediaPortal.Plugins
     {
       if (String.IsNullOrEmpty(MPControlPlugin.ServerHost))
       {
-        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Environment.MachineName);
-        serverAddress.ShowDialog();
+        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress();
+        serverAddress.ShowDialog(this);
+
         MPControlPlugin.ServerHost = serverAddress.ServerHost;
       }
 
-      if (!MPControlPlugin.StartClient())
+      IPAddress serverIP = Client.GetIPFromName(MPControlPlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      if (!MPControlPlugin.StartClient(endPoint))
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "MP Control Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       checkBoxLogVerbose.Checked      = MPControlPlugin.LogVerbose;
@@ -112,15 +124,39 @@ namespace MediaPortal.Plugins
 
       // Register for remote button presses
       _addNode = new DelegateAddNode(AddNode);
-      MPControlPlugin.RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
+
+      MPControlPlugin.HandleMessage += new ClientMessageSink(ReceivedMessage);
     }
 
     private void SetupForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-      MPControlPlugin.RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
+      MPControlPlugin.HandleMessage -= new ClientMessageSink(ReceivedMessage);
     }
     
     #region Local Methods
+
+    void ReceivedMessage(IrssMessage received)
+    {
+      if (received.Type == MessageType.RemoteEvent)
+      {
+        this.Invoke(_addNode, new Object[] { received.DataAsString });
+      }
+      else if (_learnIR != null && received.Type == MessageType.LearnIR)
+      {
+        if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+        {
+          _learnIR.LearnStatus("Learned IR successfully", true);
+        }
+        else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
+        {
+          _learnIR.LearnStatus("Learn IR timed out", false);
+        }
+        else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+        {
+          _learnIR.LearnStatus("Learn IR failed", false);
+        }
+      }
+    }
 
     void LoadRemotes(string file)
     {
@@ -159,39 +195,40 @@ namespace MediaPortal.Plugins
     }
     void SaveRemotes(string file)
     {
-      XmlTextWriter writer = new XmlTextWriter(file, System.Text.Encoding.UTF8);
-      writer.Formatting = Formatting.Indented;
-      writer.Indentation = 1;
-      writer.IndentChar = (char)9;
-      writer.WriteStartDocument(true);
-      writer.WriteStartElement("remotes"); // <remotes>
-
-      foreach (TreeNode remoteNode in treeViewRemotes.Nodes)
+      using (XmlTextWriter writer = new XmlTextWriter(file, System.Text.Encoding.UTF8))
       {
-        writer.WriteStartElement("remote"); // <remote>
-        writer.WriteAttributeString("name", remoteNode.Text);
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("remotes"); // <remotes>
 
-        foreach (TreeNode buttonNode in remoteNode.Nodes)
+        foreach (TreeNode remoteNode in treeViewRemotes.Nodes)
         {
-          writer.WriteStartElement("button"); // <button>
-          writer.WriteAttributeString("name", buttonNode.Text);
+          writer.WriteStartElement("remote"); // <remote>
+          writer.WriteAttributeString("name", remoteNode.Text);
 
-          foreach (TreeNode codeNode in buttonNode.Nodes)
+          foreach (TreeNode buttonNode in remoteNode.Nodes)
           {
-            writer.WriteStartElement("code"); // <code>
-            writer.WriteAttributeString("value", codeNode.Text);
-            writer.WriteEndElement(); // </code>
+            writer.WriteStartElement("button"); // <button>
+            writer.WriteAttributeString("name", buttonNode.Text);
+
+            foreach (TreeNode codeNode in buttonNode.Nodes)
+            {
+              writer.WriteStartElement("code"); // <code>
+              writer.WriteAttributeString("value", codeNode.Text);
+              writer.WriteEndElement(); // </code>
+            }
+
+            writer.WriteEndElement(); // </button>
           }
 
-          writer.WriteEndElement(); // </button>
+          writer.WriteEndElement(); // </remote>
         }
 
-        writer.WriteEndElement(); // </remote>
+        writer.WriteEndElement(); // </remotes>
+        writer.WriteEndDocument();
       }
-
-      writer.WriteEndElement(); // </remotes>
-      writer.WriteEndDocument();
-      writer.Close();
     }
 
     delegate void DelegateAddNode(string keyCode);
@@ -232,11 +269,6 @@ namespace MediaPortal.Plugins
       }
     }
 
-    void RemoteHandlerCallback(string keyCode)
-    {
-      this.Invoke(_addNode, new Object[] { keyCode });
-    }
-
     void RefreshIRList()
     {
       listBoxIR.Items.Clear();
@@ -268,8 +300,15 @@ namespace MediaPortal.Plugins
 
         if (File.Exists(fileName))
         {
-          LearnIR learnIR = new LearnIR(false, command);
-          learnIR.ShowDialog(this);
+          _learnIR = new IrssUtils.Forms.LearnIR(
+            new LearnIrDelegate(MPControlPlugin.LearnIRCommand),
+            new BlastIrDelegate(MPControlPlugin.BlastIR),
+            MPControlPlugin.TransceiverInformation.Ports,
+            command);
+
+          _learnIR.ShowDialog(this);
+
+          _learnIR = null;
         }
         else
         {
@@ -320,47 +359,49 @@ namespace MediaPortal.Plugins
     }
     void SaveEvents()
     {
-      XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.EventMappingFile, System.Text.Encoding.UTF8);
-      writer.Formatting = Formatting.Indented;
-      writer.Indentation = 1;
-      writer.IndentChar = (char)9;
-      writer.WriteStartDocument(true);
-      writer.WriteStartElement("events"); // <events>
-
-      foreach (ListViewItem item in listViewEventMap.Items)
+      using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.EventMappingFile, System.Text.Encoding.UTF8))
       {
-        writer.WriteStartElement("mapping"); // <mapping>
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("events"); // <events>
 
-        writer.WriteAttributeString("event", item.SubItems[0].Text);
-        writer.WriteAttributeString("command", item.SubItems[1].Text);
+        foreach (ListViewItem item in listViewEventMap.Items)
+        {
+          writer.WriteStartElement("mapping"); // <mapping>
 
-        writer.WriteEndElement(); // </mapping>
+          writer.WriteAttributeString("event", item.SubItems[0].Text);
+          writer.WriteAttributeString("command", item.SubItems[1].Text);
+
+          writer.WriteEndElement(); // </mapping>
+        }
+
+        writer.WriteEndElement(); // </events>
+        writer.WriteEndDocument();
       }
-
-      writer.WriteEndElement(); // </events>
-      writer.WriteEndDocument();
-      writer.Close();
     }
 
     void SaveMultiMappings()
     {
-      XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.MultiMappingFile, System.Text.Encoding.UTF8);
-      writer.Formatting = Formatting.Indented;
-      writer.Indentation = 1;
-      writer.IndentChar = (char)9;
-      writer.WriteStartDocument(true);
-      writer.WriteStartElement("mappings"); // <mappings>
-
-      foreach (string item in listBoxMappings.Items)
+      using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.MultiMappingFile, System.Text.Encoding.UTF8))
       {
-        writer.WriteStartElement("map");
-        writer.WriteAttributeString("name", item);
-        writer.WriteEndElement();
-      }
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("mappings"); // <mappings>
 
-      writer.WriteEndElement(); // </mappings>
-      writer.WriteEndDocument();
-      writer.Close();
+        foreach (string item in listBoxMappings.Items)
+        {
+          writer.WriteStartElement("map");
+          writer.WriteAttributeString("name", item);
+          writer.WriteEndElement();
+        }
+
+        writer.WriteEndElement(); // </mappings>
+        writer.WriteEndDocument();
+      }
     }
 
     #endregion Local Methods
@@ -381,8 +422,14 @@ namespace MediaPortal.Plugins
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      LearnIR learnIR = new LearnIR(true, String.Empty);
-      learnIR.ShowDialog(this);
+      _learnIR = new IrssUtils.Forms.LearnIR(
+        new LearnIrDelegate(MPControlPlugin.LearnIRCommand),
+        new BlastIrDelegate(MPControlPlugin.BlastIR),
+        MPControlPlugin.TransceiverInformation.Ports);
+
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
 
       RefreshIRList();
       RefreshEventMapperCommands();
@@ -537,7 +584,12 @@ namespace MediaPortal.Plugins
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
-        BlastCommand blastCommand = new BlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(MPControlPlugin.BlastIR),
+          Common.FolderIRCommands,
+          MPControlPlugin.TransceiverInformation.Ports,
+          selected.Substring(Common.CmdPrefixBlast.Length));
+
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -662,12 +714,16 @@ namespace MediaPortal.Plugins
     private void buttonChangeServer_Click(object sender, EventArgs e)
     {
       MPControlPlugin.StopClient();
-      
+
       IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(MPControlPlugin.ServerHost);
-      serverAddress.ShowDialog();
+      serverAddress.ShowDialog(this);
+
       MPControlPlugin.ServerHost = serverAddress.ServerHost;
 
-      MPControlPlugin.StartClient();
+      IPAddress serverIP = Client.GetIPFromName(MPControlPlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      MPControlPlugin.StartClient(endPoint);
     }
 
     private void buttonLoadPreset_Click(object sender, EventArgs e)
@@ -748,7 +804,12 @@ namespace MediaPortal.Plugins
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
 
-        BlastCommand blastCommand = new BlastCommand(commands);
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(MPControlPlugin.BlastIR),
+          Common.FolderIRCommands,
+          MPControlPlugin.TransceiverInformation.Ports,
+          commands);
+
         if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
 

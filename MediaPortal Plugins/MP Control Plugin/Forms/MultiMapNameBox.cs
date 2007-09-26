@@ -8,17 +8,22 @@ using System.Windows.Forms;
 
 namespace MediaPortal.Plugins
 {
-  public partial class MultiMapNameBox : Form
+
+  partial class MultiMapNameBox : Form
   {
+
+
     public string MapName
     {
       get { return textBoxName.Text; }
     }
 
+
     public MultiMapNameBox()
     {
       InitializeComponent();
     }
+
 
     private void buttonOK_Click(object sender, EventArgs e)
     {

@@ -208,10 +208,10 @@ namespace IRTransTransceiver
 
     #region Implementation
 
-    public override string Name         { get { return "IRTrans (Experimental)"; } }
+    public override string Name         { get { return "IRTrans"; } }
     public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
-    public override string Description  { get { return "IRTrans Transceiver (Experimental)"; } }
+    public override string Description  { get { return "IRTrans Transceiver"; } }
 
     public override bool Start()
     {
@@ -235,6 +235,9 @@ namespace IRTransTransceiver
     }
     public override void Stop()
     {
+      if (_socket == null)
+        return;
+
       try
       {
         _socket.Close();
@@ -243,6 +246,10 @@ namespace IRTransTransceiver
       {
         // Nothing to worry about
         Trace.WriteLine(ex.ToString());
+      }
+      finally
+      {
+        _socket = null;
       }
     }
 
@@ -296,20 +303,21 @@ namespace IRTransTransceiver
     {
       try
       {
-        XmlTextWriter writer  = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting     = Formatting.Indented;
-        writer.Indentation    = 1;
-        writer.IndentChar     = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("RemoteModel",    _irTransRemoteModel.ToString());
-        writer.WriteAttributeString("IrssUtils.Forms.ServerAddress",  _irTransServerAddress.ToString());
-        writer.WriteAttributeString("ServerPort",     _irTransServerPort.ToString());
+          writer.WriteAttributeString("RemoteModel", _irTransRemoteModel.ToString());
+          writer.WriteAttributeString("IrssUtils.Forms.ServerAddress", _irTransServerAddress.ToString());
+          writer.WriteAttributeString("ServerPort", _irTransServerPort.ToString());
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {
@@ -319,6 +327,7 @@ namespace IRTransTransceiver
 
     static bool Connect(string address, int port)
     {
+      // TODO: put this on a thread, retry every 30 seconds ...
       try
       {
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

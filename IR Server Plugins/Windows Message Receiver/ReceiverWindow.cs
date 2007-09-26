@@ -1,24 +1,50 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace WindowsMessageReceiver
 {
 
-  public delegate void ProcessMessage(ref Message m);
+  #region Delegates
 
-  public class ReceiverWindow : NativeWindow
+  /// <summary>
+  /// Windows message processing delegate.
+  /// </summary>
+  /// <param name="m">Windows message.</param>
+  delegate void ProcessMessage(ref Message m);
+
+  #endregion Delegates
+
+  /// <summary>
+  /// Use this class to receive windows messages.
+  /// </summary>
+  class ReceiverWindow : NativeWindow
   {
+
+    #region Variables
 
     ProcessMessage _processMessage = null;
 
+    #endregion Variables
+
+    #region Properties
+
+    /// <summary>
+    /// Gets or Sets the Windows Message processing delegate.
+    /// </summary>
     public ProcessMessage ProcMsg
     {
       get { return _processMessage; }
       set { _processMessage = value; }
     }
 
+    #endregion Properties
+
+    #region Constructor
+
+    /// <summary>
+    /// Create a Windows Message receiving window object.
+    /// </summary>
+    /// <param name="windowTitle">Window title for receiver object.</param>
     public ReceiverWindow(string windowTitle)
     {
       CreateParams createParams = new CreateParams();
@@ -29,6 +55,10 @@ namespace WindowsMessageReceiver
       CreateHandle(createParams);
     }
 
+    #endregion Constructor
+
+    #region Implementation
+
     protected override void WndProc(ref Message m)
     {
       if (_processMessage != null)
@@ -36,6 +66,8 @@ namespace WindowsMessageReceiver
 
       base.WndProc(ref m);
     }
+
+    #endregion Implementation
 
   }
 

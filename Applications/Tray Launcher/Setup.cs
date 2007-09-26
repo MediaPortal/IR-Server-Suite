@@ -13,7 +13,7 @@ using IrssComms;
 namespace TrayLauncher
 {
 
-  public partial class Setup : Form
+  partial class Setup : Form
   {
 
     #region Variables
@@ -64,6 +64,8 @@ namespace TrayLauncher
       openFileDialog.Filter = "All files|*.*";
       openFileDialog.Title = "Select Application to Launch";
 
+      comboBoxComputer.Items.Clear();
+      comboBoxComputer.Items.Add("localhost");
       ArrayList networkPCs = IrssUtils.Win32.GetNetworkComputers();
       if (networkPCs != null)
         comboBoxComputer.Items.AddRange(networkPCs.ToArray());

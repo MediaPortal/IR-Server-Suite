@@ -9,7 +9,7 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// Philips Pronto interface class.
   /// </summary>
-  public static class Pronto
+  static class Pronto
   {
 
     #region Enumerations
@@ -86,16 +86,15 @@ namespace MicrosoftMceTransceiver
       if (prontoData == null || prontoData.Length == 0)
         throw new ArgumentNullException("prontoData");
 
-      StreamWriter file = new StreamWriter(fileName, false);
-
-      for (int index = 0; index < prontoData.Length; index++)
+      using (StreamWriter file = new StreamWriter(fileName, false))
       {
-        file.Write(String.Format("{0:X4}", prontoData[index]));
-        if (index != prontoData.Length - 1)
-          file.Write(' ');
+        for (int index = 0; index < prontoData.Length; index++)
+        {
+          file.Write(String.Format("{0:X4}", prontoData[index]));
+          if (index != prontoData.Length - 1)
+            file.Write(' ');
+        }
       }
-
-      file.Close();
     }
 
     public static IrCode ConvertProntoDataToIrCode(ushort[] prontoData)

@@ -7,7 +7,7 @@ using Microsoft.Win32.SafeHandles;
 namespace MicrosoftMceTransceiver
 {
 
-  internal class NotifyWindow : NativeWindow
+  class NotifyWindow : NativeWindow
   {
 
     #region Interop

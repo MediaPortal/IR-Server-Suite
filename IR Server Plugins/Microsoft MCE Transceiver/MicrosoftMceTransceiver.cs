@@ -23,7 +23,7 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// The blaster port to send IR codes to.
   /// </summary>
-  enum BlasterPort
+  public enum BlasterPort
   {
     /// <summary>
     /// Send IR codes to both blaster ports.
@@ -128,10 +128,14 @@ namespace MicrosoftMceTransceiver
       {
         if (deviceGuid == MicrosoftGuid)
         {
-          if (Environment.OSVersion.Version.Major == VistaVersionNumber)
+          if (Environment.OSVersion.Version.Major >= VistaVersionNumber)
+          {
             _driver = new DriverVista(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+          }
           else
+          {
             _driver = new DriverXP(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+          }
         }
         else
         {
@@ -147,15 +151,18 @@ namespace MicrosoftMceTransceiver
     }
     public override void Suspend()
     {
-      _driver.Stop();
+      if (_driver != null)
+        _driver.Stop();
     }
     public override void Resume()
     {
-      _driver.Start();
+      if (_driver != null)
+        _driver.Start();
     }
     public override void Stop()
     {
-      _driver.Stop();
+      if (_driver != null)
+        _driver.Stop();
     }
 
     public void Configure()
@@ -284,32 +291,33 @@ namespace MicrosoftMceTransceiver
     {
       try
       {
-        XmlTextWriter writer  = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting     = Formatting.Indented;
-        writer.Indentation    = 1;
-        writer.IndentChar     = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("LearnTimeout",           _learnTimeout.ToString());
-        writer.WriteAttributeString("DisableMceServices",     _disableMceServices.ToString());
+          writer.WriteAttributeString("LearnTimeout", _learnTimeout.ToString());
+          writer.WriteAttributeString("DisableMceServices", _disableMceServices.ToString());
 
-        writer.WriteAttributeString("EnableRemoteInput",      _enableRemoteInput.ToString());
-        writer.WriteAttributeString("RemoteFirstRepeat",      _remoteFirstRepeat.ToString());
-        writer.WriteAttributeString("RemoteHeldRepeats",      _remoteHeldRepeats.ToString());
+          writer.WriteAttributeString("EnableRemoteInput", _enableRemoteInput.ToString());
+          writer.WriteAttributeString("RemoteFirstRepeat", _remoteFirstRepeat.ToString());
+          writer.WriteAttributeString("RemoteHeldRepeats", _remoteHeldRepeats.ToString());
 
-        writer.WriteAttributeString("EnableKeyboardInput",    _enableKeyboardInput.ToString());
-        writer.WriteAttributeString("KeyboardFirstRepeat",    _keyboardFirstRepeat.ToString());
-        writer.WriteAttributeString("KeyboardHeldRepeats",    _keyboardHeldRepeats.ToString());
-        writer.WriteAttributeString("HandleKeyboardLocally",  _handleKeyboardLocally.ToString());
+          writer.WriteAttributeString("EnableKeyboardInput", _enableKeyboardInput.ToString());
+          writer.WriteAttributeString("KeyboardFirstRepeat", _keyboardFirstRepeat.ToString());
+          writer.WriteAttributeString("KeyboardHeldRepeats", _keyboardHeldRepeats.ToString());
+          writer.WriteAttributeString("HandleKeyboardLocally", _handleKeyboardLocally.ToString());
 
-        writer.WriteAttributeString("EnableMouseInput",       _enableMouseInput.ToString());
-        writer.WriteAttributeString("HandleMouseLocally",     _handleMouseLocally.ToString());
-        writer.WriteAttributeString("MouseSensitivity",       _mouseSensitivity.ToString());
+          writer.WriteAttributeString("EnableMouseInput", _enableMouseInput.ToString());
+          writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
+          writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString());
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {
@@ -424,7 +432,7 @@ namespace MicrosoftMceTransceiver
       if (_remoteHandler != null)
         _remoteHandler(keyCode.ToString());
 
-      //String.Format("{0}: {1}", Enum.GetName(typeof(IRProtocol), codeType), keyCode);
+      Trace.WriteLine(String.Format("Remote: {0}, {1}", Enum.GetName(typeof(IrProtocol), codeType), keyCode));
     }
     void KeyboardEvent(uint keyCode, uint modifiers)
     {
@@ -508,7 +516,7 @@ namespace MicrosoftMceTransceiver
         }
       }
 
-      //Trace.WriteLine("Keyboard button: {0}, {1}", keyCode, modifiers);
+      Trace.WriteLine(String.Format("Keyboard: {0}, {1}", keyCode, modifiers));
 
       _lastKeyboardKeyCode = keyCode;
       _lastKeyboardModifiers = modifiers;
@@ -580,7 +588,7 @@ namespace MicrosoftMceTransceiver
       if (!_handleMouseLocally)
         _mouseHandler(deltaX, deltaY, (int)buttons);
 
-      //Trace.WriteLine("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left);
+      Trace.WriteLine(String.Format("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left));
     }
 
     static Keyboard.VKey ConvertMceKeyCodeToVKey(uint keyCode)

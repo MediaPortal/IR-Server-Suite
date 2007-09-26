@@ -40,7 +40,7 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// Used for decoding received IR codes.
   /// </summary>
-  public static class IrDecoder
+  static class IrDecoder
   {
 
     #region Constants

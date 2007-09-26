@@ -16,7 +16,7 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// Base class for the different MCE device driver access classes.
   /// </summary>
-  public abstract class Driver
+  abstract class Driver
   {
 
     #region Enumerations

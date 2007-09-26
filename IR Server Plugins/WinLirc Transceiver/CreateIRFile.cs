@@ -10,7 +10,7 @@ using System.Xml;
 namespace WinLircTransceiver
 {
 
-  public partial class CreateIRFile : Form
+  partial class CreateIRFile : Form
   {
 
     public CreateIRFile()
@@ -33,21 +33,22 @@ namespace WinLircTransceiver
 
         string fileName = saveFileDialog.FileName;
 
-        XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("IRCommand"); // <IRCommand>
+        using (XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("IRCommand"); // <IRCommand>
 
-        writer.WriteAttributeString("Password", textBoxPassword.Text);
-        writer.WriteAttributeString("RemoteName", textBoxRemote.Text);
-        writer.WriteAttributeString("ButtonName", textBoxButton.Text);
-        writer.WriteAttributeString("Repeats", numericUpDownRepeats.Value.ToString());
+          writer.WriteAttributeString("Password", textBoxPassword.Text);
+          writer.WriteAttributeString("RemoteName", textBoxRemote.Text);
+          writer.WriteAttributeString("ButtonName", textBoxButton.Text);
+          writer.WriteAttributeString("Repeats", numericUpDownRepeats.Value.ToString());
 
-        writer.WriteEndElement(); // </IRCommand>
-        writer.WriteEndDocument();
-        writer.Close();
+          writer.WriteEndElement(); // </IRCommand>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {

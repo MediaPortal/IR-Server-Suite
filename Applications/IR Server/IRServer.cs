@@ -62,18 +62,16 @@ namespace IRServer
     Server _server = null;
     Client _client = null;
 
-    int _serverPort = 24000;
-
     IRServerMode _mode;
     string _hostComputer;
 
     bool _registered = false; // Used for relay and repeater modes.
 
-    string _pluginNameReceive       = String.Empty;
-    IRServerPlugin _pluginReceive   = null;
+    string[] _pluginNameReceive;
+    IRServerPlugin[] _pluginReceive;
 
-    string _pluginNameTransmit      = String.Empty;
-    IRServerPlugin _pluginTransmit  = null;
+    string _pluginNameTransmit;
+    IRServerPlugin _pluginTransmit;
 
     bool _inConfiguration = false;
 
@@ -115,111 +113,132 @@ namespace IRServer
         _pluginReceive  = null;
         _pluginTransmit = null;
 
-        if (String.IsNullOrEmpty(_pluginNameReceive) && String.IsNullOrEmpty(_pluginNameTransmit))
+        if (_pluginNameReceive == null && String.IsNullOrEmpty(_pluginNameTransmit))
         {
-          IrssLog.Warn("No transmit or receive plugin loaded");
+          IrssLog.Warn("No transmit or receive plugins loaded");
         }
         else
         {
-          if (String.IsNullOrEmpty(_pluginNameReceive))
+          if (_pluginNameReceive == null)
           {
-            IrssLog.Warn("No receiver plugin loaded");
+            IrssLog.Warn("No receiver plugins loaded");
           }
           else
           {
-            _pluginReceive = Program.GetPlugin(_pluginNameReceive);
+            List<IRServerPlugin> plugins = new List<IRServerPlugin>(_pluginNameReceive.Length);
+
+            for (int index = 0; index < _pluginNameReceive.Length; index++)
+            {
+              string pluginName = _pluginNameReceive[index];
+
+              IRServerPlugin plugin = Program.GetPlugin(pluginName);
+
+              if (plugin == null)
+              {
+                IrssLog.Warn("Receiver plugin not found: {0}", pluginName);
+              }
+              else
+              {
+                plugins.Add(plugin);
+
+                if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit))
+                  _pluginTransmit = plugin;
+              }
+            }
+
+            _pluginReceive = plugins.ToArray();
           }
 
-          if (_pluginNameTransmit.Equals(_pluginNameReceive, StringComparison.InvariantCultureIgnoreCase))
-          {
-            _pluginTransmit = _pluginReceive;
-            IrssLog.Info("Using the same plugin for transmit and receive");
-          }
-          else if (String.IsNullOrEmpty(_pluginNameTransmit))
+          if (String.IsNullOrEmpty(_pluginNameTransmit))
           {
             IrssLog.Warn("No transmit plugin loaded");
           }
-          else
+          else if (_pluginTransmit != null)
           {
             _pluginTransmit = Program.GetPlugin(_pluginNameTransmit);
-          }            
+          }
         }
 
         switch (_mode)
         {
           case IRServerMode.ServerMode:
-            {
-              StartServer();
-
-              IrssLog.Info("Started in Server Mode");
-              break;
-            }
+            StartServer();
+            IrssLog.Info("Started in Server Mode");
+            break;
 
           case IRServerMode.RelayMode:
-            {
-              if (StartRelay())
-                IrssLog.Info("Started in Relay Mode");
-              else
-                IrssLog.Error("Failed to start in Relay Mode");
-              break;
-            }
+            if (StartRelay())
+              IrssLog.Info("Started in Relay Mode");
+            else
+              IrssLog.Error("Failed to start in Relay Mode");
+            break;
 
           case IRServerMode.RepeaterMode:
-            {
-              if (StartRepeater())
-                IrssLog.Info("Started in Repeater Mode");
-              else
-                IrssLog.Error("Failed to start in Repeater Mode");
-              break;
-            }
+            if (StartRepeater())
+              IrssLog.Info("Started in Repeater Mode");
+            else
+              IrssLog.Error("Failed to start in Repeater Mode");
+            break;
         }
 
         // Start plugin(s) ...
+
+        bool startedTransmit = false;
+
         if (_pluginReceive != null)
         {
-          try
-          {
-            if (_pluginReceive.Start())
-              IrssLog.Info("Receiver plugin started: \"{0}\"", _pluginNameReceive);
-            else
-              IrssLog.Error("Failed to start receive plugin: \"{0}\"", _pluginNameReceive);
-          }
-          catch (Exception ex)
-          {
-            IrssLog.Error("Failed to start receive plugin: \"{0}\"", _pluginNameReceive);
-            IrssLog.Error(ex.ToString());
-          }
-        }
-
-        if (!_pluginNameTransmit.Equals(_pluginNameReceive, StringComparison.InvariantCultureIgnoreCase))
-        {
-          if (_pluginTransmit != null)
+          foreach (IRServerPlugin plugin in _pluginReceive)
           {
             try
             {
-              if (_pluginTransmit.Start())
-                IrssLog.Info("Transmit plugin started: \"{0}\"", _pluginNameTransmit);
+              if (plugin.Start())
+              {
+                if (plugin is IRemoteReceiver)
+                  (plugin as IRemoteReceiver).RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
+
+                if (plugin is IKeyboardReceiver)
+                  (plugin as IKeyboardReceiver).KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
+
+                if (plugin is IMouseReceiver)
+                  (plugin as IMouseReceiver).MouseCallback += new MouseHandler(MouseHandlerCallback);
+
+                if (plugin.Name.Equals(_pluginTransmit.Name))
+                {
+                  startedTransmit = true;
+                  IrssLog.Info("Transmit and Receive plugin started: \"{0}\"", plugin.Name);
+                }
+                else
+                {
+                  IrssLog.Info("Receiver plugin started: \"{0}\"", plugin.Name);
+                }
+              }
               else
-                IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
+              {
+                IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
+              }
             }
             catch (Exception ex)
             {
-              IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
+              IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
               IrssLog.Error(ex.ToString());
             }
           }
         }
-
-        if (_pluginReceive != null)
+        
+        if (_pluginTransmit != null && !startedTransmit)
         {
-          if (_pluginReceive is IRemoteReceiver)
-            (_pluginReceive as IRemoteReceiver).RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
-
-          if (_pluginReceive is IKeyboardReceiver)
-            (_pluginReceive as IKeyboardReceiver).KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
-          
-          if (_pluginReceive is IMouseReceiver)
-            (_pluginReceive as IMouseReceiver).MouseCallback += new MouseHandler(MouseHandlerCallback);
+          try
+          {
+            if (_pluginTransmit.Start())
+              IrssLog.Info("Transmit plugin started: \"{0}\"", _pluginNameTransmit);
+            else
+              IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
+          }
+          catch (Exception ex)
+          {
+            IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
+            IrssLog.Error(ex.ToString());
+          }
         }
 
         _notifyIcon.Visible = true;
@@ -254,32 +273,52 @@ namespace IRServer
         SendToAll(message);
       }
 
+      // Stop Plugin(s) ...
+
+      bool stoppedTransmit = false;
+
       if (_pluginReceive != null)
       {
-        if (_pluginReceive is IRemoteReceiver)
-          (_pluginReceive as IRemoteReceiver).RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
-        
-        if (_pluginReceive is IKeyboardReceiver)
-          (_pluginReceive as IKeyboardReceiver).KeyboardCallback -= new KeyboardHandler(KeyboardHandlerCallback);
-        
-        if (_pluginReceive is IMouseReceiver)
-          (_pluginReceive as IMouseReceiver).MouseCallback -= new MouseHandler(MouseHandlerCallback);
+        foreach (IRServerPlugin plugin in _pluginReceive)
+        {
+          try
+          {
+            if (plugin is IRemoteReceiver)
+              (plugin as IRemoteReceiver).RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
+
+            if (plugin is IKeyboardReceiver)
+              (plugin as IKeyboardReceiver).KeyboardCallback -= new KeyboardHandler(KeyboardHandlerCallback);
+
+            if (plugin is IMouseReceiver)
+              (plugin as IMouseReceiver).MouseCallback -= new MouseHandler(MouseHandlerCallback);
+
+            plugin.Stop();
+
+            if (plugin == _pluginTransmit)
+            {
+              stoppedTransmit = true;
+              IrssLog.Info("Transmit and Receive plugin stopped: \"{0}\"", plugin.Name);
+            }
+            else
+            {
+              IrssLog.Info("Receiver plugin stopped: \"{0}\"", plugin.Name);
+            }
+          }
+          catch (Exception ex)
+          {
+            IrssLog.Error(ex.ToString());
+          }
+        }
+
+        _pluginReceive = null;
       }
-      
-      // Stop Plugin(s)
+
       try
       {
-        if (_pluginReceive != null)
-          _pluginReceive.Stop();
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-      }
-      try
-      {
-        if (_pluginTransmit != null && _pluginTransmit != _pluginReceive)
+        if (_pluginTransmit != null && !stoppedTransmit)
           _pluginTransmit.Stop();
+
+        _pluginTransmit = null;
       }
       catch (Exception ex)
       {
@@ -337,7 +376,7 @@ namespace IRServer
             _pluginNameReceive  = config.PluginReceive;
             _pluginNameTransmit = config.PluginTransmit;
 
-            SaveSettings(); // Save Settings
+            SaveSettings();
 
             Start();  // Restart communications
           }
@@ -361,7 +400,7 @@ namespace IRServer
       _registeredRepeaters = new List<ClientManager>();
 
       ServerMessageSink sink = new ServerMessageSink(ServerReceivedMessage);
-      _server = new Server(_serverPort, sink);
+      _server = new Server(Server.DefaultPort, sink);
 
       _server.Start();
     }
@@ -370,7 +409,7 @@ namespace IRServer
       if (_server == null)
         return;
 
-      _server.Stop();
+      _server.Dispose();
       _server = null;
 
       _registeredClients.Clear();
@@ -410,16 +449,14 @@ namespace IRServer
       Thread.Sleep(1000);
     }
 
-    bool StartClient()
+    bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       ClientMessageSink sink = new ClientMessageSink(ClientReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_hostComputer);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
@@ -439,16 +476,20 @@ namespace IRServer
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
-    
+
     bool StartRelay()
     {
       try
       {
         StartServer();
-        StartClient();
+
+        IPAddress serverIP = Client.GetIPFromName(_hostComputer);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+        StartClient(endPoint);
 
         return true;
       }
@@ -473,7 +514,11 @@ namespace IRServer
       try
       {
         StartServer();
-        StartClient();
+
+        IPAddress serverIP = Client.GetIPFromName(_hostComputer);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+        StartClient(endPoint);
 
         return true;
       }
@@ -604,30 +649,55 @@ namespace IRServer
           {
             IrssLog.Info("Resume from standby ...");
 
-            if (_pluginReceive != null)
-              _pluginReceive.Resume();
+            bool resumedTransmit = false;
 
-            if (_pluginTransmit != null && _pluginTransmit != _pluginReceive)
+            if (_pluginReceive != null)
+            {
+              foreach (IRServerPlugin plugin in _pluginReceive)
+              {
+                if (_pluginTransmit == plugin)
+                  resumedTransmit = true;
+
+                plugin.Resume();
+              }
+            }
+
+            if (_pluginTransmit != null && !resumedTransmit)
               _pluginTransmit.Resume();
 
-            // TODO: Inform clients ?
+            // Inform clients ...
+            if (_mode == IRServerMode.ServerMode)
+            {
+              IrssMessage message = new IrssMessage(MessageType.ServerResume, MessageFlags.Notify);
+              SendToAll(message);
+            }
             break;
           }
 
         case PowerModes.Suspend:
           {
-            IrssLog.Info("Enter low-power standby ...");
+            IrssLog.Info("Enter standby ...");
+
+            bool suspendedTransmit = false;
 
             if (_pluginReceive != null)
-              _pluginReceive.Suspend();
+            {
+              foreach (IRServerPlugin plugin in _pluginReceive)
+              {
+                if (_pluginTransmit == plugin)
+                  suspendedTransmit = true;
 
-            if (_pluginTransmit != null && _pluginTransmit != _pluginReceive)
+                plugin.Suspend();
+              }
+            }
+
+            if (_pluginTransmit != null && !suspendedTransmit)
               _pluginTransmit.Suspend();
 
             // Inform clients ...
             if (_mode == IRServerMode.ServerMode)
             {
-              IrssMessage message = new IrssMessage(MessageType.ServerShutdown, MessageFlags.Notify);
+              IrssMessage message = new IrssMessage(MessageType.ServerSuspend, MessageFlags.Notify);
               SendToAll(message);
             }
             break;
@@ -975,13 +1045,6 @@ namespace IRServer
 
             break;
 
-          case MessageType.Ping:
-          {
-            IrssMessage response = new IrssMessage(MessageType.Echo, MessageFlags.Response, combo.Message.DataAsBytes);
-            SendTo(combo.Manager, response);
-            break;
-          }
-
           case MessageType.RegisterClient:
           {
             IrssMessage response = new IrssMessage(MessageType.RegisterClient, MessageFlags.Response);
@@ -1104,45 +1167,85 @@ namespace IRServer
 
     void LoadSettings()
     {
+      _mode               = IRServerMode.ServerMode;
+      _hostComputer       = String.Empty;
+      _pluginNameReceive  = null;
+      _pluginNameTransmit = String.Empty;
+
+      XmlDocument doc = new XmlDocument();
+
       try
       {
-        XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
-
-        _mode               = (IRServerMode)Enum.Parse(typeof(IRServerMode), doc.DocumentElement.Attributes["Mode"].Value, true);
-        _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value;
-        _pluginNameReceive  = doc.DocumentElement.Attributes["PluginReceive"].Value;
-        _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value;
+      }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("No configuration file found ({0}), creating default configuration file", ConfigurationFile);
+        SaveSettings();
+        return;
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
+        return;
+      }
 
-        _mode               = IRServerMode.ServerMode;
-        _hostComputer       = String.Empty;
-        _pluginNameReceive  = String.Empty;
-        _pluginNameTransmit = String.Empty;
+      try { _mode               = (IRServerMode)Enum.Parse(typeof(IRServerMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
+      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+
+      try { _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value; }
+      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+
+      try { _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value; }
+      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+
+      try
+      {
+        string receivers        = doc.DocumentElement.Attributes["PluginReceive"].Value;
+        if (!String.IsNullOrEmpty(receivers))
+          _pluginNameReceive = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
       }
     }
     void SaveSettings()
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("settings"); // <settings>
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), _mode));
-        writer.WriteAttributeString("HostComputer", _hostComputer);
-        writer.WriteAttributeString("PluginReceive", _pluginNameReceive);
-        writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
+          writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), _mode));
+          writer.WriteAttributeString("HostComputer", _hostComputer);
+          writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
 
-        writer.WriteEndElement(); // </settings>
-        writer.WriteEndDocument();
-        writer.Close();
+          if (_pluginNameReceive != null)
+          {
+            StringBuilder receivers = new StringBuilder();
+            for (int index = 0; index < _pluginNameReceive.Length; index++)
+            {
+              receivers.Append(_pluginNameReceive[index]);
+
+              if (index < _pluginNameReceive.Length - 1)
+                receivers.Append(',');
+            }
+            writer.WriteAttributeString("PluginReceive", receivers.ToString());
+          }
+          else
+          {
+            writer.WriteAttributeString("PluginReceive", String.Empty);
+          }
+
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
       catch (Exception ex)
       {

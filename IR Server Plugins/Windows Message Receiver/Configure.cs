@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace WindowsMessageReceiver
 {
 
-  public partial class Configure : Form
+  partial class Configure : Form
   {
 
     #region Properties

@@ -43,12 +43,12 @@ namespace MediaPortal.Plugins
       this.checkBoxLogVerbose = new System.Windows.Forms.CheckBox();
       this.buttonExtChannels = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+      this.buttonChangeServer = new System.Windows.Forms.Button();
+      this.buttonHelp = new System.Windows.Forms.Button();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageOptions = new System.Windows.Forms.TabPage();
       this.tabPageIR = new System.Windows.Forms.TabPage();
       this.tabPageMacros = new System.Windows.Forms.TabPage();
-      this.buttonChangeServer = new System.Windows.Forms.Button();
-      this.buttonHelp = new System.Windows.Forms.Button();
       this.tabControl.SuspendLayout();
       this.tabPageOptions.SuspendLayout();
       this.tabPageIR.SuspendLayout();
@@ -216,6 +216,30 @@ namespace MediaPortal.Plugins
       this.buttonExtChannels.UseVisualStyleBackColor = true;
       this.buttonExtChannels.Click += new System.EventHandler(this.buttonExtChannels_Click);
       // 
+      // buttonChangeServer
+      // 
+      this.buttonChangeServer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonChangeServer.Location = new System.Drawing.Point(8, 184);
+      this.buttonChangeServer.Name = "buttonChangeServer";
+      this.buttonChangeServer.Size = new System.Drawing.Size(96, 24);
+      this.buttonChangeServer.TabIndex = 1;
+      this.buttonChangeServer.Text = "Change Server";
+      this.toolTips.SetToolTip(this.buttonChangeServer, "Change the IR Server host");
+      this.buttonChangeServer.UseVisualStyleBackColor = true;
+      this.buttonChangeServer.Click += new System.EventHandler(this.buttonChangeServer_Click);
+      // 
+      // buttonHelp
+      // 
+      this.buttonHelp.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.buttonHelp.Location = new System.Drawing.Point(168, 184);
+      this.buttonHelp.Name = "buttonHelp";
+      this.buttonHelp.Size = new System.Drawing.Size(56, 24);
+      this.buttonHelp.TabIndex = 2;
+      this.buttonHelp.Text = "Help";
+      this.toolTips.SetToolTip(this.buttonHelp, "Click here for help");
+      this.buttonHelp.UseVisualStyleBackColor = true;
+      this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
+      // 
       // tabControl
       // 
       this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -274,30 +298,6 @@ namespace MediaPortal.Plugins
       this.tabPageMacros.Text = "Macros";
       this.tabPageMacros.UseVisualStyleBackColor = true;
       // 
-      // buttonChangeServer
-      // 
-      this.buttonChangeServer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonChangeServer.Location = new System.Drawing.Point(8, 184);
-      this.buttonChangeServer.Name = "buttonChangeServer";
-      this.buttonChangeServer.Size = new System.Drawing.Size(96, 24);
-      this.buttonChangeServer.TabIndex = 1;
-      this.buttonChangeServer.Text = "Change Server";
-      this.toolTips.SetToolTip(this.buttonChangeServer, "Change the IR Server host");
-      this.buttonChangeServer.UseVisualStyleBackColor = true;
-      this.buttonChangeServer.Click += new System.EventHandler(this.buttonChangeServer_Click);
-      // 
-      // buttonHelp
-      // 
-      this.buttonHelp.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.buttonHelp.Location = new System.Drawing.Point(168, 184);
-      this.buttonHelp.Name = "buttonHelp";
-      this.buttonHelp.Size = new System.Drawing.Size(56, 24);
-      this.buttonHelp.TabIndex = 2;
-      this.buttonHelp.Text = "Help";
-      this.toolTips.SetToolTip(this.buttonHelp, "Click here for help");
-      this.buttonHelp.UseVisualStyleBackColor = true;
-      this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
-      // 
       // SetupForm
       // 
       this.AcceptButton = this.buttonOK;
@@ -315,6 +315,7 @@ namespace MediaPortal.Plugins
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "MediaPortal TV2 Blaster Plugin";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SetupForm_FormClosing);
       this.Load += new System.EventHandler(this.SetupForm_Load);
       this.tabControl.ResumeLayout(false);
       this.tabPageOptions.ResumeLayout(false);

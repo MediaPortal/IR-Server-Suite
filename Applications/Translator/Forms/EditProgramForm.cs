@@ -14,7 +14,7 @@ using IrssUtils;
 namespace Translator
 {
 
-  public partial class EditProgramForm : Form
+  partial class EditProgramForm : Form
   {
 
     #region Properties

@@ -158,9 +158,7 @@ namespace XBCDRCReceiver
 
     ~XBCDRCReceiver()
     {
-      // call Dispose with false.  Since we're in the
-      // destructor call, the managed resources will be
-      // disposed of anyways.
+      // Call Dispose with false.  Since we're in the destructor call, the managed resources will be disposed of anyway.
       Dispose(false);
     }
 
@@ -170,11 +168,10 @@ namespace XBCDRCReceiver
 
     public void Dispose()
     {
-      // dispose of the managed and unmanaged resources
+      // Dispose of the managed and unmanaged resources
       Dispose(true);
 
-      // tell the GC that the Finalize process no longer needs
-      // to be run for this object.
+      // Tell the GC that the Finalize process no longer needs to be run for this object.
       GC.SuppressFinalize(this);
     }
 
@@ -231,10 +228,12 @@ namespace XBCDRCReceiver
 
       try
       {
-        _deviceStream.Close();
+        _deviceStream.Dispose();
       }
       catch (IOException)
-      { }
+      {
+        // we are closing the stream so ignore this
+      }
       finally
       {
         _deviceStream = null;
@@ -250,11 +249,7 @@ namespace XBCDRCReceiver
         if (disposeManagedResources)
         {
           // dispose managed resources
-          if (_deviceStream != null)
-          {
-            _deviceStream.Dispose();
-            _deviceStream = null;
-          }
+          Stop();
         }
 
         // dispose unmanaged resources

@@ -40,7 +40,8 @@ namespace Translator
     static string _learnIRFilename = null;
 
     static bool _registered = false;
-    static int _echoID = -1;
+
+    static bool _firstConnection = true;
 
     static ClientMessageSink _handleMessage;
 
@@ -109,18 +110,11 @@ namespace Translator
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
       _config = Configuration.Load(ConfigFile);
+
       if (_config == null)
-        _config = new Configuration();
-
-      if (String.IsNullOrEmpty(_config.ServerHost))
       {
-        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(_config.ServerHost);
-
-        if (serverAddress.ShowDialog() == DialogResult.OK)
-        {
-          _config.ServerHost = serverAddress.ServerHost;
-          Configuration.Save(_config, ConfigFile);
-        }
+        MessageBox.Show("Failed to load configuration, creating new configuration", "Translator - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        _config = new Configuration();
       }
 
       // Setup notify icon ...
@@ -143,7 +137,22 @@ namespace Translator
       */
 
       // Start server communications ...
-      if (StartClient())
+      bool clientStarted = false;
+
+      IPAddress serverIP = Client.GetIPFromName(_config.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      try
+      {
+        clientStarted = StartClient(endPoint);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        clientStarted = false;
+      }
+
+      if (clientStarted)
       {
         // Setup event notification ...
         SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
@@ -153,13 +162,21 @@ namespace Translator
 
         SystemEvents.SessionEnding -= new SessionEndingEventHandler(SystemEvents_SessionEnding);
         SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
+
+        StopClient();
       }
       else
       {
         MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Translator - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
 
-      StopClient();
+        _inConfiguration = true;
+
+        _mainForm.ShowDialog();
+
+        _inConfiguration = false;
+      }
+      
+      _notifyIcon.Visible = false;
 
       //if (_focusWatcher.IsAlive)
         //_focusWatcher.Abort();
@@ -679,7 +696,11 @@ namespace Translator
       _notifyIcon.Icon = Properties.Resources.Icon16;
       _notifyIcon.Text = "Translator";
 
-      MapEvent(MappingEvent.Translator_Start);
+      if (_firstConnection)
+      {
+        _firstConnection = false;
+        MapEvent(MappingEvent.Translator_Start);
+      }
     }
     static void Disconnected(object obj)
     {
@@ -691,24 +712,22 @@ namespace Translator
       Thread.Sleep(1000);
     }
 
-    internal static bool StartClient()
+    internal static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
-      _notifyIcon.Text = "Translator - Reconnecting ...";
+      _notifyIcon.Text = "Translator - Connecting ...";
       _notifyIcon.Visible = true;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
-      IPAddress serverAddress = Client.GetIPFromName(_config.ServerHost);
-
-      _client = new Client(serverAddress, 24000, sink);
+      _client = new Client(endPoint, sink);
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+
       if (_client.Start())
       {
         return true;
@@ -724,7 +743,7 @@ namespace Translator
       if (_client == null)
         return;
 
-      _client.Stop();
+      _client.Dispose();
       _client = null;
     }
 
@@ -788,9 +807,8 @@ namespace Translator
 
               byte[] dataBytes = received.DataAsBytes;
 
-              FileStream file = new FileStream(_learnIRFilename, FileMode.Create);
-              file.Write(dataBytes, 0, dataBytes.Length);
-              file.Close();
+              using (FileStream file = File.Create(_learnIRFilename))
+                file.Write(dataBytes, 0, dataBytes.Length);
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -811,10 +829,6 @@ namespace Translator
             _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
             _notifyIcon.Text = "Translator - Connecting ...";
             
-            break;
-
-          case MessageType.Echo:
-            _echoID = BitConverter.ToInt32(received.DataAsBytes, 0);
             break;
 
           case MessageType.Error:
@@ -1159,20 +1173,21 @@ namespace Translator
       if (!_registered)
         throw new Exception("Cannot Blast, not registered to an active IR Server");
 
-      FileStream file = new FileStream(fileName, FileMode.Open);
-      if (file.Length == 0)
-        throw new Exception(String.Format("Cannot Blast, IR file \"{0}\" has no data, possible IR learn failure", fileName));
+      using (FileStream file = File.OpenRead(fileName))
+      {
+        if (file.Length == 0)
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
-      byte[] outData = new byte[4 + port.Length + file.Length];
+        byte[] outData = new byte[4 + port.Length + file.Length];
 
-      BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
-      Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+        BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+        Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-      file.Read(outData, 4 + port.Length, (int)file.Length);
-      file.Close();
+        file.Read(outData, 4 + port.Length, (int)file.Length);
 
-      IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
-      _client.Send(message);
+        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+        _client.Send(message);
+      }
     }
 
     /// <summary>

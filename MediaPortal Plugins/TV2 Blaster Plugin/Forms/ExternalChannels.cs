@@ -17,7 +17,7 @@ using MPUtils;
 namespace MediaPortal.Plugins
 {
 
-  public partial class ExternalChannels : Form
+  partial class ExternalChannels : Form
   {
 
     #region Variables
@@ -38,7 +38,8 @@ namespace MediaPortal.Plugins
 
     private void ExternalChannels_Load(object sender, EventArgs e)
     {
-      int cards = TV2BlasterPlugin.ExternalChannelConfigs.Length;
+      int cards = TV2BlasterPlugin.TvCardCount;
+
       string cardName;
       string cardNumber;
 
@@ -102,8 +103,8 @@ namespace MediaPortal.Plugins
       foreach (StbSetup setup in _tvCardStbSetups)
         setup.Save();
 
-      foreach (ExternalChannelConfig config in TV2BlasterPlugin.ExternalChannelConfigs)
-        config.Save();
+      for (int index = 0; index < TV2BlasterPlugin.TvCardCount; index++)
+        TV2BlasterPlugin.GetExternalChannelConfig(index).Save();
 
       this.DialogResult = DialogResult.OK;
       this.Close();
