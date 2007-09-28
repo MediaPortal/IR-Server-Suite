@@ -43,7 +43,7 @@ namespace IRServer
 
   #endregion Enumerations
 
-  internal class IRServer : IDisposable
+  public class IRServer : IDisposable
   {
 
     #region Constants
@@ -115,6 +115,10 @@ namespace IRServer
       if (disposeManagedResources)
       {
         // Dispose managed resources ...
+
+        StopServer();
+        StopClient();
+
         _notifyIcon.Dispose();
         _notifyIcon = null;
       }
@@ -183,7 +187,7 @@ namespace IRServer
           {
             IrssLog.Warn("No transmit plugin loaded");
           }
-          else if (_pluginTransmit != null)
+          else if (_pluginTransmit == null)
           {
             _pluginTransmit = Program.GetPlugin(_pluginNameTransmit);
           }

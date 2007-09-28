@@ -252,7 +252,7 @@ namespace MicrosoftMceTransceiver
     }
     public LearnStatus Learn(out byte[] data)
     {
-      IrCode code = null;
+      IrCode code;
       
       LearnStatus status = _driver.Learn(_learnTimeout, out code);
 
