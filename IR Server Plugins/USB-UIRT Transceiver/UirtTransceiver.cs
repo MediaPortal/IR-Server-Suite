@@ -162,7 +162,7 @@ namespace UirtTransceiver
 
     #endregion Variables
 
-    #region Deconstructor
+    #region Destructor
 
     ~UirtTransceiver()
     {
@@ -170,7 +170,7 @@ namespace UirtTransceiver
       Dispose(false);
     }
 
-    #endregion Deconstructor
+    #endregion Destructor
 
     #region IDisposable Members
 
@@ -367,9 +367,14 @@ namespace UirtTransceiver
         _blastRepeats = int.Parse(doc.DocumentElement.Attributes["BlastRepeats"].Value);
         _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value);
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
 
         _repeatDelay  = 500;
         _blastRepeats = 3;
@@ -396,10 +401,16 @@ namespace UirtTransceiver
           writer.WriteEndDocument();
         }
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     void UUIRTReceiveCallback(string keyCode, IntPtr userData)

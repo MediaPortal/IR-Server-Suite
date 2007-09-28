@@ -275,7 +275,7 @@ Refer to IR Blast help for more information.",
             break;
 
           case MessageType.Error:
-            IrssLog.Warn(received.DataAsString);
+            IrssLog.Warn(received.GetDataAsString());
             break;
         }
       }

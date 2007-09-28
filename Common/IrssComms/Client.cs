@@ -25,8 +25,8 @@ namespace IrssComms
 
     #region Variables
 
-    IPEndPoint _serverEndPoint;
-    Socket _serverSocket = null;
+    IPEndPoint _serverEndpoint;
+    Socket _serverSocket;
 
     volatile bool _processConnectionThread = false;
     volatile bool _connected = false;
@@ -35,9 +35,9 @@ namespace IrssComms
 
     ClientMessageSink _messageSink;
     
-    WaitCallback _connectCallback       = null;
-    WaitCallback _disconnectCallback    = null;
-    WaitCallback _commsFailureCallback  = null;
+    WaitCallback _connectCallback;
+    WaitCallback _disconnectCallback;
+    WaitCallback _commsFailureCallback;
 
     #endregion Variables
 
@@ -88,7 +88,7 @@ namespace IrssComms
     /// <param name="serverEndPoint">IP Address and Port combination of Server.</param>
     public Client(IPEndPoint serverEndPoint, ClientMessageSink messageSink)
     {
-      _serverEndPoint = serverEndPoint;
+      _serverEndpoint = serverEndPoint;
       
       _messageSink = messageSink;
 
@@ -105,13 +105,12 @@ namespace IrssComms
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposeManagedResources)
     {
-      if (disposing)
+      if (disposeManagedResources)
       {
         // Dispose managed resources ...
-        if (_processConnectionThread)
-          Stop();
+        Stop();
 
         _messageQueue.Dispose();
       }
@@ -238,7 +237,7 @@ namespace IrssComms
         {
           try
           {
-            _serverSocket.Connect(_serverEndPoint);
+            _serverSocket.Connect(_serverEndpoint);
             break;
           }
           catch (SocketException socketException)
@@ -290,8 +289,8 @@ namespace IrssComms
           // Read data from socket ...
           while (_processConnectionThread)
           {
-            bytesRead = _serverSocket.Receive(buffer, 4, SocketFlags.None);
-            if (bytesRead == 0)
+            bytesRead = _serverSocket.Receive(buffer, buffer.Length, SocketFlags.None);
+            if (bytesRead != buffer.Length)
               break;
 
             int readSize = BitConverter.ToInt32(buffer, 0);
@@ -299,12 +298,11 @@ namespace IrssComms
 
             byte[] packet = new byte[readSize];
 
-            bytesRead = _serverSocket.Receive(packet, readSize, SocketFlags.None);
-            if (bytesRead == 0)
+            bytesRead = _serverSocket.Receive(packet, packet.Length, SocketFlags.None);
+            if (bytesRead != packet.Length)
               break;
 
             IrssMessage message = IrssMessage.FromBytes(packet);
-
             _messageQueue.Enqueue(message);
           }
 

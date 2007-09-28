@@ -115,9 +115,14 @@ namespace WindowsMessageReceiver
         _messageType  = int.Parse(doc.DocumentElement.Attributes["MessageType"].Value);
         _wParam       = int.Parse(doc.DocumentElement.Attributes["WParam"].Value);
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
 
         _messageType  = WM_APP;
         _wParam       = DefaultMessageID;
@@ -142,10 +147,16 @@ namespace WindowsMessageReceiver
           writer.WriteEndDocument();
         }
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     void ProcMsg(ref Message m)

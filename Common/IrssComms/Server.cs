@@ -81,13 +81,12 @@ namespace IrssComms
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposeManagedResources)
     {
-      if (disposing)
+      if (disposeManagedResources)
       {
         // Dispose managed resources ...
-        if (_processConnectionThread)
-          Stop();
+        Stop();
         
         _messageQueue.Dispose();
       }
@@ -177,7 +176,7 @@ namespace IrssComms
       lock (_clientManagers)
       {
         foreach (ClientManager manager in _clientManagers)
-          manager.Stop();
+          manager.Dispose();
 
         _clientManagers.Clear();
         _clientManagers = null;
@@ -239,10 +238,16 @@ namespace IrssComms
           manager.Start();          
         }
       }
+#if TRACE
       catch (SocketException socketException)
       {
-        Trace.Write(socketException.ToString());
+        Trace.WriteLine(socketException.ToString());
       }
+#else
+      catch (SocketException)
+      {
+      }
+#endif
     }
 
     #endregion Implementation

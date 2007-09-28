@@ -60,11 +60,6 @@ namespace MicrosoftMceTransceiver
     static extern bool CancelIo(
       SafeFileHandle handle);
 
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CloseHandle(
-      SafeFileHandle handle);
-
     #endregion Interop
 
     #region Enumerations
@@ -213,6 +208,8 @@ namespace MicrosoftMceTransceiver
 
       OnDeviceRemoval();
 
+      _notifyWindow.Dispose();
+
       CloseDevice();
 
       _debugFile.Dispose();
@@ -278,7 +275,7 @@ namespace MicrosoftMceTransceiver
         case DeviceType.Microsoft:  portPacket = MicrosoftPorts[port];  break;
         case DeviceType.SmkTopseed: portPacket = SmkTopseedPorts[port]; break;
         default:
-          throw new Exception("Invalid device type");
+          throw new ApplicationException("Invalid device type");
       }
 
       //Dump(code.ToByteArray());
@@ -417,6 +414,9 @@ namespace MicrosoftMceTransceiver
         if (Thread.CurrentThread != _readThread)
           _readThread.Join();
 
+        _stopReadThread.Close();
+        _stopReadThread = null;
+
         _readThread = null;
       }
     }
@@ -424,7 +424,10 @@ namespace MicrosoftMceTransceiver
     void CloseDevice()
     {
       if (_eHomeHandle != null)
-        CloseHandle(_eHomeHandle);
+      {
+        _eHomeHandle.Dispose();
+        _eHomeHandle = null;
+      }
     }
 
     void OnDeviceArrival()
@@ -497,9 +500,9 @@ namespace MicrosoftMceTransceiver
               else if (handle == 0)
                 break;
               else if (handle == 1)
-                throw new Exception("Stop Read Thread");
+                throw new ApplicationException("Stop Read Thread");
               else
-                throw new Exception("Invalid wait handle return");
+                throw new ApplicationException("Invalid wait handle return");
             }
 
             bool getOverlapped = GetOverlappedResult(_eHomeHandle, ref lpOverlapped, out bytesRead, true);
@@ -665,9 +668,9 @@ namespace MicrosoftMceTransceiver
           int handle = WaitHandle.WaitAny(waitHandles, WriteSyncTimeout, false);
 
           if (handle == Win32ErrorCodes.WAIT_TIMEOUT)
-            throw new Exception("Timeout trying to write data to device");
+            throw new ApplicationException("Timeout trying to write data to device");
           else if (handle != 0)
-            throw new Exception("Invalid wait handle return");
+            throw new ApplicationException("Invalid wait handle return");
 
           bool getOverlapped = GetOverlappedResult(_eHomeHandle, ref lpOverlapped, out bytesWritten, true);
           lastError = Marshal.GetLastWin32Error();

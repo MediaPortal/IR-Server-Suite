@@ -12,7 +12,7 @@ namespace IrssComms
   /// <summary>
   /// Manages Server socket connections.
   /// </summary>
-  public class ClientManager
+  public class ClientManager : IDisposable
   {
 
     #region Variables
@@ -35,6 +35,28 @@ namespace IrssComms
     }
 
     #endregion Constructor
+
+    #region IDisposable
+
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposeManagedResources)
+    {
+      if (disposeManagedResources)
+      {
+        // Dispose managed resources ...
+        Stop();
+      }
+
+      // Free native resources ...
+
+    }
+
+    #endregion IDisposable
 
     #region Implementation
 
@@ -59,6 +81,7 @@ namespace IrssComms
       _processReceiveThread = false;
 
       _connection.Close();
+      _connection = null;
 
       //_receiveThread.Abort();
       //_receiveThread.Join();
@@ -89,8 +112,8 @@ namespace IrssComms
 
         while (_processReceiveThread)
         {
-          bytesRead = _connection.Receive(buffer, 4, SocketFlags.None);
-          if (bytesRead == 0)
+          bytesRead = _connection.Receive(buffer, buffer.Length, SocketFlags.None);
+          if (bytesRead != buffer.Length)
             break; // TODO: Inform server to remove clientmanager from list? (Low)
 
           int readSize = BitConverter.ToInt32(buffer, 0);
@@ -98,8 +121,8 @@ namespace IrssComms
 
           byte[] packet = new byte[readSize];
 
-          bytesRead = _connection.Receive(packet, readSize, SocketFlags.None);
-          if (bytesRead == 0)
+          bytesRead = _connection.Receive(packet, packet.Length, SocketFlags.None);
+          if (bytesRead != packet.Length)
             break;
 
           IrssMessage message = IrssMessage.FromBytes(packet);
@@ -107,10 +130,16 @@ namespace IrssComms
           _messageSink(combo);
         }
       }
+#if TRACE
       catch (SocketException socketException)
       {
         Trace.WriteLine(socketException.ToString());
       }
+#else
+      catch (SocketException)
+      {
+      }
+#endif
     }
 
     #endregion Implementation

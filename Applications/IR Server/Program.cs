@@ -26,11 +26,18 @@ namespace IRServer
         if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
           return;
       }
+#if TRACE
       catch (Exception ex)
       {
-        Trace.WriteLine(ex.Message);
+        Trace.WriteLine(ex.ToString());
         return;
       }
+#else
+      catch
+      {
+        return;
+      }
+#endif
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
@@ -42,10 +49,11 @@ namespace IRServer
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
       // Start Server
-      IRServer irServer = new IRServer();
-      
-      if (irServer.Start())
-        Application.Run();
+      using (IRServer irServer = new IRServer())
+      {
+        if (irServer.Start())
+          Application.Run();
+      }
 
       Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
 
@@ -108,11 +116,18 @@ namespace IRServer
 
         return plugins.ToArray();
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
         return null;
       }
+#else
+      catch
+      {
+        return null;
+      }
+#endif
     }
 
     /// <summary>

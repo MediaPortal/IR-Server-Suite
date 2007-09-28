@@ -51,7 +51,7 @@ namespace X10Transceiver
         {
           X10Inter = new X10Interface();
           if (X10Inter == null)
-            throw new Exception("Failed to start X10 interface");
+            throw new ApplicationException("Failed to start X10 interface");
 
           // Bind the interface using a connection point
           icpc = (IConnectionPointContainer)X10Inter;
@@ -62,11 +62,18 @@ namespace X10Transceiver
 
         return true;
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
         return false;
       }
+#else
+      catch
+      {
+        return false;
+      }
+#endif
     }
     public override void Suspend()
     {
@@ -103,10 +110,16 @@ namespace X10Transceiver
           if (RemoteCallback != null)
             RemoteCallback(keyCode);
         }
+#if TRACE
         catch (Exception ex)
         {
           Trace.WriteLine(ex.ToString());
         }
+#else
+        catch
+        {
+        }
+#endif
       }
     }
 

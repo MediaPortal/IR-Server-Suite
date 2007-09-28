@@ -193,6 +193,8 @@ namespace IrssUtils
 
     #region Command Segments
 
+    public static readonly char[] SegmentSeparator = new char[] { '|' };
+
     public const int SegmentsBlastCommand         = 2;
     public const int SegmentsRunCommand           = 8;
     public const int SegmentsSerialCommand        = 7;
@@ -273,7 +275,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
+      string[] commands = command.Split(SegmentSeparator, StringSplitOptions.None);
 
       if (commands.Length != elements)
         throw new ArgumentException(String.Format("Command structure is invalid: {0}", command), "command");
@@ -291,6 +293,9 @@ namespace IrssUtils
     /// <param name="command">An array of arguments for the method (the output of SplitRunCommand).</param>
     public static void ProcessRunCommand(string[] commands)
     {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
+
       Process process = new Process();
       process.StartInfo.FileName          = commands[0];
       process.StartInfo.WorkingDirectory  = commands[1];
@@ -333,6 +338,9 @@ namespace IrssUtils
     /// <param name="commands">An array of arguments for the method (the output of SplitSerialCommand).</param>
     public static void ProcessSerialCommand(string[] commands)
     {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
+
       string command        = Common.ReplaceEscapeCodes(commands[0]);
       
       string comPort        = commands[1];
@@ -369,6 +377,9 @@ namespace IrssUtils
     /// <param name="commands">An array of arguments for the method (the output of SplitWindowMessageCommand).</param>
     public static void ProcessWindowMessageCommand(string[] commands)
     {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
+
       IntPtr windowHandle = IntPtr.Zero;
 
       string matchType = commands[0].ToLowerInvariant();
@@ -425,6 +436,9 @@ namespace IrssUtils
     /// <param name="command">The keystrokes to send.</param>
     public static void ProcessKeyCommand(string command)
     {
+      if (String.IsNullOrEmpty(command))
+        throw new ArgumentNullException("command");
+
       SendKeys.SendWait(command);
     }
 
@@ -434,6 +448,9 @@ namespace IrssUtils
     /// <param name="commands">An array of arguments for the method (the output of SplitTcpMessageCommand).</param>
     public static void ProcessTcpMessageCommand(string[] commands)
     {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
+
       using (TcpClient tcpClient = new TcpClient())
       {
         tcpClient.Connect(commands[0], int.Parse(commands[1]));
@@ -457,6 +474,9 @@ namespace IrssUtils
     /// <param name="command">The Mouse Command string.</param>
     public static void ProcessMouseCommand(string command)
     {
+      if (String.IsNullOrEmpty(command))
+        throw new ArgumentNullException("command");
+
       switch (command)
       {
         case MouseClickLeft:
@@ -503,6 +523,9 @@ namespace IrssUtils
     /// <param name="command">The drive letter of the CD-ROM drive to eject the tray on.</param>
     public static void ProcessEjectCommand(string command)
     {
+      if (String.IsNullOrEmpty(command))
+        throw new ArgumentNullException("command");
+
       if (CDRom.IsCDRom(command))
         CDRom.Open(command);
     }

@@ -70,10 +70,16 @@ namespace IrssUtils
 
             File.Move(fileName, backup);
           }
+#if TRACE
           catch (Exception ex)
           {
-            Trace.WriteLine(ex.Message);
+            Trace.WriteLine(ex.ToString());
           }
+#else
+          catch
+          {
+          }
+#endif
         }
 
         try
@@ -84,10 +90,16 @@ namespace IrssUtils
           string message = DateTime.Now.ToString() + ":\tLog Opened";
           _streamWriter.WriteLine(message);
         }
+#if TRACE
         catch (Exception ex)
         {
-          Trace.WriteLine(ex.Message);
+          Trace.WriteLine(ex.ToString());
         }
+#else
+        catch
+        {
+        }
+#endif
       }
     }
 
@@ -109,12 +121,18 @@ namespace IrssUtils
               File.Delete(backup);
 
             File.Move(fileName, backup);
-          }          
+          }
         }
+#if TRACE
         catch (Exception ex)
         {
-          Trace.WriteLine(ex.Message);
+          Trace.WriteLine(ex.ToString());
         }
+#else
+        catch
+        {
+        }
+#endif
 
         try
         {
@@ -124,10 +142,16 @@ namespace IrssUtils
           string message = DateTime.Now.ToString() + ":\tLog Opened";
           _streamWriter.WriteLine(message);
         }
+#if TRACE
         catch (Exception ex)
         {
-          Trace.WriteLine(ex.Message);
+          Trace.WriteLine(ex.ToString());
         }
+#else
+        catch
+        {
+        }
+#endif
       }
     }
     

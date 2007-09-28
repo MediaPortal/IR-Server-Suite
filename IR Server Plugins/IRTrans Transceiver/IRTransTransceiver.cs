@@ -242,11 +242,18 @@ namespace IRTransTransceiver
       {
         _socket.Close();
       }
+#if TRACE
       catch (SocketException ex)
       {
         // Nothing to worry about
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch (SocketException)
+      {
+        // Nothing to worry about
+      }
+#endif
       finally
       {
         _socket = null;
@@ -290,9 +297,14 @@ namespace IRTransTransceiver
         _irTransServerAddress = doc.DocumentElement.Attributes["IrssUtils.Forms.ServerAddress"].Value;
         _irTransServerPort    = int.Parse(doc.DocumentElement.Attributes["ServerPort"].Value);
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
 
         _irTransRemoteModel   = DefaultRemoteModel;
         _irTransServerAddress = DefaultServerAddress;
@@ -319,10 +331,16 @@ namespace IRTransTransceiver
           writer.WriteEndDocument();
         }
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     static bool Connect(string address, int port)
@@ -337,11 +355,18 @@ namespace IRTransTransceiver
         byte[] sendData = BitConverter.GetBytes(IRTransClientID);
         _socket.Send(sendData, sendData.Length, SocketFlags.None);
       }
+#if TRACE
       catch (SocketException ex)
       {
         Trace.WriteLine(ex.ToString());
         return false;
       }
+#else
+      catch (SocketException)
+      {
+        return false;
+      }
+#endif
 
       return true;
     }
@@ -357,19 +382,25 @@ namespace IRTransTransceiver
 
         _asynResult = _socket.BeginReceive(socketPkt.ReceiveBuffer, 0, socketPkt.ReceiveBuffer.Length, SocketFlags.None, _pfnCallBack, socketPkt);
       }
+#if TRACE
       catch (SocketException ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch (SocketException)
+      {
+      }
+#endif
     }
     static void OnDataReceived(IAsyncResult asyn)
     {
       try
       {
         CSocketPacket theSockId = (CSocketPacket)asyn.AsyncState;
-        
+
         int bytesReceived = theSockId.ThisSocket.EndReceive(asyn);
-        
+
         IntPtr ptrReceive = Marshal.AllocHGlobal(bytesReceived);
         Marshal.Copy(theSockId.ReceiveBuffer, 0, ptrReceive, bytesReceived);
         NETWORKRECV received = (NETWORKRECV)Marshal.PtrToStructure(ptrReceive, typeof(NETWORKRECV));
@@ -397,10 +428,16 @@ namespace IRTransTransceiver
                 if (_remoteButtonHandler != null)
                   _remoteButtonHandler(keyCode);
               }
+#if TRACE
               catch (Exception ex)
               {
                 Trace.WriteLine(ex.ToString());
               }
+#else
+              catch
+              {
+              }
+#endif
             }
             break;
 
@@ -416,14 +453,23 @@ namespace IRTransTransceiver
       catch (ObjectDisposedException)
       {
       }
+#if TRACE
       catch (SocketException ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch (SocketException)
+      {
+      }
+#endif
     }
 
     static byte[] StructToByteArray(object structure, int size)
     {
+      if (structure == null || size <= 0)
+        return null;
+
       try
       {
         byte[] byteArray = new byte[size];
@@ -435,10 +481,18 @@ namespace IRTransTransceiver
 
         return byteArray;
       }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
       catch
       {
-        return null;
       }
+#endif
+
+      return null;
     }
 
     #endregion Implementation

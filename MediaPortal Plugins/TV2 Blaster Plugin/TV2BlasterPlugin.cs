@@ -281,7 +281,7 @@ namespace MediaPortal.Plugins
           case MessageType.RegisterClient:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
+              _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
               if (LogVerbose)
@@ -300,7 +300,7 @@ namespace MediaPortal.Plugins
               if (LogVerbose)
                 Log.Info("TV2BlasterPlugin: Learned IR Successfully");
 
-              byte[] dataBytes = received.DataAsBytes;
+              byte[] dataBytes = received.GetDataAsBytes();
 
               using (FileStream file = File.Create(_learnIRFilename))
                 file.Write(dataBytes, 0, dataBytes.Length);
@@ -324,7 +324,7 @@ namespace MediaPortal.Plugins
 
           case MessageType.Error:
             _learnIRFilename = null;
-            Log.Error("TV2BlasterPlugin: Received error: {0}", received.DataAsString);
+            Log.Error("TV2BlasterPlugin: Received error: {0}", received.GetDataAsString());
             break;
         }
 
@@ -622,7 +622,7 @@ namespace MediaPortal.Plugins
     internal static void BlastIR(string fileName, string port)
     {
       if (!_registered)
-        throw new Exception("Cannot Blast, not registered to an active IR Server");
+        throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
 
       using (FileStream file = File.OpenRead(fileName))
       {

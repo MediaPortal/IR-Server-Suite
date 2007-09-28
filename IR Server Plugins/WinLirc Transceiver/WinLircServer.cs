@@ -83,7 +83,6 @@ namespace WinLircTransceiver
       {
         Trace.WriteLine("WLirc: Error listening to socket: " + se.Message);
       }
-
     }
     #endregion
 

@@ -66,13 +66,12 @@ namespace IrssComms
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposeManagedResources)
     {
-      if (disposing)
+      if (disposeManagedResources)
       {
         // Dispose managed resources ...
-        if (_processQueue)
-          Stop();
+        Stop();
 
         _workerThread = null;
 
@@ -82,6 +81,7 @@ namespace IrssComms
         _queueLock = null;
 
         _queueWaitHandle.Close();
+        _queueWaitHandle = null;
       }
 
       // Free native resources ...
@@ -142,9 +142,11 @@ namespace IrssComms
         throw new ArgumentNullException("obj");
 
       lock (_queueLock)
+      {
         _queue.Enqueue(obj);
 
-      _queueWaitHandle.Set();
+        _queueWaitHandle.Set();
+      }
     }
 
     /// <summary>
@@ -166,12 +168,10 @@ namespace IrssComms
       try
       {
         T obj = default(T);
-        bool didDequeue;
+        bool didDequeue = false;
 
         while (_processQueue)
         {
-          didDequeue = false;
-
           lock (_queueLock)
           {
             if (_queue.Count > 0)
@@ -182,15 +182,27 @@ namespace IrssComms
           }
 
           if (didDequeue)
+          {
             _sink(obj);
+            obj = default(T);
+            didDequeue = false;
+          }
           else
+          {
             _queueWaitHandle.WaitOne();
+          }
         }
       }
+#if TRACE
       catch (ThreadAbortException threadAbortException)
       {
         Trace.WriteLine(threadAbortException.ToString());
       }
+#else
+      catch (ThreadAbortException)
+      {
+      }
+#endif
     }
 
     #endregion Implementation

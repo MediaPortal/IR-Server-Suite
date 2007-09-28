@@ -27,7 +27,7 @@ namespace MPUtils
     {
       GUIDialogNotify dlgNotify = (GUIDialogNotify)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
       if (dlgNotify == null)
-        throw new Exception("Failed to create GUIDialogNotify");
+        throw new ApplicationException("Failed to create GUIDialogNotify");
 
       dlgNotify.Reset();
       dlgNotify.ClearAll();
@@ -44,6 +44,9 @@ namespace MPUtils
     /// <param name="useBasicHome">Use the basic home screen when home is requested.</param>
     public static void ProcessGoTo(string screen, bool useBasicHome)
     {
+      if (String.IsNullOrEmpty(screen))
+        throw new ArgumentNullException("screen");
+
       int window = (int)GUIWindow.Window.WINDOW_INVALID;
 
       try
@@ -66,7 +69,7 @@ namespace MPUtils
       }
 
       if (window == (int)GUIWindow.Window.WINDOW_INVALID)
-        throw new Exception(String.Format("Failed to parse Goto command window id \"{0}\"", screen));
+        throw new ArgumentException(String.Format("Failed to parse Goto command window id \"{0}\"", screen), "screen");
 
       if (window == (int)GUIWindow.Window.WINDOW_HOME && useBasicHome)
         window = (int)GUIWindow.Window.WINDOW_SECOND_HOME;

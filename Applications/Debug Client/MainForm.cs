@@ -173,7 +173,7 @@ namespace DebugClient
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
               _registered = true;
-              _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
+              _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               comboBoxPort.Items.Clear();
               comboBoxPort.Items.AddRange(_irServerInfo.Ports);
               comboBoxPort.SelectedIndex = 0;
@@ -185,13 +185,13 @@ namespace DebugClient
             return;
 
           case MessageType.RemoteEvent:
-            RemoteHandlerCallback(received.DataAsString);
+            RemoteHandlerCallback(received.GetDataAsString());
             return;
 
           case MessageType.LearnIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              byte[] dataBytes = received.DataAsBytes;
+              byte[] dataBytes = received.GetDataAsBytes();
 
               using (FileStream file = File.Create(_learnIRFilename))
                 file.Write(dataBytes, 0, dataBytes.Length);
@@ -206,7 +206,7 @@ namespace DebugClient
 
           case MessageType.Error:
             _learnIRFilename = null;
-            this.Invoke(_addStatusLine, new Object[] { received.DataAsString });
+            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
             return;
         }
       }

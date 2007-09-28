@@ -65,15 +65,15 @@ namespace MicrosoftMceTransceiver
 
     #region Detection Data
 
-    static RemoteDetectionData JVC_Data     = null;
-    static RemoteDetectionData NEC_Data     = null;
-    static RemoteDetectionData RC5_Data     = null;
-    static RemoteDetectionData RC6_Data     = null;
-    static RemoteDetectionData RCA_Data     = null;
-    static RemoteDetectionData RECS80_Data  = null;
-    static RemoteDetectionData SIRC_Data    = null;
+    static RemoteDetectionData JVC_Data;
+    static RemoteDetectionData NEC_Data;
+    static RemoteDetectionData RC5_Data;
+    static RemoteDetectionData RC6_Data;
+    static RemoteDetectionData RCA_Data;
+    static RemoteDetectionData RECS80_Data;
+    static RemoteDetectionData SIRC_Data;
 
-    static MceDetectionData MCE_Data        = null;
+    static MceDetectionData MCE_Data;
 
     #endregion Detection Data
 

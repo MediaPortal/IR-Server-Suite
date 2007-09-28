@@ -354,7 +354,7 @@ namespace VirtualRemote
             break;
 
           case MessageType.Error:
-            IrssLog.Error(received.DataAsString);
+            IrssLog.Error(received.GetDataAsString());
             break;
         }
       }

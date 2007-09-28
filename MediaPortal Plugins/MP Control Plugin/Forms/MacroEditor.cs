@@ -25,6 +25,9 @@ namespace MediaPortal.Plugins
 
     public MacroEditor(bool newMacro, string name)
     {
+      if (String.IsNullOrEmpty(name))
+        throw new ArgumentNullException("name");
+
       InitializeComponent();
 
       textBoxName.Text = name;
@@ -176,7 +179,7 @@ namespace MediaPortal.Plugins
             }
             else
             {
-              Log.Error("Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
+              Log.Error("MPControlPlugin: Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
             }
 
             writer.WriteEndElement();

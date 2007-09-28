@@ -323,7 +323,7 @@ namespace TrayLauncher
             break;
 
           case MessageType.RemoteEvent:
-            RemoteHandlerCallback(received.DataAsString);
+            RemoteHandlerCallback(received.GetDataAsString());
             break;
 
           case MessageType.ServerShutdown:
@@ -332,7 +332,7 @@ namespace TrayLauncher
             break;
 
           case MessageType.Error:
-            IrssLog.Error("Received error: {0}", received.DataAsString);
+            IrssLog.Error("Received error: {0}", received.GetDataAsString());
             break;
         }
 

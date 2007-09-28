@@ -340,7 +340,7 @@ namespace MediaPortal.Plugins
       }
       else
       {
-        throw new Exception(String.Format("Unknown command in macro command list \"{0}\"", selected));
+        throw new ApplicationException(String.Format("Unknown command in macro command list \"{0}\"", selected));
       }
     }
 

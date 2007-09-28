@@ -23,12 +23,12 @@ namespace MicrosoftMceTransceiver
     #region Member Variables
 
     RemoteDetectionState _state = RemoteDetectionState.HeaderPulse;
-    byte _bit = 0;
-    byte _halfBit = 0;
-    uint _code = 0;
-    uint _header = 0;
-    bool _longPulse = false;
-    bool _longSpace = false;
+    byte _bit;
+    byte _halfBit;
+    uint _code;
+    uint _header;
+    bool _longPulse;
+    bool _longSpace;
 
     #endregion Member Variables
 

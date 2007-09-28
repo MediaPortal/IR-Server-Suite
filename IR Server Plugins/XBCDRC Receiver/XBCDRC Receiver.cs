@@ -154,7 +154,7 @@ namespace XBCDRCReceiver
 
     #endregion Interop
 
-    #region Deconstructor
+    #region Destructor
 
     ~XBCDRCReceiver()
     {
@@ -162,7 +162,7 @@ namespace XBCDRCReceiver
       Dispose(false);
     }
 
-    #endregion
+    #endregion Destructor
 
     #region IDisposable Members
 
@@ -174,6 +174,24 @@ namespace XBCDRCReceiver
       // Tell the GC that the Finalize process no longer needs to be run for this object.
       GC.SuppressFinalize(this);
     }
+
+    protected virtual void Dispose(bool disposeManagedResources)
+    {
+      // process only if mananged and unmanaged resources have
+      // not been disposed of.
+      if (!_disposed)
+      {
+        if (disposeManagedResources)
+        {
+          // dispose managed resources
+          Stop();
+        }
+
+        // dispose unmanaged resources
+        _disposed = true;
+      }
+    }
+
 
     #endregion
 
@@ -237,23 +255,6 @@ namespace XBCDRCReceiver
       finally
       {
         _deviceStream = null;
-      }
-    }
-
-    protected virtual void Dispose(bool disposeManagedResources)
-    {
-      // process only if mananged and unmanaged resources have
-      // not been disposed of.
-      if (!this._disposed)
-      {
-        if (disposeManagedResources)
-        {
-          // dispose managed resources
-          Stop();
-        }
-
-        // dispose unmanaged resources
-        this._disposed = true;
       }
     }
 
@@ -345,7 +346,7 @@ namespace XBCDRCReceiver
             if (keyCode != _lastCode || timeSpan.Milliseconds > 250)
             {
               _remoteButtonHandler(keyCode);
-              
+
               _lastCodeTime = DateTime.Now;
             }
 
@@ -355,10 +356,16 @@ namespace XBCDRCReceiver
 
         _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
     
     #endregion Implementation

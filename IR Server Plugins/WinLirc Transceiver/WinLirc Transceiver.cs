@@ -142,11 +142,16 @@ namespace WinLircTransceiver
         _serverPath         = doc.DocumentElement.Attributes["ServerPath"].Value;
         _buttonReleaseTime  = int.Parse(doc.DocumentElement.Attributes["ButtonReleaseTime"].Value);
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
 
-        _serverIP           = IPAddress.Parse("127.0.0.1");
+        _serverIP           = IPAddress.Loopback;
         _serverPort         = 8765;
         _startServer        = false;
         _serverPath         = "winlirc.exe";
@@ -175,10 +180,16 @@ namespace WinLircTransceiver
           writer.WriteEndDocument();
         }
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     void CommandHandler(WinLircServer.Command cmd)

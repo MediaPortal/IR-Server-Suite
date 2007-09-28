@@ -44,20 +44,20 @@ namespace MicrosoftMceTransceiver
     #region Members
 
     MceKeyboardDetectState _state = MceKeyboardDetectState.Header;
-    uint _type = 0;
+    uint _type;
 
-    uint _keyCode = 0;
-    uint _modifiers = 0;
+    uint _keyCode;
+    uint _modifiers;
 
-    int _deltaY = 0;
-    int _deltaX = 0;
-    bool _right = false;
-    bool _left = false;
+    int _deltaY;
+    int _deltaX;
+    bool _right;
+    bool _left;
 
-    int _bit = 0;
+    int _bit;
 
-    int _halfBit = 0;
-    uint _working = 0;
+    int _halfBit;
+    uint _working;
     
     #endregion Members
 

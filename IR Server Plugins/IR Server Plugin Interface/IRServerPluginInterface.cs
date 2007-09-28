@@ -50,6 +50,9 @@ namespace IRServerPluginInterface
 
   #endregion Enumerations
 
+  /// <summary>
+  /// Base class for all IR Server Plugins.
+  /// </summary>
   public abstract class IRServerPlugin
   {
 
@@ -104,6 +107,9 @@ namespace IRServerPluginInterface
 
   }
 
+  /// <summary>
+  /// Plugins that implement this interface are configurable.
+  /// </summary>
   public interface IConfigure
   {
 
@@ -114,6 +120,9 @@ namespace IRServerPluginInterface
 
   }
 
+  /// <summary>
+  /// Plugins that implement this interface can transmit IR commands.
+  /// </summary>
   public interface ITransmitIR
   {
 
@@ -131,6 +140,9 @@ namespace IRServerPluginInterface
 
   }
 
+  /// <summary>
+  /// Plugins that implement this interface can learn IR commands.
+  /// </summary>
   public interface ILearnIR
   {
 
@@ -143,6 +155,9 @@ namespace IRServerPluginInterface
 
   }
 
+  /// <summary>
+  /// Plugins that implement this interface can receive remote control button presses.
+  /// </summary>
   public interface IRemoteReceiver
   {
 
@@ -153,6 +168,9 @@ namespace IRServerPluginInterface
 
   }
 
+  /// <summary>
+  /// Plugins that implement this interface can receive keyboard button presses.
+  /// </summary>
   public interface IKeyboardReceiver
   {
 
@@ -163,6 +181,9 @@ namespace IRServerPluginInterface
 
   }
 
+  /// <summary>
+  /// Plugins that implement this interface can receive mouse movements and button presses.
+  /// </summary>
   public interface IMouseReceiver
   {
 

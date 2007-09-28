@@ -139,7 +139,7 @@ namespace MediaPortal.Plugins
     {
       if (received.Type == MessageType.RemoteEvent)
       {
-        this.Invoke(_addNode, new Object[] { received.DataAsString });
+        this.Invoke(_addNode, new Object[] { received.GetDataAsString() });
       }
       else if (_learnIR != null && received.Type == MessageType.LearnIR)
       {

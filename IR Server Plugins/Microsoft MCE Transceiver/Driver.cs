@@ -179,9 +179,9 @@ namespace MicrosoftMceTransceiver
     protected Guid _deviceGuid;
     protected string _devicePath;
 
-    protected RemoteCallback _remoteCallback      = null;
-    protected KeyboardCallback _keyboardCallback  = null;
-    protected MouseCallback _mouseCallback        = null;
+    protected RemoteCallback _remoteCallback;
+    protected KeyboardCallback _keyboardCallback;
+    protected MouseCallback _mouseCallback;
 
     #endregion Variables
 

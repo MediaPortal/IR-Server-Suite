@@ -6,7 +6,7 @@ namespace IrssComms
   /// <summary>
   /// Encapsulates an IrssMessage and a ClientManager object instance for queueing.
   /// </summary>
-  public struct MessageManagerCombo : IEquatable<MessageManagerCombo>
+  public class MessageManagerCombo : IEquatable<MessageManagerCombo>
   {
 
     #region Variables
@@ -52,6 +52,8 @@ namespace IrssComms
     }
 
     #endregion Properties
+
+    #region IEquatable<MessageManagerCombo> Members
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -104,6 +106,8 @@ namespace IrssComms
     {
       return _message.GetHashCode() + _manager.GetHashCode();
     }
+
+    #endregion
 
   }
 

@@ -176,7 +176,7 @@ namespace VirtualRemote
           Program.RemoteSkin = skin;
         }
         else
-          throw new Exception(String.Format("Failed to load skin file not found \"{0}\"", xmlFile));
+          throw new FileNotFoundException("Failed to load skin, file not found", xmlFile);
       }
       catch (Exception ex)
       {

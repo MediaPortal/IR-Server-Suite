@@ -86,7 +86,7 @@ namespace Translator
 
     #region Variables
 
-    IrssUtils.Forms.LearnIR _learnIR;
+    LearnIR _learnIR;
 
     #endregion Variables
 
@@ -258,7 +258,7 @@ namespace Translator
 
         if (File.Exists(fileName))
         {
-          _learnIR = new IrssUtils.Forms.LearnIR(
+          _learnIR = new LearnIR(
             new LearnIrDelegate(Program.LearnIR),
             new BlastIrDelegate(Program.BlastIR),
             Program.TransceiverInformation.Ports,
@@ -317,11 +317,36 @@ namespace Translator
       }
     }
 
+    private void MainForm_Load(object sender, EventArgs e)
+    {
+      Program.HandleMessage += new ClientMessageSink(ReceivedMessage);
+    }
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Program.HandleMessage -= new ClientMessageSink(ReceivedMessage);
+
       CommitEvents();
 
       Configuration.Save(Program.Config, Program.ConfigFile);
+    }
+
+    void ReceivedMessage(IrssMessage received)
+    {
+      if (_learnIR != null && received.Type == MessageType.LearnIR)
+      {
+        if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+        {
+          _learnIR.LearnStatus("Learned IR successfully", true);
+        }
+        else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
+        {
+          _learnIR.LearnStatus("Learn IR timed out", false);
+        }
+        else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+        {
+          _learnIR.LearnStatus("Learn IR failed", false);
+        }
+      }
     }
 
     protected override void WndProc(ref Message m)
@@ -600,7 +625,7 @@ namespace Translator
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      _learnIR = new IrssUtils.Forms.LearnIR(
+      _learnIR = new LearnIR(
         new LearnIrDelegate(Program.LearnIR),
         new BlastIrDelegate(Program.BlastIR),
         Program.TransceiverInformation.Ports);
@@ -616,7 +641,7 @@ namespace Translator
       if (listBoxIR.SelectedIndex == -1)
         return;
 
-      _learnIR = new IrssUtils.Forms.LearnIR(
+      _learnIR = new LearnIR(
         new LearnIrDelegate(Program.LearnIR),
         new BlastIrDelegate(Program.BlastIR),
         Program.TransceiverInformation.Ports,

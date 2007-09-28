@@ -43,7 +43,7 @@ namespace IRServer
 
   #endregion Enumerations
 
-  internal class IRServer
+  internal class IRServer : IDisposable
   {
 
     #region Constants
@@ -59,8 +59,8 @@ namespace IRServer
     List<ClientManager> _registeredClients;
     List<ClientManager> _registeredRepeaters;
 
-    Server _server = null;
-    Client _client = null;
+    Server _server;
+    Client _client;
 
     IRServerMode _mode;
     string _hostComputer;
@@ -77,7 +77,7 @@ namespace IRServer
 
     #endregion Variables
 
-    #region Constructor
+    #region Constructor / Destructor
 
     public IRServer()
     {
@@ -93,7 +93,37 @@ namespace IRServer
       _notifyIcon.Text = "IR Server";
     }
 
-    #endregion Constructor
+    /*
+    ~IRServer()
+    {
+      Dispose(false);
+    }
+    */
+
+    #endregion Constructor / Destructor
+
+    #region IDisposable
+
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposeManagedResources)
+    {
+      if (disposeManagedResources)
+      {
+        // Dispose managed resources ...
+        _notifyIcon.Dispose();
+        _notifyIcon = null;
+      }
+
+      // Free native resources ...
+
+    }
+
+    #endregion IDisposable
 
     #region Implementation
 
@@ -159,6 +189,7 @@ namespace IRServer
           }
         }
 
+        // Mode select ...
         switch (_mode)
         {
           case IRServerMode.ServerMode:
@@ -193,14 +224,17 @@ namespace IRServer
             {
               if (plugin.Start())
               {
-                if (plugin is IRemoteReceiver)
-                  (plugin as IRemoteReceiver).RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
+                IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
+                if (remoteReceiver != null)
+                  remoteReceiver.RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
 
-                if (plugin is IKeyboardReceiver)
-                  (plugin as IKeyboardReceiver).KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
+                IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
+                if (keyboardReceiver != null)
+                  keyboardReceiver.KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
 
-                if (plugin is IMouseReceiver)
-                  (plugin as IMouseReceiver).MouseCallback += new MouseHandler(MouseHandlerCallback);
+                IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
+                if (mouseReceiver != null)
+                  mouseReceiver.MouseCallback += new MouseHandler(MouseHandlerCallback);
 
                 if (plugin.Name.Equals(_pluginTransmit.Name))
                 {
@@ -274,7 +308,6 @@ namespace IRServer
       }
 
       // Stop Plugin(s) ...
-
       bool stoppedTransmit = false;
 
       if (_pluginReceive != null)
@@ -283,14 +316,17 @@ namespace IRServer
         {
           try
           {
-            if (plugin is IRemoteReceiver)
-              (plugin as IRemoteReceiver).RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
+            IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
+            if (remoteReceiver != null)
+              remoteReceiver.RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
 
-            if (plugin is IKeyboardReceiver)
-              (plugin as IKeyboardReceiver).KeyboardCallback -= new KeyboardHandler(KeyboardHandlerCallback);
+            IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
+            if (keyboardReceiver != null)
+              keyboardReceiver.KeyboardCallback -= new KeyboardHandler(KeyboardHandlerCallback);
 
-            if (plugin is IMouseReceiver)
-              (plugin as IMouseReceiver).MouseCallback -= new MouseHandler(MouseHandlerCallback);
+            IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
+            if (mouseReceiver != null)
+              mouseReceiver.MouseCallback -= new MouseHandler(MouseHandlerCallback);
 
             plugin.Stop();
 
@@ -406,17 +442,23 @@ namespace IRServer
     }
     void StopServer()
     {
-      if (_server == null)
-        return;
+      if (_server != null)
+      {
+        _server.Dispose();
+        _server = null;
+      }
 
-      _server.Dispose();
-      _server = null;
+      if (_registeredClients != null)
+      {
+        _registeredClients.Clear();
+        _registeredClients = null;
+      }
 
-      _registeredClients.Clear();
-      _registeredClients = null;
-
-      _registeredRepeaters.Clear();
-      _registeredRepeaters = null;
+      if (_registeredRepeaters != null)
+      {
+        _registeredRepeaters.Clear();
+        _registeredRepeaters = null;
+      }
     }
 
     void CommsFailure(object obj)
@@ -473,11 +515,11 @@ namespace IRServer
     }
     void StopClient()
     {
-      if (_client == null)
-        return;
-
-      _client.Dispose();
-      _client = null;
+      if (_client != null)
+      {
+        _client.Dispose();
+        _client = null;
+      }
     }
 
     bool StartRelay()
@@ -539,11 +581,16 @@ namespace IRServer
           IrssMessage message = new IrssMessage(MessageType.UnregisterRepeater, MessageFlags.Request);
           _client.Send(message);
         }
-
+      }
+      catch
+      {
+        throw;
+      }
+      finally
+      {
         StopServer();
         StopClient();
       }
-      catch { }
     }
 
     void RemoteHandlerCallback(string keyCode)
@@ -939,12 +986,12 @@ namespace IRServer
           case MessageType.ForwardRemoteEvent:
             if (_mode == IRServerMode.RelayMode)
             {
-              IrssMessage forward = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, combo.Message.DataAsBytes);
+              IrssMessage forward = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
               _client.Send(forward);
             }
             else
             {
-              IrssMessage forward = new IrssMessage(MessageType.RemoteEvent, MessageFlags.Notify, combo.Message.DataAsBytes);
+              IrssMessage forward = new IrssMessage(MessageType.RemoteEvent, MessageFlags.Notify, combo.Message.GetDataAsBytes());
               SendToAllExcept(combo.Manager, forward);
             }
             break;
@@ -952,12 +999,12 @@ namespace IRServer
           case MessageType.ForwardKeyboardEvent:
             if (_mode == IRServerMode.RelayMode)
             {
-              IrssMessage forward = new IrssMessage(MessageType.ForwardKeyboardEvent, MessageFlags.Request, combo.Message.DataAsBytes);
+              IrssMessage forward = new IrssMessage(MessageType.ForwardKeyboardEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
               _client.Send(forward);
             }
             else
             {
-              IrssMessage forward = new IrssMessage(MessageType.KeyboardEvent, MessageFlags.Notify, combo.Message.DataAsBytes);
+              IrssMessage forward = new IrssMessage(MessageType.KeyboardEvent, MessageFlags.Notify, combo.Message.GetDataAsBytes());
               SendToAllExcept(combo.Manager, forward);
             }
             break;
@@ -965,12 +1012,12 @@ namespace IRServer
           case MessageType.ForwardMouseEvent:
             if (_mode == IRServerMode.RelayMode)
             {
-              IrssMessage forward = new IrssMessage(MessageType.ForwardMouseEvent, MessageFlags.Request, combo.Message.DataAsBytes);
+              IrssMessage forward = new IrssMessage(MessageType.ForwardMouseEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
               _client.Send(forward);
             }
             else
             {
-              IrssMessage forward = new IrssMessage(MessageType.MouseEvent, MessageFlags.Notify, combo.Message.DataAsBytes);
+              IrssMessage forward = new IrssMessage(MessageType.MouseEvent, MessageFlags.Notify, combo.Message.GetDataAsBytes());
               SendToAllExcept(combo.Manager, forward);
             }
             break;
@@ -988,7 +1035,7 @@ namespace IRServer
               if (_registeredRepeaters.Count > 0)
                 SendToRepeaters(combo.Message);
 
-              if (BlastIR(combo.Message.DataAsBytes))
+              if (BlastIR(combo.Message.GetDataAsBytes()))
                 response.Flags |= MessageFlags.Success;
               else
                 response.Flags |= MessageFlags.Failure;
@@ -1018,7 +1065,7 @@ namespace IRServer
               {
                 case LearnStatus.Success:
                   response.Flags |= MessageFlags.Success;
-                  response.DataAsBytes = bytes;
+                  response.SetDataAsBytes(bytes);
                   break;
 
                 case LearnStatus.Failure:
@@ -1063,7 +1110,7 @@ namespace IRServer
                 irServerInfo.Ports = (_pluginTransmit as ITransmitIR).AvailablePorts;
               }
 
-              response.DataAsBytes = irServerInfo.ToBytes();
+              response.SetDataAsBytes(irServerInfo.ToBytes());
               response.Flags |= MessageFlags.Success;
             }
             else

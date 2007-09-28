@@ -618,7 +618,7 @@ namespace Translator
             break;
 
           default:
-            throw new Exception("Unknown action: " + menuItem.Text);
+            throw new ArgumentException(String.Format("Unknown action: {0}", menuItem.Text), "sender");
         }
       }
       catch (Exception ex)
@@ -740,11 +740,11 @@ namespace Translator
     }
     internal static void StopClient()
     {
-      if (_client == null)
-        return;
-
-      _client.Dispose();
-      _client = null;
+      if (_client != null)
+      {
+        _client.Dispose();
+        _client = null;
+      }
     }
 
     static void ReceivedMessage(IrssMessage received)
@@ -756,13 +756,15 @@ namespace Translator
         switch (received.Type)
         {
           case MessageType.RemoteEvent:
-            RemoteHandlerCallback(received.DataAsString);
+            RemoteHandlerCallback(received.GetDataAsString());
             break;
 
           case MessageType.KeyboardEvent:
           {
-            int vKey    = BitConverter.ToInt32(received.DataAsBytes, 0);
-            bool keyUp  = BitConverter.ToBoolean(received.DataAsBytes, 4);
+            byte[] dataBytes = received.GetDataAsBytes();
+
+            int vKey    = BitConverter.ToInt32(dataBytes, 0);
+            bool keyUp  = BitConverter.ToBoolean(dataBytes, 4);
 
             KeyboardHandlerCallback(vKey, keyUp);
             break;
@@ -770,9 +772,11 @@ namespace Translator
 
           case MessageType.MouseEvent:
           {
-            int deltaX  = BitConverter.ToInt32(received.DataAsBytes, 0);
-            int deltaY  = BitConverter.ToInt32(received.DataAsBytes, 4);
-            int buttons = BitConverter.ToInt32(received.DataAsBytes, 8);
+            byte[] dataBytes = received.GetDataAsBytes();
+
+            int deltaX  = BitConverter.ToInt32(dataBytes, 0);
+            int deltaY  = BitConverter.ToInt32(dataBytes, 4);
+            int buttons = BitConverter.ToInt32(dataBytes, 8);
 
             MouseHandlerCallback(deltaX, deltaY, buttons);
             break;
@@ -788,7 +792,7 @@ namespace Translator
           case MessageType.RegisterClient:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              _irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
+              _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
               IrssLog.Info("Registered to IR Server");
@@ -805,7 +809,7 @@ namespace Translator
             {
               IrssLog.Info("Learned IR Successfully");
 
-              byte[] dataBytes = received.DataAsBytes;
+              byte[] dataBytes = received.GetDataAsBytes();
 
               using (FileStream file = File.Create(_learnIRFilename))
                 file.Write(dataBytes, 0, dataBytes.Length);
@@ -833,7 +837,7 @@ namespace Translator
 
           case MessageType.Error:
             _learnIRFilename = null;
-            IrssLog.Error("Received error: {0}", received.DataAsString);
+            IrssLog.Error("Received error: {0}", received.GetDataAsString());
             break;
         }
 
@@ -1027,7 +1031,7 @@ namespace Translator
       doc.Load(fileName);
 
       if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
-        throw new Exception("Cannot process Macro with Blast commands when not registered to an active IR Server");
+        throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
 
       XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
       string commandProperty;
@@ -1171,7 +1175,7 @@ namespace Translator
     internal static void BlastIR(string fileName, string port)
     {
       if (!_registered)
-        throw new Exception("Cannot Blast, not registered to an active IR Server");
+        throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
 
       using (FileStream file = File.OpenRead(fileName))
       {

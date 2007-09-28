@@ -101,9 +101,9 @@ namespace MicrosoftMceTransceiver
 
     Mouse.MouseEvents _mouseButtons = Mouse.MouseEvents.None;
 
-    RemoteHandler _remoteHandler = null;
-    KeyboardHandler _keyboardHandler = null;
-    MouseHandler _mouseHandler = null;
+    RemoteHandler _remoteHandler;
+    KeyboardHandler _keyboardHandler;
+    MouseHandler _mouseHandler;
 
     #endregion Variables
 
@@ -242,7 +242,7 @@ namespace MicrosoftMceTransceiver
       IrCode code = IrCode.FromByteArray(data);
 
       if (code == null)
-        throw new Exception("Invalid IR Command data");
+        throw new ArgumentException("Invalid IR Command data", "data");
 
       //code.Finalize();
 
@@ -319,10 +319,16 @@ namespace MicrosoftMceTransceiver
           writer.WriteEndDocument();
         }
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     bool FindDevice(out Guid deviceGuid, out string devicePath)
@@ -338,8 +344,16 @@ namespace MicrosoftMceTransceiver
         if (!String.IsNullOrEmpty(devicePath))
           return true;
       }
-      catch { }
-
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
       // Try Replacement driver ...
       deviceGuid = ReplacementGuid;
       try
@@ -349,8 +363,16 @@ namespace MicrosoftMceTransceiver
         if (!String.IsNullOrEmpty(devicePath))
           return true;
       }
-      catch { }
-
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
       return false;
     }
 
@@ -380,10 +402,16 @@ namespace MicrosoftMceTransceiver
           }
         }
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
 
       // XP ...
       // Kill Microsoft MCE ehtray process (if it exists)
@@ -394,10 +422,16 @@ namespace MicrosoftMceTransceiver
           if (proc.ProcessName.Equals("ehtray", StringComparison.InvariantCultureIgnoreCase))
             proc.Kill();
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     void RemoteEvent(IrProtocol codeType, uint keyCode)
@@ -432,7 +466,9 @@ namespace MicrosoftMceTransceiver
       if (_remoteHandler != null)
         _remoteHandler(keyCode.ToString());
 
+#if TRACE
       Trace.WriteLine(String.Format("Remote: {0}, {1}", Enum.GetName(typeof(IrProtocol), codeType), keyCode));
+#endif
     }
     void KeyboardEvent(uint keyCode, uint modifiers)
     {
@@ -516,8 +552,10 @@ namespace MicrosoftMceTransceiver
         }
       }
 
+#if TRACE
       Trace.WriteLine(String.Format("Keyboard: {0}, {1}", keyCode, modifiers));
-
+#endif
+      
       _lastKeyboardKeyCode = keyCode;
       _lastKeyboardModifiers = modifiers;
 
@@ -588,7 +626,9 @@ namespace MicrosoftMceTransceiver
       if (!_handleMouseLocally)
         _mouseHandler(deltaX, deltaY, (int)buttons);
 
+#if TRACE
       Trace.WriteLine(String.Format("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left));
+#endif
     }
 
     static Keyboard.VKey ConvertMceKeyCodeToVKey(uint keyCode)
@@ -678,7 +718,7 @@ namespace MicrosoftMceTransceiver
         case 0x65: return Keyboard.VKey.VK_APPS;
 
         default:
-          throw new Exception(string.Format("Unknown Key Value {0}", keyCode));
+          throw new ArgumentException(string.Format("Unknown Key Value {0}", keyCode), "keyCode");
       }
     }
 

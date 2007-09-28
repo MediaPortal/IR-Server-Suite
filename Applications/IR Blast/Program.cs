@@ -311,7 +311,7 @@ namespace IRBlast
             break;
 
           case MessageType.Error:
-            Warn(received.DataAsString);
+            Warn(received.GetDataAsString());
             break;
         }
       }

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -7,7 +8,7 @@ using Microsoft.Win32.SafeHandles;
 namespace MicrosoftMceTransceiver
 {
 
-  class NotifyWindow : NativeWindow
+  class NotifyWindow : NativeWindow, IDisposable
   {
 
     #region Interop
@@ -64,7 +65,8 @@ namespace MicrosoftMceTransceiver
       int flags);
 
     [DllImport("user32")]
-    static extern int UnregisterDeviceNotification(IntPtr handle);
+    static extern int UnregisterDeviceNotification(
+      IntPtr handle);
 
     [DllImport("kernel32")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -73,8 +75,50 @@ namespace MicrosoftMceTransceiver
 
     #endregion Interop
 
-    #region Methods
+    #region Constructor / Destructor
 
+    public NotifyWindow()
+    {
+
+    }
+
+    ~NotifyWindow()
+    {
+      // Call Dispose with false.  Since we're in the destructor call, the managed resources will be disposed of anyway.
+      Dispose(false);
+    }
+
+    #endregion Constructor / Destructor
+
+    #region IDisposable Members
+
+    public void Dispose()
+    {
+      // Dispose of the managed and unmanaged resources
+      Dispose(true);
+
+      // Tell the GC that the Finalize process no longer needs to be run for this object.
+      GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposeManagedResources)
+    {
+      if (disposeManagedResources)
+      {
+        // Dispose managed resources ...
+
+        Destroy();
+      }
+
+      // Free native resources ...
+      UnregisterDeviceArrival();
+      UnregisterDeviceRemoval();
+    }
+
+    #endregion IDisposable Members
+
+    #region Methods
+    
     internal void Create()
     {
       if (Handle != IntPtr.Zero)
@@ -84,6 +128,14 @@ namespace MicrosoftMceTransceiver
       Params.ExStyle = 0x80;
       Params.Style = unchecked((int)0x80000000);
       CreateHandle(Params);
+    }
+
+    void Destroy()
+    {
+      if (Handle == IntPtr.Zero)
+        return;
+
+      DestroyHandle();
     }
 
     #endregion Methods
@@ -137,9 +189,9 @@ namespace MicrosoftMceTransceiver
       dbi.ClassGuid = _deviceClass;
 
       _handleDeviceArrival = RegisterDeviceNotification(Handle, ref dbi, 0);
-
+      int lastError = Marshal.GetLastWin32Error();
       if (_handleDeviceArrival == IntPtr.Zero)
-        Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
+        throw new Win32Exception(lastError);
     }
 
     internal void RegisterDeviceRemoval(IntPtr deviceHandle)
@@ -152,9 +204,9 @@ namespace MicrosoftMceTransceiver
 
       _deviceHandle = deviceHandle;
       _handleDeviceRemoval = RegisterDeviceNotification(Handle, ref dbh, 0);
-
+      int lastError = Marshal.GetLastWin32Error();
       if (_handleDeviceRemoval == IntPtr.Zero)
-        Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
+        throw new Win32Exception(lastError);
     }
 
     internal void UnregisterDeviceArrival()

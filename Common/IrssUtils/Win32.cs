@@ -364,6 +364,12 @@ namespace IrssUtils
 
     #region Delegates
 
+    /// <summary>
+    /// Delegate for enumerating open Windows with EnumWindows method.
+    /// </summary>
+    /// <param name="hWnd">Window Handle.</param>
+    /// <param name="lParam">lParam.</param>
+    /// <returns>Success.</returns>
     public delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
 
     #endregion Delegates
@@ -640,9 +646,9 @@ namespace IrssUtils
     /// </summary>
     /// <param name="o">Object to get pointer for.</param>
     /// <returns>Pointer to object.</returns>
-    public static IntPtr VarPtr(object o)
+    public static IntPtr VarPtr(object obj)
     {
-      GCHandle handle = GCHandle.Alloc(o, GCHandleType.Pinned);
+      GCHandle handle = GCHandle.Alloc(obj, GCHandleType.Pinned);
       IntPtr ptr = handle.AddrOfPinnedObject();
       handle.Free();
       return ptr;

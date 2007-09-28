@@ -243,27 +243,22 @@ namespace MicrosoftMceTransceiver
     static extern bool CancelIo(
       SafeFileHandle handle);
 
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CloseHandle(
-      SafeFileHandle handle);
-
     #endregion Interop
 
     #region Variables
 
     #region Device Details
 
-    uint _numTxPorts    = 0;
-    //uint _numRxPorts    = 0;
-    uint _learnPortMask = 0;
-    //bool _legacyDevice  = false;
-    //bool _canFlashLed   = false;
+    uint _numTxPorts;
+    //uint _numRxPorts;
+    uint _learnPortMask;
+    //bool _legacyDevice;
+    //bool _canFlashLed;
 
     bool[] _blasters;
 
-    uint _receivePort   = 0;
-    uint _learnPort     = 0;
+    uint _receivePort;
+    uint _learnPort;
 
     #endregion Device Details
 
@@ -534,6 +529,8 @@ namespace MicrosoftMceTransceiver
     {
       OnDeviceRemoval();
 
+      _notifyWindow.Dispose();
+
       CloseDevice();
 
       _debugFile.Dispose();
@@ -663,7 +660,10 @@ namespace MicrosoftMceTransceiver
     void CloseDevice()
     {
       if (_eHomeHandle != null)
-        CloseHandle(_eHomeHandle);
+      {
+        _eHomeHandle.Dispose();
+        _eHomeHandle = null;
+      }
     }
     
     void OnDeviceArrival()

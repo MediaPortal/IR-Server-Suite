@@ -93,36 +93,6 @@ namespace IrssComms
       set { _flags = value; }
     }
 
-    /// <summary>
-    /// Message data as bytes.
-    /// </summary>
-    public byte[] DataAsBytes
-    {
-      get { return _data; }
-      set { _data = value; }
-    }
-
-    /// <summary>
-    /// Message data as string.
-    /// </summary>
-    public string DataAsString
-    {
-      get
-      {
-        if (_data == null)
-          return String.Empty;
-        else
-          return Encoding.ASCII.GetString(_data);
-      }
-      set
-      {
-        if (String.IsNullOrEmpty(value))
-          _data = null;
-        else
-          _data = Encoding.ASCII.GetBytes(value);
-      }
-    }
-
     #endregion Properties
 
     #region Constructors
@@ -144,18 +114,59 @@ namespace IrssComms
     public IrssMessage(MessageType type, MessageFlags flags, byte[] data)
       : this(type, flags)
     {
-      _data = data;
+      SetDataAsBytes(data);
     }
 
     public IrssMessage(MessageType type, MessageFlags flags, string data)
       : this(type, flags)
     {
-      _data = Encoding.ASCII.GetBytes(data);
+      SetDataAsString(data);
     }
 
     #endregion Constructors
 
     #region Implementation
+
+    /// <summary>
+    /// Get message data as bytes.
+    /// </summary>
+    public byte[] GetDataAsBytes()
+    {
+      return _data;
+    }
+
+    /// <summary>
+    /// Set message data as bytes.
+    /// </summary>
+    public void SetDataAsBytes(byte[] data)
+    {
+      if (data == null)
+        _data = null;
+      else
+        _data = (byte[])data.Clone();      
+    }
+
+    /// <summary>
+    /// Get message data as string.
+    /// </summary>
+    public string GetDataAsString()
+    {
+      if (_data == null)
+        return String.Empty;
+      else
+        return Encoding.ASCII.GetString(_data);
+    }
+
+    /// <summary>
+    /// Set message data as string.
+    /// </summary>
+    public void SetDataAsString(string data)
+    {
+      if (String.IsNullOrEmpty(data))
+        _data = null;
+      else
+        _data = Encoding.ASCII.GetBytes(data);
+    }
 
     /// <summary>
     /// Turn this Message instance into a byte array.

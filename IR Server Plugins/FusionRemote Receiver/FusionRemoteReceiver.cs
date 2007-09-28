@@ -214,11 +214,18 @@ namespace FusionRemoteReceiver
 
         return true;
       }
+#if TRACE
       catch (Exception ex)
       {
-        Trace.WriteLine(ex.Message);
+        Trace.WriteLine(ex.ToString());
         return false;
       }
+#else
+      catch
+      {
+        return false;
+      }
+#endif
     }
     public override void Suspend()
     {
@@ -261,7 +268,7 @@ namespace FusionRemoteReceiver
       string devicePath = FindDevice(hidGuid, DeviceID);
 
       if (devicePath == null)
-        throw new Exception("No device detected");
+        throw new ApplicationException("No device detected");
 
       SafeFileHandle deviceHandle = CreateFile(devicePath, GENERIC_READ, EFileShares.Read | EFileShares.Write, IntPtr.Zero, ECreationDisposition.OpenExisting, EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
@@ -381,10 +388,16 @@ namespace FusionRemoteReceiver
         if (_deviceStream != null)
           _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     #endregion Implementation

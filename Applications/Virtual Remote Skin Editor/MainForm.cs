@@ -581,7 +581,7 @@ namespace SkinEditor
         {
           case MessageType.RemoteEvent:
             if (listViewButtons.SelectedItems.Count == 1)
-              listViewButtons.SelectedItems[0].SubItems[1].Text = received.DataAsString;
+              listViewButtons.SelectedItems[0].SubItems[1].Text = received.GetDataAsString();
             return;
 
           case MessageType.RegisterClient:
@@ -603,7 +603,7 @@ namespace SkinEditor
             return;
 
           case MessageType.Error:
-            MessageBox.Show(this, received.DataAsString, "Virtual Remote Skin Editor Error from Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, received.GetDataAsString(), "Virtual Remote Skin Editor Error from Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
       }

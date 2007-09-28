@@ -17,6 +17,8 @@ namespace IrssUtils
 
     #endregion Constants
 
+    #region Methods
+
     /// <summary>
     /// Get the install folder for IR Server Suite.
     /// </summary>
@@ -37,6 +39,9 @@ namespace IrssUtils
     /// <returns>If key of name exists return true else return false.</returns>
     public static bool GetAutoRun(string name)
     {
+      if (String.IsNullOrEmpty(name))
+        throw new ArgumentNullException("name");
+
       RegistryKey key = Registry.CurrentUser.CreateSubKey(AutoRunPath);
       bool autoRun = (key.GetValue(name, null) != null);
       key.Close();
@@ -51,6 +56,12 @@ namespace IrssUtils
     /// <param name="executablePath">Executable Path for program.</param>
     public static void SetAutoRun(string name, string executablePath)
     {
+      if (String.IsNullOrEmpty(name))
+        throw new ArgumentNullException("name");
+
+      if (String.IsNullOrEmpty(executablePath))
+        throw new ArgumentNullException("executablePath");
+
       RegistryKey key = Registry.CurrentUser.CreateSubKey(AutoRunPath);
       key.SetValue(name, executablePath, RegistryValueKind.String);
       key.Close();
@@ -62,11 +73,16 @@ namespace IrssUtils
     /// <param name="name">Auto-run program name.</param>
     public static void RemoveAutoRun(string name)
     {
+      if (String.IsNullOrEmpty(name))
+        throw new ArgumentNullException("name");
+
       RegistryKey key = Registry.CurrentUser.CreateSubKey(AutoRunPath);
       key.DeleteValue(name, false);
       key.Close();
     }
-    
+
+    #endregion Methods
+
   }
 
 }

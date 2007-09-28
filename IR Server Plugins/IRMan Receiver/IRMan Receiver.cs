@@ -101,10 +101,16 @@ namespace IRManReceiver
       {
         _serialPort.Dispose();
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
       finally
       {
         _serialPort = null;
@@ -140,11 +146,11 @@ namespace IRManReceiver
       try
       {
         _serialPort.Read(_deviceBuffer, 0, DeviceBufferSize);
-        
-        StringBuilder keyCode = new StringBuilder(2*DeviceBufferSize);
+
+        StringBuilder keyCode = new StringBuilder(2 * DeviceBufferSize);
         for (int index = 0; index < DeviceBufferSize; index++)
           keyCode.Append(_deviceBuffer[index].ToString("X2"));
-        
+
         TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
 
         if (keyCode.ToString() == _lastCode) // Repeated button
@@ -163,10 +169,16 @@ namespace IRManReceiver
 
         _lastCode = keyCode.ToString();
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     protected virtual void Dispose(bool disposeManagedResources)
@@ -196,9 +208,14 @@ namespace IRManReceiver
         _repeatDelay    = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
         _serialPortName = doc.DocumentElement.Attributes["SerialPortName"].Value;
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
 
         _repeatDelay    = 500;
         _serialPortName = "COM1";
@@ -223,10 +240,16 @@ namespace IRManReceiver
           writer.WriteEndDocument();
         }
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
     
     #endregion Implementation
