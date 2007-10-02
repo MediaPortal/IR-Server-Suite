@@ -249,9 +249,11 @@ namespace MicrosoftMceTransceiver
       {
         blasterPort = (BlasterPort)Enum.Parse(typeof(BlasterPort), port, true);
       }
-      catch (Exception ex)
+      catch
       {
-        throw new ArgumentException("Invalid Blaster Port", "port", ex);
+#if TRACE
+        Trace.WriteLine("Invalid Blaster Port ({0}), using default ({1})", port, blasterPort.ToString());
+#endif
       }
 
       IrCode code = IrCode.FromByteArray(data);
