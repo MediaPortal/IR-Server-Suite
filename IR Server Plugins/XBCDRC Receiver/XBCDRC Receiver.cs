@@ -11,7 +11,7 @@ using IRServerPluginInterface;
 namespace XBCDRCReceiver
 {
 
-  public class XBCDRCReceiver : IRServerPlugin, IRemoteReceiver, IDisposable
+  public class XBCDRCReceiver : IRServerPluginBase, IRemoteReceiver, IDisposable
   {
 
     #region Constants
@@ -202,10 +202,14 @@ namespace XBCDRCReceiver
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "Supports the XBox 1 IR receiver with XBCDRC"; } }
 
-    public RemoteHandler RemoteCallback
+    public override bool Detect()
     {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
+      Guid guid = new Guid();
+      HidD_GetHidGuid(ref guid);
+
+      string devicePath = FindDevice(guid);
+
+      return (devicePath != null);
     }
 
     public override bool Start()
@@ -256,6 +260,12 @@ namespace XBCDRCReceiver
       {
         _deviceStream = null;
       }
+    }
+
+    public RemoteHandler RemoteCallback
+    {
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
     }
 
     static string FindDevice(Guid classGuid)

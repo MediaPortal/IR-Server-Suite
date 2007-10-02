@@ -177,12 +177,23 @@ namespace DebugClient
               comboBoxPort.Items.Clear();
               comboBoxPort.Items.AddRange(_irServerInfo.Ports);
               comboBoxPort.SelectedIndex = 0;
+
+              _client.Send(new IrssMessage(MessageType.ActiveReceivers, MessageFlags.Request));
+              _client.Send(new IrssMessage(MessageType.ActiveBlasters, MessageFlags.Request));
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
             }
             return;
+
+          case MessageType.ActiveBlasters:
+            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
+            break;
+
+          case MessageType.ActiveReceivers:
+            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
+            break;
 
           case MessageType.RemoteEvent:
             RemoteHandlerCallback(received.GetDataAsString());
@@ -521,6 +532,7 @@ namespace DebugClient
     private void buttonAutoTest_Click(object sender, EventArgs e)
     {
       AutoTest = new Thread(new ThreadStart(AutoTestThread));
+      AutoTest.Name = "DebugClient.AutoTest";
       AutoTest.IsBackground = true;
       AutoTest.Start();
     }

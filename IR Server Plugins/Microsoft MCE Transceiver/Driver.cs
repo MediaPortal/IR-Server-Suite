@@ -304,6 +304,59 @@ namespace MicrosoftMceTransceiver
 
     #endregion Static Methods
 
+    #region Debug
+
+#if DEBUG
+
+    protected StreamWriter _debugFile;
+
+    protected void DebugOpen(string fileName)
+    {
+      try
+      {
+        _debugFile = new StreamWriter(fileName, false);
+        _debugFile.AutoFlush = true;
+      }
+      catch
+      {
+        _debugFile = null;
+      }
+    }
+
+    protected void DebugClose()
+    {
+      if (_debugFile != null)
+      {
+        _debugFile.Dispose();
+        _debugFile = null;
+      }
+    }
+
+    protected void DebugWriteLine(string line)
+    {
+      if (_debugFile != null)
+        _debugFile.WriteLine(line);
+    }
+
+    protected void DebugDump(Array array)
+    {
+      if (_debugFile == null)
+        return;
+
+      foreach (object item in array)
+      {
+        _debugFile.Write(item);
+        _debugFile.Write(", ");
+      }
+
+      _debugFile.WriteLine();
+    }
+
+#endif
+
+    #endregion Debug
+
+
   }
 
 }

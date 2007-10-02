@@ -68,10 +68,10 @@ namespace IRServer
     bool _registered = false; // Used for relay and repeater modes.
 
     string[] _pluginNameReceive;
-    IRServerPlugin[] _pluginReceive;
+    IRServerPluginBase[] _pluginReceive;
 
     string _pluginNameTransmit;
-    IRServerPlugin _pluginTransmit;
+    IRServerPluginBase _pluginTransmit;
 
     bool _inConfiguration = false;
 
@@ -159,13 +159,13 @@ namespace IRServer
           }
           else
           {
-            List<IRServerPlugin> plugins = new List<IRServerPlugin>(_pluginNameReceive.Length);
+            List<IRServerPluginBase> plugins = new List<IRServerPluginBase>(_pluginNameReceive.Length);
 
             for (int index = 0; index < _pluginNameReceive.Length; index++)
             {
               string pluginName = _pluginNameReceive[index];
 
-              IRServerPlugin plugin = Program.GetPlugin(pluginName);
+              IRServerPluginBase plugin = Program.GetPlugin(pluginName);
 
               if (plugin == null)
               {
@@ -222,7 +222,7 @@ namespace IRServer
 
         if (_pluginReceive != null)
         {
-          foreach (IRServerPlugin plugin in _pluginReceive)
+          foreach (IRServerPluginBase plugin in _pluginReceive)
           {
             try
             {
@@ -316,7 +316,7 @@ namespace IRServer
 
       if (_pluginReceive != null)
       {
-        foreach (IRServerPlugin plugin in _pluginReceive)
+        foreach (IRServerPluginBase plugin in _pluginReceive)
         {
           try
           {
@@ -441,6 +441,7 @@ namespace IRServer
 
       ServerMessageSink sink = new ServerMessageSink(ServerReceivedMessage);
       _server = new Server(Server.DefaultPort, sink);
+      _server.ClientDisconnectCallback = new WaitCallback(ClientDisconnect);
 
       _server.Start();
     }
@@ -493,6 +494,17 @@ namespace IRServer
       IrssLog.Warn("Communications with other server has been lost");
 
       Thread.Sleep(1000);
+    }
+
+    void ClientDisconnect(object obj)
+    {
+      ClientManager clientManager = obj as ClientManager;
+
+      if (clientManager != null)
+      {
+        UnregisterClient(clientManager);
+        UnregisterRepeater(clientManager);
+      }
     }
 
     bool StartClient(IPEndPoint endPoint)
@@ -704,7 +716,7 @@ namespace IRServer
 
             if (_pluginReceive != null)
             {
-              foreach (IRServerPlugin plugin in _pluginReceive)
+              foreach (IRServerPluginBase plugin in _pluginReceive)
               {
                 if (_pluginTransmit == plugin)
                   resumedTransmit = true;
@@ -733,7 +745,7 @@ namespace IRServer
 
             if (_pluginReceive != null)
             {
-              foreach (IRServerPlugin plugin in _pluginReceive)
+              foreach (IRServerPluginBase plugin in _pluginReceive)
               {
                 if (_pluginTransmit == plugin)
                   suspendedTransmit = true;
@@ -987,6 +999,8 @@ namespace IRServer
       {
         switch (combo.Message.Type)
         {
+
+          #region ForwardRemoteEvent
           case MessageType.ForwardRemoteEvent:
             if (_mode == IRServerMode.RelayMode)
             {
@@ -999,7 +1013,9 @@ namespace IRServer
               SendToAllExcept(combo.Manager, forward);
             }
             break;
+          #endregion ForwardRemoteEvent
 
+          #region ForwardKeyboardEvent
           case MessageType.ForwardKeyboardEvent:
             if (_mode == IRServerMode.RelayMode)
             {
@@ -1012,7 +1028,9 @@ namespace IRServer
               SendToAllExcept(combo.Manager, forward);
             }
             break;
+          #endregion ForwardKeyboardEvent
 
+          #region ForwardMouseEvent
           case MessageType.ForwardMouseEvent:
             if (_mode == IRServerMode.RelayMode)
             {
@@ -1025,7 +1043,9 @@ namespace IRServer
               SendToAllExcept(combo.Manager, forward);
             }
             break;
+          #endregion ForwardMouseEvent
 
+          #region BlastIR
           case MessageType.BlastIR:
           {
             IrssMessage response = new IrssMessage(MessageType.BlastIR, MessageFlags.Response);
@@ -1050,7 +1070,9 @@ namespace IRServer
             
             break;
           }
+          #endregion BlastIR
 
+          #region LearnIR
           case MessageType.LearnIR:
           {
             IrssMessage response = new IrssMessage(MessageType.LearnIR, MessageFlags.Response);
@@ -1085,7 +1107,9 @@ namespace IRServer
             SendTo(combo.Manager, response);
             break;
           }
+          #endregion LearnIR
 
+          #region ServerShutdown
           case MessageType.ServerShutdown:
             if ((combo.Message.Flags & MessageFlags.Request) == MessageFlags.Request)
             {
@@ -1093,9 +1117,10 @@ namespace IRServer
               Stop();
               Application.Exit();
             }
-
             break;
+          #endregion ServerShutdown
 
+          #region RegisterClient
           case MessageType.RegisterClient:
           {
             IrssMessage response = new IrssMessage(MessageType.RegisterClient, MessageFlags.Response);
@@ -1125,11 +1150,15 @@ namespace IRServer
             SendTo(combo.Manager, response);
             break;
           }
+          #endregion RegisterClient
 
+          #region UnregisterClient
           case MessageType.UnregisterClient:
             UnregisterClient(combo.Manager);
             break;
+          #endregion UnregisterClient
 
+          #region RegisterRepeater
           case MessageType.RegisterRepeater:
             {
               IrssMessage response = new IrssMessage(MessageType.RegisterRepeater, MessageFlags.Response);
@@ -1142,10 +1171,179 @@ namespace IRServer
               SendTo(combo.Manager, response);
               break;
             }
+          #endregion RegisterRepeater
 
+          #region UnregisterRepeater
           case MessageType.UnregisterRepeater:
             UnregisterRepeater(combo.Manager);
             break;
+          #endregion UnregisterRepeater
+
+          #region ActiveBlasters
+          case MessageType.ActiveBlasters:
+            {
+              IrssMessage response = new IrssMessage(MessageType.ActiveBlasters, MessageFlags.Response);
+              response.SetDataAsString(_pluginNameTransmit);
+              
+              SendTo(combo.Manager, response);
+              break;
+            }
+          #endregion ActiveBlasters
+
+          #region ActiveReceivers
+          case MessageType.ActiveReceivers:
+            {
+              IrssMessage response = new IrssMessage(MessageType.ActiveReceivers, MessageFlags.Response);
+
+              if (_pluginNameReceive != null)
+              {
+                StringBuilder receivers = new StringBuilder();
+                for (int index = 0; index < _pluginNameReceive.Length; index++)
+                {
+                  receivers.Append(_pluginNameReceive[index]);
+
+                  if (index < _pluginNameReceive.Length - 1)
+                    receivers.Append(',');
+                }
+
+                response.SetDataAsString(receivers.ToString());
+              }
+              else
+              {
+                response.SetDataAsString(null);
+              }
+
+              SendTo(combo.Manager, response);
+              break;
+            }
+          #endregion ActiveReceivers
+
+          #region AvailableBlasters
+          case MessageType.AvailableBlasters:
+            {
+              IrssMessage response = new IrssMessage(MessageType.AvailableBlasters, MessageFlags.Response);
+
+              IRServerPluginBase[] plugins = Program.AvailablePlugins();
+              StringBuilder blasters = new StringBuilder();
+
+              for (int index = 0; index < plugins.Length; index++)
+              {
+                IRServerPluginBase plugin = plugins[index];
+
+                if (plugin is ITransmitIR)
+                {
+                  blasters.Append(plugin.Name);
+                  blasters.Append(',');
+                }
+              }
+
+              if (blasters.Length == 0)
+              {
+                response.SetDataAsString(null);
+              }
+              else
+              {
+                blasters.Remove(blasters.Length - 1, 1);
+                response.SetDataAsString(blasters.ToString());
+              }
+              
+              SendTo(combo.Manager, response);
+              break;
+            }
+          #endregion AvailableBlasters
+
+          #region AvailableReceivers
+          case MessageType.AvailableReceivers:
+            {
+              IrssMessage response = new IrssMessage(MessageType.AvailableReceivers, MessageFlags.Response);
+
+              IRServerPluginBase[] plugins = Program.AvailablePlugins();
+              StringBuilder receivers = new StringBuilder();
+
+              for (int index = 0; index < plugins.Length; index++)
+              {
+                IRServerPluginBase plugin = plugins[index];
+
+                if (plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver)
+                {
+                  receivers.Append(plugin.Name);
+                  receivers.Append(',');
+                }
+              }
+
+              if (receivers.Length == 0)
+              {
+                response.SetDataAsString(null);
+              }
+              else
+              {
+                receivers.Remove(receivers.Length - 1, 1);
+                response.SetDataAsString(receivers.ToString());
+              }
+
+              SendTo(combo.Manager, response);
+              break;
+            }
+          #endregion AvailableReceivers
+
+          #region DetectedBlasters
+          case MessageType.DetectedBlasters:
+            {
+              IrssMessage response = new IrssMessage(MessageType.DetectedBlasters, MessageFlags.Response);
+              string[] detectedBlasters = Program.DetectBlasters();
+
+              if (detectedBlasters != null)
+              {
+                StringBuilder blasters = new StringBuilder();
+                for (int index = 0; index < detectedBlasters.Length; index++)
+                {
+                  blasters.Append(detectedBlasters[index]);
+
+                  if (index < detectedBlasters.Length - 1)
+                    blasters.Append(',');
+                }
+
+                response.SetDataAsString(blasters.ToString());
+              }
+              else
+              {
+                response.SetDataAsString(null);
+              }
+
+              SendTo(combo.Manager, response);
+              break;
+            }
+          #endregion DetectedBlasters
+
+          #region DetectedReceivers
+          case MessageType.DetectedReceivers:
+            {
+              IrssMessage response = new IrssMessage(MessageType.DetectedReceivers, MessageFlags.Response);
+              string[] detectedReceivers = Program.DetectReceivers();
+
+              if (detectedReceivers != null)
+              {
+                StringBuilder receivers = new StringBuilder();
+                for (int index = 0; index < detectedReceivers.Length; index++)
+                {
+                  receivers.Append(detectedReceivers[index]);
+
+                  if (index < detectedReceivers.Length - 1)
+                    receivers.Append(',');
+                }
+
+                response.SetDataAsString(receivers.ToString());
+              }
+              else
+              {
+                response.SetDataAsString(null);
+              }
+
+              SendTo(combo.Manager, response);
+              break;
+            }
+          #endregion DetectedReceivers
+
         }
       }
       catch (Exception ex)
@@ -1232,6 +1430,19 @@ namespace IRServer
       catch (FileNotFoundException)
       {
         IrssLog.Warn("No configuration file found ({0}), creating default configuration file", ConfigurationFile);
+
+        string[] blasters = Program.DetectBlasters();
+        if (blasters == null)
+          _pluginNameTransmit = String.Empty;
+        else
+          _pluginNameTransmit = blasters[0];
+
+        string[] receivers = Program.DetectReceivers();
+        if (receivers == null)
+          _pluginNameReceive = null;
+        else
+          _pluginNameReceive = receivers;
+        
         SaveSettings();
         return;
       }

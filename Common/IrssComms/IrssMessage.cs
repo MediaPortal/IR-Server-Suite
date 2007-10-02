@@ -33,6 +33,13 @@ namespace IrssComms
     ForwardRemoteEvent,
     ForwardKeyboardEvent,
     ForwardMouseEvent,
+
+    AvailableReceivers,
+    AvailableBlasters,
+    ActiveReceivers,
+    ActiveBlasters,
+    DetectedReceivers,
+    DetectedBlasters,
   }
 
   [Flags]

@@ -26,20 +26,29 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Creates a Macro Editor windows form.
     /// </summary>
-    /// <param name="newMacro">This a new macro.</param>
-    /// <param name="name">The name of this macro.</param>
-    public MacroEditor(bool newMacro, string name)
+    public MacroEditor()
     {
       InitializeComponent();
 
-      textBoxName.Text    = name;
-      textBoxName.Enabled = newMacro;
+      textBoxName.Text = "New";
+      textBoxName.Enabled = true;
+    }
 
-      if (!newMacro)
-      {
-        string fileName = MPBlastZonePlugin.FolderMacros + name + Common.FileExtensionMacro;
-        ReadFromFile(fileName);
-      }
+    /// <summary>
+    /// Creates a Macro Editor windows form.
+    /// </summary>
+    /// <param name="name">The name of an existing macro.</param>
+    public MacroEditor(string name)
+      : this()
+    {
+      if (String.IsNullOrEmpty(name))
+        throw new ArgumentNullException("name");
+
+      textBoxName.Text = name;
+      textBoxName.Enabled = false;
+
+      string fileName = MPBlastZonePlugin.FolderMacros + name + Common.FileExtensionMacro;
+      ReadFromFile(fileName);
     }
 
     #endregion Constructor
@@ -56,7 +65,7 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextGoto);
       comboBoxCommands.Items.Add(Common.UITextPopup);
-//    comboBoxCommands.Items.Add(Common.UITextWindowState);
+      //    comboBoxCommands.Items.Add(Common.UITextWindowState);
       comboBoxCommands.Items.Add(Common.UITextFocus);
       comboBoxCommands.Items.Add(Common.UITextExit);
       comboBoxCommands.Items.Add(Common.UITextStandby);
@@ -64,7 +73,9 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextReboot);
       comboBoxCommands.Items.Add(Common.UITextShutdown);
 
-      comboBoxCommands.Items.AddRange(Common.GetIRList(true));
+      string[] irList = Common.GetIRList(true);
+      if (irList != null && irList.Length > 0)
+        comboBoxCommands.Items.AddRange(irList);
     }
 
     /// <summary>
@@ -73,179 +84,193 @@ namespace MediaPortal.Plugins
     /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
     void WriteToFile(string fileName)
     {
-      using (XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8))
+      try
       {
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char)9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("macro"); // <macro>
-
-        foreach (string item in listBoxMacro.Items)
+        using (XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8))
         {
-          writer.WriteStartElement("action");
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("macro"); // <macro>
 
-          if (item.StartsWith(Common.CmdPrefixBlast))
+          foreach (string item in listBoxMacro.Items)
           {
-            writer.WriteAttributeString("command", Common.XmlTagBlast);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixPause))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagPause);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPause.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixRun))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagRun);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixRun.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixGoto))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagGoto);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixGoto.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixSerial))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagSerial);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixSerial.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixWindowMsg))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
-          }
-          else if (item.StartsWith(Common.CmdPrefixPopup))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagPopup);
-            writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
-          }
-          /*
-                  else if (item.StartsWith(Common.CmdPrefixWindowState))
-                  {
-                    writer.WriteAttributeString("command", Common.XmlTagWindowState);
-                    writer.WriteAttributeString("cmdproperty", String.Empty);
-                  }
-          */
-          else if (item.StartsWith(Common.CmdPrefixFocus))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagFocus);
-            writer.WriteAttributeString("cmdproperty", String.Empty);
-          }
-          else if (item.StartsWith(Common.CmdPrefixExit))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagExit);
-            writer.WriteAttributeString("cmdproperty", String.Empty);
-          }
-          else if (item.StartsWith(Common.CmdPrefixStandby))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagStandby);
-            writer.WriteAttributeString("cmdproperty", String.Empty);
-          }
-          else if (item.StartsWith(Common.CmdPrefixHibernate))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagHibernate);
-            writer.WriteAttributeString("cmdproperty", String.Empty);
-          }
-          else if (item.StartsWith(Common.CmdPrefixReboot))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagReboot);
-            writer.WriteAttributeString("cmdproperty", String.Empty);
-          }
-          else if (item.StartsWith(Common.CmdPrefixShutdown))
-          {
-            writer.WriteAttributeString("command", Common.XmlTagShutdown);
-            writer.WriteAttributeString("cmdproperty", String.Empty);
-          }
-          else
-          {
-            Log.Error("Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
+            writer.WriteStartElement("action");
+
+            if (item.StartsWith(Common.CmdPrefixBlast))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagBlast);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixPause))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagPause);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPause.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixRun))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagRun);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixRun.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixGoto))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagGoto);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixGoto.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixSerial))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagSerial);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixSerial.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixWindowMsg))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixPopup))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagPopup);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
+            }
+            /*
+                    else if (item.StartsWith(Common.CmdPrefixWindowState))
+                    {
+                      writer.WriteAttributeString("command", Common.XmlTagWindowState);
+                      writer.WriteAttributeString("cmdproperty", String.Empty);
+                    }
+            */
+            else if (item.StartsWith(Common.CmdPrefixFocus))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagFocus);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else if (item.StartsWith(Common.CmdPrefixExit))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagExit);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else if (item.StartsWith(Common.CmdPrefixStandby))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagStandby);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else if (item.StartsWith(Common.CmdPrefixHibernate))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagHibernate);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else if (item.StartsWith(Common.CmdPrefixReboot))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagReboot);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else if (item.StartsWith(Common.CmdPrefixShutdown))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagShutdown);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else
+            {
+              Log.Error("MPBlastZonePlugin: Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
+            }
+
+            writer.WriteEndElement();
           }
 
-          writer.WriteEndElement();
+          writer.WriteEndElement(); // </macro>
+          writer.WriteEndDocument();
         }
-
-        writer.WriteEndElement(); // </macro>
-        writer.WriteEndDocument();
+      }
+      catch (Exception ex)
+      {
+        Log.Error("MPControlPlugin: {0}", ex.Message);
       }
     }
 
     /// <summary>
-    /// Read a stored Macro from the macro name provided.
+    /// Read a macro into the listBox from the macro name provided.
     /// </summary>
-    /// <param name="fileName">Name of Macro to read from (macro name, not file path).</param>
+    /// <param name="fileName">Name of Macro to read (macro name, not file path).</param>
     void ReadFromFile(string fileName)
     {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(fileName);
-
-      listBoxMacro.Items.Clear();
-
-      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-
-      string commandProperty;
-      foreach (XmlNode item in commandSequence)
+      try
       {
-        commandProperty = item.Attributes["cmdproperty"].Value;
+        XmlDocument doc = new XmlDocument();
+        doc.Load(fileName);
 
-        switch (item.Attributes["command"].Value)
+        listBoxMacro.Items.Clear();
+
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
+
+        string commandProperty;
+        foreach (XmlNode item in commandSequence)
         {
-          case Common.XmlTagBlast:
-            listBoxMacro.Items.Add(Common.CmdPrefixBlast + commandProperty);
-            break;
+          commandProperty = item.Attributes["cmdproperty"].Value;
 
-          case Common.XmlTagPause:
-            listBoxMacro.Items.Add(Common.CmdPrefixPause + commandProperty);
-            break;
+          switch (item.Attributes["command"].Value)
+          {
+            case Common.XmlTagBlast:
+              listBoxMacro.Items.Add(Common.CmdPrefixBlast + commandProperty);
+              break;
 
-          case Common.XmlTagRun:
-            listBoxMacro.Items.Add(Common.CmdPrefixRun + commandProperty);
-            break;
+            case Common.XmlTagPause:
+              listBoxMacro.Items.Add(Common.CmdPrefixPause + commandProperty);
+              break;
 
-          case Common.XmlTagSerial:
-            listBoxMacro.Items.Add(Common.CmdPrefixSerial + commandProperty);
-            break;
+            case Common.XmlTagRun:
+              listBoxMacro.Items.Add(Common.CmdPrefixRun + commandProperty);
+              break;
 
-          case Common.XmlTagWindowMsg:
-            listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + commandProperty);
-            break;
+            case Common.XmlTagSerial:
+              listBoxMacro.Items.Add(Common.CmdPrefixSerial + commandProperty);
+              break;
 
-          case Common.XmlTagGoto:
-            listBoxMacro.Items.Add(Common.CmdPrefixGoto + commandProperty);
-            break;
+            case Common.XmlTagWindowMsg:
+              listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + commandProperty);
+              break;
 
-          case Common.XmlTagPopup:
-            listBoxMacro.Items.Add(Common.CmdPrefixPopup + commandProperty);
-            break;
-/*
-          case Common.XmlTagWindowState:
-            listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
-            break;
-*/
-          case Common.XmlTagFocus:
-            listBoxMacro.Items.Add(Common.CmdPrefixFocus);
-            break;
+            case Common.XmlTagGoto:
+              listBoxMacro.Items.Add(Common.CmdPrefixGoto + commandProperty);
+              break;
 
-          case Common.XmlTagExit:
-            listBoxMacro.Items.Add(Common.CmdPrefixExit);
-            break;
+            case Common.XmlTagPopup:
+              listBoxMacro.Items.Add(Common.CmdPrefixPopup + commandProperty);
+              break;
+            /*
+                      case Common.XmlTagWindowState:
+                        listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
+                        break;
+            */
+            case Common.XmlTagFocus:
+              listBoxMacro.Items.Add(Common.CmdPrefixFocus);
+              break;
 
-          case Common.XmlTagStandby:
-            listBoxMacro.Items.Add(Common.CmdPrefixStandby);
-            break;
+            case Common.XmlTagExit:
+              listBoxMacro.Items.Add(Common.CmdPrefixExit);
+              break;
 
-          case Common.XmlTagHibernate:
-            listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
-            break;
+            case Common.XmlTagStandby:
+              listBoxMacro.Items.Add(Common.CmdPrefixStandby);
+              break;
 
-          case Common.XmlTagReboot:
-            listBoxMacro.Items.Add(Common.CmdPrefixReboot);
-            break;
+            case Common.XmlTagHibernate:
+              listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
+              break;
 
-          case Common.XmlTagShutdown:
-            listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
-            break;
+            case Common.XmlTagReboot:
+              listBoxMacro.Items.Add(Common.CmdPrefixReboot);
+              break;
+
+            case Common.XmlTagShutdown:
+              listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
+              break;
+          }
         }
+      }
+      catch (Exception ex)
+      {
+        Log.Error("MPControlPlugin: {0}", ex.Message);
       }
     }
 
@@ -269,7 +294,7 @@ namespace MediaPortal.Plugins
       }
       else if (selected == Common.UITextPause)
       {
-        IrssUtils.Forms.PauseTime pauseTime = new IrssUtils.Forms.PauseTime();
+        PauseTime pauseTime = new PauseTime();
         if (pauseTime.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixPause + pauseTime.Time.ToString());
       }
@@ -297,12 +322,12 @@ namespace MediaPortal.Plugins
         if (popupMessage.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixPopup + popupMessage.CommandString);
       }
-/*
-      else if (selected == Common.UITextWindowState)
-      {
-        listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
-      }
-*/
+      /*
+            else if (selected == Common.UITextWindowState)
+            {
+              listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
+            }
+      */
       else if (selected == Common.UITextFocus)
       {
         listBoxMacro.Items.Add(Common.CmdPrefixFocus);
@@ -389,7 +414,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        MPBlastZonePlugin.ProcessMacro(MPBlastZonePlugin.FolderMacros + fileName + Common.FileExtensionMacro);
+        MPBlastZonePlugin.ProcessMacro(fileName);
       }
       catch (Exception ex)
       {
@@ -423,103 +448,102 @@ namespace MediaPortal.Plugins
 
     private void listBoxCommandSequence_DoubleClick(object sender, EventArgs e)
     {
-      if (listBoxMacro.SelectedIndex != -1)
+      if (listBoxMacro.SelectedIndex == -1)
+        return;
+
+      string selected = listBoxMacro.SelectedItem as string;
+
+      if (selected.StartsWith(Common.CmdPrefixPause))
       {
-        string selected = listBoxMacro.SelectedItem as string;
+        PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
+        if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-        if (selected.StartsWith(Common.CmdPrefixPause))
-        {
-          IrssUtils.Forms.PauseTime pauseTime = new IrssUtils.Forms.PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixPause + pauseTime.Time.ToString());
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixRun))
+      {
+        string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
 
-          if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        ExternalProgram executeProgram = new ExternalProgram(commands);
+        if (executeProgram.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixPause + pauseTime.Time.ToString());
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixRun))
-        {
-          string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
-         
-          ExternalProgram executeProgram = new ExternalProgram(commands);
-          if (executeProgram.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixRun + executeProgram.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixSerial))
+      {
+        string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixRun + executeProgram.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixSerial))
-        {
-          string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
+        SerialCommand serialCommand = new SerialCommand(commands);
+        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          SerialCommand serialCommand = new SerialCommand(commands);
-          if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixSerial + serialCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
+      {
+        string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixSerial + serialCommand.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
-        {
-          string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
+        MessageCommand messageCommand = new MessageCommand(commands);
+        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          MessageCommand messageCommand = new MessageCommand(commands);
-          if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixGoto))
+      {
+        MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen(selected.Substring(Common.CmdPrefixGoto.Length));
+        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixGoto))
-        {
-          MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen(selected.Substring(Common.CmdPrefixGoto.Length));
-          if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixGoto + goToScreen.Screen);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixPopup))
+      {
+        string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixGoto + goToScreen.Screen);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixPopup))
-        {
-          string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
+        PopupMessage popupMessage = new PopupMessage(commands);
+        if (popupMessage.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          PopupMessage popupMessage = new PopupMessage(commands);
-          if (popupMessage.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixPopup + popupMessage.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      {
+        string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixPopup + popupMessage.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixBlast))
-        {
-          string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
+          Common.FolderIRCommands,
+          MPBlastZonePlugin.TransceiverInformation.Ports,
+          commands);
 
-          BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
-            Common.FolderIRCommands,
-            MPBlastZonePlugin.TransceiverInformation.Ports,
-            commands);
+        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
-
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixBlast + blastCommand.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixBlast + blastCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
       }
     }
 

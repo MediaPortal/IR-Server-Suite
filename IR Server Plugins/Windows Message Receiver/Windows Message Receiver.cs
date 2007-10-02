@@ -10,7 +10,7 @@ using IRServerPluginInterface;
 namespace WindowsMessageReceiver
 {
 
-  public class WindowsMessageReceiver : IRServerPlugin, IConfigure, IRemoteReceiver
+  public class WindowsMessageReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
   {
     
     // TODO: Add Learn/Blast ability
@@ -56,6 +56,11 @@ namespace WindowsMessageReceiver
     public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "Supports receiving simulated button presses through Windows Messages"; } }
+
+    public override bool Detect()
+    {
+      return false;
+    }
 
     public override bool Start()
     {

@@ -12,7 +12,7 @@ using X10;
 namespace X10Transceiver
 {
 
-  public class X10Transceiver : IRServerPlugin, IRemoteReceiver, _DIX10InterfaceEvents
+  public class X10Transceiver : IRServerPluginBase, IRemoteReceiver, _DIX10InterfaceEvents
   {
 
     #region Constants
@@ -41,6 +41,28 @@ namespace X10Transceiver
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "X10 Transceiver"; } }
 
+    public override bool Detect()
+    {
+      X10Interface test;
+
+      try
+      {
+        test = new X10Interface();
+        if (test == null)
+          return false;
+      }
+      catch
+      {
+        return false;
+      }
+      finally 
+      {
+        test = null;
+      }
+
+      return true;
+    }
+
     public override bool Start()
     {
       //LoadSettings();
@@ -66,14 +88,12 @@ namespace X10Transceiver
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
-        return false;
-      }
 #else
       catch
       {
+#endif
         return false;
       }
-#endif
     }
     public override void Suspend()
     {

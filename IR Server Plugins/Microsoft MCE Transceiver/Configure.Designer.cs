@@ -98,7 +98,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             0});
-      this.numericUpDownButtonRepeatDelay.Location = new System.Drawing.Point(136, 24);
+      this.numericUpDownButtonRepeatDelay.Location = new System.Drawing.Point(144, 24);
       this.numericUpDownButtonRepeatDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -124,7 +124,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             0});
-      this.numericUpDownButtonHeldDelay.Location = new System.Drawing.Point(136, 56);
+      this.numericUpDownButtonHeldDelay.Location = new System.Drawing.Point(144, 56);
       this.numericUpDownButtonHeldDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -144,7 +144,7 @@ namespace MicrosoftMceTransceiver
       // 
       // buttonOK
       // 
-      this.buttonOK.Location = new System.Drawing.Point(120, 208);
+      this.buttonOK.Location = new System.Drawing.Point(128, 208);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 2;
@@ -155,7 +155,7 @@ namespace MicrosoftMceTransceiver
       // buttonCancel
       // 
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(192, 208);
+      this.buttonCancel.Location = new System.Drawing.Point(200, 208);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 3;
@@ -171,7 +171,7 @@ namespace MicrosoftMceTransceiver
       this.groupBoxTimes.Controls.Add(this.numericUpDownButtonRepeatDelay);
       this.groupBoxTimes.Location = new System.Drawing.Point(8, 40);
       this.groupBoxTimes.Name = "groupBoxTimes";
-      this.groupBoxTimes.Size = new System.Drawing.Size(224, 88);
+      this.groupBoxTimes.Size = new System.Drawing.Size(232, 88);
       this.groupBoxTimes.TabIndex = 1;
       this.groupBoxTimes.TabStop = false;
       this.groupBoxTimes.Text = "Remote button timing (in milliseconds)";
@@ -183,7 +183,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             0});
-      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(144, 40);
+      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(152, 40);
       this.numericUpDownLearnTimeout.Maximum = new decimal(new int[] {
             60000,
             0,
@@ -213,7 +213,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             0});
-      this.numericUpDownKeyHeldDelay.Location = new System.Drawing.Point(136, 56);
+      this.numericUpDownKeyHeldDelay.Location = new System.Drawing.Point(144, 56);
       this.numericUpDownKeyHeldDelay.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -238,7 +238,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             0});
-      this.numericUpDownKeyRepeatDelay.Location = new System.Drawing.Point(136, 24);
+      this.numericUpDownKeyRepeatDelay.Location = new System.Drawing.Point(144, 24);
       this.numericUpDownKeyRepeatDelay.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -258,11 +258,12 @@ namespace MicrosoftMceTransceiver
       // 
       // checkBoxHandleKeyboardLocal
       // 
+      this.checkBoxHandleKeyboardLocal.AutoSize = true;
       this.checkBoxHandleKeyboardLocal.Checked = true;
       this.checkBoxHandleKeyboardLocal.CheckState = System.Windows.Forms.CheckState.Checked;
       this.checkBoxHandleKeyboardLocal.Location = new System.Drawing.Point(8, 136);
       this.checkBoxHandleKeyboardLocal.Name = "checkBoxHandleKeyboardLocal";
-      this.checkBoxHandleKeyboardLocal.Size = new System.Drawing.Size(224, 24);
+      this.checkBoxHandleKeyboardLocal.Size = new System.Drawing.Size(139, 17);
       this.checkBoxHandleKeyboardLocal.TabIndex = 2;
       this.checkBoxHandleKeyboardLocal.Text = "Handle keyboard locally";
       this.toolTips.SetToolTip(this.checkBoxHandleKeyboardLocal, "Act on key presses locally (on the machine IR Server is running on)");
@@ -270,11 +271,12 @@ namespace MicrosoftMceTransceiver
       // 
       // checkBoxHandleMouseLocal
       // 
+      this.checkBoxHandleMouseLocal.AutoSize = true;
       this.checkBoxHandleMouseLocal.Checked = true;
       this.checkBoxHandleMouseLocal.CheckState = System.Windows.Forms.CheckState.Checked;
       this.checkBoxHandleMouseLocal.Location = new System.Drawing.Point(8, 40);
       this.checkBoxHandleMouseLocal.Name = "checkBoxHandleMouseLocal";
-      this.checkBoxHandleMouseLocal.Size = new System.Drawing.Size(224, 24);
+      this.checkBoxHandleMouseLocal.Size = new System.Drawing.Size(126, 17);
       this.checkBoxHandleMouseLocal.TabIndex = 1;
       this.checkBoxHandleMouseLocal.Text = "Handle mouse locally";
       this.toolTips.SetToolTip(this.checkBoxHandleMouseLocal, "Act on mouse locally (on the machine IR Server is running on)");
@@ -288,7 +290,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             65536});
-      this.numericUpDownMouseSensitivity.Location = new System.Drawing.Point(152, 80);
+      this.numericUpDownMouseSensitivity.Location = new System.Drawing.Point(160, 80);
       this.numericUpDownMouseSensitivity.Maximum = new decimal(new int[] {
             10,
             0,
@@ -312,11 +314,12 @@ namespace MicrosoftMceTransceiver
       // 
       // checkBoxDisableMCEServices
       // 
+      this.checkBoxDisableMCEServices.AutoSize = true;
       this.checkBoxDisableMCEServices.Checked = true;
       this.checkBoxDisableMCEServices.CheckState = System.Windows.Forms.CheckState.Checked;
       this.checkBoxDisableMCEServices.Location = new System.Drawing.Point(8, 80);
       this.checkBoxDisableMCEServices.Name = "checkBoxDisableMCEServices";
-      this.checkBoxDisableMCEServices.Size = new System.Drawing.Size(224, 24);
+      this.checkBoxDisableMCEServices.Size = new System.Drawing.Size(216, 17);
       this.checkBoxDisableMCEServices.TabIndex = 2;
       this.checkBoxDisableMCEServices.Text = "Disable Windows Media Center services";
       this.toolTips.SetToolTip(this.checkBoxDisableMCEServices, "Disable Microsoft Windows Media Center services to prevent interference with IR S" +
@@ -352,7 +355,7 @@ namespace MicrosoftMceTransceiver
       this.tabControl.Location = new System.Drawing.Point(8, 8);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(248, 192);
+      this.tabControl.Size = new System.Drawing.Size(256, 192);
       this.tabControl.TabIndex = 0;
       // 
       // tabPageBasic
@@ -363,7 +366,7 @@ namespace MicrosoftMceTransceiver
       this.tabPageBasic.Location = new System.Drawing.Point(4, 22);
       this.tabPageBasic.Name = "tabPageBasic";
       this.tabPageBasic.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageBasic.Size = new System.Drawing.Size(240, 166);
+      this.tabPageBasic.Size = new System.Drawing.Size(248, 166);
       this.tabPageBasic.TabIndex = 0;
       this.tabPageBasic.Text = "Basic";
       this.tabPageBasic.UseVisualStyleBackColor = true;
@@ -375,18 +378,19 @@ namespace MicrosoftMceTransceiver
       this.tabPageRemote.Location = new System.Drawing.Point(4, 22);
       this.tabPageRemote.Name = "tabPageRemote";
       this.tabPageRemote.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageRemote.Size = new System.Drawing.Size(240, 166);
+      this.tabPageRemote.Size = new System.Drawing.Size(248, 166);
       this.tabPageRemote.TabIndex = 1;
       this.tabPageRemote.Text = "Remote";
       this.tabPageRemote.UseVisualStyleBackColor = true;
       // 
       // checkBoxEnableRemote
       // 
+      this.checkBoxEnableRemote.AutoSize = true;
       this.checkBoxEnableRemote.Checked = true;
       this.checkBoxEnableRemote.CheckState = System.Windows.Forms.CheckState.Checked;
       this.checkBoxEnableRemote.Location = new System.Drawing.Point(8, 8);
       this.checkBoxEnableRemote.Name = "checkBoxEnableRemote";
-      this.checkBoxEnableRemote.Size = new System.Drawing.Size(224, 24);
+      this.checkBoxEnableRemote.Size = new System.Drawing.Size(155, 17);
       this.checkBoxEnableRemote.TabIndex = 0;
       this.checkBoxEnableRemote.Text = "Enable remote control input";
       this.checkBoxEnableRemote.UseVisualStyleBackColor = true;
@@ -399,18 +403,19 @@ namespace MicrosoftMceTransceiver
       this.tabPageKeyboard.Location = new System.Drawing.Point(4, 22);
       this.tabPageKeyboard.Name = "tabPageKeyboard";
       this.tabPageKeyboard.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageKeyboard.Size = new System.Drawing.Size(240, 166);
+      this.tabPageKeyboard.Size = new System.Drawing.Size(248, 166);
       this.tabPageKeyboard.TabIndex = 2;
       this.tabPageKeyboard.Text = "Keyboard";
       this.tabPageKeyboard.UseVisualStyleBackColor = true;
       // 
       // checkBoxEnableKeyboard
       // 
+      this.checkBoxEnableKeyboard.AutoSize = true;
       this.checkBoxEnableKeyboard.Checked = true;
       this.checkBoxEnableKeyboard.CheckState = System.Windows.Forms.CheckState.Checked;
       this.checkBoxEnableKeyboard.Location = new System.Drawing.Point(8, 8);
       this.checkBoxEnableKeyboard.Name = "checkBoxEnableKeyboard";
-      this.checkBoxEnableKeyboard.Size = new System.Drawing.Size(224, 24);
+      this.checkBoxEnableKeyboard.Size = new System.Drawing.Size(132, 17);
       this.checkBoxEnableKeyboard.TabIndex = 0;
       this.checkBoxEnableKeyboard.Text = "Enable keyboard input";
       this.checkBoxEnableKeyboard.UseVisualStyleBackColor = true;
@@ -423,7 +428,7 @@ namespace MicrosoftMceTransceiver
       this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyRepeatDelay);
       this.groupBoxKeypressTiming.Location = new System.Drawing.Point(8, 40);
       this.groupBoxKeypressTiming.Name = "groupBoxKeypressTiming";
-      this.groupBoxKeypressTiming.Size = new System.Drawing.Size(224, 88);
+      this.groupBoxKeypressTiming.Size = new System.Drawing.Size(232, 88);
       this.groupBoxKeypressTiming.TabIndex = 1;
       this.groupBoxKeypressTiming.TabStop = false;
       this.groupBoxKeypressTiming.Text = "Key press timing (in milliseconds)";
@@ -455,7 +460,7 @@ namespace MicrosoftMceTransceiver
       this.tabPageMouse.Location = new System.Drawing.Point(4, 22);
       this.tabPageMouse.Name = "tabPageMouse";
       this.tabPageMouse.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMouse.Size = new System.Drawing.Size(240, 166);
+      this.tabPageMouse.Size = new System.Drawing.Size(248, 166);
       this.tabPageMouse.TabIndex = 3;
       this.tabPageMouse.Text = "Mouse";
       this.tabPageMouse.UseVisualStyleBackColor = true;
@@ -471,11 +476,12 @@ namespace MicrosoftMceTransceiver
       // 
       // checkBoxEnableMouse
       // 
+      this.checkBoxEnableMouse.AutoSize = true;
       this.checkBoxEnableMouse.Checked = true;
       this.checkBoxEnableMouse.CheckState = System.Windows.Forms.CheckState.Checked;
       this.checkBoxEnableMouse.Location = new System.Drawing.Point(8, 8);
       this.checkBoxEnableMouse.Name = "checkBoxEnableMouse";
-      this.checkBoxEnableMouse.Size = new System.Drawing.Size(224, 24);
+      this.checkBoxEnableMouse.Size = new System.Drawing.Size(119, 17);
       this.checkBoxEnableMouse.TabIndex = 0;
       this.checkBoxEnableMouse.Text = "Enable mouse input";
       this.checkBoxEnableMouse.UseVisualStyleBackColor = true;
@@ -486,13 +492,14 @@ namespace MicrosoftMceTransceiver
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(264, 239);
+      this.ClientSize = new System.Drawing.Size(272, 239);
       this.ControlBox = false;
       this.Controls.Add(this.buttonAdvanced);
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+      this.MinimumSize = new System.Drawing.Size(278, 264);
       this.Name = "Configure";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Microsoft MCE Configuration";
@@ -505,10 +512,14 @@ namespace MicrosoftMceTransceiver
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseSensitivity)).EndInit();
       this.tabControl.ResumeLayout(false);
       this.tabPageBasic.ResumeLayout(false);
+      this.tabPageBasic.PerformLayout();
       this.tabPageRemote.ResumeLayout(false);
+      this.tabPageRemote.PerformLayout();
       this.tabPageKeyboard.ResumeLayout(false);
+      this.tabPageKeyboard.PerformLayout();
       this.groupBoxKeypressTiming.ResumeLayout(false);
       this.tabPageMouse.ResumeLayout(false);
+      this.tabPageMouse.PerformLayout();
       this.ResumeLayout(false);
 
     }

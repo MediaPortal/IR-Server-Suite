@@ -53,7 +53,22 @@ namespace IrssComms
 
     GenericPCQueue<MessageManagerCombo> _messageQueue;
 
+    WaitCallback _clientDisconnectCallback;
+
     #endregion Variables
+
+    #region Properties
+
+    /// <summary>
+    /// Gets or Sets the Client Disconnect callback.
+    /// </summary>
+    public WaitCallback ClientDisconnectCallback
+    {
+      get { return _clientDisconnectCallback; }
+      set { _clientDisconnectCallback = value; }
+    }
+
+    #endregion Properties
 
     #region Constructor
 
@@ -148,8 +163,8 @@ namespace IrssComms
       catch
       {
         _processConnectionThread = false;
-        _serverSocket = null;
-        _clientManagers = null;
+        _serverSocket     = null;
+        _clientManagers   = null;
         _connectionThread = null;
 
         throw;
@@ -205,7 +220,7 @@ namespace IrssComms
       }
       catch (SocketException)
       {
-        _clientManagers.Remove(sendTo);
+        ClientDisconnect(sendTo);
         return false;
       }
     }
@@ -220,6 +235,25 @@ namespace IrssComms
       _messageSink(combo);
     }
 
+    void ClientDisconnect(object obj)
+    {
+      ClientManager clientManager = obj as ClientManager;
+
+      if (clientManager != null)
+      {
+        lock (_clientManagers)
+        {
+          if (_clientManagers.Contains(clientManager))
+            _clientManagers.Remove(clientManager);
+        }
+
+        if (_clientDisconnectCallback != null)
+          _clientDisconnectCallback(clientManager);
+
+        clientManager.Dispose();
+      }
+    }
+
     void ConnectionThread()
     {
       try
@@ -231,6 +265,7 @@ namespace IrssComms
           Socket socket = _serverSocket.Accept();
 
           ClientManager manager = new ClientManager(socket, clientManagerMessageSink);
+          manager.DisconnectCallback = new WaitCallback(ClientDisconnect);
 
           lock (_clientManagers)
             _clientManagers.Add(manager);

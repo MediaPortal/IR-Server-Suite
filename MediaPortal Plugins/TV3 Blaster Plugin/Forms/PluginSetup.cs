@@ -155,7 +155,7 @@ namespace SetupTv.Sections
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
           RefreshIRList();
         }
       }
@@ -169,12 +169,12 @@ namespace SetupTv.Sections
 
         if (File.Exists(fileName))
         {
-          MacroEditor macroEditor = new MacroEditor(false, command);
+          MacroEditor macroEditor = new MacroEditor(command);
           macroEditor.ShowDialog(this);
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
           RefreshMacroList();
         }
       }
@@ -227,7 +227,7 @@ namespace SetupTv.Sections
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         RefreshIRList();
@@ -236,7 +236,7 @@ namespace SetupTv.Sections
 
     private void buttonNewMacro_Click(object sender, EventArgs e)
     {
-      MacroEditor macroEditor = new MacroEditor(true, String.Empty);
+      MacroEditor macroEditor = new MacroEditor();
       macroEditor.ShowDialog(this);
 
       RefreshMacroList();
@@ -258,7 +258,7 @@ namespace SetupTv.Sections
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         RefreshMacroList();

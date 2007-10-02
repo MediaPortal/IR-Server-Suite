@@ -271,8 +271,6 @@ namespace MicrosoftMceTransceiver
 
     IrCode _learningCode;
 
-    StreamWriter _debugFile;
-
     #endregion Variables
 
     #region Constructor
@@ -490,7 +488,9 @@ namespace MicrosoftMceTransceiver
       }
       catch
       {
-        CancelIo(_eHomeHandle);
+        if (_eHomeHandle != null)
+          CancelIo(_eHomeHandle);
+
         throw;
       }
     }
@@ -501,8 +501,10 @@ namespace MicrosoftMceTransceiver
 
     public override void Start()
     {
-      _debugFile = new StreamWriter("\\IRServer_DriverVista.log", false);
-      _debugFile.AutoFlush = true;
+#if DEBUG
+      DebugOpen("\\IRServer_DriverVista.log");
+      DebugWriteLine("DriverVista.Start()");
+#endif
 
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
@@ -527,18 +529,30 @@ namespace MicrosoftMceTransceiver
     }
     public override void Stop()
     {
-      OnDeviceRemoval();
+#if DEBUG
+      DebugWriteLine("DriverVista.Stop()");
+#endif
 
+      _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
+      _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
+
+      StopReadThread();
+
+      _notifyWindow.UnregisterDeviceRemoval();
       _notifyWindow.Dispose();
 
       CloseDevice();
 
-      _debugFile.Dispose();
+#if DEBUG
+      DebugClose();
+#endif
     }
 
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
-      _debugFile.WriteLine("Learn");
+#if DEBUG
+      DebugWriteLine("DriverVista.Learn()");
+#endif
 
       StopReadThread();
 
@@ -557,7 +571,9 @@ namespace MicrosoftMceTransceiver
       while (_readThreadMode == ReadThreadMode.Learning && Environment.TickCount < learnStartTick + learnTimeout)
         Thread.Sleep(PacketTimeout);
 
-      _debugFile.WriteLine("End Learn");
+#if DEBUG
+      DebugWriteLine("End Learn");
+#endif
 
       ReadThreadMode modeWas = _readThreadMode;
 
@@ -582,8 +598,9 @@ namespace MicrosoftMceTransceiver
           break;
 
         case ReadThreadMode.LearningDone:
-          _debugFile.WriteLine(_learningCode.ToByteArray());
-
+#if DEBUG
+          DebugDump(_learningCode.TimingData);
+#endif
           if (_learningCode.FinalizeData())
           {
             learned = _learningCode;
@@ -637,13 +654,21 @@ namespace MicrosoftMceTransceiver
 
     void StartReadThread()
     {
+#if DEBUG
+      DebugWriteLine("DriverVista.StartReadThread()");
+#endif
+
       _readThread = new Thread(new ThreadStart(ReadThread));
+      _readThread.Name = "MicrosoftMceTransceiver.DriverVista.ReadThread";
       _readThread.IsBackground = true;
-      _readThread.Name = "IR Server Microsoft MCE Transceiver Read";
       _readThread.Start();
     }
     void StopReadThread()
     {
+#if DEBUG
+      DebugWriteLine("DriverVista.StopReadThread()");
+#endif
+
       if (_readThread != null)
       {
         _readThreadMode = ReadThreadMode.Stop;
@@ -659,6 +684,10 @@ namespace MicrosoftMceTransceiver
 
     void CloseDevice()
     {
+#if DEBUG
+      DebugWriteLine("DriverVista.CloseDevice()");
+#endif
+
       if (_eHomeHandle != null)
       {
         _eHomeHandle.Dispose();
@@ -730,8 +759,10 @@ namespace MicrosoftMceTransceiver
 
             int[] timingData = GetTimingDataFromPacket(packetBytes);
 
-            _debugFile.WriteLine("Received:");
-            //Dump(timingData);
+#if DEBUG
+            DebugWriteLine("Received:");
+            DebugDump(timingData);
+#endif
 
             if (_readThreadMode == ReadThreadMode.Learning)
               _learningCode.AddTimingData(timingData);
@@ -754,7 +785,8 @@ namespace MicrosoftMceTransceiver
       }
       catch (Exception)
       {
-        CancelIo(_eHomeHandle);
+        if (_eHomeHandle != null)
+          CancelIo(_eHomeHandle);
       }
       finally
       {
@@ -833,18 +865,7 @@ namespace MicrosoftMceTransceiver
 
       return timingData;
     }
-    /*
-    void Dump(Array array)
-    {
-      foreach (object item in array)
-      {
-        _debugFile.Write(item);
-        _debugFile.Write(", ");
-      }
 
-      _debugFile.WriteLine();
-    }
-    */
     #endregion Misc Methods
 
   }

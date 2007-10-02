@@ -14,6 +14,7 @@ using MediaPortal.Util;
 using IrssUtils;
 using IrssUtils.Forms;
 using MPUtils;
+using MPUtils.Forms;
 
 namespace MediaPortal.Plugins
 {
@@ -104,7 +105,10 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
 
-      comboBoxCommands.Items.AddRange(TV2BlasterPlugin.GetFileList(true));
+      string[] fileList = TV2BlasterPlugin.GetFileList(true);
+      if (fileList != null)
+        comboBoxCommands.Items.AddRange(fileList);
+
       comboBoxCommands.SelectedIndex = 0;
 
       // Setup command list
@@ -169,6 +173,9 @@ namespace MediaPortal.Plugins
     public void SetToConfig(int cardId)
     {
       ExternalChannelConfig config = TV2BlasterPlugin.GetExternalChannelConfig(cardId);
+
+      if (config == null)
+        return;
 
       config.CardId = cardId;
 

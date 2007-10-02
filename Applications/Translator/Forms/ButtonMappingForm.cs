@@ -580,7 +580,7 @@ namespace Translator
 
     private void buttonNewMacro_Click(object sender, EventArgs e)
     {
-      MacroEditor macroEditor = new MacroEditor(true, String.Empty);
+      MacroEditor macroEditor = new MacroEditor();
       macroEditor.ShowDialog(this);
 
       SetupMacroList();

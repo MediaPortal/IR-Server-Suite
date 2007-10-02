@@ -166,7 +166,10 @@ namespace MediaPortal.Plugins
     /// <returns>Returns a MappedEvent object.</returns>
     public static MappedEvent FromStrings(string eventString, string commandString)
     {
-      if (eventString == null || commandString == null)
+      if (String.IsNullOrEmpty(eventString))
+        return null;
+
+      if (String.IsNullOrEmpty(commandString))
         return null;
 
       string[] eventStringElements = eventString.Split(new char[] { ',', '=' }, StringSplitOptions.None);
@@ -271,12 +274,11 @@ namespace MediaPortal.Plugins
     /// <param name="paramValue">Value of parameter to match.</param>
     /// <param name="command">Command to execute when event occurs.</param>
     public MappedEvent(MappingEvent eventType, string param, string paramValue, string command)
+      : this(eventType, command)
     {
       _matchParam = true;
-      _eventType  = eventType;
       _param      = param;
       _paramValue = paramValue;
-      _command    = command;
     }
 
     #endregion Constructors

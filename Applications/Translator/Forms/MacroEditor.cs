@@ -20,21 +20,37 @@ namespace Translator
 
     #region Constructor
 
-    public MacroEditor(bool newMacro, string name)
+    /// <summary>
+    /// Creates a Macro Editor windows form.
+    /// </summary>
+    public MacroEditor()
     {
       InitializeComponent();
+      
+      textBoxName.Text    = "New";
+      textBoxName.Enabled = true;
+    }
 
-      textBoxName.Text = name;
-      textBoxName.Enabled = newMacro;
+    /// <summary>
+    /// Creates a Macro Editor windows form.
+    /// </summary>
+    /// <param name="name">The name of an existing macro.</param>
+    public MacroEditor(string name)
+      : this()
+    {
+      if (String.IsNullOrEmpty(name))
+        throw new ArgumentNullException("name");
 
-      if (!newMacro)
-      {
-        string fileName = Program.FolderMacros + name + Common.FileExtensionMacro;
-        ReadFromFile(fileName);
-      }
+      textBoxName.Text    = name;
+      textBoxName.Enabled = false;
+
+      string fileName = Program.FolderMacros + name + Common.FileExtensionMacro;
+      ReadFromFile(fileName);
     }
 
     #endregion Constructor
+
+    #region Implementation
 
     void RefreshCommandList()
     {
@@ -57,6 +73,10 @@ namespace Translator
         comboBoxCommands.Items.AddRange(irList);
     }
 
+    /// <summary>
+    /// Write the macro in the listBox to a macro name provided.
+    /// </summary>
+    /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
     void WriteToFile(string fileName)
     {
       try
@@ -150,12 +170,19 @@ namespace Translator
         IrssLog.Error(ex.ToString());
       }
     }
+
+    /// <summary>
+    /// Read a macro into the listBox from the macro name provided.
+    /// </summary>
+    /// <param name="fileName">Name of Macro to read (macro name, not file path).</param>
     void ReadFromFile(string fileName)
     {
       try
       {
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
+
+        listBoxMacro.Items.Clear();
 
         XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
 
@@ -237,36 +264,26 @@ namespace Translator
       if (selected == Common.UITextRun)
       {
         ExternalProgram externalProgram = new ExternalProgram(false);
-
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixRun + externalProgram.CommandString);
+        if (externalProgram.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixRun + externalProgram.CommandString);
       }
       else if (selected == Common.UITextPause)
       {
-        IrssUtils.Forms.PauseTime pauseTime = new IrssUtils.Forms.PauseTime();
-
-        if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixPause + pauseTime.Time.ToString());
+        PauseTime pauseTime = new PauseTime();
+        if (pauseTime.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixPause + pauseTime.Time.ToString());
       }
       else if (selected == Common.UITextSerial)
       {
         SerialCommand serialCommand = new SerialCommand();
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixSerial + serialCommand.CommandString);
+        if (serialCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixSerial + serialCommand.CommandString);
       }
       else if (selected == Common.UITextWindowMsg)
       {
         MessageCommand messageCommand = new MessageCommand();
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
+        if (messageCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
       }
       else if (selected == Common.UITextTcpMsg)
       {
@@ -279,18 +296,14 @@ namespace Translator
       else if (selected == Common.UITextKeys)
       {
         KeysCommand keysCommand = new KeysCommand();
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
+        if (keysCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
       }
       else if (selected == Common.UITextEject)
       {
         EjectCommand ejectCommand = new EjectCommand();
-        if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
+        if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
       }
       else if (selected == Common.UITextStandby)
       {
@@ -308,7 +321,7 @@ namespace Translator
       {
         listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
       }
-      else
+      else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
         BlastCommand blastCommand = new BlastCommand(
           new BlastIrDelegate(Program.BlastIR),
@@ -316,10 +329,12 @@ namespace Translator
           Program.TransceiverInformation.Ports,
           selected.Substring(Common.CmdPrefixBlast.Length));
 
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
+        if (blastCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
+      }
+      else
+      {
+        throw new ApplicationException(String.Format("Unknown command in macro command list \"{0}\"", selected));
       }
     }
 
@@ -409,8 +424,7 @@ namespace Translator
 
       if (selected.StartsWith(Common.CmdPrefixPause))
       {
-        IrssUtils.Forms.PauseTime pauseTime = new IrssUtils.Forms.PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
-
+        PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
         if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -422,6 +436,7 @@ namespace Translator
       else if (selected.StartsWith(Common.CmdPrefixRun))
       {
         string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
+
         ExternalProgram executeProgram = new ExternalProgram(commands, false);
         if (executeProgram.ShowDialog(this) == DialogResult.Cancel)
           return;
@@ -434,6 +449,7 @@ namespace Translator
       else if (selected.StartsWith(Common.CmdPrefixSerial))
       {
         string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
+
         SerialCommand serialCommand = new SerialCommand(commands);
         if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
@@ -446,6 +462,7 @@ namespace Translator
       else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
       {
         string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
+
         MessageCommand messageCommand = new MessageCommand(commands);
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
           return;
@@ -508,6 +525,8 @@ namespace Translator
         listBoxMacro.SelectedIndex = index;
       }
     }
+
+    #endregion Implementation
 
   }
 

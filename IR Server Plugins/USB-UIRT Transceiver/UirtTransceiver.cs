@@ -15,7 +15,7 @@ namespace UirtTransceiver
 
   [CLSCompliant(false)]
   public class UirtTransceiver :
-    IRServerPlugin, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
+    IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
   {
 
     #region Interop
@@ -213,6 +213,23 @@ namespace UirtTransceiver
     public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "Support for the USB-UIRT transceiver"; } }
+
+    public override bool Detect()
+    {
+      try
+      {
+        IntPtr handle = UUIRTOpen();
+
+        if (handle != new IntPtr(-1))
+        {
+          UUIRTClose(handle);
+          return true;
+        }
+      }
+      catch { }
+
+      return false;
+    }
 
     public override bool Start()
     {

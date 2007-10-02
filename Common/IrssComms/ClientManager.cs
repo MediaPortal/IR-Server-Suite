@@ -24,7 +24,22 @@ namespace IrssComms
 
     Socket _connection;
 
+    WaitCallback _disconnectCallback;
+
     #endregion Variables
+
+    #region Properties
+
+    /// <summary>
+    /// Gets or Sets the Disconnect callback.
+    /// </summary>
+    public WaitCallback DisconnectCallback
+    {
+      get { return _disconnectCallback; }
+      set { _disconnectCallback = value; }
+    }
+
+    #endregion Properties
 
     #region Constructor
 
@@ -80,8 +95,13 @@ namespace IrssComms
 
       _processReceiveThread = false;
 
-      _connection.Close();
-      _connection = null;
+      if (_connection != null)
+      {
+        _connection.Close(100);
+        _connection = null;
+      }
+
+      _messageSink = null;
 
       //_receiveThread.Abort();
       //_receiveThread.Join();
@@ -114,7 +134,7 @@ namespace IrssComms
         {
           bytesRead = _connection.Receive(buffer, buffer.Length, SocketFlags.None);
           if (bytesRead != buffer.Length)
-            break; // TODO: Inform server to remove clientmanager from list? (Low)
+            break;
 
           int readSize = BitConverter.ToInt32(buffer, 0);
           readSize = IPAddress.NetworkToHostOrder(readSize);
@@ -127,7 +147,9 @@ namespace IrssComms
 
           IrssMessage message = IrssMessage.FromBytes(packet);
           MessageManagerCombo combo = new MessageManagerCombo(message, this);
-          _messageSink(combo);
+          
+          if (_messageSink != null)
+            _messageSink(combo);
         }
       }
 #if TRACE
@@ -140,6 +162,16 @@ namespace IrssComms
       {
       }
 #endif
+      finally
+      {
+        if (_connection != null)
+        {
+          _connection.Close(100);
+          _connection = null;
+        }
+
+        _disconnectCallback(this);
+      }
     }
 
     #endregion Implementation

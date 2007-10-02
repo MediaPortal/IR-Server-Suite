@@ -20,7 +20,7 @@ namespace IRServer
 
     #region Variables
 
-    IRServerPlugin[] _transceivers;
+    IRServerPluginBase[] _transceivers;
 
     IRServerMode _mode = IRServerMode.ServerMode;
     string _hostComputer = String.Empty;
@@ -165,7 +165,7 @@ namespace IRServer
 
       row++;
 
-      foreach (IRServerPlugin transceiver in _transceivers)
+      foreach (IRServerPluginBase transceiver in _transceivers)
       {
         gridPlugins.Rows.Insert(row);
 
@@ -262,7 +262,7 @@ namespace IRServer
 
       string plugin = gridPlugins[cell.Row.Index, 0].DisplayText;
 
-      foreach (IRServerPlugin transceiver in _transceivers)
+      foreach (IRServerPluginBase transceiver in _transceivers)
         if (transceiver.Name == plugin)
           (transceiver as IConfigure).Configure();
     }
@@ -343,6 +343,29 @@ namespace IRServer
     }
 
     #endregion Controls
+
+    private void buttonDetect_Click(object sender, EventArgs e)
+    {
+      SourceGrid.Cells.CheckBox checkBox;
+      for (int row = 1; row < gridPlugins.RowsCount; row++)
+      {
+        string name = gridPlugins[row, 0].DisplayText;
+
+        IRServerPluginBase plugin = Program.GetPlugin(name);
+        
+        bool detected = plugin.Detect();
+
+        // Receive
+        checkBox = gridPlugins[row, 1] as SourceGrid.Cells.CheckBox;
+        if (checkBox != null)
+          checkBox.Checked = detected;
+        
+        // Transmit
+        checkBox = gridPlugins[row, 2] as SourceGrid.Cells.CheckBox;
+        if (checkBox != null)
+          checkBox.Checked = detected;
+      }
+    }
 
   }
 

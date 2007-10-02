@@ -149,7 +149,7 @@ namespace MediaPortal.Plugins
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
           RefreshIRList();
           RefreshCommandsCombo();
         }
@@ -164,12 +164,12 @@ namespace MediaPortal.Plugins
 
         if (File.Exists(fileName))
         {
-          MacroEditor macroEditor = new MacroEditor(false, command);
+          MacroEditor macroEditor = new MacroEditor(command);
           macroEditor.ShowDialog(this);
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
           RefreshMacroList();
           RefreshCommandsCombo();
         }
@@ -365,7 +365,7 @@ namespace MediaPortal.Plugins
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         RefreshIRList();
@@ -375,7 +375,7 @@ namespace MediaPortal.Plugins
 
     private void buttonNewMacro_Click(object sender, EventArgs e)
     {
-      MacroEditor macroEditor = new MacroEditor(true, String.Empty);
+      MacroEditor macroEditor = new MacroEditor();
       macroEditor.ShowDialog(this);
 
       RefreshMacroList();
@@ -398,7 +398,7 @@ namespace MediaPortal.Plugins
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         RefreshMacroList();

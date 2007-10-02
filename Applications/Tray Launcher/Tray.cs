@@ -44,6 +44,8 @@ namespace TrayLauncher
 
     NotifyIcon _notifyIcon;
 
+    bool _inConfiguration = false;
+
     #endregion Variables
 
     #region Properties
@@ -109,12 +111,12 @@ namespace TrayLauncher
         }
 
         bool clientStarted = false;
-        
-        IPAddress serverIP = Client.GetIPFromName(_serverHost);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
 
         try
         {
+          IPAddress serverIP = Client.GetIPFromName(_serverHost);
+          IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
           clientStarted = StartClient(endPoint);
         }
         catch (Exception ex)
@@ -336,7 +338,6 @@ namespace TrayLauncher
             break;
         }
 
-        // If another module of the program has registered to receive messages too ...
         if (_handleMessage != null)
           _handleMessage(received);
       }
@@ -384,16 +385,26 @@ namespace TrayLauncher
     {
       IrssLog.Info("Setup");
 
+      _inConfiguration = true;
+
       if (Configure())
       {
         Stop();
         Thread.Sleep(500);
         Start();
       }
+      
+      _inConfiguration = false;
     }
     void ClickLaunch(object sender, EventArgs e)
     {
       IrssLog.Info("Launch");
+
+      if (_inConfiguration)
+      {
+        IrssLog.Info("In Configuration");
+        return;
+      }
 
       try
       {
@@ -411,24 +422,35 @@ namespace TrayLauncher
               return;
             }
           }
-          catch { }
+          catch (Exception ex)
+          {
+            IrssLog.Error(ex.ToString());
+          }
         }
 
         // Launch program
         Process launch = new Process();
         launch.StartInfo.FileName = _programFile;
         launch.StartInfo.UseShellExecute = false;
+        launch.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+        launch.StartInfo.UseShellExecute = true;
         launch.Start();
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.Message);
+        IrssLog.Error(ex.ToString());
         MessageBox.Show(ex.Message, "Tray Launcher", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     void ClickQuit(object sender, EventArgs e)
     {
       IrssLog.Info("Quit");
+
+      if (_inConfiguration)
+      {
+        IrssLog.Info("In Configuration");
+        return;
+      }
 
       Stop();
 

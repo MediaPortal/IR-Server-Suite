@@ -104,8 +104,8 @@ namespace IrssComms
 
       // Create the worker thread  ...
       _workerThread = new Thread(new ThreadStart(WorkerThread));
-      _workerThread.IsBackground = true;
       _workerThread.Name = "IrssComms.GenericPCQueue";
+      _workerThread.IsBackground = true;
 
       _workerThread.Start();
     }

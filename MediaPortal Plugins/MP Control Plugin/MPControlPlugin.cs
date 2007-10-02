@@ -367,7 +367,7 @@ namespace MediaPortal.Plugins
         if (MouseModeAcceleration)
           distance += (2 * _mouseModeRepeatCount);
 
-        switch ((RemoteButton)button)
+        switch (button)
         {
           case RemoteButton.Up:
             Mouse.Move(0, -distance, false);
@@ -764,7 +764,7 @@ namespace MediaPortal.Plugins
           string setName = MultiMaps[_multiMappingSet];
 
           if (LogVerbose)
-            Log.Info("MCEReplacement: Multi-Mapping has changed to \"{0}\"", setName);
+            Log.Info("MPControlPlugin: Multi-Mapping has changed to \"{0}\"", setName);
 
           MPCommands.ShowNotifyDialog("Multi-Mapping", setName, 2);
 
@@ -1446,6 +1446,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Returns a list of Macros.
     /// </summary>
+    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
     /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
@@ -1467,6 +1468,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Returns a combined list of IR Commands and Macros.
     /// </summary>
+    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
     /// <returns>string[] of IR Commands and Macros.</returns>
     internal static string[] GetFileList(bool commandPrefix)
     {

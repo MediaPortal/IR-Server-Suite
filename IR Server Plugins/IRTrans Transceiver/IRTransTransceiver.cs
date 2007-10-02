@@ -175,7 +175,7 @@ namespace IRTransTransceiver
   */
   #endregion Interop Structures
 
-  public class IRTransTransceiver : IRServerPlugin, IConfigure, IRemoteReceiver
+  public class IRTransTransceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
   {
 
     #region Constants
@@ -212,6 +212,11 @@ namespace IRTransTransceiver
     public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "IRTrans Transceiver"; } }
+
+    public override bool Detect()
+    {
+      return false;
+    }
 
     public override bool Start()
     {
@@ -358,15 +363,13 @@ namespace IRTransTransceiver
 #if TRACE
       catch (SocketException ex)
       {
-        Trace.WriteLine(ex.ToString());
-        return false;
-      }
+        Trace.WriteLine("IRTransTransceiver: " + ex.ToString());
 #else
       catch (SocketException)
       {
+#endif
         return false;
       }
-#endif
 
       return true;
     }

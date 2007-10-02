@@ -13,7 +13,7 @@ using IRServerPluginInterface;
 namespace IRManReceiver
 {
 
-  public class IRManReceiver : IRServerPlugin, IConfigure, IRemoteReceiver
+  public class IRManReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
   {
 
     #region Constants
@@ -49,6 +49,11 @@ namespace IRManReceiver
     public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "Receiver support for the Serial IRMan device"; } }
+
+    public override bool Detect()
+    {
+      return false;
+    }
 
     public override bool Start()
     {

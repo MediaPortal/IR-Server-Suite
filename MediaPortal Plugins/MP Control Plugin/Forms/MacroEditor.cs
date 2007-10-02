@@ -23,24 +23,37 @@ namespace MediaPortal.Plugins
 
     #region Constructor
 
-    public MacroEditor(bool newMacro, string name)
+    /// <summary>
+    /// Creates a Macro Editor windows form.
+    /// </summary>
+    public MacroEditor()
+    {
+      InitializeComponent();
+
+      textBoxName.Text = "New";
+      textBoxName.Enabled = true;
+    }
+
+    /// <summary>
+    /// Creates a Macro Editor windows form.
+    /// </summary>
+    /// <param name="name">The name of an existing macro.</param>
+    public MacroEditor(string name)
+      : this()
     {
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      InitializeComponent();
-
       textBoxName.Text = name;
-      textBoxName.Enabled = newMacro;
+      textBoxName.Enabled = false;
 
-      if (!newMacro)
-      {
-        string fileName = MPControlPlugin.FolderMacros + name + Common.FileExtensionMacro;
-        ReadFromFile(fileName);
-      }
+      string fileName = MPControlPlugin.FolderMacros + name + Common.FileExtensionMacro;
+      ReadFromFile(fileName);
     }
 
     #endregion Constructor
+
+    #region Implementation
 
     void RefreshCommandList()
     {
@@ -69,6 +82,10 @@ namespace MediaPortal.Plugins
         comboBoxCommands.Items.AddRange(irList);
     }
 
+    /// <summary>
+    /// Write the macro in the listBox to a macro name provided.
+    /// </summary>
+    /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
     void WriteToFile(string fileName)
     {
       try
@@ -194,12 +211,19 @@ namespace MediaPortal.Plugins
         Log.Error("MPControlPlugin: {0}", ex.Message);
       }
     }
+
+    /// <summary>
+    /// Read a macro into the listBox from the macro name provided.
+    /// </summary>
+    /// <param name="fileName">Name of Macro to read (macro name, not file path).</param>
     void ReadFromFile(string fileName)
     {
       try
       {
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
+
+        listBoxMacro.Items.Clear();
 
         XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
 
@@ -245,7 +269,7 @@ namespace MediaPortal.Plugins
             case Common.XmlTagMultiMap:
               listBoxMacro.Items.Add(Common.CmdPrefixMultiMap + commandProperty);
               break;
-              
+
             case Common.XmlTagMouseMode:
               listBoxMacro.Items.Add(Common.CmdPrefixMouseMode + commandProperty);
               break;
@@ -253,11 +277,11 @@ namespace MediaPortal.Plugins
             case Common.XmlTagInputLayer:
               listBoxMacro.Items.Add(Common.CmdPrefixInputLayer);
               break;
-/*
-            case Common.XmlTagWindowState:
-              listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
-              break;
-*/
+            /*
+                        case Common.XmlTagWindowState:
+                          listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
+                          break;
+            */
             case Common.XmlTagFocus:
               listBoxMacro.Items.Add(Common.CmdPrefixFocus);
               break;
@@ -305,66 +329,50 @@ namespace MediaPortal.Plugins
       if (selected == Common.UITextRun)
       {
         ExternalProgram externalProgram = new ExternalProgram();
-
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixRun + externalProgram.CommandString);
+        if (externalProgram.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixRun + externalProgram.CommandString);
       }
       else if (selected == Common.UITextPause)
       {
         PauseTime pauseTime = new PauseTime();
-
-        if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixPause + pauseTime.Time.ToString());
+        if (pauseTime.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixPause + pauseTime.Time.ToString());
       }
       else if (selected == Common.UITextSerial)
       {
         SerialCommand serialCommand = new SerialCommand();
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixSerial + serialCommand.CommandString);
+        if (serialCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixSerial + serialCommand.CommandString);
       }
       else if (selected == Common.UITextWindowMsg)
       {
         MessageCommand messageCommand = new MessageCommand();
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
+        if (messageCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
       }
       else if (selected == Common.UITextKeys)
       {
         KeysCommand keysCommand = new KeysCommand();
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
+        if (keysCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
       }
       else if (selected == Common.UITextGoto)
       {
         MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen();
-        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixGoto + goToScreen.Screen);
+        if (goToScreen.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixGoto + goToScreen.Screen);
       }
       else if (selected == Common.UITextPopup)
       {
         PopupMessage popupMessage = new PopupMessage();
-        if (popupMessage.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixPopup + popupMessage.CommandString);
+        if (popupMessage.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixPopup + popupMessage.CommandString);
       }
       else if (selected == Common.UITextMultiMap)
       {
         //SelectBlasterSpeed selectBlasterSpeed = new SelectBlasterSpeed(_blastSpeed);
         //if (selectBlasterSpeed.ShowDialog(this) == DialogResult.Cancel)
-          //return;
+        //return;
 
         listBoxMacro.Items.Add(Common.CmdPrefixMultiMap + "TOGGLE");
       }
@@ -372,7 +380,7 @@ namespace MediaPortal.Plugins
       {
         //SelectBlasterSpeed selectBlasterSpeed = new SelectBlasterSpeed(_blastSpeed);
         //if (selectBlasterSpeed.ShowDialog(this) == DialogResult.Cancel)
-          //return;
+        //return;
 
         listBoxMacro.Items.Add(Common.CmdPrefixMouseMode + "TOGGLE");
       }
@@ -380,12 +388,12 @@ namespace MediaPortal.Plugins
       {
         listBoxMacro.Items.Add(Common.CmdPrefixInputLayer);
       }
-/*
-      else if (selected == Common.UITextWindowState)
-      {
-        listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
-      }
-*/      
+      /*
+            else if (selected == Common.UITextWindowState)
+            {
+              listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
+            }
+      */
       else if (selected == Common.UITextFocus)
       {
         listBoxMacro.Items.Add(Common.CmdPrefixFocus);
@@ -410,7 +418,7 @@ namespace MediaPortal.Plugins
       {
         listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
       }
-      else
+      else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
         BlastCommand blastCommand = new BlastCommand(
           new BlastIrDelegate(MPControlPlugin.BlastIR),
@@ -418,10 +426,12 @@ namespace MediaPortal.Plugins
           MPControlPlugin.TransceiverInformation.Ports,
           selected.Substring(Common.CmdPrefixBlast.Length));
 
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
+        if (blastCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
+      }
+      else
+      {
+        throw new ApplicationException(String.Format("Unknown command in macro command list \"{0}\"", selected));
       }
     }
 
@@ -504,117 +514,117 @@ namespace MediaPortal.Plugins
 
     private void listBoxCommandSequence_DoubleClick(object sender, EventArgs e)
     {
-      if (listBoxMacro.SelectedIndex != -1)
+      if (listBoxMacro.SelectedIndex == -1)
+        return;
+
+      string selected = listBoxMacro.SelectedItem as string;
+
+      if (selected.StartsWith(Common.CmdPrefixPause))
       {
-        string selected = listBoxMacro.SelectedItem as string;
+        PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
+        if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-        if (selected.StartsWith(Common.CmdPrefixPause))
-        {
-          PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixPause + pauseTime.Time.ToString());
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixRun))
+      {
+        string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
 
-          if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        ExternalProgram executeProgram = new ExternalProgram(commands);
+        if (executeProgram.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixPause + pauseTime.Time.ToString());
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixRun))
-        {
-          string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixRun + executeProgram.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixSerial))
+      {
+        string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
 
-          ExternalProgram executeProgram = new ExternalProgram(commands);
-          if (executeProgram.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        SerialCommand serialCommand = new SerialCommand(commands);
+        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixRun + executeProgram.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixSerial))
-        {
-          string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixSerial + serialCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
+      {
+        string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
 
-          SerialCommand serialCommand = new SerialCommand(commands);
-          if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        MessageCommand messageCommand = new MessageCommand(commands);
+        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixSerial + serialCommand.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
-        {
-          string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixKeys))
+      {
+        KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
+        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          MessageCommand messageCommand = new MessageCommand(commands);
-          if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixGoto))
+      {
+        MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen(selected.Substring(Common.CmdPrefixGoto.Length));
+        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixKeys))
-        {
-          KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
-          if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixGoto + goToScreen.Screen);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixPopup))
+      {
+        string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixGoto))
-        {
-          MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen(selected.Substring(Common.CmdPrefixGoto.Length));
-          if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        PopupMessage popupMessage = new PopupMessage(commands);
+        if (popupMessage.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixGoto + goToScreen.Screen);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixPopup))
-        {
-          string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixPopup + popupMessage.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      {
+        string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
-          PopupMessage popupMessage = new PopupMessage(commands);
-          if (popupMessage.ShowDialog(this) == DialogResult.Cancel)
-            return;
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(MPControlPlugin.BlastIR),
+          Common.FolderIRCommands,
+          MPControlPlugin.TransceiverInformation.Ports,
+          commands);
 
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixPopup + popupMessage.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixBlast))
-        {
-          string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
 
-          BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(MPControlPlugin.BlastIR),
-            Common.FolderIRCommands,
-            MPControlPlugin.TransceiverInformation.Ports,
-            commands);
-
-          if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
-
-          int index = listBoxMacro.SelectedIndex;
-          listBoxMacro.Items.RemoveAt(index);
-          listBoxMacro.Items.Insert(index, Common.CmdPrefixBlast + blastCommand.CommandString);
-          listBoxMacro.SelectedIndex = index;
-        }
-
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixBlast + blastCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
       }
     }
+
+    #endregion Implementation
 
   }
 

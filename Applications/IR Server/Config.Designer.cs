@@ -34,20 +34,21 @@ namespace IRServer
       this.buttonCancel = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.checkBoxRunAtBoot = new System.Windows.Forms.CheckBox();
+      this.buttonAdvanced = new System.Windows.Forms.Button();
+      this.buttonDetect = new System.Windows.Forms.Button();
       this.groupBoxTransceiver = new System.Windows.Forms.GroupBox();
       this.gridPlugins = new SourceGrid.Grid();
       this.buttonHelp = new System.Windows.Forms.Button();
-      this.buttonAdvanced = new System.Windows.Forms.Button();
       this.groupBoxTransceiver.SuspendLayout();
       this.SuspendLayout();
       // 
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(352, 280);
+      this.buttonOK.Location = new System.Drawing.Point(352, 304);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
-      this.buttonOK.TabIndex = 4;
+      this.buttonOK.TabIndex = 5;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -56,25 +57,49 @@ namespace IRServer
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(424, 280);
+      this.buttonCancel.Location = new System.Drawing.Point(424, 304);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
-      this.buttonCancel.TabIndex = 5;
+      this.buttonCancel.TabIndex = 6;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
       // 
       // checkBoxRunAtBoot
       // 
-      this.checkBoxRunAtBoot.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.checkBoxRunAtBoot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.checkBoxRunAtBoot.AutoSize = true;
-      this.checkBoxRunAtBoot.Location = new System.Drawing.Point(168, 288);
+      this.checkBoxRunAtBoot.Location = new System.Drawing.Point(8, 272);
       this.checkBoxRunAtBoot.Name = "checkBoxRunAtBoot";
       this.checkBoxRunAtBoot.Size = new System.Drawing.Size(165, 17);
-      this.checkBoxRunAtBoot.TabIndex = 3;
+      this.checkBoxRunAtBoot.TabIndex = 1;
       this.checkBoxRunAtBoot.Text = "&Start IR Server with Windows";
       this.toolTips.SetToolTip(this.checkBoxRunAtBoot, "Run IR Server when windows boots up?");
       this.checkBoxRunAtBoot.UseVisualStyleBackColor = true;
+      // 
+      // buttonAdvanced
+      // 
+      this.buttonAdvanced.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonAdvanced.Location = new System.Drawing.Point(80, 304);
+      this.buttonAdvanced.Name = "buttonAdvanced";
+      this.buttonAdvanced.Size = new System.Drawing.Size(64, 24);
+      this.buttonAdvanced.TabIndex = 3;
+      this.buttonAdvanced.Text = "Advanced";
+      this.toolTips.SetToolTip(this.buttonAdvanced, "Click here for advanced options");
+      this.buttonAdvanced.UseVisualStyleBackColor = true;
+      this.buttonAdvanced.Click += new System.EventHandler(this.buttonAdvanced_Click);
+      // 
+      // buttonDetect
+      // 
+      this.buttonDetect.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.buttonDetect.Location = new System.Drawing.Point(216, 304);
+      this.buttonDetect.Name = "buttonDetect";
+      this.buttonDetect.Size = new System.Drawing.Size(80, 24);
+      this.buttonDetect.TabIndex = 4;
+      this.buttonDetect.Text = "Auto-Detect";
+      this.toolTips.SetToolTip(this.buttonDetect, "Click here to automatically detect attached devices");
+      this.buttonDetect.UseVisualStyleBackColor = true;
+      this.buttonDetect.Click += new System.EventHandler(this.buttonDetect_Click);
       // 
       // groupBoxTransceiver
       // 
@@ -108,31 +133,20 @@ namespace IRServer
       // buttonHelp
       // 
       this.buttonHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonHelp.Location = new System.Drawing.Point(8, 280);
+      this.buttonHelp.Location = new System.Drawing.Point(8, 304);
       this.buttonHelp.Name = "buttonHelp";
       this.buttonHelp.Size = new System.Drawing.Size(64, 24);
-      this.buttonHelp.TabIndex = 1;
+      this.buttonHelp.TabIndex = 2;
       this.buttonHelp.Text = "Help";
       this.buttonHelp.UseVisualStyleBackColor = true;
       this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
-      // 
-      // buttonAdvanced
-      // 
-      this.buttonAdvanced.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonAdvanced.Location = new System.Drawing.Point(80, 280);
-      this.buttonAdvanced.Name = "buttonAdvanced";
-      this.buttonAdvanced.Size = new System.Drawing.Size(64, 24);
-      this.buttonAdvanced.TabIndex = 2;
-      this.buttonAdvanced.Text = "Advanced";
-      this.toolTips.SetToolTip(this.buttonAdvanced, "Click here for advanced options");
-      this.buttonAdvanced.UseVisualStyleBackColor = true;
-      this.buttonAdvanced.Click += new System.EventHandler(this.buttonAdvanced_Click);
       // 
       // Config
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(496, 319);
+      this.ClientSize = new System.Drawing.Size(496, 343);
+      this.Controls.Add(this.buttonDetect);
       this.Controls.Add(this.buttonAdvanced);
       this.Controls.Add(this.buttonHelp);
       this.Controls.Add(this.checkBoxRunAtBoot);
@@ -140,7 +154,7 @@ namespace IRServer
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-      this.MinimumSize = new System.Drawing.Size(504, 346);
+      this.MinimumSize = new System.Drawing.Size(504, 370);
       this.Name = "Config";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "IR Server - Configuration";
@@ -160,5 +174,6 @@ namespace IRServer
     private System.Windows.Forms.Button buttonHelp;
     private SourceGrid.Grid gridPlugins;
     private System.Windows.Forms.Button buttonAdvanced;
+    private System.Windows.Forms.Button buttonDetect;
   }
 }

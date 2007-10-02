@@ -13,7 +13,7 @@ using IRServerPluginInterface;
 namespace WinLircTransceiver
 {
 
-  public class WinLircTransceiver : IRServerPlugin, IConfigure, IRemoteReceiver, ITransmitIR
+  public class WinLircTransceiver : IRServerPluginBase, IConfigure, IRemoteReceiver, ITransmitIR
   {
 
     #region Constants
@@ -43,6 +43,11 @@ namespace WinLircTransceiver
     public override string Version      { get { return "1.0.3.4"; } }
     public override string Author       { get { return "and-81, original code for MediaPortal by Sven"; } }
     public override string Description  { get { return "Supports WinLirc as a Transciever"; } }
+
+    public override bool Detect()
+    {
+      return WinLircServer.IsServerRunning();
+    }
 
     public override bool Start()
     {

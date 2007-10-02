@@ -26,7 +26,7 @@ namespace MediaPortal.Plugins
 
     #region Variables
 
-    IrssUtils.Forms.LearnIR _learnIR = null;
+    LearnIR _learnIR;
 
     #endregion Variables
 
@@ -272,7 +272,9 @@ namespace MediaPortal.Plugins
     void RefreshIRList()
     {
       listBoxIR.Items.Clear();
-      listBoxIR.Items.AddRange(Common.GetIRList(false));
+      string[] irList = Common.GetIRList(false);
+      if (irList != null)
+        listBoxIR.Items.AddRange(irList);
     }
     void RefreshMacroList()
     {
@@ -288,7 +290,10 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
       comboBoxCommands.Items.Add(Common.UITextGoto);
-      comboBoxCommands.Items.AddRange(MPControlPlugin.GetFileList(true));
+
+      string[] fileList = MPControlPlugin.GetFileList(true);
+      if (fileList != null)
+        comboBoxCommands.Items.AddRange(fileList);
   }
 
     void EditIR()
@@ -312,7 +317,7 @@ namespace MediaPortal.Plugins
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
           RefreshIRList();
           RefreshEventMapperCommands();
         }
@@ -327,12 +332,12 @@ namespace MediaPortal.Plugins
 
         if (File.Exists(fileName))
         {
-          MacroEditor macroEditor = new MacroEditor(false, command);
+          MacroEditor macroEditor = new MacroEditor(command);
           macroEditor.ShowDialog(this);
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
           RefreshMacroList();
           RefreshEventMapperCommands();
         }
@@ -451,7 +456,7 @@ namespace MediaPortal.Plugins
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         RefreshIRList();
@@ -461,7 +466,7 @@ namespace MediaPortal.Plugins
 
     private void buttonNewMacro_Click(object sender, EventArgs e)
     {
-      MacroEditor macroEditor = new MacroEditor(true, String.Empty);
+      MacroEditor macroEditor = new MacroEditor();
       macroEditor.ShowDialog(this);
 
       RefreshMacroList();
@@ -484,7 +489,7 @@ namespace MediaPortal.Plugins
         }
         else
         {
-          MessageBox.Show(this, "File not found: " + fileName, "File missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         RefreshMacroList();

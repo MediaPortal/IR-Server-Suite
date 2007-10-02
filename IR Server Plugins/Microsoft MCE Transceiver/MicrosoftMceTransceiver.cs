@@ -48,7 +48,7 @@ namespace MicrosoftMceTransceiver
   #endregion Delegates
 
   public class MicrosoftMceTransceiver :
-    IRServerPlugin, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
+    IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
 
     #region Constants
@@ -114,8 +114,23 @@ namespace MicrosoftMceTransceiver
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "Microsoft MCE Infrared Transceiver"; } }
 
+    public override bool Detect()
+    {
+      Guid deviceGuid;
+      string devicePath;
+
+      return FindDevice(out deviceGuid, out devicePath);
+    }
+
     public override bool Start()
     {
+#if TRACE
+      Trace.WriteLine("Start MicrosoftMceTransceiver");
+#endif
+
+      if (_driver != null)
+        throw new ApplicationException("MicrosoftMceTransceiver already started");
+
       LoadSettings();
 
       if (_disableMceServices)

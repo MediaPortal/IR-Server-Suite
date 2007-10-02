@@ -57,9 +57,16 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IRServerPluginInterface.cs" />
+    <Compile Include="IConfigure.cs" />
+    <Compile Include="IKeyboardReceiver.cs" />
+    <Compile Include="ILearnIR.cs" />
+    <Compile Include="IMouseReceiver.cs" />
+    <Compile Include="IRemoteReceiver.cs" />
+    <Compile Include="IRServerPluginBase.cs" />
+    <Compile Include="ITransmitIR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

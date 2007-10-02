@@ -156,8 +156,6 @@ namespace MicrosoftMceTransceiver
 
     DeviceType _deviceType = DeviceType.Microsoft;
 
-    StreamWriter _debugFile;
-
     #endregion Variables
 
     #region Constructor
@@ -177,9 +175,11 @@ namespace MicrosoftMceTransceiver
 
     public override void Start()
     {
-      _debugFile = new StreamWriter("\\IRServer_DriverReplacement.log", false);
-      _debugFile.AutoFlush = true;
-      
+#if DEBUG
+      DebugOpen("\\IRServer_DriverReplacement.log");
+      DebugWriteLine("DriverReplacement.Start()");
+#endif
+
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
 
@@ -210,20 +210,32 @@ namespace MicrosoftMceTransceiver
 
     public override void Stop()
     {
+#if DEBUG
+      DebugWriteLine("DriverReplacement.Stop()");
+#endif
+
+      _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
+      _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
+
       WriteSync(StopPacket);
 
-      OnDeviceRemoval();
+      StopReadThread();
 
+      _notifyWindow.UnregisterDeviceRemoval();
       _notifyWindow.Dispose();
 
       CloseDevice();
 
-      _debugFile.Dispose();
+#if DEBUG
+      DebugClose();
+#endif
     }
 
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
-      _debugFile.WriteLine("Start Learn");
+#if DEBUG
+      DebugWriteLine("Start Learn");
+#endif
 
       learned = null;
       _learningCode = new IrCode();
@@ -237,7 +249,9 @@ namespace MicrosoftMceTransceiver
       while (_readThreadMode == ReadThreadMode.Learning && Environment.TickCount < learnStartTick + learnTimeout)
         Thread.Sleep(100);
 
-      _debugFile.WriteLine("End Learn");
+#if DEBUG
+      DebugWriteLine("End Learn");
+#endif
 
       ReadThreadMode modeWas = _readThreadMode;
 
@@ -257,8 +271,9 @@ namespace MicrosoftMceTransceiver
           break;
 
         case ReadThreadMode.LearningDone:
-          _debugFile.WriteLine(_learningCode.ToByteArray());
-
+#if DEBUG
+          DebugDump(_learningCode.TimingData);
+#endif
           if (_learningCode.FinalizeData())
           {
             learned = _learningCode;
@@ -273,7 +288,9 @@ namespace MicrosoftMceTransceiver
 
     public override void Send(IrCode code, uint port)
     {
-      _debugFile.WriteLine("Send");
+#if DEBUG
+      DebugWriteLine("Send");
+#endif
 
       byte[] portPacket;
       switch (_deviceType)
@@ -283,8 +300,6 @@ namespace MicrosoftMceTransceiver
         default:
           throw new ApplicationException("Invalid device type");
       }
-
-      //Dump(code.ToByteArray());
 
       // Set port
       WriteSync(portPacket);
@@ -399,17 +414,25 @@ namespace MicrosoftMceTransceiver
 
     void StartReadThread()
     {
+#if DEBUG
+      DebugWriteLine("DriverReplacement.StartReadThread()");
+#endif
+
       _stopReadThread = new ManualResetEvent(false);
       _readThreadMode = ReadThreadMode.Receiving;
 
       _readThread = new Thread(new ThreadStart(ReadThread));
+      _readThread.Name = "MicrosoftMceTransceiver.DriverReplacement.ReadThread";
       _readThread.IsBackground = true;
-      _readThread.Name = "IR Server Microsoft MCE Transceiver Read";
       _readThread.Start();
     }
 
     void StopReadThread()
     {
+#if DEBUG
+      DebugWriteLine("DriverReplacement.StopReadThread()");
+#endif
+
       if (_readThread != null)
       {
         _readThreadMode = ReadThreadMode.Stop;
@@ -429,6 +452,10 @@ namespace MicrosoftMceTransceiver
 
     void CloseDevice()
     {
+#if DEBUG
+      DebugWriteLine("DriverReplacement.CloseDevice()");
+#endif
+
       if (_readHandle != null)
       {
         _readHandle.Dispose();
@@ -539,7 +566,10 @@ namespace MicrosoftMceTransceiver
           packetBytes = new byte[bytesRead];
           Marshal.Copy(deviceBufferPtr, packetBytes, 0, bytesRead);
 
-          //Dump(packetBytes);
+#if DEBUG
+          DebugWriteLine("Received:");
+          DebugDump(packetBytes);
+#endif
 
           int[] timingData;
 
@@ -601,8 +631,6 @@ namespace MicrosoftMceTransceiver
                         _learningCode.Carrier = (int)carrier;
                     }
 
-                    _debugFile.WriteLine(String.Format("Carrier Freq ({0:X2}, {1:X2}): {2}", b1, b2, _learningCode.Carrier));
-
                     _readThreadMode = ReadThreadMode.LearningDone;
                     break;
                   }
@@ -624,7 +652,8 @@ namespace MicrosoftMceTransceiver
       }
       catch (Exception)
       {
-        CancelIo(_readHandle);
+        if (_readHandle != null)
+          CancelIo(_readHandle);
       }
       finally
       {
@@ -635,17 +664,13 @@ namespace MicrosoftMceTransceiver
         waitHandle.Close();
       }
     }
-    /*
-    void Dump(byte[] data)
-    {
-      _debugFile.WriteLine("Dump");
-      foreach (byte d in data)
-        _debugFile.Write(String.Format("{0:X2} ", d));
-      _debugFile.WriteLine();
-    }
-    */
+
     void WriteSync(byte[] data)
     {
+#if DEBUG
+      DebugWriteLine("DriverReplacement.WriteSync()");
+#endif
+
       NativeOverlapped lpOverlapped = new NativeOverlapped();
       lpOverlapped.InternalLow = IntPtr.Zero;
       lpOverlapped.InternalHigh = IntPtr.Zero;
@@ -696,7 +721,9 @@ namespace MicrosoftMceTransceiver
       }
       catch
       {
-        CancelIo(_writeHandle);
+        if (_writeHandle != null)
+          CancelIo(_writeHandle);
+
         throw;
       }
       finally

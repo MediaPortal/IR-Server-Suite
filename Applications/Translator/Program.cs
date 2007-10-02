@@ -847,7 +847,7 @@ namespace Translator
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        IrssLog.Error(ex.Message);
+        IrssLog.Error(ex.ToString());
       }
     }
 
@@ -1160,7 +1160,7 @@ namespace Translator
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        IrssLog.Error(ex.Message);
+        IrssLog.Error(ex.ToString());
         return false;
       }
 

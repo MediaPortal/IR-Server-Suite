@@ -17,7 +17,7 @@ using IRServerPluginInterface;
 namespace FusionRemoteReceiver
 {
 
-  public class FusionRemoteReceiver : IRServerPlugin, IRemoteReceiver
+  public class FusionRemoteReceiver : IRServerPluginBase, IRemoteReceiver
   {
 
     #region Constants
@@ -202,6 +202,16 @@ namespace FusionRemoteReceiver
     public override string Author       { get { return "and-81"; } }
     public override string Description  { get { return "DViCO FusionREMOTE Receiver"; } }
 
+    public override bool Detect()
+    {
+      Guid hidGuid = new Guid();
+      HidD_GetHidGuid(ref hidGuid);
+
+      string devicePath = FindDevice(hidGuid, DeviceID);
+
+      return (devicePath != null);
+    }
+
     public override bool Start()
     {
       try
@@ -217,15 +227,13 @@ namespace FusionRemoteReceiver
 #if TRACE
       catch (Exception ex)
       {
-        Trace.WriteLine(ex.ToString());
-        return false;
-      }
+        Trace.WriteLine("FusionRemoteReceiver: " + ex.ToString());
 #else
       catch
       {
+#endif
         return false;
       }
-#endif
     }
     public override void Suspend()
     {

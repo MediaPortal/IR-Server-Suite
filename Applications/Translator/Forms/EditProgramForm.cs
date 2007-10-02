@@ -150,7 +150,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error("Test Application: {0}", ex.Message);
+        IrssLog.Error("Test Application: {0}", ex.ToString());
       }
 
     }
