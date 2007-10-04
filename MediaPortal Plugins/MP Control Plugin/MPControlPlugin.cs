@@ -811,9 +811,9 @@ namespace MediaPortal.Plugins
           xmlwriter.SetValueAsBool("MPControlPlugin", "LogVerbose", LogVerbose);
           xmlwriter.SetValueAsBool("MPControlPlugin", "RequireFocus", RequireFocus);
           xmlwriter.SetValueAsBool("MPControlPlugin", "MultiMappingEnabled", MultiMappingEnabled);
-          xmlwriter.SetValue("MPControlPlugin", "MultiMappingButton", MultiMappingButton);
+          xmlwriter.SetValue("MPControlPlugin", "MultiMappingButton", (int)MultiMappingButton);
           xmlwriter.SetValueAsBool("MPControlPlugin", "EventMapperEnabled", EventMapperEnabled);
-          xmlwriter.SetValue("MPControlPlugin", "MouseModeButton", MouseModeButton);
+          xmlwriter.SetValue("MPControlPlugin", "MouseModeButton", (int)MouseModeButton);
           xmlwriter.SetValueAsBool("MPControlPlugin", "MouseModeEnabled", MouseModeEnabled);
           xmlwriter.SetValue("MPControlPlugin", "MouseModeStep", MouseModeStep);
           xmlwriter.SetValueAsBool("MPControlPlugin", "MouseModeAcceleration", MouseModeAcceleration);
@@ -827,21 +827,21 @@ namespace MediaPortal.Plugins
 
     static MappedKeyCode[] LoadRemoteMap(string remoteFile)
     {
-      ArrayList remoteMap = new ArrayList();
+      List<MappedKeyCode> remoteMap = new List<MappedKeyCode>();
 
       try
       {
         XmlDocument doc = new XmlDocument();
         doc.Load(remoteFile);
 
-        string remoteName;
+        //string remoteName;
         string remoteButton;
         string remoteCode;
 
         XmlNodeList listRemotes = doc.DocumentElement.SelectNodes("remote");
         foreach (XmlNode nodeRemote in listRemotes)
         {
-          remoteName = nodeRemote.Attributes["name"].Value;
+          //remoteName = nodeRemote.Attributes["name"].Value;
 
           XmlNodeList listButtons = nodeRemote.SelectNodes("button");
           foreach (XmlNode nodeButton in listButtons)
@@ -862,7 +862,7 @@ namespace MediaPortal.Plugins
         Log.Error("MPControlPlugin: LoadRemoteMap() - {0}", ex.Message);
       }
 
-      return (MappedKeyCode[])remoteMap.ToArray(typeof(MappedKeyCode));
+      return remoteMap.ToArray();
     }
 
     static void LoadEventMappings()

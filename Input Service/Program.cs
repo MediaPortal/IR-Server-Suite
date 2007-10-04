@@ -10,8 +10,8 @@ using System.Text;
 
 using Microsoft.Win32;
 
-using IrssUtils;
 using IRServerPluginInterface;
+using IrssUtils;
 
 namespace InputService
 {
@@ -57,11 +57,11 @@ namespace InputService
     /// Retreives a list of available IR Server plugins.
     /// </summary>
     /// <returns>Array of plugin instances.</returns>
-    internal static IRServerPlugin[] AvailablePlugins()
+    internal static IRServerPluginBase[] AvailablePlugins()
     {
       try
       {
-        List<IRServerPlugin> plugins = new List<IRServerPlugin>();
+        List<IRServerPluginBase> plugins = new List<IRServerPluginBase>();
 
         string installFolder = SystemRegistry.GetInstallFolder();
         if (String.IsNullOrEmpty(installFolder))
@@ -74,18 +74,16 @@ namespace InputService
           try
           {
             Assembly assembly = Assembly.LoadFrom(file);
-
             Type[] types = assembly.GetExportedTypes();
 
             foreach (Type type in types)
             {
-              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(IRServerPlugin)))
+              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(IRServerPluginBase)))
               {
-                IRServerPlugin plugin = (IRServerPlugin)Activator.CreateInstance(type);
-                if (plugin == null)
-                  continue;
+                IRServerPluginBase plugin = (IRServerPluginBase)assembly.CreateInstance(type.FullName);
 
-                plugins.Add(plugin);
+                if (plugin != null)
+                  plugins.Add(plugin);
               }
             }
           }
@@ -93,17 +91,22 @@ namespace InputService
           {
             // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
           }
-          catch (Exception ex)
+          catch (TypeLoadException)
           {
-            Trace.WriteLine(ex.ToString());
+            // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
           }
         }
 
         return plugins.ToArray();
       }
+#if TRACE
       catch (Exception ex)
       {
-        Trace.WriteLine(ex.ToString());
+        Trace.WriteLine("IRServer: " + ex.ToString());
+#else
+      catch
+      {
+#endif
         return null;
       }
     }
@@ -113,18 +116,84 @@ namespace InputService
     /// </summary>
     /// <param name="pluginName">Name of plugin to instantiate.</param>
     /// <returns>Plugin instance.</returns>
-    internal static IRServerPlugin GetPlugin(string pluginName)
+    internal static IRServerPluginBase GetPlugin(string pluginName)
     {
       if (String.IsNullOrEmpty(pluginName))
         throw new ArgumentNullException("pluginName");
 
-      IRServerPlugin[] serverPlugins = AvailablePlugins();
+      IRServerPluginBase[] serverPlugins = AvailablePlugins();
       if (serverPlugins == null)
         throw new FileNotFoundException("No available plugins found");
 
-      foreach (IRServerPlugin plugin in serverPlugins)
+      foreach (IRServerPluginBase plugin in serverPlugins)
         if (plugin.Name.Equals(pluginName, StringComparison.InvariantCultureIgnoreCase))
           return plugin;
+
+      return null;
+    }
+
+    /// <summary>
+    /// Retreives a list of detected Receiver plugins.
+    /// </summary>
+    /// <returns>String array of plugin names.</returns>
+    internal static string[] DetectReceivers()
+    {
+      try
+      {
+        IRServerPluginBase[] plugins = AvailablePlugins();
+
+        List<string> receivers = new List<string>();
+
+        foreach (IRServerPluginBase plugin in plugins)
+          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
+            receivers.Add(plugin.Name);
+
+        if (receivers.Count > 0)
+          return receivers.ToArray();
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine("IRServer: " + ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
+
+      return null;
+    }
+
+    /// <summary>
+    /// Retreives a list of detected Blaster plugins.
+    /// </summary>
+    /// <returns>String array of plugin names.</returns>
+    internal static string[] DetectBlasters()
+    {
+      try
+      {
+        IRServerPluginBase[] plugins = Program.AvailablePlugins();
+
+        List<string> blasters = new List<string>();
+
+        foreach (IRServerPluginBase plugin in plugins)
+          if (plugin is ITransmitIR && plugin.Detect())
+            blasters.Add(plugin.Name);
+
+        if (blasters.Count > 0)
+          return blasters.ToArray();
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine("IRServer: " + ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
 
       return null;
     }

@@ -144,7 +144,7 @@ namespace Translator
     /// Get the Command String to launch the program.
     /// </summary>
     /// <returns>Returns the Command String to launch the program.</returns>
-    public string LaunchCommand()
+    internal string LaunchCommand()
     {
       return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
         _filename,

@@ -145,9 +145,9 @@ namespace DebugClient
       comboBoxComputer.Items.Clear();
       comboBoxComputer.Items.Add("localhost");
 
-      ArrayList networkPCs = IrssUtils.Win32.GetNetworkComputers();
+      string[] networkPCs = IrssUtils.Win32.GetNetworkComputers(false);
       if (networkPCs != null)
-        comboBoxComputer.Items.AddRange(networkPCs.ToArray());
+        comboBoxComputer.Items.AddRange(networkPCs);
 
       comboBoxComputer.Text = _serverHost;
     }

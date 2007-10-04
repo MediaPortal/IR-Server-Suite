@@ -184,7 +184,7 @@ namespace VirtualRemote
       }
     }
 
-    void ButtonPress(string keyCode)
+    static void ButtonPress(string keyCode)
     {
       if (!Program.Registered)
         return;

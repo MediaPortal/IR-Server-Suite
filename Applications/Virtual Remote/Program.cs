@@ -33,10 +33,9 @@ namespace VirtualRemote
 
     static Client _client;
 
-    static bool _registered = false;
+    static bool _registered;
 
     static string _serverHost;
-    static string _lastKeyCode = String.Empty;
 
     static string _installFolder;
 

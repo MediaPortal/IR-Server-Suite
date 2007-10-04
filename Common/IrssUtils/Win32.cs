@@ -1,7 +1,8 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Security.Permissions;
 using System.Text;
 
 namespace IrssUtils
@@ -376,6 +377,8 @@ namespace IrssUtils
 
     #region Interop
 
+    //TODO: Hide public interops
+
     [DllImport("user32.dll")]
     public static extern int EnumWindows(
       EnumWindowsProc ewp,
@@ -391,7 +394,7 @@ namespace IrssUtils
       ShutdownReasons reasons);
 
     [DllImport("user32.dll", SetLastError = true)]
-    public static extern IntPtr FindWindow(
+    private static extern IntPtr FindWindow(
       string className,
       string windowName);
 
@@ -493,6 +496,32 @@ namespace IrssUtils
     #region Methods
 
     /// <summary>
+    /// Get the window handle for a specified window class.
+    /// </summary>
+    /// <param name="className">Window class name.</param>
+    /// <returns>Handle to a window.</returns>
+    public static IntPtr FindWindowByClass(string className)
+    {
+      if (String.IsNullOrEmpty(className))
+        throw new ArgumentNullException("className");
+
+      return FindWindow(className, null);
+    }
+
+    /// <summary>
+    /// Get the window handle for a specified window title.
+    /// </summary>
+    /// <param name="className">Window title.</param>
+    /// <returns>Handle to a window.</returns>
+    public static IntPtr FindWindowByTitle(string windowTitle)
+    {
+      if (String.IsNullOrEmpty(windowTitle))
+        throw new ArgumentNullException("windowTitle");
+
+      return FindWindow(null, windowTitle);
+    }
+
+    /// <summary>
     /// Get the window title for a specified window handle.
     /// </summary>
     /// <param name="hWnd">Handle to a window.</param>
@@ -591,16 +620,17 @@ namespace IrssUtils
     /// Get a list of all computer names on the LAN, except for the local host.
     /// </summary>
     /// <returns>List of LAN computer names.</returns>
-    public static ArrayList GetNetworkComputers()
+    [EnvironmentPermission(SecurityAction.Demand, Read = "COMPUTERNAME")]
+    public static string[] GetNetworkComputers(bool includeLocalMachine)
     {
       try
       {
-        ArrayList networkComputers = new ArrayList();
+        List<string> networkComputers = new List<string>();
 
         const int MAX_PREFERRED_LENGTH = -1;
 
         int SV_TYPE_WORKSTATION = 1;
-        int SV_TYPE_SERVER = 2;
+        //int SV_TYPE_SERVER = 2;
         IntPtr buffer = IntPtr.Zero;
         IntPtr tmpBuffer = IntPtr.Zero;
         int entriesRead = 0;
@@ -615,7 +645,7 @@ namespace IrssUtils
           MAX_PREFERRED_LENGTH,
           out entriesRead,
           out totalEntries,
-          SV_TYPE_WORKSTATION | SV_TYPE_SERVER,
+          SV_TYPE_WORKSTATION, //  | SV_TYPE_SERVER
           null,
           out resHandle);
 
@@ -626,19 +656,21 @@ namespace IrssUtils
             tmpBuffer = new IntPtr((int)buffer + (i * sizeofINFO));
             _SERVER_INFO_100 svrInfo = (_SERVER_INFO_100)Marshal.PtrToStructure(tmpBuffer, typeof(_SERVER_INFO_100));
 
-            if (!svrInfo.sv100_name.Equals(Environment.MachineName, StringComparison.InvariantCultureIgnoreCase))
+            if (includeLocalMachine || !svrInfo.sv100_name.Equals(Environment.MachineName, StringComparison.InvariantCultureIgnoreCase))
               networkComputers.Add(svrInfo.sv100_name);
           }
         }
 
         NetApiBufferFree(buffer);
 
-        return networkComputers;
+        if (networkComputers.Count > 0)
+          return networkComputers.ToArray();
       }
       catch
       {
-        return null;
-      }      
+      }
+      
+      return null;
     }
 
     /// <summary>

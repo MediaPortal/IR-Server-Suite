@@ -55,7 +55,7 @@ namespace Translator
 
     #region Constructors
 
-    public ButtonMapping() : this(String.Empty, String.Empty, String.Empty) { }    
+    public ButtonMapping() { }    
     public ButtonMapping(string keyCode, string description, string command)
     {
       _keyCode      = keyCode;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Security.Permissions;
 using System.Text;
 using System.Windows.Forms;
 
@@ -31,44 +32,51 @@ namespace MicrosoftMceTransceiver
     {
       InitializeComponent();
 
-      RegistryKey regKey = Registry.LocalMachine.CreateSubKey(HidIrRegKey);
-
-      if ((int)regKey.GetValue(StartValue, HidIrDisabled) == HidIrDisabled)
-        radioButtonDisabled.Checked = true;
-      else
-        radioButtonEnabled.Checked = true;
+      using (RegistryKey regKey = Registry.LocalMachine.CreateSubKey(HidIrRegKey))
+      {
+        if ((int)regKey.GetValue(StartValue, HidIrDisabled) == HidIrDisabled)
+          radioButtonDisabled.Checked = true;
+        else
+          radioButtonEnabled.Checked = true;
+      }
     }
 
     #endregion Constructor
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      RegistryKey regKey = Registry.LocalMachine.CreateSubKey(HidIrRegKey);
-
-      int currentValue = (int)regKey.GetValue(StartValue, HidIrDisabled);
-
-      bool changedValue = false;
-
-      if (radioButtonEnabled.Checked)
+      using (RegistryKey regKey = Registry.LocalMachine.CreateSubKey(HidIrRegKey))
       {
-        if (currentValue == HidIrDisabled)
+        int currentValue = (int)regKey.GetValue(StartValue, HidIrDisabled);
+
+        bool changedValue = false;
+
+        if (radioButtonEnabled.Checked)
         {
-          regKey.SetValue(StartValue, HidIrEnabled);
-          changedValue = true;
+          if (currentValue == HidIrDisabled)
+          {
+            regKey.SetValue(StartValue, HidIrEnabled);
+            changedValue = true;
+          }
         }
-      }
-      else if (radioButtonDisabled.Checked)
-      {
-        if (currentValue != HidIrDisabled)
+        else if (radioButtonDisabled.Checked)
         {
-          regKey.SetValue(StartValue, HidIrDisabled);
-          changedValue = true;
+          if (currentValue != HidIrDisabled)
+          {
+            regKey.SetValue(StartValue, HidIrDisabled);
+            changedValue = true;
+          }
         }
+
+        if (changedValue)
+          MessageBox.Show(this, "You must reboot for changes to take effect", "Reboot required", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
 
-      if (changedValue)
-        MessageBox.Show(this, "You must reboot for changes to take effect", "Reboot required", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      this.Close();
+    }
 
+    private void buttonCancel_Click(object sender, EventArgs e)
+    {
       this.Close();
     }
 

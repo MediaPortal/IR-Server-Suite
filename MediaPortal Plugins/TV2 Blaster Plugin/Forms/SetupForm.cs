@@ -24,7 +24,7 @@ namespace MediaPortal.Plugins
 
     #region Variables
 
-    IrssUtils.Forms.LearnIR _learnIR = null;
+    IrssUtils.Forms.LearnIR _learnIR;
 
     #endregion Variables
 

@@ -30,11 +30,11 @@ namespace TrayLauncher
 
     #region Variables
 
-    static ClientMessageSink _handleMessage = null;
+    static ClientMessageSink _handleMessage;
 
     Client _client;
 
-    static bool _registered = false;
+    static bool _registered;
 
     string _serverHost;
     string _programFile;
@@ -44,7 +44,7 @@ namespace TrayLauncher
 
     NotifyIcon _notifyIcon;
 
-    bool _inConfiguration = false;
+    bool _inConfiguration;
 
     #endregion Variables
 

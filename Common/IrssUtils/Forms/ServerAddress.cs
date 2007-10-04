@@ -26,9 +26,9 @@ namespace IrssUtils.Forms
       comboBoxComputer.Items.Clear();
       comboBoxComputer.Items.Add("localhost");
 
-      ArrayList networkPCs = Win32.GetNetworkComputers();
+      string[] networkPCs = Win32.GetNetworkComputers(false);
       if (networkPCs != null)
-        comboBoxComputer.Items.AddRange(networkPCs.ToArray());
+        comboBoxComputer.Items.AddRange(networkPCs);
 
       comboBoxComputer.SelectedIndex = 0;
     }

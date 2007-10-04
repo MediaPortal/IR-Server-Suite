@@ -27,7 +27,7 @@ namespace SetupTv.Sections
 
     #region Variables
 
-    IrssUtils.Forms.LearnIR _learnIR = null;
+    IrssUtils.Forms.LearnIR _learnIR;
 
     #endregion Variables
 

@@ -408,11 +408,11 @@ namespace IrssUtils
           break;
 
         case "class":
-          windowHandle = Win32.FindWindow(commands[1], null);
+          windowHandle = Win32.FindWindowByClass(commands[1]);
           break;
 
         case "window":
-          windowHandle = Win32.FindWindow(null, commands[1]);
+          windowHandle = Win32.FindWindowByTitle(commands[1]);
           break;
       }
 

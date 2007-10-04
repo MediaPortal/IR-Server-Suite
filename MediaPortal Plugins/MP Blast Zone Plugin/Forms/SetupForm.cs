@@ -25,7 +25,7 @@ namespace MediaPortal.Plugins
 
     #region Variables
 
-    IrssUtils.Forms.LearnIR _learnIR = null;
+    IrssUtils.Forms.LearnIR _learnIR;
 
     #endregion Variables
 
@@ -633,8 +633,6 @@ namespace MediaPortal.Plugins
 
       if (treeViewMenu.SelectedNode.Level != 2)
         return;
-
-      string selected = treeViewMenu.SelectedNode.Text;
 
       if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixPause))
       {

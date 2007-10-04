@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -17,106 +18,6 @@ namespace UirtTransceiver
   public class UirtTransceiver :
     IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
   {
-
-    #region Interop
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct UUINFO
-    {
-      public int fwVersion;
-      public int protVersion;
-      public char fwDateDay;
-      public char fwDateMonth;
-      public char fwDateYear;
-    }
-
-    //Not used
-    //[StructLayout(LayoutKind.Sequential)]
-    //internal struct UUGPIO
-    //{
-    //  public byte[] irCode;
-    //  public byte action;
-    //  public byte duration;
-    //}
-
-    [DllImport("uuirtdrv.dll")]
-    static extern IntPtr UUIRTOpen();
-
-    [DllImport("uuirtdrv.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool UUIRTClose(
-      IntPtr hHandle);
-
-    //[DllImport("uuirtdrv.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //internal static extern bool UUIRTGetDrvInfo(ref int puDrvVersion);
-
-    //[DllImport("uuirtdrv.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //internal static extern bool UUIRTGetUUIRTInfo(
-    //  IntPtr hHandle,
-    //  ref UUINFO puuInfo);
-
-    //[DllImport("uuirtdrv.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //internal static extern bool UUIRTGetUUIRTConfig(
-    //  IntPtr hHandle,
-    //  ref uint puConfig);
-
-    //[DllImport("uuirtdrv.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //internal static extern bool UUIRTSetUUIRTConfig(
-    //  IntPtr hHandle,
-    //  uint uConfig);
-
-    [DllImport("uuirtdrv.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool UUIRTTransmitIR(
-      IntPtr hHandle,
-      string IRCode,
-      int codeFormat,
-      int repeatCount,
-      int inactivityWaitTime,
-      IntPtr hEvent,
-      int res1,
-      int res2);
-
-    [DllImport("uuirtdrv.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool UUIRTLearnIR(
-      IntPtr hHandle,
-      int codeFormat,
-      //[MarshalAs(UnmanagedType.LPStr)]
-      StringBuilder ircode,
-      IRLearnCallbackDelegate progressProc,
-      IntPtr userData,
-      IntPtr abort,
-      int param1,
-      IntPtr reserved1,
-      IntPtr reserved2);
-
-    [DllImport("uuirtdrv.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool UUIRTSetReceiveCallback(
-      IntPtr hHandle,
-      UUIRTReceiveCallbackDelegate receiveProc,
-      int none);
-
-    //[DllImport("uuirtdrv.dll")]
-    //static extern bool UUIRTSetUUIRTGPIOCfg(IntPtr hHandle, int index, ref UUGPIO GpioSt);
-
-    //[DllImport("uuirtdrv.dll")]
-    //static extern bool UUIRTGetUUIRTGPIOCfg(IntPtr hHandle, ref int numSlots, ref uint dwPortPins,
-    //                                                ref UUGPIO GpioSt);
-
-    #endregion
-
-    #region Delegates
-
-    delegate void UUIRTReceiveCallbackDelegate(string irCode, IntPtr userData);
-    delegate void IRLearnCallbackDelegate(uint progress, uint sigQuality, ulong carrierFreq, IntPtr userData);
-
-    #endregion Delegates
 
     #region Constants
 
@@ -140,9 +41,7 @@ namespace UirtTransceiver
 
     #region Variables
 
-    RemoteHandler _remoteButtonHandler = null;
-
-    string _blastPort = Ports[0];
+    RemoteHandler _remoteButtonHandler;
 
     int _repeatDelay;
     int _blastRepeats;
@@ -155,10 +54,10 @@ namespace UirtTransceiver
 
     IntPtr _abortLearn = IntPtr.Zero;
     bool _learnTimedOut;
-    UUIRTReceiveCallbackDelegate _receiveCallback = null;
-    bool _isUsbUirtLoaded = false;
+    NativeMethods.UUIRTReceiveCallbackDelegate _receiveCallback;
+    bool _isUsbUirtLoaded;
     IntPtr _usbUirtHandle = IntPtr.Zero;
-    bool _disposed = false;
+    bool _disposed;
 
     #endregion Variables
 
@@ -198,7 +97,7 @@ namespace UirtTransceiver
 
         if (_isUsbUirtLoaded && _usbUirtHandle != new IntPtr(-1) && _usbUirtHandle != IntPtr.Zero)
         {
-          UUIRTClose(_usbUirtHandle);
+          NativeMethods.UUIRTClose(_usbUirtHandle);
           _usbUirtHandle = IntPtr.Zero;
           _isUsbUirtLoaded = false;
         }
@@ -218,11 +117,11 @@ namespace UirtTransceiver
     {
       try
       {
-        IntPtr handle = UUIRTOpen();
+        IntPtr handle = NativeMethods.UUIRTOpen();
 
         if (handle != new IntPtr(-1))
         {
-          UUIRTClose(handle);
+          NativeMethods.UUIRTClose(handle);
           return true;
         }
       }
@@ -235,15 +134,15 @@ namespace UirtTransceiver
     {
       LoadSettings();
 
-      _usbUirtHandle = UUIRTOpen();
+      _usbUirtHandle = NativeMethods.UUIRTOpen();
 
       if (_usbUirtHandle != new IntPtr(-1))
       {
         _isUsbUirtLoaded = true;
 
         // Setup callack to receive IR messages
-        _receiveCallback = new UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback);
-        UUIRTSetReceiveCallback(_usbUirtHandle, _receiveCallback, 0);
+        _receiveCallback = new NativeMethods.UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback);
+        NativeMethods.UUIRTSetReceiveCallback(_usbUirtHandle, _receiveCallback, 0);
       }
 
       return _isUsbUirtLoaded;
@@ -262,7 +161,7 @@ namespace UirtTransceiver
         Marshal.WriteInt32(_abortLearn, AbortLearn);
       
       if (_usbUirtHandle != new IntPtr(-1))
-        UUIRTClose(_usbUirtHandle);
+        NativeMethods.UUIRTClose(_usbUirtHandle);
 
       _usbUirtHandle = IntPtr.Zero;
       _isUsbUirtLoaded = false;
@@ -298,6 +197,12 @@ namespace UirtTransceiver
 
     public bool Transmit(string port, byte[] data)
     {
+      if (String.IsNullOrEmpty(port))
+        throw new ArgumentNullException("port");
+
+      if (data == null)
+        throw new ArgumentNullException("data");
+
       bool result = false;
 
       string irCode = Encoding.ASCII.GetString(data);
@@ -310,7 +215,7 @@ namespace UirtTransceiver
       else if (port.Equals(Ports[3], StringComparison.InvariantCultureIgnoreCase))
         irCode = "Z3" + irCode;
 
-      result = UUIRTTransmitIR(
+      result = NativeMethods.UUIRTTransmitIR(
         _usbUirtHandle,         // Handle to USB-UIRT
         irCode,                 // IR Code
         UUIRTDRV_IRFMT_PRONTO,  // Code Format
@@ -323,6 +228,8 @@ namespace UirtTransceiver
 
       return result;
     }
+
+    // [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)] Not needed because assembly has.
     public LearnStatus Learn(out byte[] data)
     {
       bool result = false;
@@ -338,22 +245,27 @@ namespace UirtTransceiver
       timer.Enabled = true;
       timer.Start();
 
-      _abortLearn = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(int)));
-      Marshal.WriteInt32(_abortLearn, AllowLearn);
-      
-      result = UirtTransceiver.UUIRTLearnIR(
-        _usbUirtHandle,                                     // Handle to USB-UIRT
-        UirtTransceiver.UUIRTDRV_IRFMT_PRONTO,
-        irCode,                                             // Where to put the IR Code
-        null,                                               // Learn status callback
-        IntPtr.Zero,                                        // User data
-        _abortLearn,                                        // Abort flag?
-        0,
-        IntPtr.Zero,
-        IntPtr.Zero);
+      try
+      {
+        _abortLearn = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Int32)));
+        Marshal.WriteInt32(_abortLearn, AllowLearn);
 
-      Marshal.FreeHGlobal(_abortLearn);
-      _abortLearn = IntPtr.Zero;
+        result = NativeMethods.UUIRTLearnIR(
+          _usbUirtHandle,                                     // Handle to USB-UIRT
+          UirtTransceiver.UUIRTDRV_IRFMT_PRONTO,
+          irCode,                                             // Where to put the IR Code
+          null,                                               // Learn status callback
+          IntPtr.Zero,                                        // User data
+          _abortLearn,                                        // Abort flag?
+          0,
+          IntPtr.Zero,
+          IntPtr.Zero);
+      }
+      finally
+      {
+        Marshal.FreeHGlobal(_abortLearn);
+        _abortLearn = IntPtr.Zero;
+      }
 
       timer.Stop();
 

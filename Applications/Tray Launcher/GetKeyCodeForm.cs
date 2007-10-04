@@ -30,7 +30,7 @@ namespace TrayLauncher
     #endregion Properties
 
     delegate void DelegateKeyCodeSet();
-    DelegateKeyCodeSet _keyCodeSet = null;
+    DelegateKeyCodeSet _keyCodeSet;
     void KeyCodeSet()
     {
       timer.Stop();
@@ -55,7 +55,7 @@ namespace TrayLauncher
 
       timer.Start();
     }
-    
+
     void MessageReceiver(IrssMessage received)
     {
       if (received.Type == MessageType.RemoteEvent)
@@ -70,7 +70,7 @@ namespace TrayLauncher
     {
       KeyCodeSet();
     }
-    
+
   }
 
 }

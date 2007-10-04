@@ -62,10 +62,12 @@ namespace IrssComms
     /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
     public override bool Equals(object obj)
     {
-      if (!(obj is MessageManagerCombo))
+      MessageManagerCombo asCombo = obj as MessageManagerCombo;
+
+      if (asCombo == null)
         return false;
 
-      return Equals((MessageManagerCombo)obj);
+      return Equals(asCombo);
     }
 
     /// <summary>

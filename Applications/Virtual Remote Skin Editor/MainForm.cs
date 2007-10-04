@@ -28,20 +28,20 @@ namespace SkinEditor
 
     #region Variables
 
-    Client _client = null;
+    Client _client;
 
-    bool _registered = false;
+    bool _registered;
 
-    string _serverHost    = String.Empty;
+    string _serverHost = String.Empty;
 
-    bool _unsavedChanges = false;
-    //bool _fileOpen = false;
+    bool _unsavedChanges;
+    //bool _fileOpen;
     string _fileName = String.Empty;
 
     Label _currentButton = null;
 
     Point _mouseOffset;
-    bool _isMouseDown = false;
+    bool _isMouseDown;
 
     #endregion Variables
 

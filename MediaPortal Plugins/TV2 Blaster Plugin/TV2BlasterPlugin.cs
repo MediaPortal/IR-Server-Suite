@@ -39,12 +39,12 @@ namespace MediaPortal.Plugins
 
     #region Variables
 
-    static Client _client = null;
+    static Client _client;
 
     static string _serverHost;
     static string _learnIRFilename = null;
 
-    static bool _registered = false;
+    static bool _registered;
 
     static bool _logVerbose;
 
@@ -52,18 +52,13 @@ namespace MediaPortal.Plugins
 
     static ClientMessageSink _handleMessage;
 
-    static bool _inConfiguration = false;
+    static bool _inConfiguration;
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
     #endregion Variables
 
     #region Properties
-
-    internal static bool IsRegistered
-    {
-      get { return _registered; }
-    }
 
     internal static string ServerHost
     {

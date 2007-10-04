@@ -59,19 +59,21 @@ namespace IrssUtils.Forms
 
       if (commands != null)
       {
-        switch (commands[0].ToLowerInvariant())
+        string target = commands[0].ToLowerInvariant();
+
+        switch (target)
         {
           case "active":
             radioButtonActiveWindow.Checked = true;
             break;
           case "application":
-            radioButtonApplication.Checked = true;
+            radioButtonApplication.Checked  = true;
             break;
           case "class":
-            radioButtonClass.Checked = true;
+            radioButtonClass.Checked        = true;
             break;
           case "window":
-            radioButtonWindowTitle.Checked = true;
+            radioButtonWindowTitle.Checked  = true;
             break;
         }
 

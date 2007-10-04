@@ -65,7 +65,7 @@ namespace IRServer
     IRServerMode _mode;
     string _hostComputer;
 
-    bool _registered = false; // Used for relay and repeater modes.
+    bool _registered; // Used for relay and repeater modes.
 
     string[] _pluginNameReceive;
     IRServerPluginBase[] _pluginReceive;

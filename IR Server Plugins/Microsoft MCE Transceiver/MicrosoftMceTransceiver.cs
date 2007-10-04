@@ -252,7 +252,7 @@ namespace MicrosoftMceTransceiver
       catch
       {
 #if TRACE
-        Trace.WriteLine("Invalid Blaster Port ({0}), using default ({1})", port, blasterPort.ToString());
+        Trace.WriteLine(String.Format("Invalid Blaster Port ({0}), using default ({1})", port, blasterPort));
 #endif
       }
 

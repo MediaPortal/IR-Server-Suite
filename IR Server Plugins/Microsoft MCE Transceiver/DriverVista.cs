@@ -293,21 +293,20 @@ namespace MicrosoftMceTransceiver
       structure.Receiver = receivePort;
       structure.Timeout = timeout;
 
-      IntPtr structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+      IntPtr structPtr = IntPtr.Zero;
 
       try
       {
+        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+
         Marshal.StructureToPtr(structure, structPtr, false);
 
         IoControl(IoCtrl.StartReceive, structPtr, Marshal.SizeOf(structure), IntPtr.Zero, 0, out bytesReturned);
       }
-      catch
-      {
-        throw;
-      }
       finally
       {
-        Marshal.FreeHGlobal(structPtr);
+        if (structPtr != IntPtr.Zero)
+          Marshal.FreeHGlobal(structPtr);
       }
     }
 
@@ -323,23 +322,22 @@ namespace MicrosoftMceTransceiver
 
       DeviceCapabilities structure = new DeviceCapabilities();
 
-      IntPtr structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+      IntPtr structPtr = IntPtr.Zero;
 
       try
       {
+        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+
         Marshal.StructureToPtr(structure, structPtr, false);
 
         IoControl(IoCtrl.GetDetails, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
 
         structure = (DeviceCapabilities)Marshal.PtrToStructure(structPtr, typeof(DeviceCapabilities));
       }
-      catch
-      {
-        throw;
-      }
       finally
       {
-        Marshal.FreeHGlobal(structPtr);
+        if (structPtr != IntPtr.Zero)
+          Marshal.FreeHGlobal(structPtr);
       }
 
       _numTxPorts = structure.TransmitPorts;
@@ -374,23 +372,22 @@ namespace MicrosoftMceTransceiver
 
       uint data = 0;
 
-      IntPtr pointerToData = Marshal.AllocHGlobal(sizeof(uint));
+      IntPtr pointerToData = IntPtr.Zero;
 
       try
       {
+        pointerToData = Marshal.AllocHGlobal(sizeof(uint));
+
         Marshal.StructureToPtr(data, pointerToData, false);
 
         IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, pointerToData, sizeof(uint), out bytesReturned);
 
         data = (uint)Marshal.PtrToStructure(pointerToData, typeof(uint));
       }
-      catch
-      {
-        throw;
-      }
       finally
       {
-        Marshal.FreeHGlobal(pointerToData);
+        if (pointerToData != IntPtr.Zero)
+          Marshal.FreeHGlobal(pointerToData);
       }
 
       for (int j = 0; j < _blasters.Length; j++)
@@ -431,35 +428,37 @@ namespace MicrosoftMceTransceiver
 
       Array.Copy(irData, 0, buffer, rawTransmitChunk.Length, irData.Length);
 
-      IntPtr structurePtr = Marshal.AllocHGlobal(Marshal.SizeOf(transmitParams));
-      IntPtr bufferPtr = Marshal.AllocHGlobal(buffer.Length);
+      IntPtr structurePtr = IntPtr.Zero;
+      IntPtr bufferPtr    = IntPtr.Zero;
 
       try
       {
+        structurePtr  = Marshal.AllocHGlobal(Marshal.SizeOf(transmitParams));
+        bufferPtr     = Marshal.AllocHGlobal(buffer.Length);
+
         Marshal.StructureToPtr(transmitParams, structurePtr, true);
 
         Marshal.Copy(buffer, 0, bufferPtr, buffer.Length);
 
         IoControl(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(typeof(TransmitParams)), bufferPtr, bufferSize, out bytesReturned);
       }
-      catch
-      {
-        throw;
-      }
       finally
       {
-        Marshal.FreeHGlobal(structurePtr);
-        Marshal.FreeHGlobal(bufferPtr);
+        if (structurePtr != IntPtr.Zero)
+          Marshal.FreeHGlobal(structurePtr);
+        
+        if (bufferPtr != IntPtr.Zero)
+          Marshal.FreeHGlobal(bufferPtr);
       }
     }
 
     void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
     {
       NativeOverlapped overlapped;
-      overlapped.InternalLow = IntPtr.Zero;
+      overlapped.InternalLow  = IntPtr.Zero;
       overlapped.InternalHigh = IntPtr.Zero;
-      overlapped.OffsetLow = 0;
-      overlapped.OffsetHigh = 0;
+      overlapped.OffsetLow    = 0;
+      overlapped.OffsetHigh   = 0;
 
       try
       {

@@ -2,12 +2,11 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+//using System.Security.Permissions;
 
-//
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-//
 [assembly: AssemblyTitle("IR Server")]
 [assembly: AssemblyDescription("Provides multiple connections for local and network access to a remote control transceiver")]
 [assembly: AssemblyConfiguration("")]
@@ -22,7 +21,9 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-//
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: GuidAttribute("a94fbaf3-2d68-45da-8f4f-7dee41f00040")]
+
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
@@ -38,4 +39,4 @@ using System.Runtime.InteropServices;
 
 [assembly: CLSCompliant(true)]
 
-[assembly: GuidAttribute("a94fbaf3-2d68-45da-8f4f-7dee41f00040")]
+//[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

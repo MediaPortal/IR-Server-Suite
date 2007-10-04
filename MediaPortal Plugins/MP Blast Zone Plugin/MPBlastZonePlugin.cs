@@ -53,20 +53,20 @@ namespace MediaPortal.Plugins
 
     #region Variables
 
-    static Client _client = null;
+    static Client _client;
 
     static MenuRoot _menu;
 
     static string _serverHost;
     static string _learnIRFilename = null;
 
-    static bool _registered = false;
+    static bool _registered;
 
     static bool _logVerbose;
 
     static ClientMessageSink _handleMessage;
 
-    static bool _inConfiguration = false;
+    static bool _inConfiguration;
 
     static bool _mpBasicHome;
 
@@ -261,6 +261,7 @@ namespace MediaPortal.Plugins
         GUIWindowManager.ShowPreviousWindow();
         return;
       }
+
       base.OnAction(action);
     }
 

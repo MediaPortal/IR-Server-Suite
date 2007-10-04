@@ -92,7 +92,7 @@ namespace Translator
     /// <param name="config">Configuration to save.</param>
     /// <param name="fileName">File to save to.</param>
     /// <returns>Success.</returns>
-    public static bool Save(Configuration config, string fileName)
+    internal static bool Save(Configuration config, string fileName)
     {
       try
       {
@@ -114,7 +114,7 @@ namespace Translator
     /// </summary>
     /// <param name="fileName">File to load from.</param>
     /// <returns>Loaded Configuration.</returns>
-    public static Configuration Load(string fileName)
+    internal static Configuration Load(string fileName)
     {
       try
       {

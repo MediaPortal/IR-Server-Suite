@@ -1,4 +1,5 @@
 using System;
+using System.Security.Permissions;
 
 using Microsoft.Win32;
 
@@ -8,12 +9,15 @@ namespace IrssUtils
   /// <summary>
   /// Used for accessing the Windows System Registry.
   /// </summary>
+  [RegistryPermission(SecurityAction.Demand, Read = "HKEY_CURRENT_USER\\SOFTWARE", Write = "HKEY_CURRENT_USER\\SOFTWARE")]
+  [RegistryPermission(SecurityAction.Demand, Read = "HKEY_LOCAL_MACHINE\\Software")]
   public static class SystemRegistry
   {
 
     #region Constants
 
-    const string AutoRunPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+    const string AutoRunPath  = @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+    const string SoftwarePath = @"HKEY_LOCAL_MACHINE\Software\IR Server Suite";
 
     #endregion Constants
 
@@ -25,11 +29,7 @@ namespace IrssUtils
     /// <returns>String containing the Install Folder (no trailing slash).</returns>
     public static string GetInstallFolder()
     {
-      RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("Software\\IR Server Suite\\");
-      string installFolder = registryKey.GetValue("Install_Dir", null) as string;
-      registryKey.Close();
-
-      return installFolder;
+      return Registry.GetValue(SoftwarePath, "Install_Dir", null) as string;
     }
 
     /// <summary>
@@ -42,11 +42,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      RegistryKey key = Registry.CurrentUser.CreateSubKey(AutoRunPath);
-      bool autoRun = (key.GetValue(name, null) != null);
-      key.Close();
-
-      return autoRun;
+      return (Registry.GetValue(AutoRunPath, name, null) != null);
     }
 
     /// <summary>
@@ -62,9 +58,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(executablePath))
         throw new ArgumentNullException("executablePath");
 
-      RegistryKey key = Registry.CurrentUser.CreateSubKey(AutoRunPath);
-      key.SetValue(name, executablePath, RegistryValueKind.String);
-      key.Close();
+      Registry.SetValue(AutoRunPath, name, executablePath, RegistryValueKind.String);
     }
 
     /// <summary>
@@ -76,9 +70,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      RegistryKey key = Registry.CurrentUser.CreateSubKey(AutoRunPath);
-      key.DeleteValue(name, false);
-      key.Close();
+      Registry.SetValue(AutoRunPath, name, null);
     }
 
     #endregion Methods

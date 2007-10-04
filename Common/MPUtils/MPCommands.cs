@@ -53,20 +53,13 @@ namespace MPUtils
       {
         window = (int)Enum.Parse(typeof(GUIWindow.Window), "WINDOW_" + screen, true);
       }
-      catch
+      catch (ArgumentException)
       {
         // Parsing the window id as a GUIWindow.Window failed, so parse it as an int
       }
 
-      try
-      {
-        if (window == (int)GUIWindow.Window.WINDOW_INVALID)
-          window = Convert.ToInt32(screen);
-      }
-      catch
-      {
-        // Parsing the window id as an int failed, give up.
-      }
+      if (window == (int)GUIWindow.Window.WINDOW_INVALID)
+        int.TryParse(screen, out window);
 
       if (window == (int)GUIWindow.Window.WINDOW_INVALID)
         throw new ArgumentException(String.Format("Failed to parse Goto command window id \"{0}\"", screen), "screen");

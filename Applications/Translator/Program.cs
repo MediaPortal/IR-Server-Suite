@@ -253,7 +253,9 @@ namespace Translator
     {
       for (int index = 0; index < args.Length; index++)
       {
-        switch (args[index].ToLowerInvariant())
+        string command = args[index].ToLowerInvariant();
+
+        switch (command)
         {
           case "-macro":
             SendCopyDataMessage("Translator", Common.CmdPrefixMacro + args[++index]);
@@ -303,7 +305,7 @@ namespace Translator
       copyData.lpData = Win32.VarPtr(data).ToInt32();
       copyData.cbData = data.Length;
 
-      IntPtr windowHandle = Win32.FindWindow(null, targetWindow);
+      IntPtr windowHandle = Win32.FindWindowByTitle(targetWindow);
       if (windowHandle != IntPtr.Zero)
       {
         IntPtr result;
