@@ -204,12 +204,19 @@ namespace XBCDRCReceiver
 
     public override bool Detect()
     {
-      Guid guid = new Guid();
-      HidD_GetHidGuid(ref guid);
+      try
+      {
+        Guid guid = new Guid();
+        HidD_GetHidGuid(ref guid);
 
-      string devicePath = FindDevice(guid);
+        string devicePath = FindDevice(guid);
 
-      return (devicePath != null);
+        return (devicePath != null);
+      }
+      catch
+      {
+        return false;
+      }
     }
 
     public override bool Start()

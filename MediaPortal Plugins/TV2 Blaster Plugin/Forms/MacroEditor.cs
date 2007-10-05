@@ -65,10 +65,10 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
       comboBoxCommands.Items.Add(Common.UITextPopup);
-
-      string[] irList = Common.GetIRList(true);
-      if (irList != null && irList.Length > 0)
-        comboBoxCommands.Items.AddRange(irList);
+      
+      string[] fileList = TV2BlasterPlugin.GetFileList(true);
+      if (fileList != null && fileList.Length > 0)
+        comboBoxCommands.Items.AddRange(fileList);
     }
 
     /// <summary>
@@ -91,7 +91,12 @@ namespace MediaPortal.Plugins
           {
             writer.WriteStartElement("action");
 
-            if (item.StartsWith(Common.CmdPrefixBlast))
+            if (item.StartsWith(Common.CmdPrefixMacro))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagMacro);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMacro.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixBlast))
             {
               writer.WriteAttributeString("command", Common.XmlTagBlast);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
@@ -166,6 +171,10 @@ namespace MediaPortal.Plugins
 
           switch (item.Attributes["command"].Value)
           {
+            case Common.XmlTagMacro:
+              listBoxMacro.Items.Add(Common.CmdPrefixMacro + commandProperty);
+              break;
+
             case Common.XmlTagBlast:
               listBoxMacro.Items.Add(Common.CmdPrefixBlast + commandProperty);
               break;
@@ -261,6 +270,10 @@ namespace MediaPortal.Plugins
 
         if (blastCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
+      }
+      else if (selected.StartsWith(Common.CmdPrefixMacro))
+      {
+        listBoxMacro.Items.Add(selected);
       }
       else
       {

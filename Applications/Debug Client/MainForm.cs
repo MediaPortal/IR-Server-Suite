@@ -105,12 +105,12 @@ namespace DebugClient
 
     #region Variables
 
-    Client _client = null;
+    Client _client;
 
     string _serverHost      = "localhost";
     string _learnIRFilename = null;
 
-    bool _registered = false;
+    bool _registered;
 
     IRServerInfo _irServerInfo = new IRServerInfo();
 

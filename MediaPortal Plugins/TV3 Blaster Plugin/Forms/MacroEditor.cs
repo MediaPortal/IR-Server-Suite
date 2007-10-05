@@ -64,9 +64,9 @@ namespace TvEngine
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
 
-      string[] irList = Common.GetIRList(true);
-      if (irList != null && irList.Length > 0)
-        comboBoxCommands.Items.AddRange(irList);
+      string[] fileList = TV3BlasterPlugin.GetFileList(true);
+      if (fileList != null && fileList.Length > 0)
+        comboBoxCommands.Items.AddRange(fileList);
     }
 
     /// <summary>
@@ -89,7 +89,12 @@ namespace TvEngine
           {
             writer.WriteStartElement("action");
 
-            if (item.StartsWith(Common.CmdPrefixBlast))
+            if (item.StartsWith(Common.CmdPrefixMacro))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagMacro);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMacro.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixBlast))
             {
               writer.WriteAttributeString("command", Common.XmlTagBlast);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
@@ -159,6 +164,10 @@ namespace TvEngine
 
           switch (item.Attributes["command"].Value)
           {
+            case Common.XmlTagMacro:
+              listBoxMacro.Items.Add(Common.CmdPrefixMacro + commandProperty);
+              break;
+
             case Common.XmlTagBlast:
               listBoxMacro.Items.Add(Common.CmdPrefixBlast + commandProperty);
               break;
@@ -243,6 +252,10 @@ namespace TvEngine
 
         if (blastCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
+      }
+      else if (selected.StartsWith(Common.CmdPrefixMacro))
+      {
+        listBoxMacro.Items.Add(selected);
       }
       else
       {

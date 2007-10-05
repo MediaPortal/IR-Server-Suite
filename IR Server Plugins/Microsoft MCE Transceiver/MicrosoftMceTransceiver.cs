@@ -116,10 +116,17 @@ namespace MicrosoftMceTransceiver
 
     public override bool Detect()
     {
-      Guid deviceGuid;
-      string devicePath;
+      try
+      {
+        Guid deviceGuid;
+        string devicePath;
 
-      return FindDevice(out deviceGuid, out devicePath);
+        return FindDevice(out deviceGuid, out devicePath);
+      }
+      catch
+      {
+        return false;
+      }
     }
 
     public override bool Start()

@@ -46,7 +46,14 @@ namespace WinLircTransceiver
 
     public override bool Detect()
     {
-      return WinLircServer.IsServerRunning();
+      try
+      {
+        return WinLircServer.IsServerRunning();
+      }
+      catch
+      {
+        return false;
+      }
     }
 
     public override bool Start()

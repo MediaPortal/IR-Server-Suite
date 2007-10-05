@@ -21,9 +21,9 @@ namespace IRBlast
 
     #region Variables
 
-    static Client _client = null;
+    static Client _client;
 
-    static bool _registered = false;
+    static bool _registered;
 
     static string _serverHost = null;
 

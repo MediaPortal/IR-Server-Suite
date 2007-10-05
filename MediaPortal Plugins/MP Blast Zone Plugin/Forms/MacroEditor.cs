@@ -73,9 +73,9 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextReboot);
       comboBoxCommands.Items.Add(Common.UITextShutdown);
 
-      string[] irList = Common.GetIRList(true);
-      if (irList != null && irList.Length > 0)
-        comboBoxCommands.Items.AddRange(irList);
+      string[] fileList = MPBlastZonePlugin.GetFileList(true);
+      if (fileList != null && fileList.Length > 0)
+        comboBoxCommands.Items.AddRange(fileList);
     }
 
     /// <summary>
@@ -98,7 +98,12 @@ namespace MediaPortal.Plugins
           {
             writer.WriteStartElement("action");
 
-            if (item.StartsWith(Common.CmdPrefixBlast))
+            if (item.StartsWith(Common.CmdPrefixMacro))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagMacro);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMacro.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixBlast))
             {
               writer.WriteAttributeString("command", Common.XmlTagBlast);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
@@ -134,11 +139,11 @@ namespace MediaPortal.Plugins
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
             }
             /*
-                    else if (item.StartsWith(Common.CmdPrefixWindowState))
-                    {
-                      writer.WriteAttributeString("command", Common.XmlTagWindowState);
-                      writer.WriteAttributeString("cmdproperty", String.Empty);
-                    }
+            else if (item.StartsWith(Common.CmdPrefixWindowState))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagWindowState);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
             */
             else if (item.StartsWith(Common.CmdPrefixFocus))
             {
@@ -210,6 +215,10 @@ namespace MediaPortal.Plugins
 
           switch (item.Attributes["command"].Value)
           {
+            case Common.XmlTagMacro:
+              listBoxMacro.Items.Add(Common.CmdPrefixMacro + commandProperty);
+              break;
+
             case Common.XmlTagBlast:
               listBoxMacro.Items.Add(Common.CmdPrefixBlast + commandProperty);
               break;
@@ -323,10 +332,10 @@ namespace MediaPortal.Plugins
           listBoxMacro.Items.Add(Common.CmdPrefixPopup + popupMessage.CommandString);
       }
       /*
-            else if (selected == Common.UITextWindowState)
-            {
-              listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
-            }
+      else if (selected == Common.UITextWindowState)
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
+      }
       */
       else if (selected == Common.UITextFocus)
       {
@@ -362,6 +371,10 @@ namespace MediaPortal.Plugins
 
         if (blastCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
+      }
+      else if (selected.StartsWith(Common.CmdPrefixMacro))
+      {
+        listBoxMacro.Items.Add(selected);
       }
       else
       {

@@ -204,12 +204,19 @@ namespace FusionRemoteReceiver
 
     public override bool Detect()
     {
-      Guid hidGuid = new Guid();
-      HidD_GetHidGuid(ref hidGuid);
+      try
+      {
+        Guid hidGuid = new Guid();
+        HidD_GetHidGuid(ref hidGuid);
 
-      string devicePath = FindDevice(hidGuid, DeviceID);
+        string devicePath = FindDevice(hidGuid, DeviceID);
 
-      return (devicePath != null);
+        return (devicePath != null);
+      }
+      catch
+      {
+        return false;
+      }
     }
 
     public override bool Start()

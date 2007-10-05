@@ -70,7 +70,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      Registry.SetValue(AutoRunPath, name, null);
+      Registry.SetValue(AutoRunPath, name, String.Empty, RegistryValueKind.String);
     }
 
     #endregion Methods

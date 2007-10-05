@@ -611,14 +611,14 @@ namespace MicrosoftMceTransceiver
       _learningCode = null;
       return status;
     }
-    
+
     public override void Send(IrCode code, uint port)
     {
       byte[] data = DataPacket(code);
 
       TransmitIR(data, code.Carrier, port);
     }
-    
+
     #endregion Driver overrides
 
     #region Implementation

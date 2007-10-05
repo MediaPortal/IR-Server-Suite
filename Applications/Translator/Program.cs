@@ -33,13 +33,13 @@ namespace Translator
 
     #region Variables
 
-    static Client _client = null;
+    static Client _client;
 
     static Configuration _config;
 
     static string _learnIRFilename = null;
 
-    static bool _registered = false;
+    static bool _registered;
 
     static bool _firstConnection = true;
 
@@ -51,6 +51,8 @@ namespace Translator
 
     //static Thread _focusWatcher;
     static IntPtr _currentForegroundWindow = IntPtr.Zero;
+
+    static List<string> _macroStack;
 
     #endregion Variables
 
@@ -290,7 +292,7 @@ namespace Translator
     {
       UpdateForegroundWindow();
 
-      //Program._mainForm.Focus();
+      //_mainForm.Focus();
 
       _notifyIcon.ContextMenuStrip.Show(Screen.PrimaryScreen.Bounds.Width / 4, Screen.PrimaryScreen.Bounds.Height / 4);
 
@@ -433,13 +435,10 @@ namespace Translator
     {
       IntPtr result;
       Win32.SendMessageTimeout(hWnd, (int)msg, new IntPtr(wParam), new IntPtr(lParam), Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
+      int lastError = Marshal.GetLastWin32Error();
 
-      if (result == IntPtr.Zero)
-      {
-        int lastError = Marshal.GetLastWin32Error();
-        if (lastError != 0)
-          throw new Win32Exception(lastError);
-      }
+      if (result == IntPtr.Zero && lastError != 0)
+        throw new Win32Exception(lastError);
 
       return true;
     }
@@ -500,11 +499,11 @@ namespace Translator
       if (menuItem == null)
         return;
 
-      string fileName = Program.FolderMacros + menuItem.Text + Common.FileExtensionMacro;
+      string fileName = FolderMacros + menuItem.Text + Common.FileExtensionMacro;
 
       try
       {
-        Program.ProcessMacro(fileName);
+        ProcessMacro(fileName);
       }
       catch (Exception ex)
       {
@@ -990,7 +989,6 @@ namespace Translator
       Win32.ExitWindowsEx(Win32.ExitWindows.ShutDown | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
     }
 
-
     static void MapEvent(MappingEvent theEvent)
     {
       if (_inConfiguration)
@@ -1023,107 +1021,161 @@ namespace Translator
       }
     }
 
+    static void MacroStackAdd(string fileName)
+    {
+      string lowerCasedFileName = fileName.ToLowerInvariant();
+
+      if (_macroStack == null)
+      {
+        _macroStack = new List<string>();
+      }
+      else if (_macroStack.Contains(lowerCasedFileName))
+      {
+        StringBuilder macroStackTrace = new StringBuilder();
+        macroStackTrace.AppendLine("Macro infinite loop detected!");
+        macroStackTrace.AppendLine();
+        macroStackTrace.AppendLine("Stack trace:");
+
+        foreach (string macro in _macroStack)
+        {
+          if (macro.Equals(lowerCasedFileName))
+            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
+          else
+            macroStackTrace.AppendLine(macro);
+        }
+
+        macroStackTrace.AppendLine(String.Format("--> {0}", lowerCasedFileName));
+
+        throw new ApplicationException(macroStackTrace.ToString());
+      }
+
+      _macroStack.Add(lowerCasedFileName);
+    }
+    static void MacroStackRemove(string fileName)
+    {
+      string lowerCasedFileName = fileName.ToLowerInvariant();
+
+      if (_macroStack.Contains(lowerCasedFileName))
+        _macroStack.Remove(lowerCasedFileName);
+
+      if (_macroStack.Count == 0)
+        _macroStack = null;
+    }
+
     /// <summary>
     /// Process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
     internal static void ProcessMacro(string fileName)
     {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(fileName);
+      MacroStackAdd(fileName);
 
-      if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
-        throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
-
-      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-      string commandProperty;
-      string commandName;
-
-      foreach (XmlNode item in commandSequence)
+      try
       {
-        commandName = item.Attributes["command"].Value;
-        commandProperty = item.Attributes["cmdproperty"].Value;
+        XmlDocument doc = new XmlDocument();
+        doc.Load(fileName);
 
-        switch (commandName)
+        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
+
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
+        string commandProperty;
+
+        foreach (XmlNode item in commandSequence)
         {
-          case Common.XmlTagBlast:
-            {
-              string[] commands = Common.SplitBlastCommand(commandProperty);
-              BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-              break;
-            }
+          commandProperty = item.Attributes["cmdproperty"].Value;
 
-          case Common.XmlTagPause:
-            {
-              int sleep = int.Parse(commandProperty);
-              Thread.Sleep(sleep);
-              break;
-            }
+          switch (item.Attributes["command"].Value)
+          {
+            case Common.XmlTagMacro:
+              {
+                ProcessMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
+                break;
+              }
 
-          case Common.XmlTagRun:
-            {
-              string[] commands = Common.SplitRunCommand(commandProperty);
-              Common.ProcessRunCommand(commands);
-              break;
-            }
+            case Common.XmlTagBlast:
+              {
+                string[] commands = Common.SplitBlastCommand(commandProperty);
+                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+                break;
+              }
 
-          case Common.XmlTagSerial:
-            {
-              string[] commands = Common.SplitSerialCommand(commandProperty);
-              Common.ProcessSerialCommand(commands);
-              break;
-            }
+            case Common.XmlTagPause:
+              {
+                int sleep = int.Parse(commandProperty);
+                Thread.Sleep(sleep);
+                break;
+              }
 
-          case Common.XmlTagWindowMsg:
-            {
-              string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-              Common.ProcessWindowMessageCommand(commands);
-              break;
-            }
+            case Common.XmlTagRun:
+              {
+                string[] commands = Common.SplitRunCommand(commandProperty);
+                Common.ProcessRunCommand(commands);
+                break;
+              }
 
-          case Common.XmlTagTcpMsg:
-            {
-              string[] commands = Common.SplitTcpMessageCommand(commandProperty);
-              Common.ProcessTcpMessageCommand(commands);
-              break;
-            }
+            case Common.XmlTagSerial:
+              {
+                string[] commands = Common.SplitSerialCommand(commandProperty);
+                Common.ProcessSerialCommand(commands);
+                break;
+              }
 
-          case Common.XmlTagKeys:
-            {
-              Common.ProcessKeyCommand(commandProperty);
-              break;
-            }
+            case Common.XmlTagWindowMsg:
+              {
+                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
+                Common.ProcessWindowMessageCommand(commands);
+                break;
+              }
 
-          case Common.XmlTagEject:
-            {
-              Common.ProcessEjectCommand(commandProperty);
-              break;
-            }
+            case Common.XmlTagTcpMsg:
+              {
+                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
+                Common.ProcessTcpMessageCommand(commands);
+                break;
+              }
 
-          case Common.XmlTagStandby:
-            {
-              Standby();
-              break;
-            }
+            case Common.XmlTagKeys:
+              {
+                Common.ProcessKeyCommand(commandProperty);
+                break;
+              }
 
-          case Common.XmlTagHibernate:
-            {
-              Hibernate();
-              break;
-            }
+            case Common.XmlTagEject:
+              {
+                Common.ProcessEjectCommand(commandProperty);
+                break;
+              }
 
-          case Common.XmlTagShutdown:
-            {
-              ShutDown();
-              break;
-            }
+            case Common.XmlTagStandby:
+              {
+                Standby();
+                break;
+              }
 
-          case Common.XmlTagReboot:
-            {
-              Reboot();
-              break;
-            }
+            case Common.XmlTagHibernate:
+              {
+                Hibernate();
+                break;
+              }
+
+            case Common.XmlTagShutdown:
+              {
+                ShutDown();
+                break;
+              }
+
+            case Common.XmlTagReboot:
+              {
+                Reboot();
+                break;
+              }
+          }
         }
+      }
+      finally
+      {
+        MacroStackRemove(fileName);
       }
     }
 

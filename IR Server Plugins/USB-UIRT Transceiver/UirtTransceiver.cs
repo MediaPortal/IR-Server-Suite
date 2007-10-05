@@ -125,7 +125,9 @@ namespace UirtTransceiver
           return true;
         }
       }
-      catch { }
+      catch
+      {
+      }
 
       return false;
     }

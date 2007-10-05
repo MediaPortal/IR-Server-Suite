@@ -12,17 +12,19 @@ using Microsoft.Win32;
 namespace MicrosoftMceTransceiver
 {
 
+  [RegistryPermission(SecurityAction.Demand,
+   Read = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\HidIr",
+   Write = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\HidIr")]
   partial class Advanced : Form
   {
 
     #region Constants
 
-    const string HidIrRegKey  = "SYSTEM\\CurrentControlSet\\Services\\HidIr";
+    const string RegKey     = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\HidIr";
+    const string RegValue   = "Start";
 
-    const string StartValue   = "Start";
-
-    const int HidIrEnabled    = 3;
-    const int HidIrDisabled   = 4;
+    const int SetEnabled    = 3;
+    const int SetDisabled   = 4;
 
     #endregion Constants
 
@@ -32,45 +34,41 @@ namespace MicrosoftMceTransceiver
     {
       InitializeComponent();
 
-      using (RegistryKey regKey = Registry.LocalMachine.CreateSubKey(HidIrRegKey))
-      {
-        if ((int)regKey.GetValue(StartValue, HidIrDisabled) == HidIrDisabled)
-          radioButtonDisabled.Checked = true;
-        else
-          radioButtonEnabled.Checked = true;
-      }
+      int currentValue = (int)Registry.GetValue(RegKey, RegValue, SetDisabled);
+
+      if (currentValue == SetDisabled)
+        radioButtonDisabled.Checked = true;
+      else
+        radioButtonEnabled.Checked = true;
     }
 
     #endregion Constructor
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      using (RegistryKey regKey = Registry.LocalMachine.CreateSubKey(HidIrRegKey))
+      int currentValue = (int)Registry.GetValue(RegKey, RegValue, SetDisabled);
+
+      bool changedValue = false;
+
+      if (radioButtonEnabled.Checked)
       {
-        int currentValue = (int)regKey.GetValue(StartValue, HidIrDisabled);
-
-        bool changedValue = false;
-
-        if (radioButtonEnabled.Checked)
+        if (currentValue == SetDisabled)
         {
-          if (currentValue == HidIrDisabled)
-          {
-            regKey.SetValue(StartValue, HidIrEnabled);
-            changedValue = true;
-          }
+          Registry.SetValue(RegKey, RegValue, SetEnabled, RegistryValueKind.DWord);
+          changedValue = true;
         }
-        else if (radioButtonDisabled.Checked)
-        {
-          if (currentValue != HidIrDisabled)
-          {
-            regKey.SetValue(StartValue, HidIrDisabled);
-            changedValue = true;
-          }
-        }
-
-        if (changedValue)
-          MessageBox.Show(this, "You must reboot for changes to take effect", "Reboot required", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
+      else if (radioButtonDisabled.Checked)
+      {
+        if (currentValue != SetDisabled)
+        {
+          Registry.SetValue(RegKey, RegValue, SetDisabled, RegistryValueKind.DWord);
+          changedValue = true;
+        }
+      }
+
+      if (changedValue)
+        MessageBox.Show(this, "You must reboot for changes to take effect", "Reboot required", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
       this.Close();
     }

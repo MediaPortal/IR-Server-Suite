@@ -72,6 +72,8 @@ namespace MediaPortal.Plugins
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
+    static List<string> _macroStack;
+
     #endregion Variables
 
     #region Properties
@@ -505,179 +507,235 @@ namespace MediaPortal.Plugins
       }
     }
 
+    static void MacroStackAdd(string fileName)
+    {
+      string lowerCasedFileName = fileName.ToLowerInvariant();
+
+      if (_macroStack == null)
+      {
+        _macroStack = new List<string>();
+      }
+      else if (_macroStack.Contains(lowerCasedFileName))
+      {
+        StringBuilder macroStackTrace = new StringBuilder();
+        macroStackTrace.AppendLine("Macro infinite loop detected!");
+        macroStackTrace.AppendLine();
+        macroStackTrace.AppendLine("Stack trace:");
+
+        foreach (string macro in _macroStack)
+        {
+          if (macro.Equals(lowerCasedFileName))
+            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
+          else
+            macroStackTrace.AppendLine(macro);
+        }
+
+        macroStackTrace.AppendLine(String.Format("--> {0}", lowerCasedFileName));
+
+        throw new ApplicationException(macroStackTrace.ToString());
+      }
+
+      _macroStack.Add(lowerCasedFileName);
+    }
+    static void MacroStackRemove(string fileName)
+    {
+      string lowerCasedFileName = fileName.ToLowerInvariant();
+
+      if (_macroStack.Contains(lowerCasedFileName))
+        _macroStack.Remove(lowerCasedFileName);
+
+      if (_macroStack.Count == 0)
+        _macroStack = null;
+    }
+
     /// <summary>
     /// Process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
     internal static void ProcessMacro(string fileName)
     {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(fileName);
+      MacroStackAdd(fileName);
 
-      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-      string commandProperty;
-      string commandName;
-
-      foreach (XmlNode item in commandSequence)
+      try
       {
-        commandName = item.Attributes["command"].Value;
-        commandProperty = item.Attributes["cmdproperty"].Value;
+        XmlDocument doc = new XmlDocument();
+        doc.Load(fileName);
 
-        switch (commandName)
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
+        string commandProperty;
+        string commandName;
+
+        foreach (XmlNode item in commandSequence)
         {
-          case Common.XmlTagBlast:
-            {
-              string[] commands = Common.SplitBlastCommand(commandProperty);
-              BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-              break;
-            }
+          commandName = item.Attributes["command"].Value;
+          commandProperty = item.Attributes["cmdproperty"].Value;
 
-          case Common.XmlTagPause:
-            {
-              int sleep = int.Parse(commandProperty);
-              Thread.Sleep(sleep);
-              break;
-            }
-
-          case Common.XmlTagRun:
-            {
-              string[] commands = Common.SplitRunCommand(commandProperty);
-              Common.ProcessRunCommand(commands);
-              break;
-            }
-
-          case Common.XmlTagSerial:
-            {
-              string[] commands = Common.SplitSerialCommand(commandProperty);
-              Common.ProcessSerialCommand(commands);
-              break;
-            }
-
-          case Common.XmlTagGoto:
-            {
-              if (InConfiguration)
-                MessageBox.Show(commandProperty, "Go To Window", MessageBoxButtons.OK, MessageBoxIcon.Information);
-              else
-                MPCommands.ProcessGoTo(commandProperty, MP_BasicHome);
-              break;
-            }
-
-          case Common.XmlTagPopup:
-            {
-              string[] commands = Common.SplitPopupCommand(commandProperty);
-
-              if (InConfiguration)
-                MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
-              else
-                MPCommands.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
-
-              break;
-            }
-
-          case Common.XmlTagWindowMsg:
-            {
-              string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-              Common.ProcessWindowMessageCommand(commands);
-              break;
-            }
-
-          /*
-                    case Common.XmlTagWindowState:
-                      {
-                        if (InConfiguration)
-                        {
-                          MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", "Window State Toggle Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                          break;
-                        }
-
-                        GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_SWITCH_FULL_WINDOWED, 0, 0, 0, 0, 0, null);
-
-                        if (GUIGraphicsContext.DX9Device.PresentationParameters.Windowed)
-                          msg.Param1 = 1;
-
-                        GUIWindowManager.SendMessage(msg);
-                        break;
-                      }
-          */
-          case Common.XmlTagFocus:
-            {
-              if (InConfiguration)
+          switch (commandName)
+          {
+            case Common.XmlTagMacro:
               {
-                MessageBox.Show("Command to get focus cannot be processed in configuration.", "Get Focus Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ProcessMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
                 break;
               }
 
-              GUIGraphicsContext.ResetLastActivity();
-              GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GETFOCUS, 0, 0, 0, 0, 0, null);
-              GUIWindowManager.SendThreadMessage(msg);
-              break;
-            }
-
-          case Common.XmlTagExit:
-            {
-              if (!InConfiguration)
-                GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_EXIT, 0, 0));
-              break;
-            }
-
-          case Common.XmlTagStandby:
-            {
-              if (!InConfiguration)
+            case Common.XmlTagBlast:
               {
-                GUIGraphicsContext.ResetLastActivity();
-                // Stop all media before suspending or hibernating
-                g_Player.Stop();
-
-                GUIMessage msg;
-
-                if (_mpBasicHome)
-                  msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
-                else
-                  msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
-
-                GUIWindowManager.SendThreadMessage(msg);
-
-                WindowsController.ExitWindows(RestartOptions.Suspend, true);
+                string[] commands = Common.SplitBlastCommand(commandProperty);
+                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+                break;
               }
-              break;
-            }
 
-          case Common.XmlTagHibernate:
-            {
-              if (!InConfiguration)
+            case Common.XmlTagPause:
               {
-                GUIGraphicsContext.ResetLastActivity();
-                // Stop all media before suspending or hibernating
-                g_Player.Stop();
-
-                GUIMessage msg;
-
-                if (_mpBasicHome)
-                  msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
-                else
-                  msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
-
-                GUIWindowManager.SendThreadMessage(msg);
-
-                WindowsController.ExitWindows(RestartOptions.Hibernate, true);
+                int sleep = int.Parse(commandProperty);
+                Thread.Sleep(sleep);
+                break;
               }
-              break;
-            }
 
-          case Common.XmlTagReboot:
-            {
-              if (!InConfiguration)
-                GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_REBOOT, 0, 0));
-              break;
-            }
+            case Common.XmlTagRun:
+              {
+                string[] commands = Common.SplitRunCommand(commandProperty);
+                Common.ProcessRunCommand(commands);
+                break;
+              }
 
-          case Common.XmlTagShutdown:
-            {
-              if (!InConfiguration)
-                GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_SHUTDOWN, 0, 0));
-              break;
-            }
+            case Common.XmlTagSerial:
+              {
+                string[] commands = Common.SplitSerialCommand(commandProperty);
+                Common.ProcessSerialCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagGoto:
+              {
+                if (InConfiguration)
+                  MessageBox.Show(commandProperty, "Go To Window", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  MPCommands.ProcessGoTo(commandProperty, MP_BasicHome);
+                break;
+              }
+
+            case Common.XmlTagPopup:
+              {
+                string[] commands = Common.SplitPopupCommand(commandProperty);
+
+                if (InConfiguration)
+                  MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  MPCommands.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
+
+                break;
+              }
+
+            case Common.XmlTagWindowMsg:
+              {
+                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
+                Common.ProcessWindowMessageCommand(commands);
+                break;
+              }
+
+            /*
+            case Common.XmlTagWindowState:
+              {
+                if (InConfiguration)
+                {
+                  MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", "Window State Toggle Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  break;
+                }
+
+                GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_SWITCH_FULL_WINDOWED, 0, 0, 0, 0, 0, null);
+
+                if (GUIGraphicsContext.DX9Device.PresentationParameters.Windowed)
+                  msg.Param1 = 1;
+
+                GUIWindowManager.SendMessage(msg);
+                break;
+              }
+            */
+            case Common.XmlTagFocus:
+              {
+                if (InConfiguration)
+                {
+                  MessageBox.Show("Command to get focus cannot be processed in configuration.", "Get Focus Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  break;
+                }
+
+                GUIGraphicsContext.ResetLastActivity();
+                GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GETFOCUS, 0, 0, 0, 0, 0, null);
+                GUIWindowManager.SendThreadMessage(msg);
+                break;
+              }
+
+            case Common.XmlTagExit:
+              {
+                if (!InConfiguration)
+                  GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_EXIT, 0, 0));
+                break;
+              }
+
+            case Common.XmlTagStandby:
+              {
+                if (!InConfiguration)
+                {
+                  GUIGraphicsContext.ResetLastActivity();
+                  // Stop all media before suspending or hibernating
+                  g_Player.Stop();
+
+                  GUIMessage msg;
+
+                  if (_mpBasicHome)
+                    msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
+                  else
+                    msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
+
+                  GUIWindowManager.SendThreadMessage(msg);
+
+                  WindowsController.ExitWindows(RestartOptions.Suspend, true);
+                }
+                break;
+              }
+
+            case Common.XmlTagHibernate:
+              {
+                if (!InConfiguration)
+                {
+                  GUIGraphicsContext.ResetLastActivity();
+                  // Stop all media before suspending or hibernating
+                  g_Player.Stop();
+
+                  GUIMessage msg;
+
+                  if (_mpBasicHome)
+                    msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
+                  else
+                    msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
+
+                  GUIWindowManager.SendThreadMessage(msg);
+
+                  WindowsController.ExitWindows(RestartOptions.Hibernate, true);
+                }
+                break;
+              }
+
+            case Common.XmlTagReboot:
+              {
+                if (!InConfiguration)
+                  GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_REBOOT, 0, 0));
+                break;
+              }
+
+            case Common.XmlTagShutdown:
+              {
+                if (!InConfiguration)
+                  GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_SHUTDOWN, 0, 0));
+                break;
+              }
+          }
         }
+      }
+      finally
+      {
+        MacroStackRemove(fileName);
       }
     }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
@@ -115,6 +116,7 @@ namespace IrssUtils
 
     #region XML Tags
 
+    public const string XmlTagMacro           = "MACRO";
     public const string XmlTagBlast           = "BLAST";
     public const string XmlTagPause           = "PAUSE";
     public const string XmlTagRun             = "RUN";
@@ -427,7 +429,7 @@ namespace IrssUtils
       int lastError = Marshal.GetLastWin32Error();
 
       if (result == IntPtr.Zero)
-        Marshal.ThrowExceptionForHR(lastError);
+        throw new Win32Exception(lastError);
     }
 
     /// <summary>

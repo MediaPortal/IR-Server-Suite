@@ -120,6 +120,9 @@
   <ItemGroup>
     <Content Include="Icon.ico" />
     <Content Include="Icon16.ico" />
+    <Content Include="IRServer.exe.manifest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Advanced.resx">

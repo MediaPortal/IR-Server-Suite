@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
@@ -55,6 +56,8 @@ namespace MediaPortal.Plugins
     static bool _inConfiguration;
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
+
+    static List<string> _macroStack;
 
     #endregion Variables
 
@@ -530,82 +533,138 @@ namespace MediaPortal.Plugins
       Common.ProcessSerialCommand(commands);
     }
 
+    static void MacroStackAdd(string fileName)
+    {
+      string lowerCasedFileName = fileName.ToLowerInvariant();
+
+      if (_macroStack == null)
+      {
+        _macroStack = new List<string>();
+      }
+      else if (_macroStack.Contains(lowerCasedFileName))
+      {
+        StringBuilder macroStackTrace = new StringBuilder();
+        macroStackTrace.AppendLine("Macro infinite loop detected!");
+        macroStackTrace.AppendLine();
+        macroStackTrace.AppendLine("Stack trace:");
+
+        foreach (string macro in _macroStack)
+        {
+          if (macro.Equals(lowerCasedFileName))
+            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
+          else
+            macroStackTrace.AppendLine(macro);
+        }
+
+        macroStackTrace.AppendLine(String.Format("--> {0}", lowerCasedFileName));
+
+        throw new ApplicationException(macroStackTrace.ToString());
+      }
+
+      _macroStack.Add(lowerCasedFileName);
+    }
+    static void MacroStackRemove(string fileName)
+    {
+      string lowerCasedFileName = fileName.ToLowerInvariant();
+
+      if (_macroStack.Contains(lowerCasedFileName))
+        _macroStack.Remove(lowerCasedFileName);
+
+      if (_macroStack.Count == 0)
+        _macroStack = null;
+    }
+
     /// <summary>
     /// Process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
     internal static void ProcessMacro(string fileName)
     {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(fileName);
+      MacroStackAdd(fileName);
 
-      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-      string commandProperty;
-      string commandName;
-
-      foreach (XmlNode item in commandSequence)
+      try
       {
-        commandName = item.Attributes["command"].Value;
-        commandProperty = item.Attributes["cmdproperty"].Value;
+        XmlDocument doc = new XmlDocument();
+        doc.Load(fileName);
 
-        switch (commandName)
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
+        string commandProperty;
+        string commandName;
+
+        foreach (XmlNode item in commandSequence)
         {
-          case Common.XmlTagBlast:
-            {
-              string[] commands = Common.SplitBlastCommand(commandProperty);
-              BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-              break;
-            }
+          commandName = item.Attributes["command"].Value;
+          commandProperty = item.Attributes["cmdproperty"].Value;
 
-          case Common.XmlTagPause:
-            {
-              int sleep = int.Parse(commandProperty);
-              Thread.Sleep(sleep);
-              break;
-            }
+          switch (commandName)
+          {
+            case Common.XmlTagMacro:
+              {
+                ProcessMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
+                break;
+              }
 
-          case Common.XmlTagRun:
-            {
-              string[] commands = Common.SplitRunCommand(commandProperty);
-              Common.ProcessRunCommand(commands);
-              break;
-            }
+            case Common.XmlTagBlast:
+              {
+                string[] commands = Common.SplitBlastCommand(commandProperty);
+                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+                break;
+              }
 
-          case Common.XmlTagSerial:
-            {
-              string[] commands = Common.SplitSerialCommand(commandProperty);
-              Common.ProcessSerialCommand(commands);
-              break;
-            }
+            case Common.XmlTagPause:
+              {
+                int sleep = int.Parse(commandProperty);
+                Thread.Sleep(sleep);
+                break;
+              }
 
-          case Common.XmlTagPopup:
-            {
-              string[] commands = Common.SplitPopupCommand(commandProperty);
+            case Common.XmlTagRun:
+              {
+                string[] commands = Common.SplitRunCommand(commandProperty);
+                Common.ProcessRunCommand(commands);
+                break;
+              }
 
-              if (InConfiguration)
-                MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
-              else
-                MPCommands.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
+            case Common.XmlTagSerial:
+              {
+                string[] commands = Common.SplitSerialCommand(commandProperty);
+                Common.ProcessSerialCommand(commands);
+                break;
+              }
 
-              break;
-            }
+            case Common.XmlTagPopup:
+              {
+                string[] commands = Common.SplitPopupCommand(commandProperty);
 
-          case Common.XmlTagWindowMsg:
-            {
-              string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-              Common.ProcessWindowMessageCommand(commands);
-              break;
-            }
+                if (InConfiguration)
+                  MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  MPCommands.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
 
-          case Common.XmlTagKeys:
-            {
-              if (InConfiguration)
-                MessageBox.Show(commandProperty, "Keystroke Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
-              else
-                Common.ProcessKeyCommand(commandProperty);
-              break;
-            }
+                break;
+              }
+
+            case Common.XmlTagWindowMsg:
+              {
+                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
+                Common.ProcessWindowMessageCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagKeys:
+              {
+                if (InConfiguration)
+                  MessageBox.Show(commandProperty, "Keystroke Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  Common.ProcessKeyCommand(commandProperty);
+                break;
+              }
+          }
         }
+      }
+      finally
+      {
+        MacroStackRemove(fileName);
       }
     }
 

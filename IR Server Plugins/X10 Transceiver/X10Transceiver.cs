@@ -48,19 +48,18 @@ namespace X10Transceiver
       try
       {
         test = new X10Interface();
-        if (test == null)
-          return false;
+        if (test != null)
+          return true;
       }
       catch
       {
-        return false;
       }
       finally 
       {
         test = null;
       }
 
-      return true;
+      return false;
     }
 
     public override bool Start()

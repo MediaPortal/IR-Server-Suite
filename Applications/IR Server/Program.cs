@@ -164,8 +164,23 @@ namespace IRServer
         List<string> receivers = new List<string>();
 
         foreach (IRServerPluginBase plugin in plugins)
-          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
-            receivers.Add(plugin.Name);
+        {
+          try
+          {
+            if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
+              receivers.Add(plugin.Name);
+          }
+#if TRACE
+          catch (Exception ex)
+          {
+            Trace.WriteLine("IRServer: " + ex.ToString());
+          }
+#else
+          catch
+          {
+          }
+#endif
+        }
 
         if (receivers.Count > 0)
           return receivers.ToArray();
