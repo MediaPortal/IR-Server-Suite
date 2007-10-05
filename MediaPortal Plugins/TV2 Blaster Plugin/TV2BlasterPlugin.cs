@@ -847,7 +847,7 @@ namespace MediaPortal.Plugins
       {
         using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPConfigFile))
         {
-          ServerHost = xmlreader.GetValueAsString("TV2BlasterPlugin", "ServerHost", String.Empty);
+          ServerHost = xmlreader.GetValueAsString("TV2BlasterPlugin", "ServerHost", "localhost");
           LogVerbose = xmlreader.GetValueAsBool("TV2BlasterPlugin", "LogVerbose", false);
         }
       }

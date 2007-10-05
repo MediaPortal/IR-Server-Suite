@@ -781,7 +781,7 @@ namespace MediaPortal.Plugins
       {
         using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPConfigFile))
         {
-          ServerHost = xmlreader.GetValueAsString("MPControlPlugin", "ServerHost", String.Empty);
+          ServerHost = xmlreader.GetValueAsString("MPControlPlugin", "ServerHost", "localhost");
 
           LogVerbose = xmlreader.GetValueAsBool("MPControlPlugin", "LogVerbose", false);
           RequireFocus = xmlreader.GetValueAsBool("MPControlPlugin", "RequireFocus", true);

@@ -228,7 +228,7 @@ namespace VirtualRemote
       {
         IrssLog.Error(ex.ToString());
 
-        _serverHost = String.Empty;
+        _serverHost = "localhost";
         _remoteSkin = DefaultSkin;
       }
     }

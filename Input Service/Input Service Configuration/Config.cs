@@ -126,15 +126,6 @@ namespace Configuration
       {
         CreateGrid();
       }
-
-      try
-      {
-        checkBoxRunAtBoot.Checked = SystemRegistry.GetAutoRun("IR Server");
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-      }
     }
 
     #endregion Constructor
@@ -234,18 +225,6 @@ namespace Configuration
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      try
-      {
-        if (checkBoxRunAtBoot.Checked)
-          SystemRegistry.SetAutoRun("IR Server", Application.ExecutablePath);
-        else
-          SystemRegistry.RemoveAutoRun("IR Server");
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-      }
-
       this.DialogResult = DialogResult.OK;
       this.Close();
     }

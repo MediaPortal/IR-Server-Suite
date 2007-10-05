@@ -477,7 +477,7 @@ namespace MediaPortal.Plugins
       {
         using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPConfigFile))
         {
-          ServerHost = xmlreader.GetValueAsString("MPBlastZonePlugin", "ServerHost", String.Empty);
+          ServerHost = xmlreader.GetValueAsString("MPBlastZonePlugin", "ServerHost", "localhost");
 
           LogVerbose = xmlreader.GetValueAsBool("MPBlastZonePlugin", "LogVerbose", false);
 

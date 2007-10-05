@@ -194,7 +194,7 @@ namespace TrayLauncher
       {
         IrssLog.Error(ex.ToString());
 
-        _serverHost     = String.Empty;
+        _serverHost     = "localhost";
         _programFile    = String.Empty;
         _launchOnLoad   = false;
         _launchKeyCode  = DefaultKeyCode;

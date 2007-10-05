@@ -486,7 +486,7 @@ namespace SkinEditor
       {
         IrssLog.Error(ex.ToString());
 
-        _serverHost = String.Empty;
+        _serverHost = "localhost";
       }
     }
     void SaveSettings()

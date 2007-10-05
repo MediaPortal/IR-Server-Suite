@@ -124,7 +124,7 @@ namespace TvEngine
 
       TvBusinessLayer layer = new TvBusinessLayer();
       LogVerbose = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
-      ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", Environment.MachineName).Value;
+      ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", "localhost").Value;
 
       LoadExternalConfigs();
 

@@ -471,6 +471,8 @@ namespace InputService
 
     #endregion Service Methods
 
+    #region Implementation
+
     void StartServer()
     {
       if (_server != null)
@@ -1468,6 +1470,8 @@ namespace InputService
         IrssLog.Error(ex.ToString());
       }
     }
+
+    #endregion Implementation
 
   }
 

@@ -88,18 +88,18 @@ namespace MicrosoftMceTransceiver
 
     Driver _driver;
 
-    IrProtocol _lastRemoteButtonCodeType = IrProtocol.None;
-    uint _lastRemoteButtonKeyCode = 0;
-    DateTime _lastRemoteButtonTime = DateTime.Now;
-    bool _remoteButtonRepeated = false;
+    IrProtocol _lastRemoteButtonCodeType  = IrProtocol.None;
+    uint _lastRemoteButtonKeyCode         = 0;
+    DateTime _lastRemoteButtonTime        = DateTime.Now;
+    bool _remoteButtonRepeated            = false;
     
-    bool _keyboardKeyRepeated = false;
-    DateTime _lastKeyboardKeyTime = DateTime.Now;
+    bool _keyboardKeyRepeated             = false;
+    DateTime _lastKeyboardKeyTime         = DateTime.Now;
 
-    uint _lastKeyboardKeyCode = 0;
-    uint _lastKeyboardModifiers = 0;
+    uint _lastKeyboardKeyCode             = 0;
+    uint _lastKeyboardModifiers           = 0;
 
-    Mouse.MouseEvents _mouseButtons = Mouse.MouseEvents.None;
+    Mouse.MouseEvents _mouseButtons       = Mouse.MouseEvents.None;
 
     RemoteHandler _remoteHandler;
     KeyboardHandler _keyboardHandler;
