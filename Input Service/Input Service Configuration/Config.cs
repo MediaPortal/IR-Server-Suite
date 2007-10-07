@@ -22,14 +22,14 @@ namespace Configuration
 
     IRServerPluginBase[] _transceivers;
 
-    IRServerMode _mode = IRServerMode.ServerMode;
+    InputServiceMode _mode = InputServiceMode.ServerMode;
     string _hostComputer = String.Empty;
 
     #endregion Variables
 
     #region Properties
 
-    public IRServerMode Mode
+    public InputServiceMode Mode
     {
       get { return _mode; }
       set { _mode = value; }
@@ -120,7 +120,7 @@ namespace Configuration
       _transceivers = Program.AvailablePlugins();
       if (_transceivers == null || _transceivers.Length == 0)
       {
-        MessageBox.Show(this, "No IR Server Plugins found!", "IR Server Configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "No Input Service Plugins found!", "Input Service Configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
       else
       {
@@ -299,7 +299,7 @@ namespace Configuration
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "IR Server\\index.html");
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\Input Service.chm", HelpNavigator.Topic, "Input Service\\index.html");
       }
       catch (Exception ex)
       {

@@ -15,30 +15,30 @@ namespace Configuration
 
     #region Properties
 
-    public IRServerMode Mode
+    public InputServiceMode Mode
     {
       get
       {
         if (radioButtonRelay.Checked)
-          return IRServerMode.RelayMode;
+          return InputServiceMode.RelayMode;
         else if (radioButtonRepeater.Checked)
-          return IRServerMode.RepeaterMode;
+          return InputServiceMode.RepeaterMode;
         else
-          return IRServerMode.ServerMode;
+          return InputServiceMode.ServerMode;
       }
       set
       {
         switch (value)
         {
-          case IRServerMode.ServerMode:
+          case InputServiceMode.ServerMode:
             radioButtonServer.Checked = true;
             break;
 
-          case IRServerMode.RelayMode:
+          case InputServiceMode.RelayMode:
             radioButtonRelay.Checked = true;
             break;
 
-          case IRServerMode.RepeaterMode:
+          case InputServiceMode.RepeaterMode:
             radioButtonRepeater.Checked = true;
             break;
         }

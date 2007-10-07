@@ -16,20 +16,20 @@ namespace Configuration
   #region Enumerations
 
   /// <summary>
-  /// Describes the operation mode of the IR Server.
+  /// Describes the operation mode of the Input Service.
   /// </summary>
-  public enum IRServerMode
+  public enum InputServiceMode
   {
     /// <summary>
-    /// Acts as a standard IR Server (Default).
+    /// Acts as a standard Server (Default).
     /// </summary>
     ServerMode = 0,
     /// <summary>
-    /// Relays button presses to another IR Server.
+    /// Relays button presses to another Input Service.
     /// </summary>
     RelayMode = 1,
     /// <summary>
-    /// Acts as a repeater for another IR Server's IR blasting.
+    /// Acts as a repeater for another Input Service's blasting.
     /// </summary>
     RepeaterMode = 2,
   }
@@ -47,7 +47,7 @@ namespace Configuration
 
     #region Variables
 
-    static IRServerMode _mode;
+    static InputServiceMode _mode;
     static string _hostComputer;
     static string[] _pluginNameReceive;
     static string _pluginNameTransmit;
@@ -108,7 +108,7 @@ namespace Configuration
     {
       IrssLog.Info("Loading settings ...");
 
-      _mode               = IRServerMode.ServerMode;
+      _mode               = InputServiceMode.ServerMode;
       _hostComputer       = String.Empty;
       _pluginNameReceive  = null;
       _pluginNameTransmit = String.Empty;
@@ -144,7 +144,7 @@ namespace Configuration
         return;
       }
 
-      try { _mode = (IRServerMode)Enum.Parse(typeof(IRServerMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
+      try { _mode = (InputServiceMode)Enum.Parse(typeof(InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
       try { _hostComputer = doc.DocumentElement.Attributes["HostComputer"].Value; }
@@ -178,7 +178,7 @@ namespace Configuration
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
-          writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), _mode));
+          writer.WriteAttributeString("Mode", Enum.GetName(typeof(InputServiceMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
 
@@ -239,7 +239,7 @@ namespace Configuration
     }
 
     /// <summary>
-    /// Retreives a list of available IR Server plugins.
+    /// Retreives a list of available Input Service plugins.
     /// </summary>
     /// <returns>Array of plugin instances.</returns>
     internal static IRServerPluginBase[] AvailablePlugins()
@@ -274,11 +274,11 @@ namespace Configuration
           }
           catch (BadImageFormatException)
           {
-            // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
+            // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
           }
           catch (TypeLoadException)
           {
-            // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
+            // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
           }
         }
 

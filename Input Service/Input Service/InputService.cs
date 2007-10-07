@@ -26,20 +26,20 @@ namespace InputService
   #region Enumerations
 
   /// <summary>
-  /// Describes the operation mode of the IR Server.
+  /// Describes the operation mode of the Input Service.
   /// </summary>
-  public enum IRServerMode
+  public enum InputServiceMode
   {
     /// <summary>
-    /// Acts as a standard IR Server (Default).
+    /// Acts as a standard Server (Default).
     /// </summary>
     ServerMode = 0,
     /// <summary>
-    /// Relays button presses to another IR Server.
+    /// Relays button presses to another Input Service.
     /// </summary>
     RelayMode = 1,
     /// <summary>
-    /// Acts as a repeater for another IR Server's IR blasting.
+    /// Acts as a repeater for another Input Service's blasting.
     /// </summary>
     RepeaterMode = 2,
   }
@@ -63,7 +63,7 @@ namespace InputService
     Server _server;
     Client _client;
 
-    IRServerMode _mode;
+    InputServiceMode _mode;
     string _hostComputer;
 
     bool _registered; // Used for relay and repeater modes.
@@ -96,22 +96,24 @@ namespace InputService
 
     #region IDisposable
 
-    protected override void Dispose(bool disposing)
+    protected override void Dispose(bool disposeManagedResources)
     {
       try
       {
-        if (disposing)
+        if (disposeManagedResources)
         {
-          if (_server != null)
-            _server.Dispose();
+          // Dispose managed resources ...
 
-          if (_client != null)
-            _client.Dispose();
+          StopServer();
+          StopClient();
         }
+
+        // Free native resources ...
+
       }
       finally
       {
-        base.Dispose(disposing);
+        base.Dispose(disposeManagedResources);
       }
     }
 
@@ -127,7 +129,7 @@ namespace InputService
 
       try
       {
-        IrssLog.Info("Starting IR Server ...");
+        IrssLog.Info("Starting Input Service ...");
 
         LoadSettings();
 
@@ -184,19 +186,19 @@ namespace InputService
         // Mode select ...
         switch (_mode)
         {
-          case IRServerMode.ServerMode:
+          case InputServiceMode.ServerMode:
             StartServer();
             IrssLog.Info("Started in Server Mode");
             break;
 
-          case IRServerMode.RelayMode:
+          case InputServiceMode.RelayMode:
             if (StartRelay())
               IrssLog.Info("Started in Relay Mode");
             else
               IrssLog.Error("Failed to start in Relay Mode");
             break;
 
-          case IRServerMode.RepeaterMode:
+          case InputServiceMode.RepeaterMode:
             if (StartRepeater())
               IrssLog.Info("Started in Repeater Mode");
             else
@@ -268,7 +270,7 @@ namespace InputService
         }
 
 
-        IrssLog.Info("IR Server started");
+        IrssLog.Info("Input Service started");
       }
       catch (Exception ex)
       {
@@ -278,9 +280,9 @@ namespace InputService
 
     protected override void OnStop()
     {
-      IrssLog.Info("Stopping IR Server ...");
+      IrssLog.Info("Stopping Input Service ...");
 
-      if (_mode == IRServerMode.ServerMode)
+      if (_mode == InputServiceMode.ServerMode)
       {
         IrssMessage message = new IrssMessage(MessageType.ServerShutdown, MessageFlags.Notify);
         SendToAll(message);
@@ -340,20 +342,20 @@ namespace InputService
         IrssLog.Error(ex.ToString());
       }
 
-      // Stop Server
+      // Stop Service
       try
       {
         switch (_mode)
         {
-          case IRServerMode.ServerMode:
+          case InputServiceMode.ServerMode:
             StopServer();
             break;
 
-          case IRServerMode.RelayMode:
+          case InputServiceMode.RelayMode:
             StopRelay();
             break;
 
-          case IRServerMode.RepeaterMode:
+          case InputServiceMode.RepeaterMode:
             StopRepeater();
             break;
         }
@@ -375,6 +377,8 @@ namespace InputService
     {
       switch (powerStatus)
       {
+
+        #region Suspend
         case PowerBroadcastStatus.Suspend:
           IrssLog.Info("Entering standby ...");
 
@@ -384,24 +388,42 @@ namespace InputService
           {
             foreach (IRServerPluginBase plugin in _pluginReceive)
             {
-              if (plugin == _pluginTransmit)
-                suspendedTransmit = true;
-              
-              plugin.Suspend();
+              try
+              {
+                plugin.Suspend();
+
+                if (plugin == _pluginTransmit)
+                  suspendedTransmit = true;
+              }
+              catch (Exception ex)
+              {
+                IrssLog.Error(ex.ToString());
+              }
             }
           }
 
           if (_pluginTransmit != null && !suspendedTransmit)
-            _pluginTransmit.Suspend();
+          {
+            try
+            {
+              _pluginTransmit.Suspend();
+            }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex.ToString());
+            }
+          }
 
           // Inform clients ...
-          if (_mode == IRServerMode.ServerMode)
+          if (_mode == InputServiceMode.ServerMode)
           {
-            IrssMessage message = new IrssMessage(MessageType.ServerShutdown, MessageFlags.Notify);
+            IrssMessage message = new IrssMessage(MessageType.ServerSuspend, MessageFlags.Notify);
             SendToAll(message);
           }
           break;
+        #endregion Suspend
 
+        #region Resume
         case PowerBroadcastStatus.ResumeAutomatic:
         case PowerBroadcastStatus.ResumeCritical:
         case PowerBroadcastStatus.ResumeSuspend:
@@ -413,18 +435,41 @@ namespace InputService
           {
             foreach (IRServerPluginBase plugin in _pluginReceive)
             {
-              if (plugin == _pluginTransmit)
-                resumedTransmit = true;
+              try
+              {
+                plugin.Resume();
 
-              plugin.Resume();
+                if (plugin == _pluginTransmit)
+                  resumedTransmit = true;
+              }
+              catch (Exception ex)
+              {
+                IrssLog.Error(ex.ToString());
+              }
             }
           }
 
           if (_pluginTransmit != null && !resumedTransmit)
-            _pluginTransmit.Resume();
+          {
+            try
+            {
+              _pluginTransmit.Resume();
+            }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex.ToString());
+            }
+          }
 
-          // TODO: Inform clients ?
+          // Inform clients ...
+          if (_mode == InputServiceMode.ServerMode)
+          {
+            IrssMessage message = new IrssMessage(MessageType.ServerResume, MessageFlags.Notify);
+            SendToAll(message);
+          }
           break;
+        #endregion Resume
+
       }
 
       return true;
@@ -519,12 +564,14 @@ namespace InputService
         IrssLog.Error("Communications failure");
 
       StopClient();
+
+      IrssLog.Error("Please report this error");
     }
     void Connected(object obj)
     {
       IrssLog.Info("Connected to another server");
 
-      if (_mode == IRServerMode.RepeaterMode)
+      if (_mode == InputServiceMode.RepeaterMode)
       {
         IrssMessage message = new IrssMessage(MessageType.RegisterRepeater, MessageFlags.Request);
         _client.Send(message);
@@ -658,23 +705,23 @@ namespace InputService
 
       switch (_mode)
       {
-        case IRServerMode.ServerMode:
+        case InputServiceMode.ServerMode:
           {
             IrssMessage message = new IrssMessage(MessageType.RemoteEvent, MessageFlags.Notify, bytes);
             SendToAll(message);
             break;
           }
 
-        case IRServerMode.RelayMode:
+        case InputServiceMode.RelayMode:
           {
             IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, bytes);
             _client.Send(message);
             break;
           }
 
-        case IRServerMode.RepeaterMode:
+        case InputServiceMode.RepeaterMode:
           {
-            IrssLog.Debug("Remote event ignored, IR Server is in Repeater Mode.");
+            IrssLog.Debug("Remote event ignored, Input Service is in Repeater Mode.");
             break;
           }
       }
@@ -690,23 +737,23 @@ namespace InputService
       
       switch (_mode)
       {
-        case IRServerMode.ServerMode:
+        case InputServiceMode.ServerMode:
           {
             IrssMessage message = new IrssMessage(MessageType.KeyboardEvent, MessageFlags.Notify, bytes);
             SendToAll(message);
             break;
           }
 
-        case IRServerMode.RelayMode:
+        case InputServiceMode.RelayMode:
           {
             IrssMessage message = new IrssMessage(MessageType.ForwardKeyboardEvent, MessageFlags.Request, bytes);
             _client.Send(message);
             break;
           }
 
-        case IRServerMode.RepeaterMode:
+        case InputServiceMode.RepeaterMode:
           {
-            IrssLog.Debug("Keyboard event ignored, IR Server is in Repeater Mode.");
+            IrssLog.Debug("Keyboard event ignored, Input Service is in Repeater Mode.");
             break;
           }
       }
@@ -723,23 +770,23 @@ namespace InputService
 
       switch (_mode)
       {
-        case IRServerMode.ServerMode:
+        case InputServiceMode.ServerMode:
           {
             IrssMessage message = new IrssMessage(MessageType.MouseEvent, MessageFlags.Notify, bytes);
             SendToAll(message);
             break;
           }
 
-        case IRServerMode.RelayMode:
+        case InputServiceMode.RelayMode:
           {
             IrssMessage message = new IrssMessage(MessageType.ForwardMouseEvent, MessageFlags.Request, bytes);
             _client.Send(message);
             break;
           }
 
-        case IRServerMode.RepeaterMode:
+        case InputServiceMode.RepeaterMode:
           {
-            IrssLog.Debug("Mouse event ignored, IR Server is in Repeater Mode.");
+            IrssLog.Debug("Mouse event ignored, Input Service is in Repeater Mode.");
             break;
           }
       }
@@ -979,7 +1026,7 @@ namespace InputService
 
           #region ForwardRemoteEvent
           case MessageType.ForwardRemoteEvent:
-            if (_mode == IRServerMode.RelayMode)
+            if (_mode == InputServiceMode.RelayMode)
             {
               IrssMessage forward = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
               _client.Send(forward);
@@ -994,7 +1041,7 @@ namespace InputService
 
           #region ForwardKeyboardEvent
           case MessageType.ForwardKeyboardEvent:
-            if (_mode == IRServerMode.RelayMode)
+            if (_mode == InputServiceMode.RelayMode)
             {
               IrssMessage forward = new IrssMessage(MessageType.ForwardKeyboardEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
               _client.Send(forward);
@@ -1009,7 +1056,7 @@ namespace InputService
 
           #region ForwardMouseEvent
           case MessageType.ForwardMouseEvent:
-            if (_mode == IRServerMode.RelayMode)
+            if (_mode == InputServiceMode.RelayMode)
             {
               IrssMessage forward = new IrssMessage(MessageType.ForwardMouseEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
               _client.Send(forward);
@@ -1027,7 +1074,7 @@ namespace InputService
           {
             IrssMessage response = new IrssMessage(MessageType.BlastIR, MessageFlags.Response);
 
-            if (_mode == IRServerMode.RelayMode)
+            if (_mode == InputServiceMode.RelayMode)
             {
               response.Flags |= MessageFlags.Failure;
             }
@@ -1054,7 +1101,7 @@ namespace InputService
           {
             IrssMessage response = new IrssMessage(MessageType.LearnIR, MessageFlags.Response);
 
-            if (_mode == IRServerMode.RelayMode)
+            if (_mode == InputServiceMode.RelayMode)
             {
               response.Flags |= MessageFlags.Failure;
             }
@@ -1372,7 +1419,7 @@ namespace InputService
 
     void LoadSettings()
     {
-      _mode               = IRServerMode.ServerMode;
+      _mode               = InputServiceMode.ServerMode;
       _hostComputer       = String.Empty;
       _pluginNameReceive  = null;
       _pluginNameTransmit = String.Empty;
@@ -1408,7 +1455,7 @@ namespace InputService
         return;
       }
 
-      try { _mode               = (IRServerMode)Enum.Parse(typeof(IRServerMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
+      try { _mode               = (InputServiceMode)Enum.Parse(typeof(InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
       try { _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value; }
@@ -1440,7 +1487,7 @@ namespace InputService
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
-          writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), _mode));
+          writer.WriteAttributeString("Mode", Enum.GetName(typeof(InputServiceMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
 

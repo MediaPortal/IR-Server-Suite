@@ -217,6 +217,7 @@ namespace MicrosoftMceTransceiver
 
       _notifyWindow.UnregisterDeviceRemoval();
       _notifyWindow.Dispose();
+      _notifyWindow = null;
 
       CloseDevice();
 

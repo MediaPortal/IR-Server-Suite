@@ -356,7 +356,6 @@ namespace MicrosoftMceTransceiver
 
     #endregion Debug
 
-
   }
 
 }

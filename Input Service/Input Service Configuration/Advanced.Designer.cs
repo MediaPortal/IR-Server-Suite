@@ -56,7 +56,7 @@ namespace Configuration
       this.groupBoxMode.Size = new System.Drawing.Size(384, 120);
       this.groupBoxMode.TabIndex = 0;
       this.groupBoxMode.TabStop = false;
-      this.groupBoxMode.Text = "IR Server Mode";
+      this.groupBoxMode.Text = "Input Service Mode";
       // 
       // labelComputer
       // 
@@ -78,7 +78,7 @@ namespace Configuration
       this.radioButtonRepeater.TabIndex = 2;
       this.radioButtonRepeater.TabStop = true;
       this.radioButtonRepeater.Text = "Repeater mode";
-      this.toolTips.SetToolTip(this.radioButtonRepeater, "All output commands from a host IR Server are repeated");
+      this.toolTips.SetToolTip(this.radioButtonRepeater, "All output commands from a host Input Service are repeated");
       this.radioButtonRepeater.UseVisualStyleBackColor = true;
       this.radioButtonRepeater.CheckedChanged += new System.EventHandler(this.radioButtonRepeater_CheckedChanged);
       // 
@@ -91,7 +91,7 @@ namespace Configuration
       this.radioButtonRelay.TabIndex = 1;
       this.radioButtonRelay.TabStop = true;
       this.radioButtonRelay.Text = "Input relay mode";
-      this.toolTips.SetToolTip(this.radioButtonRelay, "All input is relayed to another IR Server instance");
+      this.toolTips.SetToolTip(this.radioButtonRelay, "All input is relayed to another Input Service instance");
       this.radioButtonRelay.UseVisualStyleBackColor = true;
       this.radioButtonRelay.CheckedChanged += new System.EventHandler(this.radioButtonRelay_CheckedChanged);
       // 
@@ -104,7 +104,7 @@ namespace Configuration
       this.radioButtonServer.TabIndex = 0;
       this.radioButtonServer.TabStop = true;
       this.radioButtonServer.Text = "Server mode (default)";
-      this.toolTips.SetToolTip(this.radioButtonServer, "IR Server operates as a device server (default)");
+      this.toolTips.SetToolTip(this.radioButtonServer, "Input Service operates as a device server (default)");
       this.radioButtonServer.UseVisualStyleBackColor = true;
       this.radioButtonServer.CheckedChanged += new System.EventHandler(this.radioButtonServer_CheckedChanged);
       // 
@@ -158,7 +158,7 @@ namespace Configuration
       this.MinimumSize = new System.Drawing.Size(418, 213);
       this.Name = "Advanced";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-      this.Text = "IR Server - Advanced Configuration";
+      this.Text = "Input Service Configuration - Advanced";
       this.groupBoxMode.ResumeLayout(false);
       this.groupBoxMode.PerformLayout();
       this.ResumeLayout(false);

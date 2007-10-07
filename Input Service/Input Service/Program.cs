@@ -54,7 +54,7 @@ namespace InputService
     }
 
     /// <summary>
-    /// Retreives a list of available IR Server plugins.
+    /// Retreives a list of available Input Service plugins.
     /// </summary>
     /// <returns>Array of plugin instances.</returns>
     internal static IRServerPluginBase[] AvailablePlugins()
@@ -89,11 +89,11 @@ namespace InputService
           }
           catch (BadImageFormatException)
           {
-            // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
+            // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
           }
           catch (TypeLoadException)
           {
-            // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
+            // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
           }
         }
 
