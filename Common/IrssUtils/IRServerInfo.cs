@@ -64,6 +64,9 @@ namespace IrssUtils
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IRServerInfo"/> class.
+    /// </summary>
     public IRServerInfo()
     {
       _canLearn     = false;

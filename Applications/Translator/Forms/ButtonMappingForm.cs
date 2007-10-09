@@ -402,7 +402,8 @@ namespace Translator
             }
 
             textBoxCommand.Text = _command =
-              String.Format("{0}|{1}|{2}|{3}|{4}",
+              String.Format("{0}{1}|{2}|{3}|{4}|{5}",
+                Common.CmdPrefixWindowMsg,
                 target,
                 textBoxMsgTarget.Text,
                 numericUpDownMsg.Value.ToString(),

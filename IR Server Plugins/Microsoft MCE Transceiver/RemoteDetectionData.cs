@@ -5,7 +5,7 @@ namespace MicrosoftMceTransceiver
 
   #region Enumerations
 
-  public enum RemoteDetectionState
+  enum RemoteDetectionState
   {
     HeaderPulse,
     HeaderSpace,

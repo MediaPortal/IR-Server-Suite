@@ -10,6 +10,9 @@ using IRServerPluginInterface;
 namespace WindowsMessageReceiver
 {
 
+  /// <summary>
+  /// IR Server Plugin for receiving Windows Messages.
+  /// </summary>
   public class WindowsMessageReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
   {
     
@@ -52,16 +55,42 @@ namespace WindowsMessageReceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "Windows Messages"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "Supports receiving simulated button presses through Windows Messages"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       return false;
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -71,14 +100,23 @@ namespace WindowsMessageReceiver
 
       return true;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       _receiverWindow.ProcMsg -= new ProcessMessage(ProcMsg);
@@ -86,6 +124,9 @@ namespace WindowsMessageReceiver
       _receiverWindow = null;
     }
 
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
     public void Configure()
     {
       LoadSettings();
@@ -104,12 +145,19 @@ namespace WindowsMessageReceiver
       }
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
 
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
     void LoadSettings()
     {
       try
@@ -133,6 +181,9 @@ namespace WindowsMessageReceiver
         _wParam       = DefaultMessageID;
       }
     }
+    /// <summary>
+    /// Saves the settings.
+    /// </summary>
     void SaveSettings()
     {
       try
@@ -164,6 +215,10 @@ namespace WindowsMessageReceiver
 #endif
     }
 
+    /// <summary>
+    /// Proccesses the incoming Windows Message.
+    /// </summary>
+    /// <param name="m">The message.</param>
     void ProcMsg(ref Message m)
     {
       if (m.Msg == _messageType && m.WParam.ToInt32() == _wParam)

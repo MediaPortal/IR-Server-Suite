@@ -20,7 +20,7 @@ namespace IRTransTransceiver
 
   #region Enumerations
 
-  public enum IrTransStatus
+  enum IrTransStatus
   {
     STATUS_MESSAGE          = 1,
     STATUS_TIMING           = 2,
@@ -44,7 +44,7 @@ namespace IRTransTransceiver
     STATUS_IRDBFLASH		    = 20,
     STATUS_ANALOGINPUT		  = 21,
   }
-  public enum IrTransCommand
+  enum IrTransCommand
   {
     COMMAND_SEND            = 1,
     COMMAND_LRNREM          = 2,
@@ -112,8 +112,8 @@ namespace IRTransTransceiver
 
   #region Interop Structures
 
-  [StructLayout(LayoutKind.Sequential), CLSCompliant(false)]
-  public struct NETWORKRECV
+  [StructLayout(LayoutKind.Sequential)]
+  struct NETWORKRECV
   {
     public UInt32 ClientID;
     public Int16 StatusLen;
@@ -128,8 +128,8 @@ namespace IRTransTransceiver
     public string Data;
   }
   /*
-  [StructLayout(LayoutKind.Sequential), CLSCompliant(false)]
-  public struct NETWORKSTATUS
+  [StructLayout(LayoutKind.Sequential)]
+  struct NETWORKSTATUS
   {
 	  public UInt32 ClientID;
 	  public Int16 StatusLen;
@@ -143,8 +143,8 @@ namespace IRTransTransceiver
 	  public string Message;
   }
   
-  [StructLayout(LayoutKind.Sequential), CLSCompliant(false)]
-  public struct NETWORKCOMMAND
+  [StructLayout(LayoutKind.Sequential)]
+  struct NETWORKCOMMAND
   {
 	  public byte netcommand;
     public byte mode;
@@ -158,8 +158,8 @@ namespace IRTransTransceiver
     public byte trasmit_freq;
   }
 
-  [StructLayout(LayoutKind.Sequential), CLSCompliant(false)]
-  public struct LCDCOMMAND
+  [StructLayout(LayoutKind.Sequential)]
+  struct LCDCOMMAND
   {
     public byte netcommand;
     public byte mode;
@@ -175,6 +175,9 @@ namespace IRTransTransceiver
   */
   #endregion Interop Structures
 
+  /// <summary>
+  /// IR Server Plugin for IRTrans.
+  /// </summary>
   public class IRTransTransceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
   {
 
@@ -208,16 +211,42 @@ namespace IRTransTransceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "IRTrans"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "IRTrans Transceiver"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       return false;
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -230,14 +259,23 @@ namespace IRTransTransceiver
 
       return false;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       if (_socket == null)
@@ -265,12 +303,19 @@ namespace IRTransTransceiver
       }
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
 
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
     public void Configure()
     {
       LoadSettings();
@@ -291,6 +336,9 @@ namespace IRTransTransceiver
       }
     }
 
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
     static void LoadSettings()
     {
       try
@@ -316,6 +364,9 @@ namespace IRTransTransceiver
         _irTransServerPort    = DefaultServerPort;
       }
     }
+    /// <summary>
+    /// Saves the settings.
+    /// </summary>
     static void SaveSettings()
     {
       try
@@ -348,6 +399,12 @@ namespace IRTransTransceiver
 #endif
     }
 
+    /// <summary>
+    /// Connects to the specified address.
+    /// </summary>
+    /// <param name="address">The address.</param>
+    /// <param name="port">The port.</param>
+    /// <returns>true if successful, otherwise false.</returns>
     static bool Connect(string address, int port)
     {
       // TODO: put this on a thread, retry every 30 seconds ...
@@ -373,6 +430,9 @@ namespace IRTransTransceiver
 
       return true;
     }
+    /// <summary>
+    /// Starts receiving.
+    /// </summary>
     static void BeginReceive()
     {
       try
@@ -396,13 +456,17 @@ namespace IRTransTransceiver
       }
 #endif
     }
-    static void OnDataReceived(IAsyncResult asyn)
+    /// <summary>
+    /// Called when data received.
+    /// </summary>
+    /// <param name="asyncResult">The async result.</param>
+    static void OnDataReceived(IAsyncResult asyncResult)
     {
       try
       {
-        CSocketPacket theSockId = (CSocketPacket)asyn.AsyncState;
+        CSocketPacket theSockId = (CSocketPacket)asyncResult.AsyncState;
 
-        int bytesReceived = theSockId.ThisSocket.EndReceive(asyn);
+        int bytesReceived = theSockId.ThisSocket.EndReceive(asyncResult);
 
         IntPtr ptrReceive = Marshal.AllocHGlobal(bytesReceived);
         Marshal.Copy(theSockId.ReceiveBuffer, 0, ptrReceive, bytesReceived);
@@ -468,6 +532,12 @@ namespace IRTransTransceiver
 #endif
     }
 
+    /// <summary>
+    /// Converts structs to byte arrays.
+    /// </summary>
+    /// <param name="structure">The structure.</param>
+    /// <param name="size">The size.</param>
+    /// <returns>Converted structure.</returns>
     static byte[] StructToByteArray(object structure, int size)
     {
       if (structure == null || size <= 0)

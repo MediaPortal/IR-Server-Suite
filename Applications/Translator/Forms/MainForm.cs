@@ -189,19 +189,21 @@ namespace Translator
     }
     void RefreshIRList()
     {
-      listBoxIR.Items.Clear();
+      listViewIR.Items.Clear();
 
       string[] irList = Common.GetIRList(false);
       if (irList != null && irList.Length > 0)
-        listBoxIR.Items.AddRange(irList);
+        foreach (string irFile in irList)
+          listViewIR.Items.Add(irFile);
     }
     void RefreshMacroList()
     {
-      listBoxMacro.Items.Clear();
+      listViewMacro.Items.Clear();
 
       string[] macroList = Program.GetMacroList(false);
       if (macroList != null && macroList.Length > 0)
-        listBoxMacro.Items.AddRange(macroList);
+        foreach (string macroFile in macroList)
+          listViewMacro.Items.Add(macroFile);
 
       Program.UpdateNotifyMenu();
     }
@@ -251,47 +253,47 @@ namespace Translator
 
     void EditIR()
     {
-      if (listBoxIR.SelectedIndex != -1)
+      if (listViewIR.SelectedItems.Count != 1)
+        return;
+
+      string command = listViewIR.SelectedItems[0].Text;
+      string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
+
+      if (File.Exists(fileName))
       {
-        string command = listBoxIR.SelectedItem as string;
-        string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
+        _learnIR = new LearnIR(
+          new LearnIrDelegate(Program.LearnIR),
+          new BlastIrDelegate(Program.BlastIR),
+          Program.TransceiverInformation.Ports,
+          command);
 
-        if (File.Exists(fileName))
-        {
-          _learnIR = new LearnIR(
-            new LearnIrDelegate(Program.LearnIR),
-            new BlastIrDelegate(Program.BlastIR),
-            Program.TransceiverInformation.Ports,
-            command);
+        _learnIR.ShowDialog(this);
 
-          _learnIR.ShowDialog(this);
-
-          _learnIR = null;
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-          RefreshIRList();
-        }
+        _learnIR = null;
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        RefreshIRList();
       }
     }
     void EditMacro()
     {
-      if (listBoxMacro.SelectedIndex != -1)
-      {
-        string command = listBoxMacro.SelectedItem as string;
-        string fileName = Program.FolderMacros + command + Common.FileExtensionMacro;
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
 
-        if (File.Exists(fileName))
-        {
-          MacroEditor macroEditor = new MacroEditor(command);
-          macroEditor.ShowDialog(this);
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-          RefreshMacroList();
-        }
+      string command = listViewMacro.SelectedItems[0].Text;
+      string fileName = Program.FolderMacros + command + Common.FileExtensionMacro;
+
+      if (File.Exists(fileName))
+      {
+        MacroEditor macroEditor = new MacroEditor(command);
+        macroEditor.ShowDialog(this);
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        RefreshMacroList();
       }
     }
 
@@ -349,6 +351,7 @@ namespace Translator
       }
     }
 
+    // TODO: Move to a notify window
     protected override void WndProc(ref Message m)
     {
       try
@@ -365,7 +368,7 @@ namespace Translator
           byte[] dataBytes = new byte[dataStructure.cbData];
           IntPtr lpData = new IntPtr(dataStructure.lpData);
           System.Runtime.InteropServices.Marshal.Copy(lpData, dataBytes, 0, dataStructure.cbData);
-          string strData = Encoding.Default.GetString(dataBytes);
+          string strData = Encoding.ASCII.GetString(dataBytes);
 
           Program.ProcessCommand(strData);
         }
@@ -638,32 +641,21 @@ namespace Translator
     }
     private void buttonEditIR_Click(object sender, EventArgs e)
     {
-      if (listBoxIR.SelectedIndex == -1)
-        return;
-
-      _learnIR = new LearnIR(
-        new LearnIrDelegate(Program.LearnIR),
-        new BlastIrDelegate(Program.BlastIR),
-        Program.TransceiverInformation.Ports,
-        listBoxIR.SelectedItem as string);
-
-      _learnIR.ShowDialog(this);
-
-      _learnIR = null;
+      EditIR();
     }
     private void buttonDeleteIR_Click(object sender, EventArgs e)
     {
-      if (listBoxIR.SelectedIndex == -1)
+      if (listViewIR.SelectedItems.Count != 1)
         return;
 
-      string file = listBoxIR.SelectedItem as string;
+      string file = listViewIR.SelectedItems[0].Text;
       string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
       if (File.Exists(fileName))
       {
         if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
         {
           File.Delete(fileName);
-          listBoxIR.Items.Remove(listBoxIR.SelectedItem);
+          listViewIR.Items.Remove(listViewIR.SelectedItems[0]);
         }
       }
       else
@@ -685,17 +677,17 @@ namespace Translator
     }
     private void buttonDeleteMacro_Click(object sender, EventArgs e)
     {
-      if (listBoxMacro.SelectedIndex == -1)
+      if (listViewMacro.SelectedItems.Count != 1)
         return;
 
-      string file = listBoxMacro.SelectedItem as string;
+      string file = listViewMacro.SelectedItems[0].Text;
       string fileName = Program.FolderMacros + file + Common.FileExtensionMacro;
       if (File.Exists(fileName))
       {
         if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
         {
           File.Delete(fileName);
-          listBoxMacro.Items.Remove(listBoxMacro.SelectedItem);
+          listViewMacro.Items.Remove(listViewMacro.SelectedItems[0]);
         }
       }
       else
@@ -705,10 +697,10 @@ namespace Translator
     }
     private void buttonTestMacro_Click(object sender, EventArgs e)
     {
-      if (listBoxMacro.SelectedIndex == -1)
+      if (listViewMacro.SelectedItems.Count != 1)
         return;
 
-      string fileName = Program.FolderMacros + listBoxMacro.SelectedItem as string + Common.FileExtensionMacro;
+      string fileName = Program.FolderMacros + listViewMacro.SelectedItems[0].Text + Common.FileExtensionMacro;
 
       try
       {
@@ -720,14 +712,84 @@ namespace Translator
       }
     }
 
-    private void listBoxIR_DoubleClick(object sender, EventArgs e)
+    private void listViewIR_DoubleClick(object sender, EventArgs e)
     {
       EditIR();
     }
+    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+        return;
 
-    private void listBoxMacro_DoubleClick(object sender, EventArgs e)
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = Common.FolderIRCommands + originItem.Text + Common.FileExtensionIR;
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      {
+        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
+    private void listViewMacro_DoubleClick(object sender, EventArgs e)
     {
       EditMacro();
+    }
+    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+        return;
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = Program.FolderMacros + originItem.Text + Common.FileExtensionMacro;
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      {
+        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = Program.FolderMacros + e.Label + Common.FileExtensionMacro;
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     private void checkBoxAutoRun_CheckedChanged(object sender, EventArgs e)

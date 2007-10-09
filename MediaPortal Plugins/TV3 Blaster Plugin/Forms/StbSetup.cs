@@ -266,7 +266,6 @@ namespace TvEngine
               Common.FolderSTB, 
               TV3BlasterPlugin.TransceiverInformation.Ports, 
               command.Substring(Common.CmdPrefixSTB.Length), 
-              true, 
               blastCommandCount--);
 
             if (useForAllBlastCommands)

@@ -10,11 +10,18 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// Window List form.
+  /// </summary>
   public partial class WindowList : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// Gets the selected window title.
+    /// </summary>
+    /// <value>The selected window title.</value>
     public string SelectedWindowTitle
     {
       get { return listBoxWindows.SelectedItem as string; }
@@ -24,6 +31,9 @@ namespace IrssUtils.Forms
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowList"/> class.
+    /// </summary>
     public WindowList()
     {
       InitializeComponent();
@@ -37,10 +47,10 @@ namespace IrssUtils.Forms
     {
       Win32.EnumWindowsProc ewp = new Win32.EnumWindowsProc(AddWindow);
 
-      Win32.EnumWindows(ewp, 0);
+      Win32.EnumerateWindows(ewp, IntPtr.Zero);
     }
 
-    bool AddWindow(IntPtr hWnd, int lParam)
+    bool AddWindow(IntPtr hWnd, IntPtr lParam)
     {
       string title = Win32.GetWindowTitle(hWnd);
 

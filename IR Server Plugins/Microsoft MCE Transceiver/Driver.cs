@@ -216,6 +216,16 @@ namespace MicrosoftMceTransceiver
     public abstract void Stop();
 
     /// <summary>
+    /// Computer is entering standby, suspend device.
+    /// </summary>
+    public abstract void Suspend();
+
+    /// <summary>
+    /// Computer is returning from standby, resume device.
+    /// </summary>
+    public abstract void Resume();
+
+    /// <summary>
     /// Learn an IR Command.
     /// </summary>
     /// <param name="learnTimeout">How long to wait before aborting learn.</param>
@@ -310,6 +320,10 @@ namespace MicrosoftMceTransceiver
 
     protected StreamWriter _debugFile;
 
+    /// <summary>
+    /// Opens a debug output file.
+    /// </summary>
+    /// <param name="fileName">Name of the file.</param>
     protected void DebugOpen(string fileName)
     {
       try
@@ -323,6 +337,9 @@ namespace MicrosoftMceTransceiver
       }
     }
 
+    /// <summary>
+    /// Closes the debug output file.
+    /// </summary>
     protected void DebugClose()
     {
       if (_debugFile != null)
@@ -332,12 +349,20 @@ namespace MicrosoftMceTransceiver
       }
     }
 
+    /// <summary>
+    /// Writes a line to the debug output file.
+    /// </summary>
+    /// <param name="line">The line.</param>
     protected void DebugWriteLine(string line)
     {
       if (_debugFile != null)
         _debugFile.WriteLine(line);
     }
 
+    /// <summary>
+    /// Dumps an Array to the debug output file.
+    /// </summary>
+    /// <param name="array">The array.</param>
     protected void DebugDump(Array array)
     {
       if (_debugFile == null)

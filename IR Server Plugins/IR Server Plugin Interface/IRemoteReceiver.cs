@@ -12,7 +12,7 @@ namespace IRServerPluginInterface
   public delegate void RemoteHandler(string keyCode);
 
   #endregion Delegates
-  
+
   /// <summary>
   /// Plugins that implement this interface can receive remote control button presses.
   /// </summary>
@@ -22,6 +22,7 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Callback for remote button presses.
     /// </summary>
+    /// <value>The remote callback.</value>
     RemoteHandler RemoteCallback { get; set; }
 
   }

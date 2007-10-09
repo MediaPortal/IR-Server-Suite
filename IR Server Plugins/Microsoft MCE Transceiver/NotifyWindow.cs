@@ -101,9 +101,9 @@ namespace MicrosoftMceTransceiver
       GC.SuppressFinalize(this);
     }
 
-    private void Dispose(bool disposeManagedResources)
+    private void Dispose(bool disposing)
     {
-      if (disposeManagedResources)
+      if (disposing)
       {
         // Dispose managed resources ...
 

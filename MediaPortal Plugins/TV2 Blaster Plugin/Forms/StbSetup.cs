@@ -254,7 +254,6 @@ namespace MediaPortal.Plugins
               Common.FolderSTB,
               TV2BlasterPlugin.TransceiverInformation.Ports,
               command.Substring(Common.CmdPrefixSTB.Length),
-              true,
               blastCommandCount--);
 
             if (useForAllBlastCommands)

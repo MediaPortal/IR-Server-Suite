@@ -14,6 +14,9 @@ using IRServerPluginInterface;
 namespace UirtTransceiver
 {
 
+  /// <summary>
+  /// IR Server Plugin for USB-UIRT Transceiver device.
+  /// </summary>
   [CLSCompliant(false)]
   public class UirtTransceiver :
     IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
@@ -63,6 +66,10 @@ namespace UirtTransceiver
 
     #region Destructor
 
+    /// <summary>
+    /// Releases unmanaged resources and performs other cleanup operations before the
+    /// <see cref="UirtTransceiver"/> is reclaimed by garbage collection.
+    /// </summary>
     ~UirtTransceiver()
     {
       // Call Dispose with false.  Since we're in the destructor call, the managed resources will be disposed of anyway.
@@ -73,6 +80,9 @@ namespace UirtTransceiver
 
     #region IDisposable Members
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
     public void Dispose()
     {
       // Dispose of the managed and unmanaged resources
@@ -82,13 +92,17 @@ namespace UirtTransceiver
       GC.SuppressFinalize(this);
     }
 
-    private void Dispose(bool disposeManagedResources)
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    private void Dispose(bool disposing)
     {
       if (!_disposed)
       {
         _disposed = true;
 
-        if (disposeManagedResources)
+        if (disposing)
         {
           // Dispose managed resources ...
         }
@@ -108,11 +122,33 @@ namespace UirtTransceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "USB-UIRT"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "Support for the USB-UIRT transceiver"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       try
@@ -132,6 +168,10 @@ namespace UirtTransceiver
       return false;
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -149,14 +189,23 @@ namespace UirtTransceiver
 
       return _isUsbUirtLoaded;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       if (_abortLearn != IntPtr.Zero)
@@ -169,6 +218,9 @@ namespace UirtTransceiver
       _isUsbUirtLoaded = false;
     }
 
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
     public void Configure()
     {
       LoadSettings();
@@ -189,14 +241,28 @@ namespace UirtTransceiver
       }
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
 
+    /// <summary>
+    /// Lists the available blaster ports.
+    /// </summary>
+    /// <value>The available ports.</value>
     public string[] AvailablePorts { get { return Ports; }   }
 
+    /// <summary>
+    /// Transmit an infrared command.
+    /// </summary>
+    /// <param name="port">Port to transmit on.</param>
+    /// <param name="data">Data to transmit.</param>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Transmit(string port, byte[] data)
     {
       if (String.IsNullOrEmpty(port))
@@ -231,7 +297,13 @@ namespace UirtTransceiver
       return result;
     }
 
-    // [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)] Not needed because assembly has.
+    /// <summary>
+    /// Learn an infrared command.
+    /// </summary>
+    /// <param name="data">New infrared command.</param>
+    /// <returns>
+    /// Tells the calling code if the learn was Successful, Failed or Timed Out.
+    /// </returns>
     public LearnStatus Learn(out byte[] data)
     {
       bool result = false;
@@ -287,6 +359,9 @@ namespace UirtTransceiver
       }
     }
 
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
     void LoadSettings()
     {
       try
@@ -312,6 +387,9 @@ namespace UirtTransceiver
         _learnTimeout = 10000;
       }
     }
+    /// <summary>
+    /// Saves the settings.
+    /// </summary>
     void SaveSettings()
     {
       try
@@ -344,6 +422,11 @@ namespace UirtTransceiver
 #endif
     }
 
+    /// <summary>
+    /// The receive callback.
+    /// </summary>
+    /// <param name="keyCode">The key code.</param>
+    /// <param name="userData">The user data.</param>
     void UUIRTReceiveCallback(string keyCode, IntPtr userData)
     {
       if (_remoteButtonHandler == null)
@@ -367,6 +450,7 @@ namespace UirtTransceiver
       
       _lastCode = keyCode;
     }
+    
     /*
     void UUIRTLearnCallback(uint progress, uint sigQuality, ulong carrierFreq, IntPtr userData)
     {
@@ -374,6 +458,12 @@ namespace UirtTransceiver
       //MessageBox.Show(_learnCarrierFreq.ToString());
     }
     */
+
+    /// <summary>
+    /// Handles the Tick event of the timer control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
     void timer_Tick(object sender, EventArgs e)
     {
       if (_abortLearn != IntPtr.Zero)

@@ -10,11 +10,18 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// Eject Command form.
+  /// </summary>
   public partial class EjectCommand : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// Gets the command string.
+    /// </summary>
+    /// <value>The command string.</value>
     public string CommandString
     {
       get
@@ -27,22 +34,28 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
-    public EjectCommand() : this(null) { }
-    public EjectCommand(string command)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EjectCommand"/> class.
+    /// </summary>
+    public EjectCommand()
     {
       InitializeComponent();
 
       DriveInfo[] drives = DriveInfo.GetDrives();
       foreach (DriveInfo drive in drives)
-      {
         if (drive.DriveType == DriveType.CDRom)
-        {
           comboBoxDrive.Items.Add(drive.Name);
-          if (drive.Name == command)
-            comboBoxDrive.SelectedItem = drive.Name;
-        }
-      }
+    }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EjectCommand"/> class.
+    /// </summary>
+    /// <param name="command">The currently selected drive.</param>
+    public EjectCommand(string command)
+      : this()
+    {
+      if (!String.IsNullOrEmpty(command))
+        comboBoxDrive.SelectedItem = command;
     }
 
     #endregion

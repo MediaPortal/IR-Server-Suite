@@ -11,6 +11,9 @@ using IRServerPluginInterface;
 namespace XBCDRCReceiver
 {
 
+  /// <summary>
+  /// IR Server Plugin for the XBox 1 IR Receiver with XBCDRC.
+  /// </summary>
   public class XBCDRCReceiver : IRServerPluginBase, IRemoteReceiver, IDisposable
   {
 
@@ -156,6 +159,10 @@ namespace XBCDRCReceiver
 
     #region Destructor
 
+    /// <summary>
+    /// Releases unmanaged resources and performs other cleanup operations before the
+    /// <see cref="XBCDRCReceiver"/> is reclaimed by garbage collection.
+    /// </summary>
     ~XBCDRCReceiver()
     {
       // Call Dispose with false.  Since we're in the destructor call, the managed resources will be disposed of anyway.
@@ -166,6 +173,9 @@ namespace XBCDRCReceiver
 
     #region IDisposable Members
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
     public void Dispose()
     {
       // Dispose of the managed and unmanaged resources
@@ -175,13 +185,17 @@ namespace XBCDRCReceiver
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposeManagedResources)
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
     {
       // process only if mananged and unmanaged resources have
       // not been disposed of.
       if (!_disposed)
       {
-        if (disposeManagedResources)
+        if (disposing)
         {
           // dispose managed resources
           Stop();
@@ -197,11 +211,33 @@ namespace XBCDRCReceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "XBCDRC"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "Supports the XBox 1 IR receiver with XBCDRC"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       try
@@ -219,6 +255,10 @@ namespace XBCDRCReceiver
       }
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       Guid guid = new Guid();
@@ -242,14 +282,23 @@ namespace XBCDRCReceiver
 
       return true;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       if (_deviceStream == null)
@@ -269,12 +318,21 @@ namespace XBCDRCReceiver
       }
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
 
+    /// <summary>
+    /// Finds the device.
+    /// </summary>
+    /// <param name="classGuid">The class GUID.</param>
+    /// <returns>Device path.</returns>
     static string FindDevice(Guid classGuid)
     {
       int lastError;
@@ -344,6 +402,10 @@ namespace XBCDRCReceiver
       return devicePath;
     }
 
+    /// <summary>
+    /// Called when a device read is completed.
+    /// </summary>
+    /// <param name="asyncResult">The async result.</param>
     void OnReadComplete(IAsyncResult asyncResult)
     {
       try

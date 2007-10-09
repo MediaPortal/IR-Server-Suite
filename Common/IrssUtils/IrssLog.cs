@@ -18,10 +18,25 @@ namespace IrssUtils
     /// </summary>
     public enum Level
     {
+      /// <summary>
+      /// Do not log any messages.
+      /// </summary>
       Off   = 0,
+      /// <summary>
+      /// Log only Error messages.
+      /// </summary>
       Error = 1,
+      /// <summary>
+      /// Log only Warning and Error messages.
+      /// </summary>
       Warn  = 2,
+      /// <summary>
+      /// Log only Warning, Error and Information messages.
+      /// </summary>
       Info  = 3,
+      /// <summary>
+      /// Log all messages.
+      /// </summary>
       Debug = 4,
     }
 
@@ -39,6 +54,7 @@ namespace IrssUtils
     /// <summary>
     /// Level of detail to record in log file.
     /// </summary>
+    /// <value>The log level.</value>
     public static Level LogLevel
     {
       get { return _logLevel; }

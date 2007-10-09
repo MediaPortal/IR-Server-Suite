@@ -5,7 +5,7 @@ namespace MicrosoftMceTransceiver
 
   #region Enumerations
 
-  public enum MceKeyboardDetectState
+  enum MceKeyboardDetectState
   {
     Header,
     CodeType,
@@ -23,7 +23,7 @@ namespace MicrosoftMceTransceiver
   }
 
   [Flags]
-  public enum KeyModifiers
+  enum KeyModifiers
   {
     None          = 0,
     LeftControl   = 1,

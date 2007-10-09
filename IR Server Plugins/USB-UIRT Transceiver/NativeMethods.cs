@@ -5,6 +5,9 @@ using System.Text;
 namespace UirtTransceiver
 {
 
+  /// <summary>
+  /// Native Methods Class.
+  /// </summary>
   internal static class NativeMethods
   {
 

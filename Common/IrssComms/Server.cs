@@ -90,15 +90,22 @@ namespace IrssComms
     
     #region IDisposable
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
     public void Dispose()
     {
       Dispose(true);
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposeManagedResources)
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
     {
-      if (disposeManagedResources)
+      if (disposing)
       {
         // Dispose managed resources ...
         Stop();
@@ -117,7 +124,7 @@ namespace IrssComms
     /// <summary>
     /// Start the server.
     /// </summary>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Start()
     {
       if (_processConnectionThread)
@@ -207,7 +214,7 @@ namespace IrssComms
     /// </summary>
     /// <param name="sendTo">Client to send to.</param>
     /// <param name="message">Message to send.</param>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Send(ClientManager sendTo, IrssMessage message)
     {
       if (!_clientManagers.Contains(sendTo))

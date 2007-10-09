@@ -132,7 +132,27 @@ namespace MicrosoftMceTransceiver
 
     // Start and Stop Packets
     static readonly byte[] StartPacket            = { 0x00, 0xFF, 0xAA };
-    static readonly byte[] StopPacket             = { 0xFF, 0xBB, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+    static readonly byte[] StopPacket             = { 0xFF, 0xBB, 
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+      0xFF, 0xFF };
 
     // Misc Packets
     static readonly byte[] SetCarrierFreqPacket   = { 0x9F, 0x06, 0x01, 0x80 };
@@ -173,10 +193,13 @@ namespace MicrosoftMceTransceiver
 
     #region Driver overrides
 
+    /// <summary>
+    /// Start using the device.
+    /// </summary>
     public override void Start()
     {
 #if DEBUG
-      DebugOpen("\\IRServer_DriverReplacement.log");
+      DebugOpen("MicrosoftMceTransceiver_DriverReplacement.log");
       DebugWriteLine("DriverReplacement.Start()");
 #endif
 
@@ -208,6 +231,9 @@ namespace MicrosoftMceTransceiver
       _notifyWindow.RegisterDeviceRemoval(_readHandle.DangerousGetHandle());
     }
 
+    /// <summary>
+    /// Stop access to the device.
+    /// </summary>
     public override void Stop()
     {
 #if DEBUG
@@ -232,6 +258,30 @@ namespace MicrosoftMceTransceiver
 #endif
     }
 
+    /// <summary>
+    /// Computer is entering standby, suspend device.
+    /// </summary>
+    public override void Suspend()
+    {
+      //Stop();
+      WriteSync(StopPacket);
+    }
+
+    /// <summary>
+    /// Computer is returning from standby, resume device.
+    /// </summary>
+    public override void Resume()
+    {
+      //Start();
+      WriteSync(StartPacket);
+    }
+
+    /// <summary>
+    /// Learn an IR Command.
+    /// </summary>
+    /// <param name="learnTimeout">How long to wait before aborting learn.</param>
+    /// <param name="learned">Newly learned IR Command.</param>
+    /// <returns>Learn status.</returns>
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
 #if DEBUG
@@ -287,6 +337,11 @@ namespace MicrosoftMceTransceiver
       return status;
     }
 
+    /// <summary>
+    /// Send an IR Command.
+    /// </summary>
+    /// <param name="code">IR code data to send.</param>
+    /// <param name="port">IR port to send to.</param>
     public override void Send(IrCode code, uint port)
     {
 #if DEBUG
@@ -427,7 +482,6 @@ namespace MicrosoftMceTransceiver
       _readThread.IsBackground = true;
       _readThread.Start();
     }
-
     void StopReadThread()
     {
 #if DEBUG
@@ -509,7 +563,10 @@ namespace MicrosoftMceTransceiver
       bool success = false;
       safeWaitHandle.DangerousAddRef(ref success);
       if (!success)
+      {
+        waitHandle.Close();
         return;
+      }
 
       IntPtr deviceBufferPtr = IntPtr.Zero;
 
@@ -651,8 +708,15 @@ namespace MicrosoftMceTransceiver
 
         }
       }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+#else
       catch (Exception)
       {
+#endif
+
         if (_readHandle != null)
           CancelIo(_readHandle);
       }

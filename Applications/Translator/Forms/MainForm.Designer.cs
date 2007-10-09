@@ -57,13 +57,13 @@ namespace Translator
       this.columnHeaderEvent = new System.Windows.Forms.ColumnHeader();
       this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
       this.tabPageIRCommands = new System.Windows.Forms.TabPage();
-      this.listBoxIR = new System.Windows.Forms.ListBox();
+      this.listViewIR = new System.Windows.Forms.ListView();
       this.buttonNewIR = new System.Windows.Forms.Button();
       this.buttonEditIR = new System.Windows.Forms.Button();
       this.buttonDeleteIR = new System.Windows.Forms.Button();
       this.tabPageMacro = new System.Windows.Forms.TabPage();
+      this.listViewMacro = new System.Windows.Forms.ListView();
       this.buttonTestMacro = new System.Windows.Forms.Button();
-      this.listBoxMacro = new System.Windows.Forms.ListBox();
       this.buttonDeleteMacro = new System.Windows.Forms.Button();
       this.buttonNewMacro = new System.Windows.Forms.Button();
       this.buttonEditMacro = new System.Windows.Forms.Button();
@@ -136,11 +136,11 @@ namespace Translator
       // buttonRemoveProgram
       // 
       this.buttonRemoveProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonRemoveProgram.Image = global::Translator.Properties.Resources.Delete;
       this.buttonRemoveProgram.Location = new System.Drawing.Point(336, 16);
       this.buttonRemoveProgram.Name = "buttonRemoveProgram";
       this.buttonRemoveProgram.Size = new System.Drawing.Size(24, 24);
       this.buttonRemoveProgram.TabIndex = 2;
-      this.buttonRemoveProgram.Text = "-";
       this.toolTip.SetToolTip(this.buttonRemoveProgram, "Remove the current program from the list");
       this.buttonRemoveProgram.UseVisualStyleBackColor = true;
       this.buttonRemoveProgram.Click += new System.EventHandler(this.buttonRemoveProgram_Click);
@@ -148,11 +148,11 @@ namespace Translator
       // buttonAddProgram
       // 
       this.buttonAddProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonAddProgram.Image = global::Translator.Properties.Resources.Plus;
       this.buttonAddProgram.Location = new System.Drawing.Point(304, 16);
       this.buttonAddProgram.Name = "buttonAddProgram";
       this.buttonAddProgram.Size = new System.Drawing.Size(24, 24);
       this.buttonAddProgram.TabIndex = 1;
-      this.buttonAddProgram.Text = "+";
       this.toolTip.SetToolTip(this.buttonAddProgram, "Add a program to the list");
       this.buttonAddProgram.UseVisualStyleBackColor = true;
       this.buttonAddProgram.Click += new System.EventHandler(this.buttonAddProgram_Click);
@@ -249,7 +249,7 @@ namespace Translator
       this.buttonOK.Location = new System.Drawing.Point(384, 440);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
-      this.buttonOK.TabIndex = 5;
+      this.buttonOK.TabIndex = 3;
       this.buttonOK.Text = "&OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -401,7 +401,7 @@ namespace Translator
       // 
       // tabPageIRCommands
       // 
-      this.tabPageIRCommands.Controls.Add(this.listBoxIR);
+      this.tabPageIRCommands.Controls.Add(this.listViewIR);
       this.tabPageIRCommands.Controls.Add(this.buttonNewIR);
       this.tabPageIRCommands.Controls.Add(this.buttonEditIR);
       this.tabPageIRCommands.Controls.Add(this.buttonDeleteIR);
@@ -413,18 +413,24 @@ namespace Translator
       this.tabPageIRCommands.Text = "IR Commands";
       this.tabPageIRCommands.UseVisualStyleBackColor = true;
       // 
-      // listBoxIR
+      // listViewIR
       // 
-      this.listBoxIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+      this.listViewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.listBoxIR.FormattingEnabled = true;
-      this.listBoxIR.IntegralHeight = false;
-      this.listBoxIR.Location = new System.Drawing.Point(8, 8);
-      this.listBoxIR.Name = "listBoxIR";
-      this.listBoxIR.Size = new System.Drawing.Size(416, 328);
-      this.listBoxIR.TabIndex = 0;
-      this.listBoxIR.DoubleClick += new System.EventHandler(this.listBoxIR_DoubleClick);
+      this.listViewIR.FullRowSelect = true;
+      this.listViewIR.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+      this.listViewIR.HideSelection = false;
+      this.listViewIR.LabelEdit = true;
+      this.listViewIR.Location = new System.Drawing.Point(8, 8);
+      this.listViewIR.MultiSelect = false;
+      this.listViewIR.Name = "listViewIR";
+      this.listViewIR.Size = new System.Drawing.Size(416, 328);
+      this.listViewIR.TabIndex = 0;
+      this.listViewIR.UseCompatibleStateImageBehavior = false;
+      this.listViewIR.View = System.Windows.Forms.View.List;
+      this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
+      this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
       // 
       // buttonNewIR
       // 
@@ -464,8 +470,8 @@ namespace Translator
       // 
       // tabPageMacro
       // 
+      this.tabPageMacro.Controls.Add(this.listViewMacro);
       this.tabPageMacro.Controls.Add(this.buttonTestMacro);
-      this.tabPageMacro.Controls.Add(this.listBoxMacro);
       this.tabPageMacro.Controls.Add(this.buttonDeleteMacro);
       this.tabPageMacro.Controls.Add(this.buttonNewMacro);
       this.tabPageMacro.Controls.Add(this.buttonEditMacro);
@@ -476,6 +482,25 @@ namespace Translator
       this.tabPageMacro.TabIndex = 3;
       this.tabPageMacro.Text = "Macros";
       this.tabPageMacro.UseVisualStyleBackColor = true;
+      // 
+      // listViewMacro
+      // 
+      this.listViewMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.listViewMacro.FullRowSelect = true;
+      this.listViewMacro.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+      this.listViewMacro.HideSelection = false;
+      this.listViewMacro.LabelEdit = true;
+      this.listViewMacro.Location = new System.Drawing.Point(8, 8);
+      this.listViewMacro.MultiSelect = false;
+      this.listViewMacro.Name = "listViewMacro";
+      this.listViewMacro.Size = new System.Drawing.Size(416, 328);
+      this.listViewMacro.TabIndex = 5;
+      this.listViewMacro.UseCompatibleStateImageBehavior = false;
+      this.listViewMacro.View = System.Windows.Forms.View.List;
+      this.listViewMacro.DoubleClick += new System.EventHandler(this.listViewMacro_DoubleClick);
+      this.listViewMacro.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewMacro_AfterLabelEdit);
       // 
       // buttonTestMacro
       // 
@@ -488,19 +513,6 @@ namespace Translator
       this.toolTip.SetToolTip(this.buttonTestMacro, "Test the currently selected Macro");
       this.buttonTestMacro.UseVisualStyleBackColor = true;
       this.buttonTestMacro.Click += new System.EventHandler(this.buttonTestMacro_Click);
-      // 
-      // listBoxMacro
-      // 
-      this.listBoxMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.listBoxMacro.FormattingEnabled = true;
-      this.listBoxMacro.IntegralHeight = false;
-      this.listBoxMacro.Location = new System.Drawing.Point(8, 8);
-      this.listBoxMacro.Name = "listBoxMacro";
-      this.listBoxMacro.Size = new System.Drawing.Size(416, 328);
-      this.listBoxMacro.TabIndex = 0;
-      this.listBoxMacro.DoubleClick += new System.EventHandler(this.listBoxMacro_DoubleClick);
       // 
       // buttonDeleteMacro
       // 
@@ -541,10 +553,11 @@ namespace Translator
       // checkBoxAutoRun
       // 
       this.checkBoxAutoRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.checkBoxAutoRun.AutoSize = true;
       this.checkBoxAutoRun.Location = new System.Drawing.Point(16, 440);
       this.checkBoxAutoRun.Name = "checkBoxAutoRun";
-      this.checkBoxAutoRun.Size = new System.Drawing.Size(184, 24);
-      this.checkBoxAutoRun.TabIndex = 4;
+      this.checkBoxAutoRun.Size = new System.Drawing.Size(167, 17);
+      this.checkBoxAutoRun.TabIndex = 2;
       this.checkBoxAutoRun.Text = "&Start Translator with Windows";
       this.toolTip.SetToolTip(this.checkBoxAutoRun, "Set this to make Translator automatically start when you turn the computer on");
       this.checkBoxAutoRun.UseVisualStyleBackColor = true;
@@ -573,58 +586,58 @@ namespace Translator
             this.toolStripSeparator2,
             this.quitToolStripMenuItem});
       this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
-      this.configurationToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+      this.configurationToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       this.configurationToolStripMenuItem.Text = "&File";
       // 
       // newToolStripMenuItem
       // 
       this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-      this.newToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+      this.newToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.newToolStripMenuItem.Text = "&New";
       this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
       // 
       // openToolStripMenuItem
       // 
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.openToolStripMenuItem.Text = "&Open ...";
       this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
       // 
       // importToolStripMenuItem
       // 
       this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-      this.importToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+      this.importToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.importToolStripMenuItem.Text = "&Import ...";
       this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
       // 
       // exportToolStripMenuItem
       // 
       this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-      this.exportToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+      this.exportToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.exportToolStripMenuItem.Text = "&Export ...";
       this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
       // 
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(129, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(119, 6);
       // 
       // serverToolStripMenuItem
       // 
       this.serverToolStripMenuItem.Name = "serverToolStripMenuItem";
-      this.serverToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+      this.serverToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.serverToolStripMenuItem.Text = "&Server ...";
       this.serverToolStripMenuItem.Click += new System.EventHandler(this.serverToolStripMenuItem_Click);
       // 
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(129, 6);
+      this.toolStripSeparator2.Size = new System.Drawing.Size(119, 6);
       // 
       // quitToolStripMenuItem
       // 
       this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-      this.quitToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+      this.quitToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.quitToolStripMenuItem.Text = "&Quit";
       this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
       // 
@@ -634,20 +647,20 @@ namespace Translator
             this.translatorHelpToolStripMenuItem,
             this.aboutToolStripMenuItem});
       this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-      this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+      this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
       this.helpToolStripMenuItem.Text = "&Help";
       // 
       // translatorHelpToolStripMenuItem
       // 
       this.translatorHelpToolStripMenuItem.Name = "translatorHelpToolStripMenuItem";
-      this.translatorHelpToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+      this.translatorHelpToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.translatorHelpToolStripMenuItem.Text = "&Contents";
       this.translatorHelpToolStripMenuItem.Click += new System.EventHandler(this.translatorHelpToolStripMenuItem_Click);
       // 
       // aboutToolStripMenuItem
       // 
       this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.aboutToolStripMenuItem.Text = "&About";
       this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
       // 
@@ -674,7 +687,7 @@ namespace Translator
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MainMenuStrip = this.menuStrip;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(464, 475);
+      this.MinimumSize = new System.Drawing.Size(472, 508);
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Translator";
@@ -711,13 +724,11 @@ namespace Translator
     private System.Windows.Forms.TabControl tabControl;
     private System.Windows.Forms.TabPage tabPagePrograms;
     private System.Windows.Forms.TabPage tabPageIRCommands;
-    private System.Windows.Forms.ListBox listBoxIR;
     private System.Windows.Forms.Button buttonNewIR;
     private System.Windows.Forms.Button buttonEditIR;
     private System.Windows.Forms.Button buttonDeleteIR;
     private System.Windows.Forms.TabPage tabPageMacro;
     private System.Windows.Forms.Button buttonTestMacro;
-    private System.Windows.Forms.ListBox listBoxMacro;
     private System.Windows.Forms.Button buttonDeleteMacro;
     private System.Windows.Forms.Button buttonNewMacro;
     private System.Windows.Forms.Button buttonEditMacro;
@@ -749,6 +760,8 @@ namespace Translator
     private System.Windows.Forms.ToolStripMenuItem serverToolStripMenuItem;
     private System.Windows.Forms.OpenFileDialog openFileDialog;
     private System.Windows.Forms.SaveFileDialog saveFileDialog;
+    private System.Windows.Forms.ListView listViewIR;
+    private System.Windows.Forms.ListView listViewMacro;
   }
 }
 

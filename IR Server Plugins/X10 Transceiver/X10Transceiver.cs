@@ -12,6 +12,9 @@ using X10;
 namespace X10Transceiver
 {
 
+  /// <summary>
+  /// IR Server Plugin for X10 Transceiver devices.
+  /// </summary>
   public class X10Transceiver : IRServerPluginBase, IRemoteReceiver, _DIX10InterfaceEvents
   {
 
@@ -36,11 +39,33 @@ namespace X10Transceiver
    
     #region IIRServerPlugin Members
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "X10"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "X10 Transceiver"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       X10Interface test;
@@ -62,6 +87,10 @@ namespace X10Transceiver
       return false;
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       //LoadSettings();
@@ -94,19 +123,32 @@ namespace X10Transceiver
         return false;
       }
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       X10Inter = null;
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
@@ -117,6 +159,16 @@ namespace X10Transceiver
 
     #region _DIX10InterfaceEvents Members
 
+    /// <summary>
+    /// X10 command.
+    /// </summary>
+    /// <param name="bszCommand">The command.</param>
+    /// <param name="eCommand">The command type.</param>
+    /// <param name="lAddress">The address.</param>
+    /// <param name="EKeyState">State of the key.</param>
+    /// <param name="lSequence">The sequence.</param>
+    /// <param name="eCommandType">Type of the command.</param>
+    /// <param name="varTimestamp">The timestamp.</param>
     [CLSCompliant(false)]
     public void X10Command(string bszCommand, EX10Command eCommand, int lAddress, EX10Key EKeyState, int lSequence, EX10Comm eCommandType, object varTimestamp)
     {
@@ -142,6 +194,11 @@ namespace X10Transceiver
       }
     }
 
+    /// <summary>
+    /// X10 help event.
+    /// </summary>
+    /// <param name="hwndDialog">The HWND of the dialog.</param>
+    /// <param name="lHelpID">The help ID.</param>
     public void X10HelpEvent(int hwndDialog, int lHelpID) { }
 
     #endregion _DIX10InterfaceEvents Members

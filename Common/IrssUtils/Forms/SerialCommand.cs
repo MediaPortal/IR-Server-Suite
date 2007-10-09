@@ -10,11 +10,18 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// Serial Command form.
+  /// </summary>
   public partial class SerialCommand : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// Gets the command string.
+    /// </summary>
+    /// <value>The command string.</value>
     public string CommandString
     {
       get
@@ -51,9 +58,25 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SerialCommand"/> class.
+    /// </summary>
     public SerialCommand() : this(null, String.Empty) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SerialCommand"/> class.
+    /// </summary>
+    /// <param name="parametersMessage">The optional parameters message.</param>
     public SerialCommand(string parametersMessage) : this(null, parametersMessage) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SerialCommand"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
     public SerialCommand(string[] commands) : this(commands, String.Empty) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SerialCommand"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
+    /// <param name="parametersMessage">The optional parameters message.</param>
     public SerialCommand(string[] commands, string parametersMessage)
     {
       InitializeComponent();

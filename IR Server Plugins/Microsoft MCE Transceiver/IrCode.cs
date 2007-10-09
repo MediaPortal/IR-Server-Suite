@@ -83,7 +83,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Locates the gap between button presses and reduces the data down to just the first press.
     /// </summary>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool FinalizeData()
     {
       if (_timingData.Length == 0)

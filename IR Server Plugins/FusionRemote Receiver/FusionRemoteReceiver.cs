@@ -17,6 +17,9 @@ using IRServerPluginInterface;
 namespace FusionRemoteReceiver
 {
 
+  /// <summary>
+  /// IR Server Plugin for the DViCO FusionREMOTE USB Receiver device.
+  /// </summary>
   public class FusionRemoteReceiver : IRServerPluginBase, IRemoteReceiver
   {
 
@@ -197,11 +200,33 @@ namespace FusionRemoteReceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "FusionREMOTE"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "DViCO FusionREMOTE Receiver"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       try
@@ -219,6 +244,10 @@ namespace FusionRemoteReceiver
       }
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       try
@@ -242,14 +271,23 @@ namespace FusionRemoteReceiver
         return false;
       }
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       if (_deviceStream == null)
@@ -269,12 +307,19 @@ namespace FusionRemoteReceiver
       }
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteHandler; }
       set { _remoteHandler = value; }
     }
 
+    /// <summary>
+    /// Opens the device.
+    /// </summary>
     static void OpenDevice()
     {
       Guid hidGuid = new Guid();
@@ -294,6 +339,12 @@ namespace FusionRemoteReceiver
       _deviceStream = new FileStream(deviceHandle, FileAccess.Read, 128, true);
     }
 
+    /// <summary>
+    /// Finds the device.
+    /// </summary>
+    /// <param name="classGuid">The class GUID.</param>
+    /// <param name="deviceID">The device ID.</param>
+    /// <returns>Device path.</returns>
     static string FindDevice(Guid classGuid, string deviceID)
     {
       string devicePath = null;
@@ -361,6 +412,10 @@ namespace FusionRemoteReceiver
       return devicePath;
     }
 
+    /// <summary>
+    /// Called when a device read completes.
+    /// </summary>
+    /// <param name="asyncResult">The async result.</param>
     static void OnReadComplete(IAsyncResult asyncResult)
     {
       try

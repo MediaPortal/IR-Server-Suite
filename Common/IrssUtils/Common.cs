@@ -8,6 +8,7 @@ using System.IO.Ports;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -105,6 +106,7 @@ namespace IrssUtils
     public const string CmdPrefixHibernate    = "Hibernate";
     public const string CmdPrefixReboot       = "Reboot";
     public const string CmdPrefixShutdown     = "Shutdown";
+    public const string CmdPrefixLogOff       = "Log Off";
 
     public const string CmdPrefixMouse        = "Mouse: ";
 
@@ -136,6 +138,7 @@ namespace IrssUtils
     public const string XmlTagHibernate       = "HIBERNATE";
     public const string XmlTagReboot          = "REBOOT";
     public const string XmlTagShutdown        = "SHUTDOWN";
+    public const string XmlTagLogOff          = "LOG_OFF";
 
     public const string XmlTagMouse           = "MOUSE";
 
@@ -165,7 +168,7 @@ namespace IrssUtils
     public const string UITextHibernate       = "Hibernate";
     public const string UITextReboot          = "Reboot";
     public const string UITextShutdown        = "Shutdown";
-    //public const string UITextLogoff
+    public const string UITextLogOff          = "Log Off";
 
     public const string UITextMouse           = "Mouse Command";
 
@@ -195,14 +198,30 @@ namespace IrssUtils
 
     #region Command Segments
 
-    public static readonly char[] SegmentSeparator = new char[] { '|' };
-
-    public const int SegmentsBlastCommand         = 2;
-    public const int SegmentsRunCommand           = 8;
-    public const int SegmentsSerialCommand        = 7;
+    /// <summary>
+    /// Number of Segments in a Blast Command.
+    /// </summary>
+    public const int SegmentsBlastCommand = 2;
+    /// <summary>
+    /// Number of Segments in a Run Command.
+    /// </summary>
+    public const int SegmentsRunCommand = 8;
+    /// <summary>
+    /// Number of Segments in a Serial Command.
+    /// </summary>
+    public const int SegmentsSerialCommand = 7;
+    /// <summary>
+    /// Number of Segments in a Windows Message Command.
+    /// </summary>
     public const int SegmentsWindowMessageCommand = 5;
-    public const int SegmentsPopupCommand         = 3;
-    public const int SegmentsTcpMessageCommand    = 3;
+    /// <summary>
+    /// Number of Segments in a Popup Command.
+    /// </summary>
+    public const int SegmentsPopupCommand = 3;
+    /// <summary>
+    /// Number of Segments in a TCP Message Command.
+    /// </summary>
+    public const int SegmentsTcpMessageCommand = 3;
 
     #endregion Command Segments
 
@@ -277,7 +296,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      string[] commands = command.Split(SegmentSeparator, StringSplitOptions.None);
+      string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
 
       if (commands.Length != elements)
         throw new ArgumentException(String.Format("Command structure is invalid: {0}", command), "command");
@@ -292,7 +311,7 @@ namespace IrssUtils
     /// <summary>
     /// Given a split Run command this method will launch the process according to the details of the command structure.
     /// </summary>
-    /// <param name="command">An array of arguments for the method (the output of SplitRunCommand).</param>
+    /// <param name="commands">An array of arguments for the method (the output of SplitRunCommand).</param>
     public static void ProcessRunCommand(string[] commands)
     {
       if (commands == null)
@@ -389,7 +408,7 @@ namespace IrssUtils
       switch (matchType)
       {
         case "active":
-          windowHandle = Win32.GetForegroundWindow();
+          windowHandle = Win32.ForegroundWindow();
           break;
 
         case "application":
@@ -428,7 +447,7 @@ namespace IrssUtils
       Win32.SendMessageTimeout(windowHandle, msg, wordParam, longParam, Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
       int lastError = Marshal.GetLastWin32Error();
 
-      if (result == IntPtr.Zero)
+      if (result == IntPtr.Zero && lastError != 0)
         throw new Win32Exception(lastError);
     }
 
@@ -645,6 +664,18 @@ namespace IrssUtils
       }
 
       return output.ToString();
+    }
+
+    /// <summary>
+    /// Determines the validity of a given filename.
+    /// </summary>
+    /// <param name="fileName">File name to validate.</param>
+    /// <returns>true if the name is valid; otherwise, false.</returns>
+    public static bool IsValidFileName(string fileName)
+    {
+      Regex validate = new Regex(@"^[a-zA-Z0-9_\s-]+$");
+      
+      return validate.IsMatch(fileName);
     }
 
     #endregion Misc

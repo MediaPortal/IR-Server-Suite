@@ -24,7 +24,7 @@ namespace IrssUtils
     static extern int GetDriveType(string driveLetter);
 
     [DllImport("winmm.dll", EntryPoint = "mciSendStringA")]
-    static extern void mciSendStringA(string lpstrCommand, string lpstrReturnString, long uReturnLength, long hwndCallback);
+    static extern void mciSendStringA(string command, string returnString, int returnLength, int callback);
 
     #endregion Interop
 
@@ -46,8 +46,9 @@ namespace IrssUtils
     /// <param name="driveLetter">Drive letter of CD-Rom to open.</param>
     public static void Open(string driveLetter)
     {
-      string returnString = "";
       string command = String.Format("set cdaudio!{0} door open", driveLetter);
+
+      string returnString = String.Empty;
       mciSendStringA(command, returnString, 0, 0);
     }
 
@@ -57,8 +58,9 @@ namespace IrssUtils
     /// <param name="driveLetter">Drive letter of CD-Rom to close.</param>
     public static void Close(string driveLetter)
     {
-      string returnString = "";
       string command = String.Format("set cdaudio!{0} door closed", driveLetter);
+
+      string returnString = String.Empty;
       mciSendStringA(command, returnString, 0, 0);
     }
 

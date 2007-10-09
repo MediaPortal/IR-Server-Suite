@@ -13,6 +13,9 @@ using IRServerPluginInterface;
 namespace IRManReceiver
 {
 
+  /// <summary>
+  /// IR Server Plugin for IRMan Receiver device.
+  /// </summary>
   public class IRManReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
   {
 
@@ -45,16 +48,42 @@ namespace IRManReceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "IRMan"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "Receiver support for the Serial IRMan device"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       return false;
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -89,14 +118,23 @@ namespace IRManReceiver
 
       return false;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       if (_serialPort == null)
@@ -122,12 +160,19 @@ namespace IRManReceiver
       }
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
 
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
     public void Configure()
     {
       LoadSettings();
@@ -146,6 +191,11 @@ namespace IRManReceiver
       }
     }
 
+    /// <summary>
+    /// Handles the DataReceived event of the SerialPort control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.IO.Ports.SerialDataReceivedEventArgs"/> instance containing the event data.</param>
     void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
     {
       try
@@ -186,13 +236,17 @@ namespace IRManReceiver
 #endif
     }
 
-    protected virtual void Dispose(bool disposeManagedResources)
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
     {
       // process only if mananged and unmanaged resources have
       // not been disposed of.
       if (!this._disposed)
       {
-        if (disposeManagedResources)
+        if (disposing)
         {
           // dispose managed resources
           Stop();
@@ -203,6 +257,9 @@ namespace IRManReceiver
       }
     }
 
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
     void LoadSettings()
     {
       try
@@ -226,6 +283,9 @@ namespace IRManReceiver
         _serialPortName = "COM1";
       }
     }
+    /// <summary>
+    /// Saves the settings.
+    /// </summary>
     void SaveSettings()
     {
       try

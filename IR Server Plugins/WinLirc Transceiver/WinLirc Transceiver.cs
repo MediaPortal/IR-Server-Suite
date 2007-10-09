@@ -13,6 +13,9 @@ using IRServerPluginInterface;
 namespace WinLircTransceiver
 {
 
+  /// <summary>
+  /// IR Server Plugin for WinLirc.
+  /// </summary>
   public class WinLircTransceiver : IRServerPluginBase, IConfigure, IRemoteReceiver, ITransmitIR
   {
 
@@ -39,11 +42,33 @@ namespace WinLircTransceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "WinLirc"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81, original code for MediaPortal by Sven"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "Supports WinLirc as a Transciever"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       try
@@ -56,6 +81,10 @@ namespace WinLircTransceiver
       }
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -71,14 +100,23 @@ namespace WinLircTransceiver
 
       return true;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       if (_server != null)
@@ -88,12 +126,19 @@ namespace WinLircTransceiver
       }
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
 
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
     public void Configure()
     {
       LoadSettings();
@@ -118,8 +163,18 @@ namespace WinLircTransceiver
       }
     }
 
+    /// <summary>
+    /// Lists the available blaster ports.
+    /// </summary>
+    /// <value>The available ports.</value>
     public string[] AvailablePorts { get { return new string[] { "Default" }; } }
 
+    /// <summary>
+    /// Transmit an infrared command.
+    /// </summary>
+    /// <param name="port">Port to transmit on.</param>
+    /// <param name="data">Data to transmit.</param>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Transmit(string port, byte[] data)
     {
       string password, remoteName, buttonName, repeats;
@@ -141,6 +196,9 @@ namespace WinLircTransceiver
       return true;
     }
 
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
     void LoadSettings()
     {
       try
@@ -170,6 +228,9 @@ namespace WinLircTransceiver
         _buttonReleaseTime  = 200;
       }
     }
+    /// <summary>
+    /// Saves the settings.
+    /// </summary>
     void SaveSettings()
     {
       try
@@ -204,6 +265,10 @@ namespace WinLircTransceiver
 #endif
     }
 
+    /// <summary>
+    /// Handles commands.
+    /// </summary>
+    /// <param name="cmd">The Command.</param>
     void CommandHandler(WinLircServer.Command cmd)
     {
       if (_remoteButtonHandler == null)

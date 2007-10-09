@@ -110,9 +110,9 @@ namespace IRServer
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposeManagedResources)
+    protected virtual void Dispose(bool disposing)
     {
-      if (disposeManagedResources)
+      if (disposing)
       {
         // Dispose managed resources ...
 
@@ -718,15 +718,31 @@ namespace IRServer
             {
               foreach (IRServerPluginBase plugin in _pluginReceive)
               {
-                if (_pluginTransmit == plugin)
-                  resumedTransmit = true;
+                try
+                {
+                  plugin.Resume();
 
-                plugin.Resume();
+                  if (plugin == _pluginTransmit)
+                    resumedTransmit = true;
+                }
+                catch (Exception ex)
+                {
+                  IrssLog.Error(ex.ToString());
+                }
               }
             }
 
             if (_pluginTransmit != null && !resumedTransmit)
-              _pluginTransmit.Resume();
+            {
+              try
+              {
+                _pluginTransmit.Resume();
+              }
+              catch (Exception ex)
+              {
+                IrssLog.Error(ex.ToString());
+              }
+            }
 
             // Inform clients ...
             if (_mode == IRServerMode.ServerMode)
@@ -747,15 +763,31 @@ namespace IRServer
             {
               foreach (IRServerPluginBase plugin in _pluginReceive)
               {
-                if (_pluginTransmit == plugin)
-                  suspendedTransmit = true;
+                try
+                {
+                  plugin.Suspend();
 
-                plugin.Suspend();
+                  if (plugin == _pluginTransmit)
+                    suspendedTransmit = true;
+                }
+                catch (Exception ex)
+                {
+                  IrssLog.Error(ex.ToString());
+                }
               }
             }
 
             if (_pluginTransmit != null && !suspendedTransmit)
-              _pluginTransmit.Suspend();
+            {
+              try
+              {
+                _pluginTransmit.Suspend();
+              }
+              catch (Exception ex)
+              {
+                IrssLog.Error(ex.ToString());
+              }
+            }
 
             // Inform clients ...
             if (_mode == IRServerMode.ServerMode)

@@ -221,7 +221,7 @@ namespace Translator
     {
       try
       {
-        IntPtr hWnd = Win32.GetForegroundWindow();
+        IntPtr hWnd = Win32.ForegroundWindow();
 
         if (hWnd == IntPtr.Zero)
           return;
@@ -233,16 +233,16 @@ namespace Translator
           return;
 
         /*
-                string windowTitle = Win32.GetWindowTitle(hWnd);
-                if (windowTitle.StartsWith("Translator", StringComparison.InvariantCultureIgnoreCase))
-                  return;
+        string windowTitle = Win32.GetWindowTitle(hWnd);
+        if (windowTitle.StartsWith("Translator", StringComparison.InvariantCultureIgnoreCase))
+          return;
 
-                int procID;
-                Win32.GetWindowThreadProcessId(hWnd, out procID);
-                Process proc = Process.GetProcessById(procID);
-                if (proc.MainModule.ModuleName.Equals("Translator.exe", StringComparison.InvariantCultureIgnoreCase))
-                  return;
-                */
+        int procID;
+        Win32.GetWindowThreadProcessId(hWnd, out procID);
+        Process proc = Process.GetProcessById(procID);
+        if (proc.MainModule.ModuleName.Equals("Translator.exe", StringComparison.InvariantCultureIgnoreCase))
+          return;
+        */
 
         _currentForegroundWindow = hWnd;
       }
@@ -283,6 +283,10 @@ namespace Translator
             SendCopyDataMessage("Translator", Common.CmdPrefixHibernate);
             continue;
 
+          case "-logoff":
+            SendCopyDataMessage("Translator", Common.CmdPrefixLogOff);
+            continue;
+
           //TODO: Add more command line options.
         }
       }
@@ -302,22 +306,22 @@ namespace Translator
     static void SendCopyDataMessage(string targetWindow, string data)
     {
       Win32.COPYDATASTRUCT copyData;
-
+      
+      byte[] dataBytes = Encoding.ASCII.GetBytes(data);
+      
       copyData.dwData = 24;
-      copyData.lpData = Win32.VarPtr(data).ToInt32();
-      copyData.cbData = data.Length;
+      copyData.lpData = Win32.VarPtr(dataBytes).ToInt32();
+      copyData.cbData = dataBytes.Length;
 
       IntPtr windowHandle = Win32.FindWindowByTitle(targetWindow);
       if (windowHandle != IntPtr.Zero)
       {
         IntPtr result;
         Win32.SendMessageTimeout(windowHandle, (int)Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero, Win32.VarPtr(copyData), Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
+        int lastError = Marshal.GetLastWin32Error();
 
-        if (result == IntPtr.Zero)
-        {
-          int lastError = Marshal.GetLastWin32Error();
+        if (result == IntPtr.Zero && lastError != 0)
           throw new Win32Exception(lastError);
-        }
       }
     }
 
@@ -404,7 +408,7 @@ namespace Translator
       actions.DropDownItems.Add("System Standby", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Hibernate", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Reboot", null, new EventHandler(ClickAction));
-      //actions.DropDownItems.Add("System Logoff", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("System LogOff", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Shutdown", null, new EventHandler(ClickAction));
 
       actions.DropDownItems.Add(new ToolStripSeparator());
@@ -583,11 +587,9 @@ namespace Translator
             Reboot();
             break;
 
-            /*
-          case "System Logoff":
+          case "System LogOff":
             LogOff();
             break;
-            */
 
           case "System Shutdown":
             ShutDown();
@@ -976,17 +978,17 @@ namespace Translator
     static void Reboot()
     {
       IrssLog.Info("Reboot");
-      Win32.ExitWindowsEx(Win32.ExitWindows.Reboot | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
+      Win32.WindowsExit(Win32.ExitWindows.Reboot | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
     }
-    /*static void LogOff()
+    static void LogOff()
     {
       IrssLog.Info("LogOff");
-      Win32.ExitWindowsEx(Win32.ExitWindows.LogOff | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReason.FlagUserDefined);
-    }*/
+      Win32.WindowsExit(Win32.ExitWindows.LogOff | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
+    }
     static void ShutDown()
     {
       IrssLog.Info("ShutDown");
-      Win32.ExitWindowsEx(Win32.ExitWindows.ShutDown | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
+      Win32.WindowsExit(Win32.ExitWindows.ShutDown | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
     }
 
     static void MapEvent(MappingEvent theEvent)
@@ -1170,6 +1172,12 @@ namespace Translator
                 Reboot();
                 break;
               }
+
+            case Common.XmlTagLogOff:
+              {
+                LogOff();
+                break;
+              }
           }
         }
       }
@@ -1183,7 +1191,7 @@ namespace Translator
     /// Learn an IR command.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in.</param>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     internal static bool LearnIR(string fileName)
     {
       try
@@ -1300,6 +1308,10 @@ namespace Translator
       else if (command.StartsWith(Common.CmdPrefixHibernate)) // Hibernate Command
       {
         Hibernate();
+      }
+      else if (command.StartsWith(Common.CmdPrefixLogOff)) // LogOff Command
+      {
+        LogOff();
       }
       else if (command.StartsWith(Common.CmdPrefixReboot)) // Reboot Command
       {

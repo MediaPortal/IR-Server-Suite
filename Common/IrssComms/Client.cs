@@ -86,6 +86,7 @@ namespace IrssComms
     /// Create a TCP communications client.
     /// </summary>
     /// <param name="serverEndPoint">IP Address and Port combination of Server.</param>
+    /// <param name="messageSink">The message sink to call for messages.</param>
     public Client(IPEndPoint serverEndPoint, ClientMessageSink messageSink)
     {
       _serverEndpoint = serverEndPoint;
@@ -99,15 +100,22 @@ namespace IrssComms
 
     #region IDisposable
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
     public void Dispose()
     {
       Dispose(true);
       GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposeManagedResources)
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
     {
-      if (disposeManagedResources)
+      if (disposing)
       {
         // Dispose managed resources ...
         Stop();
@@ -126,7 +134,7 @@ namespace IrssComms
     /// <summary>
     /// Start the client communications.
     /// </summary>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Start()
     {
       if (_processConnectionThread)
@@ -186,7 +194,7 @@ namespace IrssComms
     /// Send a message to the server.
     /// </summary>
     /// <param name="message">Message to send.</param>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Send(IrssMessage message)
     {
       if (message == null)

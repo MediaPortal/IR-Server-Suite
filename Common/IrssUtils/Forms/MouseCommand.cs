@@ -9,11 +9,18 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// Mouse Command form.
+  /// </summary>
   public partial class MouseCommand : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// Gets the command string.
+    /// </summary>
+    /// <value>The command string.</value>
     public string CommandString
     {
       get
@@ -46,13 +53,22 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
-    public MouseCommand() : this(null) { }
-    public MouseCommand(string command)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MouseCommand"/> class.
+    /// </summary>
+    public MouseCommand()
     {
       InitializeComponent();
-
+    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MouseCommand"/> class.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    public MouseCommand(string command)
+      : this()
+    {
       if (String.IsNullOrEmpty(command))
-        return;
+        throw new ArgumentNullException("command");
 
       switch (command)
       {

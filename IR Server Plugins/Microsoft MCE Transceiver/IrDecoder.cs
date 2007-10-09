@@ -10,30 +10,69 @@ namespace MicrosoftMceTransceiver
   /// <summary>
   /// Protocol of IR Code.
   /// </summary>
-  public enum IrProtocol
+  enum IrProtocol
   {
+    /// <summary>
+    /// No protocol.
+    /// </summary>
     None,
-    //ITT,
+    /// <summary>
+    /// ITT protocol (unsupported).
+    /// </summary>
+    ITT,
+    /// <summary>
+    /// JVC protocol.
+    /// </summary>
     JVC,
+    /// <summary>
+    /// NEC protocol.
+    /// </summary>
     NEC,
-    //NRC17,
+    /// <summary>
+    /// Nokia NRC17 protocol (unsupported).
+    /// </summary>
+    NRC17,
+    /// <summary>
+    /// Philips RC5 protocol.
+    /// </summary>
     RC5,
+    /// <summary>
+    /// Philips RC6 protocol.
+    /// </summary>
     RC6,
+    /// <summary>
+    /// RCA protocol.
+    /// </summary>
     RCA,
-    //RCMM,
+    /// <summary>
+    /// Philips RC-MM protocol (unsupported).
+    /// </summary>
+    RCMM,
+    /// <summary>
+    /// RECS-80 protocol.
+    /// </summary>
     RECS80,
-    //Sharp,
+    /// <summary>
+    /// Sharp protocol (unsupported).
+    /// </summary>
+    Sharp,
+    /// <summary>
+    /// Sony SIRC protocol.
+    /// </summary>
     SIRC,
-    //XSAT,
+    /// <summary>
+    /// X-Sat protocol (unsupported).
+    /// </summary>
+    XSAT,
   }
 
   #endregion Enumerations
 
   #region Delegates
 
-  public delegate void RemoteCallback(IrProtocol codeType, uint keyCode);
-  public delegate void KeyboardCallback(uint keyCode, uint modifiers);
-  public delegate void MouseCallback(int deltaX, int deltaY, bool rightButton, bool leftButton);
+  delegate void RemoteCallback(IrProtocol codeType, uint keyCode);
+  delegate void KeyboardCallback(uint keyCode, uint modifiers);
+  delegate void MouseCallback(int deltaX, int deltaY, bool rightButton, bool leftButton);
 
   #endregion Delegates
 

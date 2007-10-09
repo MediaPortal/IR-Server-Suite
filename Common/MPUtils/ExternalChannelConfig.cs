@@ -49,63 +49,113 @@ namespace MPUtils
 
     #region Properties
 
+    /// <summary>
+    /// Gets the name of the file used to store this configuration.
+    /// </summary>
+    /// <value>The name of the file.</value>
     public string FileName
     {
       get { return _fileName; }
     }
 
+    /// <summary>
+    /// Gets or sets the card id.
+    /// </summary>
+    /// <value>The card id.</value>
     public int CardId
     {
       get { return _cardID; }
       set { _cardID = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the pause time.
+    /// </summary>
+    /// <value>The pause time.</value>
     public int PauseTime
     {
       get { return _pauseTime; }
       set { _pauseTime = value; }
     }
+    /// <summary>
+    /// Gets or sets a value indicating whether to send a select command.
+    /// </summary>
+    /// <value><c>true</c> if send select; otherwise, <c>false</c>.</value>
     public bool SendSelect
     {
       get { return _sendSelect; }
       set { _sendSelect = value; }
     }
+    /// <summary>
+    /// Gets or sets a value indicating whether to send the select command twice.
+    /// </summary>
+    /// <value><c>true</c> if sending channel select twice; otherwise, <c>false</c>.</value>
     public bool DoubleChannelSelect
     {
       get { return _doubleChannelSelect; }
       set { _doubleChannelSelect = value; }
     }
+    /// <summary>
+    /// Gets or sets the flag to repeat channel commands.
+    /// </summary>
+    /// <value>The flag to repeat channel commands.</value>
     public int RepeatChannelCommands
     {
       get { return _repeatChannelCommands; }
       set { _repeatChannelCommands = value; }
     }
+    /// <summary>
+    /// Gets or sets the channel digit count.
+    /// </summary>
+    /// <value>The number of channel digits.</value>
     public int ChannelDigits
     {
       get { return _channelDigits; }
       set { _channelDigits = value; }
     }
+    /// <summary>
+    /// Gets or sets the pause time between repeats.
+    /// </summary>
+    /// <value>The repeat pause time.</value>
     public int RepeatPauseTime
     {
       get { return _repeatPauseTime; }
       set { _repeatPauseTime = value; }
     }
+    /// <summary>
+    /// Gets or sets a value indicating whether to use a pre-change command.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if using a pre-change command; otherwise, <c>false</c>.
+    /// </value>
     public bool UsePreChangeCommand
     {
       get { return _usePreChangeCommand; }
       set { _usePreChangeCommand = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the digit commands.
+    /// </summary>
+    /// <value>The digit commands.</value>
     public string[] Digits
     {
       get { return _digits; }
       set { _digits = value; }
     }
+    /// <summary>
+    /// Gets or sets the select command.
+    /// </summary>
+    /// <value>The select command.</value>
     public string SelectCommand
     {
       get { return _selectCommand; }
       set { _selectCommand = value; }
     }
+    /// <summary>
+    /// Gets or sets the pre-change command.
+    /// </summary>
+    /// <value>The pre-change command.</value>
     public string PreChangeCommand
     {
       get { return _preChangeCommand; }
@@ -116,6 +166,10 @@ namespace MPUtils
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalChannelConfig"/> class.
+    /// </summary>
+    /// <param name="fileName">Name of the configuration file.</param>
     public ExternalChannelConfig(string fileName)
     {
       _fileName               = fileName;
@@ -140,6 +194,9 @@ namespace MPUtils
 
     #endregion Constructor
 
+    /// <summary>
+    /// Saves this instance to its configuration file.
+    /// </summary>
     public void Save()
     {
       using (XmlTextWriter writer = new XmlTextWriter(_fileName, System.Text.Encoding.UTF8))
@@ -211,6 +268,11 @@ namespace MPUtils
       return defaultValue;
     }
 
+    /// <summary>
+    /// Loads the specified file into a new instance of <see cref="ExternalChannelConfig"/> class.
+    /// </summary>
+    /// <param name="fileName">Name of the file to load.</param>
+    /// <returns>A new <see cref="ExternalChannelConfig"/> class instance.</returns>
     public static ExternalChannelConfig Load(string fileName)
     {
       ExternalChannelConfig newECC = new ExternalChannelConfig(fileName);

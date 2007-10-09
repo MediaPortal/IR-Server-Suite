@@ -12,21 +12,25 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Name of the IR Server plugin.
     /// </summary>
+    /// <value>The name.</value>
     public abstract string Name { get; }
 
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
+    /// <value>The version.</value>
     public abstract string Version { get; }
 
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
+    /// <value>The author.</value>
     public abstract string Author { get; }
 
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
+    /// <value>The description.</value>
     public abstract string Description { get; }
 
     #endregion Properties
@@ -42,7 +46,7 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     public abstract bool Start();
 
     /// <summary>

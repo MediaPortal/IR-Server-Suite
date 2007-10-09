@@ -96,11 +96,11 @@ namespace InputService
 
     #region IDisposable
 
-    protected override void Dispose(bool disposeManagedResources)
+    protected override void Dispose(bool disposing)
     {
       try
       {
-        if (disposeManagedResources)
+        if (disposing)
         {
           // Dispose managed resources ...
 
@@ -113,7 +113,7 @@ namespace InputService
       }
       finally
       {
-        base.Dispose(disposeManagedResources);
+        base.Dispose(disposing);
       }
     }
 
@@ -1430,23 +1430,20 @@ namespace InputService
       {
         doc.Load(ConfigurationFile);
       }
+      catch (DirectoryNotFoundException)
+      {
+        IrssLog.Error("No configuration file found ({0}), folder not found! Creating default configuration file", ConfigurationFile);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(ConfigurationFile));
+
+        CreateDefaultSettings();
+        return;
+      }
       catch (FileNotFoundException)
       {
         IrssLog.Warn("No configuration file found ({0}), creating default configuration file", ConfigurationFile);
 
-        string[] blasters = Program.DetectBlasters();
-        if (blasters == null)
-          _pluginNameTransmit = String.Empty;
-        else
-          _pluginNameTransmit = blasters[0];
-
-        string[] receivers = Program.DetectReceivers();
-        if (receivers == null)
-          _pluginNameReceive = null;
-        else
-          _pluginNameReceive = receivers;
-
-        SaveSettings();
+        CreateDefaultSettings();
         return;
       }
       catch (Exception ex)
@@ -1511,6 +1508,29 @@ namespace InputService
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
         }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
+    }
+    void CreateDefaultSettings()
+    {
+      try
+      {
+        string[] blasters = Program.DetectBlasters();
+        if (blasters == null)
+          _pluginNameTransmit = String.Empty;
+        else
+          _pluginNameTransmit = blasters[0];
+
+        string[] receivers = Program.DetectReceivers();
+        if (receivers == null)
+          _pluginNameReceive = null;
+        else
+          _pluginNameReceive = receivers;
+
+        SaveSettings();
       }
       catch (Exception ex)
       {

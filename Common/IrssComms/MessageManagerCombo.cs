@@ -73,7 +73,7 @@ namespace IrssComms
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
-    /// <param name="obj">An object to compare with this object.</param>
+    /// <param name="other">An object to compare with this object.</param>
     /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
     public bool Equals(MessageManagerCombo other)
     {
@@ -83,8 +83,11 @@ namespace IrssComms
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
-    /// <param name="obj">An object to compare with this object.</param>
-    /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <param name="obj1">First object to compare.</param>
+    /// <param name="obj2">Second object to compare.</param>
+    /// <returns>
+    /// true if the current object is equal to the other parameter; otherwise, false.
+    /// </returns>
     public static bool operator ==(MessageManagerCombo obj1, MessageManagerCombo obj2)
     {
       return obj1.Equals(obj2);
@@ -93,8 +96,11 @@ namespace IrssComms
     /// <summary>
     /// Indicates whether the current object is not equal to another object of the same type.
     /// </summary>
-    /// <param name="obj">An object to compare with this object.</param>
-    /// <returns>true if the current object is not equal to the other parameter; otherwise, false.</returns>
+    /// <param name="obj1">First object to compare.</param>
+    /// <param name="obj2">Second object to compare.</param>
+    /// <returns>
+    /// true if the current object is not equal to the other parameter; otherwise, false.
+    /// </returns>
     public static bool operator !=(MessageManagerCombo obj1, MessageManagerCombo obj2)
     {
       return !obj1.Equals(obj2);

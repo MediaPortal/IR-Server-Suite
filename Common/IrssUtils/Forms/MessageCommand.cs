@@ -10,11 +10,18 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// Message Command form.
+  /// </summary>
   public partial class MessageCommand : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// Gets the command string.
+    /// </summary>
+    /// <value>The command string.</value>
     public string CommandString
     {
       get
@@ -52,7 +59,14 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MessageCommand"/> class.
+    /// </summary>
     public MessageCommand() : this(new string[] { "active", String.Empty, ((int)Win32.WindowsMessage.WM_USER).ToString(), "0", "0" }) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MessageCommand"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
     public MessageCommand(string[] commands)
     {
       InitializeComponent();

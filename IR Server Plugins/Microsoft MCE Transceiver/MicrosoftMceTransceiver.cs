@@ -47,6 +47,9 @@ namespace MicrosoftMceTransceiver
 
   #endregion Delegates
 
+  /// <summary>
+  /// IR Server Plugin for Microsoft MCE Transceiver device.
+  /// </summary>
   public class MicrosoftMceTransceiver :
     IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
@@ -109,11 +112,29 @@ namespace MicrosoftMceTransceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
     public override string Name         { get { return "Microsoft MCE"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
     public override string Description  { get { return "Microsoft MCE Infrared Transceiver"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       try
@@ -129,6 +150,10 @@ namespace MicrosoftMceTransceiver
       }
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
 #if TRACE
@@ -171,22 +196,46 @@ namespace MicrosoftMceTransceiver
 
       return true;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
+#if TRACE
+      Trace.WriteLine("Suspend MicrosoftMceTransceiver");
+#endif
+
       if (_driver != null)
-        _driver.Stop();
+        _driver.Suspend();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
+#if TRACE
+      Trace.WriteLine("Resume MicrosoftMceTransceiver");
+#endif
+
       if (_driver != null)
-        _driver.Start();
+        _driver.Resume();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
+#if TRACE
+      Trace.WriteLine("Stop MicrosoftMceTransceiver");
+#endif
+
       if (_driver != null)
         _driver.Stop();
     }
 
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
     public void Configure()
     {
       LoadSettings();
@@ -231,24 +280,42 @@ namespace MicrosoftMceTransceiver
       }
     }
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteHandler; }
       set { _remoteHandler = value; }
     }
+    /// <summary>
+    /// Callback for keyboard presses.
+    /// </summary>
     public KeyboardHandler KeyboardCallback
     {
       get { return _keyboardHandler; }
       set { _keyboardHandler = value; }
     }
+    /// <summary>
+    /// Callback for mouse events.
+    /// </summary>
     public MouseHandler MouseCallback
     {
       get { return _mouseHandler; }
       set { _mouseHandler = value; }
     }
 
+    /// <summary>
+    /// Lists the available blaster ports.
+    /// </summary>
     public string[] AvailablePorts { get { return Enum.GetNames(typeof(BlasterPort)); } }
 
+    /// <summary>
+    /// Transmit an infrared command.
+    /// </summary>
+    /// <param name="port">Port to transmit on.</param>
+    /// <param name="data">Data to transmit.</param>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Transmit(string port, byte[] data)
     {
       BlasterPort blasterPort = BlasterPort.Both;
@@ -274,6 +341,13 @@ namespace MicrosoftMceTransceiver
 
       return true;
     }
+    /// <summary>
+    /// Learn an infrared command.
+    /// </summary>
+    /// <param name="data">New infrared command.</param>
+    /// <returns>
+    /// Tells the calling code if the learn was Successful, Failed or Timed Out.
+    /// </returns>
     public LearnStatus Learn(out byte[] data)
     {
       IrCode code;

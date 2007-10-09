@@ -7,59 +7,160 @@ namespace IrssComms
 
   #region Enumerations
 
+  /// <summary>
+  /// Type of message.
+  /// </summary>
   public enum MessageType
   {
+    /// <summary>
+    /// Unknown message type.
+    /// </summary>
     Unknown,
 
+    /// <summary>
+    /// Register Client.
+    /// </summary>
     RegisterClient,
+    /// <summary>
+    /// Unregister Client.
+    /// </summary>
     UnregisterClient,
 
+    /// <summary>
+    /// Register Repeater.
+    /// </summary>
     RegisterRepeater,
+    /// <summary>
+    /// Unregister Repeater.
+    /// </summary>
     UnregisterRepeater,
 
+    /// <summary>
+    /// Learn IR Command.
+    /// </summary>
     LearnIR,
+    /// <summary>
+    /// Blast IR Command.
+    /// </summary>
     BlastIR,
 
+    /// <summary>
+    /// Error.
+    /// </summary>
     Error,
 
+    /// <summary>
+    /// Server Shutdown.
+    /// </summary>
     ServerShutdown,
+    /// <summary>
+    /// Server Suspend.
+    /// </summary>
     ServerSuspend,
+    /// <summary>
+    /// Server Resume
+    /// </summary>
     ServerResume,
 
+    /// <summary>
+    /// Remote Event.
+    /// </summary>
     RemoteEvent,
+    /// <summary>
+    /// Keyboard Event.
+    /// </summary>
     KeyboardEvent,
+    /// <summary>
+    /// Mouse Event.
+    /// </summary>
     MouseEvent,
 
+    /// <summary>
+    /// Forward a Remote Event.
+    /// </summary>
     ForwardRemoteEvent,
+    /// <summary>
+    /// Forward a Keyboard Event.
+    /// </summary>
     ForwardKeyboardEvent,
+    /// <summary>
+    /// Forward a Mouse Event.
+    /// </summary>
     ForwardMouseEvent,
 
+    /// <summary>
+    /// Available Receivers.
+    /// </summary>
     AvailableReceivers,
+    /// <summary>
+    /// Available Blasters.
+    /// </summary>
     AvailableBlasters,
+    /// <summary>
+    /// Active Receivers.
+    /// </summary>
     ActiveReceivers,
+    /// <summary>
+    /// Active Blasters.
+    /// </summary>
     ActiveBlasters,
+    /// <summary>
+    /// Detected Receivers.
+    /// </summary>
     DetectedReceivers,
+    /// <summary>
+    /// Detected Blasters.
+    /// </summary>
     DetectedBlasters,
   }
 
+  /// <summary>
+  /// Flags to determine more information about the message.
+  /// </summary>
   [Flags]
   public enum MessageFlags
   {
+    /// <summary>
+    /// No Flags.
+    /// </summary>
     None            = 0x0000,
-    
+
+    /// <summary>
+    /// Message is a Request.
+    /// </summary>
     Request         = 0x0001,
+    /// <summary>
+    /// Message is a Response to a received Message.
+    /// </summary>
     Response        = 0x0002,
+    /// <summary>
+    /// Message is a Notification.
+    /// </summary>
     Notify          = 0x0004,
-    
+
+    /// <summary>
+    /// Operation Success.
+    /// </summary>
     Success         = 0x0008,
+    /// <summary>
+    /// Operation Failure.
+    /// </summary>
     Failure         = 0x0010,
+    /// <summary>
+    /// Operation Time-Out.
+    /// </summary>
     Timeout         = 0x0020,
+    
     //Error           = 0x0040,
 
     //DataString      = 0x0080,
     //DataBytes       = 0x0100,
 
     //ForceRespond    = 0x0200,
+    
+    /// <summary>
+    /// Force the recipient not to respond.
+    /// </summary>
     ForceNotRespond = 0x0400,
   }
 
@@ -104,6 +205,9 @@ namespace IrssComms
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IrssMessage"/> class.
+    /// </summary>
     protected IrssMessage()
     {
       _type   = MessageType.Unknown;
@@ -111,6 +215,11 @@ namespace IrssComms
       _data   = null;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IrssMessage"/> class.
+    /// </summary>
+    /// <param name="type">The message type.</param>
+    /// <param name="flags">The message flags.</param>
     public IrssMessage(MessageType type, MessageFlags flags)
       : this()
     {
@@ -118,12 +227,24 @@ namespace IrssComms
       _flags  = flags;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IrssMessage"/> class.
+    /// </summary>
+    /// <param name="type">The message type.</param>
+    /// <param name="flags">The message flags.</param>
+    /// <param name="data">The message data.</param>
     public IrssMessage(MessageType type, MessageFlags flags, byte[] data)
       : this(type, flags)
     {
       SetDataAsBytes(data);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IrssMessage"/> class.
+    /// </summary>
+    /// <param name="type">The message type.</param>
+    /// <param name="flags">The message flags.</param>
+    /// <param name="data">The message data.</param>
     public IrssMessage(MessageType type, MessageFlags flags, string data)
       : this(type, flags)
     {

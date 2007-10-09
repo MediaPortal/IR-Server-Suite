@@ -10,8 +10,7 @@ namespace IRServerPluginInterface
   /// </summary>
   /// <param name="deltaX">Mouse movement on the X-axis.</param>
   /// <param name="deltaY">Mouse movement on the Y-axis.</param>
-  /// <param name="rightButton">Is the right button pressed?</param>
-  /// <param name="leftButton">Is the left button pressed?</param>
+  /// <param name="buttons">Which (if any) buttons are pressed?</param>
   public delegate void MouseHandler(int deltaX, int deltaY, int buttons);
 
   #endregion Delegates
@@ -25,6 +24,7 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Callback for mouse events.
     /// </summary>
+    /// <value>The mouse callback.</value>
     MouseHandler MouseCallback { get; set; }
 
   }

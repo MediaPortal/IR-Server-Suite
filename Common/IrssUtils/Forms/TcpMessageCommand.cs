@@ -9,11 +9,18 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// TCP Message Command form.
+  /// </summary>
   public partial class TcpMessageCommand : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// Gets the command string.
+    /// </summary>
+    /// <value>The command string.</value>
     public string CommandString
     {
       get
@@ -29,17 +36,26 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
-    public TcpMessageCommand() : this(null) { }
-    public TcpMessageCommand(string[] commands)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TcpMessageCommand"/> class.
+    /// </summary>
+    public TcpMessageCommand()
     {
       InitializeComponent();
+    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TcpMessageCommand"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
+    public TcpMessageCommand(string[] commands)
+      : this()
+    {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
 
-      if (commands != null)
-      {
-        textBoxIP.Text = commands[0];
-        numericUpDownPort.Value = Convert.ToDecimal(commands[1]);
-        textBoxText.Text = commands[2];
-      }
+      textBoxIP.Text          = commands[0];
+      numericUpDownPort.Value = Convert.ToDecimal(commands[1]);
+      textBoxText.Text        = commands[2];
     }
 
     #endregion Constructors

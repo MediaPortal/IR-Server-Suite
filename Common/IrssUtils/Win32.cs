@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
@@ -338,12 +339,13 @@ namespace IrssUtils
     [Flags]
     public enum ExitWindows
     {
-      // ONE of the following five:
+      // Must include ONE of the following:
       LogOff      = 0x00,
       ShutDown    = 0x01,
       Reboot      = 0x02,
       PowerOff    = 0x08,
       RestartApps = 0x40,
+
       // Optionally include ONE of the following:
       Force       = 0x04,
       ForceIfHung = 0x10,
@@ -353,11 +355,23 @@ namespace IrssUtils
 
     #region Structures
 
+    /// <summary>
+    /// Data structure for sending data over a windows message.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct COPYDATASTRUCT
     {
+      /// <summary>
+      /// Data ID.
+      /// </summary>
       public int dwData;
+      /// <summary>
+      /// Data size.
+      /// </summary>
       public int cbData;
+      /// <summary>
+      /// Data.
+      /// </summary>
       public int lpData;
     }
 
@@ -370,26 +384,24 @@ namespace IrssUtils
     /// </summary>
     /// <param name="hWnd">Window Handle.</param>
     /// <param name="lParam">lParam.</param>
-    /// <returns>Success.</returns>
-    public delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
+    /// <returns>true if successful, otherwise false.</returns>
+    public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
     #endregion Delegates
 
     #region Interop
 
-    //TODO: Hide public interops
-
     [DllImport("user32.dll")]
-    public static extern int EnumWindows(
+    private static extern int EnumWindows(
       EnumWindowsProc ewp,
-      int lParam); 
+      IntPtr lParam); 
 
     [DllImport("user32.dll")]
-    public static extern IntPtr GetForegroundWindow();
+    private static extern IntPtr GetForegroundWindow();
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool ExitWindowsEx(
+    private static extern bool ExitWindowsEx(
       ExitWindows flags,
       ShutdownReasons reasons);
 
@@ -409,10 +421,10 @@ namespace IrssUtils
       out IntPtr result);
 
     //[DllImport("user32.dll", SetLastError = false)]
-    //public static extern IntPtr SendMessage(IntPtr windowHandle, int msg, IntPtr wordParam, IntPtr longParam);
+    //private static extern IntPtr SendMessage(IntPtr windowHandle, int msg, IntPtr wordParam, IntPtr longParam);
 
     //[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    //public static extern int RegisterWindowMessage(string lpString);
+    //private static extern int RegisterWindowMessage(string lpString);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -449,7 +461,7 @@ namespace IrssUtils
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern int GetWindowTextLength(IntPtr hWnd);
 
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern int GetWindowText(
       IntPtr hWnd,
       StringBuilder lpString,
@@ -496,6 +508,37 @@ namespace IrssUtils
     #region Methods
 
     /// <summary>
+    /// Get a handle to the current foreground window.
+    /// </summary>
+    /// <returns>Handle to foreground window.</returns>
+    public static IntPtr ForegroundWindow()
+    {
+      return GetForegroundWindow();
+    }
+
+    /// <summary>
+    /// Enumerates all windows by calling the supplied delegate for each window.
+    /// </summary>
+    /// <param name="ewp">Delegate to call for each window.</param>
+    /// <param name="lParam">Used to identify this enumeration session.</param>
+    /// <returns>Number of windows.</returns>
+    public static int EnumerateWindows(EnumWindowsProc ewp, IntPtr lParam)
+    {
+      return EnumWindows(ewp, lParam);
+    }
+
+    /// <summary>
+    /// Used to logoff, shutdown or reboot.
+    /// </summary>
+    /// <param name="flags">The type of exit to perform.</param>
+    /// <param name="reasons">The reason for the exit.</param>
+    /// <returns>true if successful, otherwise false.</returns>
+    public static bool WindowsExit(ExitWindows flags, ShutdownReasons reasons)
+    {
+      return ExitWindowsEx(flags, reasons);
+    }
+
+    /// <summary>
     /// Get the window handle for a specified window class.
     /// </summary>
     /// <param name="className">Window class name.</param>
@@ -505,20 +548,32 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(className))
         throw new ArgumentNullException("className");
 
-      return FindWindow(className, null);
+      IntPtr window = FindWindow(className, null);
+      int lastError = Marshal.GetLastWin32Error();
+
+      if (window == IntPtr.Zero && lastError != 0)
+        throw new Win32Exception(lastError);
+
+      return window;
     }
 
     /// <summary>
     /// Get the window handle for a specified window title.
     /// </summary>
-    /// <param name="className">Window title.</param>
+    /// <param name="windowTitle">The window title.</param>
     /// <returns>Handle to a window.</returns>
     public static IntPtr FindWindowByTitle(string windowTitle)
     {
       if (String.IsNullOrEmpty(windowTitle))
         throw new ArgumentNullException("windowTitle");
 
-      return FindWindow(null, windowTitle);
+      IntPtr window = FindWindow(null, windowTitle);
+      int lastError = Marshal.GetLastWin32Error();
+
+      if (window == IntPtr.Zero && lastError != 0)
+        throw new Win32Exception(lastError);
+
+      return window;
     }
 
     /// <summary>
@@ -529,11 +584,19 @@ namespace IrssUtils
     public static string GetWindowTitle(IntPtr hWnd)
     {
       int length = GetWindowTextLength(hWnd);
+      int lastError = Marshal.GetLastWin32Error();
+
+      if (lastError != 0)
+        throw new Win32Exception(lastError);
       
       StringBuilder windowTitle = new StringBuilder(length + 1);
       
       GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
-      
+      lastError = Marshal.GetLastWin32Error();
+
+      if (lastError != 0)
+        throw new Win32Exception(lastError);
+
       return windowTitle.ToString();
     }
 
@@ -542,7 +605,7 @@ namespace IrssUtils
     /// </summary>
     /// <param name="hWnd">Handle to window.</param>
     /// <param name="force">Force from a minimized or hidden state.</param>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     public static bool SetForegroundWindow(IntPtr hWnd, bool force)
     {
       IntPtr fgWindow = GetForegroundWindow();
@@ -676,7 +739,7 @@ namespace IrssUtils
     /// <summary>
     /// Get an IntPtr pointing to any object.
     /// </summary>
-    /// <param name="o">Object to get pointer for.</param>
+    /// <param name="obj">Object to get pointer for.</param>
     /// <returns>Pointer to object.</returns>
     public static IntPtr VarPtr(object obj)
     {

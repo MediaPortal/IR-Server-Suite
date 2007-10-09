@@ -91,7 +91,7 @@ namespace Translator
     /// </summary>
     /// <param name="config">Configuration to save.</param>
     /// <param name="fileName">File to save to.</param>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     internal static bool Save(Configuration config, string fileName)
     {
       try

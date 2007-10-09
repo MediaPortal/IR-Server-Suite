@@ -3,6 +3,9 @@ using System;
 namespace IrssUtils
 {
 
+  /// <summary>
+  /// Win32 Error Codes.
+  /// </summary>
   public static class Win32ErrorCodes
   {
 

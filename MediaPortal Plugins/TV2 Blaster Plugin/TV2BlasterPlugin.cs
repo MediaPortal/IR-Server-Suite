@@ -752,7 +752,7 @@ namespace MediaPortal.Plugins
     /// Learn an IR Command and put it in a file.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in.</param>
-    /// <returns>Success.</returns>
+    /// <returns>true if successful, otherwise false.</returns>
     internal static bool LearnIRCommand(string fileName)
     {
       try

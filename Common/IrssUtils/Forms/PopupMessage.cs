@@ -9,11 +9,18 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// Popup Message Command form.
+  /// </summary>
   public partial class PopupMessage : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// Gets the command string.
+    /// </summary>
+    /// <value>The command string.</value>
     public string CommandString
     {
       get
@@ -29,7 +36,14 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PopupMessage"/> class.
+    /// </summary>
     public PopupMessage() : this(null) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PopupMessage"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
     public PopupMessage(string[] commands)
     {
       InitializeComponent();

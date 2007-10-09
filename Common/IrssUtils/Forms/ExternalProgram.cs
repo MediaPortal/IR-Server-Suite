@@ -11,6 +11,9 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// External Program Command form.
+  /// </summary>
   public partial class ExternalProgram : Form
   {
 
@@ -22,6 +25,10 @@ namespace IrssUtils.Forms
 
     #region Properties
 
+    /// <summary>
+    /// Gets the command string.
+    /// </summary>
+    /// <value>The command string.</value>
     public string CommandString
     {
       get
@@ -42,12 +49,43 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
+    /// </summary>
     public ExternalProgram() : this(null, String.Empty, true) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
+    /// </summary>
+    /// <param name="canWait">Enable the "Wait for program to finish" option.</param>
     public ExternalProgram(bool canWait) : this(null, String.Empty, canWait) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
+    /// </summary>
+    /// <param name="parametersMessage">The optional parameters message.</param>
     public ExternalProgram(string parametersMessage) : this(null, parametersMessage, true) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
     public ExternalProgram(string[] commands) : this(commands, String.Empty, true) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
+    /// <param name="canWait">Enable the "Wait for program to finish" option.</param>
     public ExternalProgram(string[] commands, bool canWait) : this(commands, String.Empty, canWait) { }
-    public ExternalProgram(string[] commands, string parametersMessage) : this(commands, String.Empty, true) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
+    /// <param name="parametersMessage">The optional parameters message.</param>
+    public ExternalProgram(string[] commands, string parametersMessage) : this(commands, parametersMessage, true) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
+    /// </summary>
+    /// <param name="commands">The command elements.</param>
+    /// <param name="parametersMessage">The optional parameters message.</param>
+    /// <param name="canWait">Enable the "Wait for program to finish" option.</param>
     public ExternalProgram(string[] commands, string parametersMessage, bool canWait)
     {
       InitializeComponent();

@@ -13,6 +13,9 @@ using IRServerPluginInterface;
 namespace SerialIRBlaster
 {
 
+  /// <summary>
+  /// IR Server Plugin for Serial IR Blaster device.
+  /// </summary>
   public class SerialIRBlaster : IRServerPluginBase, IConfigure, ITransmitIR
   {
 
@@ -38,16 +41,42 @@ namespace SerialIRBlaster
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "Serial IR Blaster"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "Support for the Serial IR Blaster device"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       return false;
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -61,14 +90,23 @@ namespace SerialIRBlaster
 
       return true;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       if (_serialPort == null)
@@ -94,6 +132,9 @@ namespace SerialIRBlaster
       }
     }
 
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
     public void Configure()
     {
       LoadSettings();
@@ -109,12 +150,22 @@ namespace SerialIRBlaster
         SaveSettings();
       }
     }
-    
+
+    /// <summary>
+    /// Lists the available blaster ports.
+    /// </summary>
+    /// <value>The available ports.</value>
     public string[] AvailablePorts
     {
       get { return Ports; }
     }
 
+    /// <summary>
+    /// Transmit an infrared command.
+    /// </summary>
+    /// <param name="port">Port to transmit on.</param>
+    /// <param name="data">Data to transmit.</param>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Transmit(string port, byte[] data)
     {
       if (_serialPort == null)
@@ -125,13 +176,17 @@ namespace SerialIRBlaster
       return true;
     }
 
-    protected virtual void Dispose(bool disposeManagedResources)
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
     {
       // process only if mananged and unmanaged resources have
       // not been disposed of.
       if (!_disposed)
       {
-        if (disposeManagedResources)
+        if (disposing)
         {
           // dispose managed resources
           Stop();
@@ -142,6 +197,9 @@ namespace SerialIRBlaster
       }
     }
 
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
     void LoadSettings()
     {
       try
@@ -163,6 +221,9 @@ namespace SerialIRBlaster
         _serialPortName = "COM1";
       }
     }
+    /// <summary>
+    /// Saves the settings.
+    /// </summary>
     void SaveSettings()
     {
       try

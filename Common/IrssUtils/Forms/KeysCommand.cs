@@ -9,11 +9,18 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// Keystrokes Command form.
+  /// </summary>
   public partial class KeysCommand : Form
   {
 
     #region Properties
 
+    /// <summary>
+    /// Gets the command string.
+    /// </summary>
+    /// <value>The command string.</value>
     public string CommandString
     {
       get
@@ -26,11 +33,21 @@ namespace IrssUtils.Forms
 
     #region Constructors
 
-    public KeysCommand() : this(null) { }
-    public KeysCommand(string command)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeysCommand"/> class.
+    /// </summary>
+    public KeysCommand()
     {
       InitializeComponent();
+    }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KeysCommand"/> class.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    public KeysCommand(string command)
+      : this()
+    {
       if (!String.IsNullOrEmpty(command))
         textBoxKeystrokes.Text = command;
     }

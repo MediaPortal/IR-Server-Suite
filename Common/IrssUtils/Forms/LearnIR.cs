@@ -9,6 +9,9 @@ using System.Windows.Forms;
 namespace IrssUtils.Forms
 {
 
+  /// <summary>
+  /// Learn IR form.
+  /// </summary>
   public partial class LearnIR : Form
   {
 
@@ -80,6 +83,11 @@ namespace IrssUtils.Forms
 
     delegate void LearnStatusDelegate(string status, bool success);
 
+    /// <summary>
+    /// Updates the Learn IR status.
+    /// </summary>
+    /// <param name="status">The status.</param>
+    /// <param name="success">Success status.</param>
     public void LearnStatus(string status, bool success)
     {
       if (labelLearned.InvokeRequired)
