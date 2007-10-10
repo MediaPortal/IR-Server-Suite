@@ -185,7 +185,7 @@ namespace IrssUtils.Forms
 
       try
       {
-        string fileName = String.Format("{0}{1}{2}", _baseFolder, name, Common.FileExtensionIR);
+        string fileName = _baseFolder + name + Common.FileExtensionIR;
         string port = comboBoxPort.SelectedItem as string;
 
         _blastIrDelegate(fileName, port);

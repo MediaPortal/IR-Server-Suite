@@ -109,11 +109,18 @@ namespace IrssUtils.Forms
 
     private void buttonLearn_Click(object sender, EventArgs e)
     {
-      string command = textBoxName.Text.Trim();
+      string name = textBoxName.Text.Trim();
 
-      if (command.Length == 0)
+      if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this IR code", "Missing name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this IR Command", "Missing name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
+        return;
+      }
+
+      if (!Common.IsValidFileName(name))
+      {
+        MessageBox.Show(this, "You must supply a valid name for this IR Command", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -123,7 +130,7 @@ namespace IrssUtils.Forms
       buttonTest.Enabled = false;
       buttonDone.Enabled = false;
 
-      string fileName = String.Format("{0}{1}{2}", Common.FolderIRCommands, command, Common.FileExtensionIR);
+      string fileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
 
       if (_learnIrDelegate(fileName))
       {
@@ -157,7 +164,7 @@ namespace IrssUtils.Forms
 
       try
       {
-        string fileName = String.Format("{0}{1}{2}", Common.FolderIRCommands, name, Common.FileExtensionIR);
+        string fileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
         string port = comboBoxPort.SelectedItem as string;
 
         _blastIrDelegate(fileName, port);

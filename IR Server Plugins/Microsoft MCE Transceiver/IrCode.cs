@@ -9,7 +9,7 @@ namespace MicrosoftMceTransceiver
 {
 
   /// <summary>
-  /// Encapsulates an MCE compatible IR code.
+  /// Encapsulates an MCE compatible IR Code.
   /// </summary>
   class IrCode
   {
@@ -30,7 +30,7 @@ namespace MicrosoftMceTransceiver
     public const int CarrierFrequencyDefault  = 36000;
 
     /// <summary>
-    /// How long the longest IR code space should be.
+    /// How long the longest IR Code space should be.
     /// </summary>
     const int LongestSpace = -10000;
 
@@ -106,7 +106,7 @@ namespace MicrosoftMceTransceiver
     }
 
     /// <summary>
-    /// Add timing data to this IR code.
+    /// Add timing data to this IR Code.
     /// </summary>
     /// <param name="timingData">Addition timing data.</param>
     public void AddTimingData(int[] timingData)
@@ -147,7 +147,7 @@ namespace MicrosoftMceTransceiver
     }
 
     /// <summary>
-    /// Creates a byte array representation of this IR code for sending in a message.
+    /// Creates a byte array representation of this IR Code for sending in a message.
     /// </summary>
     /// <returns>Byte array representation.</returns>
     public byte[] ToByteArray()

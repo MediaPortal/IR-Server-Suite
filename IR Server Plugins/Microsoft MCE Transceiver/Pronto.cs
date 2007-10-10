@@ -15,7 +15,7 @@ namespace MicrosoftMceTransceiver
     #region Enumerations
 
     /// <summary>
-    /// Pronto IR code type identifier.
+    /// Pronto IR Code type identifier.
     /// </summary>
     enum CodeType
     {

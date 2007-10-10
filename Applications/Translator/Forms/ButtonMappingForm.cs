@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 using IrssComms;
 using IrssUtils;
+using IrssUtils.Forms;
 
 namespace Translator
 {
@@ -39,7 +40,7 @@ namespace Translator
     string _description;
     string _command;
 
-    IrssUtils.Forms.LearnIR _learnIR;
+    LearnIR _learnIR;
 
     #endregion Variables
 
@@ -514,7 +515,7 @@ namespace Translator
       }
       else if (radioButtonWindowTitle.Checked)
       {
-        IrssUtils.Forms.WindowList windowList = new IrssUtils.Forms.WindowList();
+        WindowList windowList = new WindowList();
         if (windowList.ShowDialog(this) == DialogResult.OK)
           textBoxMsgTarget.Text = windowList.SelectedWindowTitle;
       }
@@ -567,7 +568,7 @@ namespace Translator
 
     private void buttonLearnIR_Click(object sender, EventArgs e)
     {
-      _learnIR = new IrssUtils.Forms.LearnIR(
+      _learnIR = new LearnIR(
         new LearnIrDelegate(Program.LearnIR),
         new BlastIrDelegate(Program.BlastIR),
         Program.TransceiverInformation.Ports);

@@ -315,14 +315,7 @@ namespace Translator
 
       IntPtr windowHandle = Win32.FindWindowByTitle(targetWindow);
       if (windowHandle != IntPtr.Zero)
-      {
-        IntPtr result;
-        Win32.SendMessageTimeout(windowHandle, (int)Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero, Win32.VarPtr(copyData), Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
-        int lastError = Marshal.GetLastWin32Error();
-
-        if (result == IntPtr.Zero && lastError != 0)
-          throw new Win32Exception(lastError);
-      }
+        Win32.SendWindowsMessage(windowHandle, (int)Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero, Win32.VarPtr(copyData));
     }
 
     static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
@@ -434,20 +427,6 @@ namespace Translator
       _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, new EventHandler(ClickQuit));
     }
 
-    /**/
-    static bool SendMessageToWindow(IntPtr hWnd, Win32.WindowsMessage msg, int wParam, int lParam)
-    {
-      IntPtr result;
-      Win32.SendMessageTimeout(hWnd, (int)msg, new IntPtr(wParam), new IntPtr(lParam), Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
-      int lastError = Marshal.GetLastWin32Error();
-
-      if (result == IntPtr.Zero && lastError != 0)
-        throw new Win32Exception(lastError);
-
-      return true;
-    }
-    /**/
-
     static void ClickProgram(object sender, EventArgs e)
     {
       IrssLog.Info("Click Launch Program");
@@ -528,49 +507,49 @@ namespace Translator
         switch (menuItem.Text)
         {
           case "Next Window":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
               (int)Win32.SysCommand.SC_NEXTWINDOW,
               0);
             break;
 
           case "Last Window":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
               (int)Win32.SysCommand.SC_PREVWINDOW,
               0);
             break;
 
           case "Close Window":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
               (int)Win32.SysCommand.SC_CLOSE,
               0);
             break;
 
           case "Maximize Window":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
               (int)Win32.SysCommand.SC_MAXIMIZE,
               0);
             break;
 
           case "Minimize Window":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
               (int)Win32.SysCommand.SC_MINIMIZE,
               0);
             break;
 
           case "Restore Window":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_SYSCOMMAND,
+              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
               (int)Win32.SysCommand.SC_RESTORE,
               0);
             break;
@@ -597,25 +576,25 @@ namespace Translator
 
 
           case "Volume Up":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_APPCOMMAND,
+              (int)Win32.WindowsMessage.WM_APPCOMMAND,
               (int)Win32.AppCommand.APPCOMMAND_VOLUME_UP,
               0);
             break;
 
           case "Volume Down":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_APPCOMMAND,
+              (int)Win32.WindowsMessage.WM_APPCOMMAND,
               (int)Win32.AppCommand.APPCOMMAND_VOLUME_DOWN,
               0);
             break;
 
           case "Volume Mute":
-            SendMessageToWindow(
+            Win32.SendWindowsMessage(
               _currentForegroundWindow,
-              Win32.WindowsMessage.WM_APPCOMMAND,
+              (int)Win32.WindowsMessage.WM_APPCOMMAND,
               (int)Win32.AppCommand.APPCOMMAND_VOLUME_MUTE,
               0);
             break;
@@ -968,12 +947,16 @@ namespace Translator
     static void Hibernate()
     {
       IrssLog.Info("Hibernate");
-      Application.SetSuspendState(PowerState.Hibernate, true, false);
+
+      if (!Application.SetSuspendState(PowerState.Hibernate, false, false))
+        IrssLog.Warn("Hibernate request was rejected by another application.");
     }
     static void Standby()
     {
       IrssLog.Info("Standby");
-      Application.SetSuspendState(PowerState.Suspend, true, false);
+
+      if (!Application.SetSuspendState(PowerState.Suspend, false, false))
+        IrssLog.Warn("Standby request was rejected by another application.");
     }
     static void Reboot()
     {

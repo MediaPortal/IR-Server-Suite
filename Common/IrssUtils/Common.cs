@@ -441,14 +441,7 @@ namespace IrssUtils
       IntPtr wordParam = new IntPtr(int.Parse(commands[3]));
       IntPtr longParam = new IntPtr(int.Parse(commands[4]));
 
-      //Win32.SendMessage(windowHandle, msg, wordParam, longParam);
-
-      IntPtr result = IntPtr.Zero;
-      Win32.SendMessageTimeout(windowHandle, msg, wordParam, longParam, Win32.SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
-      int lastError = Marshal.GetLastWin32Error();
-
-      if (result == IntPtr.Zero && lastError != 0)
-        throw new Win32Exception(lastError);
+      Win32.SendWindowsMessage(windowHandle, msg, wordParam, longParam);
     }
 
     /// <summary>

@@ -64,7 +64,7 @@ namespace DebugClient
       this.buttonBlast.Size = new System.Drawing.Size(64, 24);
       this.buttonBlast.TabIndex = 1;
       this.buttonBlast.Text = "Blast IR";
-      this.toolTips.SetToolTip(this.buttonBlast, "Blast learned IR code");
+      this.toolTips.SetToolTip(this.buttonBlast, "Blast learned IR Command");
       this.buttonBlast.UseVisualStyleBackColor = true;
       this.buttonBlast.Click += new System.EventHandler(this.buttonBlast_Click);
       // 
@@ -75,7 +75,7 @@ namespace DebugClient
       this.buttonLearnIR.Size = new System.Drawing.Size(64, 24);
       this.buttonLearnIR.TabIndex = 0;
       this.buttonLearnIR.Text = "Learn IR";
-      this.toolTips.SetToolTip(this.buttonLearnIR, "Learn an IR code");
+      this.toolTips.SetToolTip(this.buttonLearnIR, "Learn an IR Command");
       this.buttonLearnIR.UseVisualStyleBackColor = true;
       this.buttonLearnIR.Click += new System.EventHandler(this.buttonLearnIR_Click);
       // 

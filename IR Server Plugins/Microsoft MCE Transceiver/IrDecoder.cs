@@ -77,7 +77,7 @@ namespace MicrosoftMceTransceiver
   #endregion Delegates
 
   /// <summary>
-  /// Used for decoding received IR codes.
+  /// Used for decoding received IR Codes.
   /// </summary>
   static class IrDecoder
   {

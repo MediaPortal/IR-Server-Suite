@@ -392,7 +392,7 @@ namespace TvEngine
       while (channel.Length < config.ChannelDigits)
         channel.Insert(0, '0');
 
-      // Process the channel and blast the relevant IR codes.
+      // Process the channel and blast the relevant IR Commands.
       string command;
       int charVal;
 

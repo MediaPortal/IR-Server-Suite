@@ -25,15 +25,45 @@ namespace IrssUtils
     [Flags]
     public enum MouseEvents
     {
+      /// <summary>
+      /// No Event.
+      /// </summary>
       None        = 0x0000,
+      /// <summary>
+      /// Move.
+      /// </summary>
       Move        = 0x0001,
+      /// <summary>
+      /// Left Button Down.
+      /// </summary>
       LeftDown    = 0x0002,
+      /// <summary>
+      /// Left Button Up.
+      /// </summary>
       LeftUp      = 0x0004,
+      /// <summary>
+      /// Right Button Down.
+      /// </summary>
       RightDown   = 0x0008,
+      /// <summary>
+      /// Right Button Up.
+      /// </summary>
       RightUp     = 0x0010,
+      /// <summary>
+      /// Middle Button Down.
+      /// </summary>
       MiddleDown  = 0x0020,
+      /// <summary>
+      /// Middle Button Up.
+      /// </summary>
       MiddleUp    = 0x0040,
+      /// <summary>
+      /// Scroll.
+      /// </summary>
       Scroll      = 0x0800,
+      /// <summary>
+      /// Position Absolute.
+      /// </summary>
       Absolute    = 0x8000
     }
 
@@ -42,8 +72,17 @@ namespace IrssUtils
     /// </summary>
     public enum ScrollDir
     {
+      /// <summary>
+      /// No Scroll.
+      /// </summary>
       None  =    0,
+      /// <summary>
+      /// Scroll Up.
+      /// </summary>
       Up    =  120,
+      /// <summary>
+      /// Scroll Down.
+      /// </summary>
       Down  = -120
     }
 

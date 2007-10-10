@@ -48,14 +48,14 @@ namespace MediaPortal.Plugins
       this.comboBoxCommands = new System.Windows.Forms.ComboBox();
       this.buttonNewCommand = new System.Windows.Forms.Button();
       this.tabPageIR = new System.Windows.Forms.TabPage();
-      this.listBoxIR = new System.Windows.Forms.ListBox();
+      this.listViewIR = new System.Windows.Forms.ListView();
       this.buttonNewIR = new System.Windows.Forms.Button();
       this.buttonEditIR = new System.Windows.Forms.Button();
       this.buttonDeleteIR = new System.Windows.Forms.Button();
       this.tabPageMacros = new System.Windows.Forms.TabPage();
+      this.listViewMacro = new System.Windows.Forms.ListView();
       this.buttonTestMacro = new System.Windows.Forms.Button();
       this.buttonDeleteMacro = new System.Windows.Forms.Button();
-      this.listBoxMacro = new System.Windows.Forms.ListBox();
       this.buttonEditMacro = new System.Windows.Forms.Button();
       this.buttonNewMacro = new System.Windows.Forms.Button();
       this.checkBoxLogVerbose = new System.Windows.Forms.CheckBox();
@@ -286,7 +286,7 @@ namespace MediaPortal.Plugins
       // 
       // tabPageIR
       // 
-      this.tabPageIR.Controls.Add(this.listBoxIR);
+      this.tabPageIR.Controls.Add(this.listViewIR);
       this.tabPageIR.Controls.Add(this.buttonNewIR);
       this.tabPageIR.Controls.Add(this.buttonEditIR);
       this.tabPageIR.Controls.Add(this.buttonDeleteIR);
@@ -298,21 +298,24 @@ namespace MediaPortal.Plugins
       this.tabPageIR.Text = "IR Commands";
       this.tabPageIR.UseVisualStyleBackColor = true;
       // 
-      // listBoxIR
+      // listViewIR
       // 
-      this.listBoxIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+      this.listViewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.listBoxIR.ColumnWidth = 260;
-      this.listBoxIR.FormattingEnabled = true;
-      this.listBoxIR.HorizontalScrollbar = true;
-      this.listBoxIR.IntegralHeight = false;
-      this.listBoxIR.Location = new System.Drawing.Point(8, 8);
-      this.listBoxIR.MultiColumn = true;
-      this.listBoxIR.Name = "listBoxIR";
-      this.listBoxIR.Size = new System.Drawing.Size(480, 288);
-      this.listBoxIR.TabIndex = 0;
-      this.listBoxIR.DoubleClick += new System.EventHandler(this.listBoxIR_DoubleClick);
+      this.listViewIR.FullRowSelect = true;
+      this.listViewIR.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+      this.listViewIR.HideSelection = false;
+      this.listViewIR.LabelEdit = true;
+      this.listViewIR.Location = new System.Drawing.Point(8, 8);
+      this.listViewIR.MultiSelect = false;
+      this.listViewIR.Name = "listViewIR";
+      this.listViewIR.Size = new System.Drawing.Size(480, 288);
+      this.listViewIR.TabIndex = 0;
+      this.listViewIR.UseCompatibleStateImageBehavior = false;
+      this.listViewIR.View = System.Windows.Forms.View.List;
+      this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
+      this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
       // 
       // buttonNewIR
       // 
@@ -349,9 +352,9 @@ namespace MediaPortal.Plugins
       // 
       // tabPageMacros
       // 
+      this.tabPageMacros.Controls.Add(this.listViewMacro);
       this.tabPageMacros.Controls.Add(this.buttonTestMacro);
       this.tabPageMacros.Controls.Add(this.buttonDeleteMacro);
-      this.tabPageMacros.Controls.Add(this.listBoxMacro);
       this.tabPageMacros.Controls.Add(this.buttonEditMacro);
       this.tabPageMacros.Controls.Add(this.buttonNewMacro);
       this.tabPageMacros.Location = new System.Drawing.Point(4, 22);
@@ -361,6 +364,25 @@ namespace MediaPortal.Plugins
       this.tabPageMacros.TabIndex = 3;
       this.tabPageMacros.Text = "Macros";
       this.tabPageMacros.UseVisualStyleBackColor = true;
+      // 
+      // listViewMacro
+      // 
+      this.listViewMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.listViewMacro.FullRowSelect = true;
+      this.listViewMacro.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+      this.listViewMacro.HideSelection = false;
+      this.listViewMacro.LabelEdit = true;
+      this.listViewMacro.Location = new System.Drawing.Point(8, 8);
+      this.listViewMacro.MultiSelect = false;
+      this.listViewMacro.Name = "listViewMacro";
+      this.listViewMacro.Size = new System.Drawing.Size(480, 288);
+      this.listViewMacro.TabIndex = 0;
+      this.listViewMacro.UseCompatibleStateImageBehavior = false;
+      this.listViewMacro.View = System.Windows.Forms.View.List;
+      this.listViewMacro.DoubleClick += new System.EventHandler(this.listViewMacro_DoubleClick);
+      this.listViewMacro.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewMacro_AfterLabelEdit);
       // 
       // buttonTestMacro
       // 
@@ -383,22 +405,6 @@ namespace MediaPortal.Plugins
       this.buttonDeleteMacro.Text = "Delete";
       this.buttonDeleteMacro.UseVisualStyleBackColor = true;
       this.buttonDeleteMacro.Click += new System.EventHandler(this.buttonDeleteMacro_Click);
-      // 
-      // listBoxMacro
-      // 
-      this.listBoxMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.listBoxMacro.ColumnWidth = 260;
-      this.listBoxMacro.FormattingEnabled = true;
-      this.listBoxMacro.HorizontalScrollbar = true;
-      this.listBoxMacro.IntegralHeight = false;
-      this.listBoxMacro.Location = new System.Drawing.Point(8, 8);
-      this.listBoxMacro.MultiColumn = true;
-      this.listBoxMacro.Name = "listBoxMacro";
-      this.listBoxMacro.Size = new System.Drawing.Size(480, 288);
-      this.listBoxMacro.TabIndex = 0;
-      this.listBoxMacro.DoubleClick += new System.EventHandler(this.listBoxMacro_DoubleClick);
       // 
       // buttonEditMacro
       // 
@@ -483,14 +489,12 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.TabControl tabControl;
     private System.Windows.Forms.TabPage tabPageMenuSetup;
     private System.Windows.Forms.TabPage tabPageIR;
-    private System.Windows.Forms.ListBox listBoxIR;
     private System.Windows.Forms.Button buttonNewIR;
     private System.Windows.Forms.Button buttonEditIR;
     private System.Windows.Forms.Button buttonDeleteIR;
     private System.Windows.Forms.TabPage tabPageMacros;
     private System.Windows.Forms.Button buttonTestMacro;
     private System.Windows.Forms.Button buttonDeleteMacro;
-    private System.Windows.Forms.ListBox listBoxMacro;
     private System.Windows.Forms.Button buttonEditMacro;
     private System.Windows.Forms.Button buttonNewMacro;
     private System.Windows.Forms.CheckBox checkBoxLogVerbose;
@@ -508,5 +512,7 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.Button buttonSetCommand;
     private System.Windows.Forms.Button buttonHelp;
     private System.Windows.Forms.Button buttonEditTree;
+    private System.Windows.Forms.ListView listViewIR;
+    private System.Windows.Forms.ListView listViewMacro;
   }
 }

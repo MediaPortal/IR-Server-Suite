@@ -1013,7 +1013,7 @@ namespace Translator
     }
     private void serverToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Program.Config.ServerHost);
+      ServerAddress serverAddress = new ServerAddress(Program.Config.ServerHost);
       if (serverAddress.ShowDialog(this) == DialogResult.OK)
       {
         Program.StopClient();

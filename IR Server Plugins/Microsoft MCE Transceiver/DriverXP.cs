@@ -198,7 +198,7 @@ namespace MicrosoftMceTransceiver
     public override void Start()
     {
 #if DEBUG
-      DebugOpen("MicrosoftMceTransceiver_DriverXP.log");
+      DebugOpen("\\MicrosoftMceTransceiver_DriverXP.log");
       DebugWriteLine("DriverXP.Start()");
 #endif
 
@@ -257,8 +257,8 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     public override void Suspend()
     {
-      //Stop();
-      WriteSync(StopPacket);
+      Stop();
+      //WriteSync(StopPacket);
     }
 
     /// <summary>
@@ -266,8 +266,8 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     public override void Resume()
     {
-      //Start();
-      WriteSync(StartPacket);
+      Start();
+      //WriteSync(StartPacket);
     }
 
     /// <summary>
@@ -334,7 +334,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Send an IR Command.
     /// </summary>
-    /// <param name="code">IR code data to send.</param>
+    /// <param name="code">IR Command data to send.</param>
     /// <param name="port">IR port to send to.</param>
     public override void Send(IrCode code, uint port)
     {

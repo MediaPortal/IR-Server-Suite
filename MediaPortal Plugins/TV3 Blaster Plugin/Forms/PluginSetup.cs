@@ -16,8 +16,9 @@ using TvEngine;
 using TvControl;
 using TvDatabase;
 
-using IrssUtils;
 using IrssComms;
+using IrssUtils;
+using IrssUtils.Forms;
 
 namespace SetupTv.Sections
 {
@@ -27,7 +28,7 @@ namespace SetupTv.Sections
 
     #region Variables
 
-    IrssUtils.Forms.LearnIR _learnIR;
+    LearnIR _learnIR;
 
     #endregion Variables
 
@@ -125,58 +126,66 @@ namespace SetupTv.Sections
 
     void RefreshIRList()
     {
-      listBoxIR.Items.Clear();
-      listBoxIR.Items.AddRange(Common.GetIRList(false));
+      listViewIR.Items.Clear();
+
+      string[] irList = Common.GetIRList(false);
+      if (irList != null && irList.Length > 0)
+        foreach (string irFile in irList)
+          listViewIR.Items.Add(irFile);
     }
     void RefreshMacroList()
     {
-      listBoxMacro.Items.Clear();
-      listBoxMacro.Items.AddRange(TV3BlasterPlugin.GetMacroList(false));
+      listViewMacro.Items.Clear();
+
+      string[] macroList = TV3BlasterPlugin.GetMacroList(false);
+      if (macroList != null && macroList.Length > 0)
+        foreach (string macroFile in macroList)
+          listViewMacro.Items.Add(macroFile);
     }
 
     void EditIR()
     {
-      if (listBoxIR.SelectedIndex != -1)
-      {
-        string command = listBoxIR.SelectedItem as string;
-        string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
+      if (listViewIR.SelectedItems.Count != 1)
+        return;
+
+      string command = listViewIR.SelectedItems[0].Text;
+      string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
         
-        if (File.Exists(fileName))
-        {
-          _learnIR = new IrssUtils.Forms.LearnIR(
-            new LearnIrDelegate(TV3BlasterPlugin.LearnIRCommand),
-            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
-            TV3BlasterPlugin.TransceiverInformation.Ports,
-            command);
+      if (File.Exists(fileName))
+      {
+        _learnIR = new LearnIR(
+          new LearnIrDelegate(TV3BlasterPlugin.LearnIRCommand),
+          new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+          TV3BlasterPlugin.TransceiverInformation.Ports,
+          command);
 
-          _learnIR.ShowDialog(this);
+        _learnIR.ShowDialog(this);
 
-          _learnIR = null;
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-          RefreshIRList();
-        }
+        _learnIR = null;
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        RefreshIRList();
       }
     }
     void EditMacro()
     {
-      if (listBoxMacro.SelectedIndex != -1)
-      {
-        string command = listBoxMacro.SelectedItem as string;
-        string fileName = TV3BlasterPlugin.FolderMacros + command + Common.FileExtensionMacro;
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
 
-        if (File.Exists(fileName))
-        {
-          MacroEditor macroEditor = new MacroEditor(command);
-          macroEditor.ShowDialog(this);
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-          RefreshMacroList();
-        }
+      string command = listViewMacro.SelectedItems[0].Text;
+      string fileName = TV3BlasterPlugin.FolderMacros + command + Common.FileExtensionMacro;
+
+      if (File.Exists(fileName))
+      {
+        MacroEditor macroEditor = new MacroEditor(command);
+        macroEditor.ShowDialog(this);
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        RefreshMacroList();
       }
     }
 
@@ -199,7 +208,7 @@ namespace SetupTv.Sections
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      _learnIR = new IrssUtils.Forms.LearnIR(
+      _learnIR = new LearnIR(
         new LearnIrDelegate(TV3BlasterPlugin.LearnIRCommand),
         new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
         TV3BlasterPlugin.TransceiverInformation.Ports);
@@ -216,22 +225,22 @@ namespace SetupTv.Sections
     }
     private void buttonDeleteIR_Click(object sender, EventArgs e)
     {
-      if (listBoxIR.SelectedIndex != -1)
-      {
-        string file = listBoxIR.SelectedItem as string;
-        string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
-        if (File.Exists(fileName))
-        {
-          if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            File.Delete(fileName);
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        }
+      if (listViewIR.SelectedItems.Count != 1)
+        return;
 
-        RefreshIRList();
+      string file = listViewIR.SelectedItems[0].Text;
+      string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
+      if (File.Exists(fileName))
+      {
+        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete",  MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+          File.Delete(fileName);
       }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      }
+
+      RefreshIRList();
     }
 
     private void buttonNewMacro_Click(object sender, EventArgs e)
@@ -247,32 +256,32 @@ namespace SetupTv.Sections
     }
     private void buttonDeleteMacro_Click(object sender, EventArgs e)
     {
-      if (listBoxMacro.SelectedIndex != -1)
-      {
-        string file = listBoxMacro.SelectedItem as string;
-        string fileName = TV3BlasterPlugin.FolderMacros + file + Common.FileExtensionMacro;
-        if (File.Exists(fileName))
-        {
-          if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            File.Delete(fileName);
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        }
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
 
-        RefreshMacroList();
+      string file = listViewMacro.SelectedItems[0].Text;
+      string fileName = TV3BlasterPlugin.FolderMacros + file + Common.FileExtensionMacro;
+      if (File.Exists(fileName))
+      {
+        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+          File.Delete(fileName);
       }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      }
+
+      RefreshMacroList();
     }
     private void buttonTestMacro_Click(object sender, EventArgs e)
     {
-      if (listBoxMacro.SelectedIndex == -1)
+      if (listViewMacro.SelectedItems.Count != 1)
         return;
-
-      string fileName = TV3BlasterPlugin.FolderMacros + listBoxMacro.SelectedItem as string + Common.FileExtensionMacro;
 
       try
       {
+        string fileName = TV3BlasterPlugin.FolderMacros + listViewMacro.SelectedItems[0].Text + Common.FileExtensionMacro;
+
         TV3BlasterPlugin.ProcessMacro(fileName);
       }
       catch (Exception ex)
@@ -294,7 +303,7 @@ namespace SetupTv.Sections
     {
       TV3BlasterPlugin.StopClient();
 
-      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(TV3BlasterPlugin.ServerHost);
+      ServerAddress serverAddress = new ServerAddress(TV3BlasterPlugin.ServerHost);
       serverAddress.ShowDialog(this);
 
       TV3BlasterPlugin.ServerHost = serverAddress.ServerHost;
@@ -318,6 +327,77 @@ namespace SetupTv.Sections
     }
 
     #endregion Controls
+
+    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+        return;
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = Common.FolderIRCommands + originItem.Text + Common.FileExtensionIR;
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      {
+        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+        return;
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = TV3BlasterPlugin.FolderMacros + originItem.Text + Common.FileExtensionMacro;
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      {
+        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = TV3BlasterPlugin.FolderMacros + e.Label + Common.FileExtensionMacro;
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
 
   }
 

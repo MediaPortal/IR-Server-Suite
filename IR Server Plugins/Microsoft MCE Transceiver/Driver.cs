@@ -236,7 +236,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Send an IR Command.
     /// </summary>
-    /// <param name="code">IR code data to send.</param>
+    /// <param name="code">IR Command data to send.</param>
     /// <param name="port">IR port to send to.</param>
     public abstract void Send(IrCode code, uint port);
 

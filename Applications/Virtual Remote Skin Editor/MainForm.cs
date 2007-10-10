@@ -13,6 +13,7 @@ using System.Xml;
 
 using IrssComms;
 using IrssUtils;
+using IrssUtils.Forms;
 
 namespace SkinEditor
 {
@@ -331,7 +332,7 @@ namespace SkinEditor
     }
     private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(_serverHost);
+      ServerAddress serverAddress = new ServerAddress(_serverHost);
       serverAddress.ShowDialog(this);
       
       _serverHost = serverAddress.ServerHost;

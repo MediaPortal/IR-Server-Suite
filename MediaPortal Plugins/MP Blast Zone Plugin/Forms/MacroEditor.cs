@@ -65,7 +65,7 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextGoto);
       comboBoxCommands.Items.Add(Common.UITextPopup);
-      //    comboBoxCommands.Items.Add(Common.UITextWindowState);
+      //comboBoxCommands.Items.Add(Common.UITextWindowState);
       comboBoxCommands.Items.Add(Common.UITextFocus);
       comboBoxCommands.Items.Add(Common.UITextExit);
       comboBoxCommands.Items.Add(Common.UITextStandby);
@@ -247,9 +247,9 @@ namespace MediaPortal.Plugins
               listBoxMacro.Items.Add(Common.CmdPrefixPopup + commandProperty);
               break;
             /*
-                      case Common.XmlTagWindowState:
-                        listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
-                        break;
+            case Common.XmlTagWindowState:
+              listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
+              break;
             */
             case Common.XmlTagFocus:
               listBoxMacro.Items.Add(Common.CmdPrefixFocus);
@@ -413,15 +413,23 @@ namespace MediaPortal.Plugins
 
     private void buttonTest_Click(object sender, EventArgs e)
     {
-      string fileName = textBoxName.Text.Trim();
+      string name = textBoxName.Text.Trim();
 
-      if (fileName.Length == 0)
+      if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
         return;
       }
 
-      fileName = MPBlastZonePlugin.FolderMacros + fileName + Common.FileExtensionMacro;
+      if (!Common.IsValidFileName(name))
+      {
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
+        return;
+      }
+
+      string fileName = MPBlastZonePlugin.FolderMacros + name + Common.FileExtensionMacro;
 
       WriteToFile(fileName);
 
@@ -443,15 +451,23 @@ namespace MediaPortal.Plugins
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      string fileName = textBoxName.Text.Trim();
+      string name = textBoxName.Text.Trim();
 
-      if (fileName.Length == 0)
+      if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
         return;
       }
 
-      fileName = MPBlastZonePlugin.FolderMacros + fileName + Common.FileExtensionMacro;
+      if (!Common.IsValidFileName(name))
+      {
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
+        return;
+      }
+
+      string fileName = MPBlastZonePlugin.FolderMacros + name + Common.FileExtensionMacro;
 
       WriteToFile(fileName);
 

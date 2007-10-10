@@ -504,8 +504,8 @@ namespace Translator
       // 
       // buttonTestMacro
       // 
-      this.buttonTestMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonTestMacro.Location = new System.Drawing.Point(368, 344);
+      this.buttonTestMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonTestMacro.Location = new System.Drawing.Point(208, 344);
       this.buttonTestMacro.Name = "buttonTestMacro";
       this.buttonTestMacro.Size = new System.Drawing.Size(56, 24);
       this.buttonTestMacro.TabIndex = 4;

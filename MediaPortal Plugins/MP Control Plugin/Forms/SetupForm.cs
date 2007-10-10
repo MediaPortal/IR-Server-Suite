@@ -14,9 +14,9 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Hardware;
 using MediaPortal.Util;
 
+using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
-using IrssComms;
 
 namespace MediaPortal.Plugins
 {
@@ -43,7 +43,7 @@ namespace MediaPortal.Plugins
     {
       if (String.IsNullOrEmpty(MPControlPlugin.ServerHost))
       {
-        IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress();
+        ServerAddress serverAddress = new ServerAddress();
         serverAddress.ShowDialog(this);
 
         MPControlPlugin.ServerHost = serverAddress.ServerHost;
@@ -271,20 +271,27 @@ namespace MediaPortal.Plugins
 
     void RefreshIRList()
     {
-      listBoxIR.Items.Clear();
+      listViewIR.Items.Clear();
+
       string[] irList = Common.GetIRList(false);
-      if (irList != null)
-        listBoxIR.Items.AddRange(irList);
+      if (irList != null && irList.Length > 0)
+        foreach (string irFile in irList)
+          listViewIR.Items.Add(irFile);
     }
     void RefreshMacroList()
     {
-      listBoxMacro.Items.Clear();
-      listBoxMacro.Items.AddRange(MPControlPlugin.GetMacroList(false));
+      listViewMacro.Items.Clear();
+
+      string[] macroList = MPControlPlugin.GetMacroList(false);
+      if (macroList != null && macroList.Length > 0)
+        foreach (string macroFile in macroList)
+          listViewMacro.Items.Add(macroFile);
     }
 
     void RefreshEventMapperCommands()
     {
       comboBoxCommands.Items.Clear();
+
       comboBoxCommands.Items.Add(Common.UITextRun);
       comboBoxCommands.Items.Add(Common.UITextSerial);
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
@@ -292,55 +299,56 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextGoto);
 
       string[] fileList = MPControlPlugin.GetFileList(true);
-      if (fileList != null)
+
+      if (fileList != null && fileList.Length > 0)
         comboBoxCommands.Items.AddRange(fileList);
-  }
+    }
 
     void EditIR()
     {
-      if (listBoxIR.SelectedIndex != -1)
+      if (listViewIR.SelectedItems.Count != 1)
+        return;
+
+      string command = listViewIR.SelectedItems[0].Text;
+      string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
+
+      if (File.Exists(fileName))
       {
-        string command = listBoxIR.SelectedItem as string;
-        string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
+        _learnIR = new LearnIR(
+          new LearnIrDelegate(MPControlPlugin.LearnIRCommand),
+          new BlastIrDelegate(MPControlPlugin.BlastIR),
+          MPControlPlugin.TransceiverInformation.Ports,
+          command);
 
-        if (File.Exists(fileName))
-        {
-          _learnIR = new IrssUtils.Forms.LearnIR(
-            new LearnIrDelegate(MPControlPlugin.LearnIRCommand),
-            new BlastIrDelegate(MPControlPlugin.BlastIR),
-            MPControlPlugin.TransceiverInformation.Ports,
-            command);
+        _learnIR.ShowDialog(this);
 
-          _learnIR.ShowDialog(this);
-
-          _learnIR = null;
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-          RefreshIRList();
-          RefreshEventMapperCommands();
-        }
+        _learnIR = null;
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        RefreshIRList();
+        RefreshEventMapperCommands();
       }
     }
     void EditMacro()
     {
-      if (listBoxMacro.SelectedIndex != -1)
-      {
-        string command = listBoxMacro.SelectedItem as string;
-        string fileName = MPControlPlugin.FolderMacros + command + Common.FileExtensionMacro;
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
 
-        if (File.Exists(fileName))
-        {
-          MacroEditor macroEditor = new MacroEditor(command);
-          macroEditor.ShowDialog(this);
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-          RefreshMacroList();
-          RefreshEventMapperCommands();
-        }
+      string command = listViewMacro.SelectedItems[0].Text;
+      string fileName = MPControlPlugin.FolderMacros + command + Common.FileExtensionMacro;
+
+      if (File.Exists(fileName))
+      {
+        MacroEditor macroEditor = new MacroEditor(command);
+        macroEditor.ShowDialog(this);
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        RefreshMacroList();
+        RefreshEventMapperCommands();
       }
     }
 
@@ -427,7 +435,7 @@ namespace MediaPortal.Plugins
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      _learnIR = new IrssUtils.Forms.LearnIR(
+      _learnIR = new LearnIR(
         new LearnIrDelegate(MPControlPlugin.LearnIRCommand),
         new BlastIrDelegate(MPControlPlugin.BlastIR),
         MPControlPlugin.TransceiverInformation.Ports);
@@ -445,23 +453,23 @@ namespace MediaPortal.Plugins
     }
     private void buttonDeleteIR_Click(object sender, EventArgs e)
     {
-      if (listBoxIR.SelectedIndex != -1)
-      {
-        string file = listBoxIR.SelectedItem as string;
-        string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
-        if (File.Exists(fileName))
-        {
-          if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete",  MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            File.Delete(fileName);
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        }
+      if (listViewIR.SelectedItems.Count != 1)
+        return;
 
-        RefreshIRList();
-        RefreshEventMapperCommands();
+      string file = listViewIR.SelectedItems[0].Text;
+      string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
+      if (File.Exists(fileName))
+      {
+        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete",  MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+          File.Delete(fileName);
       }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      }
+
+      RefreshIRList();
+      RefreshEventMapperCommands();
     }
 
     private void buttonNewMacro_Click(object sender, EventArgs e)
@@ -478,33 +486,33 @@ namespace MediaPortal.Plugins
     }
     private void buttonDeleteMacro_Click(object sender, EventArgs e)
     {
-      if (listBoxMacro.SelectedIndex != -1)
-      {
-        string file = listBoxMacro.SelectedItem as string;
-        string fileName = MPControlPlugin.FolderMacros + file + Common.FileExtensionMacro;
-        if (File.Exists(fileName))
-        {
-          if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            File.Delete(fileName);
-        }
-        else
-        {
-          MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        }
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
 
-        RefreshMacroList();
-        RefreshEventMapperCommands();
+      string file = listViewMacro.SelectedItems[0].Text;
+      string fileName = MPControlPlugin.FolderMacros + file + Common.FileExtensionMacro;
+      if (File.Exists(fileName))
+      {
+        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+          File.Delete(fileName);
       }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      }
+
+      RefreshMacroList();
+      RefreshEventMapperCommands();
     }
     private void buttonTestMacro_Click(object sender, EventArgs e)
     {
-      if (listBoxMacro.SelectedIndex == -1)
+      if (listViewMacro.SelectedItems.Count != 1)
         return;
-
-      string fileName = MPControlPlugin.FolderMacros + listBoxMacro.SelectedItem as string + Common.FileExtensionMacro;
 
       try
       {
+        string fileName = MPControlPlugin.FolderMacros + listViewMacro.SelectedItems[0].Text + Common.FileExtensionMacro;
+
         MPControlPlugin.ProcessMacro(fileName);
       }
       catch (Exception ex)
@@ -720,7 +728,7 @@ namespace MediaPortal.Plugins
     {
       MPControlPlugin.StopClient();
 
-      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(MPControlPlugin.ServerHost);
+      ServerAddress serverAddress = new ServerAddress(MPControlPlugin.ServerHost);
       serverAddress.ShowDialog(this);
 
       MPControlPlugin.ServerHost = serverAddress.ServerHost;
@@ -874,6 +882,77 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Other Controls
+
+    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+        return;
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = Common.FolderIRCommands + originItem.Text + Common.FileExtensionIR;
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      {
+        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+        return;
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = MPControlPlugin.FolderMacros + originItem.Text + Common.FileExtensionMacro;
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      {
+        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = MPControlPlugin.FolderMacros + e.Label + Common.FileExtensionMacro;
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
 
   }
 

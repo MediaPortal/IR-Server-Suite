@@ -504,7 +504,7 @@ namespace MicrosoftMceTransceiver
     public override void Start()
     {
 #if DEBUG
-      DebugOpen("MicrosoftMceTransceiver__DriverVista.log");
+      DebugOpen("\\MicrosoftMceTransceiver__DriverVista.log");
       DebugWriteLine("DriverVista.Start()");
 #endif
 
@@ -645,7 +645,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Send an IR Command.
     /// </summary>
-    /// <param name="code">IR code data to send.</param>
+    /// <param name="code">IR Command data to send.</param>
     /// <param name="port">IR port to send to.</param>
     public override void Send(IrCode code, uint port)
     {

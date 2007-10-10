@@ -21,20 +21,20 @@ namespace MicrosoftMceTransceiver
   #region Enumerations
 
   /// <summary>
-  /// The blaster port to send IR codes to.
+  /// The blaster port to send IR Commands to.
   /// </summary>
   public enum BlasterPort
   {
     /// <summary>
-    /// Send IR codes to both blaster ports.
+    /// Send IR Commands to both blaster ports.
     /// </summary>
     Both = 0,
     /// <summary>
-    /// Send IR codes to blaster port 1 only.
+    /// Send IR Commands to blaster port 1 only.
     /// </summary>
     Port_1 = 1,
     /// <summary>
-    /// Send IR codes to blaster port 2 only.
+    /// Send IR Commands to blaster port 2 only.
     /// </summary>
     Port_2 = 2
   }

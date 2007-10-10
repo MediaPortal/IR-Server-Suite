@@ -14,6 +14,7 @@ using System.Xml;
 
 using IrssComms;
 using IrssUtils;
+using IrssUtils.Forms;
 
 namespace VirtualRemote
 {
@@ -155,7 +156,7 @@ namespace VirtualRemote
       {
         if (String.IsNullOrEmpty(_serverHost))
         {
-          IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress();
+          ServerAddress serverAddress = new ServerAddress();
           serverAddress.ShowDialog();
 
           _serverHost = serverAddress.ServerHost;

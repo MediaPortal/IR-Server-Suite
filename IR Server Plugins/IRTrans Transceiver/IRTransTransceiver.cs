@@ -347,7 +347,7 @@ namespace IRTransTransceiver
         doc.Load(ConfigurationFile);
 
         _irTransRemoteModel   = doc.DocumentElement.Attributes["RemoteModel"].Value;
-        _irTransServerAddress = doc.DocumentElement.Attributes["IrssUtils.Forms.ServerAddress"].Value;
+        _irTransServerAddress = doc.DocumentElement.Attributes["ServerAddress"].Value;
         _irTransServerPort    = int.Parse(doc.DocumentElement.Attributes["ServerPort"].Value);
       }
 #if TRACE
@@ -380,7 +380,7 @@ namespace IRTransTransceiver
           writer.WriteStartElement("settings"); // <settings>
 
           writer.WriteAttributeString("RemoteModel", _irTransRemoteModel.ToString());
-          writer.WriteAttributeString("IrssUtils.Forms.ServerAddress", _irTransServerAddress.ToString());
+          writer.WriteAttributeString("ServerAddress", _irTransServerAddress.ToString());
           writer.WriteAttributeString("ServerPort", _irTransServerPort.ToString());
 
           writer.WriteEndElement(); // </settings>

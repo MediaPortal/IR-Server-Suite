@@ -13,6 +13,7 @@ using System.Xml;
 
 using IrssComms;
 using IrssUtils;
+using IrssUtils.Forms;
 
 namespace VirtualRemote
 {
@@ -219,7 +220,7 @@ namespace VirtualRemote
     {
       Program.StopClient();
 
-      IrssUtils.Forms.ServerAddress serverAddress = new IrssUtils.Forms.ServerAddress(Program.ServerHost);
+      ServerAddress serverAddress = new ServerAddress(Program.ServerHost);
       serverAddress.ShowDialog(this);
 
       Program.ServerHost = serverAddress.ServerHost;

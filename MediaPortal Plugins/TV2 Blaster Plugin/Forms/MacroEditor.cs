@@ -312,15 +312,23 @@ namespace MediaPortal.Plugins
 
     private void buttonTest_Click(object sender, EventArgs e)
     {
-      string fileName = textBoxName.Text.Trim();
+      string name = textBoxName.Text.Trim();
 
-      if (fileName.Length == 0)
+      if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
         return;
       }
 
-      fileName = TV2BlasterPlugin.FolderMacros + fileName + Common.FileExtensionMacro;
+      if (!Common.IsValidFileName(name))
+      {
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
+        return;
+      }
+
+      string fileName = TV2BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
 
       WriteToFile(fileName);
 
@@ -342,15 +350,23 @@ namespace MediaPortal.Plugins
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      string fileName = textBoxName.Text.Trim();
+      string name = textBoxName.Text.Trim();
 
-      if (fileName.Length == 0)
+      if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
         return;
       }
 
-      fileName = TV2BlasterPlugin.FolderMacros + fileName + Common.FileExtensionMacro;
+      if (!Common.IsValidFileName(name))
+      {
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        textBoxName.Focus();
+        return;
+      }
+
+      string fileName = TV2BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
 
       WriteToFile(fileName);
 
