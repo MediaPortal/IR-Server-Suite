@@ -54,6 +54,8 @@ namespace Translator
 
     static List<string> _macroStack;
 
+    static CopyDataWM _copyDataWM;
+
     #endregion Variables
 
     #region Properties
@@ -94,10 +96,17 @@ namespace Translator
     {
       if (args.Length > 0)
       {
-        ProcessCommandLine(args);
+        try
+        {
+          ProcessCommandLine(args);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.ToString());
+        }
         return;
       }      
-      
+
       // Check for multiple instances.
       if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
         return;
@@ -160,7 +169,22 @@ namespace Translator
         SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
         SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
 
+        try
+        {
+          _copyDataWM = new CopyDataWM();
+        }
+        catch (Win32Exception ex)
+        {
+          IrssLog.Error("Error enabling CopyData messages: {0}", ex.ToString());
+        }
+
         Application.Run();
+
+        if (_copyDataWM != null)
+        {
+          _copyDataWM.Dispose();
+          _copyDataWM = null;
+        }
 
         SystemEvents.SessionEnding -= new SessionEndingEventHandler(SystemEvents_SessionEnding);
         SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
@@ -197,7 +221,7 @@ namespace Translator
     /// </summary>
     /// <param name="sender">Sender.</param>
     /// <param name="e">Event args.</param>
-    public static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
       IrssLog.Error(e.Exception.ToString());
     }
@@ -259,32 +283,45 @@ namespace Translator
 
         switch (command)
         {
+          case "-blast":
+            if (args.Length > index + 2)
+              CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + args[++index] + '|' + args[++index]);
+            else
+              Console.WriteLine("Blast command requires two parameters.");
+            continue;
+
           case "-macro":
-            SendCopyDataMessage("Translator", Common.CmdPrefixMacro + args[++index]);
+            if (args.Length > index + 1)
+              CopyDataWM.SendCopyDataMessage(Common.CmdPrefixMacro + args[++index]);
+            else
+              Console.WriteLine("Macro command requires a parameter.");
             continue;
 
           case "-eject":
-            SendCopyDataMessage("Translator", Common.CmdPrefixEject + args[++index]);
+            if (args.Length > index + 1)
+              CopyDataWM.SendCopyDataMessage(Common.CmdPrefixEject + args[++index]);
+            else
+              Console.WriteLine("Eject command requires a parameter.");
             continue;
 
           case "-shutdown":
-            SendCopyDataMessage("Translator", Common.CmdPrefixShutdown);
+            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixShutdown);
             continue;
 
           case "-reboot":
-            SendCopyDataMessage("Translator", Common.CmdPrefixReboot);
+            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixReboot);
             continue;
 
           case "-standby":
-            SendCopyDataMessage("Translator", Common.CmdPrefixStandby);
+            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixStandby);
             continue;
 
           case "-hibernate":
-            SendCopyDataMessage("Translator", Common.CmdPrefixHibernate);
+            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixHibernate);
             continue;
 
           case "-logoff":
-            SendCopyDataMessage("Translator", Common.CmdPrefixLogOff);
+            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixLogOff);
             continue;
 
           //TODO: Add more command line options.
@@ -301,21 +338,6 @@ namespace Translator
       _notifyIcon.ContextMenuStrip.Show(Screen.PrimaryScreen.Bounds.Width / 4, Screen.PrimaryScreen.Bounds.Height / 4);
 
       //_notifyIcon.ContextMenuStrip.Focus();
-    }
-
-    static void SendCopyDataMessage(string targetWindow, string data)
-    {
-      Win32.COPYDATASTRUCT copyData;
-      
-      byte[] dataBytes = Encoding.ASCII.GetBytes(data);
-      
-      copyData.dwData = 24;
-      copyData.lpData = Win32.VarPtr(dataBytes).ToInt32();
-      copyData.cbData = dataBytes.Length;
-
-      IntPtr windowHandle = Win32.FindWindowByTitle(targetWindow);
-      if (windowHandle != IntPtr.Zero)
-        Win32.SendWindowsMessage(windowHandle, (int)Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero, Win32.VarPtr(copyData));
     }
 
     static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
@@ -1006,6 +1028,10 @@ namespace Translator
       }
     }
 
+    /// <summary>
+    /// Adds to the Macro Stack.
+    /// </summary>
+    /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackAdd(string fileName)
     {
       string lowerCasedFileName = fileName.ToLowerInvariant();
@@ -1036,6 +1062,10 @@ namespace Translator
 
       _macroStack.Add(lowerCasedFileName);
     }
+    /// <summary>
+    /// Removes from the Macro Stack.
+    /// </summary>
+    /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackRemove(string fileName)
     {
       string lowerCasedFileName = fileName.ToLowerInvariant();

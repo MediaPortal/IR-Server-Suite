@@ -60,6 +60,11 @@ namespace MicrosoftMceTransceiver
     static extern bool CancelIo(
       SafeFileHandle handle);
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool CloseHandle(
+      SafeFileHandle handle);
+
     #endregion Interop
 
     #region Enumerations
@@ -112,7 +117,7 @@ namespace MicrosoftMceTransceiver
     // Device variables
     const int DeviceBufferSize  = 100;
     const int PacketTimeout     = 100;
-    const int WriteSyncTimeout  = 5000;
+    const int WriteSyncTimeout  = 10000;
 
     // Microsoft Port Packets
     static readonly byte[][] MicrosoftPorts = new byte[][]
@@ -200,7 +205,7 @@ namespace MicrosoftMceTransceiver
     {
 #if DEBUG
       DebugOpen("\\MicrosoftMceTransceiver_DriverReplacement.log");
-      DebugWriteLine("DriverReplacement.Start()");
+      DebugWriteLine("Start()");
 #endif
 
       _notifyWindow = new NotifyWindow();
@@ -237,7 +242,7 @@ namespace MicrosoftMceTransceiver
     public override void Stop()
     {
 #if DEBUG
-      DebugWriteLine("DriverReplacement.Stop()");
+      DebugWriteLine("Stop()");
 #endif
 
       _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
@@ -263,8 +268,11 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     public override void Suspend()
     {
-      Stop();
-      //WriteSync(StopPacket);
+#if DEBUG
+      DebugWriteLine("Suspend()");
+#endif
+
+      Stop(); // Unlike the default driver, the replacement driver requires this.
     }
 
     /// <summary>
@@ -272,8 +280,11 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     public override void Resume()
     {
-      Start();
-      //WriteSync(StartPacket);
+#if DEBUG
+      DebugWriteLine("Resume()");
+#endif
+
+      Start(); // Unlike the default driver, the replacement driver requires this.
     }
 
     /// <summary>
@@ -285,7 +296,7 @@ namespace MicrosoftMceTransceiver
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
 #if DEBUG
-      DebugWriteLine("Start Learn");
+      DebugWriteLine("Learn()");
 #endif
 
       learned = null;
@@ -298,7 +309,7 @@ namespace MicrosoftMceTransceiver
 
       // Wait for the learning to finish ...
       while (_readThreadMode == ReadThreadMode.Learning && Environment.TickCount < learnStartTick + learnTimeout)
-        Thread.Sleep(100);
+        Thread.Sleep(PacketTimeout);
 
 #if DEBUG
       DebugWriteLine("End Learn");
@@ -345,7 +356,8 @@ namespace MicrosoftMceTransceiver
     public override void Send(IrCode code, uint port)
     {
 #if DEBUG
-      DebugWriteLine("Send");
+      DebugWriteLine("Send()");
+      DebugDump(code.TimingData);
 #endif
 
       byte[] portPacket;
@@ -376,14 +388,24 @@ namespace MicrosoftMceTransceiver
       byte[] carrierPacket = new byte[SetCarrierFreqPacket.Length];
       SetCarrierFreqPacket.CopyTo(carrierPacket, 0);
 
-      if (code.Carrier == IrCode.CarrierFrequencyUnknown || code.Carrier == IrCode.CarrierFrequencyDCMode)
+      if (code.Carrier == IrCode.CarrierFrequencyDCMode)
         return carrierPacket;
+
+      int carrier = code.Carrier;
+
+      if (code.Carrier == IrCode.CarrierFrequencyUnknown)
+      {
+        carrier = IrCode.CarrierFrequencyDefault;
+#if DEBUG
+        DebugWriteLine(String.Format("CarrierPacket(): No carrier frequency specificied, using default ({0})", carrier));
+#endif
+      }
 
       for (int scaler = 1; scaler <= 4; scaler++)
       {
-        int divisor = (10000000 >> (2 * scaler)) / code.Carrier;
+        int divisor = (10000000 >> (2 * scaler)) / carrier;
 
-        if (divisor <= 0xFF)
+        if (divisor < 0xFF)
         {
           carrierPacket[2] = (byte)scaler;
           carrierPacket[3] = (byte)divisor;
@@ -402,12 +424,20 @@ namespace MicrosoftMceTransceiver
       // Construct data bytes into "packet" ...
       List<byte> packet = new List<byte>();
 
+#if DEBUG
+      DebugWriteLine("DataPacket()");
+#endif
+
       for (int index = 0; index < code.TimingData.Length; index++)
       {
         double time = (double)code.TimingData[index];
         
         byte duration = (byte)Math.Abs(Math.Round(time / 50));
         bool pulse = (time > 0);
+
+#if DEBUG
+        DebugWrite(String.Format("{0}{1}, ", pulse ? '+' : '-', duration * 50));
+#endif
 
         while (duration > 0x7F)
         {
@@ -418,6 +448,10 @@ namespace MicrosoftMceTransceiver
 
         packet.Add((byte)(pulse ? 0x80 | duration : duration));
       }
+
+#if DEBUG
+      DebugWriteNewLine();
+#endif
 
       // Insert byte count markers into packet data bytes ...
       int subpackets = (int)Math.Ceiling(packet.Count / (double)4);
@@ -471,7 +505,7 @@ namespace MicrosoftMceTransceiver
     void StartReadThread()
     {
 #if DEBUG
-      DebugWriteLine("DriverReplacement.StartReadThread()");
+      DebugWriteLine("StartReadThread()");
 #endif
 
       _stopReadThread = new ManualResetEvent(false);
@@ -485,15 +519,13 @@ namespace MicrosoftMceTransceiver
     void StopReadThread()
     {
 #if DEBUG
-      DebugWriteLine("DriverReplacement.StopReadThread()");
+      DebugWriteLine("StopReadThread()");
 #endif
 
       if (_readThread != null)
       {
         _readThreadMode = ReadThreadMode.Stop;
         _stopReadThread.Set();
-
-        //_readThread.Abort();
 
         if (Thread.CurrentThread != _readThread)
           _readThread.Join();
@@ -508,17 +540,21 @@ namespace MicrosoftMceTransceiver
     void CloseDevice()
     {
 #if DEBUG
-      DebugWriteLine("DriverReplacement.CloseDevice()");
+      DebugWriteLine("CloseDevice()");
 #endif
 
       if (_readHandle != null)
       {
+        CloseHandle(_readHandle);
+
         _readHandle.Dispose();
         _readHandle = null;
       }
 
       if (_writeHandle != null)
       {
+        CloseHandle(_writeHandle);
+
         _writeHandle.Dispose();
         _writeHandle = null;
       }
@@ -616,18 +652,13 @@ namespace MicrosoftMceTransceiver
             continue;
 
           sinceLastPacket = DateTime.Now.Subtract(lastPacketTime);
-          if (sinceLastPacket.TotalMilliseconds >= PacketTimeout + 50)
-            IrDecoder.DecodeIR(null, null, null, null);
+          //if (sinceLastPacket.TotalMilliseconds >= PacketTimeout + 50)
+            //IrDecoder.DecodeIR(null, null, null, null);
 
           lastPacketTime = DateTime.Now;
 
           packetBytes = new byte[bytesRead];
           Marshal.Copy(deviceBufferPtr, packetBytes, 0, bytesRead);
-
-#if DEBUG
-          DebugWriteLine("Received:");
-          DebugDump(packetBytes);
-#endif
 
           int[] timingData;
 
@@ -694,7 +725,9 @@ namespace MicrosoftMceTransceiver
                   }
 
                   if (packetBytes.Length > indexOf9F + 1)
+                  {
                     indexOf9F = Array.IndexOf(packetBytes, (byte)0x9F, indexOf9F + 1);
+                  }
                   else
                   {
                     _readThreadMode = ReadThreadMode.LearningFailed;
@@ -733,7 +766,8 @@ namespace MicrosoftMceTransceiver
     void WriteSync(byte[] data)
     {
 #if DEBUG
-      DebugWriteLine("DriverReplacement.WriteSync()");
+      DebugWriteLine("WriteSync()");
+      DebugDump(data);
 #endif
 
       NativeOverlapped lpOverlapped = new NativeOverlapped();
@@ -838,6 +872,11 @@ namespace MicrosoftMceTransceiver
 
       if (len != 0)
         timingData.Add(len * 50);
+
+#if DEBUG
+      DebugWriteLine("Received:");
+      DebugDump(timingData.ToArray());
+#endif
 
       return timingData.ToArray();
     }

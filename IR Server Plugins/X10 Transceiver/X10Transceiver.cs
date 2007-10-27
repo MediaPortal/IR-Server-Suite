@@ -48,7 +48,7 @@ namespace X10Transceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.3.4"; } }
+    public override string Version      { get { return "1.0.3.5"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -93,8 +93,6 @@ namespace X10Transceiver
     /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
-      //LoadSettings();
-
       try
       {
         if (X10Inter == null)
@@ -142,7 +140,12 @@ namespace X10Transceiver
     /// </summary>
     public override void Stop()
     {
-      X10Inter = null;
+      if (X10Inter != null)
+      {
+        icp.Unadvise(cookie);
+        icpc = null;
+        X10Inter = null;
+      }
     }
 
     /// <summary>

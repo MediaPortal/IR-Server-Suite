@@ -1,11 +1,13 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace IrssUtils
 {
 
   /// <summary>
   /// Win32 native method wrapper for Keyboard control functions.
+  /// http://msdn2.microsoft.com/en-us/library/ms646304.aspx
   /// </summary>
   public static class Keyboard
   {
@@ -18,6 +20,10 @@ namespace IrssUtils
       byte bScan,
       uint dwFlags,
       IntPtr dwExtraInfo);
+
+    [DllImport("user32.dll")]
+    static extern short VkKeyScan(
+      char ch);
 
     #endregion Interop
 
@@ -623,7 +629,7 @@ namespace IrssUtils
     #region Public Methods
 
     /// <summary>
-    /// Simulate a key being pressed down
+    /// Simulate a key being pressed down.
     /// </summary>
     /// <param name="vKey">Virtual key to press.</param>
     public static void KeyDown(VKey vKey)
@@ -632,7 +638,7 @@ namespace IrssUtils
     }
 
     /// <summary>
-    /// Simulate a key being released
+    /// Simulate a key being released.
     /// </summary>
     /// <param name="vKey">Virtual key to release.</param>
     public static void KeyUp(VKey vKey)
@@ -641,7 +647,7 @@ namespace IrssUtils
     }
 
     /// <summary>
-    /// Simulate a Virtual Key event
+    /// Simulate a Virtual Key event.
     /// </summary>
     /// <param name="vKey">Virtual Key.</param>
     /// <param name="scan">Scan code.</param>
@@ -650,6 +656,52 @@ namespace IrssUtils
     public static void Event(VKey vKey, byte scan, KeyEvents flags, IntPtr extraInfo)
     {
       keybd_event((byte)vKey, scan, (uint)flags, extraInfo);
+    }
+
+    /// <summary>
+    /// Simulate a Virtual Key event.
+    /// </summary>
+    /// <param name="vKey">Virtual key code.</param>
+    /// <param name="scan">Scan code.</param>
+    /// <param name="flags">Event type.</param>
+    /// <param name="extraInfo">Pointer to additional information.</param>
+    public static void Event(byte vKey, byte scan, KeyEvents flags, IntPtr extraInfo)
+    {
+      keybd_event(vKey, scan, (uint)flags, extraInfo);
+    }
+
+
+    public static void Process(string keystrokes)
+    {
+      if (String.IsNullOrEmpty(keystrokes))
+        throw new ArgumentNullException("keystrokes");
+
+
+
+      for (int index = 0; index < keystrokes.Length; index++)
+      {
+        char curChar = keystrokes[index];
+
+        short keyScan = VkKeyScan(curChar);
+
+        byte keyCode = (byte)curChar;        
+        byte scanCode = 0;
+        
+        bool isExtended = false;
+
+        if (isExtended)
+        {
+          Event(keyCode, scanCode, KeyEvents.ExtendedKey | KeyEvents.KeyDown, IntPtr.Zero);
+          Event(keyCode, scanCode, KeyEvents.ExtendedKey | KeyEvents.KeyUp, IntPtr.Zero);
+        }
+        else
+        {
+          Event(keyCode, scanCode, KeyEvents.KeyDown, IntPtr.Zero);
+          Event(keyCode, scanCode, KeyEvents.KeyUp, IntPtr.Zero);
+        }
+      }
+
+
     }
 
     #endregion Public Methods

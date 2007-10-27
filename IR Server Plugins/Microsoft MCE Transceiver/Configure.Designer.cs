@@ -183,7 +183,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             0});
-      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(152, 40);
+      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(152, 64);
       this.numericUpDownLearnTimeout.Maximum = new decimal(new int[] {
             60000,
             0,
@@ -317,7 +317,7 @@ namespace MicrosoftMceTransceiver
       this.checkBoxDisableMCEServices.AutoSize = true;
       this.checkBoxDisableMCEServices.Checked = true;
       this.checkBoxDisableMCEServices.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxDisableMCEServices.Location = new System.Drawing.Point(8, 80);
+      this.checkBoxDisableMCEServices.Location = new System.Drawing.Point(8, 96);
       this.checkBoxDisableMCEServices.Name = "checkBoxDisableMCEServices";
       this.checkBoxDisableMCEServices.Size = new System.Drawing.Size(216, 17);
       this.checkBoxDisableMCEServices.TabIndex = 2;
@@ -339,7 +339,7 @@ namespace MicrosoftMceTransceiver
       // 
       // labelLearnIRTimeout
       // 
-      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 40);
+      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 64);
       this.labelLearnIRTimeout.Name = "labelLearnIRTimeout";
       this.labelLearnIRTimeout.Size = new System.Drawing.Size(136, 20);
       this.labelLearnIRTimeout.TabIndex = 0;
@@ -492,7 +492,7 @@ namespace MicrosoftMceTransceiver
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(272, 239);
+      this.ClientSize = new System.Drawing.Size(272, 258);
       this.ControlBox = false;
       this.Controls.Add(this.buttonAdvanced);
       this.Controls.Add(this.tabControl);

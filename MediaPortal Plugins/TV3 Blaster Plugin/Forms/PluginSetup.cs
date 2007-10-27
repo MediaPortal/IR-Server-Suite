@@ -191,7 +191,7 @@ namespace SetupTv.Sections
 
     #endregion Implementation
 
-    #region Controls
+    #region Buttons
 
     private void buttonSTB_Click(object sender, EventArgs e)
     {
@@ -290,15 +290,6 @@ namespace SetupTv.Sections
       }
     }
 
-    private void listBoxIR_DoubleClick(object sender, EventArgs e)
-    {
-      EditIR();
-    }
-    private void listBoxMacro_DoubleClick(object sender, EventArgs e)
-    {
-      EditMacro();
-    }
-
     private void buttonHostSetup_Click(object sender, EventArgs e)
     {
       TV3BlasterPlugin.StopClient();
@@ -326,13 +317,33 @@ namespace SetupTv.Sections
       }
     }
 
-    #endregion Controls
+    #endregion Buttons
+
+    #region Other Controls
+
+    private void listViewIR_DoubleClick(object sender, EventArgs e)
+    {
+      EditIR();
+    }
+    private void listViewMacro_DoubleClick(object sender, EventArgs e)
+    {
+      EditMacro();
+    }
 
     private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
     {
       ListView origin = sender as ListView;
       if (origin == null)
+      {
+        e.CancelEdit = true;
         return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
 
       ListViewItem originItem = origin.Items[e.Item];
 
@@ -344,7 +355,7 @@ namespace SetupTv.Sections
         return;
       }
 
-      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      if (!Common.IsValidFileName(e.Label))
       {
         MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
@@ -367,7 +378,16 @@ namespace SetupTv.Sections
     {
       ListView origin = sender as ListView;
       if (origin == null)
+      {
+        e.CancelEdit = true;
         return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
 
       ListViewItem originItem = origin.Items[e.Item];
 
@@ -379,7 +399,7 @@ namespace SetupTv.Sections
         return;
       }
 
-      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      if (!Common.IsValidFileName(e.Label))
       {
         MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
@@ -398,6 +418,8 @@ namespace SetupTv.Sections
         MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+
+    #endregion Other Controls
 
   }
 

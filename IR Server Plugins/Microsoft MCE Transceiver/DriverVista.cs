@@ -17,97 +17,47 @@ namespace MicrosoftMceTransceiver
   class DriverVista : Driver
   {
 
-    #region Constants
+    #region Interop
 
-    // Device variables
-    const int DeviceBufferSize  = 100;
-    const int PacketTimeout     = 100;
-    const int WriteSyncTimeout  = 5000;
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool GetOverlappedResult(
+      SafeFileHandle handle,
+      ref NativeOverlapped overlapped,
+      out int bytesTransferred,
+      [MarshalAs(UnmanagedType.Bool)] bool wait);
 
-    #endregion Constants
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    static extern SafeFileHandle CreateFile(
+      [MarshalAs(UnmanagedType.LPTStr)] string fileName,
+      [MarshalAs(UnmanagedType.U4)] CreateFileAccessTypes fileAccess,
+      [MarshalAs(UnmanagedType.U4)] CreateFileShares fileShare,
+      IntPtr securityAttributes,
+      [MarshalAs(UnmanagedType.U4)] CreateFileDisposition creationDisposition,
+      [MarshalAs(UnmanagedType.U4)] CreateFileAttributes flags,
+      IntPtr templateFile);
 
-    #region Enumerations
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool DeviceIoControl(
+      SafeFileHandle handle,
+      [MarshalAs(UnmanagedType.U4)] IoCtrl ioControlCode,
+      IntPtr inBuffer, int inBufferSize,
+      IntPtr outBuffer, int outBufferSize,
+      out int bytesReturned,
+      ref NativeOverlapped overlapped);
 
-    enum IoCtrl : uint
-    {
-      StartReceive  = 0x0F608028,
-      StopReceive   = 0x0F60802C,
-      GetDetails    = 0x0F604004,
-      GetBlasters   = 0x0F604008,
-      Receive       = 0x0F604022,
-      Transmit      = 0x0F608015,
-    }
+    [DllImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool CancelIo(
+      SafeFileHandle handle);
 
-    /// <summary>
-    /// IR Device Capability Flags.
-    /// </summary>
-    [Flags]
-    enum DeviceCapabilityFlags : uint
-    {
-      /// <summary>
-      /// Hardware supports legacy key signing.
-      /// </summary>
-      LegacySigning = 0x0001, 
-      /// <summary>
-      /// Hardware has unique serial number.
-      /// </summary>
-      SerialNumber  = 0x0002,
-      /// <summary>
-      /// Can hardware flash LED to identify receiver? 
-      /// </summary>
-      FlashLed      = 0x0004,
-      /// <summary>
-      /// Is this a legacy device?
-      /// </summary>
-      Legacy        = 0x0008,
-      /// <summary>
-      /// Device can wake from S1.
-      /// </summary>
-      WakeS1        = 0x0010,
-      /// <summary>
-      /// Device can wake from S2.
-      /// </summary>
-      WakeS2        = 0x0020,
-      /// <summary>
-      /// Device can wake from S3.
-      /// </summary>
-      WakeS3        = 0x0040,
-      /// <summary>
-      /// Device can wake from S4.
-      /// </summary>
-      WakeS4        = 0x0080,
-      /// <summary>
-      /// Device can wake from S5.
-      /// </summary>
-      WakeS5        = 0x0100,
-    }
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool CloseHandle(
+      SafeFileHandle handle);
 
-    [Flags]
-    enum TransmitFlags : uint
-    {
-      /// <summary>
-      /// Pulse Mode.
-      /// </summary>
-      PulseMode = 0x01,
-      /// <summary>
-      /// DC Mode.
-      /// </summary>
-      DCMode    = 0x02,
-    }
-
-    /// <summary>
-    /// Read Thread Mode.
-    /// </summary>
-    enum ReadThreadMode
-    {
-      Receiving,
-      Learning,
-      LearningDone,
-      LearningFailed,
-      Stop,
-    }
-
-    #endregion Enumerations
+    #endregion Interop
 
     #region Structures
 
@@ -208,42 +158,97 @@ namespace MicrosoftMceTransceiver
 
     #endregion Structures
 
-    #region Interop
+    #region Enumerations
 
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool DeviceIoControl(
-      SafeFileHandle handle,
-      [MarshalAs(UnmanagedType.U4)] IoCtrl ioControlCode,
-      IntPtr inBuffer, int inBufferSize,
-      IntPtr outBuffer, int outBufferSize,
-      out int bytesReturned,
-      ref NativeOverlapped overlapped);
+    enum IoCtrl : uint
+    {
+      StartReceive  = 0x0F608028,
+      StopReceive   = 0x0F60802C,
+      GetDetails    = 0x0F604004,
+      GetBlasters   = 0x0F604008,
+      Receive       = 0x0F604022,
+      Transmit      = 0x0F608015,
+    }
 
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool GetOverlappedResult(
-      SafeFileHandle handle,
-      ref NativeOverlapped overlapped,
-      out int bytesTransferred,
-      [MarshalAs(UnmanagedType.Bool)] bool wait);
+    /// <summary>
+    /// IR Device Capability Flags.
+    /// </summary>
+    [Flags]
+    enum DeviceCapabilityFlags : uint
+    {
+      /// <summary>
+      /// Hardware supports legacy key signing.
+      /// </summary>
+      LegacySigning = 0x0001, 
+      /// <summary>
+      /// Hardware has unique serial number.
+      /// </summary>
+      SerialNumber  = 0x0002,
+      /// <summary>
+      /// Can hardware flash LED to identify receiver? 
+      /// </summary>
+      FlashLed      = 0x0004,
+      /// <summary>
+      /// Is this a legacy device?
+      /// </summary>
+      Legacy        = 0x0008,
+      /// <summary>
+      /// Device can wake from S1.
+      /// </summary>
+      WakeS1        = 0x0010,
+      /// <summary>
+      /// Device can wake from S2.
+      /// </summary>
+      WakeS2        = 0x0020,
+      /// <summary>
+      /// Device can wake from S3.
+      /// </summary>
+      WakeS3        = 0x0040,
+      /// <summary>
+      /// Device can wake from S4.
+      /// </summary>
+      WakeS4        = 0x0080,
+      /// <summary>
+      /// Device can wake from S5.
+      /// </summary>
+      WakeS5        = 0x0100,
+    }
 
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern SafeFileHandle CreateFile(
-      [MarshalAs(UnmanagedType.LPTStr)] string fileName,
-      [MarshalAs(UnmanagedType.U4)] CreateFileAccessTypes fileAccess,
-      [MarshalAs(UnmanagedType.U4)] CreateFileShares fileShare,
-      IntPtr securityAttributes,
-      [MarshalAs(UnmanagedType.U4)] CreateFileDisposition creationDisposition,
-      [MarshalAs(UnmanagedType.U4)] CreateFileAttributes flags,
-      IntPtr templateFile);
+    [Flags]
+    enum TransmitFlags : uint
+    {
+      /// <summary>
+      /// Pulse Mode.
+      /// </summary>
+      PulseMode = 0x01,
+      /// <summary>
+      /// DC Mode.
+      /// </summary>
+      DCMode    = 0x02,
+    }
 
-    [DllImport("kernel32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CancelIo(
-      SafeFileHandle handle);
+    /// <summary>
+    /// Read Thread Mode.
+    /// </summary>
+    enum ReadThreadMode
+    {
+      Receiving,
+      Learning,
+      LearningDone,
+      LearningFailed,
+      Stop,
+    }
 
-    #endregion Interop
+    #endregion Enumerations
+
+    #region Constants
+
+    // Device variables
+    const int DeviceBufferSize  = 100;
+    const int PacketTimeout     = 100;
+    const int WriteSyncTimeout  = 10000;
+
+    #endregion Constants
 
     #region Variables
 
@@ -357,6 +362,16 @@ namespace MicrosoftMceTransceiver
       //DeviceCapabilityFlags flags = structure.DetailsFlags;
       //_legacyDevice = (int)(flags & DeviceCapabilityFlags.Legacy) != 0;
       //_canFlashLed = (int)(flags & DeviceCapabilityFlags.FlashLed) != 0;
+
+#if DEBUG
+      DebugWriteLine("Device Capabilities:");
+      DebugWriteLine("NumTxPorts:     " + _numTxPorts.ToString());
+      DebugWriteLine("NumRxPorts:     " + structure.ReceivePorts.ToString());
+      DebugWriteLine("LearnPortMask:  " + _learnPortMask.ToString());
+      DebugWriteLine("ReceivePort:    " + _receivePort.ToString());
+      DebugWriteLine("LearnPort:      " + _learnPort.ToString());
+      DebugWriteLine("DetailsFlags:   " + structure.DetailsFlags.ToString());
+#endif
     }
 
     void GetBlasters()
@@ -392,6 +407,10 @@ namespace MicrosoftMceTransceiver
 
       for (int j = 0; j < _blasters.Length; j++)
         _blasters[j] = ((data & (((int)1) << j)) != 0);
+
+#if DEBUG
+      DebugWriteLine("Blasters:       " + data.ToString());
+#endif
     }
 
     void TransmitIR(byte[] irData, int carrier, uint transmitPortMask)
@@ -504,18 +523,21 @@ namespace MicrosoftMceTransceiver
     public override void Start()
     {
 #if DEBUG
-      DebugOpen("\\MicrosoftMceTransceiver__DriverVista.log");
-      DebugWriteLine("DriverVista.Start()");
+      DebugOpen("\\MicrosoftMceTransceiver_DriverVista.log");
+      DebugWriteLine("Start()");
 #endif
 
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
 
+      int lastError;
+
       _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
-      int lastError = Marshal.GetLastWin32Error();
+      lastError = Marshal.GetLastWin32Error();
       if (_eHomeHandle.IsInvalid)
         throw new Win32Exception(lastError);
 
+      // Initialize device ...
       GetAllDeviceInformation();
 
       StartReceive(_receivePort, PacketTimeout);
@@ -536,7 +558,7 @@ namespace MicrosoftMceTransceiver
     public override void Stop()
     {
 #if DEBUG
-      DebugWriteLine("DriverVista.Stop()");
+      DebugWriteLine("Stop()");
 #endif
 
       _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
@@ -560,6 +582,10 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     public override void Suspend()
     {
+#if DEBUG
+      DebugWriteLine("Suspend()");
+#endif
+
       Stop();
     }
 
@@ -568,6 +594,10 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     public override void Resume()
     {
+#if DEBUG
+      DebugWriteLine("Resume()");
+#endif
+
       Start();
     }
 
@@ -580,7 +610,7 @@ namespace MicrosoftMceTransceiver
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
 #if DEBUG
-      DebugWriteLine("DriverVista.Learn()");
+      DebugWriteLine("Learn()");
 #endif
 
       StopReadThread();
@@ -637,7 +667,7 @@ namespace MicrosoftMceTransceiver
           }
           break;
       }
-      
+
       _learningCode = null;
       return status;
     }
@@ -649,6 +679,11 @@ namespace MicrosoftMceTransceiver
     /// <param name="port">IR port to send to.</param>
     public override void Send(IrCode code, uint port)
     {
+#if DEBUG
+      DebugWriteLine("Send()");
+      DebugDump(code.TimingData);
+#endif
+
       byte[] data = DataPacket(code);
 
       TransmitIR(data, code.Carrier, port);
@@ -689,7 +724,7 @@ namespace MicrosoftMceTransceiver
     void StartReadThread()
     {
 #if DEBUG
-      DebugWriteLine("DriverVista.StartReadThread()");
+      DebugWriteLine("StartReadThread()");
 #endif
 
       _readThread = new Thread(new ThreadStart(ReadThread));
@@ -700,7 +735,7 @@ namespace MicrosoftMceTransceiver
     void StopReadThread()
     {
 #if DEBUG
-      DebugWriteLine("DriverVista.StopReadThread()");
+      DebugWriteLine("StopReadThread()");
 #endif
 
       if (_readThread != null)
@@ -719,11 +754,13 @@ namespace MicrosoftMceTransceiver
     void CloseDevice()
     {
 #if DEBUG
-      DebugWriteLine("DriverVista.CloseDevice()");
+      DebugWriteLine("CloseDevice()");
 #endif
 
       if (_eHomeHandle != null)
       {
+        CloseHandle(_eHomeHandle);
+
         _eHomeHandle.Dispose();
         _eHomeHandle = null;
       }
@@ -780,8 +817,8 @@ namespace MicrosoftMceTransceiver
             bytesRead -= Marshal.SizeOf(receiveParams);
 
             sinceLastPacket = DateTime.Now.Subtract(lastPacketTime);
-            if (sinceLastPacket.TotalMilliseconds >= PacketTimeout + 50)
-              IrDecoder.DecodeIR(null, null, null, null);
+            //if (sinceLastPacket.TotalMilliseconds >= PacketTimeout + 50)
+              //IrDecoder.DecodeIR(null, null, null, null);
 
             lastPacketTime = DateTime.Now;
 
@@ -815,6 +852,7 @@ namespace MicrosoftMceTransceiver
               _readThreadMode = ReadThreadMode.LearningDone;
             }
           }
+
         }
       }
 #if DEBUG

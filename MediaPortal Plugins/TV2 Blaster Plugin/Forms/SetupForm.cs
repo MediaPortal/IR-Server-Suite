@@ -289,22 +289,29 @@ namespace MediaPortal.Plugins
 
     #region Other Controls
 
-    private void listBoxIR_DoubleClick(object sender, EventArgs e)
+    private void listViewIR_DoubleClick(object sender, EventArgs e)
     {
       EditIR();
     }
-    private void listBoxMacro_DoubleClick(object sender, EventArgs e)
+    private void listViewMacro_DoubleClick(object sender, EventArgs e)
     {
       EditMacro();
     }
-
-    #endregion Other Controls
 
     private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
     {
       ListView origin = sender as ListView;
       if (origin == null)
+      {
+        e.CancelEdit = true;
         return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
 
       ListViewItem originItem = origin.Items[e.Item];
 
@@ -316,7 +323,7 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      if (!Common.IsValidFileName(e.Label))
       {
         MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
@@ -339,7 +346,16 @@ namespace MediaPortal.Plugins
     {
       ListView origin = sender as ListView;
       if (origin == null)
+      {
+        e.CancelEdit = true;
         return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
 
       ListViewItem originItem = origin.Items[e.Item];
 
@@ -351,7 +367,7 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      if (!Common.IsValidFileName(e.Label))
       {
         MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
@@ -370,6 +386,8 @@ namespace MediaPortal.Plugins
         MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+
+    #endregion Other Controls
 
   }
 

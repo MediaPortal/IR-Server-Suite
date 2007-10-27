@@ -318,13 +318,13 @@ namespace MicrosoftMceTransceiver
 
 #if DEBUG
 
-    protected StreamWriter _debugFile;
+    protected static StreamWriter _debugFile;
 
     /// <summary>
     /// Opens a debug output file.
     /// </summary>
     /// <param name="fileName">Name of the file.</param>
-    protected void DebugOpen(string fileName)
+    protected static void DebugOpen(string fileName)
     {
       try
       {
@@ -340,7 +340,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Closes the debug output file.
     /// </summary>
-    protected void DebugClose()
+    protected static void DebugClose()
     {
       if (_debugFile != null)
       {
@@ -353,24 +353,47 @@ namespace MicrosoftMceTransceiver
     /// Writes a line to the debug output file.
     /// </summary>
     /// <param name="line">The line.</param>
-    protected void DebugWriteLine(string line)
+    protected static void DebugWriteLine(string line)
     {
       if (_debugFile != null)
         _debugFile.WriteLine(line);
     }
 
     /// <summary>
+    /// Writes a string to the debug output file.
+    /// </summary>
+    /// <param name="text">The string to write.</param>
+    protected static void DebugWrite(string text)
+    {
+      if (_debugFile != null)
+        _debugFile.Write(text);
+    }
+
+    /// <summary>
+    /// Writes a new line to the debug output file.
+    /// </summary>
+    protected static void DebugWriteNewLine()
+    {
+      if (_debugFile != null)
+        _debugFile.WriteLine();
+    }
+
+    /// <summary>
     /// Dumps an Array to the debug output file.
     /// </summary>
     /// <param name="array">The array.</param>
-    protected void DebugDump(Array array)
+    protected static void DebugDump(Array array)
     {
       if (_debugFile == null)
         return;
 
       foreach (object item in array)
       {
-        _debugFile.Write(item);
+        if (item is byte)         _debugFile.Write("{0:X2}", (byte)   item);
+        else if (item is ushort)  _debugFile.Write("{0:X4}", (ushort) item);
+        else if (item is int)     _debugFile.Write("{1}{0}", (int)    item, (int)item > 0 ? "+" : "");
+        else                      _debugFile.Write("{0}",             item);
+        
         _debugFile.Write(", ");
       }
 

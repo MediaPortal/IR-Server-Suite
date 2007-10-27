@@ -47,7 +47,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevAge.Core, Version=4.6.2660.128, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">

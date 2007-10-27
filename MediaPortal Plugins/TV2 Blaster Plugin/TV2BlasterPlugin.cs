@@ -23,12 +23,18 @@ using MPUtils;
 namespace MediaPortal.Plugins
 {
 
+  /// <summary>
+  /// MediaPortal TV2 Blaster Plugin for IR Server.
+  /// </summary>
   public class TV2BlasterPlugin : IPlugin, ISetupForm
   {
 
     #region Constants
 
-    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.4 for IR Server";
+    /// <summary>
+    /// The plugin version string.
+    /// </summary>
+    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.5 for IR Server";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "TV2 Blaster Plugin\\Macro\\";
 
@@ -68,10 +74,25 @@ namespace MediaPortal.Plugins
       get { return _serverHost; }
       set { _serverHost = value; }
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to log verbosely.
+    /// </summary>
+    /// <value><c>true</c> if logging is set to verbose; otherwise, <c>false</c>.</value>
     internal static bool LogVerbose
     {
       get { return _logVerbose; }
       set { _logVerbose = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether in configuration.
+    /// </summary>
+    /// <value><c>true</c> if in configuration; otherwise, <c>false</c>.</value>
+    internal static bool InConfiguration
+    {
+      get { return _inConfiguration; }
+      set { _inConfiguration = value; }
     }
 
     internal static ClientMessageSink HandleMessage
@@ -80,17 +101,14 @@ namespace MediaPortal.Plugins
       set { _handleMessage = value; }
     }
 
-    internal static bool InConfiguration
-    {
-      get { return _inConfiguration; }
-      set { _inConfiguration = value; }
-    }
-
     internal static IRServerInfo TransceiverInformation
     {
       get { return _irServerInfo; }
     }
 
+    /// <summary>
+    /// Count of available TV Cards.
+    /// </summary>
     internal static int TvCardCount
     {
       get
@@ -110,14 +128,17 @@ namespace MediaPortal.Plugins
 
     #region IPlugin methods
 
+    /// <summary>
+    /// Starts this instance.
+    /// </summary>
     public void Start()
     {
+      InConfiguration = false;
+
       Log.Info("TV2BlasterPlugin: Starting ({0})", PluginVersion);
 
       // Load basic settings
       LoadSettings();
-
-      InConfiguration = false;
 
       LoadExternalConfigs();
 
@@ -133,6 +154,9 @@ namespace MediaPortal.Plugins
       if (LogVerbose)
         Log.Info("TV2BlasterPlugin: Started");
     }
+    /// <summary>
+    /// Stops this instance.
+    /// </summary>
     public void Stop()
     {
       GUIWindowManager.Receivers -= new SendMessageHandler(OnMessage);
@@ -147,14 +171,49 @@ namespace MediaPortal.Plugins
 
     #region ISetupForm methods
 
+    /// <summary>
+    /// Determines whether this plugin can be enabled.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if this plugin can be enabled; otherwise, <c>false</c>.
+    /// </returns>
     public bool CanEnable()       { return true; }
+    /// <summary>
+    /// Determines whether this plugin has setup.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if this plugin has setup; otherwise, <c>false</c>.
+    /// </returns>
     public bool HasSetup()        { return true; }
+    /// <summary>
+    /// Gets the plugin name.
+    /// </summary>
+    /// <returns>The plugin name.</returns>
     public string PluginName()    { return "TV2 Blaster Plugin for IR Server"; }
+    /// <summary>
+    /// Defaults enabled.
+    /// </summary>
+    /// <returns>true if this plugin is enabled by default, otherwise false.</returns>
     public bool DefaultEnabled()  { return true; }
+    /// <summary>
+    /// Gets the window id.
+    /// </summary>
+    /// <returns>The window id.</returns>
     public int GetWindowId()      { return 0; }
+    /// <summary>
+    /// Gets the plugin author.
+    /// </summary>
+    /// <returns>The plugin author.</returns>
     public string Author()        { return "and-81"; }
+    /// <summary>
+    /// Gets the description of the plugin.
+    /// </summary>
+    /// <returns>The plugin description.</returns>
     public string Description()   { return "External Channel Changer for TV Engine 2 using IR Server"; }
 
+    /// <summary>
+    /// Shows the plugin configuration.
+    /// </summary>
     public void ShowPlugin()
     {
       try
@@ -182,6 +241,14 @@ namespace MediaPortal.Plugins
       }
     }
 
+    /// <summary>
+    /// Gets the home screen details for the plugin.
+    /// </summary>
+    /// <param name="strButtonText">The button text.</param>
+    /// <param name="strButtonImage">The button image.</param>
+    /// <param name="strButtonImageFocus">The button image focus.</param>
+    /// <param name="strPictureImage">The picture image.</param>
+    /// <returns>true if the plugin can be seen, otherwise false.</returns>
     public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus, out string strPictureImage)
     {
       strButtonText = strButtonImage = strButtonImageFocus = strPictureImage = String.Empty;
@@ -355,12 +422,7 @@ namespace MediaPortal.Plugins
     /// </summary>
     static void LoadExternalConfigs()
     {
-      ArrayList cards = new ArrayList();
-      MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
-
-      int cardCount = cards.Count;
-      if (cardCount == 0)
-        cardCount = 1;
+      int cardCount = TvCardCount;
 
       _externalChannelConfigs = new ExternalChannelConfig[cardCount];
 
@@ -399,6 +461,11 @@ namespace MediaPortal.Plugins
       return null;
     }
 
+    /// <summary>
+    /// Processes the external channel.
+    /// </summary>
+    /// <param name="externalChannel">The external channel.</param>
+    /// <param name="tunerCard">The tuner card.</param>
     static void ProcessExternalChannel(string externalChannel, string tunerCard)
     {
       int card = int.Parse(tunerCard);
@@ -422,7 +489,7 @@ namespace MediaPortal.Plugins
       while (channel.Length < config.ChannelDigits)
         channel.Insert(0, '0');
 
-      // Process the channel and blast the relevant IR codes.
+      // Process the channel and blast the relevant IR Commands.
       string command;
       int charVal;
 
@@ -513,6 +580,12 @@ namespace MediaPortal.Plugins
       }
     }
 
+    /// <summary>
+    /// Processes the external channel program.
+    /// </summary>
+    /// <param name="runCommand">The run command.</param>
+    /// <param name="currentChannelDigit">The current channel digit.</param>
+    /// <param name="fullChannelString">The full channel string.</param>
     static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit, string fullChannelString)
     {
       string[] commands = Common.SplitRunCommand(runCommand);
@@ -523,6 +596,12 @@ namespace MediaPortal.Plugins
       Common.ProcessRunCommand(commands);
     }
 
+    /// <summary>
+    /// Processes the external serial command.
+    /// </summary>
+    /// <param name="serialCommand">The serial command.</param>
+    /// <param name="currentChannelDigit">The current channel digit.</param>
+    /// <param name="fullChannelString">The full channel string.</param>
     static void ProcessExternalSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
     {
       string[] commands = Common.SplitSerialCommand(serialCommand);
@@ -533,6 +612,10 @@ namespace MediaPortal.Plugins
       Common.ProcessSerialCommand(commands);
     }
 
+    /// <summary>
+    /// Adds to the Macro Stack.
+    /// </summary>
+    /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackAdd(string fileName)
     {
       string lowerCasedFileName = fileName.ToLowerInvariant();
@@ -563,6 +646,10 @@ namespace MediaPortal.Plugins
 
       _macroStack.Add(lowerCasedFileName);
     }
+    /// <summary>
+    /// Removes from the Macro Stack.
+    /// </summary>
+    /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackRemove(string fileName)
     {
       string lowerCasedFileName = fileName.ToLowerInvariant();
@@ -589,14 +676,12 @@ namespace MediaPortal.Plugins
 
         XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
         string commandProperty;
-        string commandName;
 
         foreach (XmlNode item in commandSequence)
         {
-          commandName = item.Attributes["command"].Value;
           commandProperty = item.Attributes["cmdproperty"].Value;
 
-          switch (commandName)
+          switch (item.Attributes["command"].Value)
           {
             case Common.XmlTagMacro:
               {
@@ -704,37 +789,37 @@ namespace MediaPortal.Plugins
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro)) // Macro
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
         ProcessMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixSTB))  // STB IR Code
+      else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.InvariantCultureIgnoreCase))  // STB IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
         BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.InvariantCultureIgnoreCase)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.InvariantCultureIgnoreCase)) // Serial Port Command
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.InvariantCultureIgnoreCase))  // Message Command
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys))  // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         if (InConfiguration)
@@ -751,7 +836,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Learn an IR Command and put it in a file.
     /// </summary>
-    /// <param name="fileName">File to place learned IR command in.</param>
+    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns>true if successful, otherwise false.</returns>
     internal static bool LearnIRCommand(string fileName)
     {
@@ -793,6 +878,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Returns a list of Macros.
     /// </summary>
+    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
     /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
@@ -814,6 +900,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Returns a combined list of IR Commands and Macros.
     /// </summary>
+    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
     /// <returns>string[] of IR Commands and Macros.</returns>
     internal static string[] GetFileList(bool commandPrefix)
     {
@@ -841,6 +928,9 @@ namespace MediaPortal.Plugins
       return list;
     }
 
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
     static void LoadSettings()
     {
       try
@@ -856,6 +946,9 @@ namespace MediaPortal.Plugins
         Log.Error("TV2BlasterPlugin: LoadSettings() {0}", ex.Message);
       }
     }
+    /// <summary>
+    /// Saves the settings.
+    /// </summary>
     static void SaveSettings()
     {
       try

@@ -19,7 +19,7 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     enum CodeType
     {
-      // Can use ...
+      // Supported ...
       RawOscillated   = 0x0000,
       RawUnmodulated  = 0x0100,
       RC5             = 0x5000,
@@ -27,7 +27,7 @@ namespace MicrosoftMceTransceiver
       RC6             = 0x6000,
       RC6A            = 0x6001,
       
-      // Can't use ...
+      // Unsupported ...
       VariableLength  = 0x7000,
       IndexToUDB      = 0x8000,
       NEC_1           = 0x9000,

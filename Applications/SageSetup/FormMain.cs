@@ -24,7 +24,7 @@ namespace SageSetup
 
     private void FormMain_Load(object sender, EventArgs e)
     {
-      ArrayList networkPCs = Win32.GetNetworkComputers();
+      string[] networkPCs = Win32.GetNetworkComputers(false);
       if (networkPCs == null)
       {
         MessageBox.Show(this, "No server names detected.", "Network Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -33,7 +33,7 @@ namespace SageSetup
       }
       else
       {
-        comboBoxComputer.Items.AddRange(networkPCs.ToArray());
+        comboBoxComputer.Items.AddRange(networkPCs);
       }
 
       _irBlastLocation = SystemRegistry.GetInstallFolder();
@@ -63,9 +63,10 @@ namespace SageSetup
         return;
       }
 
+      RegistryKey mainKey = null;
+
       try
       {
-        RegistryKey mainKey;
         if (radioButtonExeTuner.Checked)
           mainKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Sage\\EXETunerPlugin");
         else
@@ -93,13 +94,17 @@ namespace SageSetup
         command.Append(" -channel %CHANNEL%");
 
         mainKey.SetValue("Command", command.ToString(), RegistryValueKind.String);
-        mainKey.Close();
 
         MessageBox.Show(this, "Sage plugin setup complete", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
       catch (Exception ex)
       {
         MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+      finally
+      {
+        if (mainKey != null)
+          mainKey.Close();
       }
     }
 

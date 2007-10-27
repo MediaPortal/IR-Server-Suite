@@ -283,7 +283,7 @@ namespace MediaPortal.Plugins
       this.listViewIR.TabIndex = 0;
       this.listViewIR.UseCompatibleStateImageBehavior = false;
       this.listViewIR.View = System.Windows.Forms.View.List;
-      this.listViewIR.DoubleClick += new System.EventHandler(this.listBoxIR_DoubleClick);
+      this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
       this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
       // 
       // listViewMacro
@@ -302,7 +302,7 @@ namespace MediaPortal.Plugins
       this.listViewMacro.TabIndex = 0;
       this.listViewMacro.UseCompatibleStateImageBehavior = false;
       this.listViewMacro.View = System.Windows.Forms.View.List;
-      this.listViewMacro.DoubleClick += new System.EventHandler(this.listBoxMacro_DoubleClick);
+      this.listViewMacro.DoubleClick += new System.EventHandler(this.listViewMacro_DoubleClick);
       this.listViewMacro.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewMacro_AfterLabelEdit);
       // 
       // SetupForm

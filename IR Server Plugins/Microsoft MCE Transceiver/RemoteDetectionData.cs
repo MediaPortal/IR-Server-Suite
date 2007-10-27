@@ -29,6 +29,7 @@ namespace MicrosoftMceTransceiver
     uint _header;
     bool _longPulse;
     bool _longSpace;
+    int _toggle;
 
     #endregion Member Variables
 
@@ -71,6 +72,12 @@ namespace MicrosoftMceTransceiver
     {
       get { return _longSpace; }
       set { _longSpace = value; }
+    }
+
+    public int Toggle
+    {
+      get { return _toggle; }
+      set { _toggle = value; }
     }
 
     #endregion Properties

@@ -26,12 +26,18 @@ using MPUtils;
 namespace TvEngine
 {
 
+  /// <summary>
+  /// MediaPortal TV3 Blaster Plugin for IR Server.
+  /// </summary>
   public class TV3BlasterPlugin : ITvServerPlugin
   {
 
     #region Constants
 
-    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.3.4 for IR Server";
+    /// <summary>
+    /// The plugin version string.
+    /// </summary>
+    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.3.5 for IR Server";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "TV3 Blaster Plugin\\Macro\\";
 
@@ -56,11 +62,11 @@ namespace TvEngine
 
     static bool _inConfiguration;
 
-    static TvServerEventHandler _eventHandler;
-
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
     static List<string> _macroStack;
+
+    static TvServerEventHandler _eventHandler;
 
     #endregion Variables
 
@@ -73,7 +79,7 @@ namespace TvEngine
     /// <summary>
     /// Returns the version of the plugin.
     /// </summary>
-    public string Version { get { return "1.0.3.4"; } }
+    public string Version { get { return "1.0.3.5"; } }
     /// <summary>
     /// Returns the author of the plugin.
     /// </summary>
@@ -88,22 +94,31 @@ namespace TvEngine
       get { return _serverHost; }
       set { _serverHost = value; }
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to log verbosely.
+    /// </summary>
+    /// <value><c>true</c> if logging is set to verbose; otherwise, <c>false</c>.</value>
     internal static bool LogVerbose
     {
       get { return _logVerbose; }
       set { _logVerbose = value; }
     }
 
-    internal static ClientMessageSink HandleMessage
-    {
-      get { return _handleMessage; }
-      set { _handleMessage = value; }
-    }
-
+    /// <summary>
+    /// Gets or sets a value indicating whether in configuration.
+    /// </summary>
+    /// <value><c>true</c> if in configuration; otherwise, <c>false</c>.</value>
     internal static bool InConfiguration
     {
       get { return _inConfiguration; }
       set { _inConfiguration = value; }
+    }
+
+    internal static ClientMessageSink HandleMessage
+    {
+      get { return _handleMessage; }
+      set { _handleMessage = value; }
     }
 
     internal static IRServerInfo TransceiverInformation
@@ -115,12 +130,16 @@ namespace TvEngine
 
     #region ITvServerPlugin methods
 
+    /// <summary>
+    /// Starts this instance.
+    /// </summary>
     [CLSCompliant(false)]
     public void Start(IController controller)
     {
+      InConfiguration = false;
+
       Log.Info("TV3BlasterPlugin: Starting ({0})", PluginVersion);
 
-      InConfiguration = false;
 
       TvBusinessLayer layer = new TvBusinessLayer();
       LogVerbose = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
@@ -141,6 +160,9 @@ namespace TvEngine
       if (LogVerbose)
         Log.Info("TV3BlasterPlugin: Started");
     }
+    /// <summary>
+    /// Stops this instance.
+    /// </summary>
     public void Stop()
     {
       ITvServerEvent events = GlobalServiceProvider.Instance.Get<ITvServerEvent>();
@@ -378,6 +400,11 @@ namespace TvEngine
       return null;
     }
 
+    /// <summary>
+    /// Processes the external channel.
+    /// </summary>
+    /// <param name="externalChannel">The external channel.</param>
+    /// <param name="cardId">The tuner card ID.</param>
     static void ProcessExternalChannel(string externalChannel, int cardId)
     {
       ExternalChannelConfig config = GetExternalChannelConfig(cardId);
@@ -483,6 +510,12 @@ namespace TvEngine
       }
     }
 
+    /// <summary>
+    /// Processes the external channel program.
+    /// </summary>
+    /// <param name="runCommand">The run command.</param>
+    /// <param name="currentChannelDigit">The current channel digit.</param>
+    /// <param name="fullChannelString">The full channel string.</param>
     static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit, string fullChannelString)
     {
       string[] commands = Common.SplitRunCommand(runCommand);
@@ -493,6 +526,12 @@ namespace TvEngine
       Common.ProcessRunCommand(commands);
     }
 
+    /// <summary>
+    /// Processes the external serial command.
+    /// </summary>
+    /// <param name="serialCommand">The serial command.</param>
+    /// <param name="currentChannelDigit">The current channel digit.</param>
+    /// <param name="fullChannelString">The full channel string.</param>
     static void ProcessExternalSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
     {
       string[] commands = Common.SplitSerialCommand(serialCommand);
@@ -503,6 +542,10 @@ namespace TvEngine
       Common.ProcessSerialCommand(commands);
     }
 
+    /// <summary>
+    /// Adds to the Macro Stack.
+    /// </summary>
+    /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackAdd(string fileName)
     {
       string lowerCasedFileName = fileName.ToLowerInvariant();
@@ -533,6 +576,10 @@ namespace TvEngine
 
       _macroStack.Add(lowerCasedFileName);
     }
+    /// <summary>
+    /// Removes from the Macro Stack.
+    /// </summary>
+    /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackRemove(string fileName)
     {
       string lowerCasedFileName = fileName.ToLowerInvariant();
@@ -559,14 +606,12 @@ namespace TvEngine
 
         XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
         string commandProperty;
-        string commandName;
 
         foreach (XmlNode item in commandSequence)
         {
-          commandName = item.Attributes["command"].Value;
           commandProperty = item.Attributes["cmdproperty"].Value;
 
-          switch (commandName)
+          switch (item.Attributes["command"].Value)
           {
             case Common.XmlTagMacro:
               {
@@ -662,37 +707,37 @@ namespace TvEngine
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro)) // Macro
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
         ProcessMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixSTB))  // STB IR Code
+      else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.InvariantCultureIgnoreCase))  // STB IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
         BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.InvariantCultureIgnoreCase)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.InvariantCultureIgnoreCase)) // Serial Port Command
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.InvariantCultureIgnoreCase))  // Message Command
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys))  // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         if (InConfiguration)
@@ -709,7 +754,7 @@ namespace TvEngine
     /// <summary>
     /// Learn an IR Command and put it in a file.
     /// </summary>
-    /// <param name="fileName">File to place learned IR command in.</param>
+    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns>true if successful, otherwise false.</returns>
     internal static bool LearnIRCommand(string fileName)
     {
@@ -751,6 +796,7 @@ namespace TvEngine
     /// <summary>
     /// Returns a list of Macros.
     /// </summary>
+    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
     /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
@@ -772,6 +818,7 @@ namespace TvEngine
     /// <summary>
     /// Returns a combined list of IR Commands and Macros.
     /// </summary>
+    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
     /// <returns>string[] of IR Commands and Macros.</returns>
     internal static string[] GetFileList(bool commandPrefix)
     {

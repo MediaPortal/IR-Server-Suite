@@ -25,14 +25,14 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     public const int CarrierFrequencyDCMode   = 0;
     /// <summary>
-    /// Default carrier frequency, 36kHz. (This is the carrier frequency for RC5, RC6 and RC-MM
+    /// Default carrier frequency, 36kHz (the carrier frequency for RC5, RC6 and RC-MM).
     /// </summary>
     public const int CarrierFrequencyDefault  = 36000;
 
     /// <summary>
-    /// How long the longest IR Code space should be.
+    /// How long the longest IR Code space should be (microseconds).
     /// </summary>
-    const int LongestSpace = -10000;
+    const int LongestSpace = -100000;
 
     #endregion Constants
 
@@ -46,7 +46,7 @@ namespace MicrosoftMceTransceiver
     #region Properties
 
     /// <summary>
-    /// The IR carrier frequency.
+    /// Gets or Sets the IR carrier frequency.
     /// </summary>
     public int Carrier
     {
@@ -55,7 +55,7 @@ namespace MicrosoftMceTransceiver
     }
 
     /// <summary>
-    /// The IR timing data.
+    /// Gets or Sets the IR timing data.
     /// </summary>
     public int[] TimingData
     {
@@ -91,14 +91,17 @@ namespace MicrosoftMceTransceiver
 
       List<int> newData = new List<int>();
 
-      for (int index = 0; index < _timingData.Length; index++)
+      foreach (int time in _timingData)
       {
-        int time = _timingData[index];
-
-        newData.Add(time);
-
-        if (time < LongestSpace)
+        if (time <= LongestSpace)
+        {
+          newData.Add(LongestSpace);
           break;
+        }
+        else
+        {
+          newData.Add(time);
+        }
       }
 
       _timingData = newData.ToArray();
@@ -147,7 +150,7 @@ namespace MicrosoftMceTransceiver
     }
 
     /// <summary>
-    /// Creates a byte array representation of this IR Code for sending in a message.
+    /// Creates a byte array representation of this IR Code (in Pronto format).
     /// </summary>
     /// <returns>Byte array representation.</returns>
     public byte[] ToByteArray()

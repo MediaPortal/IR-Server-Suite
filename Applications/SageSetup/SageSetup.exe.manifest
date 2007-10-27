@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" >
-  <assemblyIdentity version="1.0.3.5" processorArchitecture="X86" name="IRServer" type="win32" />
-  <description>Provides multiple connections for local and network access to a remote control transceiver</description>
+  <assemblyIdentity version="1.0.3.5" processorArchitecture="X86" name="SageSetup" type="win32" />
+  <description>Setup the Sage EXE Tuner plugins for use with IR Server</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
       <requestedPrivileges>

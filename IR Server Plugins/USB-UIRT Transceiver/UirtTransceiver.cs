@@ -57,9 +57,8 @@ namespace UirtTransceiver
 
     IntPtr _abortLearn = IntPtr.Zero;
     bool _learnTimedOut;
-    NativeMethods.UUIRTReceiveCallbackDelegate _receiveCallback;
     bool _isUsbUirtLoaded;
-    IntPtr _usbUirtHandle = IntPtr.Zero;
+    IntPtr _usbUirtHandle = new IntPtr(-1);
     bool _disposed;
 
     #endregion Variables
@@ -131,7 +130,7 @@ namespace UirtTransceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.3.4"; } }
+    public override string Version      { get { return "1.0.3.5"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -180,11 +179,15 @@ namespace UirtTransceiver
 
       if (_usbUirtHandle != new IntPtr(-1))
       {
+        if (_usbUirtHandle == IntPtr.Zero)
+          throw new ApplicationException("USBUIRT LOGIC ERROR 1, REPORT THIS TO and-81");
+
         _isUsbUirtLoaded = true;
 
-        // Setup callack to receive IR messages
-        _receiveCallback = new NativeMethods.UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback);
-        NativeMethods.UUIRTSetReceiveCallback(_usbUirtHandle, _receiveCallback, 0);
+        NativeMethods.UUIRTSetReceiveCallback(
+          _usbUirtHandle,
+          new NativeMethods.UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback),
+          0);
       }
 
       return _isUsbUirtLoaded;
@@ -210,11 +213,16 @@ namespace UirtTransceiver
     {
       if (_abortLearn != IntPtr.Zero)
         Marshal.WriteInt32(_abortLearn, AbortLearn);
-      
-      if (_usbUirtHandle != new IntPtr(-1))
-        NativeMethods.UUIRTClose(_usbUirtHandle);
 
-      _usbUirtHandle = IntPtr.Zero;
+      if (_usbUirtHandle != new IntPtr(-1))
+      {
+        if (_usbUirtHandle == IntPtr.Zero)
+          throw new ApplicationException("USBUIRT LOGIC ERROR 2, REPORT THIS TO and-81");
+
+        NativeMethods.UUIRTClose(_usbUirtHandle);
+        _usbUirtHandle = new IntPtr(-1);
+      }
+
       _isUsbUirtLoaded = false;
     }
 
@@ -255,7 +263,7 @@ namespace UirtTransceiver
     /// Lists the available blaster ports.
     /// </summary>
     /// <value>The available ports.</value>
-    public string[] AvailablePorts { get { return Ports; }   }
+    public string[] AvailablePorts { get { return Ports; } }
 
     /// <summary>
     /// Transmit an infrared command.

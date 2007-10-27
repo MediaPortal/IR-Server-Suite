@@ -351,36 +351,6 @@ namespace Translator
       }
     }
 
-    // TODO: Move to a notify window
-    protected override void WndProc(ref Message m)
-    {
-      try
-      {
-        if (m.Msg == (int)Win32.WindowsMessage.WM_COPYDATA)
-        {
-          IrssLog.Info("Received WM_COPYDATA message");
-
-          Win32.COPYDATASTRUCT dataStructure = (Win32.COPYDATASTRUCT)m.GetLParam(typeof(Win32.COPYDATASTRUCT));
-
-          if (dataStructure.dwData != 24)
-            return;
-
-          byte[] dataBytes = new byte[dataStructure.cbData];
-          IntPtr lpData = new IntPtr(dataStructure.lpData);
-          System.Runtime.InteropServices.Marshal.Copy(lpData, dataBytes, 0, dataStructure.cbData);
-          string strData = Encoding.ASCII.GetString(dataBytes);
-
-          Program.ProcessCommand(strData);
-        }
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-      }
-
-      base.WndProc(ref m);
-    }
-
     #region Controls
 
     private void listViewButtons_DoubleClick(object sender, EventArgs e)
@@ -716,11 +686,25 @@ namespace Translator
     {
       EditIR();
     }
+    private void listViewMacro_DoubleClick(object sender, EventArgs e)
+    {
+      EditMacro();
+    }
+
     private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
     {
       ListView origin = sender as ListView;
       if (origin == null)
+      {
+        e.CancelEdit = true;
         return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
 
       ListViewItem originItem = origin.Items[e.Item];
 
@@ -732,7 +716,7 @@ namespace Translator
         return;
       }
 
-      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      if (!Common.IsValidFileName(e.Label))
       {
         MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
@@ -751,16 +735,20 @@ namespace Translator
         MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-
-    private void listViewMacro_DoubleClick(object sender, EventArgs e)
-    {
-      EditMacro();
-    }
     private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
     {
       ListView origin = sender as ListView;
       if (origin == null)
+      {
+        e.CancelEdit = true;
         return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
 
       ListViewItem originItem = origin.Items[e.Item];
 
@@ -772,7 +760,7 @@ namespace Translator
         return;
       }
 
-      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
+      if (!Common.IsValidFileName(e.Label))
       {
         MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
@@ -1043,7 +1031,7 @@ namespace Translator
     }
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      MessageBox.Show(this, "Translator\nVersion 1.0.3.4 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(this, "Translator\nVersion 1.0.3.5 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     #endregion Menu

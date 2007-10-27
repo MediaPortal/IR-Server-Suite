@@ -16,6 +16,11 @@ namespace MicrosoftMceTransceiver
     /// No protocol.
     /// </summary>
     None,
+
+    /// <summary>
+    /// Daewoo protocol.
+    /// </summary>
+    Daewoo,
     /// <summary>
     /// ITT protocol (unsupported).
     /// </summary>
@@ -25,27 +30,51 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     JVC,
     /// <summary>
+    /// Matsushita protocol.
+    /// </summary>
+    Matsushita,
+    /// <summary>
+    /// Mitsubishi protocol.
+    /// </summary>
+    Mitsubishi,
+    /// <summary>
     /// NEC protocol.
     /// </summary>
     NEC,
     /// <summary>
-    /// Nokia NRC17 protocol (unsupported).
+    /// Nokia NRC17 protocol.
     /// </summary>
     NRC17,
+    /// <summary>
+    /// Panasonic protocol.
+    /// </summary>
+    Panasonic,
     /// <summary>
     /// Philips RC5 protocol.
     /// </summary>
     RC5,
     /// <summary>
-    /// Philips RC6 protocol.
+    /// Philips RC5X protocol.
+    /// </summary>
+    RC5X,
+    /// <summary>
+    /// Philips RC6 protocol (Mode 0).
     /// </summary>
     RC6,
+    /// <summary>
+    /// Philips RC6 protocol (Mode 6A).
+    /// </summary>
+    RC6A,
+    /// <summary>
+    /// Microsoft's protocol variation of Philips RC6.
+    /// </summary>
+    RC6_MCE,
     /// <summary>
     /// RCA protocol.
     /// </summary>
     RCA,
     /// <summary>
-    /// Philips RC-MM protocol (unsupported).
+    /// Philips RC-MM protocol.  This protocol cannot be reliably (if at all) decoded by the MCE device.
     /// </summary>
     RCMM,
     /// <summary>
@@ -61,16 +90,25 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     SIRC,
     /// <summary>
+    /// Toshiba protocol.
+    /// </summary>
+    Toshiba,
+    /// <summary>
     /// X-Sat protocol (unsupported).
     /// </summary>
     XSAT,
+
+    /// <summary>
+    /// Unknown protocol.
+    /// </summary>
+    Unknown,
   }
 
   #endregion Enumerations
 
   #region Delegates
 
-  delegate void RemoteCallback(IrProtocol codeType, uint keyCode);
+  delegate void RemoteCallback(IrProtocol codeType, uint keyCode, bool firstPress);
   delegate void KeyboardCallback(uint keyCode, uint modifiers);
   delegate void MouseCallback(int deltaX, int deltaY, bool rightButton, bool leftButton);
 
@@ -84,15 +122,17 @@ namespace MicrosoftMceTransceiver
 
     #region Constants
 
-    //public const uint PulseBit  = 0x01000000;
-    //public const uint PulseMask = 0x00FFFFFF;
-
-    //const UInt16 ToggleBitMce   = 0x8000;
+    const UInt16 ToggleBitMce   = 0x8000;
     const UInt16 ToggleMaskMce  = 0x7FFF;
     const UInt16 CustomerMce    = 0x800F;
 
+    const UInt16 ToggleBitRC5   = 0x0800;
     const UInt16 ToggleMaskRC5  = 0xF7FF;
+
+    const UInt32 ToggleBitRC5X  = 0x20000;
     const UInt16 ToggleMaskRC5X = 0xFFFF;
+
+    const uint RC6HeaderMask    = 0xFFFFFFF0;
 
     const uint PrefixRC6        = 0x000FC950;
     const uint PrefixRC6A       = 0x000FCA90;
@@ -104,15 +144,21 @@ namespace MicrosoftMceTransceiver
 
     #region Detection Data
 
-    static RemoteDetectionData JVC_Data;
-    static RemoteDetectionData NEC_Data;
-    static RemoteDetectionData RC5_Data;
-    static RemoteDetectionData RC6_Data;
-    static RemoteDetectionData RCA_Data;
-    static RemoteDetectionData RECS80_Data;
-    static RemoteDetectionData SIRC_Data;
+    static RemoteDetectionData Daewoo_Data      = new RemoteDetectionData();
+    static RemoteDetectionData JVC_Data         = new RemoteDetectionData();
+    static RemoteDetectionData Matsushita_Data  = new RemoteDetectionData();
+    static RemoteDetectionData Mitsubishi_Data  = new RemoteDetectionData();
+    static RemoteDetectionData NEC_Data         = new RemoteDetectionData();
+    static RemoteDetectionData NRC17_Data       = new RemoteDetectionData();
+    static RemoteDetectionData Panasonic_Data   = new RemoteDetectionData();
+    static RemoteDetectionData RC5_Data         = new RemoteDetectionData();
+    static RemoteDetectionData RC6_Data         = new RemoteDetectionData();
+    static RemoteDetectionData RCA_Data         = new RemoteDetectionData();
+    static RemoteDetectionData RECS80_Data      = new RemoteDetectionData();
+    static RemoteDetectionData SIRC_Data        = new RemoteDetectionData();
+    static RemoteDetectionData Toshiba_Data     = new RemoteDetectionData();
 
-    static MceDetectionData MCE_Data;
+    static MceDetectionData MCE_Data            = new MceDetectionData();
 
     #endregion Detection Data
 
@@ -127,30 +173,134 @@ namespace MicrosoftMceTransceiver
     /// <param name="mouseCallback">Method to call when Mouse event decoded.</param>
     public static void DecodeIR(int[] timingData, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
     {
+      if (timingData == null)
+        return;
+
+      DetectDaewoo(timingData, remoteCallback);
 //    DetectITT(timingData, remoteCallback);
       DetectJVC(timingData, remoteCallback);
+      DetectMatsushita(timingData, remoteCallback);
+      DetectMitsubishi(timingData, remoteCallback);
       DetectNEC(timingData, remoteCallback);
-//    DetectNRC17(timingData, remoteCallback);
+      DetectNRC17(timingData, remoteCallback);
+      DetectPanasonic(timingData, remoteCallback);
       DetectRC5(timingData, remoteCallback);
       DetectRC6(timingData, remoteCallback);
       DetectRCA(timingData, remoteCallback);
 //    DetectRCMM(timingData, remoteCallback);
       DetectRECS80(timingData, remoteCallback);
 //    DetectSharp(timingData, remoteCallback);
-      DetectSIRC(timingData, remoteCallback); // 15 Bit
+      DetectSIRC(timingData, remoteCallback);
+      DetectToshiba(timingData, remoteCallback);
 //    DetectXSAT(timingData, remoteCallback);
 
       DetectMCE(timingData, keyboardCallback, mouseCallback);
+      //DetectIMon(timingData, keyboardCallback, mouseCallback);
     }
 
+    static void DetectDaewoo(int[] timingData, RemoteCallback remoteCallback)
+    {
+      for (int i = 0; i < timingData.Length; i++)
+      {
+        int duration = Math.Abs(timingData[i]);
+        bool pulse = (timingData[i] > 0);
+        bool ignored = true;
+
+        switch (Daewoo_Data.State)
+        {
+
+          #region HeaderPulse
+          case RemoteDetectionState.HeaderPulse:
+            //Console.WriteLine("Daewoo HeaderPulse");
+
+            if (pulse && duration >= 7800 && duration <= 8200)
+            {
+              Daewoo_Data.State = RemoteDetectionState.HeaderSpace;
+              ignored = false;
+            }
+            break;
+          #endregion HeaderPulse
+
+          #region HeaderSpace
+          case RemoteDetectionState.HeaderSpace:
+            //Console.WriteLine("Daewoo HeaderSpace");
+
+            if (!pulse && duration >= 3800 && duration <= 4200)
+            {
+              Daewoo_Data.State = RemoteDetectionState.Data;
+              Daewoo_Data.HalfBit = 0;
+              Daewoo_Data.Bit = 0;
+              Daewoo_Data.Code = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 10000 && duration <= 40000) // For Repeats
+            {
+              Daewoo_Data.State = RemoteDetectionState.Data;
+              Daewoo_Data.HalfBit = 0;
+              Daewoo_Data.Bit = 0;
+              Daewoo_Data.Code = 0;
+              ignored = false;
+            }
+            break;
+          #endregion HeaderSpace
+
+          #region Data
+          case RemoteDetectionState.Data:
+            //Console.WriteLine("Daewoo Data");
+
+            if (pulse && duration >= 350 && duration <= 750)
+            {
+              Daewoo_Data.HalfBit = 1;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 250 && duration <= 650 && Daewoo_Data.HalfBit == 1)
+            {
+              Daewoo_Data.Code <<= 1;
+              Daewoo_Data.Bit++;
+              Daewoo_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 1250 && duration <= 1650 && Daewoo_Data.HalfBit == 1)
+            {
+              Daewoo_Data.Code <<= 1;
+              Daewoo_Data.Code |= 1;
+              Daewoo_Data.Bit++;
+              Daewoo_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else
+            {
+              //Console.WriteLine("Daewoo Error");
+            }
+
+            if (Daewoo_Data.Bit == 16)
+            {
+              remoteCallback(IrProtocol.Daewoo, Daewoo_Data.Code, false);
+              Daewoo_Data.State = RemoteDetectionState.Leading;
+            }
+            break;
+          #endregion Data
+
+          #region Leading
+          case RemoteDetectionState.Leading:
+            //Console.WriteLine("Daewoo Leading");
+
+            if (pulse && duration >= 350 && duration <= 750)
+            {
+              Daewoo_Data.State = RemoteDetectionState.HeaderSpace;
+              ignored = false;
+            }
+            break;
+          #endregion Leading
+
+        }
+
+        if (ignored && (Daewoo_Data.State != RemoteDetectionState.HeaderPulse))
+          Daewoo_Data.State = RemoteDetectionState.HeaderPulse;
+      }
+    }
     static void DetectJVC(int[] timingData, RemoteCallback remoteCallback)
     {
-      if (JVC_Data == null || timingData == null)
-        JVC_Data = new RemoteDetectionData();
-
-      if (timingData == null)
-        return;
-
       for (int i = 0; i < timingData.Length; i++)
       {
         int duration = Math.Abs(timingData[i]);
@@ -162,9 +312,9 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Trace.WriteLine("JVC HeaderPulse");
+            //Console.WriteLine("JVC HeaderPulse: {0}", timingData[i]);
 
-            if (pulse && duration >= 8200 && duration <= 8600)
+            if (pulse && duration >= 8300 && duration <= 8500)
             {
               JVC_Data.State = RemoteDetectionState.HeaderSpace;
               ignored = false;
@@ -174,10 +324,12 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Trace.WriteLine("JVC HeaderSpace");
+            //Console.WriteLine("JVC HeaderSpace: {0}", timingData[i]);
 
-            if (!pulse && duration >= 4000 && duration <= 4400)
+            if (!pulse && duration >= 4100 && duration <= 4300)
             {
+              JVC_Data.Toggle = 0;
+
               JVC_Data.State = RemoteDetectionState.Data;
               JVC_Data.HalfBit = 0;
               JVC_Data.Bit = 0;
@@ -189,21 +341,21 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Trace.WriteLine("JVC Data");
+            //Console.WriteLine("JVC Data: {0}", timingData[i]);
 
-            if (pulse && duration >= 350 && duration <= 750)
+            if (pulse && duration >= 450 && duration <= 650)
             {
               JVC_Data.HalfBit = 1;
               ignored = false;
             }
-            else if (!pulse && duration >= 250 && duration <= 650 && JVC_Data.HalfBit == 1)
+            else if (!pulse && duration >= 450 && duration <= 650 && JVC_Data.HalfBit == 1)
             {
               JVC_Data.Code <<= 1;
               JVC_Data.Bit++;
               JVC_Data.HalfBit = 0;
               ignored = false;
             }
-            else if (!pulse && duration >= 1450 && duration <= 1850 && JVC_Data.HalfBit == 1)
+            else if (!pulse && duration >= 1450 && duration <= 1700 && JVC_Data.HalfBit == 1)
             {
               JVC_Data.Code <<= 1;
               JVC_Data.Code |= 1;
@@ -211,46 +363,243 @@ namespace MicrosoftMceTransceiver
               JVC_Data.HalfBit = 0;
               ignored = false;
             }
+            else if (!pulse && duration >= 10000)
+            {
+              if (JVC_Data.Bit == 16)
+              {
+                bool first = false;
+                if (JVC_Data.Code != JVC_Data.Toggle)
+                  first = true;
+
+                remoteCallback(IrProtocol.JVC, JVC_Data.Code, first);
+                ignored = false;
+
+                JVC_Data.Toggle = (int)JVC_Data.Code;
+
+                JVC_Data.State = RemoteDetectionState.Data;
+                JVC_Data.HalfBit = 0;
+                JVC_Data.Bit = 0;
+                JVC_Data.Code = 0;
+              }
+              else if (JVC_Data.Bit == 32)
+              {
+                remoteCallback(IrProtocol.Unknown, JVC_Data.Code, false);
+              }
+              else
+              {
+                //Console.WriteLine("JVC Error");
+              }
+ 
+            }
             else
             {
-              //Trace.WriteLine("JVC Error");
+              //Console.WriteLine("JVC Error");
             }
 
-            if (JVC_Data.Bit == 16)
-            {
-              remoteCallback(IrProtocol.JVC, JVC_Data.Code);
-              JVC_Data.State = RemoteDetectionState.Leading;
-            }
             break;
           #endregion Data
-
-          #region Leading
-          case RemoteDetectionState.Leading:
-            //Trace.WriteLine("JVC Leading");
-
-            if (pulse && duration >= 350 && duration <= 750)
-            {
-              JVC_Data = new RemoteDetectionData();
-              JVC_Data.State = RemoteDetectionState.Data;
-              ignored = false;
-            }
-            break;
-          #endregion Leading
 
         }
 
         if (ignored && (JVC_Data.State != RemoteDetectionState.HeaderPulse))
-          JVC_Data = new RemoteDetectionData();
+          JVC_Data.State = RemoteDetectionState.HeaderPulse;
+      }
+    }
+    static void DetectMatsushita(int[] timingData, RemoteCallback remoteCallback)
+    {
+      for (int i = 0; i < timingData.Length; i++)
+      {
+        int duration = Math.Abs(timingData[i]);
+        bool pulse = (timingData[i] > 0);
+        bool ignored = true;
+
+        switch (Matsushita_Data.State)
+        {
+
+          #region HeaderPulse
+          case RemoteDetectionState.HeaderPulse:
+            //Console.WriteLine("Matsushita HeaderPulse: {0}, {1}", pulse, duration);
+
+            if (pulse && duration >= 3300 && duration <= 3700)
+            {
+              Matsushita_Data.State = RemoteDetectionState.HeaderSpace;
+              ignored = false;
+            }
+            //else
+              //Console.WriteLine("HeaderPulse fall through");
+
+            break;
+          #endregion HeaderPulse
+
+          #region HeaderSpace
+          case RemoteDetectionState.HeaderSpace:
+            //Console.WriteLine("Matsushita HeaderSpace: {0}, {1}", pulse, duration);
+
+            if (!pulse && duration >= 3300 && duration <= 3700)
+            {
+              Matsushita_Data.State = RemoteDetectionState.Data;
+              Matsushita_Data.HalfBit = 0;
+              Matsushita_Data.Bit = 0;
+              Matsushita_Data.Code = 0;
+              ignored = false;
+            }
+            //else
+              //Console.WriteLine("HeaderSpace fell through");
+
+            break;
+          #endregion HeaderSpace
+
+          #region Data
+          case RemoteDetectionState.Data:
+            //Console.Write("MData: {0}, {1}\t", pulse, duration);
+
+            if (pulse && duration >= 650 && duration <= 1050)
+            {
+              Matsushita_Data.HalfBit = 1;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 650 && duration <= 1050 && Matsushita_Data.HalfBit == 1)
+            {
+              Matsushita_Data.Code <<= 1;
+              Matsushita_Data.Bit++;
+              Matsushita_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 2450 && duration <= 2850 && Matsushita_Data.HalfBit == 1)
+            {
+              Matsushita_Data.Code <<= 1;
+              Matsushita_Data.Code |= 1;
+              Matsushita_Data.Bit++;
+              Matsushita_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 20000 && Matsushita_Data.HalfBit == 1)
+            {
+              if (Matsushita_Data.Bit != 22)
+                break;
+
+              uint code = Matsushita_Data.Code >> 12;
+              remoteCallback(IrProtocol.Matsushita, code, false);
+              Matsushita_Data.State = RemoteDetectionState.HeaderPulse;
+              Matsushita_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else
+            {
+              //Console.WriteLine("Matsushita Error");
+            }
+
+            break;
+          #endregion Data
+
+        }
+
+        if (ignored && (Matsushita_Data.State != RemoteDetectionState.HeaderPulse))
+        {
+          //Console.WriteLine("ignored");
+          Matsushita_Data.State = RemoteDetectionState.HeaderPulse;
+        }
+      }
+    }
+    static void DetectMitsubishi(int[] timingData, RemoteCallback remoteCallback)
+    {
+      for (int i = 0; i < timingData.Length; i++)
+      {
+        int duration = Math.Abs(timingData[i]);
+        bool pulse = (timingData[i] > 0);
+        bool ignored = true;
+
+        switch (Mitsubishi_Data.State)
+        {
+
+          #region HeaderPulse
+          case RemoteDetectionState.HeaderPulse:
+            //Console.WriteLine("Mitsubishi HeaderPulse: {0}, {1}", pulse, duration);
+
+            if (pulse && duration >= 7800 && duration <= 8200)
+            {
+              Mitsubishi_Data.State = RemoteDetectionState.HeaderSpace;
+              ignored = false;
+            }
+            //else
+              //Console.WriteLine("HeaderPulse fall through");
+
+            break;
+          #endregion HeaderPulse
+
+          #region HeaderSpace
+          case RemoteDetectionState.HeaderSpace:
+            //Console.WriteLine("Mitsubishi HeaderSpace: {0}, {1}", pulse, duration);
+
+            if (!pulse && duration >= 3800 && duration <= 4200)
+            {
+              Mitsubishi_Data.State = RemoteDetectionState.Data;
+              Mitsubishi_Data.HalfBit = 0;
+              Mitsubishi_Data.Bit = 0;
+              Mitsubishi_Data.Code = 0;
+              ignored = false;
+            }
+            //else
+              //Console.WriteLine("HeaderSpace fell through");
+
+            break;
+          #endregion HeaderSpace
+
+          #region Data
+          case RemoteDetectionState.Data:
+            //Console.Write("MData: {0}, {1}\t", pulse, duration);
+
+            if (pulse && duration >= 350 && duration <= 650)
+            {
+              Mitsubishi_Data.HalfBit = 1;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 350 && duration <= 650 && Mitsubishi_Data.HalfBit == 1)
+            {
+              Mitsubishi_Data.Code <<= 1;
+              Mitsubishi_Data.Bit++;
+              Mitsubishi_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 1300 && duration <= 1700 && Mitsubishi_Data.HalfBit == 1)
+            {
+              Mitsubishi_Data.Code <<= 1;
+              Mitsubishi_Data.Code |= 1;
+              Mitsubishi_Data.Bit++;
+              Mitsubishi_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 3800 && duration <= 4200 && Mitsubishi_Data.HalfBit == 1 && Mitsubishi_Data.Bit == 8)
+            {
+              Mitsubishi_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 20000 && Mitsubishi_Data.HalfBit == 1 && Mitsubishi_Data.Bit == 16)
+            {
+              remoteCallback(IrProtocol.Mitsubishi, Mitsubishi_Data.Code, false);
+              Mitsubishi_Data.State = RemoteDetectionState.HeaderPulse;
+              Mitsubishi_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else
+            {
+              Console.WriteLine("Mitsubishi Error");
+            }
+
+            break;
+          #endregion Data
+
+        }
+
+        if (ignored && (Mitsubishi_Data.State != RemoteDetectionState.HeaderPulse))
+        {
+          Console.WriteLine("ignored");
+          Mitsubishi_Data.State = RemoteDetectionState.HeaderPulse;
+        }
       }
     }
     static void DetectNEC(int[] timingData, RemoteCallback remoteCallback)
     {
-      if (NEC_Data == null || timingData == null)
-        NEC_Data = new RemoteDetectionData();
-
-      if (timingData == null)
-        return;
-
       for (int i = 0; i < timingData.Length; i++)
       {
         int duration = Math.Abs(timingData[i]);
@@ -262,19 +611,20 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Trace.WriteLine("NEC HeaderPulse");
+            //Console.WriteLine("NEC HeaderPulse: {0}", timingData[i]);
 
             if (pulse && duration >= 8800 && duration <= 9200)
             {
               NEC_Data.State = RemoteDetectionState.HeaderSpace;
               ignored = false;
             }
+
             break;
           #endregion HeaderPulse
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Trace.WriteLine("NEC HeaderSpace");
+            //Console.WriteLine("NEC HeaderSpace: {0}", timingData[i]);
 
             if (!pulse && duration >= 4300 && duration <= 4700)
             {
@@ -286,9 +636,24 @@ namespace MicrosoftMceTransceiver
             }
             else if (!pulse && duration >= 2050 && duration <= 2450) // For Repeats
             {
-              remoteCallback(IrProtocol.NEC, NEC_Data.Code);
-              NEC_Data.State = RemoteDetectionState.HeaderPulse;
-              ignored = false;
+              //Console.Write("Repeat");
+
+              if (NEC_Data.Code != 0)
+              {
+                uint address = (NEC_Data.Code >> 24) & 0xFF;
+                uint command = (NEC_Data.Code >> 8) & 0xFF;
+
+                uint code = (address << 8) + command;
+
+                //Console.WriteLine(" Code: {0}", code);
+
+                remoteCallback(IrProtocol.NEC, code, false);
+
+                NEC_Data.State = RemoteDetectionState.Leading;
+                ignored = false;
+              }
+              //else
+                //Console.WriteLine("Code = 0  fell through");
             }
 
             break;
@@ -296,21 +661,21 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Trace.WriteLine("NEC Data");
+            //Console.WriteLine("NEC Data: {0}", timingData[i]);
 
             if (pulse && duration >= 350 && duration <= 750)
             {
               NEC_Data.HalfBit = 1;
               ignored = false;
             }
-            else if (!pulse && duration >= 250 && duration <= 650 && NEC_Data.HalfBit == 1)
+            else if (!pulse && duration >= 350 && duration <= 650 && NEC_Data.HalfBit == 1)
             {
               NEC_Data.Code <<= 1;
               NEC_Data.Bit++;
               NEC_Data.HalfBit = 0;
               ignored = false;
             }
-            else if (!pulse && duration >= 1550 && duration <= 1950 && NEC_Data.HalfBit == 1)
+            else if (!pulse && duration >= 1200 && duration <= 2800 && NEC_Data.HalfBit == 1)
             {
               NEC_Data.Code <<= 1;
               NEC_Data.Code |= 1;
@@ -318,33 +683,334 @@ namespace MicrosoftMceTransceiver
               NEC_Data.HalfBit = 0;
               ignored = false;
             }
+            else if (!pulse && duration >= 12000)
+            {
+              if (NEC_Data.Bit != 32)
+              {
+                if (NEC_Data.Code != 0)
+                {
+                  //Console.WriteLine("Invalid NEC: {0}bit, {1:X}", NEC_Data.Bit, NEC_Data.Code);
+                  remoteCallback(IrProtocol.Unknown, NEC_Data.Code, false);
+                }
+                break;
+              }
+
+              uint address     = (NEC_Data.Code >> 24) & 0xFF;
+              uint notAddress  = (NEC_Data.Code >> 16) & 0xFF;
+
+              uint command     = (NEC_Data.Code >> 8) & 0xFF;
+              uint notCommand  = NEC_Data.Code & 0xFF;
+
+              if ((address + notAddress == 0xFF) && (command + notCommand == 0xFF))
+              {
+                uint code = (address << 8) + command;
+                remoteCallback(IrProtocol.NEC, code, true);
+                NEC_Data.State = RemoteDetectionState.HeaderPulse;
+                ignored = false;
+              }
+              else
+              {
+                //Console.WriteLine("Invalid NEC: {0:X}", NEC_Data.Code);
+                remoteCallback(IrProtocol.Unknown, NEC_Data.Code, false);
+              }
+            }
             else
             {
-              //Trace.WriteLine("NEC Error");
+              //Console.WriteLine("NEC Error");
             }
 
-            if (NEC_Data.Bit == 32)
+            break;
+          #endregion Data
+
+          #region Leading
+          case RemoteDetectionState.Leading:
+            Console.WriteLine("NEC Leading: {0}", timingData[i]);
+
+            // For Repeats
+            if (pulse && duration >= 400 && duration <= 800)
             {
-              remoteCallback(IrProtocol.NEC, NEC_Data.Code);
+              ignored = false;
+            }
+            else if (!pulse && duration > 10000) // Repeats
+            {
+              ignored = false;
               NEC_Data.State = RemoteDetectionState.HeaderPulse;
             }
+
+            break;
+          #endregion Leading
+
+        }
+
+        if (ignored && (NEC_Data.State != RemoteDetectionState.HeaderPulse))
+          NEC_Data.State = RemoteDetectionState.HeaderPulse;
+      }
+    }
+    static void DetectNRC17(int[] timingData, RemoteCallback remoteCallback)
+    {
+      for (int i = 0; i < timingData.Length; i++)
+      {
+        int duration = Math.Abs(timingData[i]);
+        bool pulse = (timingData[i] > 0);
+        bool ignored = true;
+
+        switch (NRC17_Data.State)
+        {
+
+          #region HeaderPulse
+          case RemoteDetectionState.HeaderPulse:
+            //Console.WriteLine("NRC17 HeaderPulse: {0}", timingData[i]);
+
+            if (pulse && (duration >= 400) && (duration <= 650))
+            {
+              NRC17_Data.State = RemoteDetectionState.HeaderSpace;
+              ignored = false;
+            }
+            break;
+          #endregion HeaderPulse
+
+          #region HeaderSpace
+          case RemoteDetectionState.HeaderSpace:
+            //Console.WriteLine("NRC17 HeaderSpace: {0}", timingData[i]);
+
+            if (!pulse &&
+              (((duration >= 2350) && (duration <= 2600)) || // Normal battery
+              ((duration >= 3350) && (duration <= 3600))))   // Low battery              
+            {
+              NRC17_Data.State = RemoteDetectionState.Data;
+              NRC17_Data.HalfBit = 0;
+              NRC17_Data.Bit = 17;
+              NRC17_Data.Header = 0;
+              NRC17_Data.Code = 0;
+              ignored = false;
+            }
+            break;
+          #endregion HeaderSpace
+
+          #region Data
+          case RemoteDetectionState.Data:
+            //Console.WriteLine("NRC17 Data: {0}", timingData[i]);
+
+            if (NRC17_Data.HalfBit == 0)
+            {
+              if (pulse && (duration >= 300) && (duration <= 700))
+              {
+                // Logic 1
+                NRC17_Data.HalfBit = 1;
+                NRC17_Data.Code |= (uint)(1 << NRC17_Data.Bit--);
+                ignored = false;
+              }
+              else if (!pulse && (duration >= 300) && (duration <= 700))
+              {
+                // Logic 0
+                NRC17_Data.HalfBit = 1;
+                NRC17_Data.Bit--;
+                ignored = false;
+              }
+            }
+            else
+            {
+              if (!pulse && (duration >= 300) && (duration <= 700))
+              {
+                NRC17_Data.HalfBit = 0;
+                ignored = false;
+              }
+              else if (pulse && (duration >= 300) && (duration <= 700))
+              {
+                NRC17_Data.HalfBit = 0;
+                ignored = false;
+              }
+              else if (!pulse && (duration >= 800) && (duration <= 1200))
+              {
+                NRC17_Data.HalfBit = 1;
+                NRC17_Data.Bit--;
+                ignored = false;
+              }
+              else if (pulse && (duration >= 800) && (duration <= 1200))
+              {
+                NRC17_Data.HalfBit = 1;
+                NRC17_Data.Code |= (uint)(1 << NRC17_Data.Bit--);
+                ignored = false;
+              }
+            }
+
+            if (NRC17_Data.Bit == 0)
+            {
+              NRC17_Data.Code &= 0xFFFF;  // 16-bits (Ignore leading bit which is always 1)
+              remoteCallback(IrProtocol.NRC17, NRC17_Data.Code, false);
+
+              //Console.WriteLine("NRC17: {0}", NRC17_Data.Code);
+
+              NRC17_Data.State = RemoteDetectionState.HeaderPulse;
+            }
+
             break;
           #endregion Data
 
         }
 
-        if (ignored && (NEC_Data.State != RemoteDetectionState.HeaderPulse))
-          NEC_Data = new RemoteDetectionData();
+        if (ignored && (NRC17_Data.State != RemoteDetectionState.HeaderPulse))
+          NRC17_Data.State = RemoteDetectionState.HeaderPulse;
+      }
+    }
+    static void DetectPanasonic(int[] timingData, RemoteCallback remoteCallback)
+    {
+      for (int i = 0; i < timingData.Length; i++)
+      {
+        int duration = Math.Abs(timingData[i]);
+        bool pulse = (timingData[i] > 0);
+        bool ignored = true;
+
+        switch (Panasonic_Data.State)
+        {
+
+          #region HeaderPulse
+          case RemoteDetectionState.HeaderPulse:
+            //Console.WriteLine("Panasonic HeaderPulse: {0}", timingData[i]);
+
+            if (pulse && duration >= 3150 && duration <= 3900)
+            {
+              Panasonic_Data.State = RemoteDetectionState.HeaderSpace;
+              ignored = false;
+            }
+            //else
+              //Console.WriteLine("HeaderPulse fall through");
+
+            break;
+          #endregion HeaderPulse
+
+          #region HeaderSpace
+          case RemoteDetectionState.HeaderSpace:
+            //Console.WriteLine("Panasonic HeaderSpace: {0}", timingData[i]);
+
+            if (!pulse && duration >= 3150 && duration <= 3900)
+            {
+              Panasonic_Data.State = RemoteDetectionState.Data;
+              Panasonic_Data.HalfBit = 0;
+              Panasonic_Data.Bit = 0;
+              Panasonic_Data.Code = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 2050 && duration <= 2450) // For Repeats
+            {
+              //Console.Write("Repeat");
+
+              if (Panasonic_Data.Code != 0)
+              {
+                uint address = (Panasonic_Data.Code >> 24) & 0xFF;
+                uint command = (Panasonic_Data.Code >> 8) & 0xFF;
+
+                uint code = (address << 8) + command;
+
+                //Console.WriteLine(" Code: {0}", code);
+
+                remoteCallback(IrProtocol.Panasonic, code, false);
+
+                Panasonic_Data.State = RemoteDetectionState.Leading;
+                ignored = false;
+              }
+              //else
+                //Console.WriteLine("Code = 0  fell through");
+            }
+            //else
+              //Console.WriteLine("HeaderSpace fell through");
+
+            break;
+          #endregion HeaderSpace
+
+          #region Data
+          case RemoteDetectionState.Data:
+            //Console.WriteLine("Panasonic Data: {0}", timingData[i]);
+
+            if (pulse && duration >= 600 && duration <= 1150)
+            {
+              Panasonic_Data.HalfBit = 1;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 600 && duration <= 1150 && Panasonic_Data.HalfBit == 1)
+            {
+              Panasonic_Data.Code <<= 1;
+              Panasonic_Data.Bit++;
+              Panasonic_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 1800 && duration <= 3450 && Panasonic_Data.HalfBit == 1)
+            {
+              Panasonic_Data.Code <<= 1;
+              Panasonic_Data.Code |= 1;
+              Panasonic_Data.Bit++;
+              Panasonic_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 8000)
+            {
+              if (Panasonic_Data.Bit != 22)
+                break;
+
+
+              uint custom = (Panasonic_Data.Code >> 17) & 0x1F;
+              uint data = (Panasonic_Data.Code >> 11) & 0x3F;
+
+              uint notCustom = (Panasonic_Data.Code >> 6) & 0x1F;
+              uint notData = Panasonic_Data.Code & 0x3F;
+
+              if ((custom + notCustom == 0x1F) && (data + notData == 0x3F))
+              {
+                uint code = (custom << 8) + data;
+                remoteCallback(IrProtocol.Panasonic, code, true);
+                Panasonic_Data.State = RemoteDetectionState.HeaderPulse;
+                ignored = false;
+              }
+              else
+              {
+                Console.WriteLine("custom != notCustom || data != notData    fall through");
+                Console.WriteLine("{0:X}", Panasonic_Data.Code);
+              }
+            }
+            else
+            {
+              //Console.WriteLine("Panasonic Error");
+            }
+
+            break;
+          #endregion Data
+
+          #region Leading
+          case RemoteDetectionState.Leading:
+            //Console.WriteLine("Panasonic Leading: {0}", timingData[i]);
+
+            // For Repeats
+            if (pulse && duration >= 400 && duration <= 800)
+            {
+              ignored = false;
+            }
+            else if (!pulse && duration >= 38000 && duration <= 40000) // First Repeat
+            {
+              ignored = false;
+              Panasonic_Data.State = RemoteDetectionState.HeaderPulse;
+            }
+            else if (!pulse && duration >= 94600 && duration <= 95000) // Multiple Repeats
+            {
+              ignored = false;
+              Panasonic_Data.State = RemoteDetectionState.HeaderPulse;
+            }
+            //else
+              //Console.WriteLine("Leading fall through");
+
+            break;
+          #endregion Leading
+
+        }
+
+        if (ignored && (Panasonic_Data.State != RemoteDetectionState.HeaderPulse))
+        {
+          //Console.WriteLine("Panasonic Ignored");
+          Panasonic_Data.State = RemoteDetectionState.HeaderPulse;
+        }
       }
     }
     static void DetectRC5(int[] timingData, RemoteCallback remoteCallback)
     {
-      if (RC5_Data == null || timingData == null)
-        RC5_Data = new RemoteDetectionData();
-
-      if (timingData == null)
-        return;
-
       for (int i = 0; i < timingData.Length; i++)
       {
         int duration = Math.Abs(timingData[i]);
@@ -356,7 +1022,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Trace.WriteLine("RC5 HeaderPulse");
+            //Console.WriteLine("RC5 HeaderPulse: {0}", timingData[i]);
 
             if (pulse)
             {
@@ -381,7 +1047,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Trace.WriteLine("RC5 HeaderSpace");
+            //Console.WriteLine("RC5 HeaderSpace: {0}", timingData[i]);
 
             if (!pulse && (duration >= 750) && (duration <= 1000))
             {
@@ -394,7 +1060,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Trace.WriteLine("RC5 Data");
+            //Console.WriteLine("RC5 Data: {0}", timingData[i]);
 
             if (RC5_Data.HalfBit == 0)
             {
@@ -412,7 +1078,7 @@ namespace MicrosoftMceTransceiver
                 }
                 else
                 {
-                  //Trace.WriteLine("RC5 Error  {0} on bit {1}", duration, bit);
+                  //Console.WriteLine("RC5 Error: {0} on bit {1}", timingData[i], RC5_Data.Bit);
                 }
               }
               else
@@ -435,7 +1101,7 @@ namespace MicrosoftMceTransceiver
                 }
                 else
                 {
-                  //Trace.WriteLine("RC5 Space Error  {0} on bit {1}", duration, bit);
+                  //Console.WriteLine("RC5 Space Error: {0} on bit {1}", timingData[i], RC5_Data.Bit);
                 }
               }
               break;
@@ -458,14 +1124,14 @@ namespace MicrosoftMceTransceiver
             }
             else
             {
-              //Trace.WriteLine("RC5 Duration Error  {0} on bit {1}", duration, bit);
+              //Console.WriteLine("RC5 Duration Error: {0} on bit {1}", timingData[i], RC5_Data.Bit);
             }
             break;
           #endregion Data
 
           #region Leading
           case RemoteDetectionState.Leading:
-            //Trace.WriteLine("RC5 Leading");
+            //Console.WriteLine("RC5 Leading: {0}", timingData[i]);
 
             if (pulse)
               break;
@@ -482,12 +1148,33 @@ namespace MicrosoftMceTransceiver
 
         if (RC5_Data.State == RemoteDetectionState.KeyCode)
         {
-          if (RC5_Data.Code > 0xFFFF)
-            RC5_Data.Code &= ToggleMaskRC5X;
-          else
-            RC5_Data.Code &= ToggleMaskRC5;
+          bool toggleOn;
+          
+          bool first = true;
+          bool RC5X;
 
-          remoteCallback(IrProtocol.RC5, RC5_Data.Code);
+          if (RC5_Data.Code > 0xFFFF) // RC5X
+          {
+            toggleOn = ((RC5_Data.Code & ToggleBitRC5X) == ToggleBitRC5X);
+            RC5_Data.Code &= ToggleMaskRC5X;
+            RC5X = true;
+          }
+          else // RC5
+          {
+            toggleOn = ((RC5_Data.Code & ToggleBitRC5) == ToggleBitRC5);
+            RC5_Data.Code &= ToggleMaskRC5;
+            RC5X = false;
+          }
+
+          if ((toggleOn && RC5_Data.Toggle == 1) || (!toggleOn && RC5_Data.Toggle == 2))
+            first = false;
+
+          RC5_Data.Toggle = toggleOn ? 1 : 2;
+
+          if (RC5X)
+            remoteCallback(IrProtocol.RC5X, RC5_Data.Code, first);
+          else
+            remoteCallback(IrProtocol.RC5, RC5_Data.Code, first);
 
           RC5_Data.State = RemoteDetectionState.HeaderPulse;
         }
@@ -499,12 +1186,6 @@ namespace MicrosoftMceTransceiver
     }
     static void DetectRC6(int[] timingData, RemoteCallback remoteCallback)
     {
-      if (RC6_Data == null || timingData == null)
-        RC6_Data = new RemoteDetectionData();
-
-      if (timingData == null)
-        return;
-
       for (int i = 0; i < timingData.Length; i++)
       {
         int duration = Math.Abs(timingData[i]);
@@ -516,7 +1197,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Trace.WriteLine("RC6 HeaderPulse");
+            //Console.WriteLine("RC6 HeaderPulse: {0}", timingData[i]);
 
             if (pulse && (duration >= 2600) && (duration <= 3300))
             {
@@ -527,6 +1208,7 @@ namespace MicrosoftMceTransceiver
               RC6_Data.Code = 0;
               RC6_Data.LongPulse = false;
               RC6_Data.LongSpace = false;
+              RC6_Data.Toggle &= 0xFE;
               ignored = false;
             }
             break;
@@ -534,7 +1216,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Trace.WriteLine("RC6 HeaderSpace");
+            //Console.WriteLine("RC6 HeaderSpace: {0}", timingData[i]);
 
             if (!pulse && (duration >= 750) && (duration <= 1000))
             {
@@ -547,7 +1229,7 @@ namespace MicrosoftMceTransceiver
 
           #region PreData
           case RemoteDetectionState.PreData:
-            //Trace.WriteLine("RC6 PreData");
+            //Console.WriteLine("RC6 PreData: {0}", timingData[i]);
 
             if (pulse)
             {
@@ -576,7 +1258,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Trace.WriteLine(string.Format("RC6 Error Bit {0} {1} {2}", bit, pulse ? "Pulse" : "Space", duration));
+                //Console.WriteLine(string.Format("RC6 Error Bit {0} {1} {2}", RC6_Data.Bit, pulse ? "Pulse" : "Space", duration));
               }
             }
             else
@@ -604,23 +1286,25 @@ namespace MicrosoftMceTransceiver
                 else
                 {
                   RC6_Data.HalfBit = 1;
-                  RC6_Data.LongPulse = true;
+                  //RC6_Data.LongPulse = true;
+                  RC6_Data.LongSpace = true;
                   RC6_Data.Bit = 0;
+                  RC6_Data.Toggle |= 1;
                 }
               }
               else
               {
-                //Trace.WriteLine(string.Format("RC6 Error Bit {0} {1} {2}", bit, pulse ? "Pulse" : "Space", duration));
+                //Console.WriteLine(string.Format("RC6 Error Bit {0} {1} {2}", RC6_Data.Bit, pulse ? "Pulse" : "Space", duration));
               }
             }
 
             if ((ignored == false) && (RC6_Data.Bit == 0))
             {
-              if ((RC6_Data.Header & 0xFFFFFFF0) == PrefixRC6)
+              if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6)
               {
                 RC6_Data.Bit = 16;
               }
-              else if ((RC6_Data.Header & 0xFFFFFFF0) == PrefixRC6A)
+              else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
               {
                 RC6_Data.Bit = 32;
               }
@@ -637,7 +1321,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Trace.WriteLine("RC6 Data");
+            //Console.WriteLine("RC6 Data: {0}", timingData[i]);
 
             if ((RC6_Data.HalfBit % 2) == 0)
             {
@@ -658,7 +1342,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Trace.WriteLine(string.Format("RC6 Error Halfbit0 {0} {1}", pulse ? "Pulse" : "Space", duration));
+                Console.WriteLine(string.Format("RC6 Error Halfbit0 {0} {1}", pulse ? "Pulse" : "Space", duration));
               }
               break;
             }
@@ -668,7 +1352,7 @@ namespace MicrosoftMceTransceiver
               RC6_Data.LongPulse = false;
               if (pulse)
               {
-                //Trace.WriteLine(string.Format("RC6 Error Pulse after LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
+                Console.WriteLine(string.Format("RC6 Error Pulse after LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
                 break;
               }
 
@@ -687,7 +1371,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Trace.WriteLine(string.Format("RC6 Error Pulse LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
+                Console.WriteLine(string.Format("RC6 Error Pulse LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
               }
             }
             else if (RC6_Data.LongSpace)
@@ -696,7 +1380,7 @@ namespace MicrosoftMceTransceiver
 
               if (!pulse)
               {
-                //Trace.WriteLine(string.Format("RC6 Error Pulse after LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
+                Console.WriteLine(string.Format("RC6 Error Pulse after LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
                 break;
               }
 
@@ -726,7 +1410,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Trace.WriteLine(string.Format("RC6 Error LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
+                Console.WriteLine(string.Format("RC6 Error LongPulse {0} {1}", pulse ? "Pulse" : "Space", duration));
               }
             }
             break;
@@ -736,10 +1420,53 @@ namespace MicrosoftMceTransceiver
 
         if (RC6_Data.State == RemoteDetectionState.KeyCode)
         {
-          if ((~RC6_Data.Code >> 16) == CustomerMce)
+          bool first = false;
+
+          bool mceVariation;
+          bool aVariation;
+
+          if ((~RC6_Data.Code >> 16) == CustomerMce) // MCE RC6 variation
+          {
+            bool toggleOn = ((RC6_Data.Code & ToggleBitMce) == ToggleBitMce);
+
+            if ((toggleOn && RC6_Data.Toggle != 8) || (!toggleOn && RC6_Data.Toggle != 16))
+              first = true;
+
+            // Use this to signal toggle in MCE RC6 variation
+            RC6_Data.Toggle = toggleOn ? 8 : 16;
+
             RC6_Data.Code &= ToggleMaskMce;
 
-          remoteCallback(IrProtocol.RC6, RC6_Data.Code);
+            mceVariation = true;
+            aVariation = false;
+          }
+          else // Standard RC6 (Non-MCE)
+          {
+            bool toggleOn = (RC6_Data.Toggle & 1) == 1;
+
+            if (RC6_Data.Toggle == 0 || RC6_Data.Toggle == 1 || RC6_Data.Toggle == 2 || RC6_Data.Toggle == 5)
+              first = true;
+
+            // Use this to signal toggle in standard RC6
+            if (toggleOn)
+              RC6_Data.Toggle = 2;
+            else
+              RC6_Data.Toggle = 4;
+
+            mceVariation = false;
+
+            if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
+              aVariation = true;
+            else
+              aVariation = false;
+          }
+
+          if (mceVariation)
+            remoteCallback(IrProtocol.RC6_MCE, RC6_Data.Code, first);
+          else if (aVariation)
+            remoteCallback(IrProtocol.RC6A, RC6_Data.Code, first);
+          else
+            remoteCallback(IrProtocol.RC6, RC6_Data.Code, first);
 
           RC6_Data.State = RemoteDetectionState.HeaderPulse;
         }
@@ -751,12 +1478,6 @@ namespace MicrosoftMceTransceiver
     }
     static void DetectRCA(int[] timingData, RemoteCallback remoteCallback)
     {
-      if (RCA_Data == null || timingData == null)
-        RCA_Data = new RemoteDetectionData();
-
-      if (timingData == null)
-        return;
-
       for (int i = 0; i < timingData.Length; i++)
       {
         int duration = Math.Abs(timingData[i]);
@@ -768,7 +1489,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Trace.WriteLine("RCA HeaderPulse");
+            //Console.WriteLine("RCA HeaderPulse");
 
             if (pulse && duration >= 3800 && duration <= 4200)
             {
@@ -780,7 +1501,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Trace.WriteLine("RCA HeaderSpace");
+            //Console.WriteLine("RCA HeaderSpace");
 
             if (!pulse && duration >= 3800 && duration <= 4200)
             {
@@ -795,7 +1516,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Trace.WriteLine("RCA Data");
+            //Console.WriteLine("RCA Data");
 
             if (pulse && duration >= 300 && duration <= 700)
             {
@@ -819,12 +1540,12 @@ namespace MicrosoftMceTransceiver
             }
             else
             {
-              //Trace.WriteLine("RCA Error");
+              //Console.WriteLine("RCA Error");
             }
 
             if (RCA_Data.Bit == 12)
             {
-              remoteCallback(IrProtocol.RCA, RCA_Data.Code);
+              remoteCallback(IrProtocol.RCA, RCA_Data.Code, false);
               RCA_Data.State = RemoteDetectionState.HeaderPulse;
             }
             break;
@@ -838,12 +1559,6 @@ namespace MicrosoftMceTransceiver
     }
     static void DetectRECS80(int[] timingData, RemoteCallback remoteCallback)
     {
-      if (RECS80_Data == null || timingData == null)
-        RECS80_Data = new RemoteDetectionData();
-
-      if (timingData == null)
-        return;
-
       for (int i = 0; i < timingData.Length; i++)
       {
         int duration = Math.Abs(timingData[i]);
@@ -855,7 +1570,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Trace.WriteLine("RECS80 HeaderPulse");
+            //Console.WriteLine("RECS80 HeaderPulse: {0}, {1}\t", duration, pulse);
 
             if (pulse && (duration >= 3300) && (duration <= 4100))
             {
@@ -867,7 +1582,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Trace.WriteLine("RECS80 HeaderSpace");
+            //Console.WriteLine("RECS80 HeaderSpace: {0}, {1}\t", duration, pulse);
 
             if (!pulse && (duration >= 1400) && (duration <= 1800))
             {
@@ -883,7 +1598,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Trace.WriteLine("RECS80 Data");
+            //Console.Write("RECS80 Data: {0}, {1} ", duration, pulse);
 
             if ((RECS80_Data.HalfBit % 2) == 0)
             {
@@ -896,14 +1611,15 @@ namespace MicrosoftMceTransceiver
                 RECS80_Data.Bit--;
                 ignored = false;
               }
-              break;
+              else
+                break;
             }
             else
             {
               if (pulse) 
                 break;
 
-              if ((duration >= 400) && (duration <= 750))
+              if ((duration >= 300) && (duration <= 750))
               {
                 RECS80_Data.HalfBit = 0;
                 ignored = false;
@@ -924,8 +1640,8 @@ namespace MicrosoftMceTransceiver
 
               if (RECS80_Data.Bit == 0)
               {
-                RECS80_Data.Code &= 0x0000FFFF;
-                remoteCallback(IrProtocol.RECS80, RECS80_Data.Code);
+                RECS80_Data.Code &= 0xFFFF;
+                remoteCallback(IrProtocol.RECS80, RECS80_Data.Code, false);
 
                 RECS80_Data.State = RemoteDetectionState.HeaderPulse;
               }
@@ -941,12 +1657,6 @@ namespace MicrosoftMceTransceiver
     }
     static void DetectSIRC(int[] timingData, RemoteCallback remoteCallback)
     {
-      if (SIRC_Data == null || timingData == null)
-        SIRC_Data = new RemoteDetectionData();
-
-      if (timingData == null)
-        return;
-
       for (int i = 0; i < timingData.Length; i++)
       {
         int duration = Math.Abs(timingData[i]);
@@ -958,9 +1668,9 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
-            //Trace.WriteLine("SIRC HeaderPulse");
+            //Console.WriteLine("SIRC HeaderPulse: {0}", timingData[i]);
 
-            if (pulse && duration >= 2200 && duration <= 2600)
+            if (pulse && duration >= 2100 && duration <= 2700)
             {
               SIRC_Data.State = RemoteDetectionState.HeaderSpace;
               ignored = false;
@@ -970,7 +1680,7 @@ namespace MicrosoftMceTransceiver
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            //Trace.WriteLine("SIRC HeaderSpace");
+            //Console.WriteLine("SIRC HeaderSpace: {0}", timingData[i]);
 
             if (!pulse && duration >= 400 && duration <= 800)
             {
@@ -984,7 +1694,7 @@ namespace MicrosoftMceTransceiver
 
           #region Data
           case RemoteDetectionState.Data:
-            //Trace.WriteLine("SIRC Data");
+            //Console.WriteLine("SIRC Data: {0}", timingData[i]);
 
             if (pulse && duration >= 400 && duration <= 800)
             {
@@ -1003,16 +1713,16 @@ namespace MicrosoftMceTransceiver
             {
               ignored = false;
             }
-            else
+            else if (!pulse && duration >= 6000)
             {
-              //Trace.WriteLine("SIRC Error");
-            }
+              if ((SIRC_Data.Bit == 8) || (SIRC_Data.Bit == 12) || (SIRC_Data.Bit == 15) || (SIRC_Data.Bit == 20))
+              {
+                remoteCallback(IrProtocol.SIRC, SIRC_Data.Code, false);
+                SIRC_Data.State = RemoteDetectionState.HeaderPulse;
+                ignored = false;
+              }
+           }
 
-            if (SIRC_Data.Bit == 15)
-            {
-              remoteCallback(IrProtocol.SIRC, SIRC_Data.Code);
-              SIRC_Data.State = RemoteDetectionState.HeaderPulse;
-            }
             break;
           #endregion Data
 
@@ -1022,6 +1732,100 @@ namespace MicrosoftMceTransceiver
           SIRC_Data.State = RemoteDetectionState.HeaderPulse;
       }
 
+    }
+    static void DetectToshiba(int[] timingData, RemoteCallback remoteCallback)
+    {
+      for (int i = 0; i < timingData.Length; i++)
+      {
+        int duration = Math.Abs(timingData[i]);
+        bool pulse = (timingData[i] > 0);
+        bool ignored = true;
+
+        switch (Toshiba_Data.State)
+        {
+
+          #region HeaderPulse
+          case RemoteDetectionState.HeaderPulse:
+            //Console.WriteLine("Toshiba HeaderPulse: {0}, {1}", pulse, duration);
+
+            if (pulse && duration >= 4300 && duration <= 4700)
+            {
+              Toshiba_Data.State = RemoteDetectionState.HeaderSpace;
+              ignored = false;
+            }
+
+            break;
+          #endregion HeaderPulse
+
+          #region HeaderSpace
+          case RemoteDetectionState.HeaderSpace:
+            //Console.WriteLine("Toshiba HeaderSpace: {0}, {1}", pulse, duration);
+
+            if (!pulse && duration >= 4300 && duration <= 4700)
+            {
+              Toshiba_Data.State = RemoteDetectionState.Data;
+              Toshiba_Data.HalfBit = 0;
+              Toshiba_Data.Bit = 0;
+              Toshiba_Data.Code = 0;
+              ignored = false;
+            }
+
+            break;
+          #endregion HeaderSpace
+
+          #region Data
+          case RemoteDetectionState.Data:
+            //Console.WriteLine("Toshiba Data: {0}", timingData[i]);
+
+            if (pulse && duration >= 350 && duration <= 750)
+            {
+              Toshiba_Data.HalfBit = 1;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 350 && duration <= 750 && Toshiba_Data.HalfBit == 1)
+            {
+              Toshiba_Data.Code <<= 1;
+              Toshiba_Data.Bit++;
+              Toshiba_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 1500 && duration <= 1900 && Toshiba_Data.HalfBit == 1)
+            {
+              Toshiba_Data.Code <<= 1;
+              Toshiba_Data.Code |= 1;
+              Toshiba_Data.Bit++;
+              Toshiba_Data.HalfBit = 0;
+              ignored = false;
+            }
+            else if (!pulse && duration >= 6100 && Toshiba_Data.HalfBit == 1 && Toshiba_Data.Bit == 32)
+            {
+              uint custom       = (Toshiba_Data.Code >> 24) & 0xFF;
+              uint repeatCustom = (Toshiba_Data.Code >> 16) & 0xFF;
+
+              uint data         = (Toshiba_Data.Code >> 8) & 0xFF;
+              uint notData      = Toshiba_Data.Code & 0xFF;
+
+              if (custom == repeatCustom && (data + notData == 0xFF))
+              {
+                uint code = (custom << 8) + data;
+                remoteCallback(IrProtocol.Toshiba, code, false);
+                Toshiba_Data.State = RemoteDetectionState.HeaderPulse;
+                ignored = false;
+              }
+            }
+            else
+            {
+              //Console.WriteLine("Toshiba Error");
+            }
+
+            break;
+          #endregion Data
+
+        }
+
+        if (ignored && (Toshiba_Data.State != RemoteDetectionState.HeaderPulse))
+          Toshiba_Data.State = RemoteDetectionState.HeaderPulse;
+      }
     }
 
     //static uint biggest = 0;
@@ -1036,18 +1840,6 @@ namespace MicrosoftMceTransceiver
       const int HalfBit_Zero = 1;
       const int HalfBit_One = 2;
 
-      if (MCE_Data == null || timingData == null)
-      {
-        MCE_Data = new MceDetectionData();
-
-        // TODO: if lingering mouse data ...
-        if (mouseCallback != null)
-          mouseCallback(0, 0, false, false);
-      }
-
-      if (timingData == null)
-        return;
-
       for (int i = 0; i < timingData.Length; i++)
       {
         int duration = Math.Abs(timingData[i]);
@@ -1058,25 +1850,29 @@ namespace MicrosoftMceTransceiver
         {
           switch (MCE_Data.HalfBit)
           {
+
+            #region HalfBit_None
             case HalfBit_None:
               if (duration >= 100 && duration <= 450)
-                MCE_Data.HalfBit = (pulse ? 2 : 1);
+                MCE_Data.HalfBit = (pulse ? HalfBit_One : HalfBit_Zero);
               else if (duration >= 500 && duration <= 800)
               {
-                //Trace.WriteLine("Bad bit sequence double {0}", pulse);
-                MCE_Data.HalfBit = (pulse ? 2 : 1);
+                //Console.WriteLine("Bad bit sequence double {0}", pulse);
+                MCE_Data.HalfBit = (pulse ? HalfBit_One : HalfBit_Zero);
                 //MCE_Data = new MceDetectionData();
                 return;
               }
               else
               {
                 // Over Length duration (Treat as a Zero bit)
-                //Trace.WriteLine("Bad duration {0}", duration);
+                //Console.WriteLine("Bad duration {0}", duration);
                 MCE_Data.Working <<= 1;
                 MCE_Data.Bit--;
               }
               break;
+            #endregion HalfBit_None
 
+            #region HalfBit_Zero
             case HalfBit_Zero:
               if (duration >= 100 && duration <= 450)
               {
@@ -1084,11 +1880,11 @@ namespace MicrosoftMceTransceiver
                 {
                   MCE_Data.Working <<= 1;
                   MCE_Data.Bit--;
-                  MCE_Data.HalfBit = 0;
+                  MCE_Data.HalfBit = HalfBit_None;
                 }
                 else
                 {
-                  //Trace.WriteLine("Bad bit sequence 00");
+                  //Console.WriteLine("Bad bit sequence 00");
                   MCE_Data = new MceDetectionData();
                   //return;
                 }
@@ -1099,24 +1895,24 @@ namespace MicrosoftMceTransceiver
                 {
                   MCE_Data.Working <<= 1;
                   MCE_Data.Bit--;
-                  MCE_Data.HalfBit = 2;
+                  MCE_Data.HalfBit = HalfBit_One;
                 }
                 else
                 {
-                  //Trace.WriteLine("Bad bit sequence 00 0");
+                  //Console.WriteLine("Bad bit sequence 00 0");
                   MCE_Data = new MceDetectionData();
                   //return;
                 }
               }
               else
               {
-                //Trace.WriteLine("Bad duration {0}", duration);
+                //Console.WriteLine("Bad duration {0}", duration);
                 if (MCE_Data.Bit == 1)
                 {
                   MCE_Data.Working <<= 1;
                   //MceKeyboard_Data.Working |= 1;
                   MCE_Data.Bit--;
-                  MCE_Data.HalfBit = 0;
+                  MCE_Data.HalfBit = HalfBit_None;
                   //i--;
                 }
                 else
@@ -1124,7 +1920,9 @@ namespace MicrosoftMceTransceiver
                 //return;
               }
               break;
+            #endregion HalfBit_Zero
 
+            #region HalfBit_One
             case HalfBit_One:
               if (duration >= 100 && duration <= 450)
               {
@@ -1133,11 +1931,11 @@ namespace MicrosoftMceTransceiver
                   MCE_Data.Working <<= 1;
                   MCE_Data.Working |= 1;
                   MCE_Data.Bit--;
-                  MCE_Data.HalfBit = 0;
+                  MCE_Data.HalfBit = HalfBit_None;
                 }
                 else
                 {
-                  //Trace.WriteLine("Bad bit sequence 11");
+                  //Console.WriteLine("Bad bit sequence 11");
                   MCE_Data = new MceDetectionData();
                   //return;
                 }
@@ -1149,31 +1947,35 @@ namespace MicrosoftMceTransceiver
                   MCE_Data.Working <<= 1;
                   MCE_Data.Working |= 1;
                   MCE_Data.Bit--;
-                  MCE_Data.HalfBit = 1;
+                  MCE_Data.HalfBit = HalfBit_Zero;
                 }
                 else
                 {
-                  //Trace.WriteLine("Bad bit sequence 11 1");
+                  //Console.WriteLine("Bad bit sequence 11 1");
                   MCE_Data = new MceDetectionData();
                   //return;
                 }
               }
               else
               {
-                //Trace.WriteLine("Bad duration {0}", duration);
+                //Console.WriteLine("Bad duration {0}", duration);
                 if (MCE_Data.Bit == 1)
                 {
                   MCE_Data.Working <<= 1;
                   MCE_Data.Working |= 1;
                   MCE_Data.Bit--;
-                  MCE_Data.HalfBit = 0;
+                  MCE_Data.HalfBit = HalfBit_None;
                   //i--;
                 }
                 else
+                {
                   MCE_Data = new MceDetectionData();
-                //return;
+                  //return;
+                }
               }
               break;
+            #endregion HalfBit_One
+
           }
         }
         #endregion Working data ...
@@ -1183,7 +1985,7 @@ namespace MicrosoftMceTransceiver
 
           #region Header
           case MceKeyboardDetectState.Header:
-            //Trace.WriteLine("KB Header");
+            //Console.WriteLine("KB Header");
 
             if (pulse && (duration >= 2600) && (duration <= 3300))
             {
@@ -1197,7 +1999,7 @@ namespace MicrosoftMceTransceiver
 
           #region CodeType
           case MceKeyboardDetectState.CodeType:
-            //Trace.WriteLine("KB CodeType");
+            //Console.WriteLine("KB CodeType");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1217,7 +2019,7 @@ namespace MicrosoftMceTransceiver
               }
               else
               {
-                //Trace.WriteLine("KB: Invalid Type {0}", MceKeyboard_Data.Type);
+                //Console.WriteLine("KB: Invalid Type {0}", MceKeyboard_Data.Type);
                 return;
               }
             }
@@ -1230,7 +2032,7 @@ namespace MicrosoftMceTransceiver
 
           #region KeyboardIgnore
           case MceKeyboardDetectState.KeyboardIgnore:
-            //Trace.WriteLine("KB KeyboardIgnore");
+            //Console.WriteLine("KB KeyboardIgnore");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1243,7 +2045,7 @@ namespace MicrosoftMceTransceiver
 
           #region KeyCode
           case MceKeyboardDetectState.KeyCode:
-            //Trace.WriteLine("KB KeyCode");
+            //Console.WriteLine("KB KeyCode");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1258,7 +2060,7 @@ namespace MicrosoftMceTransceiver
 
           #region Modifiers
           case MceKeyboardDetectState.Modifiers:
-            //Trace.WriteLine("KB Modifiers");
+            //Console.WriteLine("KB Modifiers");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1277,7 +2079,7 @@ namespace MicrosoftMceTransceiver
 
           #region MouseIgnore
           case MceKeyboardDetectState.MouseIgnore:
-            //Trace.WriteLine("KB MouseIgnore");
+            //Console.WriteLine("KB MouseIgnore");
 
             if (MCE_Data.Bit == 0)
             {
@@ -1290,11 +2092,11 @@ namespace MicrosoftMceTransceiver
 
           #region DeltaY
           case MceKeyboardDetectState.DeltaY:
-            //Trace.WriteLine("KB DeltaY");
+            //Console.WriteLine("KB DeltaY");
 
             if (MCE_Data.Bit == 0)
             {
-              //Trace.WriteLine("KB DeltaY Set");
+              //Console.WriteLine("KB DeltaY Set");
               MCE_Data.DeltaY = ScaleMouseDelta((int)MCE_Data.Working);
 
               MCE_Data.State = MceKeyboardDetectState.DeltaX;
@@ -1306,11 +2108,11 @@ namespace MicrosoftMceTransceiver
 
           #region DeltaX
           case MceKeyboardDetectState.DeltaX:
-            //Trace.WriteLine("KB DeltaX");
+            //Console.WriteLine("KB DeltaX");
 
             if (MCE_Data.Bit == 0)
             {
-              //Trace.WriteLine("KB DeltaX Set");
+              //Console.WriteLine("KB DeltaX Set");
               MCE_Data.DeltaX = ScaleMouseDelta((int)MCE_Data.Working);
 
               MCE_Data.State = MceKeyboardDetectState.Right;
@@ -1322,11 +2124,11 @@ namespace MicrosoftMceTransceiver
 
           #region Right
           case MceKeyboardDetectState.Right:
-            //Trace.WriteLine("KB Right");
+            //Console.WriteLine("KB Right");
 
             if (MCE_Data.Bit == 0)
             {
-              //Trace.WriteLine("KB Right Set");
+              //Console.WriteLine("KB Right Set");
               MCE_Data.Right = (MCE_Data.Working == 1);
 
               MCE_Data.State = MceKeyboardDetectState.Left;
@@ -1338,11 +2140,11 @@ namespace MicrosoftMceTransceiver
 
           #region Left
           case MceKeyboardDetectState.Left:
-            //Trace.WriteLine("KB Left");
+            //Console.WriteLine("KB Left");
 
             if (MCE_Data.Bit == 0)
             {
-              //Trace.WriteLine("KB Left Set");
+              //Console.WriteLine("KB Left Set");
               MCE_Data.Left = (MCE_Data.Working == 1);
 
               MCE_Data.State = MceKeyboardDetectState.Checksum;
@@ -1354,11 +2156,11 @@ namespace MicrosoftMceTransceiver
 
           #region Checksum
           case MceKeyboardDetectState.Checksum:
-            //Trace.WriteLine("KB Checksum");
+            //Console.WriteLine("KB Checksum");
 
             if (MCE_Data.Bit == 0)
             {
-              //Trace.WriteLine("KB Checksum Set");
+              //Console.WriteLine("KB Checksum Set");
               mouseCallback(MCE_Data.DeltaX, MCE_Data.DeltaY, MCE_Data.Right, MCE_Data.Left);
 
               MCE_Data = new MceDetectionData();
@@ -1383,6 +2185,20 @@ namespace MicrosoftMceTransceiver
         scaledDelta -= 0x80;
 
       return scaledDelta;
+    }
+
+    static bool Approx(int value, int target, int margin)
+    {
+      if (value >= target - margin && value <= target + margin)
+        return true;
+
+      return false;
+    }
+    static bool Approx(int value, int target, double accuracy)
+    {
+      int margin = (int)((double)target * accuracy);
+      
+      return Approx(value, target, margin);
     }
 
     #endregion Methods

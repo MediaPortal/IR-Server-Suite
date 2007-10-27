@@ -57,7 +57,7 @@ namespace IRManReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.3.4"; } }
+    public override string Version      { get { return "1.0.3.5"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>

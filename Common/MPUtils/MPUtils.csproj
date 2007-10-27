@@ -43,6 +43,7 @@
     <RegisterForComInterop>false</RegisterForComInterop>
     <DocumentationFile>bin\x86\Debug\MPUtils.XML</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\x86\Release\</OutputPath>

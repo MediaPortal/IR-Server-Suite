@@ -119,7 +119,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
-    public override string Version      { get { return "1.0.3.4"; } }
+    public override string Version      { get { return "1.0.3.5"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -230,7 +230,10 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_driver != null)
+      {
         _driver.Stop();
+        _driver = null;
+      }
     }
 
     /// <summary>
@@ -532,20 +535,30 @@ namespace MicrosoftMceTransceiver
 #endif
     }
 
-    void RemoteEvent(IrProtocol codeType, uint keyCode)
+    void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
     {
+#if TRACE
+      Trace.WriteLine(String.Format("Remote: {0}, {1}, {2}", Enum.GetName(typeof(IrProtocol), codeType), keyCode, firstPress));
+#endif
+
       if (!_enableRemoteInput)
         return;
 
-      if (_lastRemoteButtonCodeType == codeType && _lastRemoteButtonKeyCode == keyCode)
+      if (!firstPress && _lastRemoteButtonCodeType == codeType && _lastRemoteButtonKeyCode == keyCode)
       {
         TimeSpan timeBetween = DateTime.Now.Subtract(_lastRemoteButtonTime);
 
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < _remoteFirstRepeat)
+        {
+          //Console.Write(" Skip First Repeat ");
           return;
+        }
 
         if (_remoteButtonRepeated && timeBetween.TotalMilliseconds < _remoteHeldRepeats)
+        {
+          //Console.Write(" Skip Held Repeat ");
           return;
+        }
 
         if (_remoteButtonRepeated && timeBetween.TotalMilliseconds > _remoteFirstRepeat)
           _remoteButtonRepeated = false;
@@ -563,13 +576,13 @@ namespace MicrosoftMceTransceiver
 
       if (_remoteHandler != null)
         _remoteHandler(keyCode.ToString());
-
-#if TRACE
-      Trace.WriteLine(String.Format("Remote: {0}, {1}", Enum.GetName(typeof(IrProtocol), codeType), keyCode));
-#endif
     }
     void KeyboardEvent(uint keyCode, uint modifiers)
     {
+#if TRACE
+      Trace.WriteLine(String.Format("Keyboard: {0}, {1}", keyCode, modifiers));
+#endif
+
       if (!_enableKeyboardInput)
         return;
 
@@ -650,10 +663,6 @@ namespace MicrosoftMceTransceiver
         }
       }
 
-#if TRACE
-      Trace.WriteLine(String.Format("Keyboard: {0}, {1}", keyCode, modifiers));
-#endif
-      
       _lastKeyboardKeyCode = keyCode;
       _lastKeyboardModifiers = modifiers;
 
@@ -661,6 +670,10 @@ namespace MicrosoftMceTransceiver
     }
     void MouseEvent(int deltaX, int deltaY, bool right, bool left)
     {
+#if TRACE
+      Trace.WriteLine(String.Format("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left));
+#endif
+
       if (!_enableMouseInput)
         return;
 
@@ -723,10 +736,6 @@ namespace MicrosoftMceTransceiver
 
       if (!_handleMouseLocally)
         _mouseHandler(deltaX, deltaY, (int)buttons);
-
-#if TRACE
-      Trace.WriteLine(String.Format("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left));
-#endif
     }
 
     static Keyboard.VKey ConvertMceKeyCodeToVKey(uint keyCode)

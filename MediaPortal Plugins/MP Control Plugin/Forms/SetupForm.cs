@@ -17,6 +17,7 @@ using MediaPortal.Util;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using MPUtils.Forms;
 
 namespace MediaPortal.Plugins
 {
@@ -565,7 +566,7 @@ namespace MediaPortal.Plugins
       }
       else if (selected == Common.UITextGoto)
       {
-        MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen();
+        GoToScreen goToScreen = new GoToScreen();
         if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -748,13 +749,102 @@ namespace MediaPortal.Plugins
 
     #region Other Controls
 
-    private void listBoxIR_DoubleClick(object sender, EventArgs e)
+    private void listViewIR_DoubleClick(object sender, EventArgs e)
     {
       EditIR();
     }
-    private void listBoxMacro_DoubleClick(object sender, EventArgs e)
+    private void listViewMacro_DoubleClick(object sender, EventArgs e)
     {
       EditMacro();
+    }
+
+    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+      {
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = Common.FolderIRCommands + originItem.Text + Common.FileExtensionIR;
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (!Common.IsValidFileName(e.Label))
+      {
+        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+      {
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = MPControlPlugin.FolderMacros + originItem.Text + Common.FileExtensionMacro;
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (!Common.IsValidFileName(e.Label))
+      {
+        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = MPControlPlugin.FolderMacros + e.Label + Common.FileExtensionMacro;
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     private void listViewEventMap_KeyDown(object sender, KeyEventArgs e)
@@ -781,7 +871,7 @@ namespace MediaPortal.Plugins
       }
       else if (command.StartsWith(Common.CmdPrefixGoto))
       {
-        MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen(command.Substring(Common.CmdPrefixGoto.Length));
+        GoToScreen goToScreen = new GoToScreen(command.Substring(Common.CmdPrefixGoto.Length));
         if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -882,77 +972,6 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Other Controls
-
-    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
-        return;
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = Common.FolderIRCommands + originItem.Text + Common.FileExtensionIR;
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
-      {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
-
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
-        return;
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = MPControlPlugin.FolderMacros + originItem.Text + Common.FileExtensionMacro;
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label) || !Common.IsValidFileName(e.Label))
-      {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = MPControlPlugin.FolderMacros + e.Label + Common.FileExtensionMacro;
-
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
 
   }
 
