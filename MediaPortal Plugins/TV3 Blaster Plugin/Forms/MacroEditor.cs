@@ -28,7 +28,7 @@ namespace TvEngine
     public MacroEditor()
     {
       InitializeComponent();
-      
+
       textBoxName.Text    = "New";
       textBoxName.Enabled = true;
     }
@@ -62,7 +62,13 @@ namespace TvEngine
       comboBoxCommands.Items.Add(Common.UITextPause);
       comboBoxCommands.Items.Add(Common.UITextSerial);
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
+      comboBoxCommands.Items.Add(Common.UITextTcpMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
+      comboBoxCommands.Items.Add(Common.UITextEject);
+      comboBoxCommands.Items.Add(Common.UITextStandby);
+      comboBoxCommands.Items.Add(Common.UITextHibernate);
+      comboBoxCommands.Items.Add(Common.UITextReboot);
+      comboBoxCommands.Items.Add(Common.UITextShutdown);
 
       string[] fileList = TV3BlasterPlugin.GetFileList(true);
       if (fileList != null && fileList.Length > 0)
@@ -119,10 +125,40 @@ namespace TvEngine
               writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
             }
+            else if (item.StartsWith(Common.CmdPrefixTcpMsg))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagTcpMsg);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixTcpMsg.Length));
+            }
             else if (item.StartsWith(Common.CmdPrefixKeys))
             {
               writer.WriteAttributeString("command", Common.XmlTagKeys);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixEject))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagEject);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixEject.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixStandby))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagStandby);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else if (item.StartsWith(Common.CmdPrefixHibernate))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagHibernate);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else if (item.StartsWith(Common.CmdPrefixReboot))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagReboot);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            else if (item.StartsWith(Common.CmdPrefixShutdown))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagShutdown);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
             }
             else
             {
@@ -188,8 +224,32 @@ namespace TvEngine
               listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + commandProperty);
               break;
 
+            case Common.XmlTagTcpMsg:
+              listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + commandProperty);
+              break;
+
             case Common.XmlTagKeys:
               listBoxMacro.Items.Add(Common.CmdPrefixKeys + commandProperty);
+              break;
+
+            case Common.XmlTagEject:
+              listBoxMacro.Items.Add(Common.CmdPrefixEject + commandProperty);
+              break;
+
+            case Common.XmlTagStandby:
+              listBoxMacro.Items.Add(Common.CmdPrefixStandby);
+              break;
+
+            case Common.XmlTagHibernate:
+              listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
+              break;
+
+            case Common.XmlTagReboot:
+              listBoxMacro.Items.Add(Common.CmdPrefixReboot);
+              break;
+
+            case Common.XmlTagShutdown:
+              listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
               break;
           }
         }
@@ -236,16 +296,46 @@ namespace TvEngine
         if (messageCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
       }
+      else if (selected == Common.UITextTcpMsg)
+      {
+        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
+      }
       else if (selected == Common.UITextKeys)
       {
         KeysCommand keysCommand = new KeysCommand();
         if (keysCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
       }
+      else if (selected == Common.UITextEject)
+      {
+        EjectCommand ejectCommand = new EjectCommand();
+        if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
+      }
+      else if (selected == Common.UITextStandby)
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixStandby);
+      }
+      else if (selected == Common.UITextHibernate)
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
+      }
+      else if (selected == Common.UITextReboot)
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixReboot);
+      }
+      else if (selected == Common.UITextShutdown)
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
+      }
       else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
         BlastCommand blastCommand = new BlastCommand(
-          new BlastIrDelegate(TV3BlasterPlugin.BlastIR), 
+          new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
           Common.FolderIRCommands,
           TV3BlasterPlugin.TransceiverInformation.Ports,
           selected.Substring(Common.CmdPrefixBlast.Length));
@@ -413,6 +503,18 @@ namespace TvEngine
         listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
+      else if (selected.StartsWith(Common.CmdPrefixTcpMsg))
+      {
+        string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
+        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
       else if (selected.StartsWith(Common.CmdPrefixKeys))
       {
         KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
@@ -422,6 +524,17 @@ namespace TvEngine
         int index = listBoxMacro.SelectedIndex;
         listBoxMacro.Items.RemoveAt(index);
         listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixEject))
+      {
+        EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
+        if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixEject + ejectCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast))

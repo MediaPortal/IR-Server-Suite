@@ -180,17 +180,23 @@ namespace IrssUtils
 
     #region Mouse Commands
 
-    public const string MouseMoveUp       = "Move_Up ";
-    public const string MouseMoveDown     = "Move_Down ";
-    public const string MouseMoveLeft     = "Move_Left ";
-    public const string MouseMoveRight    = "Move_Right ";
-    
-    public const string MouseClickLeft    = "Click_Left";
-    public const string MouseClickRight   = "Click_Right";
-    public const string MouseClickMiddle  = "Click_Middle";
-    
-    public const string MouseScrollUp     = "Scroll_Up";
-    public const string MouseScrollDown   = "Scroll_Down";
+    public const string MouseMoveUp             = "Move_Up ";
+    public const string MouseMoveDown           = "Move_Down ";
+    public const string MouseMoveLeft           = "Move_Left ";
+    public const string MouseMoveRight          = "Move_Right ";
+
+    public const string MouseMoveToPos          = "Move_To_Pos ";
+
+    public const string MouseClickLeft          = "Click_Left";
+    public const string MouseClickRight         = "Click_Right";
+    public const string MouseClickMiddle        = "Click_Middle";
+
+    public const string MouseDoubleClickLeft    = "DoubleClick_Left";
+    public const string MouseDoubleClickRight   = "DoubleClick_Right";
+    public const string MouseDoubleClickMiddle  = "DoubleClick_Middle";
+
+    public const string MouseScrollUp           = "Scroll_Up";
+    public const string MouseScrollDown         = "Scroll_Down";
 
     #endregion Mouse Commands
 
@@ -498,12 +504,33 @@ namespace IrssUtils
           Mouse.Button(Mouse.MouseEvents.LeftUp);
           break;
 
-        case  MouseClickMiddle:
+        case MouseClickMiddle:
           Mouse.Button(Mouse.MouseEvents.MiddleDown);
           Mouse.Button(Mouse.MouseEvents.MiddleUp);
           break;
 
         case MouseClickRight:
+          Mouse.Button(Mouse.MouseEvents.RightDown);
+          Mouse.Button(Mouse.MouseEvents.RightUp);
+          break;
+
+        case MouseDoubleClickLeft:
+          Mouse.Button(Mouse.MouseEvents.LeftDown);
+          Mouse.Button(Mouse.MouseEvents.LeftUp);
+          Mouse.Button(Mouse.MouseEvents.LeftDown);
+          Mouse.Button(Mouse.MouseEvents.LeftUp);
+          break;
+
+        case MouseDoubleClickMiddle:
+          Mouse.Button(Mouse.MouseEvents.MiddleDown);
+          Mouse.Button(Mouse.MouseEvents.MiddleUp);
+          Mouse.Button(Mouse.MouseEvents.MiddleDown);
+          Mouse.Button(Mouse.MouseEvents.MiddleUp);
+          break;
+
+        case MouseDoubleClickRight:
+          Mouse.Button(Mouse.MouseEvents.RightDown);
+          Mouse.Button(Mouse.MouseEvents.RightUp);
           Mouse.Button(Mouse.MouseEvents.RightDown);
           Mouse.Button(Mouse.MouseEvents.RightUp);
           break;
@@ -525,6 +552,17 @@ namespace IrssUtils
             Mouse.Move(int.Parse(command.Substring(MouseMoveRight.Length)), 0, false);
           else if (command.StartsWith(MouseMoveUp))
             Mouse.Move(0, -int.Parse(command.Substring(MouseMoveUp.Length)), false);
+          else if (command.StartsWith(MouseMoveToPos))
+          {
+            string subString = command.Substring(MouseMoveToPos.Length);
+
+            string[] coords = subString.Split(new char[] { ',' });
+
+            int x = int.Parse(coords[0]);
+            int y = int.Parse(coords[1]);
+
+            Mouse.Move(x, y, true);
+          }
           else
             throw new ApplicationException("Invalid Mouse Command");
           break;
@@ -666,8 +704,10 @@ namespace IrssUtils
     /// <returns>true if the name is valid; otherwise, false.</returns>
     public static bool IsValidFileName(string fileName)
     {
-      Regex validate = new Regex(@"^[a-zA-Z0-9_\s-]+$");
-      
+      if (String.IsNullOrEmpty(fileName))
+        return false;
+
+      Regex validate = new Regex("^(?!^(PRN|AUX|CLOCK\\$|NUL|CON|COM\\d|LPT\\d|\\..*)(\\..+)?$)[^\\x00-\\x1f\\\\?*:\\\";|/]+$", RegexOptions.IgnoreCase);
       return validate.IsMatch(fileName);
     }
 

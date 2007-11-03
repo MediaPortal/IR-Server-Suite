@@ -62,6 +62,7 @@ namespace Translator
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextTcpMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
+      comboBoxCommands.Items.Add(Common.UITextMouse);
       comboBoxCommands.Items.Add(Common.UITextEject);
       comboBoxCommands.Items.Add(Common.UITextStandby);
       comboBoxCommands.Items.Add(Common.UITextHibernate);
@@ -136,6 +137,11 @@ namespace Translator
             {
               writer.WriteAttributeString("command", Common.XmlTagKeys);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixMouse))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagMouse);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMouse.Length));
             }
             else if (item.StartsWith(Common.CmdPrefixEject))
             {
@@ -234,6 +240,10 @@ namespace Translator
               listBoxMacro.Items.Add(Common.CmdPrefixKeys + commandProperty);
               break;
 
+            case Common.XmlTagMouse:
+              listBoxMacro.Items.Add(Common.CmdPrefixMouse + commandProperty);
+              break;
+
             case Common.XmlTagEject:
               listBoxMacro.Items.Add(Common.CmdPrefixEject + commandProperty);
               break;
@@ -311,6 +321,12 @@ namespace Translator
         KeysCommand keysCommand = new KeysCommand();
         if (keysCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
+      }
+      else if (selected == Common.UITextMouse)
+      {
+        MouseCommand mouseCommand = new MouseCommand();
+        if (mouseCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixMouse + mouseCommand.CommandString);
       }
       else if (selected == Common.UITextEject)
       {
@@ -526,6 +542,17 @@ namespace Translator
         int index = listBoxMacro.SelectedIndex;
         listBoxMacro.Items.RemoveAt(index);
         listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixMouse))
+      {
+        MouseCommand mouseCommand = new MouseCommand(selected.Substring(Common.CmdPrefixMouse.Length));
+        if (mouseCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixMouse + mouseCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
       else if (selected.StartsWith(Common.CmdPrefixEject))

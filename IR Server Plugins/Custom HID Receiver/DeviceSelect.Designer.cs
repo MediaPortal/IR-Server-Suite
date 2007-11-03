@@ -1,5 +1,6 @@
 namespace CustomHIDReceiver
 {
+
   partial class DeviceSelect
   {
     /// <summary>
@@ -130,4 +131,5 @@ namespace CustomHIDReceiver
     private System.Windows.Forms.ColumnHeader columnHeaderID;
     private System.Windows.Forms.Button buttonAdvanced;
   }
+
 }

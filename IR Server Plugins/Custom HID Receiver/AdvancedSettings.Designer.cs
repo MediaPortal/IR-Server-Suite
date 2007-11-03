@@ -1,7 +1,9 @@
 namespace CustomHIDReceiver
 {
+
   partial class AdvancedSettings
   {
+
     /// <summary>
     /// Required designer variable.
     /// </summary>
@@ -151,5 +153,7 @@ namespace CustomHIDReceiver
     private System.Windows.Forms.NumericUpDown numericUpDownInputByteMask;
     private System.Windows.Forms.Label labelRepeatDelay;
     private System.Windows.Forms.NumericUpDown numericUpDownRepeatDelay;
+
   }
+
 }

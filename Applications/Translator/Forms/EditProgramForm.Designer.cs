@@ -269,7 +269,7 @@ namespace Translator
       this.Controls.Add(this.textBoxApp);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(392, 308);
+      this.MinimumSize = new System.Drawing.Size(392, 396);
       this.Name = "EditProgramForm";
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

@@ -59,7 +59,7 @@ namespace MediaPortal.Plugins
       this.buttonEditMacro = new System.Windows.Forms.Button();
       this.buttonNewMacro = new System.Windows.Forms.Button();
       this.checkBoxLogVerbose = new System.Windows.Forms.CheckBox();
-      this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+      this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.buttonHelp = new System.Windows.Forms.Button();
       this.tabControl.SuspendLayout();
       this.tabPageMenuSetup.SuspendLayout();
@@ -90,7 +90,7 @@ namespace MediaPortal.Plugins
       this.buttonChangeServer.Size = new System.Drawing.Size(96, 24);
       this.buttonChangeServer.TabIndex = 1;
       this.buttonChangeServer.Text = "Change &Server";
-      this.toolTip.SetToolTip(this.buttonChangeServer, "Change the IR Server host");
+      this.toolTips.SetToolTip(this.buttonChangeServer, "Change the IR Server host");
       this.buttonChangeServer.UseVisualStyleBackColor = true;
       this.buttonChangeServer.Click += new System.EventHandler(this.buttonChangeServer_Click);
       // 
@@ -160,7 +160,6 @@ namespace MediaPortal.Plugins
       // 
       // groupBoxTreeCommands
       // 
-      this.groupBoxTreeCommands.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxTreeCommands.Controls.Add(this.buttonEditTree);
       this.groupBoxTreeCommands.Controls.Add(this.buttonAdd);
       this.groupBoxTreeCommands.Controls.Add(this.buttonDeleteAll);
@@ -169,9 +168,9 @@ namespace MediaPortal.Plugins
       this.groupBoxTreeCommands.Controls.Add(this.buttonDown);
       this.groupBoxTreeCommands.Controls.Add(this.buttonUp);
       this.groupBoxTreeCommands.Controls.Add(this.buttonTop);
-      this.groupBoxTreeCommands.Location = new System.Drawing.Point(448, 0);
+      this.groupBoxTreeCommands.Location = new System.Drawing.Point(448, 3);
       this.groupBoxTreeCommands.Name = "groupBoxTreeCommands";
-      this.groupBoxTreeCommands.Size = new System.Drawing.Size(40, 296);
+      this.groupBoxTreeCommands.Size = new System.Drawing.Size(40, 293);
       this.groupBoxTreeCommands.TabIndex = 1;
       this.groupBoxTreeCommands.TabStop = false;
       // 
@@ -182,7 +181,7 @@ namespace MediaPortal.Plugins
       this.buttonEditTree.Name = "buttonEditTree";
       this.buttonEditTree.Size = new System.Drawing.Size(24, 24);
       this.buttonEditTree.TabIndex = 3;
-      this.toolTip.SetToolTip(this.buttonEditTree, "Edit the selected item");
+      this.toolTips.SetToolTip(this.buttonEditTree, "Edit the selected item");
       this.buttonEditTree.UseVisualStyleBackColor = true;
       this.buttonEditTree.Click += new System.EventHandler(this.buttonEditTree_Click);
       // 
@@ -193,7 +192,7 @@ namespace MediaPortal.Plugins
       this.buttonAdd.Name = "buttonAdd";
       this.buttonAdd.Size = new System.Drawing.Size(24, 24);
       this.buttonAdd.TabIndex = 2;
-      this.toolTip.SetToolTip(this.buttonAdd, "Add a new collection");
+      this.toolTips.SetToolTip(this.buttonAdd, "Add a new collection");
       this.buttonAdd.UseVisualStyleBackColor = true;
       this.buttonAdd.Click += new System.EventHandler(this.buttonAdd_Click);
       // 
@@ -204,7 +203,7 @@ namespace MediaPortal.Plugins
       this.buttonDeleteAll.Name = "buttonDeleteAll";
       this.buttonDeleteAll.Size = new System.Drawing.Size(24, 24);
       this.buttonDeleteAll.TabIndex = 5;
-      this.toolTip.SetToolTip(this.buttonDeleteAll, "Delete all items");
+      this.toolTips.SetToolTip(this.buttonDeleteAll, "Delete all items");
       this.buttonDeleteAll.UseVisualStyleBackColor = true;
       this.buttonDeleteAll.Click += new System.EventHandler(this.buttonDeleteAll_Click);
       // 
@@ -215,7 +214,7 @@ namespace MediaPortal.Plugins
       this.buttonDelete.Name = "buttonDelete";
       this.buttonDelete.Size = new System.Drawing.Size(24, 24);
       this.buttonDelete.TabIndex = 4;
-      this.toolTip.SetToolTip(this.buttonDelete, "Delete selected item");
+      this.toolTips.SetToolTip(this.buttonDelete, "Delete selected item");
       this.buttonDelete.UseVisualStyleBackColor = true;
       this.buttonDelete.Click += new System.EventHandler(this.buttonDelete_Click);
       // 
@@ -226,7 +225,7 @@ namespace MediaPortal.Plugins
       this.buttonBottom.Name = "buttonBottom";
       this.buttonBottom.Size = new System.Drawing.Size(24, 24);
       this.buttonBottom.TabIndex = 7;
-      this.toolTip.SetToolTip(this.buttonBottom, "Move selected item to the bottom");
+      this.toolTips.SetToolTip(this.buttonBottom, "Move selected item to the bottom");
       this.buttonBottom.UseVisualStyleBackColor = true;
       this.buttonBottom.Click += new System.EventHandler(this.buttonBottom_Click);
       // 
@@ -237,7 +236,7 @@ namespace MediaPortal.Plugins
       this.buttonDown.Name = "buttonDown";
       this.buttonDown.Size = new System.Drawing.Size(24, 24);
       this.buttonDown.TabIndex = 6;
-      this.toolTip.SetToolTip(this.buttonDown, "Move selected item down");
+      this.toolTips.SetToolTip(this.buttonDown, "Move selected item down");
       this.buttonDown.UseVisualStyleBackColor = true;
       this.buttonDown.Click += new System.EventHandler(this.buttonDown_Click);
       // 
@@ -248,7 +247,7 @@ namespace MediaPortal.Plugins
       this.buttonUp.Name = "buttonUp";
       this.buttonUp.Size = new System.Drawing.Size(24, 24);
       this.buttonUp.TabIndex = 1;
-      this.toolTip.SetToolTip(this.buttonUp, "Move selected item up");
+      this.toolTips.SetToolTip(this.buttonUp, "Move selected item up");
       this.buttonUp.UseVisualStyleBackColor = true;
       this.buttonUp.Click += new System.EventHandler(this.buttonUp_Click);
       // 
@@ -259,7 +258,7 @@ namespace MediaPortal.Plugins
       this.buttonTop.Name = "buttonTop";
       this.buttonTop.Size = new System.Drawing.Size(24, 24);
       this.buttonTop.TabIndex = 0;
-      this.toolTip.SetToolTip(this.buttonTop, "Move selected item to the top");
+      this.toolTips.SetToolTip(this.buttonTop, "Move selected item to the top");
       this.buttonTop.UseVisualStyleBackColor = true;
       this.buttonTop.Click += new System.EventHandler(this.buttonTop_Click);
       // 
@@ -436,7 +435,7 @@ namespace MediaPortal.Plugins
       this.checkBoxLogVerbose.Size = new System.Drawing.Size(120, 24);
       this.checkBoxLogVerbose.TabIndex = 3;
       this.checkBoxLogVerbose.Text = "&Extended logging";
-      this.toolTip.SetToolTip(this.checkBoxLogVerbose, "Enable more detailed logging of plugin operations");
+      this.toolTips.SetToolTip(this.checkBoxLogVerbose, "Enable more detailed logging of plugin operations");
       this.checkBoxLogVerbose.UseVisualStyleBackColor = true;
       // 
       // buttonHelp
@@ -447,7 +446,7 @@ namespace MediaPortal.Plugins
       this.buttonHelp.Size = new System.Drawing.Size(56, 24);
       this.buttonHelp.TabIndex = 2;
       this.buttonHelp.Text = "&Help";
-      this.toolTip.SetToolTip(this.buttonHelp, "Click here for help");
+      this.toolTips.SetToolTip(this.buttonHelp, "Click here for help");
       this.buttonHelp.UseVisualStyleBackColor = true;
       this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
       // 
@@ -457,7 +456,7 @@ namespace MediaPortal.Plugins
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(520, 408);
+      this.ClientSize = new System.Drawing.Size(520, 415);
       this.Controls.Add(this.checkBoxLogVerbose);
       this.Controls.Add(this.buttonHelp);
       this.Controls.Add(this.tabControl);
@@ -506,7 +505,7 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.Button buttonTop;
     private System.Windows.Forms.ComboBox comboBoxCommands;
     private System.Windows.Forms.Button buttonAdd;
-    private System.Windows.Forms.ToolTip toolTip;
+    private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.Button buttonDeleteAll;
     private System.Windows.Forms.Button buttonDelete;
     private System.Windows.Forms.Button buttonSetCommand;

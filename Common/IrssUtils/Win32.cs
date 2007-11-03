@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
@@ -15,7 +16,62 @@ namespace IrssUtils
   public static class Win32
   {
 
+    #region Constants
+
+    /// <summary>
+    /// Maximum length of unmanaged Windows Path strings.
+    /// </summary>
+    private const int MAX_PATH = 260;
+
+    /// <summary>
+    /// Maximum length of unmanaged Typename.
+    /// </summary>
+    private const int MAX_TYPE = 80;
+
+    #endregion Constants
+
     #region Enumerations
+
+    [Flags]
+    enum SHGFI : int
+    {
+      /// <summary>get icon</summary>
+      Icon = 0x000000100,
+      /// <summary>get display name</summary>
+      DisplayName = 0x000000200,
+      /// <summary>get type name</summary>
+      TypeName = 0x000000400,
+      /// <summary>get attributes</summary>
+      Attributes = 0x000000800,
+      /// <summary>get icon location</summary>
+      IconLocation = 0x000001000,
+      /// <summary>return exe type</summary>
+      ExeType = 0x000002000,
+      /// <summary>get system icon index</summary>
+      SysIconIndex = 0x000004000,
+      /// <summary>put a link overlay on icon</summary>
+      LinkOverlay = 0x000008000,
+      /// <summary>show icon in selected state</summary>
+      Selected = 0x000010000,
+      /// <summary>get only specified attributes</summary>
+      Attr_Specified = 0x000020000,
+      /// <summary>get large icon</summary>
+      LargeIcon = 0x000000000,
+      /// <summary>get small icon</summary>
+      SmallIcon = 0x000000001,
+      /// <summary>get open icon</summary>
+      OpenIcon = 0x000000002,
+      /// <summary>get shell size icon</summary>
+      ShellIconSize = 0x000000004,
+      /// <summary>pszPath is a pidl</summary>
+      PIDL = 0x000000008,
+      /// <summary>use passed dwFileAttribute</summary>
+      UseFileAttributes = 0x000000010,
+      /// <summary>apply the appropriate overlays</summary>
+      AddOverlays = 0x000000020,
+      /// <summary>Get the index of the overlay in the upper 8 bits of the iIcon</summary>
+      OverlayIndex = 0x000000040,
+    }
 
     /// <summary>
     /// Windows Message types.
@@ -868,71 +924,71 @@ namespace IrssUtils
       /// <summary>
       /// SC_SIZE
       /// </summary>
-      SC_SIZE         = 0xF000,
+      SC_SIZE = 0xF000,
       /// <summary>
       /// SC_MOVE
       /// </summary>
-      SC_MOVE         = 0xF010,
+      SC_MOVE = 0xF010,
       /// <summary>
       /// SC_MINIMIZE
       /// </summary>
-      SC_MINIMIZE     = 0xF020,
+      SC_MINIMIZE = 0xF020,
       /// <summary>
       /// SC_MAXIMIZE
       /// </summary>
-      SC_MAXIMIZE     = 0xF030,
+      SC_MAXIMIZE = 0xF030,
       /// <summary>
       /// SC_NEXTWINDOW
       /// </summary>
-      SC_NEXTWINDOW   = 0xF040,
+      SC_NEXTWINDOW = 0xF040,
       /// <summary>
       /// SC_PREVWINDOW
       /// </summary>
-      SC_PREVWINDOW   = 0xF050,
+      SC_PREVWINDOW = 0xF050,
       /// <summary>
       /// SC_CLOSE
       /// </summary>
-      SC_CLOSE        = 0xF060,
+      SC_CLOSE = 0xF060,
       /// <summary>
       /// SC_VSCROLL
       /// </summary>
-      SC_VSCROLL      = 0xF070,
+      SC_VSCROLL = 0xF070,
       /// <summary>
       /// SC_HSCROLL
       /// </summary>
-      SC_HSCROLL      = 0xF080,
+      SC_HSCROLL = 0xF080,
       /// <summary>
       /// SC_MOUSEMENU
       /// </summary>
-      SC_MOUSEMENU    = 0xF090,
+      SC_MOUSEMENU = 0xF090,
       /// <summary>
       /// SC_KEYMENU
       /// </summary>
-      SC_KEYMENU      = 0xF100,
+      SC_KEYMENU = 0xF100,
       /// <summary>
       /// SC_ARRANGE
       /// </summary>
-      SC_ARRANGE      = 0xF110,
+      SC_ARRANGE = 0xF110,
       /// <summary>
       /// SC_RESTORE
       /// </summary>
-      SC_RESTORE      = 0xF120,
+      SC_RESTORE = 0xF120,
       /// <summary>
       /// SC_TASKLIST
       /// </summary>
-      SC_TASKLIST     = 0xF130,
+      SC_TASKLIST = 0xF130,
       /// <summary>
       /// SC_SCREENSAVE
       /// </summary>
-      SC_SCREENSAVE   = 0xF140,
+      SC_SCREENSAVE = 0xF140,
       /// <summary>
       /// SC_HOTKEY
       /// </summary>
-      SC_HOTKEY       = 0xF150,
+      SC_HOTKEY = 0xF150,
       /// <summary>
       /// SC_DEFAULT
       /// </summary>
-      SC_DEFAULT      = 0xF160,
+      SC_DEFAULT = 0xF160,
       /// <summary>
       /// SC_MONITORPOWER
       /// </summary>
@@ -940,25 +996,25 @@ namespace IrssUtils
       /// <summary>
       /// SC_CONTEXTHELP
       /// </summary>
-      SC_CONTEXTHELP  = 0xF180,
+      SC_CONTEXTHELP = 0xF180,
       /// <summary>
       /// SC_SEPARATOR
       /// </summary>
-      SC_SEPARATOR    = 0xF00F,
+      SC_SEPARATOR = 0xF00F,
 
       /// <summary>
       /// SCF_ISSECURE
       /// </summary>
-      SCF_ISSECURE    = 0x00000001,
+      SCF_ISSECURE = 0x00000001,
 
       /// <summary>
       /// SC_ICON
       /// </summary>
-      SC_ICON         = SC_MINIMIZE,
+      SC_ICON = SC_MINIMIZE,
       /// <summary>
       /// SC_ZOOM
       /// </summary>
-      SC_ZOOM         = SC_MAXIMIZE,
+      SC_ZOOM = SC_MAXIMIZE,
     }
 
     /// <summary>
@@ -969,87 +1025,87 @@ namespace IrssUtils
       /// <summary>
       /// APPCOMMAND_BROWSER_BACKWARD
       /// </summary>
-      APPCOMMAND_BROWSER_BACKWARD     = 1,
+      APPCOMMAND_BROWSER_BACKWARD = 1,
       /// <summary>
       /// APPCOMMAND_BROWSER_FORWARD
       /// </summary>
-      APPCOMMAND_BROWSER_FORWARD      = 2,
+      APPCOMMAND_BROWSER_FORWARD = 2,
       /// <summary>
       /// APPCOMMAND_BROWSER_REFRESH
       /// </summary>
-      APPCOMMAND_BROWSER_REFRESH      = 3,
+      APPCOMMAND_BROWSER_REFRESH = 3,
       /// <summary>
       /// APPCOMMAND_BROWSER_STOP
       /// </summary>
-      APPCOMMAND_BROWSER_STOP         = 4,
+      APPCOMMAND_BROWSER_STOP = 4,
       /// <summary>
       /// APPCOMMAND_BROWSER_SEARCH
       /// </summary>
-      APPCOMMAND_BROWSER_SEARCH       = 5,
+      APPCOMMAND_BROWSER_SEARCH = 5,
       /// <summary>
       /// APPCOMMAND_BROWSER_FAVORITES
       /// </summary>
-      APPCOMMAND_BROWSER_FAVORITES    = 6,
+      APPCOMMAND_BROWSER_FAVORITES = 6,
       /// <summary>
       /// APPCOMMAND_BROWSER_HOME
       /// </summary>
-      APPCOMMAND_BROWSER_HOME         = 7,
+      APPCOMMAND_BROWSER_HOME = 7,
       /// <summary>
       /// APPCOMMAND_VOLUME_MUTE
       /// </summary>
-      APPCOMMAND_VOLUME_MUTE          = 8,
+      APPCOMMAND_VOLUME_MUTE = 8,
       /// <summary>
       /// APPCOMMAND_VOLUME_DOWN
       /// </summary>
-      APPCOMMAND_VOLUME_DOWN          = 9,
+      APPCOMMAND_VOLUME_DOWN = 9,
       /// <summary>
       /// APPCOMMAND_VOLUME_UP
       /// </summary>
-      APPCOMMAND_VOLUME_UP            = 10,
+      APPCOMMAND_VOLUME_UP = 10,
       /// <summary>
       /// APPCOMMAND_MEDIA_NEXTTRACK
       /// </summary>
-      APPCOMMAND_MEDIA_NEXTTRACK      = 11,
+      APPCOMMAND_MEDIA_NEXTTRACK = 11,
       /// <summary>
       /// APPCOMMAND_MEDIA_PREVIOUSTRACK
       /// </summary>
-      APPCOMMAND_MEDIA_PREVIOUSTRACK  = 12,
+      APPCOMMAND_MEDIA_PREVIOUSTRACK = 12,
       /// <summary>
       /// APPCOMMAND_MEDIA_STOP
       /// </summary>
-      APPCOMMAND_MEDIA_STOP           = 13,
+      APPCOMMAND_MEDIA_STOP = 13,
       /// <summary>
       /// APPCOMMAND_MEDIA_PLAY_PAUSE
       /// </summary>
-      APPCOMMAND_MEDIA_PLAY_PAUSE     = 4143,
+      APPCOMMAND_MEDIA_PLAY_PAUSE = 4143,
       /// <summary>
       /// APPCOMMAND_MEDIA_PLAY
       /// </summary>
-      APPCOMMAND_MEDIA_PLAY           = 4142,
+      APPCOMMAND_MEDIA_PLAY = 4142,
       /// <summary>
       /// APPCOMMAND_MEDIA_PAUSE
       /// </summary>
-      APPCOMMAND_MEDIA_PAUSE          = 4143,
+      APPCOMMAND_MEDIA_PAUSE = 4143,
       /// <summary>
       /// APPCOMMAND_MEDIA_RECORD
       /// </summary>
-      APPCOMMAND_MEDIA_RECORD         = 4144,
+      APPCOMMAND_MEDIA_RECORD = 4144,
       /// <summary>
       /// APPCOMMAND_MEDIA_FASTFORWARD
       /// </summary>
-      APPCOMMAND_MEDIA_FASTFORWARD    = 4145,
+      APPCOMMAND_MEDIA_FASTFORWARD = 4145,
       /// <summary>
       /// APPCOMMAND_MEDIA_REWIND
       /// </summary>
-      APPCOMMAND_MEDIA_REWIND         = 4146,
+      APPCOMMAND_MEDIA_REWIND = 4146,
       /// <summary>
       /// APPCOMMAND_MEDIA_CHANNEL_UP
       /// </summary>
-      APPCOMMAND_MEDIA_CHANNEL_UP     = 4147,
+      APPCOMMAND_MEDIA_CHANNEL_UP = 4147,
       /// <summary>
       /// APPCOMMAND_MEDIA_CHANNEL_DOWN
       /// </summary>
-      APPCOMMAND_MEDIA_CHANNEL_DOWN   = 4148,
+      APPCOMMAND_MEDIA_CHANNEL_DOWN = 4148,
     }
 
     /// <summary>
@@ -1061,15 +1117,15 @@ namespace IrssUtils
       /// <summary>
       /// Normal.
       /// </summary>
-      SMTO_NORMAL             = 0x0000,
+      SMTO_NORMAL = 0x0000,
       /// <summary>
       /// Block.
       /// </summary>
-      SMTO_BLOCK              = 0x0001,
+      SMTO_BLOCK = 0x0001,
       /// <summary>
       /// Abort if hung.
       /// </summary>
-      SMTO_ABORTIFHUNG        = 0x0002,
+      SMTO_ABORTIFHUNG = 0x0002,
       /// <summary>
       /// To timeout if not hung.
       /// </summary>
@@ -1085,112 +1141,112 @@ namespace IrssUtils
       /// <summary>
       /// MajorApplication
       /// </summary>
-      MajorApplication          = 0x00040000,
+      MajorApplication = 0x00040000,
       /// <summary>
       /// MajorHardware
       /// </summary>
-      MajorHardware             = 0x00010000,
+      MajorHardware = 0x00010000,
       /// <summary>
       /// MajorLegacyApi
       /// </summary>
-      MajorLegacyApi            = 0x00070000,
+      MajorLegacyApi = 0x00070000,
       /// <summary>
       /// MajorOperatingSystem
       /// </summary>
-      MajorOperatingSystem      = 0x00020000,
+      MajorOperatingSystem = 0x00020000,
       /// <summary>
       /// MajorOther
       /// </summary>
-      MajorOther                = 0x00000000,
+      MajorOther = 0x00000000,
       /// <summary>
       /// MajorPower
       /// </summary>
-      MajorPower                = 0x00060000,
+      MajorPower = 0x00060000,
       /// <summary>
       /// MajorSoftware
       /// </summary>
-      MajorSoftware             = 0x00030000,
+      MajorSoftware = 0x00030000,
       /// <summary>
       /// MajorSystem
       /// </summary>
-      MajorSystem               = 0x00050000,
+      MajorSystem = 0x00050000,
 
       /// <summary>
       /// MinorBlueScreen
       /// </summary>
-      MinorBlueScreen           = 0x0000000F,
+      MinorBlueScreen = 0x0000000F,
       /// <summary>
       /// MinorCordUnplugged
       /// </summary>
-      MinorCordUnplugged        = 0x0000000b,
+      MinorCordUnplugged = 0x0000000b,
       /// <summary>
       /// MinorDisk
       /// </summary>
-      MinorDisk                 = 0x00000007,
+      MinorDisk = 0x00000007,
       /// <summary>
       /// MinorEnvironment
       /// </summary>
-      MinorEnvironment          = 0x0000000c,
+      MinorEnvironment = 0x0000000c,
       /// <summary>
       /// MinorHardwareDriver
       /// </summary>
-      MinorHardwareDriver       = 0x0000000d,
+      MinorHardwareDriver = 0x0000000d,
       /// <summary>
       /// MinorHotfix
       /// </summary>
-      MinorHotfix               = 0x00000011,
+      MinorHotfix = 0x00000011,
       /// <summary>
       /// MinorHung
       /// </summary>
-      MinorHung                 = 0x00000005,
+      MinorHung = 0x00000005,
       /// <summary>
       /// MinorInstallation
       /// </summary>
-      MinorInstallation         = 0x00000002,
+      MinorInstallation = 0x00000002,
       /// <summary>
       /// MinorMaintenance
       /// </summary>
-      MinorMaintenance          = 0x00000001,
+      MinorMaintenance = 0x00000001,
       /// <summary>
       /// MinorMMC
       /// </summary>
-      MinorMMC                  = 0x00000019,
+      MinorMMC = 0x00000019,
       /// <summary>
       /// MinorNetworkConnectivity
       /// </summary>
-      MinorNetworkConnectivity  = 0x00000014,
+      MinorNetworkConnectivity = 0x00000014,
       /// <summary>
       /// MinorNetworkCard
       /// </summary>
-      MinorNetworkCard          = 0x00000009,
+      MinorNetworkCard = 0x00000009,
       /// <summary>
       /// MinorOther
       /// </summary>
-      MinorOther                = 0x00000000,
+      MinorOther = 0x00000000,
       /// <summary>
       /// MinorOtherDriver
       /// </summary>
-      MinorOtherDriver          = 0x0000000e,
+      MinorOtherDriver = 0x0000000e,
       /// <summary>
       /// MinorPowerSupply
       /// </summary>
-      MinorPowerSupply          = 0x0000000a,
+      MinorPowerSupply = 0x0000000a,
       /// <summary>
       /// MinorProcessor
       /// </summary>
-      MinorProcessor            = 0x00000008,
+      MinorProcessor = 0x00000008,
       /// <summary>
       /// MinorReconfig
       /// </summary>
-      MinorReconfig             = 0x00000004,
+      MinorReconfig = 0x00000004,
       /// <summary>
       /// MinorSecurity
       /// </summary>
-      MinorSecurity             = 0x00000013,
+      MinorSecurity = 0x00000013,
       /// <summary>
       /// MinorSecurityFix
       /// </summary>
-      MinorSecurityFix          = 0x00000012,
+      MinorSecurityFix = 0x00000012,
       /// <summary>
       /// MinorSecurityFixUninstall
       /// </summary>
@@ -1198,7 +1254,7 @@ namespace IrssUtils
       /// <summary>
       /// MinorServicePack
       /// </summary>
-      MinorServicePack          = 0x00000010,
+      MinorServicePack = 0x00000010,
       /// <summary>
       /// MinorServicePackUninstall
       /// </summary>
@@ -1206,25 +1262,25 @@ namespace IrssUtils
       /// <summary>
       /// MinorTermSrv
       /// </summary>
-      MinorTermSrv              = 0x00000020,
+      MinorTermSrv = 0x00000020,
       /// <summary>
       /// MinorUnstable
       /// </summary>
-      MinorUnstable             = 0x00000006,
+      MinorUnstable = 0x00000006,
       /// <summary>
       /// MinorUpgrade
       /// </summary>
-      MinorUpgrade              = 0x00000003,
+      MinorUpgrade = 0x00000003,
       /// <summary>
       /// MinorWMI
       /// </summary>
-      MinorWMI                  = 0x00000015,
+      MinorWMI = 0x00000015,
 
       /// <summary>
       /// FlagUserDefined
       /// </summary>
-      FlagUserDefined           = 0x40000000,
-      
+      FlagUserDefined = 0x40000000,
+
       //FlagPlanned               = 0x80000000,
     }
 
@@ -1237,19 +1293,19 @@ namespace IrssUtils
       /// <summary>
       /// LogOff
       /// </summary>
-      LogOff      = 0x00,
+      LogOff = 0x00,
       /// <summary>
       /// ShutDown
       /// </summary>
-      ShutDown    = 0x01,
+      ShutDown = 0x01,
       /// <summary>
       /// Reboot
       /// </summary>
-      Reboot      = 0x02,
+      Reboot = 0x02,
       /// <summary>
       /// PowerOff
       /// </summary>
-      PowerOff    = 0x08,
+      PowerOff = 0x08,
       /// <summary>
       /// RestartApps
       /// </summary>
@@ -1258,7 +1314,7 @@ namespace IrssUtils
       /// <summary>
       /// Force
       /// </summary>
-      Force       = 0x04,
+      Force = 0x04,
       /// <summary>
       /// ForceIfHung
       /// </summary>
@@ -1289,6 +1345,21 @@ namespace IrssUtils
       public int lpData;
     }
 
+    /// <summary>
+    /// Data structure for retreiving information on files from the shell.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SHFILEINFO
+    {
+      public IntPtr hIcon;
+      public IntPtr iIcon;
+      public int dwAttributes;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+      public string szDisplayName;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
+      public string szTypeName;
+    };
+
     #endregion Structures
 
     #region Delegates
@@ -1305,10 +1376,30 @@ namespace IrssUtils
 
     #region Interop
 
+    [DllImport("shell32.dll")]
+    private static extern IntPtr SHGetFileInfo(
+      string pszPath,
+      uint dwFileAttributes,
+      ref SHFILEINFO psfi,
+      uint cbSizeFileInfo,
+      SHGFI uFlags);
+
+    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+    private static extern int ExtractIconEx(
+        string lpszFile,
+        int nIconIndex,
+        IntPtr[] phIconLarge,
+        IntPtr[] phIconSmall,
+        int nIcons);
+
+    [DllImport("user32.dll", EntryPoint = "DestroyIcon", SetLastError = true)]
+    private static extern int DestroyIcon(
+      IntPtr hIcon);
+
     [DllImport("user32.dll")]
     private static extern int EnumWindows(
       EnumWindowsProc ewp,
-      IntPtr lParam); 
+      IntPtr lParam);
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
@@ -1421,6 +1512,67 @@ namespace IrssUtils
     #endregion Interop
 
     #region Methods
+
+    public static Icon GetIconFor(string fileName)
+    {
+      IntPtr ptr;
+      SHFILEINFO shinfo = new SHFILEINFO();
+
+      //Use this to get the large Icon
+      ptr = SHGetFileInfo(
+        fileName,
+        0,
+        ref shinfo,
+        (uint)Marshal.SizeOf(shinfo),
+        SHGFI.Icon | SHGFI.LargeIcon);
+
+      return Icon.FromHandle(shinfo.hIcon);   
+    }
+
+    /// <summary>
+    /// Extracts the icons from a resource.
+    /// </summary>
+    /// <param name="fileName">Name of the file to extract icons from.</param>
+    /// <param name="index">The index to the icon inside the file.</param>
+    /// <param name="large">The large icon.</param>
+    /// <param name="small">The small icon.</param>
+    /// <returns>true if successful, otherwise false.</returns>
+    public static bool ExtractIcons(string fileName, int index, out Icon large, out Icon small)
+    {
+      IntPtr[] hLarge = new IntPtr[1] { IntPtr.Zero };
+      IntPtr[] hSmall = new IntPtr[1] { IntPtr.Zero };
+
+      large = null;
+      small = null;
+
+      try
+      {
+        int iconCount = ExtractIconEx(fileName, index, hLarge, hSmall, 1);
+
+        if (iconCount > 0)
+        {
+          large = (Icon)Icon.FromHandle(hLarge[0]).Clone();
+          small = (Icon)Icon.FromHandle(hSmall[0]).Clone();
+          return true;
+        }
+        else
+          return false;
+      }
+      catch
+      {
+        return false;
+      }
+      finally
+      {
+        foreach (IntPtr ptr in hLarge)
+          if (ptr != IntPtr.Zero)
+            DestroyIcon(ptr);
+
+        foreach (IntPtr ptr in hSmall)
+          if (ptr != IntPtr.Zero)
+            DestroyIcon(ptr);
+      }
+    }
 
     /// <summary>
     /// Send a window message using the SendMessageTimeout method.

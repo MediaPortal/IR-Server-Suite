@@ -221,6 +221,9 @@
     <Content Include="Graphics\ClickLeft.png" />
     <Content Include="Graphics\ClickMiddle.png" />
     <Content Include="Graphics\ClickRight.png" />
+    <Content Include="Graphics\DoubleClickLeft.png" />
+    <Content Include="Graphics\DoubleClickMiddle.png" />
+    <Content Include="Graphics\DoubleClickRight.png" />
     <Content Include="Graphics\MoveDown.png" />
     <Content Include="Graphics\MoveLeft.png" />
     <Content Include="Graphics\MoveRight.png" />

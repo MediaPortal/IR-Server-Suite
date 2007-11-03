@@ -154,7 +154,7 @@ namespace SetupTv.Sections
       if (File.Exists(fileName))
       {
         _learnIR = new LearnIR(
-          new LearnIrDelegate(TV3BlasterPlugin.LearnIRCommand),
+          new LearnIrDelegate(TV3BlasterPlugin.LearnIR),
           new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
           TV3BlasterPlugin.TransceiverInformation.Ports,
           command);
@@ -209,7 +209,7 @@ namespace SetupTv.Sections
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
       _learnIR = new LearnIR(
-        new LearnIrDelegate(TV3BlasterPlugin.LearnIRCommand),
+        new LearnIrDelegate(TV3BlasterPlugin.LearnIR),
         new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
         TV3BlasterPlugin.TransceiverInformation.Ports);
 
@@ -355,16 +355,18 @@ namespace SetupTv.Sections
         return;
       }
 
-      if (!Common.IsValidFileName(e.Label))
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
 
       try
       {
-        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
+        string newFileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
 
         File.Move(oldFileName, newFileName);
       }
@@ -399,16 +401,18 @@ namespace SetupTv.Sections
         return;
       }
 
-      if (!Common.IsValidFileName(e.Label))
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
 
       try
       {
-        string newFileName = TV3BlasterPlugin.FolderMacros + e.Label + Common.FileExtensionMacro;
+        string newFileName = TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
 
         File.Move(oldFileName, newFileName);
       }

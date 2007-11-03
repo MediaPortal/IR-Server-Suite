@@ -110,6 +110,8 @@ namespace MicrosoftMceTransceiver
 
     #region Constants
 
+    const double ClockFrequency = 2412460.0;
+
     // Vendor ID's for SMK and Topseed devices.
     const string VidSMK       = "vid_1784";
     const string VidTopseed   = "vid_0609";
@@ -127,7 +129,7 @@ namespace MicrosoftMceTransceiver
 				new byte[] { 0x9F, 0x08, 0x02 },	      // 2
 			};
 
-    // SMK or Topseed Port Packets
+    // SMK / Topseed Port Packets
     static readonly byte[][] SmkTopseedPorts = new byte[][]
 			{
 				new byte[] { 0x9F, 0x08, 0x00 },	      // Both
@@ -135,7 +137,7 @@ namespace MicrosoftMceTransceiver
 				new byte[] { 0x9F, 0x08, 0x02 },        // 2
 			};
 
-    // Start and Stop Packets
+    // Start, Stop and Reset Packets
     static readonly byte[] StartPacket            = { 0x00, 0xFF, 0xAA };
     static readonly byte[] StopPacket             = { 0xFF, 0xBB, 
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -158,6 +160,7 @@ namespace MicrosoftMceTransceiver
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       0xFF, 0xFF };
+    static readonly byte[] ResetPacket = { 0xFF, 0xFE };
 
     // Misc Packets
     static readonly byte[] SetCarrierFreqPacket   = { 0x9F, 0x06, 0x01, 0x80 };
@@ -176,7 +179,7 @@ namespace MicrosoftMceTransceiver
     Thread _readThread;
     ReadThreadMode _readThreadMode;
     ManualResetEvent _stopReadThread;
-    
+
     IrCode _learningCode;
 
     DeviceType _deviceType = DeviceType.Microsoft;
@@ -223,12 +226,12 @@ namespace MicrosoftMceTransceiver
       if (_writeHandle.IsInvalid)
         throw new Win32Exception(lastError);
 
+      StartReadThread();
+
       // Initialize device ...
       WriteSync(StartPacket);
       SetTimeout(PacketTimeout);
       SetInputPort(InputPort.Receive);
-
-      StartReadThread();
 
       _notifyWindow.Create();
       _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
@@ -369,6 +372,10 @@ namespace MicrosoftMceTransceiver
           throw new ApplicationException("Invalid device type");
       }
 
+      // Reset device (hopefully this will stop the blaster from stalling)
+      WriteSync(ResetPacket);
+      Thread.Sleep(PacketTimeout);
+
       // Set port
       WriteSync(portPacket);
 
@@ -383,6 +390,11 @@ namespace MicrosoftMceTransceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Create a device data packet to set the Carrier frequency.
+    /// </summary>
+    /// <param name="code">IrCode to get carrier frequency from.</param>
+    /// <returns>Raw device data.</returns>
     static byte[] CarrierPacket(IrCode code)
     {
       byte[] carrierPacket = new byte[SetCarrierFreqPacket.Length];
@@ -401,21 +413,17 @@ namespace MicrosoftMceTransceiver
 #endif
       }
 
-      for (int scaler = 1; scaler <= 4; scaler++)
-      {
-        int divisor = (10000000 >> (2 * scaler)) / carrier;
-
-        if (divisor < 0xFF)
-        {
-          carrierPacket[2] = (byte)scaler;
-          carrierPacket[3] = (byte)divisor;
-          break;
-        }
-      }
+      carrierPacket[2] = 0x80;
+      carrierPacket[3] = (byte)Math.Round(ClockFrequency / carrier);
 
       return carrierPacket;
     }
 
+    /// <summary>
+    /// Converts an IrCode into raw data for the device.
+    /// </summary>
+    /// <param name="code">IrCode to convert.</param>
+    /// <returns>Raw device data.</returns>
     static byte[] DataPacket(IrCode code)
     {
       if (code.TimingData.Length == 0)
@@ -459,7 +467,7 @@ namespace MicrosoftMceTransceiver
       byte[] output = new byte[packet.Count + subpackets + 1];
 
       int outputPos = 0;
-      
+
       for (int packetPos = 0; packetPos < packet.Count; )
       {
         byte copyCount = (byte)(packet.Count - packetPos < 4 ? packet.Count - packetPos : 0x04);
@@ -487,11 +495,15 @@ namespace MicrosoftMceTransceiver
       int timeoutSamples = 20 * timeout;
 
       timeoutPacket[2] = (byte)(timeoutSamples >> 8);
-      timeoutPacket[3] = (byte)(timeoutSamples % 256);
+      timeoutPacket[3] = (byte)(timeoutSamples & 0xFF);
 
       WriteSync(timeoutPacket);
     }
 
+    /// <summary>
+    /// Set the IR receiver input port.
+    /// </summary>
+    /// <param name="port">The input port.</param>
     void SetInputPort(InputPort port)
     {
       byte[] inputPortPacket = new byte[SetInputPortPacket.Length];
@@ -502,6 +514,9 @@ namespace MicrosoftMceTransceiver
       WriteSync(inputPortPacket);
     }
 
+    /// <summary>
+    /// Start the device read thread.
+    /// </summary>
     void StartReadThread()
     {
 #if DEBUG
@@ -516,6 +531,9 @@ namespace MicrosoftMceTransceiver
       _readThread.IsBackground = true;
       _readThread.Start();
     }
+    /// <summary>
+    /// Stop the device read thread.
+    /// </summary>
     void StopReadThread()
     {
 #if DEBUG
@@ -537,6 +555,9 @@ namespace MicrosoftMceTransceiver
       }
     }
 
+    /// <summary>
+    /// Close all handles to the device.
+    /// </summary>
     void CloseDevice()
     {
 #if DEBUG
@@ -575,7 +596,10 @@ namespace MicrosoftMceTransceiver
 
       StopReadThread();
     }
-    
+
+    /// <summary>
+    /// Device read thread method.
+    /// </summary>
     void ReadThread()
     {
       int bytesRead;
@@ -763,6 +787,10 @@ namespace MicrosoftMceTransceiver
       }
     }
 
+    /// <summary>
+    /// Synchronously write a packet of bytes to the device.
+    /// </summary>
+    /// <param name="data">Packet to write to device.</param>
     void WriteSync(byte[] data)
     {
 #if DEBUG
@@ -832,6 +860,11 @@ namespace MicrosoftMceTransceiver
       }
     }
 
+    /// <summary>
+    /// Turn raw packet data int pulse timing data.
+    /// </summary>
+    /// <param name="packet">The raw device packet.</param>
+    /// <returns>Timing data.</returns>
     static int[] GetTimingDataFromPacket(byte[] packet)
     {
       List<int> timingData = new List<int>();
@@ -881,6 +914,13 @@ namespace MicrosoftMceTransceiver
       return timingData.ToArray();
     }
 
+    /// <summary>
+    /// Determines the pulse count and total time of the supplied IrCode.
+    /// This is used to determine the carrier frequency.
+    /// </summary>
+    /// <param name="code">The IrCode to analyse.</param>
+    /// <param name="onTime">The total ammount of pulse time.</param>
+    /// <param name="onCount">The total count of pulses.</param>
     static void GetIrCodeLengths(IrCode code, out int onTime, out int onCount)
     {
       onTime  = 0;

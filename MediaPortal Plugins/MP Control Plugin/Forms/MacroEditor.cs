@@ -14,6 +14,8 @@ using MediaPortal.Util;
 
 using IrssUtils;
 using IrssUtils.Forms;
+using MPUtils;
+using MPUtils.Forms;
 
 namespace MediaPortal.Plugins
 {
@@ -30,7 +32,7 @@ namespace MediaPortal.Plugins
     {
       InitializeComponent();
 
-      textBoxName.Text = "New";
+      textBoxName.Text    = "New";
       textBoxName.Enabled = true;
     }
 
@@ -44,7 +46,7 @@ namespace MediaPortal.Plugins
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      textBoxName.Text = name;
+      textBoxName.Text    = name;
       textBoxName.Enabled = false;
 
       string fileName = MPControlPlugin.FolderMacros + name + Common.FileExtensionMacro;
@@ -63,7 +65,10 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextPause);
       comboBoxCommands.Items.Add(Common.UITextSerial);
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
+      comboBoxCommands.Items.Add(Common.UITextTcpMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
+      comboBoxCommands.Items.Add(Common.UITextMouse);
+      comboBoxCommands.Items.Add(Common.UITextEject);
       comboBoxCommands.Items.Add(Common.UITextGoto);
       comboBoxCommands.Items.Add(Common.UITextPopup);
       comboBoxCommands.Items.Add(Common.UITextMultiMap);
@@ -137,10 +142,25 @@ namespace MediaPortal.Plugins
               writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
             }
+            else if (item.StartsWith(Common.CmdPrefixTcpMsg))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagTcpMsg);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixTcpMsg.Length));
+            }
             else if (item.StartsWith(Common.CmdPrefixKeys))
             {
               writer.WriteAttributeString("command", Common.XmlTagKeys);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixMouse))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagMouse);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMouse.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixEject))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagEject);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixEject.Length));
             }
             else if (item.StartsWith(Common.CmdPrefixPopup))
             {
@@ -263,8 +283,20 @@ namespace MediaPortal.Plugins
               listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + commandProperty);
               break;
 
+            case Common.XmlTagTcpMsg:
+              listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + commandProperty);
+              break;
+
             case Common.XmlTagKeys:
               listBoxMacro.Items.Add(Common.CmdPrefixKeys + commandProperty);
+              break;
+
+            case Common.XmlTagMouse:
+              listBoxMacro.Items.Add(Common.CmdPrefixMouse + commandProperty);
+              break;
+
+            case Common.XmlTagEject:
+              listBoxMacro.Items.Add(Common.CmdPrefixEject + commandProperty);
               break;
 
             case Common.XmlTagGoto:
@@ -359,15 +391,35 @@ namespace MediaPortal.Plugins
         if (messageCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
       }
+      else if (selected == Common.UITextTcpMsg)
+      {
+        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
+      }
       else if (selected == Common.UITextKeys)
       {
         KeysCommand keysCommand = new KeysCommand();
         if (keysCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
       }
+      else if (selected == Common.UITextMouse)
+      {
+        MouseCommand mouseCommand = new MouseCommand();
+        if (mouseCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixMouse + mouseCommand.CommandString);
+      }
+      else if (selected == Common.UITextEject)
+      {
+        EjectCommand ejectCommand = new EjectCommand();
+        if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
+      }
       else if (selected == Common.UITextGoto)
       {
-        MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen();
+        GoToScreen goToScreen = new GoToScreen();
         if (goToScreen.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixGoto + goToScreen.Screen);
       }
@@ -590,6 +642,18 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
+      else if (selected.StartsWith(Common.CmdPrefixTcpMsg))
+      {
+        string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
+        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
       else if (selected.StartsWith(Common.CmdPrefixKeys))
       {
         KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
@@ -601,9 +665,31 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
+      else if (selected.StartsWith(Common.CmdPrefixMouse))
+      {
+        MouseCommand mouseCommand = new MouseCommand(selected.Substring(Common.CmdPrefixMouse.Length));
+        if (mouseCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixMouse + mouseCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixEject))
+      {
+        EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
+        if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixEject + ejectCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
       else if (selected.StartsWith(Common.CmdPrefixGoto))
       {
-        MPUtils.Forms.GoToScreen goToScreen = new MPUtils.Forms.GoToScreen(selected.Substring(Common.CmdPrefixGoto.Length));
+        GoToScreen goToScreen = new GoToScreen(selected.Substring(Common.CmdPrefixGoto.Length));
         if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -615,7 +701,6 @@ namespace MediaPortal.Plugins
       else if (selected.StartsWith(Common.CmdPrefixPopup))
       {
         string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
-
         PopupMessage popupMessage = new PopupMessage(commands);
         if (popupMessage.ShowDialog(this) == DialogResult.Cancel)
           return;

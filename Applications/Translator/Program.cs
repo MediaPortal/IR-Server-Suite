@@ -673,7 +673,7 @@ namespace Translator
 
       Application.Exit();
     }
-    
+
     static void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
@@ -983,17 +983,17 @@ namespace Translator
     static void Reboot()
     {
       IrssLog.Info("Reboot");
-      Win32.WindowsExit(Win32.ExitWindows.Reboot | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
+      Win32.WindowsExit(Win32.ExitWindows.Reboot, Win32.ShutdownReasons.FlagUserDefined);
     }
     static void LogOff()
     {
       IrssLog.Info("LogOff");
-      Win32.WindowsExit(Win32.ExitWindows.LogOff | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
+      Win32.WindowsExit(Win32.ExitWindows.LogOff, Win32.ShutdownReasons.FlagUserDefined);
     }
     static void ShutDown()
     {
       IrssLog.Info("ShutDown");
-      Win32.WindowsExit(Win32.ExitWindows.ShutDown | Win32.ExitWindows.ForceIfHung, Win32.ShutdownReasons.FlagUserDefined);
+      Win32.WindowsExit(Win32.ExitWindows.ShutDown, Win32.ShutdownReasons.FlagUserDefined);
     }
 
     static void MapEvent(MappingEvent theEvent)
@@ -1156,6 +1156,12 @@ namespace Translator
                 break;
               }
 
+            case Common.XmlTagMouse:
+              {
+                Common.ProcessMouseCommand(commandProperty);
+                break;
+              }
+
             case Common.XmlTagEject:
               {
                 Common.ProcessEjectCommand(commandProperty);
@@ -1203,7 +1209,7 @@ namespace Translator
     /// <summary>
     /// Learn an IR command.
     /// </summary>
-    /// <param name="fileName">File to place learned IR command in.</param>
+    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns>true if successful, otherwise false.</returns>
     internal static bool LearnIR(string fileName)
     {
@@ -1278,67 +1284,67 @@ namespace Translator
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro)) // Macro
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
         ProcessMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.InvariantCultureIgnoreCase)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.InvariantCultureIgnoreCase)) // Serial Port Command
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg)) // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.InvariantCultureIgnoreCase))  // Message Command
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys)) // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         Common.ProcessKeyCommand(keyCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixEject)) // Eject Command
-      {
-        string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
-        Common.ProcessEjectCommand(ejectCommand);
-      }
-      else if (command.StartsWith(Common.CmdPrefixMouse)) // Mouse Command
+      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.InvariantCultureIgnoreCase)) // Mouse Command
       {
         string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
         Common.ProcessMouseCommand(mouseCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixHibernate)) // Hibernate Command
+      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.InvariantCultureIgnoreCase)) // Eject Command
+      {
+        string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
+        Common.ProcessEjectCommand(ejectCommand);
+      }
+      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.InvariantCultureIgnoreCase)) // Hibernate Command
       {
         Hibernate();
       }
-      else if (command.StartsWith(Common.CmdPrefixLogOff)) // LogOff Command
+      else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.InvariantCultureIgnoreCase)) // LogOff Command
       {
         LogOff();
       }
-      else if (command.StartsWith(Common.CmdPrefixReboot)) // Reboot Command
+      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.InvariantCultureIgnoreCase)) // Reboot Command
       {
         Reboot();
       }
-      else if (command.StartsWith(Common.CmdPrefixShutdown)) // Shutdown Command
+      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.InvariantCultureIgnoreCase)) // Shutdown Command
       {
         ShutDown();
       }
-      else if (command.StartsWith(Common.CmdPrefixStandby)) // Standby Command
+      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.InvariantCultureIgnoreCase)) // Standby Command
       {
         Standby();
       }
-      else if (command.StartsWith(Common.CmdPrefixTranslator)) // Translator Command
+      else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.InvariantCultureIgnoreCase)) // Translator Command
       {
         ShowTranslatorMenu();
       }
@@ -1351,6 +1357,7 @@ namespace Translator
     /// <summary>
     /// Returns a list of Macros.
     /// </summary>
+    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
     /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {

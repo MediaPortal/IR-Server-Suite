@@ -85,7 +85,7 @@ namespace Configuration
             (_pluginNameTransmit != config.PluginTransmit))
         {
 
-          if (MessageBox.Show("Input Service must be restarted for configuration changes to take effect", "Restart Input Service", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+          if (MessageBox.Show("Input Service will now be restarted for configuration changes to take effect", "Restarting Input Service", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
           {
             // Change settings ...
             _mode = config.Mode;

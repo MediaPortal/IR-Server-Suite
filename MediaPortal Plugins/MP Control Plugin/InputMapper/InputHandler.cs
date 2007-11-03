@@ -135,7 +135,7 @@ namespace MediaPortal.Plugins
     public InputHandler(string deviceXmlName)
     {
 
-      using (Profile.Settings xmlreader = new Profile.Settings(MPControlPlugin.MPConfigFile))
+      using (Profile.Settings xmlreader = new Profile.Settings(MPUtils.MPCommon.MPConfigFile))
         _basicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
 
       string xmlPath = GetXmlPath(deviceXmlName);
@@ -182,8 +182,8 @@ namespace MediaPortal.Plugins
     public string GetXmlPath(string deviceXmlName)
     {
       string path = String.Empty;
-      string pathCustom = MPControlPlugin.CustomInputDevice + deviceXmlName + ".xml";
-      string pathDefault = MPControlPlugin.CustomInputDefault + deviceXmlName + ".xml";
+      string pathCustom = MPUtils.MPCommon.CustomInputDevice + deviceXmlName + ".xml";
+      string pathDefault = MPUtils.MPCommon.CustomInputDefault + deviceXmlName + ".xml";
 
       if (System.IO.File.Exists(pathCustom) && CheckXmlFile(pathCustom))
       {

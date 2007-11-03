@@ -133,7 +133,7 @@ namespace MediaPortal.Plugins
     {
       MPControlPlugin.HandleMessage -= new ClientMessageSink(ReceivedMessage);
     }
-    
+
     #region Local Methods
 
     void ReceivedMessage(IrssMessage received)
@@ -296,8 +296,16 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextRun);
       comboBoxCommands.Items.Add(Common.UITextSerial);
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
+      comboBoxCommands.Items.Add(Common.UITextTcpMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
+      comboBoxCommands.Items.Add(Common.UITextEject);
       comboBoxCommands.Items.Add(Common.UITextGoto);
+      //comboBoxCommands.Items.Add(Common.UITextWindowState);
+      comboBoxCommands.Items.Add(Common.UITextExit);
+      comboBoxCommands.Items.Add(Common.UITextStandby);
+      comboBoxCommands.Items.Add(Common.UITextHibernate);
+      comboBoxCommands.Items.Add(Common.UITextReboot);
+      comboBoxCommands.Items.Add(Common.UITextShutdown);
 
       string[] fileList = MPControlPlugin.GetFileList(true);
 
@@ -316,7 +324,7 @@ namespace MediaPortal.Plugins
       if (File.Exists(fileName))
       {
         _learnIR = new LearnIR(
-          new LearnIrDelegate(MPControlPlugin.LearnIRCommand),
+          new LearnIrDelegate(MPControlPlugin.LearnIR),
           new BlastIrDelegate(MPControlPlugin.BlastIR),
           MPControlPlugin.TransceiverInformation.Ports,
           command);
@@ -437,7 +445,7 @@ namespace MediaPortal.Plugins
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
       _learnIR = new LearnIR(
-        new LearnIrDelegate(MPControlPlugin.LearnIRCommand),
+        new LearnIrDelegate(MPControlPlugin.LearnIR),
         new BlastIrDelegate(MPControlPlugin.BlastIR),
         MPControlPlugin.TransceiverInformation.Ports);
 
@@ -564,14 +572,6 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (selected == Common.UITextGoto)
-      {
-        GoToScreen goToScreen = new GoToScreen();
-        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixGoto + goToScreen.Screen;
-      }
       else if (selected == Common.UITextSerial)
       {
         SerialCommand serialCommand = new SerialCommand();
@@ -588,6 +588,14 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
+      else if (selected == Common.UITextTcpMsg)
+      {
+        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        command = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+      }
       else if (selected == Common.UITextKeys)
       {
         KeysCommand keysCommand = new KeysCommand();
@@ -595,6 +603,22 @@ namespace MediaPortal.Plugins
           return;
 
         command = Common.CmdPrefixKeys + keysCommand.CommandString;
+      }
+      else if (selected == Common.UITextEject)
+      {
+        EjectCommand ejectCommand = new EjectCommand();
+        if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
+          return;
+        
+        command = Common.CmdPrefixEject + ejectCommand.CommandString;
+      }
+      else if (selected == Common.UITextGoto)
+      {
+        GoToScreen goToScreen = new GoToScreen();
+        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        command = Common.CmdPrefixGoto + goToScreen.Screen;
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast))
       {
@@ -609,7 +633,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixBlast + blastCommand.CommandString;
       }
-      else if (selected.StartsWith(Common.CmdPrefixMacro))
+      else
       {
         command = selected;
       }
@@ -626,8 +650,8 @@ namespace MediaPortal.Plugins
 
       string mappingName = multiMapNameBox.MapName;
 
-      string pathCustom = MPControlPlugin.CustomInputDevice + "MPControlPlugin.xml";
-      string pathDefault = MPControlPlugin.CustomInputDefault + "MPControlPlugin.xml";
+      string pathCustom = MPUtils.MPCommon.CustomInputDevice + "MPControlPlugin.xml";
+      string pathDefault = MPUtils.MPCommon.CustomInputDefault + "MPControlPlugin.xml";
 
       string sourceFile;
       if (File.Exists(pathCustom))
@@ -640,7 +664,7 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      string destinationFile = MPControlPlugin.CustomInputDevice + mappingName + ".xml";
+      string destinationFile = MPUtils.MPCommon.CustomInputDevice + mappingName + ".xml";
 
       File.Copy(sourceFile, destinationFile, true);
 
@@ -783,16 +807,18 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      if (!Common.IsValidFileName(e.Label))
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
 
       try
       {
-        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
+        string newFileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
 
         File.Move(oldFileName, newFileName);
       }
@@ -827,16 +853,18 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      if (!Common.IsValidFileName(e.Label))
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
 
       try
       {
-        string newFileName = MPControlPlugin.FolderMacros + e.Label + Common.FileExtensionMacro;
+        string newFileName = MPControlPlugin.FolderMacros + name + Common.FileExtensionMacro;
 
         File.Move(oldFileName, newFileName);
       }

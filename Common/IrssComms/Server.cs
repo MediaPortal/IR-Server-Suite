@@ -246,19 +246,19 @@ namespace IrssComms
     {
       ClientManager clientManager = obj as ClientManager;
 
-      if (clientManager != null)
+      if (clientManager == null || _clientManagers == null)
+        return;
+
+      lock (_clientManagers)
       {
-        lock (_clientManagers)
-        {
-          if (_clientManagers.Contains(clientManager))
-            _clientManagers.Remove(clientManager);
-        }
-
-        if (_clientDisconnectCallback != null)
-          _clientDisconnectCallback(clientManager);
-
-        clientManager.Dispose();
+        if (_clientManagers.Contains(clientManager))
+          _clientManagers.Remove(clientManager);
       }
+
+      if (_clientDisconnectCallback != null)
+        _clientDisconnectCallback(clientManager);
+
+      clientManager.Dispose();
     }
 
     void ConnectionThread()

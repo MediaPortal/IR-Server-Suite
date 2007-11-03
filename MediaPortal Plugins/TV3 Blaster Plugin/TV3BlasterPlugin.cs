@@ -66,8 +66,6 @@ namespace TvEngine
 
     static List<string> _macroStack;
 
-    static TvServerEventHandler _eventHandler;
-
     #endregion Variables
 
     #region Properties
@@ -140,16 +138,13 @@ namespace TvEngine
 
       Log.Info("TV3BlasterPlugin: Starting ({0})", PluginVersion);
 
-
-      TvBusinessLayer layer = new TvBusinessLayer();
-      LogVerbose = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
-      ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", "localhost").Value;
+      // Load basic settings
+      LoadSettings();
 
       LoadExternalConfigs();
 
       ITvServerEvent events = GlobalServiceProvider.Instance.Get<ITvServerEvent>();
-      _eventHandler = new TvServerEventHandler(events_OnTvServerEvent);
-      events.OnTvServerEvent += _eventHandler;
+      events.OnTvServerEvent += new TvServerEventHandler(events_OnTvServerEvent);
 
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
@@ -166,7 +161,7 @@ namespace TvEngine
     public void Stop()
     {
       ITvServerEvent events = GlobalServiceProvider.Instance.Get<ITvServerEvent>();
-      events.OnTvServerEvent -= _eventHandler;
+      events.OnTvServerEvent -= new TvServerEventHandler(events_OnTvServerEvent);
 
       StopClient();
 
@@ -230,7 +225,7 @@ namespace TvEngine
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+
       if (_client.Start())
       {
         return true;
@@ -243,11 +238,11 @@ namespace TvEngine
     }
     internal static void StopClient()
     {
-      if (_client == null)
-        return;
-
-      _client.Dispose();
-      _client = null;
+      if (_client != null)
+      {
+        _client.Dispose();
+        _client = null;
+      }
     }
 
     static void ReceivedMessage(IrssMessage received)
@@ -306,7 +301,7 @@ namespace TvEngine
             {
               Log.Error("TV3BlasterPlugin: Learn IR command timed-out");
             }
-            
+
             _learnIRFilename = null;
             break;
 
@@ -378,6 +373,7 @@ namespace TvEngine
           _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
           Log.Error(ex.ToString());
         }
+
         _externalChannelConfigs[index].CardId = card.IdCard;
         index++;
       }
@@ -604,6 +600,9 @@ namespace TvEngine
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
 
+        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
+
         XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
         string commandProperty;
 
@@ -654,6 +653,13 @@ namespace TvEngine
                 break;
               }
 
+            case Common.XmlTagTcpMsg:
+              {
+                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
+                Common.ProcessTcpMessageCommand(commands);
+                break;
+              }
+
             case Common.XmlTagKeys:
               {
                 if (InConfiguration)
@@ -669,6 +675,48 @@ namespace TvEngine
       {
         MacroStackRemove(fileName);
       }
+    }
+
+    /// <summary>
+    /// Learn an IR command.
+    /// </summary>
+    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
+    /// <returns>true if successful, otherwise false.</returns>
+    internal static bool LearnIR(string fileName)
+    {
+      try
+      {
+        if (String.IsNullOrEmpty(fileName))
+        {
+          Log.Error("TV3BlasterPlugin: Null or Empty file name for LearnIR()");
+          return false;
+        }
+
+        if (!_registered)
+        {
+          Log.Error("TV3BlasterPlugin: Not registered to an active IR Server");
+          return false;
+        }
+
+        if (_learnIRFilename != null)
+        {
+          Log.Error("TV3BlasterPlugin: Already trying to learn an IR command");
+          return false;
+        }
+
+        _learnIRFilename = fileName;
+
+        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
+        _client.Send(message);
+      }
+      catch (Exception ex)
+      {
+        _learnIRFilename = null;
+        Log.Error("TV3BlasterPlugin - LearnIR(): {0}", ex.Message);
+        return false;
+      }
+
+      return true;
     }
 
     /// <summary>
@@ -752,48 +800,6 @@ namespace TvEngine
     }
 
     /// <summary>
-    /// Learn an IR Command and put it in a file.
-    /// </summary>
-    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
-    /// <returns>true if successful, otherwise false.</returns>
-    internal static bool LearnIRCommand(string fileName)
-    {
-      try
-      {
-        if (String.IsNullOrEmpty(fileName))
-        {
-          Log.Error("TV3BlasterPlugin: Null or Empty file name for LearnIR()");
-          return false;
-        }
-
-        if (!_registered)
-        {
-          Log.Error("TV3BlasterPlugin: Not registered to an active IR Server");
-          return false;
-        }
-
-        if (_learnIRFilename != null)
-        {
-          Log.Error("TV3BlasterPlugin: Already trying to learn an IR command");
-          return false;
-        }
-
-        _learnIRFilename = fileName;
-
-        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
-        _client.Send(message);
-
-        return true;
-      }
-      catch (Exception ex)
-      {
-        _learnIRFilename = null;
-        Log.Error("TV3BlasterPlugin - LearnIRCommand(): {0}", ex.Message);
-        return false;
-      }
-    }
-
-    /// <summary>
     /// Returns a list of Macros.
     /// </summary>
     /// <param name="commandPrefix">Add the command prefix to each list item.</param>
@@ -844,6 +850,16 @@ namespace TvEngine
       }
 
       return list;
+    }
+
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
+    static void LoadSettings()
+    {
+      TvBusinessLayer layer = new TvBusinessLayer();
+      ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", "localhost").Value;
+      LogVerbose = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
     }
 
     #endregion Implementation

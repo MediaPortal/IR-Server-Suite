@@ -26,13 +26,22 @@ namespace IrssUtils.Forms
       get
       {
         StringBuilder command = new StringBuilder();
-        command.Append(Common.CmdPrefixMouse);
 
         if (checkBoxMouseClickLeft.Checked)         command.Append(Common.MouseClickLeft);
-        else if (checkBoxMouseClickRight.Checked)   command.Append(Common.MouseClickRight);
         else if (checkBoxMouseClickMiddle.Checked)  command.Append(Common.MouseClickMiddle);
+        else if (checkBoxMouseClickRight.Checked)   command.Append(Common.MouseClickRight);
+        else if (checkBoxMouseDoubleLeft.Checked)   command.Append(Common.MouseDoubleClickLeft);
+        else if (checkBoxMouseDoubleMiddle.Checked) command.Append(Common.MouseDoubleClickMiddle);
+        else if (checkBoxMouseDoubleRight.Checked)  command.Append(Common.MouseDoubleClickRight);
         else if (checkBoxMouseScrollUp.Checked)     command.Append(Common.MouseScrollUp);
         else if (checkBoxMouseScrollDown.Checked)   command.Append(Common.MouseScrollDown);
+        else if (checkBoxMouseMoveToPos.Checked)
+        {
+          command.Append(Common.MouseMoveToPos);
+          command.Append(numericUpDownX.Value);
+          command.Append(',');
+          command.Append(numericUpDownY.Value);
+        }
         else
         {
           if (checkBoxMouseMoveUp.Checked)          command.Append(Common.MouseMoveUp);
@@ -40,7 +49,7 @@ namespace IrssUtils.Forms
           else if (checkBoxMouseMoveLeft.Checked)   command.Append(Common.MouseMoveLeft);
           else if (checkBoxMouseMoveRight.Checked)  command.Append(Common.MouseMoveRight);
           else
-            return null;
+            return "None";
 
           command.Append(numericUpDownMouseMove.Value.ToString());
         }
@@ -72,19 +81,36 @@ namespace IrssUtils.Forms
 
       switch (command)
       {
-        case Common.MouseClickLeft:   checkBoxMouseClickLeft.Checked = true;    break;
-        case Common.MouseClickMiddle: checkBoxMouseClickMiddle.Checked = true;  break;
-        case Common.MouseClickRight:  checkBoxMouseClickRight.Checked = true;   break;
-        case Common.MouseScrollDown:  checkBoxMouseScrollDown.Checked = true;   break;
-        case Common.MouseScrollUp:    checkBoxMouseScrollUp.Checked = true;     break;
+        case Common.MouseClickLeft:         checkBoxMouseClickLeft.Checked    = true;   break;
+        case Common.MouseClickMiddle:       checkBoxMouseClickMiddle.Checked  = true;   break;
+        case Common.MouseClickRight:        checkBoxMouseClickRight.Checked   = true;   break;
+        case Common.MouseDoubleClickLeft:   checkBoxMouseDoubleLeft.Checked   = true;   break;
+        case Common.MouseDoubleClickMiddle: checkBoxMouseDoubleMiddle.Checked = true;   break;
+        case Common.MouseDoubleClickRight:  checkBoxMouseDoubleRight.Checked  = true;   break;
+        case Common.MouseScrollDown:        checkBoxMouseScrollDown.Checked   = true;   break;
+        case Common.MouseScrollUp:          checkBoxMouseScrollUp.Checked     = true;   break;
 
         default:
-          if (command.StartsWith(Common.MouseMoveDown))       checkBoxMouseMoveDown.Checked = true;
-          else if (command.StartsWith(Common.MouseMoveLeft))  checkBoxMouseMoveLeft.Checked = true;
-          else if (command.StartsWith(Common.MouseMoveRight)) checkBoxMouseMoveRight.Checked = true;
-          else if (command.StartsWith(Common.MouseMoveUp))    checkBoxMouseMoveUp.Checked = true;
+          if (command.StartsWith(Common.MouseMoveDown))       checkBoxMouseMoveDown.Checked   = true;
+          else if (command.StartsWith(Common.MouseMoveLeft))  checkBoxMouseMoveLeft.Checked   = true;
+          else if (command.StartsWith(Common.MouseMoveRight)) checkBoxMouseMoveRight.Checked  = true;
+          else if (command.StartsWith(Common.MouseMoveUp))    checkBoxMouseMoveUp.Checked     = true;
+          else if (command.StartsWith(Common.MouseMoveToPos))
+          {
+            checkBoxMouseMoveToPos.Checked = true;
 
-          numericUpDownMouseMove.Value = Decimal.Parse(command.Substring(command.IndexOf(" ")));
+            string subString = command.Substring(Common.MouseMoveToPos.Length);
+
+            string[] coords = subString.Split(new char[] { ',' });
+
+            numericUpDownX.Value = Decimal.Parse(coords[0]);
+            numericUpDownY.Value = Decimal.Parse(coords[1]);
+            break;
+          }
+          else
+            break;
+
+          numericUpDownMouseMove.Value = Decimal.Parse(command.Substring(command.IndexOf(' ')));
           break;
       }
   }
@@ -98,7 +124,6 @@ namespace IrssUtils.Forms
       this.DialogResult = DialogResult.OK;
       this.Close();
     }
-
     private void buttonCancel_Click(object sender, EventArgs e)
     {
       this.DialogResult = DialogResult.Cancel;
@@ -106,6 +131,28 @@ namespace IrssUtils.Forms
     }
 
     #endregion Buttons
+
+    private void checkBoxMouse_CheckedChanged(object sender, EventArgs e)
+    {
+      CheckBox origin = (CheckBox)sender;
+
+      if (!origin.Checked)
+        return;
+
+      if (origin != checkBoxMouseMoveToPos)     checkBoxMouseMoveToPos.Checked    = false;
+      if (origin != checkBoxMouseClickLeft)     checkBoxMouseClickLeft.Checked    = false;
+      if (origin != checkBoxMouseClickRight)    checkBoxMouseClickRight.Checked   = false;
+      if (origin != checkBoxMouseClickMiddle)   checkBoxMouseClickMiddle.Checked  = false;
+      if (origin != checkBoxMouseDoubleLeft)    checkBoxMouseDoubleLeft.Checked   = false;
+      if (origin != checkBoxMouseDoubleRight)   checkBoxMouseDoubleRight.Checked  = false;
+      if (origin != checkBoxMouseDoubleMiddle)  checkBoxMouseDoubleMiddle.Checked = false;
+      if (origin != checkBoxMouseMoveUp)        checkBoxMouseMoveUp.Checked       = false;
+      if (origin != checkBoxMouseMoveDown)      checkBoxMouseMoveDown.Checked     = false;
+      if (origin != checkBoxMouseMoveLeft)      checkBoxMouseMoveLeft.Checked     = false;
+      if (origin != checkBoxMouseMoveRight)     checkBoxMouseMoveRight.Checked    = false;
+      if (origin != checkBoxMouseScrollUp)      checkBoxMouseScrollUp.Checked     = false;
+      if (origin != checkBoxMouseScrollDown)    checkBoxMouseScrollDown.Checked   = false;
+    }
 
   }
 

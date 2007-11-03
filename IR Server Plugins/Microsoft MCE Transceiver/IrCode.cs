@@ -150,20 +150,36 @@ namespace MicrosoftMceTransceiver
     }
 
     /// <summary>
-    /// Creates a byte array representation of this IR Code (in Pronto format).
+    /// Creates a byte array representation of this IR Code.
     /// </summary>
+    /// <param name="asPronto">Set this parameter true to convert the IR Code into Pronto format.</param>
     /// <returns>Byte array representation.</returns>
-    public byte[] ToByteArray()
+    public byte[] ToByteArray(bool asPronto)
     {
-      ushort[] prontoData = Pronto.ConvertIrCodeToProntoRaw(this);
-
       StringBuilder output = new StringBuilder();
 
-      for (int index = 0; index < prontoData.Length; index++)
+      if (asPronto)
       {
-        output.Append(prontoData[index].ToString("X4"));
-        if (index != prontoData.Length - 1)
-          output.Append(' ');
+        ushort[] prontoData = Pronto.ConvertIrCodeToProntoRaw(this);
+
+        for (int index = 0; index < prontoData.Length; index++)
+        {
+          output.Append(prontoData[index].ToString("X4"));
+          if (index != prontoData.Length - 1)
+            output.Append(' ');
+        }
+      }
+      else // Native format (only benefit is a slightly more accurate Carrier Frequency)
+      {
+        output.Append("MCE,");
+        output.AppendFormat("{0},", _carrier);
+
+        for (int index = 0; index < _timingData.Length; index++)
+        {
+          output.Append(_timingData[index]);
+          if (index != _timingData.Length - 1)
+            output.Append(',');
+        }
       }
 
       return Encoding.ASCII.GetBytes(output.ToString());
@@ -174,7 +190,7 @@ namespace MicrosoftMceTransceiver
     #region Static Methods
 
     /// <summary>
-    /// Takes old IR file bytes.
+    /// Creates an IrCode object from old IR file bytes.
     /// </summary>
     /// <param name="data">IR file bytes.</param>
     /// <returns>New IrCode object.</returns>
@@ -207,24 +223,61 @@ namespace MicrosoftMceTransceiver
     }
 
     /// <summary>
+    /// Create an IrCode object from Native file bytes.
+    /// </summary>
+    /// <param name="data">IR file bytes.</param>
+    /// <returns>New IrCode object.</returns>
+    static IrCode FromNativeData(string data)
+    {
+      if (String.IsNullOrEmpty(data))
+        throw new ArgumentNullException("data");
+
+      string[] elements = data.Split(new char[] { ',' });
+
+      if (elements.Length < 3)
+        throw new ApplicationException("Invalid native IR file data");
+
+      IrCode newCode = new IrCode();
+      newCode.Carrier = int.Parse(elements[1]);
+
+      int[] timingData = new int[elements.Length - 2];
+      for (int index = 2; index < elements.Length; index++)
+        timingData[index - 2] = int.Parse(elements[index]);
+
+      newCode.TimingData = timingData;
+
+      return newCode;
+    }
+
+    /// <summary>
     /// Create a new IrCode object from byte array data.
     /// </summary>
     /// <param name="data">Byte array to create from.</param>
-    /// <returns>New IrCode.</returns>
+    /// <returns>New IrCode object.</returns>
     public static IrCode FromByteArray(byte[] data)
     {
       if (data[4] != ' ')
+      {
+        string code = Encoding.ASCII.GetString(data);
+
+        string[] stringData = code.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+        ushort[] prontoData = new ushort[stringData.Length];
+        for (int i = 0; i < stringData.Length; i++)
+          prontoData[i] = ushort.Parse(stringData[i], System.Globalization.NumberStyles.HexNumber);
+
+        return Pronto.ConvertProntoDataToIrCode(prontoData);
+      }
+      else if (data[0] == 'M' && data[1] == 'C' && data[2] == 'E')
+      {
+        string code = Encoding.ASCII.GetString(data);
+
+        return FromNativeData(code);
+      }
+      else
+      {
         return FromOldData(data);
-
-      string code = Encoding.ASCII.GetString(data);
-
-      string[] stringData = code.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-      ushort[] prontoData = new ushort[stringData.Length];
-      for (int i = 0; i < stringData.Length; i++)
-        prontoData[i] = ushort.Parse(stringData[i], System.Globalization.NumberStyles.HexNumber);
-
-      return Pronto.ConvertProntoDataToIrCode(prontoData);
+      }
     }
 
     #endregion Static Methods

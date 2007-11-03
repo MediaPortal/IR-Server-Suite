@@ -60,8 +60,6 @@ namespace MediaPortal.Plugins
 
     internal static readonly string FolderMacros = Common.FolderAppData + "MP Blast Zone Plugin\\Macro\\";
 
-    internal static readonly string MPConfigFile = Config.GetFolder(Config.Dir.Config) + "\\MediaPortal.xml";
-
     #endregion Constants
 
     #region Variables
@@ -133,6 +131,11 @@ namespace MediaPortal.Plugins
       set { _handleMessage = value; }
     }
 
+    internal static IRServerInfo TransceiverInformation
+    {
+      get { return _irServerInfo; }
+    }
+
     /// <summary>
     /// Gets a value indicating whether MediaPortal has basic home enabled.
     /// </summary>
@@ -140,11 +143,6 @@ namespace MediaPortal.Plugins
     internal static bool MP_BasicHome
     {
       get { return _mpBasicHome; }
-    }
-
-    internal static IRServerInfo TransceiverInformation
-    {
-      get { return _irServerInfo; }
     }
 
     #endregion Properties
@@ -206,7 +204,6 @@ namespace MediaPortal.Plugins
     /// </summary>
     /// <returns>The plugin description.</returns>
     public string Description()   { return "This is a window plugin that uses the IR Server to control various pieces of equipment"; }
-
 
     /// <summary>
     /// Shows the plugin configuration.
@@ -443,7 +440,7 @@ namespace MediaPortal.Plugins
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+
       if (_client.Start())
       {
         return true;
@@ -456,11 +453,11 @@ namespace MediaPortal.Plugins
     }
     internal static void StopClient()
     {
-      if (_client == null)
-        return;
-
-      _client.Dispose();
-      _client = null;
+      if (_client != null)
+      {
+        _client.Dispose();
+        _client = null;
+      }
     }
 
     static void ReceivedMessage(IrssMessage received)
@@ -519,7 +516,7 @@ namespace MediaPortal.Plugins
             {
               Log.Error("MPBlastZonePlugin: Learn IR command timed-out");
             }
-            
+
             _learnIRFilename = null;
             break;
 
@@ -541,6 +538,60 @@ namespace MediaPortal.Plugins
       {
         Log.Error("MPBlastZonePlugin - ReveivedMessage(): {0}", ex.Message);
       }
+    }
+
+    static void Hibernate()
+    {
+      if (InConfiguration)
+        return;
+
+      GUIGraphicsContext.ResetLastActivity();
+      // Stop all media before hibernating
+      g_Player.Stop();
+
+      GUIMessage msg;
+
+      if (_mpBasicHome)
+        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
+      else
+        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
+
+      GUIWindowManager.SendThreadMessage(msg);
+
+      WindowsController.ExitWindows(RestartOptions.Hibernate, false);
+    }
+
+    static void Standby()
+    {
+      if (InConfiguration)
+        return;
+
+      GUIGraphicsContext.ResetLastActivity();
+      // Stop all media before suspending
+      g_Player.Stop();
+
+      GUIMessage msg;
+
+      if (_mpBasicHome)
+        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
+      else
+        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
+
+      GUIWindowManager.SendThreadMessage(msg);
+
+      WindowsController.ExitWindows(RestartOptions.Suspend, false);
+    }
+
+    static void Reboot()
+    {
+      if (!InConfiguration)
+        GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_SHUTDOWN, 0, 0));
+    }
+
+    static void ShutDown()
+    {
+      if (!InConfiguration)
+        GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_REBOOT, 0, 0));
     }
 
     /// <summary>
@@ -605,6 +656,9 @@ namespace MediaPortal.Plugins
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
 
+        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
+
         XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
         string commandProperty;
 
@@ -653,7 +707,7 @@ namespace MediaPortal.Plugins
                 if (InConfiguration)
                   MessageBox.Show(commandProperty, "Go To Window", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
-                  MPCommands.ProcessGoTo(commandProperty, MP_BasicHome);
+                  MPCommon.ProcessGoTo(commandProperty, MP_BasicHome);
                 break;
               }
 
@@ -664,7 +718,7 @@ namespace MediaPortal.Plugins
                 if (InConfiguration)
                   MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
-                  MPCommands.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
+                  MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
 
                 break;
               }
@@ -715,61 +769,33 @@ namespace MediaPortal.Plugins
                 break;
               }
 
+            case Common.XmlTagEject:
+              {
+                Common.ProcessEjectCommand(commandProperty);
+                break;
+              }
+
             case Common.XmlTagStandby:
               {
-                if (!InConfiguration)
-                {
-                  GUIGraphicsContext.ResetLastActivity();
-                  // Stop all media before suspending or hibernating
-                  g_Player.Stop();
-
-                  GUIMessage msg;
-
-                  if (_mpBasicHome)
-                    msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
-                  else
-                    msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
-
-                  GUIWindowManager.SendThreadMessage(msg);
-
-                  WindowsController.ExitWindows(RestartOptions.Suspend, true);
-                }
+                Standby();
                 break;
               }
 
             case Common.XmlTagHibernate:
               {
-                if (!InConfiguration)
-                {
-                  GUIGraphicsContext.ResetLastActivity();
-                  // Stop all media before suspending or hibernating
-                  g_Player.Stop();
-
-                  GUIMessage msg;
-
-                  if (_mpBasicHome)
-                    msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
-                  else
-                    msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
-
-                  GUIWindowManager.SendThreadMessage(msg);
-
-                  WindowsController.ExitWindows(RestartOptions.Hibernate, true);
-                }
-                break;
-              }
-
-            case Common.XmlTagReboot:
-              {
-                if (!InConfiguration)
-                  GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_REBOOT, 0, 0));
+                Hibernate();
                 break;
               }
 
             case Common.XmlTagShutdown:
               {
-                if (!InConfiguration)
-                  GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_SHUTDOWN, 0, 0));
+                ShutDown();
+                break;
+              }
+
+            case Common.XmlTagReboot:
+              {
+                Reboot();
                 break;
               }
           }
@@ -779,6 +805,48 @@ namespace MediaPortal.Plugins
       {
         MacroStackRemove(fileName);
       }
+    }
+
+    /// <summary>
+    /// Learn an IR command.
+    /// </summary>
+    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
+    /// <returns>true if successful, otherwise false.</returns>
+    internal static bool LearnIR(string fileName)
+    {
+      try
+      {
+        if (String.IsNullOrEmpty(fileName))
+        {
+          Log.Error("MPBlastZonePlugin: Null or Empty file name for LearnIR()");
+          return false;
+        }
+
+        if (!_registered)
+        {
+          Log.Warn("MPBlastZonePlugin: Not registered to an active IR Server");
+          return false;
+        }
+
+        if (_learnIRFilename != null)
+        {
+          Log.Warn("MPBlastZonePlugin: Already trying to learn an IR command");
+          return false;
+        }
+
+        _learnIRFilename = fileName;
+
+        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
+        _client.Send(message);
+      }
+      catch (Exception ex)
+      {
+        _learnIRFilename = null;
+        Log.Error("MPBlastZonePlugin - LearnIRCommand(): {0}", ex.Message);
+        return false;
+      }
+
+      return true;
     }
 
     /// <summary>
@@ -842,55 +910,47 @@ namespace MediaPortal.Plugins
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
+      {
+        string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
+        if (InConfiguration)
+          MessageBox.Show(keyCommand, "Keystroke Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        else
+          Common.ProcessKeyCommand(keyCommand);
+      }
+      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.InvariantCultureIgnoreCase)) // Mouse Command
+      {
+        string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
+        Common.ProcessMouseCommand(mouseCommand);
+      }
+      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.InvariantCultureIgnoreCase)) // Eject Command
+      {
+        string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
+        Common.ProcessEjectCommand(ejectCommand);
+      }
+      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.InvariantCultureIgnoreCase)) // Hibernate Command
+      {
+        Hibernate();
+      }
+      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.InvariantCultureIgnoreCase)) // Reboot Command
+      {
+        Reboot();
+      }
+      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.InvariantCultureIgnoreCase)) // Shutdown Command
+      {
+        ShutDown();
+      }
+      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.InvariantCultureIgnoreCase)) // Standby Command
+      {
+        Standby();
+      }
       else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.InvariantCultureIgnoreCase)) // Go To Screen
       {
-        MPCommands.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), MP_BasicHome);
+        MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), MP_BasicHome);
       }
       else
       {
         throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
-      }
-    }
-
-    /// <summary>
-    /// Learn an IR Command and put it in a file.
-    /// </summary>
-    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
-    /// <returns>true if successful, otherwise false.</returns>
-    internal static bool LearnIRCommand(string fileName)
-    {
-      try
-      {
-        if (String.IsNullOrEmpty(fileName))
-        {
-          Log.Error("MPBlastZonePlugin: Null or Empty file name for LearnIR()");
-          return false;
-        }
-
-        if (!_registered)
-        {
-          Log.Warn("MPBlastZonePlugin: Not registered to an active IR Server");
-          return false;
-        }
-
-        if (_learnIRFilename != null)
-        {
-          Log.Warn("MPBlastZonePlugin: Already trying to learn an IR command");
-          return false;
-        }
-
-        _learnIRFilename = fileName;
-
-        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
-        _client.Send(message);
-
-        return true;
-      }
-      catch (Exception ex)
-      {
-        _learnIRFilename = null;
-        Log.Error("MPBlastZonePlugin - LearnIRCommand(): {0}", ex.Message);
-        return false;
       }
     }
 
@@ -954,7 +1014,7 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPConfigFile))
+        using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPCommon.MPConfigFile))
         {
           ServerHost = xmlreader.GetValueAsString("MPBlastZonePlugin", "ServerHost", "localhost");
 
@@ -976,7 +1036,7 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MPConfigFile))
+        using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MPCommon.MPConfigFile))
         {
           xmlwriter.SetValue("MPBlastZonePlugin", "ServerHost", ServerHost);
 

@@ -19,6 +19,12 @@ namespace Translator
   partial class MainForm : Form
   {
 
+    #region Constants
+
+    const string SystemWide = "System Wide";
+
+    #endregion Constants
+
     #region Enumerations
 
     /// <summary>
@@ -87,6 +93,10 @@ namespace Translator
     #region Variables
 
     LearnIR _learnIR;
+    
+    ToolStripMenuItem _addProgramToolStripMenuItem;
+    ToolStripMenuItem _editProgramToolStripMenuItem;
+    ToolStripMenuItem _removeProgramToolStripMenuItem;
 
     #endregion Variables
 
@@ -97,11 +107,15 @@ namespace Translator
       InitializeComponent();
 
       RefreshProgramList();
+      listViewPrograms.Items[0].Selected = true;
+
       RefreshButtonList();
       RefreshEventList();
       RefreshEventCommands();
       RefreshIRList();
       RefreshMacroList();
+
+      SetupProgramsContextMenu();
 
       try
       {
@@ -114,13 +128,26 @@ namespace Translator
 
     void RefreshProgramList()
     {
-      comboBoxProgram.Items.Clear();
-      comboBoxProgram.Items.Add("System wide");
+      imageListPrograms.Images.Clear();
+      imageListPrograms.Images.Add(Properties.Resources.WinLogo);
 
+      listViewPrograms.Items.Clear();
+      
+      ListViewItem newItem = new ListViewItem(SystemWide, 0);
+      newItem.ToolTipText = "Defines mappings that effect the whole computer";
+      listViewPrograms.Items.Add(newItem);
+
+      int imageIndex = 1;
       foreach (ProgramSettings progSettings in Program.Config.Programs)
-        comboBoxProgram.Items.Add(progSettings.Name);
+      {
+        Icon icon = Win32.GetIconFor(progSettings.Filename);
 
-      comboBoxProgram.SelectedIndex = 0;
+        imageListPrograms.Images.Add(icon);
+
+        newItem = new ListViewItem(progSettings.Name, imageIndex++);
+        newItem.ToolTipText = progSettings.Filename;
+        listViewPrograms.Items.Add(newItem);
+      }
 
       Program.UpdateNotifyMenu();
     }
@@ -210,13 +237,12 @@ namespace Translator
 
     List<ButtonMapping> GetCurrentSettings()
     {
-      string selectedItem = comboBoxProgram.SelectedItem as string;
-
-      if (selectedItem == null)
-      {
+      if (listViewPrograms.SelectedItems.Count == 0)
         return null;
-      }
-      else if (selectedItem == "System wide")
+
+      string selectedItem = listViewPrograms.SelectedItems[0].Text;
+      
+      if (selectedItem == SystemWide)
       {
         return Program.Config.SystemWideMappings;
       }
@@ -228,6 +254,59 @@ namespace Translator
       }
 
       return null;
+    }
+
+    void SetupProgramsContextMenu()
+    {
+      _addProgramToolStripMenuItem = new ToolStripMenuItem("&Add Program", Properties.Resources.Plus, new EventHandler(addProgramToolStripMenuItem_Click));
+      _editProgramToolStripMenuItem = new ToolStripMenuItem("&Edit Program", Properties.Resources.Edit, new EventHandler(editProgramToolStripMenuItem_Click));
+      _removeProgramToolStripMenuItem = new ToolStripMenuItem("&Remove Program", Properties.Resources.Delete, new EventHandler(removeProgramToolStripMenuItem_Click));
+
+      contextMenuStripPrograms.Items.Add(_addProgramToolStripMenuItem);
+      contextMenuStripPrograms.Items.Add(_editProgramToolStripMenuItem);
+      contextMenuStripPrograms.Items.Add(_removeProgramToolStripMenuItem);
+    }
+    void RefreshProgramsContextMenu()
+    {
+      if (listViewPrograms.SelectedItems.Count == 0 ||
+          listViewPrograms.SelectedItems[0].Text == SystemWide)
+      {
+        _editProgramToolStripMenuItem.Enabled   = false;
+        _removeProgramToolStripMenuItem.Enabled = false;
+      }
+      else
+      {
+        _editProgramToolStripMenuItem.Enabled   = true;
+        _removeProgramToolStripMenuItem.Enabled = true;
+      }
+
+      if (listViewPrograms.SelectedItems.Count == 0)
+      {
+        _editProgramToolStripMenuItem.Text    = "&Edit ...";
+        _removeProgramToolStripMenuItem.Text  = "&Remove ...";
+      }/*
+      else if (listViewPrograms.SelectedItems[0].Text == SystemWide)
+      {
+      }*/
+      else
+      {
+        string program = listViewPrograms.SelectedItems[0].Text;
+        _editProgramToolStripMenuItem.Text    = "&Edit \"" + program + "\"";
+        _removeProgramToolStripMenuItem.Text  = "&Remove \"" + program + "\"";
+      }
+
+    }
+
+    void AddProgram()
+    {
+      ProgramSettings progSettings = new ProgramSettings();
+
+      if (EditProgram(progSettings))
+      {
+        Program.Config.Programs.Add(progSettings);
+
+        RefreshProgramList();
+      }
     }
 
     bool EditProgram(ProgramSettings progSettings)
@@ -246,6 +325,26 @@ namespace Translator
 
         Program.UpdateNotifyMenu();
         return true;
+      }
+
+      return false;
+    }
+    bool EditProgram(string programName)
+    {
+      foreach (ProgramSettings progSettings in Program.Config.Programs)
+      {
+        if (progSettings.Name.Equals(programName))
+        {
+          if (EditProgram(progSettings))
+          {
+            RefreshProgramList();
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
       }
 
       return false;
@@ -376,71 +475,6 @@ namespace Translator
           buttonNew_Click(null, null);
           break;
       }
-    }
-
-    private void comboBoxProgram_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if ((comboBoxProgram.SelectedItem as string) == "System wide")
-      {
-        buttonRemoveProgram.Enabled = false;
-        buttonEditProgram.Enabled = false;
-      }
-      else
-      {
-        buttonRemoveProgram.Enabled = true;
-        buttonEditProgram.Enabled = true;
-      }
-
-      RefreshButtonList();
-    }
-
-    private void buttonAddProgram_Click(object sender, EventArgs e)
-    {
-      ProgramSettings progSettings = new ProgramSettings();
-
-      if (EditProgram(progSettings))
-      {
-        // TODO: check for duplicates in Program.Config.Programs ...
-
-        comboBoxProgram.Items.Add(progSettings.Name);
-        Program.Config.Programs.Add(progSettings);
-        comboBoxProgram.SelectedIndex = comboBoxProgram.Items.Count - 1;
-      }
-    }
-    private void buttonRemoveProgram_Click(object sender, EventArgs e)
-    {
-      ProgramSettings progSettings = null;
-
-      foreach (ProgramSettings settings in Program.Config.Programs)
-      {
-        if (settings.Name == comboBoxProgram.SelectedItem as string)
-        {
-          progSettings = settings;
-        }
-      }
-
-      if (progSettings != null)
-      {
-        if (MessageBox.Show(this, String.Format("Are you sure you want to remove all mappings for {0}?", progSettings.Name), String.Format("Remove {0}?", progSettings.Name), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-        {
-          Program.Config.Programs.Remove(progSettings);
-          comboBoxProgram.Items.Remove(comboBoxProgram.SelectedItem);
-          comboBoxProgram.SelectedIndex = 0;
-
-          Program.UpdateNotifyMenu();
-        }
-      }
-    }
-    private void buttonEditProgram_Click(object sender, EventArgs e)
-    {
-      foreach (ProgramSettings progSettings in Program.Config.Programs)
-        if (progSettings.Name == comboBoxProgram.SelectedItem as string)
-          if (EditProgram(progSettings))
-          {
-            comboBoxProgram.Items.Remove(comboBoxProgram.SelectedItem);
-            comboBoxProgram.Items.Add(progSettings.Name);
-            comboBoxProgram.SelectedItem = progSettings.Name;
-          }
     }
 
     private void buttonNew_Click(object sender, EventArgs e)
@@ -716,16 +750,18 @@ namespace Translator
         return;
       }
 
-      if (!Common.IsValidFileName(e.Label))
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
 
       try
       {
-        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
+        string newFileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
 
         File.Move(oldFileName, newFileName);
       }
@@ -760,16 +796,18 @@ namespace Translator
         return;
       }
 
-      if (!Common.IsValidFileName(e.Label))
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
 
       try
       {
-        string newFileName = Program.FolderMacros + e.Label + Common.FileExtensionMacro;
+        string newFileName = Program.FolderMacros + name + Common.FileExtensionMacro;
 
         File.Move(oldFileName, newFileName);
       }
@@ -790,11 +828,12 @@ namespace Translator
 
     private void buttonAddEvent_Click(object sender, EventArgs e)
     {
-      listViewEventMap.Items.Add(
-        new ListViewItem(
-          new string[] { comboBoxEvents.SelectedItem as string, String.Empty }
-        )
-      );
+      ListViewItem newItem = 
+        new ListViewItem(new string[] { comboBoxEvents.SelectedItem as string, String.Empty });
+
+      listViewEventMap.SelectedIndices.Clear();
+      listViewEventMap.Items.Add(newItem);
+      newItem.Selected = true;
     }
     private void buttonSetCommand_Click(object sender, EventArgs e)
     {
@@ -870,7 +909,6 @@ namespace Translator
         foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
           listViewEventMap.Items.Remove(listViewItem);
     }
-
     private void listViewEventMap_DoubleClick(object sender, EventArgs e)
     {
       if (listViewEventMap.SelectedItems.Count != 1)
@@ -934,6 +972,20 @@ namespace Translator
       }
 
       listViewEventMap.SelectedItems[0].SubItems[1].Text = command;
+    }
+
+    private void listViewPrograms_DoubleClick(object sender, EventArgs e)
+    {
+      if (listViewPrograms.SelectedItems.Count == 1 && listViewPrograms.SelectedItems[0].Text != SystemWide)
+      {
+        string selectedItem = listViewPrograms.SelectedItems[0].Text;
+
+        EditProgram(selectedItem);
+      }
+    }
+    private void listViewPrograms_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      RefreshButtonList();
     }
 
     #endregion Controls
@@ -1032,6 +1084,55 @@ namespace Translator
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
       MessageBox.Show(this, "Translator\nVersion 1.0.3.5 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    private void addProgramToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      AddProgram();
+    }
+    private void editProgramToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (listViewPrograms.SelectedItems.Count == 0)
+        return;
+
+      string selectedItem = listViewPrograms.SelectedItems[0].Text;
+
+      EditProgram(selectedItem);
+    }
+    private void removeProgramToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (listViewPrograms.SelectedItems.Count == 0)
+        return;
+
+      string selectedItem = listViewPrograms.SelectedItems[0].Text;
+
+      foreach (ProgramSettings settings in Program.Config.Programs)
+      {
+        if (settings.Name.Equals(selectedItem))
+        {
+          string message = String.Format("Are you sure you want to remove all mappings for {0}?", settings.Name);
+          string caption = String.Format("Remove {0}?", settings.Name);
+
+          if (MessageBox.Show(this, message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+          {
+            Program.Config.Programs.Remove(settings);
+
+            RefreshProgramList();
+          }
+
+          break;
+        }
+      }
+    }
+    private void contextMenuStripPrograms_Opening(object sender, CancelEventArgs e)
+    {
+      RefreshProgramsContextMenu();
+    }
+
+    private void removeEventToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
+        listViewEventMap.Items.Remove(listViewItem);
     }
 
     #endregion Menu

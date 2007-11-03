@@ -20,7 +20,7 @@ namespace Translator
     PC_Suspend,
     PC_Resume,
     PC_Logoff,
-    Scheduled_Event,
+    //Scheduled_Event,
   }
 
   #endregion Enumerations

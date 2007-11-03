@@ -409,7 +409,7 @@ namespace MicrosoftMceTransceiver
         _blasters[j] = ((data & (((int)1) << j)) != 0);
 
 #if DEBUG
-      DebugWriteLine("Blasters:       " + data.ToString());
+      DebugWriteLine("BlastersMask:   " + data.ToString());
 #endif
     }
 

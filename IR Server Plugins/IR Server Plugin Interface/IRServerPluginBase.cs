@@ -41,7 +41,7 @@ namespace IRServerPluginInterface
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
     /// </summary>
     /// <returns>true if the device is present, otherwise false.</returns>
-    public abstract bool Detect();
+    public virtual bool Detect() { return false; }
 
     /// <summary>
     /// Start the IR Server plugin.
@@ -52,12 +52,12 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
-    public abstract void Suspend();
+    public virtual void Suspend() { }
 
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
-    public abstract void Resume();
+    public virtual void Resume() { }
 
     /// <summary>
     /// Stop the IR Server plugin.

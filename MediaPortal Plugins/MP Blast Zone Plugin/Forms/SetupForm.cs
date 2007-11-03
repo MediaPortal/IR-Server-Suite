@@ -135,7 +135,15 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextRun);
       comboBoxCommands.Items.Add(Common.UITextSerial);
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
+      comboBoxCommands.Items.Add(Common.UITextTcpMsg);
+      comboBoxCommands.Items.Add(Common.UITextEject);
       comboBoxCommands.Items.Add(Common.UITextGoto);
+      //comboBoxCommands.Items.Add(Common.UITextWindowState);
+      comboBoxCommands.Items.Add(Common.UITextExit);
+      comboBoxCommands.Items.Add(Common.UITextStandby);
+      comboBoxCommands.Items.Add(Common.UITextHibernate);
+      comboBoxCommands.Items.Add(Common.UITextReboot);
+      comboBoxCommands.Items.Add(Common.UITextShutdown);
 
       string[] fileList = MPBlastZonePlugin.GetFileList(true);
 
@@ -154,7 +162,7 @@ namespace MediaPortal.Plugins
       if (File.Exists(fileName))
       {
         _learnIR = new LearnIR(
-          new LearnIrDelegate(MPBlastZonePlugin.LearnIRCommand),
+          new LearnIrDelegate(MPBlastZonePlugin.LearnIR),
           new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
           MPBlastZonePlugin.TransceiverInformation.Ports,
           command);
@@ -287,12 +295,11 @@ namespace MediaPortal.Plugins
         return;
 
       string selected = comboBoxCommands.SelectedItem as string;
-      string command;
+      string command = String.Empty;
 
       if (selected == Common.UITextRun)
       {
         ExternalProgram externalProgram = new ExternalProgram();
-
         if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
           return;
 
@@ -352,7 +359,7 @@ namespace MediaPortal.Plugins
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
       _learnIR = new LearnIR(
-        new LearnIrDelegate(MPBlastZonePlugin.LearnIRCommand),
+        new LearnIrDelegate(MPBlastZonePlugin.LearnIR),
         new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
         MPBlastZonePlugin.TransceiverInformation.Ports);
 
@@ -675,16 +682,18 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      if (!Common.IsValidFileName(e.Label))
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
 
       try
       {
-        string newFileName = Common.FolderIRCommands + e.Label + Common.FileExtensionIR;
+        string newFileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
 
         File.Move(oldFileName, newFileName);
       }
@@ -719,16 +728,18 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      if (!Common.IsValidFileName(e.Label))
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + e.Label, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
 
       try
       {
-        string newFileName = MPBlastZonePlugin.FolderMacros + e.Label + Common.FileExtensionMacro;
+        string newFileName = MPBlastZonePlugin.FolderMacros + name + Common.FileExtensionMacro;
 
         File.Move(oldFileName, newFileName);
       }

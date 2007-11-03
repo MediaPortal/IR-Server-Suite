@@ -40,8 +40,6 @@ namespace MediaPortal.Plugins
 
     internal static readonly string ExtCfgFolder = Common.FolderAppData + "TV2 Blaster Plugin\\";
 
-    internal static readonly string MPConfigFile = Config.GetFolder(Config.Dir.Config) + "\\MediaPortal.xml";
-
     #endregion Constants
 
     #region Variables
@@ -60,6 +58,8 @@ namespace MediaPortal.Plugins
     static ClientMessageSink _handleMessage;
 
     static bool _inConfiguration;
+
+    static bool _mpBasicHome;
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
@@ -302,7 +302,7 @@ namespace MediaPortal.Plugins
       _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
       _client.ConnectCallback       = new WaitCallback(Connected);
       _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+
       if (_client.Start())
       {
         return true;
@@ -315,11 +315,11 @@ namespace MediaPortal.Plugins
     }
     internal static void StopClient()
     {
-      if (_client == null)
-        return;
-
-      _client.Dispose();
-      _client = null;
+      if (_client != null)
+      {
+        _client.Dispose();
+        _client = null;
+      }
     }
 
     static void ReceivedMessage(IrssMessage received)
@@ -379,7 +379,7 @@ namespace MediaPortal.Plugins
               Log.Error("TV2BlasterPlugin: Learn IR command timed-out");
             }
 
-            _learnIRFilename = null; 
+            _learnIRFilename = null;
             break;
 
           case MessageType.ServerShutdown:
@@ -674,6 +674,9 @@ namespace MediaPortal.Plugins
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
 
+        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
+
         XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
         string commandProperty;
 
@@ -717,6 +720,15 @@ namespace MediaPortal.Plugins
                 break;
               }
 
+            case Common.XmlTagGoto:
+              {
+                if (InConfiguration)
+                  MessageBox.Show(commandProperty, "Go To Window", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  MPCommon.ProcessGoTo(commandProperty, _mpBasicHome);
+                break;
+              }
+
             case Common.XmlTagPopup:
               {
                 string[] commands = Common.SplitPopupCommand(commandProperty);
@@ -724,7 +736,7 @@ namespace MediaPortal.Plugins
                 if (InConfiguration)
                   MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
-                  MPCommands.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
+                  MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
 
                 break;
               }
@@ -733,6 +745,13 @@ namespace MediaPortal.Plugins
               {
                 string[] commands = Common.SplitWindowMessageCommand(commandProperty);
                 Common.ProcessWindowMessageCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagTcpMsg:
+              {
+                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
+                Common.ProcessTcpMessageCommand(commands);
                 break;
               }
 
@@ -751,6 +770,48 @@ namespace MediaPortal.Plugins
       {
         MacroStackRemove(fileName);
       }
+    }
+
+    /// <summary>
+    /// Learn an IR command.
+    /// </summary>
+    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
+    /// <returns>true if successful, otherwise false.</returns>
+    internal static bool LearnIR(string fileName)
+    {
+      try
+      {
+        if (String.IsNullOrEmpty(fileName))
+        {
+          Log.Error("TV2BlasterPlugin: Null or Empty file name for LearnIR()");
+          return false;
+        }
+
+        if (!_registered)
+        {
+          Log.Warn("TV2BlasterPlugin: Not registered to an active IR Server");
+          return false;
+        }
+
+        if (_learnIRFilename != null)
+        {
+          Log.Warn("TV2BlasterPlugin: Already trying to learn an IR command");
+          return false;
+        }
+
+        _learnIRFilename = fileName;
+
+        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
+        _client.Send(message);
+      }
+      catch (Exception ex)
+      {
+        _learnIRFilename = null;
+        Log.Error("TV2BlasterPlugin - LearnIR(): {0}", ex.Message);
+        return false;
+      }
+
+      return true;
     }
 
     /// <summary>
@@ -827,51 +888,13 @@ namespace MediaPortal.Plugins
         else
           Common.ProcessKeyCommand(keyCommand);
       }
+      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.InvariantCultureIgnoreCase)) // Go To Screen
+      {
+        MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), _mpBasicHome);
+      }
       else
       {
         throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
-      }
-    }
-
-    /// <summary>
-    /// Learn an IR Command and put it in a file.
-    /// </summary>
-    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
-    /// <returns>true if successful, otherwise false.</returns>
-    internal static bool LearnIRCommand(string fileName)
-    {
-      try
-      {
-        if (String.IsNullOrEmpty(fileName))
-        {
-          Log.Error("TV2BlasterPlugin: Null or Empty file name for LearnIR()");
-          return false;
-        }
-
-        if (!_registered)
-        {
-          Log.Warn("TV2BlasterPlugin: Not registered to an active IR Server");
-          return false;
-        }
-
-        if (_learnIRFilename != null)
-        {
-          Log.Warn("TV2BlasterPlugin: Already trying to learn an IR command");
-          return false;
-        }
-
-        _learnIRFilename = fileName;
-
-        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
-        _client.Send(message);
-
-        return true;
-      }
-      catch (Exception ex)
-      {
-        _learnIRFilename = null;
-        Log.Error("TV2BlasterPlugin - LearnIRCommand(): {0}", ex.Message);
-        return false;
       }
     }
 
@@ -935,10 +958,13 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPConfigFile))
+        using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPCommon.MPConfigFile))
         {
           ServerHost = xmlreader.GetValueAsString("TV2BlasterPlugin", "ServerHost", "localhost");
           LogVerbose = xmlreader.GetValueAsBool("TV2BlasterPlugin", "LogVerbose", false);
+
+          // MediaPortal settings ...
+          _mpBasicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
         }
       }
       catch (Exception ex)
@@ -953,7 +979,7 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MPConfigFile))
+        using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MPCommon.MPConfigFile))
         {
           xmlwriter.SetValue("TV2BlasterPlugin", "ServerHost", ServerHost);
           xmlwriter.SetValueAsBool("TV2BlasterPlugin", "LogVerbose", LogVerbose);

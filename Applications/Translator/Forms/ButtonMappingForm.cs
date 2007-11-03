@@ -612,15 +612,15 @@ namespace Translator
       if (!origin.Checked)
         return;
       
-      if (origin != checkBoxMouseClickLeft)   checkBoxMouseClickLeft.Checked = false;
-      if (origin != checkBoxMouseClickRight)  checkBoxMouseClickRight.Checked = false;
-      if (origin != checkBoxMouseClickMiddle) checkBoxMouseClickMiddle.Checked = false;
-      if (origin != checkBoxMouseMoveUp)      checkBoxMouseMoveUp.Checked = false;
-      if (origin != checkBoxMouseMoveDown)    checkBoxMouseMoveDown.Checked = false;
-      if (origin != checkBoxMouseMoveLeft)    checkBoxMouseMoveLeft.Checked = false;
-      if (origin != checkBoxMouseMoveRight)   checkBoxMouseMoveRight.Checked = false;
-      if (origin != checkBoxMouseScrollUp)    checkBoxMouseScrollUp.Checked = false;
-      if (origin != checkBoxMouseScrollDown)  checkBoxMouseScrollDown.Checked = false;
+      if (origin != checkBoxMouseClickLeft)   checkBoxMouseClickLeft.Checked    = false;
+      if (origin != checkBoxMouseClickRight)  checkBoxMouseClickRight.Checked   = false;
+      if (origin != checkBoxMouseClickMiddle) checkBoxMouseClickMiddle.Checked  = false;
+      if (origin != checkBoxMouseMoveUp)      checkBoxMouseMoveUp.Checked       = false;
+      if (origin != checkBoxMouseMoveDown)    checkBoxMouseMoveDown.Checked     = false;
+      if (origin != checkBoxMouseMoveLeft)    checkBoxMouseMoveLeft.Checked     = false;
+      if (origin != checkBoxMouseMoveRight)   checkBoxMouseMoveRight.Checked    = false;
+      if (origin != checkBoxMouseScrollUp)    checkBoxMouseScrollUp.Checked     = false;
+      if (origin != checkBoxMouseScrollDown)  checkBoxMouseScrollDown.Checked   = false;
     }
 
     private void KeystrokeToolStripMenuItem_Click(object sender, EventArgs e)

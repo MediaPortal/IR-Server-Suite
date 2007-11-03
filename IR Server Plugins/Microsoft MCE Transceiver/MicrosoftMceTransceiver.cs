@@ -60,8 +60,8 @@ namespace MicrosoftMceTransceiver
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\Microsoft MCE Transceiver.xml";
     
-    Guid MicrosoftGuid    = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
-    Guid ReplacementGuid  = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f, 0xb1, 0x72, 0x8b);
+    readonly Guid MicrosoftGuid   = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
+    readonly Guid ReplacementGuid = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f, 0xb1, 0x72, 0x8b);
 
     const int VistaVersionNumber  = 6;
 
@@ -86,6 +86,10 @@ namespace MicrosoftMceTransceiver
     bool _enableMouseInput      = false;
     bool _handleMouseLocally    = true;
     double _mouseSensitivity    = 1.0d;
+
+    // Hidden options ...
+    bool _storeAsPronto         = true;
+    bool _forceVistaDriver      = false;
 
     #endregion Configuration
 
@@ -175,7 +179,7 @@ namespace MicrosoftMceTransceiver
       {
         if (deviceGuid == MicrosoftGuid)
         {
-          if (Environment.OSVersion.Version.Major >= VistaVersionNumber)
+          if (_forceVistaDriver || Environment.OSVersion.Version.Major >= VistaVersionNumber)
           {
             _driver = new DriverVista(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
           }
@@ -190,7 +194,9 @@ namespace MicrosoftMceTransceiver
         }
       }
       else
+      {
         return false;
+      }
 
       _driver.Start();
 
@@ -358,7 +364,7 @@ namespace MicrosoftMceTransceiver
       LearnStatus status = _driver.Learn(_learnTimeout, out code);
 
       if (code != null)
-        data = code.ToByteArray();
+        data = code.ToByteArray(_storeAsPronto);
       else
         data = null;
 
@@ -374,7 +380,7 @@ namespace MicrosoftMceTransceiver
 
       try   { _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value); } catch {}
       try   { _disableMceServices = bool.Parse(doc.DocumentElement.Attributes["DisableMceServices"].Value); } catch {}
-      
+
       try   { _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); } catch {}
       try   { _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); } catch {}
       try   { _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value); } catch {}
@@ -387,6 +393,10 @@ namespace MicrosoftMceTransceiver
       try   { _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value); } catch {}
       try   { _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); } catch {}
       try   { _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); } catch {}
+
+      // Hidden options ...
+      try   { _storeAsPronto = bool.Parse(doc.DocumentElement.Attributes["StoreAsPronto"].Value); } catch {}
+      try   { _forceVistaDriver = bool.Parse(doc.DocumentElement.Attributes["ForceVistaDriver"].Value); } catch {}
     }
     void SaveSettings()
     {
@@ -415,6 +425,9 @@ namespace MicrosoftMceTransceiver
           writer.WriteAttributeString("EnableMouseInput", _enableMouseInput.ToString());
           writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
           writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString());
+
+          writer.WriteAttributeString("StoreAsPronto", _storeAsPronto.ToString());
+          writer.WriteAttributeString("ForceVistaDriver", _forceVistaDriver.ToString());
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();

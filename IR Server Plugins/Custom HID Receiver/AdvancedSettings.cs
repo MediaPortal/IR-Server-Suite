@@ -8,11 +8,15 @@ using System.Windows.Forms;
 
 namespace CustomHIDReceiver
 {
-  public partial class AdvancedSettings : Form
+
+  internal partial class AdvancedSettings : Form
   {
+
     public AdvancedSettings()
     {
       InitializeComponent();
     }
+
   }
+
 }

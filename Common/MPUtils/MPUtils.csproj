@@ -85,7 +85,7 @@
     <Compile Include="Forms\GoToScreen.Designer.cs">
       <DependentUpon>GoToScreen.cs</DependentUpon>
     </Compile>
-    <Compile Include="MPCommands.cs" />
+    <Compile Include="MPCommon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -376,7 +376,11 @@ namespace MicrosoftMceTransceiver
 
                 JVC_Data.Toggle = (int)JVC_Data.Code;
 
-                JVC_Data.State = RemoteDetectionState.Data;
+                if (duration > 25000)
+                  JVC_Data.State = RemoteDetectionState.HeaderPulse;
+                else
+                  JVC_Data.State = RemoteDetectionState.Data;
+
                 JVC_Data.HalfBit = 0;
                 JVC_Data.Bit = 0;
                 JVC_Data.Code = 0;
