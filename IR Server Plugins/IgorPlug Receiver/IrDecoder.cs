@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MicrosoftMceTransceiver
+namespace IgorPlugReceiver
 {
 
   #region Enumerations
@@ -2213,7 +2213,6 @@ namespace MicrosoftMceTransceiver
     {
       return ((test >= minValue) && (test <= maxValue));
     }
-
 
     #endregion Methods
 

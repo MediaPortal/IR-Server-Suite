@@ -564,13 +564,17 @@ namespace MicrosoftMceTransceiver
 
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < _remoteFirstRepeat)
         {
-          //Console.Write(" Skip First Repeat ");
+#if TRACE
+          Trace.WriteLine("Skip First Repeat");
+#endif
           return;
         }
 
         if (_remoteButtonRepeated && timeBetween.TotalMilliseconds < _remoteHeldRepeats)
         {
-          //Console.Write(" Skip Held Repeat ");
+#if TRACE
+          Trace.WriteLine("Skip Held Repeat");
+#endif
           return;
         }
 

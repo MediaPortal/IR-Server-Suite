@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("IgorPlug USB Receiver")]
-[assembly: AssemblyDescription("IR Server plugin to support the IgorPlug USB receiver")]
+[assembly: AssemblyTitle("IgorPlug Receiver")]
+[assembly: AssemblyDescription("IR Server plugin to support the IgorPlug receiver")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("IgorPlugUSBReceiver")]
+[assembly: AssemblyProduct("IgorPlugReceiver")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -29,7 +29,8 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.3.4")]
-[assembly: AssemblyFileVersion("1.0.3.4")]
+[assembly: AssemblyVersion("1.0.3.5")]
+[assembly: AssemblyFileVersion("1.0.3.5")]
 
 [assembly: CLSCompliant(true)]
+[assembly: GuidAttribute("2286B6BF-A7F8-4f1a-B72A-764B5002C949")]
