@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
+using Microsoft.Win32;
+
 #if TRACE
 using System.Diagnostics;
 #endif
@@ -37,7 +39,6 @@ namespace CustomHIDReceiver
       get { return _usage; }
       set { _usage = value; }
     }
-
   }
   
   internal static class RawInput
@@ -362,7 +363,7 @@ namespace CustomHIDReceiver
 
             // Drop the "root" keyboard and mouse devices used for Terminal Services and the Remote Desktop
             //if (deviceName.ToUpperInvariant().Contains("ROOT"))
-            //              continue;
+            //  continue;
 
             // If the device is identified in the list as a keyboard or 
             // HID device, create a DeviceInfo object to store information 
@@ -370,7 +371,7 @@ namespace CustomHIDReceiver
             Trace.WriteLine(String.Format("\r\n{0} )==============\r\n", NumberOfDevices));
             Trace.WriteLine(String.Format("Name: {0}\r\n", deviceName));
             Trace.WriteLine(String.Format("Type: {0}\r\n", rid.dwType));
-            Trace.WriteLine(String.Format("Desc: {0}\r\n", GetDeviceDesc(deviceName)));
+            Trace.WriteLine(String.Format("Desc: {0}\r\n", GetFriendlyName(deviceName)));
 
             // Get Detailed Info ...
             uint size = (uint)Marshal.SizeOf(typeof(DeviceInfo));
@@ -382,9 +383,9 @@ namespace CustomHIDReceiver
             di.Size = Marshal.SizeOf(typeof(DeviceInfo));
             GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICEINFO, ref di, ref size);
 
-            RAWINPUTDEVICE deviceData = new RAWINPUTDEVICE();
-            deviceData.dwFlags = RawInputDeviceFlags.InputSink;
-            deviceData.hwndTarget = IntPtr.Zero;
+            DeviceDetails details = new DeviceDetails();
+            //details.Name = deviceName;
+            details.ID = deviceName;
 
             switch (di.Type)
             {
@@ -396,18 +397,13 @@ namespace CustomHIDReceiver
                   Trace.WriteLine(String.Format("Usage Page: {0:X4}\r\n", di.HIDInfo.UsagePage));
                   Trace.WriteLine(String.Format("Usage: {0:X4}\r\n", di.HIDInfo.Usage));
 
-                  deviceData.usUsagePage = di.HIDInfo.UsagePage;
-                  deviceData.usUsage = di.HIDInfo.Usage;
-
-                  DeviceDetails details = new DeviceDetails();
-
                   string vidAndPid = String.Format("Vid_{0:x4}&Pid_{1:x4}", di.HIDInfo.VendorID, di.HIDInfo.ProductID);
                   details.Name = String.Format("HID: {0}", GetFriendlyName(vidAndPid));
-                  details.ID = deviceName;
-
-                  //details.Name = deviceName;
                   //details.ID = GetDeviceDesc(deviceName);
-                  details.DeviceData = deviceData;
+
+                  details.UsagePage = di.HIDInfo.UsagePage;
+                  details.Usage = di.HIDInfo.Usage;
+
                   devices.Add(details);
                   break;
                 }
@@ -421,12 +417,13 @@ namespace CustomHIDReceiver
                   Trace.WriteLine(String.Format("Indicators: {0}\r\n", di.KeyboardInfo.NumberOfIndicators));
                   Trace.WriteLine(String.Format("Total Keys: {0}\r\n", di.KeyboardInfo.NumberOfKeysTotal));
 
-                  devices[NumberOfDevices].Name = "Keyboard";
-                  devices[NumberOfDevices].ID = String.Format("{0}-{1}", di.KeyboardInfo.Type, di.KeyboardInfo.SubType);
+                  details.Name = "HID Keyboard";
+                  //details.ID = String.Format("{0}-{1}", di.KeyboardInfo.Type, di.KeyboardInfo.SubType);
 
-                  devices[NumberOfDevices].DeviceData.usUsagePage = 0x01;
-                  devices[NumberOfDevices].DeviceData.usUsage = 0x06;
-                  NumberOfDevices++;
+                  details.UsagePage = 0x01;
+                  details.Usage = 0x06;
+
+                  devices.Add(details);
                   break;
                 }
 
@@ -436,9 +433,12 @@ namespace CustomHIDReceiver
                   Trace.WriteLine(String.Format("Buttons: {0}\r\n", di.MouseInfo.NumberOfButtons));
                   Trace.WriteLine(String.Format("Sample Rate: {0}hz\r\n", di.MouseInfo.SampleRate));
 
-                  devices[NumberOfDevices].DeviceData.usUsagePage = 0x01;
-                  devices[NumberOfDevices].DeviceData.usUsage = 0x02;
-                  NumberOfDevices++;
+                  details.Name = "HID Mouse";
+
+                  details.UsagePage = 0x01;
+                  details.Usage = 0x02;
+
+                  devices.Add(details);
                   break;
                 }
             }
@@ -458,6 +458,36 @@ namespace CustomHIDReceiver
 
     }
 
+    static string GetFriendlyName(string vidAndPid)
+    {
+      try
+      {
+        using (RegistryKey USBEnum = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Enum\\USB"))
+        {
+          foreach (string usbSubKey in USBEnum.GetSubKeyNames())
+          {
+            if (usbSubKey.IndexOf(vidAndPid, StringComparison.InvariantCultureIgnoreCase) == -1)
+              continue;
+
+            using (RegistryKey currentKey = USBEnum.OpenSubKey(usbSubKey))
+            {
+              string[] vidAndPidSubKeys = currentKey.GetSubKeyNames();
+
+              foreach (string vidAndPidSubKey in vidAndPidSubKeys)
+              {
+                using (RegistryKey subKey = currentKey.OpenSubKey(vidAndPidSubKey))
+                  return subKey.GetValue("LocationInformation", null) as string;
+              }
+            }
+          }
+        }
+      }
+      catch
+      {
+      }
+
+      return null;
+    }
 
 
   }

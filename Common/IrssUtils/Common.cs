@@ -96,12 +96,8 @@ namespace IrssUtils
     public const string CmdPrefixTcpMsg       = "TCP Message: ";
     public const string CmdPrefixGoto         = "Goto: ";
     public const string CmdPrefixPopup        = "Popup: ";
-    public const string CmdPrefixMultiMap     = "Multi-Mapping: ";
     public const string CmdPrefixMouseMode    = "Mouse Mode: ";
-    public const string CmdPrefixInputLayer   = "Toggle Input Layer";
 //  public const string CmdPrefixWindowState  = "Toggle Window State";
-    public const string CmdPrefixFocus        = "Get Focus";
-    public const string CmdPrefixExit         = "Exit MediaPortal";
     public const string CmdPrefixStandby      = "Standby";
     public const string CmdPrefixHibernate    = "Hibernate";
     public const string CmdPrefixReboot       = "Reboot";
@@ -113,6 +109,12 @@ namespace IrssUtils
     public const string CmdPrefixEject        = "Eject: ";
 
     public const string CmdPrefixTranslator   = "Show Translator Menu";
+
+    // For MediaPortal ...
+    public const string CmdPrefixMultiMap     = "Multi-Mapping: ";
+    public const string CmdPrefixInputLayer   = "Toggle Input Layer";
+    public const string CmdPrefixFocus        = "Get Focus";
+    public const string CmdPrefixExit         = "Exit MediaPortal";
 
     #endregion Command Prefixes
 

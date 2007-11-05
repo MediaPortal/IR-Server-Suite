@@ -215,8 +215,8 @@ namespace MediaPortal.Plugins
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl.Controls.Add(this.tabPageOptions);
-      this.tabControl.Controls.Add(this.tabPageIR);
       this.tabControl.Controls.Add(this.tabPageMacros);
+      this.tabControl.Controls.Add(this.tabPageIR);
       this.tabControl.Location = new System.Drawing.Point(8, 8);
       this.tabControl.Multiline = true;
       this.tabControl.Name = "tabControl";

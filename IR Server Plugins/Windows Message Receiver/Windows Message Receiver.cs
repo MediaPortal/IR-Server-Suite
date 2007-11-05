@@ -38,7 +38,7 @@ namespace WindowsMessageReceiver
     const int WM_APP            = 0x8000;
     const int DefaultMessageID  = 0x0018;
 
-    internal static readonly string WindowTitle = "Windows Messages Receiver for IR Server";
+    internal const string WindowTitle = "WM Receiver for IR Server";
 
     #endregion Constants
 

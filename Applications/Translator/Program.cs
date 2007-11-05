@@ -121,7 +121,6 @@ namespace Translator
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
       _config = Configuration.Load(ConfigFile);
-
       if (_config == null)
       {
         MessageBox.Show("Failed to load configuration, creating new configuration", "Translator - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -172,6 +171,7 @@ namespace Translator
         try
         {
           _copyDataWM = new CopyDataWM();
+          _copyDataWM.Start();
         }
         catch (Win32Exception ex)
         {

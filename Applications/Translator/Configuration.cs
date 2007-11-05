@@ -124,14 +124,14 @@ namespace Translator
       }
       catch (FileNotFoundException)
       {
-        IrssLog.Warn("No configuration file found ({0}), using default configuration", fileName);
-        return new Configuration();
+        IrssLog.Warn("No configuration file found ({0}), creating new configuration", fileName);
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
-        return null;
       }
+
+      return null;
     }
 
     #endregion Static Methods

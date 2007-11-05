@@ -426,6 +426,7 @@ namespace MicrosoftMceTransceiver
           writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
           writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString());
 
+          // Hidden options ...
           writer.WriteAttributeString("StoreAsPronto", _storeAsPronto.ToString());
           writer.WriteAttributeString("ForceVistaDriver", _forceVistaDriver.ToString());
 

@@ -1526,7 +1526,10 @@ namespace IrssUtils
         (uint)Marshal.SizeOf(shinfo),
         SHGFI.Icon | SHGFI.LargeIcon);
 
-      return Icon.FromHandle(shinfo.hIcon);   
+      if (shinfo.hIcon != IntPtr.Zero)
+        return Icon.FromHandle(shinfo.hIcon);
+      else
+        return null;
     }
 
     /// <summary>

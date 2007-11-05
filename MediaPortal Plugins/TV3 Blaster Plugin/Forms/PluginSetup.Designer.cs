@@ -68,8 +68,8 @@ namespace SetupTv.Sections
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl.Controls.Add(this.tabPageSetup);
-      this.tabControl.Controls.Add(this.tabPageIR);
       this.tabControl.Controls.Add(this.tabPageMacros);
+      this.tabControl.Controls.Add(this.tabPageIR);
       this.tabControl.Location = new System.Drawing.Point(8, 8);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;

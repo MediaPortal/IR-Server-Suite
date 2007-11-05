@@ -89,9 +89,6 @@ namespace CustomHIDReceiver
     /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
-      _device.usUsagePage = 0xFF00;
-      _device.usUsage = 0x01;
-
       _device.dwFlags = RawInput.RawInputDeviceFlags.InputSink;      
       _device.hwndTarget = _receiverWindow.Handle;
       
@@ -283,17 +280,18 @@ namespace CustomHIDReceiver
         {
           case RawInput.RawInputType.HID:
             {
-              byte[] bRawData = new byte[raw.hid.dwSizeHid];
+              int offset = Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof(RawInput.RAWHID));
 
-              int pRawData = buffer.ToInt32() + Marshal.SizeOf(typeof(RawInput.RAWINPUT));
-              Marshal.Copy(new IntPtr(pRawData), bRawData, 0, bRawData.Length - 1);
+              byte[] bRawData = new byte[offset + raw.hid.dwSizeHid];
+              Marshal.Copy(buffer, bRawData, 0, bRawData.Length);
 
-              //Marshal.Copy(raw.hid.data, bRawData, 0, raw.hid.dwSizeHid - 1);
+              byte[] newArray = new byte[raw.hid.dwSizeHid];
+              Array.Copy(bRawData, offset, newArray, 0, newArray.Length);
 
               StringBuilder str = new StringBuilder();
               str.Append("HID: ");
 
-              foreach (byte b in bRawData)
+              foreach (byte b in newArray)
                 str.Append(String.Format("{0:X2} ", b));
 
               Trace.WriteLine(str.ToString());

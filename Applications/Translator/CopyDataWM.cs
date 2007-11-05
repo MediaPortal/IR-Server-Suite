@@ -13,25 +13,30 @@ namespace Translator
 
     #region Constants
 
-    static readonly string CopyDataTarget = "Translator CopyData Target";
+    /// <summary>
+    /// Window name for CopyData messages.
+    /// </summary>
+    public const string CopyDataTarget = "Translator CopyData Target";
 
-    const int CopyDataID = 24;
+    /// <summary>
+    /// Data value for CopyData messages.
+    /// </summary>
+    public const int CopyDataID = 24;
 
     #endregion Constants
 
     #region Constructor / Destructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NotifyWindow"/> class.
+    /// Initializes a new instance of the <see cref="CopyDataWM"/> class.
     /// </summary>
     public CopyDataWM()
     {
-      Create();
     }
 
     /// <summary>
     /// Releases unmanaged resources and performs other cleanup operations before the
-    /// <see cref="NotifyWindow"/> is reclaimed by garbage collection.
+    /// <see cref="CopyDataWM"/> is reclaimed by garbage collection.
     /// </summary>
     ~CopyDataWM()
     {
@@ -65,7 +70,7 @@ namespace Translator
       {
         // Dispose managed resources ...
 
-        Destroy();
+        Stop();
       }
 
       // Free native resources ...
@@ -74,26 +79,26 @@ namespace Translator
     #endregion IDisposable Members
 
     #region Methods
-    
-    void Create()
+
+    public bool Start()
     {
       if (Handle != IntPtr.Zero)
-        return;
+        return false;
 
-      CreateParams Params = new CreateParams();
-      Params.ExStyle      = 0x80;
-      Params.Style        = unchecked((int)0x80000000);
-      Params.Caption      = CopyDataTarget;
+      CreateParams createParams = new CreateParams();
+      createParams.Caption      = "Test";
+      createParams.ExStyle      = 0x80;
+      createParams.Style        = unchecked((int)0x80000000);
 
-      CreateHandle(Params);
+      CreateHandle(createParams);
+
+      return (Handle != IntPtr.Zero);
     }
 
-    void Destroy()
+    public void Stop()
     {
-      if (Handle == IntPtr.Zero)
-        return;
-
-      DestroyHandle();
+      if (Handle != IntPtr.Zero)
+        DestroyHandle();
     }
 
     #endregion Methods
@@ -128,11 +133,13 @@ namespace Translator
           IrssLog.Error("Error processing WM_COPYDATA message: {0}", ex.ToString());
         }
       }
+
+      base.WndProc(ref m);
     }
 
     #endregion Overrides
 
-    internal static void SendCopyDataMessage(string data)
+    public static void SendCopyDataMessage(string data)
     {
       Win32.COPYDATASTRUCT copyData;
 

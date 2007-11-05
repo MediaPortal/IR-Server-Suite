@@ -32,8 +32,8 @@ namespace CustomHIDReceiver
             if (details.ID.Equals(listViewDevices.SelectedItems[0].SubItems[1].Text))
             {
               RawInput.RAWINPUTDEVICE device = new RawInput.RAWINPUTDEVICE();
-              device.usUsagePage = details.DeviceData.usUsagePage;
-              device.usUsage = details.DeviceData.usUsage;
+              device.usUsagePage = details.UsagePage;
+              device.usUsage = details.Usage;
               return device;
             }
           }

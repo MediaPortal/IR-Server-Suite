@@ -153,15 +153,20 @@
     <Content Include="Graphics\ClickMiddle.png" />
     <Content Include="Graphics\ClickRight.png" />
     <Content Include="Graphics\Delete.png" />
+    <Content Include="Graphics\DeleteAll.png" />
     <Content Include="Graphics\Edit.png" />
     <Content Include="Graphics\MoveDown.png" />
     <Content Include="Graphics\MoveLeft.png" />
     <Content Include="Graphics\MoveRight.png" />
     <Content Include="Graphics\MoveUp.png" />
+    <Content Include="Graphics\NoIcon.png" />
     <Content Include="Graphics\Plus.png" />
     <Content Include="Graphics\ScrollDown.png" />
     <Content Include="Graphics\ScrollUp.png" />
     <Content Include="Graphics\WinLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Default Settings\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

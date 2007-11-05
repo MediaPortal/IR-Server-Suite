@@ -532,8 +532,8 @@ namespace MediaPortal.Plugins
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl.Controls.Add(this.tabPageRemotes);
-      this.tabControl.Controls.Add(this.tabPageIR);
       this.tabControl.Controls.Add(this.tabPageMacros);
+      this.tabControl.Controls.Add(this.tabPageIR);
       this.tabControl.Controls.Add(this.tabPageMultiMapping);
       this.tabControl.Controls.Add(this.tabPageEventMapper);
       this.tabControl.Controls.Add(this.tabPageMouseMode);
