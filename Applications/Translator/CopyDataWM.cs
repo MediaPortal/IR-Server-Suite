@@ -139,6 +139,10 @@ namespace Translator
 
     #endregion Overrides
 
+    /// <summary>
+    /// Sends a copy data message.
+    /// </summary>
+    /// <param name="data">The data.</param>
     public static void SendCopyDataMessage(string data)
     {
       Win32.COPYDATASTRUCT copyData;

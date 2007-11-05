@@ -123,6 +123,9 @@ namespace Translator
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProgramSettings"/> class.
+    /// </summary>
     public ProgramSettings()
     {
       _name             = "New Program";

@@ -13,12 +13,33 @@ namespace Translator
   /// </summary>
   public enum MappingEvent
   {
+    /// <summary>
+    /// No event.
+    /// </summary>
     None,
+    /// <summary>
+    /// Translator started.
+    /// </summary>
     Translator_Start,
+    /// <summary>
+    /// Translator quit.
+    /// </summary>
     Translator_Quit,
+    /// <summary>
+    /// The PC is shutting down.
+    /// </summary>
     PC_Shutdown,
+    /// <summary>
+    /// The PC is suspending.
+    /// </summary>
     PC_Suspend,
+    /// <summary>
+    /// The PC has returned from suspend.
+    /// </summary>
     PC_Resume,
+    /// <summary>
+    /// The user is logging off.
+    /// </summary>
     PC_Logoff,
     //Scheduled_Event,
   }

@@ -409,7 +409,6 @@ namespace Translator
         _notifyIcon.ContextMenuStrip.Items.Add(macros);
       }
 
-      /**/
       ToolStripMenuItem actions = new ToolStripMenuItem("&Actions");
       actions.DropDownItems.Add("Next Window", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("Last Window", null, new EventHandler(ClickAction));
@@ -442,7 +441,6 @@ namespace Translator
       actions.DropDownItems.Add("Volume Mute", null, new EventHandler(ClickAction));
 
       _notifyIcon.ContextMenuStrip.Items.Add(actions);
-      /**/
 
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
       _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, new EventHandler(ClickSetup));

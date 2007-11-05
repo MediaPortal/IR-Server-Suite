@@ -6,7 +6,7 @@ namespace Translator
 {
 
   #region Enumerations
-
+  /*
   public enum ScheduleRepeat
   {
     Never,
@@ -48,7 +48,7 @@ namespace Translator
     November,
     December,
   }
-
+  */
   #endregion Enumerations
 
   class EventSchedule

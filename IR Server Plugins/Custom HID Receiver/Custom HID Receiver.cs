@@ -14,12 +14,15 @@ using IRServerPluginInterface;
 namespace CustomHIDReceiver
 {
 
+  /// <summary>
+  /// IR Server plugin to support HID USB devices.
+  /// </summary>
   public class CustomHIDReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
 
     #region Constants
 
-    public static readonly string ConfigurationFile =
+    static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\Custom HID Receiver.xml";
 
@@ -56,6 +59,9 @@ namespace CustomHIDReceiver
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CustomHIDReceiver"/> class.
+    /// </summary>
     public CustomHIDReceiver()
     {
       LoadSettings();
@@ -67,9 +73,25 @@ namespace CustomHIDReceiver
     #endregion Constructor
 
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "Custom HID Receiver"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.5"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "Supports HID USB devices."; } }
 
     /// <summary>
@@ -101,16 +123,25 @@ namespace CustomHIDReceiver
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       _device.dwFlags |= RawInput.RawInputDeviceFlags.Remove;
       RegisterForRawInput(_device);
     }
-    
+
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
     public void Configure()
     {
       DeviceSelect deviceSelect = new DeviceSelect();
@@ -147,6 +178,9 @@ namespace CustomHIDReceiver
       set { _mouseHandler = value; }
     }
 
+    /// <summary>
+    /// Loads the settings.
+    /// </summary>
     void LoadSettings()
     {
       try
@@ -175,6 +209,9 @@ namespace CustomHIDReceiver
         _repeatDelay  = 250;
       }
     }
+    /// <summary>
+    /// Saves the settings.
+    /// </summary>
     void SaveSettings()
     {
       try
@@ -240,7 +277,9 @@ namespace CustomHIDReceiver
     
     void ProcessKeyDown(int param)
     {
+#if TRACE
       Trace.WriteLine(String.Format("KeyDown - Param: {0}", param));
+#endif
 
       if (_keyboardHandler != null)
         _keyboardHandler(param, false);
@@ -248,7 +287,9 @@ namespace CustomHIDReceiver
 
     void ProcessKeyUp(int param)
     {
+#if TRACE
       Trace.WriteLine(String.Format("KeyUp - Param: {0}", param));
+#endif
 
       if (_keyboardHandler != null)
         _keyboardHandler(param, true);
@@ -256,7 +297,9 @@ namespace CustomHIDReceiver
 
     void ProcessAppCommand(int param)
     {
+#if TRACE
       Trace.WriteLine(String.Format("AppCommand - Param: {0}", param));
+#endif
     }
 
     void ProcessInputCommand(ref Message message)
@@ -304,6 +347,7 @@ namespace CustomHIDReceiver
 
           case RawInput.RawInputType.Mouse:
             {
+#if TRACE
               Trace.WriteLine(String.Format("Mouse Event"));
               Trace.WriteLine(String.Format("Buttons: {0}", raw.mouse.ulButtons));
               Trace.WriteLine(String.Format("Raw Buttons: {0}", raw.mouse.ulRawButtons));
@@ -311,7 +355,7 @@ namespace CustomHIDReceiver
               Trace.WriteLine(String.Format("Extra: {0}", raw.mouse.ulExtraInformation));
               Trace.WriteLine(String.Format("Button Data: {0}", raw.mouse.buttonsStr.usButtonData));
               Trace.WriteLine(String.Format("Button Flags: {0}", raw.mouse.buttonsStr.usButtonFlags));
-
+#endif
               //if (_mouseHandler != null)
                 //_mouseHandler(0, 0, (int)raw.mouse.ulButtons);
 
@@ -320,12 +364,16 @@ namespace CustomHIDReceiver
 
           case RawInput.RawInputType.Keyboard:
             {
+#if TRACE
               Trace.WriteLine(String.Format("Keyboard Event"));
+#endif
               
               switch (raw.keyboard.Flags)
               {
                 case RawInput.RawKeyboardFlags.KeyBreak:
+#if TRACE
                   Trace.WriteLine( String.Format("Break: {0}", raw.keyboard.VKey));
+#endif
 
                   if (_keyboardHandler != null)
                     _keyboardHandler(raw.keyboard.VKey, true);
@@ -333,15 +381,21 @@ namespace CustomHIDReceiver
                   break;
 
                 case RawInput.RawKeyboardFlags.KeyE0:
+#if TRACE
                   Trace.WriteLine( String.Format("E0: {0}", raw.keyboard.MakeCode));
+#endif
                   break;
 
                 case RawInput.RawKeyboardFlags.KeyE1:
+#if TRACE
                   Trace.WriteLine( String.Format("E1"));
+#endif
                   break;
 
                 case RawInput.RawKeyboardFlags.KeyMake:
+#if TRACE
                   Trace.WriteLine( String.Format("Make: {0}", raw.keyboard.VKey));
+#endif
 
                   if (_keyboardHandler != null)
                     _keyboardHandler(raw.keyboard.VKey, false);
@@ -349,13 +403,18 @@ namespace CustomHIDReceiver
                   break;
 
                 case RawInput.RawKeyboardFlags.TerminalServerSetLED:
+#if TRACE
                   Trace.WriteLine( String.Format("TerminalServerSetLED"));
+#endif
                   break;
 
                 case RawInput.RawKeyboardFlags.TerminalServerShadow:
+#if TRACE
                   Trace.WriteLine( String.Format("TerminalServerShadow"));
+#endif
                   break;
               }
+
               break;
             }
         }
@@ -366,7 +425,6 @@ namespace CustomHIDReceiver
       }
 
     }
-
 
   }
 

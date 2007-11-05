@@ -14,6 +14,9 @@ using IRServerPluginInterface;
 namespace IgorPlugReceiver
 {
 
+  /// <summary>
+  /// IR Server plugin supporting the IgorPlug device.
+  /// </summary>
   public class IgorPlugReceiver : IRServerPluginBase, IRemoteReceiver
   {
 
@@ -145,11 +148,31 @@ namespace IgorPlugReceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "IgorPlug"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
     public override string Version      { get { return "1.0.3.5"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
     public override string Description  { get { return "IgorPlug Receiver"; } }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
       ThreadStart readThreadStart = new ThreadStart(ReadThread);
@@ -159,14 +182,23 @@ namespace IgorPlugReceiver
 
       return true;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
       Stop();
     }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
     public override void Resume()
     {
       Start();
     }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
     public override void Stop()
     {
       _readThread.Abort();

@@ -55,7 +55,16 @@ namespace Translator
 
     #region Constructors
 
-    public ButtonMapping() { }    
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ButtonMapping"/> class.
+    /// </summary>
+    public ButtonMapping() { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ButtonMapping"/> class.
+    /// </summary>
+    /// <param name="keyCode">The remote key code.</param>
+    /// <param name="description">The description.</param>
+    /// <param name="command">The command to execute for this remote button.</param>
     public ButtonMapping(string keyCode, string description, string command)
     {
       _keyCode      = keyCode;
