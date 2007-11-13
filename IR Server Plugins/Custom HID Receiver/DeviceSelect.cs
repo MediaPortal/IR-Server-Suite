@@ -75,7 +75,7 @@ namespace CustomHIDReceiver
       for (int index = 0; index < listViewDevices.Items.Count; index++)
       {
 //        MessageBox.Show(listViewDevices.Items[index].SubItems[1].Text);
-        if (listViewDevices.Items[index].SubItems[1].Text.Equals(deviceID, StringComparison.InvariantCultureIgnoreCase))
+        if (listViewDevices.Items[index].SubItems[1].Text.Equals(deviceID, StringComparison.OrdinalIgnoreCase))
         {
           listViewDevices.Items[index].Selected = true;
           break;

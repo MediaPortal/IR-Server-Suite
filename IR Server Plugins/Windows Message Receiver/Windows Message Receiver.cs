@@ -23,7 +23,7 @@ namespace WindowsMessageReceiver
     [DllImport("user32")]
     public static extern IntPtr GetForegroundWindow();
 
-    [DllImport("user32", SetLastError = false)]
+    [DllImport("user32")]
     public static extern IntPtr SendMessage(IntPtr windowHandle, int msg, IntPtr wordParam, IntPtr longParam);
 
     #endregion Interop
@@ -47,9 +47,9 @@ namespace WindowsMessageReceiver
     int _messageType  = WM_APP;
     int _wParam       = DefaultMessageID;
 
-    RemoteHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler;
 
-    ReceiverWindow _receiverWindow = null;
+    ReceiverWindow _receiverWindow;
 
     #endregion Variables
 

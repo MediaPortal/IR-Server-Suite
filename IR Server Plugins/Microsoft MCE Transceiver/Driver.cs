@@ -238,7 +238,7 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     /// <param name="code">IR Command data to send.</param>
     /// <param name="port">IR port to send to.</param>
-    public abstract void Send(IrCode code, uint port);
+    public abstract void Send(IrCode code, int port);
 
     #endregion Abstract Methods
 
@@ -353,20 +353,22 @@ namespace MicrosoftMceTransceiver
     /// Writes a line to the debug output file.
     /// </summary>
     /// <param name="line">The line.</param>
-    protected static void DebugWriteLine(string line)
+    /// <param name="args">Formatting arguments.</param>
+    protected static void DebugWriteLine(string line, params object[] args)
     {
       if (_debugFile != null)
-        _debugFile.WriteLine(line);
+        _debugFile.WriteLine(line, args);
     }
 
     /// <summary>
     /// Writes a string to the debug output file.
     /// </summary>
     /// <param name="text">The string to write.</param>
-    protected static void DebugWrite(string text)
+    /// <param name="args">Formatting arguments.</param>
+    protected static void DebugWrite(string text, params object[] args)
     {
       if (_debugFile != null)
-        _debugFile.Write(text);
+        _debugFile.Write(text, args);
     }
 
     /// <summary>

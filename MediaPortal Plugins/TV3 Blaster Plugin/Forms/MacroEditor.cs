@@ -272,67 +272,65 @@ namespace TvEngine
 
       string selected = comboBoxCommands.SelectedItem as string;
 
-      if (selected == Common.UITextRun)
+      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
         ExternalProgram externalProgram = new ExternalProgram();
         if (externalProgram.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixRun + externalProgram.CommandString);
       }
-      else if (selected == Common.UITextPause)
+      else if (selected.Equals(Common.UITextPause, StringComparison.OrdinalIgnoreCase))
       {
         PauseTime pauseTime = new PauseTime();
         if (pauseTime.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixPause + pauseTime.Time.ToString());
       }
-      else if (selected == Common.UITextSerial)
+      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
       {
         SerialCommand serialCommand = new SerialCommand();
         if (serialCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixSerial + serialCommand.CommandString);
       }
-      else if (selected == Common.UITextWindowMsg)
+      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
       }
-      else if (selected == Common.UITextTcpMsg)
+      else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
-        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
       }
-      else if (selected == Common.UITextKeys)
+      else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand();
         if (keysCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
       }
-      else if (selected == Common.UITextEject)
+      else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
       {
         EjectCommand ejectCommand = new EjectCommand();
         if (ejectCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
       }
-      else if (selected == Common.UITextStandby)
+      else if (selected.Equals(Common.UITextStandby, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixStandby);
       }
-      else if (selected == Common.UITextHibernate)
+      else if (selected.Equals(Common.UITextHibernate, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
       }
-      else if (selected == Common.UITextReboot)
+      else if (selected.Equals(Common.UITextReboot, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixReboot);
       }
-      else if (selected == Common.UITextShutdown)
+      else if (selected.Equals(Common.UITextShutdown, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
       }
-      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         BlastCommand blastCommand = new BlastCommand(
           new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
@@ -343,7 +341,7 @@ namespace TvEngine
         if (blastCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
       }
-      else if (selected.StartsWith(Common.CmdPrefixMacro))
+      else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(selected);
       }
@@ -453,7 +451,7 @@ namespace TvEngine
 
       string selected = listBoxMacro.SelectedItem as string;
 
-      if (selected.StartsWith(Common.CmdPrefixPause))
+      if (selected.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
       {
         PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
         if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
@@ -464,7 +462,7 @@ namespace TvEngine
         listBoxMacro.Items.Insert(index, Common.CmdPrefixPause + pauseTime.Time.ToString());
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixRun))
+      else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
 
@@ -477,7 +475,7 @@ namespace TvEngine
         listBoxMacro.Items.Insert(index, Common.CmdPrefixRun + executeProgram.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixSerial))
+      else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
 
@@ -490,7 +488,7 @@ namespace TvEngine
         listBoxMacro.Items.Insert(index, Common.CmdPrefixSerial + serialCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
+      else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
 
@@ -503,7 +501,7 @@ namespace TvEngine
         listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixTcpMsg))
+      else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
@@ -515,7 +513,7 @@ namespace TvEngine
         listBoxMacro.Items.Insert(index, Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixKeys))
+      else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
         if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -526,7 +524,7 @@ namespace TvEngine
         listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixEject))
+      else if (selected.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
       {
         EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
         if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -537,7 +535,7 @@ namespace TvEngine
         listBoxMacro.Items.Insert(index, Common.CmdPrefixEject + ejectCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 

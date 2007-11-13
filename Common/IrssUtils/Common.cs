@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -94,6 +95,7 @@ namespace IrssUtils
     public const string CmdPrefixKeys         = "Keys: ";
     public const string CmdPrefixWindowMsg    = "Window Message: ";
     public const string CmdPrefixTcpMsg       = "TCP Message: ";
+    public const string CmdPrefixHttpMsg      = "HTTP Message: ";
     public const string CmdPrefixGoto         = "Goto: ";
     public const string CmdPrefixPopup        = "Popup: ";
     public const string CmdPrefixMouseMode    = "Mouse Mode: ";
@@ -105,10 +107,10 @@ namespace IrssUtils
     public const string CmdPrefixLogOff       = "Log Off";
 
     public const string CmdPrefixMouse        = "Mouse: ";
-
     public const string CmdPrefixEject        = "Eject: ";
+    public const string CmdPrefixSound        = "Sound: ";
 
-    public const string CmdPrefixTranslator   = "Show Translator Menu";
+    public const string CmdPrefixTranslator   = "Show Translator OSD";
 
     // For MediaPortal ...
     public const string CmdPrefixMultiMap     = "Multi-Mapping: ";
@@ -143,8 +145,8 @@ namespace IrssUtils
     public const string XmlTagLogOff          = "LOG_OFF";
 
     public const string XmlTagMouse           = "MOUSE";
-
     public const string XmlTagEject           = "EJECT";
+    public const string XmlTagSound           = "SOUND";
 
     public const string XmlTagTranslator      = "TRANSLATOR";
 
@@ -173,10 +175,10 @@ namespace IrssUtils
     public const string UITextLogOff          = "Log Off";
 
     public const string UITextMouse           = "Mouse Command";
-
     public const string UITextEject           = "Eject CD";
+    public const string UITextSound           = "Play Sound";
 
-    public const string UITextTranslator      = "Show Translator Menu";
+    public const string UITextTranslator      = "Show Translator OSD";
 
     #endregion User Interface Text
 
@@ -201,6 +203,15 @@ namespace IrssUtils
     public const string MouseScrollDown         = "Scroll_Down";
 
     #endregion Mouse Commands
+
+    #region Windows Message Target
+
+    public const string WMTargetActive      = "ACTIVE";
+    public const string WMTargetApplication = "APPLICATION";
+    public const string WMTargetClass       = "CLASS";
+    public const string WMTargetWindow      = "WINDOW";
+
+    #endregion Windows Message Target
 
     #endregion Strings
 
@@ -230,6 +241,10 @@ namespace IrssUtils
     /// Number of Segments in a TCP Message Command.
     /// </summary>
     public const int SegmentsTcpMessageCommand = 3;
+    /// <summary>
+    /// Number of Segments in a HTTP Message Command.
+    /// </summary>
+    public const int SegmentsHttpMessageCommand = 4;
 
     #endregion Command Segments
 
@@ -297,6 +312,16 @@ namespace IrssUtils
     public static string[] SplitTcpMessageCommand(string command)
     {
       return SplitCommand(command, SegmentsTcpMessageCommand);
+    }
+
+    /// <summary>
+    /// Splits an HTTP Message Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
+    public static string[] SplitHttpMessageCommand(string command)
+    {
+      return SplitCommand(command, SegmentsHttpMessageCommand);
     }
 
     static string[] SplitCommand(string command, int elements)
@@ -411,20 +436,19 @@ namespace IrssUtils
 
       IntPtr windowHandle = IntPtr.Zero;
 
-      string matchType = commands[0].ToLowerInvariant();
-
+      string matchType = commands[0].ToUpperInvariant();
       switch (matchType)
       {
-        case "active":
+        case WMTargetActive:
           windowHandle = Win32.ForegroundWindow();
           break;
 
-        case "application":
+        case WMTargetApplication:
           foreach (System.Diagnostics.Process proc in System.Diagnostics.Process.GetProcesses())
           {
             try
             {
-              if (commands[1].Equals(proc.MainModule.FileName, StringComparison.InvariantCultureIgnoreCase))
+              if (commands[1].Equals(proc.MainModule.FileName, StringComparison.OrdinalIgnoreCase))
               {
                 windowHandle = proc.MainWindowHandle;
                 break;
@@ -436,14 +460,20 @@ namespace IrssUtils
           }
           break;
 
-        case "class":
+        case WMTargetClass:
           windowHandle = Win32.FindWindowByClass(commands[1]);
           break;
 
-        case "window":
+        case WMTargetWindow:
           windowHandle = Win32.FindWindowByTitle(commands[1]);
           break;
+
+        default:
+          throw new ArgumentOutOfRangeException("commands", commands[0], "Invalid message target");
       }
+
+      if (windowHandle == IntPtr.Zero)
+        throw new ApplicationException(String.Format("Window Message target ({0}) not found", commands[0]));
 
       int msg = int.Parse(commands[2]);
       IntPtr wordParam = new IntPtr(int.Parse(commands[3]));
@@ -461,7 +491,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      SendKeys.SendWait(command);
+      Keyboard.ProcessCommand(command);
     }
 
     /// <summary>
@@ -582,6 +612,43 @@ namespace IrssUtils
 
       if (CDRom.IsCDRom(command))
         CDRom.Open(command);
+      else
+        throw new ApplicationException(String.Format("Drive ({0}) is not an optical drive", command));
+    }
+    
+    /// <summary>
+    /// Given a path to a wave file this method will play the sound.
+    /// </summary>
+    /// <param name="command">The path to an audio file.</param>
+    public static void ProcessSoundCommand(string command)
+    {
+      if (String.IsNullOrEmpty(command))
+        throw new ArgumentNullException("command");
+
+      if (!Audio.Play(command, false))
+        throw new ApplicationException(String.Format("Sound Command ({0}) failed to play", command));
+    }
+
+    /// <summary>
+    /// Given a split HTTP Message Command this method will send the HTTP message according to the command structure supplied.
+    /// </summary>
+    /// <param name="commands">An array of arguments for the method (the output of SplitHttpMessageCommand).</param>
+    /// <returns>The response to the command.</returns>
+    public static string ProcessHttpCommand(string[] commands)
+    {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
+
+      Uri uri = new Uri(ReplaceEscapeCodes(commands[0]));
+
+      WebRequest request  = WebRequest.Create(uri);
+      request.Timeout     = int.Parse(commands[1]);
+      request.Credentials = new NetworkCredential(commands[2], commands[3]);
+
+      using (WebResponse response = request.GetResponse())
+        using (Stream responseStream = response.GetResponseStream())
+          using (StreamReader streamReader = new StreamReader(responseStream))
+            return streamReader.ReadToEnd();
     }
 
     #endregion Command Execution
@@ -711,6 +778,29 @@ namespace IrssUtils
 
       Regex validate = new Regex("^(?!^(PRN|AUX|CLOCK\\$|NUL|CON|COM\\d|LPT\\d|\\..*)(\\..+)?$)[^\\x00-\\x1f\\\\?*:\\\";|/]+$", RegexOptions.IgnoreCase);
       return validate.IsMatch(fileName);
+    }
+
+    /// <summary>
+    /// Replace all instances of environment variables with their value.
+    /// </summary>
+    /// <param name="input">The input to process.</param>
+    /// <returns>Modified input string.</returns>
+    public static string ReplaceEnvironmentVariables(string input)
+    {
+      string output = input;
+
+      if (input.Contains("%"))
+      {
+        foreach (Match match in Regex.Matches(input, @"%\w+%"))
+        {
+          string envVar = Environment.GetEnvironmentVariable(match.Value.Substring(1, match.Value.Length - 2));
+
+          if (envVar != null)
+            output = output.Replace(match.Value, envVar);
+        }
+      }
+
+      return output;
     }
 
     #endregion Misc

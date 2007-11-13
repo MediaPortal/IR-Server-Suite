@@ -145,7 +145,7 @@ namespace IRServer
         throw new FileNotFoundException("No available plugins found");
 
       foreach (IRServerPluginBase plugin in serverPlugins)
-        if (plugin.Name.Equals(pluginName, StringComparison.InvariantCultureIgnoreCase))
+        if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
           return plugin;
 
       return null;

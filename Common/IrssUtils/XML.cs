@@ -25,7 +25,7 @@ namespace IrssUtils
         return defaultValue;
 
       foreach (XmlNode node in nodeList)
-        if (node.Name == property)
+        if (node.Name.Equals(property, StringComparison.OrdinalIgnoreCase))
           return node.InnerText;
 
       return defaultValue;
@@ -46,7 +46,7 @@ namespace IrssUtils
       bool returnValue = defaultValue;
       foreach (XmlNode node in nodeList)
       {
-        if (node.Name == property)
+        if (node.Name.Equals(property, StringComparison.OrdinalIgnoreCase))
         {
           bool.TryParse(node.InnerText, out returnValue);
           break;
@@ -71,7 +71,7 @@ namespace IrssUtils
       int returnValue = defaultValue;
       foreach (XmlNode node in nodeList)
       {
-        if (node.Name == property)
+        if (node.Name.Equals(property, StringComparison.OrdinalIgnoreCase))
         {
           int.TryParse(node.InnerText, out returnValue);
           break;

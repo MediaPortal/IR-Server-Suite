@@ -284,11 +284,11 @@ namespace UirtTransceiver
       string irCode = Encoding.ASCII.GetString(data);
 
       // Set blaster port ...
-      if (port.Equals(Ports[1], StringComparison.InvariantCultureIgnoreCase))
+      if (port.Equals(Ports[1], StringComparison.OrdinalIgnoreCase))
         irCode = "Z1" + irCode;
-      else if (port.Equals(Ports[2], StringComparison.InvariantCultureIgnoreCase))
+      else if (port.Equals(Ports[2], StringComparison.OrdinalIgnoreCase))
         irCode = "Z2" + irCode;
-      else if (port.Equals(Ports[3], StringComparison.InvariantCultureIgnoreCase))
+      else if (port.Equals(Ports[3], StringComparison.OrdinalIgnoreCase))
         irCode = "Z3" + irCode;
 
       result = NativeMethods.UUIRTTransmitIR(
@@ -442,7 +442,7 @@ namespace UirtTransceiver
 
       TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
 
-      if (keyCode == _lastCode) // Repeated button
+      if (keyCode.Equals(_lastCode, StringComparison.Ordinal)) // Repeated button
       {
         if (timeSpan.Milliseconds > _repeatDelay)
         {

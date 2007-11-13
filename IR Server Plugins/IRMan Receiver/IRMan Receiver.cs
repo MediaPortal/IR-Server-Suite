@@ -34,12 +34,12 @@ namespace IRManReceiver
     SerialPort _serialPort;
     byte[] _deviceBuffer;
 
-    RemoteHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler;
 
     int _repeatDelay;
     string _serialPortName;
 
-    bool _disposed = false;
+    bool _disposed;
 
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
@@ -202,27 +202,29 @@ namespace IRManReceiver
       {
         _serialPort.Read(_deviceBuffer, 0, DeviceBufferSize);
 
+        TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
+
         StringBuilder keyCode = new StringBuilder(2 * DeviceBufferSize);
         for (int index = 0; index < DeviceBufferSize; index++)
           keyCode.Append(_deviceBuffer[index].ToString("X2"));
 
-        TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
+        string thisCode = keyCode.ToString();
 
-        if (keyCode.ToString() == _lastCode) // Repeated button
+        if (thisCode.Equals(_lastCode, StringComparison.Ordinal)) // Repeated button
         {
           if (timeSpan.Milliseconds > _repeatDelay)
           {
-            _remoteButtonHandler(keyCode.ToString());
+            _remoteButtonHandler(thisCode);
             _lastCodeTime = DateTime.Now;
           }
         }
         else
         {
-          _remoteButtonHandler(keyCode.ToString());
+          _remoteButtonHandler(thisCode);
           _lastCodeTime = DateTime.Now;
         }
 
-        _lastCode = keyCode.ToString();
+        _lastCode = thisCode;
       }
 #if TRACE
       catch (Exception ex)

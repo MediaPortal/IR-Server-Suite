@@ -33,11 +33,7 @@ namespace Translator
 
     #region Variables
 
-    static Client _client;
-
-    static Configuration _config;
-
-    static string _learnIRFilename = null;
+    static string _learnIRFilename;
 
     static bool _registered;
 
@@ -49,12 +45,7 @@ namespace Translator
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
-    //static Thread _focusWatcher;
-    static IntPtr _currentForegroundWindow = IntPtr.Zero;
-
     static List<string> _macroStack;
-
-    static CopyDataWM _copyDataWM;
 
     #endregion Variables
 
@@ -83,6 +74,10 @@ namespace Translator
 
     static NotifyIcon _notifyIcon;
     static MainForm _mainForm;
+    static MenuForm _menuForm;
+    static Client _client;
+    static Configuration _config;
+    static CopyDataWM _copyDataWM;
 
     #endregion Components
 
@@ -100,12 +95,18 @@ namespace Translator
         {
           ProcessCommandLine(args);
         }
+#if TRACE
         catch (Exception ex)
         {
-          Console.WriteLine(ex.ToString());
+          Trace.WriteLine(ex.ToString());
         }
+#else
+        catch
+        {
+        }
+#endif
         return;
-      }      
+      }
 
       // Check for multiple instances.
       if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
@@ -135,16 +136,11 @@ namespace Translator
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
       _notifyIcon.Visible = false;
 
-      // Setup main form ...
-      _mainForm = new MainForm();
+      // Setup the Translator Menu ...
+      _menuForm = new MenuForm();
 
-      // Start the window focus watcher thread
-      /*
-      _focusWatcher = new Thread(new ThreadStart(FocusWatcherThread));
-      _focusWatcher.Name = "Translator - Focus watcher";
-      _focusWatcher.IsBackground = true;
-      _focusWatcher.Start();
-      */
+      // Setup the main form ...
+      _mainForm = new MainForm();
 
       // Start server communications ...
       bool clientStarted = false;
@@ -204,9 +200,6 @@ namespace Translator
       
       _notifyIcon.Visible = false;
 
-      //if (_focusWatcher.IsAlive)
-        //_focusWatcher.Abort();
-
       Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
 
       IrssLog.Close();
@@ -226,102 +219,57 @@ namespace Translator
       IrssLog.Error(e.Exception.ToString());
     }
 
-    /*static void FocusWatcherThread()
-    {
-      try
-      {
-        while (true)
-        {
-          UpdateForegroundWindow();
-          Thread.Sleep(2000);
-        }
-      }
-      catch
-      {
-      }
-    }*/
-
-    static void UpdateForegroundWindow()
-    {
-      try
-      {
-        IntPtr hWnd = Win32.ForegroundWindow();
-
-        if (hWnd == IntPtr.Zero)
-          return;
-
-        if (hWnd == _mainForm.Handle)
-          return;
-
-        if (hWnd == _notifyIcon.ContextMenuStrip.Handle)
-          return;
-
-        /*
-        string windowTitle = Win32.GetWindowTitle(hWnd);
-        if (windowTitle.StartsWith("Translator", StringComparison.InvariantCultureIgnoreCase))
-          return;
-
-        int procID;
-        Win32.GetWindowThreadProcessId(hWnd, out procID);
-        Process proc = Process.GetProcessById(procID);
-        if (proc.MainModule.ModuleName.Equals("Translator.exe", StringComparison.InvariantCultureIgnoreCase))
-          return;
-        */
-
-        _currentForegroundWindow = hWnd;
-      }
-      catch
-      {
-      }
-    }
-
     static void ProcessCommandLine(string[] args)
     {
       for (int index = 0; index < args.Length; index++)
       {
-        string command = args[index].ToLowerInvariant();
+        string command = args[index].ToUpperInvariant();
 
         switch (command)
         {
-          case "-blast":
+          case "-BLAST":
             if (args.Length > index + 2)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + args[++index] + '|' + args[++index]);
             else
               Console.WriteLine("Blast command requires two parameters.");
             continue;
 
-          case "-macro":
+          case "-MACRO":
             if (args.Length > index + 1)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixMacro + args[++index]);
             else
               Console.WriteLine("Macro command requires a parameter.");
             continue;
 
-          case "-eject":
+          case "-EJECT":
             if (args.Length > index + 1)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixEject + args[++index]);
             else
               Console.WriteLine("Eject command requires a parameter.");
             continue;
 
-          case "-shutdown":
+          case "-SHUTDOWN":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixShutdown);
             continue;
 
-          case "-reboot":
+          case "-REBOOT":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixReboot);
             continue;
 
-          case "-standby":
+          case "-STANDBY":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixStandby);
             continue;
 
-          case "-hibernate":
+          case "-HIBERNATE":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixHibernate);
             continue;
 
-          case "-logoff":
+          case "-LOGOFF":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixLogOff);
+            continue;
+
+          case "-OSD":
+            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixTranslator);
             continue;
 
           //TODO: Add more command line options.
@@ -329,15 +277,24 @@ namespace Translator
       }
     }
 
-    static void ShowTranslatorMenu()
+    static void ShowOSD()
     {
-      UpdateForegroundWindow();
+      IrssLog.Info("Show OSD");
 
-      //_mainForm.Focus();
+      Thread thread = new Thread(new ThreadStart(MenuThread));
+      thread.Start();
+    }
 
-      _notifyIcon.ContextMenuStrip.Show(Screen.PrimaryScreen.Bounds.Width / 4, Screen.PrimaryScreen.Bounds.Height / 4);
+    static void MenuThread()
+    {
+      if (_menuForm.Visible)
+      {
+        IrssLog.Info("OSD already visible");
 
-      //_notifyIcon.ContextMenuStrip.Focus();
+        return;
+      }
+
+      _menuForm.ShowDialog();
     }
 
     static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
@@ -410,14 +367,6 @@ namespace Translator
       }
 
       ToolStripMenuItem actions = new ToolStripMenuItem("&Actions");
-      actions.DropDownItems.Add("Next Window", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Last Window", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Close Window", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Maximize Window", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Minimize Window", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Restore Window", null, new EventHandler(ClickAction));
-
-      actions.DropDownItems.Add(new ToolStripSeparator());
 
       actions.DropDownItems.Add("System Standby", null, new EventHandler(ClickAction));
       actions.DropDownItems.Add("System Hibernate", null, new EventHandler(ClickAction));
@@ -443,6 +392,7 @@ namespace Translator
       _notifyIcon.ContextMenuStrip.Items.Add(actions);
 
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+      _notifyIcon.ContextMenuStrip.Items.Add("Show &OSD", null, new EventHandler(ClickOSD));
       _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, new EventHandler(ClickSetup));
       _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, new EventHandler(ClickQuit));
     }
@@ -458,7 +408,7 @@ namespace Translator
       string program = menuItem.Text;
       foreach (ProgramSettings programSettings in Config.Programs)
       {
-        if (programSettings.Name == program)
+        if (programSettings.Name.Equals(program, StringComparison.OrdinalIgnoreCase))
         {
           IrssLog.Info("Launching {0}", program);
 
@@ -526,54 +476,6 @@ namespace Translator
       {
         switch (menuItem.Text)
         {
-          case "Next Window":
-            Win32.SendWindowsMessage(
-              _currentForegroundWindow,
-              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
-              (int)Win32.SysCommand.SC_NEXTWINDOW,
-              0);
-            break;
-
-          case "Last Window":
-            Win32.SendWindowsMessage(
-              _currentForegroundWindow,
-              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
-              (int)Win32.SysCommand.SC_PREVWINDOW,
-              0);
-            break;
-
-          case "Close Window":
-            Win32.SendWindowsMessage(
-              _currentForegroundWindow,
-              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
-              (int)Win32.SysCommand.SC_CLOSE,
-              0);
-            break;
-
-          case "Maximize Window":
-            Win32.SendWindowsMessage(
-              _currentForegroundWindow,
-              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
-              (int)Win32.SysCommand.SC_MAXIMIZE,
-              0);
-            break;
-
-          case "Minimize Window":
-            Win32.SendWindowsMessage(
-              _currentForegroundWindow,
-              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
-              (int)Win32.SysCommand.SC_MINIMIZE,
-              0);
-            break;
-
-          case "Restore Window":
-            Win32.SendWindowsMessage(
-              _currentForegroundWindow,
-              (int)Win32.WindowsMessage.WM_SYSCOMMAND,
-              (int)Win32.SysCommand.SC_RESTORE,
-              0);
-            break;
-
           case "System Standby":
             Standby();
             break;
@@ -597,7 +499,7 @@ namespace Translator
 
           case "Volume Up":
             Win32.SendWindowsMessage(
-              _currentForegroundWindow,
+              Win32.ForegroundWindow(),
               (int)Win32.WindowsMessage.WM_APPCOMMAND,
               (int)Win32.AppCommand.APPCOMMAND_VOLUME_UP,
               0);
@@ -605,7 +507,7 @@ namespace Translator
 
           case "Volume Down":
             Win32.SendWindowsMessage(
-              _currentForegroundWindow,
+              Win32.ForegroundWindow(),
               (int)Win32.WindowsMessage.WM_APPCOMMAND,
               (int)Win32.AppCommand.APPCOMMAND_VOLUME_DOWN,
               0);
@@ -613,7 +515,7 @@ namespace Translator
 
           case "Volume Mute":
             Win32.SendWindowsMessage(
-              _currentForegroundWindow,
+              Win32.ForegroundWindow(),
               (int)Win32.WindowsMessage.WM_APPCOMMAND,
               (int)Win32.AppCommand.APPCOMMAND_VOLUME_MUTE,
               0);
@@ -639,6 +541,11 @@ namespace Translator
         return;
 
       CDRom.Open(menuItem.Text);
+    }
+
+    static void ClickOSD(object sender, EventArgs e)
+    {
+      ShowOSD();
     }
     
     static void ClickSetup(object sender, EventArgs e)
@@ -868,7 +775,7 @@ namespace Translator
 
         foreach (ProgramSettings progSettings in Config.Programs)
         {
-          if (fileName.Equals(Path.GetFileName(progSettings.Filename), StringComparison.InvariantCultureIgnoreCase))
+          if (fileName.Equals(Path.GetFileName(progSettings.FileName), StringComparison.OrdinalIgnoreCase))
           {
             return progSettings;
           }
@@ -885,17 +792,16 @@ namespace Translator
 
     static void RemoteHandlerCallback(string keyCode)
     {
-      ProgramSettings active = ActiveProgram();
-
       if (_inConfiguration)
         return;
 
+      ProgramSettings active = ActiveProgram();
       if (active == null)
       {
         // Try system wide button mappings ...
         foreach (ButtonMapping buttonMap in _config.SystemWideMappings)
         {
-          if (buttonMap.KeyCode == keyCode)
+          if (buttonMap.KeyCode.Equals(keyCode, StringComparison.Ordinal))
           {
             IrssLog.Debug("KeyCode {0} mapped in System Wide mappings", keyCode);
             try
@@ -912,7 +818,7 @@ namespace Translator
         // Try active program button mappings ...
         foreach (ButtonMapping buttonMap in active.ButtonMappings)
         {
-          if (buttonMap.KeyCode == keyCode)
+          if (buttonMap.KeyCode.Equals(keyCode, StringComparison.Ordinal))
           {
             IrssLog.Debug("KeyCode {0} mapped in \"{1}\" mappings", keyCode, active.Name);
             try
@@ -929,7 +835,7 @@ namespace Translator
           // Try system wide button mappings ...
           foreach (ButtonMapping buttonMap in _config.SystemWideMappings)
           {
-            if (buttonMap.KeyCode == keyCode)
+            if (buttonMap.KeyCode.Equals(keyCode, StringComparison.Ordinal))
             {
               IrssLog.Debug("KeyCode {0} mapped in System Wide mappings", keyCode);
               try
@@ -945,7 +851,6 @@ namespace Translator
 
       IrssLog.Debug("No mapping found for KeyCode = {0}", keyCode);
     }
-
     static void KeyboardHandlerCallback(int vKey, bool keyUp)
     {
       if (keyUp)
@@ -953,7 +858,6 @@ namespace Translator
       else
         Keyboard.KeyDown((Keyboard.VKey)vKey);
     }
-
     static void MouseHandlerCallback(int deltaX, int deltaY, int buttons)
     {
       if (buttons != (int)Mouse.MouseEvents.None)
@@ -962,7 +866,6 @@ namespace Translator
       if (deltaX != 0 || deltaY != 0)
         Mouse.Move(deltaX, deltaY, false);
     }
-
 
     static void Hibernate()
     {
@@ -1013,14 +916,21 @@ namespace Translator
       {
         if (mappedEvent.EventType == theEvent)
         {
-          IrssLog.Info("Event mapped: {0}, {1}", eventName, mappedEvent.Command);
-          try
+          if (String.IsNullOrEmpty(mappedEvent.Command))
           {
-            ProcessCommand(mappedEvent.Command);
+            IrssLog.Warn("Event found ({0}) with no command set", eventName);
           }
-          catch (Exception ex)
+          else
           {
-            IrssLog.Error(ex.ToString());
+            try
+            {
+              IrssLog.Info("Event mapped: {0}, {1}", eventName, mappedEvent.Command);
+              ProcessCommand(mappedEvent.Command);
+            }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex.ToString());
+            }
           }
         }
       }
@@ -1032,13 +942,13 @@ namespace Translator
     /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackAdd(string fileName)
     {
-      string lowerCasedFileName = fileName.ToLowerInvariant();
+      string upperCasedFileName = fileName.ToUpperInvariant();
 
       if (_macroStack == null)
       {
         _macroStack = new List<string>();
       }
-      else if (_macroStack.Contains(lowerCasedFileName))
+      else if (_macroStack.Contains(upperCasedFileName))
       {
         StringBuilder macroStackTrace = new StringBuilder();
         macroStackTrace.AppendLine("Macro infinite loop detected!");
@@ -1047,18 +957,18 @@ namespace Translator
 
         foreach (string macro in _macroStack)
         {
-          if (macro.Equals(lowerCasedFileName))
+          if (macro.Equals(upperCasedFileName))
             macroStackTrace.AppendLine(String.Format("--> {0}", macro));
           else
             macroStackTrace.AppendLine(macro);
         }
 
-        macroStackTrace.AppendLine(String.Format("--> {0}", lowerCasedFileName));
+        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
 
         throw new ApplicationException(macroStackTrace.ToString());
       }
 
-      _macroStack.Add(lowerCasedFileName);
+      _macroStack.Add(upperCasedFileName);
     }
     /// <summary>
     /// Removes from the Macro Stack.
@@ -1066,10 +976,10 @@ namespace Translator
     /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackRemove(string fileName)
     {
-      string lowerCasedFileName = fileName.ToLowerInvariant();
+      string upperCasedFileName = fileName.ToUpperInvariant();
 
-      if (_macroStack.Contains(lowerCasedFileName))
-        _macroStack.Remove(lowerCasedFileName);
+      if (_macroStack.Contains(upperCasedFileName))
+        _macroStack.Remove(upperCasedFileName);
 
       if (_macroStack.Count == 0)
         _macroStack = null;
@@ -1282,69 +1192,69 @@ namespace Translator
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase)) // Macro
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
         ProcessMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.InvariantCultureIgnoreCase)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.InvariantCultureIgnoreCase)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.InvariantCultureIgnoreCase))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         Common.ProcessKeyCommand(keyCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.InvariantCultureIgnoreCase)) // Mouse Command
+      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase)) // Mouse Command
       {
         string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
         Common.ProcessMouseCommand(mouseCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.InvariantCultureIgnoreCase)) // Eject Command
+      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase)) // Eject Command
       {
         string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
         Common.ProcessEjectCommand(ejectCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.InvariantCultureIgnoreCase)) // Hibernate Command
+      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase)) // Hibernate Command
       {
         Hibernate();
       }
-      else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.InvariantCultureIgnoreCase)) // LogOff Command
+      else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.OrdinalIgnoreCase)) // LogOff Command
       {
         LogOff();
       }
-      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.InvariantCultureIgnoreCase)) // Reboot Command
+      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase)) // Reboot Command
       {
         Reboot();
       }
-      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.InvariantCultureIgnoreCase)) // Shutdown Command
+      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase)) // Shutdown Command
       {
         ShutDown();
       }
-      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.InvariantCultureIgnoreCase)) // Standby Command
+      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase)) // Standby Command
       {
         Standby();
       }
-      else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.InvariantCultureIgnoreCase)) // Translator Command
+      else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.OrdinalIgnoreCase)) // Translator Command
       {
-        ShowTranslatorMenu();
+        ShowOSD();
       }
       else
       {

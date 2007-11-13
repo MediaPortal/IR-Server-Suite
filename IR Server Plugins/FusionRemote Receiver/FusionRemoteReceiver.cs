@@ -31,10 +31,10 @@ namespace FusionRemoteReceiver
 
     const string DeviceID = "VID_0FE9&PID_9010";
 
-    const UInt32 DIGCF_ALLCLASSES       = 0x00000004;
-    const UInt32 DIGCF_DEVICEINTERFACE  = 0x00000010;
-    const UInt32 DIGCF_PRESENT          = 0x00000002;
-    const UInt32 DIGCF_PROFILE          = 0x00000008;
+    const uint DIGCF_ALLCLASSES       = 0x04;
+    const uint DIGCF_DEVICEINTERFACE  = 0x10;
+    const uint DIGCF_PRESENT          = 0x02;
+    const uint DIGCF_PROFILE          = 0x08;
 
     // File Access Types
     const uint GENERIC_READ     = 0x80000000;
@@ -190,7 +190,7 @@ namespace FusionRemoteReceiver
 
     #region Variables
 
-    static RemoteHandler _remoteHandler = null;
+    static RemoteHandler _remoteHandler;
 
     static FileStream _deviceStream;
     static byte[] _deviceBuffer;
@@ -401,7 +401,7 @@ namespace FusionRemoteReceiver
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        if (deviceInterfaceDetailData.DevicePath.IndexOf(deviceID, StringComparison.InvariantCultureIgnoreCase) != -1)
+        if (deviceInterfaceDetailData.DevicePath.IndexOf(deviceID, StringComparison.OrdinalIgnoreCase) != -1)
         {
           SetupDiDestroyDeviceInfoList(handle);
           devicePath = deviceInterfaceDetailData.DevicePath;

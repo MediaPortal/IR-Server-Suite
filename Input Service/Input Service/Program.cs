@@ -41,9 +41,9 @@ namespace InputService
         InstallContext installContext = new InstallContext(String.Empty, cmdline);
         transactedInstaller.Context = installContext;
 
-        if (args[0].Equals("/install", System.StringComparison.InvariantCultureIgnoreCase))
+        if (args[0].Equals("/install", System.StringComparison.OrdinalIgnoreCase))
           transactedInstaller.Install(new Hashtable());
-        else if (args[0].Equals("/uninstall", System.StringComparison.InvariantCultureIgnoreCase))
+        else if (args[0].Equals("/uninstall", System.StringComparison.OrdinalIgnoreCase))
           transactedInstaller.Uninstall(null);
 
         return;
@@ -126,7 +126,7 @@ namespace InputService
         throw new FileNotFoundException("No available plugins found");
 
       foreach (IRServerPluginBase plugin in serverPlugins)
-        if (plugin.Name.Equals(pluginName, StringComparison.InvariantCultureIgnoreCase))
+        if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
           return plugin;
 
       return null;

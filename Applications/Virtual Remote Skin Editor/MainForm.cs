@@ -39,7 +39,7 @@ namespace SkinEditor
     //bool _fileOpen;
     string _fileName = String.Empty;
 
-    Label _currentButton = null;
+    Label _currentButton;
 
     Point _mouseOffset;
     bool _isMouseDown;
@@ -435,7 +435,7 @@ namespace SkinEditor
       {
         _fileName = openFileDialog.FileName;
 
-        if (Path.GetExtension(_fileName) != ".xml")
+        if (!Path.GetExtension(_fileName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
           return;
 
         LoadSkinFile(_fileName);

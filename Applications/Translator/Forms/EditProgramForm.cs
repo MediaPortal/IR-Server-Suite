@@ -73,7 +73,7 @@ namespace Translator
       if (progSettings != null)
       {
         DisplayName       = progSettings.Name;
-        Filename          = progSettings.Filename;
+        Filename          = progSettings.FileName;
         StartupFolder     = progSettings.Folder;
         Parameters        = progSettings.Arguments;
         StartState        = progSettings.WindowState;
@@ -100,7 +100,7 @@ namespace Translator
         if (String.IsNullOrEmpty(textBoxAppStartFolder.Text))
           textBoxAppStartFolder.Text = Path.GetDirectoryName(find.FileName);
         
-        if (String.IsNullOrEmpty(textBoxDisplayName.Text) || textBoxDisplayName.Text == "New Program")
+        if (String.IsNullOrEmpty(textBoxDisplayName.Text) || textBoxDisplayName.Text.Equals("New Program", StringComparison.Ordinal))
           textBoxDisplayName.Text = Path.GetFileNameWithoutExtension(find.FileName);
       }
     }

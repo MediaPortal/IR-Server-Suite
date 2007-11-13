@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
@@ -36,9 +36,9 @@ namespace IrssUtils.Forms
       comboBoxComputer.Items.Clear();
       comboBoxComputer.Items.Add("localhost");
 
-      string[] networkPCs = Win32.GetNetworkComputers(false);
+      List<string> networkPCs = Network.GetComputers(false);
       if (networkPCs != null)
-        comboBoxComputer.Items.AddRange(networkPCs);
+        comboBoxComputer.Items.AddRange(networkPCs.ToArray());
 
       comboBoxComputer.SelectedIndex = 0;
     }

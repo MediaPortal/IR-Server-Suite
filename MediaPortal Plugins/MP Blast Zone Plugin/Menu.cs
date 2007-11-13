@@ -83,7 +83,7 @@ namespace MediaPortal.Plugins
     public MenuFolder GetItem(string name)
     {
       foreach (MenuFolder item in _items)
-        if (item.Name == name)
+        if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
           return item;
 
       return null;
@@ -156,7 +156,7 @@ namespace MediaPortal.Plugins
     public MenuCommand GetItem(string name)
     {
       foreach (MenuCommand item in _items)
-        if (item.Name == name)
+        if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
           return item;
 
       return null;

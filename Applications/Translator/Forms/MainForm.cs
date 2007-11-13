@@ -147,7 +147,17 @@ namespace Translator
     {
       imageListPrograms.Images.Clear();
       imageListPrograms.Images.Add(Properties.Resources.WinLogo);
-      imageListPrograms.Images.Add(Properties.Resources.NoIcon);
+
+      Icon large;
+      Icon small;
+
+      string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
+      string file = folder + "\\user32.dll";
+      Win32.ExtractIcons(file, 1, out large, out small);
+      imageListPrograms.Images.Add(large);
+
+
+      //imageListPrograms.Images.Add(Properties.Resources.NoIcon);
 
       string wasSelected = string.Empty;
       if (listViewPrograms.Items.Count > 0)
@@ -165,13 +175,13 @@ namespace Translator
       int imageIndex = 2;
       foreach (ProgramSettings progSettings in Program.Config.Programs)
       {
-        Icon icon = Win32.GetIconFor(progSettings.Filename);
+        Icon icon = Win32.GetIconFor(progSettings.FileName);
 
         if (icon != null)
         {
           imageListPrograms.Images.Add(icon);
           newItem = new ListViewItem(progSettings.Name, imageIndex++);
-          newItem.ToolTipText = progSettings.Filename;
+          newItem.ToolTipText = progSettings.FileName;
         }
         else
         {
@@ -222,7 +232,7 @@ namespace Translator
 
       comboBoxEvents.Items.Clear();
       foreach (string eventName in Enum.GetNames(typeof(MappingEvent)))
-        if (eventName != "None")
+        if (!eventName.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxEvents.Items.Add(eventName);
 
       comboBoxEvents.SelectedIndex = 0;
@@ -372,7 +382,7 @@ namespace Translator
       if (editProg.ShowDialog(this) == DialogResult.OK)
       {
         progSettings.Name             = editProg.DisplayName;
-        progSettings.Filename         = editProg.Filename;
+        progSettings.FileName         = editProg.Filename;
         progSettings.Folder           = editProg.StartupFolder;
         progSettings.Arguments        = editProg.Parameters;
         progSettings.WindowState      = editProg.StartState;
@@ -473,7 +483,7 @@ namespace Translator
 
       foreach (ButtonMapping test in currentMappings)
       {
-        if (keyCode == test.KeyCode)
+        if (keyCode.Equals(test.KeyCode, StringComparison.Ordinal))
         {
           existing = test;
           map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
@@ -512,7 +522,7 @@ namespace Translator
         {
           for (int index = 0; index < listViewButtons.Items.Count; index++)
           {
-            if (listViewButtons.Items[index].SubItems[0].Text == map.KeyCode)
+            if (listViewButtons.Items[index].SubItems[0].Text.Equals(map.KeyCode, StringComparison.Ordinal))
             {
               listViewButtons.Items[index].SubItems[1].Text = map.Description;
               listViewButtons.Items[index].SubItems[2].Text = map.Command;
@@ -540,7 +550,7 @@ namespace Translator
       ButtonMapping toRemove = null;
       foreach (ButtonMapping test in currentMappings)
       {
-        if (test.KeyCode == item.SubItems[0].Text)
+        if (test.KeyCode.Equals(item.SubItems[0].Text, StringComparison.Ordinal))
         {
           toRemove = test;
           break;
@@ -563,7 +573,7 @@ namespace Translator
 
       foreach (ButtonMapping test in currentMappings)
       {
-        if (item.SubItems[0].Text == test.KeyCode)
+        if (item.SubItems[0].Text.Equals(test.KeyCode, StringComparison.Ordinal))
         {
           ButtonMappingForm map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
 
@@ -613,7 +623,7 @@ namespace Translator
 
       foreach (ProgramSettings programSettings in Program.Config.Programs)
       {
-        if (programSettings.Name == programName)
+        if (programSettings.Name.Equals(programName, StringComparison.OrdinalIgnoreCase))
         {
           ImportButtons(programSettings.ButtonMappings);
           return;
@@ -633,7 +643,7 @@ namespace Translator
 
         foreach (ButtonMapping existingMapping in currentMappings)
         {
-          if (existingMapping.KeyCode == newMapping.KeyCode)
+          if (existingMapping.KeyCode.Equals(newMapping.KeyCode, StringComparison.Ordinal))
           {
             // Change the existing mapping to the new one
             existingMapping.Description = newMapping.Description;
@@ -952,7 +962,7 @@ namespace Translator
       string selected = comboBoxCommands.SelectedItem as string;
       string command = String.Empty;
 
-      if (selected == Common.UITextRun)
+      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
         ExternalProgram externalProgram = new ExternalProgram(false);
 
@@ -961,7 +971,7 @@ namespace Translator
 
         command = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (selected == Common.UITextSerial)
+      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
       {
         SerialCommand serialCommand = new SerialCommand();
         if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -969,7 +979,7 @@ namespace Translator
 
         command = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (selected == Common.UITextWindowMsg)
+      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -977,7 +987,7 @@ namespace Translator
 
         command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (selected == Common.UITextKeys)
+      else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand();
         if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -985,7 +995,7 @@ namespace Translator
 
         command = Common.CmdPrefixKeys + keysCommand.CommandString;
       }
-      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         BlastCommand blastCommand = new BlastCommand(
           new BlastIrDelegate(Program.BlastIR),
@@ -998,7 +1008,7 @@ namespace Translator
 
         command = Common.CmdPrefixBlast + blastCommand.CommandString;
       }
-      else if (selected.StartsWith(Common.CmdPrefixMacro))
+      else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
       {
         command = selected;
       }
@@ -1025,7 +1035,7 @@ namespace Translator
 
       string command = listViewEventMap.SelectedItems[0].SubItems[1].Text;
 
-      if (command.StartsWith(Common.CmdPrefixRun))
+      if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         ExternalProgram externalProgram = new ExternalProgram(commands, false);
@@ -1034,7 +1044,7 @@ namespace Translator
 
         command = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial))
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         SerialCommand serialCommand = new SerialCommand(commands);
@@ -1043,7 +1053,7 @@ namespace Translator
 
         command = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg))
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         MessageCommand messageCommand = new MessageCommand(commands);
@@ -1052,7 +1062,7 @@ namespace Translator
 
         command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys))
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand(command.Substring(Common.CmdPrefixKeys.Length));
         if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -1060,7 +1070,7 @@ namespace Translator
 
         command = Common.CmdPrefixKeys + keysCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast))
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
 
@@ -1256,7 +1266,7 @@ namespace Translator
         if (programSettings.Name.Equals(selectedItem))
           continue;
 
-        Icon icon = Win32.GetIconFor(programSettings.Filename);
+        Icon icon = Win32.GetIconFor(programSettings.FileName);
         Image image = null;
         if (icon != null)
           image = icon.ToBitmap();

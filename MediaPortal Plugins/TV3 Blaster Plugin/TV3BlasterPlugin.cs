@@ -50,7 +50,7 @@ namespace TvEngine
     static Client _client;
 
     static string _serverHost;
-    static string _learnIRFilename = null;
+    static string _learnIRFilename;
 
     static bool _registered;
 
@@ -544,13 +544,13 @@ namespace TvEngine
     /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackAdd(string fileName)
     {
-      string lowerCasedFileName = fileName.ToLowerInvariant();
+      string upperCasedFileName = fileName.ToUpperInvariant();
 
       if (_macroStack == null)
       {
         _macroStack = new List<string>();
       }
-      else if (_macroStack.Contains(lowerCasedFileName))
+      else if (_macroStack.Contains(upperCasedFileName))
       {
         StringBuilder macroStackTrace = new StringBuilder();
         macroStackTrace.AppendLine("Macro infinite loop detected!");
@@ -559,18 +559,18 @@ namespace TvEngine
 
         foreach (string macro in _macroStack)
         {
-          if (macro.Equals(lowerCasedFileName))
+          if (macro.Equals(upperCasedFileName))
             macroStackTrace.AppendLine(String.Format("--> {0}", macro));
           else
             macroStackTrace.AppendLine(macro);
         }
 
-        macroStackTrace.AppendLine(String.Format("--> {0}", lowerCasedFileName));
+        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
 
         throw new ApplicationException(macroStackTrace.ToString());
       }
 
-      _macroStack.Add(lowerCasedFileName);
+      _macroStack.Add(upperCasedFileName);
     }
     /// <summary>
     /// Removes from the Macro Stack.
@@ -578,10 +578,10 @@ namespace TvEngine
     /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackRemove(string fileName)
     {
-      string lowerCasedFileName = fileName.ToLowerInvariant();
+      string upperCasedFileName = fileName.ToUpperInvariant();
 
-      if (_macroStack.Contains(lowerCasedFileName))
-        _macroStack.Remove(lowerCasedFileName);
+      if (_macroStack.Contains(upperCasedFileName))
+        _macroStack.Remove(upperCasedFileName);
 
       if (_macroStack.Count == 0)
         _macroStack = null;
@@ -663,7 +663,7 @@ namespace TvEngine
             case Common.XmlTagKeys:
               {
                 if (InConfiguration)
-                  MessageBox.Show(commandProperty, "Keystroke Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
                   Common.ProcessKeyCommand(commandProperty);
                 break;
@@ -755,41 +755,41 @@ namespace TvEngine
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase)) // Macro
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
         ProcessMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.InvariantCultureIgnoreCase))  // STB IR Code
+      else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))  // STB IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
         BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.InvariantCultureIgnoreCase)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.InvariantCultureIgnoreCase)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.InvariantCultureIgnoreCase))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         if (InConfiguration)
-          MessageBox.Show(keyCommand, "Keystroke Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
         else
           Common.ProcessKeyCommand(keyCommand);
       }

@@ -26,24 +26,24 @@ namespace IrssUtils.Forms
     {
       get
       {
-        string target = "error";
+        string target = "ERROR";
 
         if (radioButtonActiveWindow.Checked)
         {
-          target = "active";
+          target = Common.WMTargetActive;
           textBoxMsgTarget.Text = "*";
         }
         else if (radioButtonApplication.Checked)
         {
-          target = "application";
+          target = Common.WMTargetApplication;
         }
         else if (radioButtonClass.Checked)
         {
-          target = "class";
+          target = Common.WMTargetClass;
         }
         else if (radioButtonWindowTitle.Checked)
         {
-          target = "window";
+          target = Common.WMTargetWindow;
         }
 
         return String.Format("{0}|{1}|{2}|{3}|{4}",
@@ -62,7 +62,7 @@ namespace IrssUtils.Forms
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageCommand"/> class.
     /// </summary>
-    public MessageCommand() : this(new string[] { "active", String.Empty, ((int)Win32.WindowsMessage.WM_USER).ToString(), "0", "0" }) { }
+    public MessageCommand() : this(new string[] { Common.WMTargetActive, String.Empty, ((int)Win32.WindowsMessage.WM_USER).ToString(), "0", "0" }) { }
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageCommand"/> class.
     /// </summary>
@@ -73,22 +73,15 @@ namespace IrssUtils.Forms
 
       if (commands != null)
       {
-        string target = commands[0].ToLowerInvariant();
-
+        string target = commands[0].ToUpperInvariant();
         switch (target)
         {
-          case "active":
-            radioButtonActiveWindow.Checked = true;
-            break;
-          case "application":
-            radioButtonApplication.Checked  = true;
-            break;
-          case "class":
-            radioButtonClass.Checked        = true;
-            break;
-          case "window":
-            radioButtonWindowTitle.Checked  = true;
-            break;
+          case Common.WMTargetActive:       radioButtonActiveWindow.Checked = true;   break;
+          case Common.WMTargetApplication:  radioButtonApplication.Checked  = true;   break;
+          case Common.WMTargetClass:        radioButtonClass.Checked        = true;   break;
+          case Common.WMTargetWindow:       radioButtonWindowTitle.Checked  = true;   break;
+          default:
+            throw new ArgumentOutOfRangeException("commands", commands[0], "Invalid message target");
         }
 
         textBoxMsgTarget.Text     = commands[1];

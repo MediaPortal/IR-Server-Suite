@@ -198,7 +198,7 @@ namespace IRTransTransceiver
 
     #region Variables
 
-    static RemoteHandler _remoteButtonHandler = null;
+    static RemoteHandler _remoteButtonHandler;
 
     static Socket _socket;
     static IAsyncResult _asynResult;
@@ -486,7 +486,7 @@ namespace IRTransTransceiver
         switch ((IrTransStatus)received.StatusType)
         {
           case IrTransStatus.STATUS_RECEIVE:
-            if (received.Remote.Trim() == _irTransRemoteModel)
+            if (received.Remote.Trim().Equals(_irTransRemoteModel, StringComparison.OrdinalIgnoreCase))
             {
               try
               {

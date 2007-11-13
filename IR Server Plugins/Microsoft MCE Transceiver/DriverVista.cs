@@ -61,112 +61,176 @@ namespace MicrosoftMceTransceiver
 
     #region Structures
 
+    #region Notes
+
+    // This is really weird and I don't know why this works, but apparently on
+    // 64-bit systems the following structures require 64-bit integers.
+    // The easiest way to do this is to use an IntPtr because it is 32-bits
+    // wide on 32-bit systems, and 64-bits wide on 64-bit systems.
+    // Given that it is exactly the same data on 32-bit or 64-bit systems it
+    // makes no sense (to me) why Microsoft would do it this way ...
+
+    // Note: I couldn't find any reference to this in the WinHEC or other
+    // documentation I have seen.  When 64-bit users started reporting
+    // "The data area passed to a system call is too small." errors (122) the
+    // only thing I could think of was that the structures were differenly
+    // sized on 64-bit systems.  And the only thing in C# that sizes
+    // differently on 64-bit systems is the IntPtr.
+
+    #endregion Notes
+    
+    /// <summary>
+    /// Information for transmitting IR.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     struct TransmitChunk
     {
       /// <summary>
       /// Next chunk offset.
       /// </summary>
-      public uint OffsetToNextChunk;
+      public IntPtr OffsetToNextChunk;
       /// <summary>
       /// Repeat count.
       /// </summary>
-      public uint RepeatCount;
+      public IntPtr RepeatCount;
       /// <summary>
       /// Number of bytes.
       /// </summary>
-      public uint ByteCount;
+      public IntPtr ByteCount;
     }
 
+    /// <summary>
+    /// Parameters for transmitting IR.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     struct TransmitParams
     {
       /// <summary>
       /// Bitmask containing ports to transmit on.
       /// </summary>
-      public uint TransmitPortMask;
+      public IntPtr TransmitPortMask;
       /// <summary>
       /// Carrier period.
       /// </summary>
-      public uint CarrierPeriod;
+      public IntPtr CarrierPeriod;
       /// <summary>
       /// Transmit Flags.
       /// </summary>
-      [MarshalAs(UnmanagedType.U4)]
-      public TransmitFlags Flags;
+      public IntPtr Flags;
       /// <summary>
       /// Pulse Size.  If Pulse Mode Flag set.
       /// </summary>
-      public uint PulseSize;
+      public IntPtr PulseSize;
     }
 
+    /// <summary>
+    /// Receive parameters.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     struct ReceiveParams
     {
       /// <summary>
       /// Last packet in block?
       /// </summary>
-      public uint DataEnd;
+      public IntPtr DataEnd;
       /// <summary>
       /// Number of bytes in block.
       /// </summary>
-      public uint ByteCount;
+      public IntPtr ByteCount;
       /// <summary>
       /// Carrier frequency of IR received.
       /// </summary>
-      public uint CarrierFrequency;
+      public IntPtr CarrierFrequency;
     }
 
+    /// <summary>
+    /// Parameters for StartReceive.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     struct StartReceiveParams
     {
       /// <summary>
       /// Index of the receiver to use.
       /// </summary>
-      public uint Receiver;
+      public IntPtr Receiver;
       /// <summary>
-      /// Receive timeout, in milliseconds?
+      /// Receive timeout, in milliseconds.
       /// </summary>
-      public uint Timeout;
+      public IntPtr Timeout;
     }
 
+    /// <summary>
+    /// Device Capabilities data structure.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     struct DeviceCapabilities
     {
       /// <summary>
-      /// Protocol version.  Currently must be 100 (1.0).
+      /// Device protocol version.
       /// </summary>
-      public uint ProtocolVersion;
+      public IntPtr ProtocolVersion;
       /// <summary>
       /// Number of transmit ports – 0-32.
       /// </summary>
-      public uint TransmitPorts;
+      public IntPtr TransmitPorts;
       /// <summary>
-      /// Number of receive ports – 0-32 (For beanbag, this is two (one for learning, one for normal).
+      /// Number of receive ports – 0-32. For beanbag, this is two (one for learning, one for normal receiving).
       /// </summary>
-      public uint ReceivePorts;
+      public IntPtr ReceivePorts;
       /// <summary>
       /// Bitmask identifying which receivers are learning receivers – low bit is the first receiver, second-low bit is the second receiver, etc ...
       /// </summary>
-      public uint LearningMask;
+      public IntPtr LearningMask;
       /// <summary>
       /// Device flags.
       /// </summary>
-      [MarshalAs(UnmanagedType.U4)]
-      public DeviceCapabilityFlags DetailsFlags;
+      public IntPtr DetailsFlags;
+    }
+
+    /// <summary>
+    /// Available Blasters data structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    struct AvailableBlasters
+    {
+      /// <summary>
+      /// Blaster bit-mask.
+      /// </summary>
+      public IntPtr Blasters;
     }
 
     #endregion Structures
 
     #region Enumerations
 
-    enum IoCtrl : uint
+    /// <summary>
+    /// Device IO Control details.
+    /// </summary>
+    enum IoCtrl
     {
+      /// <summary>
+      /// Start receiving IR.
+      /// </summary>
       StartReceive  = 0x0F608028,
+      /// <summary>
+      /// Stop receiving IR.
+      /// </summary>
       StopReceive   = 0x0F60802C,
+      /// <summary>
+      /// Get IR device details.
+      /// </summary>
       GetDetails    = 0x0F604004,
+      /// <summary>
+      /// Get IR blasters
+      /// </summary>
       GetBlasters   = 0x0F604008,
+      /// <summary>
+      /// Receive IR.
+      /// </summary>
       Receive       = 0x0F604022,
+      /// <summary>
+      /// Transmit IR.
+      /// </summary>
       Transmit      = 0x0F608015,
     }
 
@@ -174,7 +238,7 @@ namespace MicrosoftMceTransceiver
     /// IR Device Capability Flags.
     /// </summary>
     [Flags]
-    enum DeviceCapabilityFlags : uint
+    enum DeviceCapabilityFlags
     {
       /// <summary>
       /// Hardware supports legacy key signing.
@@ -214,17 +278,20 @@ namespace MicrosoftMceTransceiver
       WakeS5        = 0x0100,
     }
 
+    /// <summary>
+    /// Used to set the carrier mode for IR blasting.
+    /// </summary>
     [Flags]
-    enum TransmitFlags : uint
+    enum TransmitFlags
     {
       /// <summary>
       /// Pulse Mode.
       /// </summary>
-      PulseMode = 0x01,
+      PulseMode = 1,
       /// <summary>
       /// DC Mode.
       /// </summary>
-      DCMode    = 0x02,
+      DCMode    = 2,
     }
 
     /// <summary>
@@ -243,7 +310,6 @@ namespace MicrosoftMceTransceiver
 
     #region Constants
 
-    // Device variables
     const int DeviceBufferSize  = 100;
     const int PacketTimeout     = 100;
     const int WriteSyncTimeout  = 10000;
@@ -254,16 +320,13 @@ namespace MicrosoftMceTransceiver
 
     #region Device Details
 
-    uint _numTxPorts;
-    //uint _numRxPorts;
-    uint _learnPortMask;
-    //bool _legacyDevice;
-    //bool _canFlashLed;
+    int _numTxPorts;
+    int _learnPortMask;
 
     bool[] _blasters;
 
-    uint _receivePort;
-    uint _learnPort;
+    int _receivePort;
+    int _learnPort;
 
     #endregion Device Details
 
@@ -281,22 +344,19 @@ namespace MicrosoftMceTransceiver
     #region Constructor
 
     public DriverVista(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
-      : base(deviceGuid, devicePath, remoteCallback, keyboardCallback, mouseCallback)
-    {
-
-    }
+      : base(deviceGuid, devicePath, remoteCallback, keyboardCallback, mouseCallback) { }
 
     #endregion Constructor
 
     #region Device Control Functions
 
-    void StartReceive(uint receivePort, uint timeout)
+    void StartReceive(int receivePort, int timeout)
     {
       int bytesReturned;
 
       StartReceiveParams structure;
-      structure.Receiver = receivePort;
-      structure.Timeout = timeout;
+      structure.Receiver  = new IntPtr(receivePort);
+      structure.Timeout   = new IntPtr(timeout);
 
       IntPtr structPtr = IntPtr.Zero;
 
@@ -345,99 +405,98 @@ namespace MicrosoftMceTransceiver
           Marshal.FreeHGlobal(structPtr);
       }
 
-      _numTxPorts = structure.TransmitPorts;
-      //_numRxPorts = structure.ReceivePorts;
-      _learnPortMask = structure.LearningMask;
+      _numTxPorts = structure.TransmitPorts.ToInt32();
+      //_numRxPorts = structure.ReceivePorts.ToInt32();
+      _learnPortMask = structure.LearningMask.ToInt32();
 
       int receivePort = FirstLowBit(_learnPortMask);
       if (receivePort != -1)
-        _receivePort = (uint)receivePort;
+        _receivePort = receivePort;
 
       int learnPort = FirstHighBit(_learnPortMask);
       if (learnPort != -1)
-        _learnPort = (uint)learnPort;
+        _learnPort = learnPort;
       else
         _learnPort = _receivePort;
 
-      //DeviceCapabilityFlags flags = structure.DetailsFlags;
+      //DeviceCapabilityFlags flags = (DeviceCapabilityFlags)structure.DetailsFlags.ToInt32();
       //_legacyDevice = (int)(flags & DeviceCapabilityFlags.Legacy) != 0;
       //_canFlashLed = (int)(flags & DeviceCapabilityFlags.FlashLed) != 0;
 
 #if DEBUG
       DebugWriteLine("Device Capabilities:");
-      DebugWriteLine("NumTxPorts:     " + _numTxPorts.ToString());
-      DebugWriteLine("NumRxPorts:     " + structure.ReceivePorts.ToString());
-      DebugWriteLine("LearnPortMask:  " + _learnPortMask.ToString());
-      DebugWriteLine("ReceivePort:    " + _receivePort.ToString());
-      DebugWriteLine("LearnPort:      " + _learnPort.ToString());
-      DebugWriteLine("DetailsFlags:   " + structure.DetailsFlags.ToString());
+      DebugWriteLine("NumTxPorts:     {0}", _numTxPorts);
+      DebugWriteLine("NumRxPorts:     {0}", structure.ReceivePorts.ToInt32());
+      DebugWriteLine("LearnPortMask:  {0}", _learnPortMask);
+      DebugWriteLine("ReceivePort:    {0}", _receivePort);
+      DebugWriteLine("LearnPort:      {0}", _learnPort);
+      DebugWriteLine("DetailsFlags:   {0}", structure.DetailsFlags.ToInt32());
 #endif
     }
 
     void GetBlasters()
     {
-      int bytesReturned;
-
-      if (_numTxPorts == 0)
+      if (_numTxPorts <= 0)
         return;
 
-      _blasters = new bool[_numTxPorts];
-      for (int i = 0; i < _blasters.Length; i++)
-        _blasters[i] = false;
+      int bytesReturned;
 
-      uint data = 0;
+      AvailableBlasters structure = new AvailableBlasters();
 
-      IntPtr pointerToData = IntPtr.Zero;
+      IntPtr structPtr = IntPtr.Zero;
 
       try
       {
-        pointerToData = Marshal.AllocHGlobal(sizeof(uint));
+        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
 
-        Marshal.StructureToPtr(data, pointerToData, false);
+        Marshal.StructureToPtr(structure, structPtr, false);
 
-        IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, pointerToData, sizeof(uint), out bytesReturned);
+        IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
 
-        data = (uint)Marshal.PtrToStructure(pointerToData, typeof(uint));
+        structure = (AvailableBlasters)Marshal.PtrToStructure(structPtr, typeof(AvailableBlasters));
       }
       finally
       {
-        if (pointerToData != IntPtr.Zero)
-          Marshal.FreeHGlobal(pointerToData);
+        if (structPtr != IntPtr.Zero)
+          Marshal.FreeHGlobal(structPtr);
       }
 
+      int data = structure.Blasters.ToInt32();
+
+      _blasters = new bool[_numTxPorts];
       for (int j = 0; j < _blasters.Length; j++)
-        _blasters[j] = ((data & (((int)1) << j)) != 0);
+        _blasters[j] = ((data & (1 << j)) != 0);
 
 #if DEBUG
-      DebugWriteLine("BlastersMask:   " + data.ToString());
+      DebugWriteLine("BlastersMask:   {0}", data);
 #endif
     }
 
-    void TransmitIR(byte[] irData, int carrier, uint transmitPortMask)
+    void TransmitIR(byte[] irData, int carrier, int transmitPortMask)
     {
       int bytesReturned;
 
-      TransmitParams transmitParams = new TransmitParams();
-      transmitParams.TransmitPortMask = transmitPortMask;
+      TransmitParams transmitParams   = new TransmitParams();
+      transmitParams.TransmitPortMask = new IntPtr(transmitPortMask);
 
       if (carrier == IrCode.CarrierFrequencyUnknown)
         carrier = IrCode.CarrierFrequencyDefault;
 
-      if (IsPulseMode((uint)carrier))
+      if (IsPulseMode(carrier))
       {
-        transmitParams.Flags = TransmitFlags.PulseMode;
-        transmitParams.PulseSize = (uint)carrier;
+        transmitParams.Flags          = new IntPtr((int)TransmitFlags.PulseMode);
+        transmitParams.CarrierPeriod  = new IntPtr(GetCarrierPeriod(carrier));        
       }
       else
       {
-        //transmitParams.Flags = TransmitFlags.DCMode;
-        transmitParams.CarrierPeriod = GetCarrierPeriod((uint)carrier);
+        transmitParams.Flags          = new IntPtr((int)TransmitFlags.DCMode);
+        //transmitParams.PulseSize      = new IntPtr(carrier);
       }
 
-      TransmitChunk transmitChunk = new TransmitChunk();
-      transmitChunk.OffsetToNextChunk = 0;
-      transmitChunk.RepeatCount = 1;
-      transmitChunk.ByteCount = (uint)irData.Length;
+      TransmitChunk transmitChunk     = new TransmitChunk();
+      transmitChunk.OffsetToNextChunk = new IntPtr(0);
+      transmitChunk.RepeatCount       = new IntPtr(1);
+      transmitChunk.ByteCount         = new IntPtr(irData.Length);
 
       int bufferSize = irData.Length + Marshal.SizeOf(typeof(TransmitChunk)) + 8;
       byte[] buffer = new byte[bufferSize];
@@ -677,7 +736,7 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     /// <param name="code">IR Command data to send.</param>
     /// <param name="port">IR port to send to.</param>
-    public override void Send(IrCode code, uint port)
+    public override void Send(IrCode code, int port)
     {
 #if DEBUG
       DebugWriteLine("Send()");
@@ -789,8 +848,6 @@ namespace MicrosoftMceTransceiver
     void ReadThread()
     {
       int bytesRead;
-      TimeSpan sinceLastPacket;
-      DateTime lastPacketTime = DateTime.Now;
 
       IntPtr deviceBufferPtr  = IntPtr.Zero;
       IntPtr receiveParamsPtr = IntPtr.Zero;
@@ -803,7 +860,7 @@ namespace MicrosoftMceTransceiver
         receiveParamsPtr = Marshal.AllocHGlobal(receiveParamsSize);
 
         ReceiveParams receiveParams = new ReceiveParams();
-        receiveParams.ByteCount = DeviceBufferSize;
+        receiveParams.ByteCount = new IntPtr(DeviceBufferSize);
         Marshal.StructureToPtr(receiveParams, receiveParamsPtr, false);
 
         while (_readThreadMode != ReadThreadMode.Stop)
@@ -815,12 +872,6 @@ namespace MicrosoftMceTransceiver
             int dataSize = bytesRead;
 
             bytesRead -= Marshal.SizeOf(receiveParams);
-
-            sinceLastPacket = DateTime.Now.Subtract(lastPacketTime);
-            //if (sinceLastPacket.TotalMilliseconds >= PacketTimeout + 50)
-              //IrDecoder.DecodeIR(null, null, null, null);
-
-            lastPacketTime = DateTime.Now;
 
             byte[] packetBytes = new byte[bytesRead];
             byte[] dataBytes = new byte[dataSize];
@@ -846,9 +897,9 @@ namespace MicrosoftMceTransceiver
           {
             ReceiveParams receiveParams2 = (ReceiveParams)Marshal.PtrToStructure(receiveParamsPtr, typeof(ReceiveParams));
 
-            if (receiveParams2.DataEnd != 0 && receiveParams2.CarrierFrequency != 0)
+            if (receiveParams2.DataEnd.ToInt32() != 0)
             {
-              _learningCode.Carrier = (int)receiveParams2.CarrierFrequency;
+              _learningCode.Carrier = receiveParams2.CarrierFrequency.ToInt32();
               _readThreadMode = ReadThreadMode.LearningDone;
             }
           }
@@ -898,7 +949,7 @@ namespace MicrosoftMceTransceiver
       return rawData;
     }
 
-    static int FirstHighBit(uint mask)
+    static int FirstHighBit(int mask)
     {
       for (int i = 0; i < 32; i++)
         if ((mask & (1 << i)) != 0)
@@ -906,7 +957,7 @@ namespace MicrosoftMceTransceiver
 
       return -1;
     }
-    static int FirstLowBit(uint mask)
+    static int FirstLowBit(int mask)
     {
       for (int i = 0; i < 32; i++)
         if ((mask & (1 << i)) == 0)
@@ -915,17 +966,14 @@ namespace MicrosoftMceTransceiver
       return -1;
     }
 
-    static uint GetCarrierPeriod(uint carrier)
+    static int GetCarrierPeriod(int carrier)
     {
-      return (uint)(1000000 / carrier);
+      return 1000000 / carrier;
     }
 
-    static bool IsPulseMode(uint carrier)
+    static bool IsPulseMode(int carrier)
     {
-      if (carrier > 0 && carrier < 100)
-        return true;
-
-      return false;
+      return carrier > 100;
     }
 
     static int[] GetTimingDataFromPacket(byte[] packetBytes)

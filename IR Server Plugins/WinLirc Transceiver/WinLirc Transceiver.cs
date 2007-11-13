@@ -29,7 +29,7 @@ namespace WinLircTransceiver
 
     #region Variables
 
-    RemoteHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler;
     WinLircServer _server;
 
     IPAddress _serverIP;

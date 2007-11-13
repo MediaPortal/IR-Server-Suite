@@ -16,7 +16,7 @@ namespace Translator
     #region Variables
 
     string _name;
-    string _filename;
+    string _fileName;
     string _folder;
     string _arguments;
     bool _useShellExecute;
@@ -40,13 +40,13 @@ namespace Translator
     }
     
     /// <summary>
-    /// Program filename.
+    /// Program file name.
     /// </summary>
     [XmlAttribute]  
-    public string Filename
+    public string FileName
     {
-      get { return _filename; }
-      set { _filename = value; }
+      get { return _fileName; }
+      set { _fileName = value; }
     }
 
     /// <summary>
@@ -110,13 +110,12 @@ namespace Translator
     }
     
     /// <summary>
-    /// List of button mappings associated with this program.
+    /// Gets a list of button mappings associated with this program.
     /// </summary>
     [XmlArray]      
     public List<ButtonMapping> ButtonMappings
     {
       get { return _buttonMappings; }
-      set { _buttonMappings = value; }
     }
 
     #endregion Properties
@@ -129,7 +128,7 @@ namespace Translator
     public ProgramSettings()
     {
       _name             = "New Program";
-      _filename         = String.Empty;
+      _fileName         = String.Empty;
       _folder           = String.Empty;
       _arguments        = String.Empty;
       _useShellExecute  = false;
@@ -150,7 +149,7 @@ namespace Translator
     internal string LaunchCommand()
     {
       return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
-        _filename,
+        _fileName,
         _folder,
         _arguments,
         _windowState.ToString(),

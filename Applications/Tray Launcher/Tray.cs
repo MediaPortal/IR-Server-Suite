@@ -351,7 +351,7 @@ namespace TrayLauncher
     {
       IrssLog.Info("Remote Event: {0}", keyCode);
 
-      if (keyCode == _launchKeyCode)
+      if (keyCode.Equals(_launchKeyCode, StringComparison.Ordinal))
         ClickLaunch(null, null);
     }
 
@@ -413,7 +413,7 @@ namespace TrayLauncher
         {
           try
           {
-            if (Path.GetFileName(process.MainModule.ModuleName).Equals(Path.GetFileName(_programFile), StringComparison.InvariantCultureIgnoreCase))
+            if (Path.GetFileName(process.MainModule.ModuleName).Equals(Path.GetFileName(_programFile), StringComparison.OrdinalIgnoreCase))
             {
               IrssLog.Info("Program already running, attempting to give focus.");
 

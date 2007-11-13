@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio.cs" />
     <Compile Include="CDRom.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Forms\BlastCommand.cs">
@@ -146,6 +147,7 @@
     <Compile Include="IrssLog.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="Mouse.cs" />
+    <Compile Include="Network.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

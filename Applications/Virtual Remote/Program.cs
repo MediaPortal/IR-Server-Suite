@@ -95,7 +95,7 @@ namespace VirtualRemote
         {
           for (int index = 0; index < args.Length; index++)
           {
-            if (args[index].Equals("-host", StringComparison.InvariantCultureIgnoreCase))
+            if (args[index].Equals("-host", StringComparison.OrdinalIgnoreCase))
             {
               _serverHost = args[++index];
               continue;

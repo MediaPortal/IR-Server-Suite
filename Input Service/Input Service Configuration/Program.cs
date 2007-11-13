@@ -219,7 +219,7 @@ namespace Configuration
         ServiceController[] services = ServiceController.GetServices();
         foreach (ServiceController service in services)
         {
-          if (service.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
+          if (service.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase))
           {
             service.Stop();
             service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
@@ -312,7 +312,7 @@ namespace Configuration
         throw new FileNotFoundException("No available plugins found");
 
       foreach (IRServerPluginBase plugin in serverPlugins)
-        if (plugin.Name.Equals(pluginName, StringComparison.InvariantCultureIgnoreCase))
+        if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
           return plugin;
 
       return null;

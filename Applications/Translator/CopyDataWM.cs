@@ -30,9 +30,7 @@ namespace Translator
     /// <summary>
     /// Initializes a new instance of the <see cref="CopyDataWM"/> class.
     /// </summary>
-    public CopyDataWM()
-    {
-    }
+    public CopyDataWM() { }
 
     /// <summary>
     /// Releases unmanaged resources and performs other cleanup operations before the

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Permissions;
 using System.Text;
 
 namespace IrssUtils
@@ -13,6 +11,7 @@ namespace IrssUtils
   /// <summary>
   /// Win32 native method class.
   /// </summary>
+  [CLSCompliant(false)]
   public static class Win32
   {
 
@@ -21,19 +20,32 @@ namespace IrssUtils
     /// <summary>
     /// Maximum length of unmanaged Windows Path strings.
     /// </summary>
-    private const int MAX_PATH = 260;
+    const int MAX_PATH = 260;
 
     /// <summary>
     /// Maximum length of unmanaged Typename.
     /// </summary>
-    private const int MAX_TYPE = 80;
+    const int MAX_TYPE = 80;
+
+
+    const int GCL_HICON   = -14;
+    const int GCL_HICONSM = -34;
+
+
+    const int ICON_SMALL  = 0;
+    const int ICON_BIG    = 1;
+
+    const int WPF_RESTORETOMAXIMIZED = 2;
+
+    const int MINIMIZE_ALL = 419;
+    const int MINIMIZE_ALL_UNDO = 416;
 
     #endregion Constants
 
     #region Enumerations
 
     [Flags]
-    enum SHGFI : int
+    enum SHGFI
     {
       /// <summary>get icon</summary>
       Icon = 0x000000100,
@@ -1321,6 +1333,339 @@ namespace IrssUtils
       ForceIfHung = 0x10,
     }
 
+    /// <summary>
+    /// Enumeration of the different ways of showing a window using ShowWindow.
+    /// </summary>
+    enum WindowShowStyle
+    {
+      /// <summary>Hides the window and activates another window.</summary>
+      /// <remarks>See SW_HIDE</remarks>
+      Hide = 0,
+      /// <summary>Activates and displays a window. If the window is minimized
+      /// or maximized, the system restores it to its original size and
+      /// position. An application should specify this flag when displaying
+      /// the window for the first time.</summary>
+      /// <remarks>See SW_SHOWNORMAL</remarks>
+      ShowNormal = 1,
+      /// <summary>Activates the window and displays it as a minimized window.</summary>
+      /// <remarks>See SW_SHOWMINIMIZED</remarks>
+      ShowMinimized = 2,
+      /// <summary>Activates the window and displays it as a maximized window.</summary>
+      /// <remarks>See SW_SHOWMAXIMIZED</remarks>
+      ShowMaximized = 3,
+      /// <summary>Maximizes the specified window.</summary>
+      /// <remarks>See SW_MAXIMIZE</remarks>
+      Maximize = 3,
+      /// <summary>Displays a window in its most recent size and position.
+      /// This value is similar to "ShowNormal", except the window is not
+      /// actived.</summary>
+      /// <remarks>See SW_SHOWNOACTIVATE</remarks>
+      ShowNormalNoActivate = 4,
+      /// <summary>Activates the window and displays it in its current size
+      /// and position.</summary>
+      /// <remarks>See SW_SHOW</remarks>
+      Show = 5,
+      /// <summary>Minimizes the specified window and activates the next
+      /// top-level window in the Z order.</summary>
+      /// <remarks>See SW_MINIMIZE</remarks>
+      Minimize = 6,
+      /// <summary>Displays the window as a minimized window. This value is
+      /// similar to "ShowMinimized", except the window is not activated.</summary>
+      /// <remarks>See SW_SHOWMINNOACTIVE</remarks>
+      ShowMinNoActivate = 7,
+      /// <summary>Displays the window in its current size and position. This
+      /// value is similar to "Show", except the window is not activated.</summary>
+      /// <remarks>See SW_SHOWNA</remarks>
+      ShowNoActivate = 8,
+      /// <summary>Activates and displays the window. If the window is
+      /// minimized or maximized, the system restores it to its original size
+      /// and position. An application should specify this flag when restoring
+      /// a minimized window.</summary>
+      /// <remarks>See SW_RESTORE</remarks>
+      Restore = 9,
+      /// <summary>Sets the show state based on the SW_ value specified in the
+      /// STARTUPINFO structure passed to the CreateProcess function by the
+      /// program that started the application.</summary>
+      /// <remarks>See SW_SHOWDEFAULT</remarks>
+      ShowDefault = 10,
+      /// <summary>Windows 2000/XP: Minimizes a window, even if the thread
+      /// that owns the window is hung. This flag should only be used when
+      /// minimizing windows from a different thread.</summary>
+      /// <remarks>See SW_FORCEMINIMIZE</remarks>
+      ForceMinimized = 11
+    }
+
+    /// <summary>
+    /// Win32 Window Styles.
+    /// </summary>
+    [Flags]
+    public enum WindowStyles : uint
+    {
+      /// <summary>
+      /// Overlapped.
+      /// </summary>
+      WS_OVERLAPPED       = 0x00000000,
+      /// <summary>
+      /// Popup.
+      /// </summary>
+      WS_POPUP            = 0x80000000,
+      /// <summary>
+      /// Child.
+      /// </summary>
+      WS_CHILD            = 0x40000000,
+      /// <summary>
+      /// Minimize.
+      /// </summary>
+      WS_MINIMIZE         = 0x20000000,
+      /// <summary>
+      /// Visible.
+      /// </summary>
+      WS_VISIBLE          = 0x10000000,
+      /// <summary>
+      /// Disabled.
+      /// </summary>
+      WS_DISABLED         = 0x08000000,
+      /// <summary>
+      /// Clip Siblings.
+      /// </summary>
+      WS_CLIPSIBLINGS     = 0x04000000,
+      /// <summary>
+      /// Clip Children.
+      /// </summary>
+      WS_CLIPCHILDREN     = 0x02000000,
+      /// <summary>
+      /// Maximize.
+      /// </summary>
+      WS_MAXIMIZE         = 0x01000000,
+      /// <summary>
+      /// Border.
+      /// </summary>
+      WS_BORDER           = 0x00800000,
+      /// <summary>
+      /// Dialog Frame.
+      /// </summary>
+      WS_DLGFRAME         = 0x00400000,
+      /// <summary>
+      /// Vertical Scroll.
+      /// </summary>
+      WS_VSCROLL          = 0x00200000,
+      /// <summary>
+      /// Horizontal Scroll.
+      /// </summary>
+      WS_HSCROLL          = 0x00100000,
+      /// <summary>
+      /// System Menu.
+      /// </summary>
+      WS_SYSMENU          = 0x00080000,
+      /// <summary>
+      /// Thick Frame.
+      /// </summary>
+      WS_THICKFRAME       = 0x00040000,
+      /// <summary>
+      /// Group.
+      /// </summary>
+      WS_GROUP            = 0x00020000,
+      /// <summary>
+      /// Tab Stop.
+      /// </summary>
+      WS_TABSTOP          = 0x00010000,
+
+      /// <summary>
+      /// Minimize Box.
+      /// </summary>
+      WS_MINIMIZEBOX      = 0x00020000,
+      /// <summary>
+      /// Maximize Box.
+      /// </summary>
+      WS_MAXIMIZEBOX      = 0x00010000,
+
+      /// <summary>
+      /// Caption (WS_BORDER | WS_DLGFRAME).
+      /// </summary>
+      WS_CAPTION          = WS_BORDER | WS_DLGFRAME,
+      /// <summary>
+      /// Tiled (WS_OVERLAPPED).
+      /// </summary>
+      WS_TILED            = WS_OVERLAPPED,
+      /// <summary>
+      /// Iconic (WS_MINIMIZE).
+      /// </summary>
+      WS_ICONIC           = WS_MINIMIZE,
+      /// <summary>
+      /// Size Box (WS_THICKFRAME).
+      /// </summary>
+      WS_SIZEBOX          = WS_THICKFRAME,
+      /// <summary>
+      /// Tiled Window (WS_OVERLAPPEDWINDOW).
+      /// </summary>
+      WS_TILEDWINDOW      = WS_OVERLAPPEDWINDOW,
+
+      /// <summary>
+      /// Overlapped Window (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX).
+      /// </summary>
+      WS_OVERLAPPEDWINDOW = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
+      /// <summary>
+      /// Popup Window (WS_POPUP | WS_BORDER | WS_SYSMENU).
+      /// </summary>
+      WS_POPUPWINDOW      = WS_POPUP | WS_BORDER | WS_SYSMENU,
+      /// <summary>
+      /// Child Window (WS_CHILD).
+      /// </summary>
+      WS_CHILDWINDOW      = WS_CHILD,
+    }
+
+    /// <summary>
+    /// Win32 Window Extended Styles.
+    /// </summary>
+    [Flags]
+    public enum WindowExStyles
+    {
+      /// <summary>
+      /// Specifies that a window created with this style accepts drag-drop files.
+      /// </summary>
+      WS_EX_ACCEPTFILES = 0x00000010,
+      /// <summary>
+      /// Forces a top-level window onto the taskbar when the window is visible.
+      /// </summary>
+      WS_EX_APPWINDOW = 0x00040000,
+      /// <summary>
+      /// Specifies that a window has a border with a sunken edge.
+      /// </summary>
+      WS_EX_CLIENTEDGE = 0x00000200,
+      /// <summary>
+      /// Windows XP: Paints all descendants of a window in bottom-to-top painting order using double-buffering. For more information, see Remarks. This cannot be used if the window has a class style of either CS_OWNDC or CS_CLASSDC.
+      /// </summary>
+      WS_EX_COMPOSITED = 0x02000000,
+      /// <summary>
+      /// Includes a question mark in the title bar of the window. When the user clicks the question mark, the cursor changes to a question mark with a pointer. If the user then clicks a child window, the child receives a WM_HELP message. The child window should pass the message to the parent window procedure, which should call the WinHelp function using the HELP_WM_HELP command. The Help application displays a pop-up window that typically contains help for the child window.
+      /// WS_EX_CONTEXTHELP cannot be used with the WS_MAXIMIZEBOX or WS_MINIMIZEBOX styles.
+      /// </summary>
+      WS_EX_CONTEXTHELP = 0x00000400,
+      /// <summary>
+      /// The window itself contains child windows that should take part in dialog box navigation. If this style is specified, the dialog manager recurses into children of this window when performing navigation operations such as handling the TAB key, an arrow key, or a keyboard mnemonic.
+      /// </summary>
+      WS_EX_CONTROLPARENT = 0x00010000,
+      /// <summary>
+      /// Creates a window that has a double border; the window can, optionally, be created with a title bar by specifying the WS_CAPTION style in the dwStyle parameter.
+      /// </summary>
+      WS_EX_DLGMODALFRAME = 0x00000001,
+      /// <summary>
+      /// Windows 2000/XP: Creates a layered window. Note that this cannot be used for child windows. Also, this cannot be used if the window has a class style of either CS_OWNDC or CS_CLASSDC.
+      /// </summary>
+      WS_EX_LAYERED = 0x00080000,
+      /// <summary>
+      /// Arabic and Hebrew versions of Windows 98/Me, Windows 2000/XP: Creates a window whose horizontal origin is on the right edge. Increasing horizontal values advance to the left.
+      /// </summary>
+      WS_EX_LAYOUTRTL = 0x00400000,
+      /// <summary>
+      /// Creates a window that has generic left-aligned properties. This is the default.
+      /// </summary>
+      WS_EX_LEFT = 0x00000000,
+      /// <summary>
+      /// If the shell language is Hebrew, Arabic, or another language that supports reading order alignment, the vertical scroll bar (if present) is to the left of the client area. For other languages, the style is ignored.
+      /// </summary>
+      WS_EX_LEFTSCROLLBAR = 0x00004000,
+      /// <summary>
+      /// The window text is displayed using left-to-right reading-order properties. This is the default.
+      /// </summary>
+      WS_EX_LTRREADING = 0x00000000,
+      /// <summary>
+      /// Creates a multiple-document interface (MDI) child window.
+      /// </summary>
+      WS_EX_MDICHILD = 0x00000040,
+      /// <summary>
+      /// Windows 2000/XP: A top-level window created with this style does not become the foreground window when the user clicks it. The system does not bring this window to the foreground when the user minimizes or closes the foreground window.
+      /// To activate the window, use the SetActiveWindow or SetForegroundWindow function.
+      /// The window does not appear on the taskbar by default. To force the window to appear on the taskbar, use the WS_EX_APPWINDOW style.
+      /// </summary>
+      WS_EX_NOACTIVATE = 0x08000000,
+      /// <summary>
+      /// Windows 2000/XP: A window created with this style does not pass its window layout to its child windows.
+      /// </summary>
+      WS_EX_NOINHERITLAYOUT = 0x00100000,
+      /// <summary>
+      /// Specifies that a child window created with this style does not send the WM_PARENTNOTIFY message to its parent window when it is created or destroyed.
+      /// </summary>
+      WS_EX_NOPARENTNOTIFY = 0x00000004,
+      /// <summary>
+      /// Combines the WS_EX_CLIENTEDGE and WS_EX_WINDOWEDGE styles.
+      /// </summary>
+      WS_EX_OVERLAPPEDWINDOW = WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE,
+      /// <summary>
+      /// Combines the WS_EX_WINDOWEDGE, WS_EX_TOOLWINDOW, and WS_EX_TOPMOST styles.
+      /// </summary>
+      WS_EX_PALETTEWINDOW = WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST,
+      /// <summary>
+      /// The window has generic "right-aligned" properties. This depends on the window class. This style has an effect only if the shell language is Hebrew, Arabic, or another language that supports reading-order alignment; otherwise, the style is ignored.
+      /// Using the WS_EX_RIGHT style for static or edit controls has the same effect as using the SS_RIGHT or ES_RIGHT style, respectively. Using this style with button controls has the same effect as using BS_RIGHT and BS_RIGHTBUTTON styles.
+      /// </summary>
+      WS_EX_RIGHT = 0x00001000,
+      /// <summary>
+      /// Vertical scroll bar (if present) is to the right of the client area. This is the default.
+      /// </summary>
+      WS_EX_RIGHTSCROLLBAR = 0x00000000,
+      /// <summary>
+      /// If the shell language is Hebrew, Arabic, or another language that supports reading-order alignment, the window text is displayed using right-to-left reading-order properties. For other languages, the style is ignored.
+      /// </summary>
+      WS_EX_RTLREADING = 0x00002000,
+      /// <summary>
+      /// Creates a window with a three-dimensional border style intended to be used for items that do not accept user input.
+      /// </summary>
+      WS_EX_STATICEDGE = 0x00020000,
+      /// <summary>
+      /// Creates a tool window; that is, a window intended to be used as a floating toolbar. A tool window has a title bar that is shorter than a normal title bar, and the window title is drawn using a smaller font. A tool window does not appear in the taskbar or in the dialog that appears when the user presses ALT+TAB. If a tool window has a system menu, its icon is not displayed on the title bar. However, you can display the system menu by right-clicking or by typing ALT+SPACE.
+      /// </summary>
+      WS_EX_TOOLWINDOW = 0x00000080,
+      /// <summary>
+      /// Specifies that a window created with this style should be placed above all non-topmost windows and should stay above them, even when the window is deactivated. To add or remove this style, use the SetWindowPos function.
+      /// </summary>
+      WS_EX_TOPMOST = 0x00000008,
+      /// <summary>
+      /// Specifies that a window created with this style should not be painted until siblings beneath the window (that were created by the same thread) have been painted. The window appears transparent because the bits of underlying sibling windows have already been painted.
+      /// To achieve transparency without these restrictions, use the SetWindowRgn function.
+      /// </summary>
+      WS_EX_TRANSPARENT = 0x00000020,
+      /// <summary>
+      /// Specifies that a window has a border with a raised edge.
+      /// </summary>
+      WS_EX_WINDOWEDGE = 0x00000100
+    }
+
+    /// <summary>
+    /// GWL.
+    /// </summary>
+    public enum GWL
+    {
+      /// <summary>
+      /// WndProc.
+      /// </summary>
+      GWL_WNDPROC     = (-4),
+      /// <summary>
+      /// HInstance.
+      /// </summary>
+      GWL_HINSTANCE   = (-6),
+      /// <summary>
+      /// hWnd Parent.
+      /// </summary>
+      GWL_HWNDPARENT  = (-8),
+      /// <summary>
+      /// Style.
+      /// </summary>
+      GWL_STYLE       = (-16),
+      /// <summary>
+      /// Extended Style.
+      /// </summary>
+      GWL_EXSTYLE     = (-20),
+      /// <summary>
+      /// User Data.
+      /// </summary>
+      GWL_USERDATA    = (-21),
+      /// <summary>
+      /// ID.
+      /// </summary>
+      GWL_ID          = (-12),
+    }
+
     #endregion Enumerations
 
     #region Structures
@@ -1351,14 +1696,53 @@ namespace IrssUtils
     [StructLayout(LayoutKind.Sequential)]
     public struct SHFILEINFO
     {
+      /// <summary>
+      /// hIcon;
+      /// </summary>
       public IntPtr hIcon;
+      /// <summary>
+      /// iIcon.
+      /// </summary>
       public IntPtr iIcon;
+      /// <summary>
+      /// Attributes.
+      /// </summary>
       public int dwAttributes;
+      /// <summary>
+      /// Display Name.
+      /// </summary>
       [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
       public string szDisplayName;
+      /// <summary>
+      /// Type Name.
+      /// </summary>
       [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
       public string szTypeName;
     };
+
+    private struct POINTAPI
+    {
+      public int x;
+      public int y;
+    }
+
+    private struct RECT
+    {
+      public int left;
+      public int top;
+      public int right;
+      public int bottom;
+    }
+
+    private struct WINDOWPLACEMENT
+    {
+      public int length;
+      public int flags;
+      public WindowShowStyle showCmd;
+      public POINTAPI ptMinPosition;
+      public POINTAPI ptMaxPosition;
+      public RECT rcNormalPosition;
+    }
 
     #endregion Structures
 
@@ -1376,8 +1760,23 @@ namespace IrssUtils
 
     #region Interop
 
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool GetWindowPlacement(
+      IntPtr hWnd,
+      ref WINDOWPLACEMENT lpwndpl);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool ShowWindow(
+      IntPtr hWnd,
+      WindowShowStyle style);
+
+    [DllImport("user32.dll")]
+    static extern IntPtr GetDesktopWindow();
+
     [DllImport("shell32.dll")]
-    private static extern IntPtr SHGetFileInfo(
+    static extern IntPtr SHGetFileInfo(
       string pszPath,
       uint dwFileAttributes,
       ref SHFILEINFO psfi,
@@ -1385,39 +1784,38 @@ namespace IrssUtils
       SHGFI uFlags);
 
     [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-    private static extern int ExtractIconEx(
+    static extern int ExtractIconEx(
         string lpszFile,
         int nIconIndex,
         IntPtr[] phIconLarge,
         IntPtr[] phIconSmall,
         int nIcons);
 
-    [DllImport("user32.dll", EntryPoint = "DestroyIcon", SetLastError = true)]
-    private static extern int DestroyIcon(
+    [DllImport("user32.dll")]
+    static extern int DestroyIcon(
       IntPtr hIcon);
 
     [DllImport("user32.dll")]
-    private static extern int EnumWindows(
+    static extern int EnumWindows(
       EnumWindowsProc ewp,
       IntPtr lParam);
 
     [DllImport("user32.dll")]
-    private static extern IntPtr GetForegroundWindow();
+    static extern IntPtr GetForegroundWindow();
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool ExitWindowsEx(
+    static extern bool ExitWindowsEx(
       ExitWindows flags,
       ShutdownReasons reasons);
 
-    [DllImport("user32.dll", SetLastError = true)]
-    private static extern IntPtr FindWindow(
+    [DllImport("user32.dll")]
+    static extern IntPtr FindWindow(
       string className,
       string windowName);
 
-
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    private static extern IntPtr SendMessageTimeout(
+    static extern IntPtr SendMessageTimeout(
       IntPtr hWnd,
       int msg,
       IntPtr wParam,
@@ -1426,110 +1824,137 @@ namespace IrssUtils
       int timeout,
       out IntPtr result);
 
-    //[DllImport("user32.dll", SetLastError = false)]
-    //private static extern IntPtr SendMessage(IntPtr windowHandle, int msg, IntPtr wordParam, IntPtr longParam);
+    //[DllImport("user32.dll")]
+    //static extern IntPtr SendMessage(IntPtr windowHandle, int msg, IntPtr wordParam, IntPtr longParam);
 
     //[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    //private static extern int RegisterWindowMessage(string lpString);
+    //static extern int RegisterWindowMessage(string lpString);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetFocus(IntPtr hWnd);
+    static extern bool SetFocus(IntPtr hWnd);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetForegroundWindow(IntPtr hWnd);
+    static extern bool SetForegroundWindow(IntPtr hWnd);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool BringWindowToTop(IntPtr hWnd);
+    static extern bool BringWindowToTop(IntPtr hWnd);
 
     //[DllImport("user32.dll")]
     //[return: MarshalAs(UnmanagedType.Bool)]
-    //private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+    //static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool AttachThreadInput(
+    static extern bool AttachThreadInput(
       int threadId,
       int threadIdTo,
       [MarshalAs(UnmanagedType.Bool)]
       bool attach);
 
-    //[DllImport("user32.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //private static extern bool IsWindowVisible(IntPtr hWnd);
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool IsWindowVisible(IntPtr hWnd);
 
-    //[DllImport("user32.dll")]
-    //[return: MarshalAs(UnmanagedType.Bool)]
-    //private static extern bool IsIconic(IntPtr hWnd);
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool IsIconic(IntPtr hWnd);
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    private static extern int GetWindowTextLength(IntPtr hWnd);
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    static extern int GetWindowTextLength(IntPtr hWnd);
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    private static extern int GetWindowText(
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    static extern int GetWindowText(
       IntPtr hWnd,
       StringBuilder lpString,
       int maxCount);
 
-    [DllImport("user32.dll", SetLastError = true)]
-    private static extern int GetWindowThreadProcessId(
+    [DllImport("user32.dll")]
+    static extern int GetWindowThreadProcessId(
       IntPtr hWnd,
       out int processId);
 
     [DllImport("kernel32.dll")]
-    private static extern int GetCurrentThreadId();
+    static extern int GetCurrentThreadId();
+    
+    [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+    static extern IntPtr GetWindowLongPtr32(
+      IntPtr hWnd,
+      GWL nIndex);
 
-    #region Net API
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
+    static extern IntPtr GetWindowLongPtr64(
+      IntPtr hWnd,
+      GWL nIndex);
 
-    [DllImport("netapi32.dll", CharSet = CharSet.Auto, SetLastError = true), SuppressUnmanagedCodeSecurityAttribute]
-    static extern int NetServerEnum(
-      string ServerName, // must be null
-      int Level,
-      ref IntPtr Buf,
-      int PrefMaxLen,
-      out int EntriesRead,
-      out int TotalEntries,
-      int ServerType,
-      string Domain, // null for login domain
-      out int ResumeHandle
-    );
+    [DllImport("user32.dll", EntryPoint = "GetClassLong")]
+    static extern uint GetClassLongPtr32(
+      IntPtr hWnd,
+      int nIndex);
 
-    [DllImport("netapi32.dll", SetLastError = true), SuppressUnmanagedCodeSecurityAttribute]
-    static extern int NetApiBufferFree(IntPtr pBuf);
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct _SERVER_INFO_100
-    {
-      public int sv100_platform_id;
-      [MarshalAs(UnmanagedType.LPWStr)]
-      public string sv100_name;
-    }
-
-    #endregion Net API
+    [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
+    static extern IntPtr GetClassLongPtr64(
+      IntPtr hWnd,
+      int nIndex);
 
     #endregion Interop
 
     #region Methods
 
+    /// <summary>
+    /// Gets the desktop window handle.
+    /// </summary>
+    /// <returns></returns>
+    public static IntPtr GetDesktopWindowHandle()
+    {
+      return GetDesktopWindow();
+    }
+
+    /// <summary>
+    /// Gets the icon for a supplied file.
+    /// </summary>
+    /// <param name="fileName">Name of the file.</param>
+    /// <returns>File icon.</returns>
     public static Icon GetIconFor(string fileName)
     {
-      IntPtr ptr;
       SHFILEINFO shinfo = new SHFILEINFO();
 
-      //Use this to get the large Icon
-      ptr = SHGetFileInfo(
-        fileName,
-        0,
-        ref shinfo,
-        (uint)Marshal.SizeOf(shinfo),
-        SHGFI.Icon | SHGFI.LargeIcon);
+      SHGetFileInfo(fileName, 0, ref shinfo, (uint)Marshal.SizeOf(shinfo), SHGFI.Icon | SHGFI.LargeIcon);
+
+      Icon icon = null;
 
       if (shinfo.hIcon != IntPtr.Zero)
-        return Icon.FromHandle(shinfo.hIcon);
-      else
-        return null;
+      {
+        icon = Icon.FromHandle(shinfo.hIcon);
+        //DestroyIcon(shinfo.hIcon);
+      }
+
+      return icon;
+    }
+
+    /// <summary>
+    /// Gets the window icon.
+    /// </summary>
+    /// <param name="handle">The window handle to get the icon for.</param>
+    /// <returns>Window icon.</returns>
+    public static Icon GetWindowIcon(IntPtr handle)
+    {
+      IntPtr icon = IntPtr.Zero;
+
+      SendMessageTimeout(handle, (int)WindowsMessage.WM_GETICON, new IntPtr(ICON_BIG), IntPtr.Zero, SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out icon);
+
+      if (icon == IntPtr.Zero)
+        icon = GetClassLongPtr(handle, GCL_HICON);
+
+      if (icon == IntPtr.Zero)
+        SendMessageTimeout(handle, (int)WindowsMessage.WM_QUERYDRAGICON, IntPtr.Zero, IntPtr.Zero, SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out icon);
+
+      if (icon != IntPtr.Zero)
+        return Icon.FromHandle(icon);
+
+      return null;
     }
 
     /// <summary>
@@ -1557,13 +1982,7 @@ namespace IrssUtils
           large = (Icon)Icon.FromHandle(hLarge[0]).Clone();
           small = (Icon)Icon.FromHandle(hSmall[0]).Clone();
           return true;
-        }
-        else
-          return false;
-      }
-      catch
-      {
-        return false;
+        }        
       }
       finally
       {
@@ -1575,6 +1994,8 @@ namespace IrssUtils
           if (ptr != IntPtr.Zero)
             DestroyIcon(ptr);
       }
+
+      return false;
     }
 
     /// <summary>
@@ -1584,7 +2005,8 @@ namespace IrssUtils
     /// <param name="msg">The message.</param>
     /// <param name="wParam">The wParam.</param>
     /// <param name="lParam">The lParam.</param>
-    public static void SendWindowsMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
+    /// <returns>Result of message.</returns>
+    public static IntPtr SendWindowsMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
     {
       IntPtr result = IntPtr.Zero;
       
@@ -1593,6 +2015,8 @@ namespace IrssUtils
       
       if (result == IntPtr.Zero && lastError != 0)
         throw new Win32Exception(lastError);
+
+      return result;
     }
 
     /// <summary>
@@ -1602,9 +2026,10 @@ namespace IrssUtils
     /// <param name="msg">The message.</param>
     /// <param name="wParam">The wParam.</param>
     /// <param name="lParam">The lParam.</param>
-    public static void SendWindowsMessage(IntPtr hWnd, int msg, int wParam, int lParam)
+    /// <returns>Result of message.</returns>
+    public static IntPtr SendWindowsMessage(IntPtr hWnd, int msg, int wParam, int lParam)
     {
-      SendWindowsMessage(hWnd, msg, new IntPtr(wParam), new IntPtr(lParam));
+      return SendWindowsMessage(hWnd, msg, new IntPtr(wParam), new IntPtr(lParam));
     }
 
     /// <summary>
@@ -1648,13 +2073,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(className))
         throw new ArgumentNullException("className");
 
-      IntPtr window = FindWindow(className, null);
-      int lastError = Marshal.GetLastWin32Error();
-
-      if (window == IntPtr.Zero && lastError != 0)
-        throw new Win32Exception(lastError);
-
-      return window;
+      return FindWindow(className, null);
     }
 
     /// <summary>
@@ -1667,13 +2086,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(windowTitle))
         throw new ArgumentNullException("windowTitle");
 
-      IntPtr window = FindWindow(null, windowTitle);
-      int lastError = Marshal.GetLastWin32Error();
-
-      if (window == IntPtr.Zero && lastError != 0)
-        throw new Win32Exception(lastError);
-
-      return window;
+      return FindWindow(null, windowTitle);
     }
 
     /// <summary>
@@ -1684,18 +2097,12 @@ namespace IrssUtils
     public static string GetWindowTitle(IntPtr hWnd)
     {
       int length = GetWindowTextLength(hWnd);
-      int lastError = Marshal.GetLastWin32Error();
-
-      if (lastError != 0)
-        throw new Win32Exception(lastError);
+      if (length == 0)
+        return null;
       
       StringBuilder windowTitle = new StringBuilder(length + 1);
-      
-      GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
-      lastError = Marshal.GetLastWin32Error();
 
-      if (lastError != 0)
-        throw new Win32Exception(lastError);
+      GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
 
       return windowTitle.ToString();
     }
@@ -1713,7 +2120,7 @@ namespace IrssUtils
       if (hWnd == fgWindow || SetForegroundWindow(hWnd))
         return true;
 
-      if (force == false)
+      if (!force)
         return false;
 
       if (fgWindow == IntPtr.Zero)
@@ -1760,81 +2167,152 @@ namespace IrssUtils
     }
 
     /// <summary>
+    /// Gets the process ID of a given window.
+    /// </summary>
+    /// <param name="handle">The window handle.</param>
+    /// <returns>Process ID.</returns>
+    public static int GetWindowPID(IntPtr handle)
+    {
+      int pid = -1;
+      GetWindowThreadProcessId(handle, out pid);
+
+      return pid;
+    }
+
+    /// <summary>
+    /// Activates the window by handle.
+    /// </summary>
+    /// <param name="hWnd">The handle to the window to activate.</param>
+    public static void ActivateWindowByHandle(IntPtr hWnd)
+    {
+      WINDOWPLACEMENT windowPlacement = new WINDOWPLACEMENT();
+      windowPlacement.length = Marshal.SizeOf(windowPlacement);
+      GetWindowPlacement(hWnd, ref windowPlacement);
+
+      switch (windowPlacement.showCmd)
+      {
+        case WindowShowStyle.Hide:
+          ShowWindow(hWnd, WindowShowStyle.Restore);
+          break;
+
+        case WindowShowStyle.ShowMinimized:
+          if (windowPlacement.flags == WPF_RESTORETOMAXIMIZED)
+            ShowWindow(hWnd, WindowShowStyle.ShowMaximized);
+          else
+            ShowWindow(hWnd, WindowShowStyle.ShowNormal);
+          break;
+
+        default:
+          SetForegroundWindow(hWnd, true);
+          break;
+      }
+    }
+
+    /// <summary>
+    /// Gets a window long pointer.
+    /// </summary>
+    /// <param name="hWnd">The window handle.</param>
+    /// <param name="nIndex">Index of the data to retreive.</param>
+    /// <returns>IntPtr of retreived data.</returns>
+    public static IntPtr GetWindowLongPtr(IntPtr hWnd, GWL nIndex)
+    {
+      if (IntPtr.Size == 8)
+        return GetWindowLongPtr64(hWnd, nIndex);
+      else
+        return GetWindowLongPtr32(hWnd, nIndex);
+    }
+
+    /// <summary>
+    /// Gets a class long pointer.
+    /// </summary>
+    /// <param name="hWnd">The window handle.</param>
+    /// <param name="nIndex">Index of the data to retreive.</param>
+    /// <returns>IntPtr of retreived data.</returns>
+    public static IntPtr GetClassLongPtr(IntPtr hWnd, int nIndex)
+    {
+      if (IntPtr.Size == 8)
+        return GetClassLongPtr64(hWnd, nIndex);
+      else
+        return new IntPtr(GetClassLongPtr32(hWnd, nIndex));
+    }
+
+    /// <summary>
+    /// Show the desktop.
+    /// </summary>
+    public static void ShowDesktop()
+    {
+      IntPtr trayWnd = FindWindow("Shell_TrayWnd", null);
+
+      if (trayWnd == IntPtr.Zero)
+        return;
+
+      IntPtr result;
+      SendMessageTimeout(trayWnd, (int)WindowsMessage.WM_COMMAND, new IntPtr(MINIMIZE_ALL), IntPtr.Zero, SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
+    }
+
+
+    /// <summary>
     /// Given a 32-bit integer this method returns the High Word (upper 16 bits).
     /// </summary>
-    /// <param name="n">32-bit integer.</param>
+    /// <param name="dWord">32-bit integer.</param>
     /// <returns>Upper 16 bits or source 32-bit integer.</returns>
-    public static Int16 HighWord(Int32 n)
+    public static Int16 HighWord(Int32 dWord)
     {
-      return (Int16)((n >> 16) & 0xffff);
+      return (Int16)((dWord >> 16) & 0xffff);
     }
 
     /// <summary>
     /// Given a 32-bit integer this method returns the Low Word (lower 16 bits).
     /// </summary>
-    /// <param name="n">32-bit integer.</param>
+    /// <param name="dWord">32-bit integer.</param>
     /// <returns>Lower 16 bits or source 32-bit integer.</returns>
-    public static Int16 LowWord(Int32 n)
+    public static Int16 LowWord(Int32 dWord)
     {
-      return (Int16)(n & 0xffff);
+      return (Int16)(dWord & 0xffff);
     }
 
     /// <summary>
-    /// Get a list of all computer names on the LAN, except for the local host.
+    /// Given a 16-bit integer this method returns the High Byte (upper 8 bits).
     /// </summary>
-    /// <returns>List of LAN computer names.</returns>
-    [EnvironmentPermission(SecurityAction.Demand, Read = "COMPUTERNAME")]
-    public static string[] GetNetworkComputers(bool includeLocalMachine)
+    /// <param name="word">16-bit integer.</param>
+    /// <returns>Upper 8 bits or source 16-bit integer.</returns>
+    public static Byte HighByte(Int16 word)
     {
-      try
-      {
-        List<string> networkComputers = new List<string>();
-
-        const int MAX_PREFERRED_LENGTH = -1;
-
-        int SV_TYPE_WORKSTATION = 1;
-        //int SV_TYPE_SERVER = 2;
-        IntPtr buffer = IntPtr.Zero;
-        IntPtr tmpBuffer = IntPtr.Zero;
-        int entriesRead = 0;
-        int totalEntries = 0;
-        int resHandle = 0;
-        int sizeofINFO = Marshal.SizeOf(typeof(_SERVER_INFO_100));
-
-        int ret = NetServerEnum(
-          null,
-          100,
-          ref buffer,
-          MAX_PREFERRED_LENGTH,
-          out entriesRead,
-          out totalEntries,
-          SV_TYPE_WORKSTATION, //  | SV_TYPE_SERVER
-          null,
-          out resHandle);
-
-        if (ret == 0)
-        {
-          for (int i = 0; i < totalEntries; i++)
-          {
-            tmpBuffer = new IntPtr((int)buffer + (i * sizeofINFO));
-            _SERVER_INFO_100 svrInfo = (_SERVER_INFO_100)Marshal.PtrToStructure(tmpBuffer, typeof(_SERVER_INFO_100));
-
-            if (includeLocalMachine || !svrInfo.sv100_name.Equals(Environment.MachineName, StringComparison.InvariantCultureIgnoreCase))
-              networkComputers.Add(svrInfo.sv100_name);
-          }
-        }
-
-        NetApiBufferFree(buffer);
-
-        if (networkComputers.Count > 0)
-          return networkComputers.ToArray();
-      }
-      catch
-      {
-      }
-      
-      return null;
+      return (Byte)((word >> 8) & 0xff);
     }
+
+    /// <summary>
+    /// Given a 16-bit integer this method returns the Low Byte (lower 8 bits).
+    /// </summary>
+    /// <param name="word">16-bit integer.</param>
+    /// <returns>Lower 8 bits or source 16-bit integer.</returns>
+    public static Byte LowByte(Int16 word)
+    {
+      return (Byte)(word & 0xff);
+    }
+
+    /// <summary>
+    /// Check one value for the presence of a given bit-mask.
+    /// </summary>
+    /// <param name="check">Value to check.</param>
+    /// <param name="mask">Bit-Mask to compare with.</param>
+    /// <returns>true if the bit-mask is satisfied, otherwise false.</returns>
+    public static bool CheckMask(byte check, byte mask)
+    {
+      return (check & mask) == mask ? true : false;
+    }
+
+    /// <summary>
+    /// Check one value for the presence of a given bit-mask.
+    /// </summary>
+    /// <param name="check">Value to check.</param>
+    /// <param name="mask">Bit-Mask to compare with.</param>
+    /// <returns>true if the bit-mask is satisfied, otherwise false.</returns>
+    public static bool CheckMask(int check, int mask)
+    {
+      return (check & mask) == mask ? true : false;
+    }
+
 
     /// <summary>
     /// Get an IntPtr pointing to any object.
@@ -1848,33 +2326,6 @@ namespace IrssUtils
       handle.Free();
       return ptr;
     }
-
-    /*
-    public static void ActivateWindowByHandle(IntPtr hWnd)
-    {
-      WindowPlacement windowPlacement;
-      GetWindowPlacement(hWnd, out windowPlacement);
-
-      switch (windowPlacement.showCmd)
-      {
-        case SW_HIDE:           //Window is hidden
-          ShowWindow(hWnd, SW_RESTORE);
-          break;
-        case SW_SHOWMINIMIZED:  //Window is minimized
-          // if the window is minimized, then we need to restore it to its 
-          // previous size. we also take into account whether it was 
-          // previously maximized. 
-          int showCmd = (windowPlacement.flags == WPF_RESTORETOMAXIMIZED) ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL;
-          ShowWindow(hWnd, showCmd);
-          break;
-        default:
-          // if it's not minimized, then we just call SetForegroundWindow to 
-          // bring it to the front. 
-          SetForegroundWindow(hWnd);
-          break;
-      }
-    }
-    */
 
     #endregion Methods
 

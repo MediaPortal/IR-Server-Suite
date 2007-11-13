@@ -213,7 +213,7 @@ namespace TvEngine
 
     public void SetToXml(string xmlFile)
     {
-      if (xmlFile == "Clear all")
+      if (xmlFile.Equals("Clear all", StringComparison.OrdinalIgnoreCase))
       {
         foreach (ListViewItem item in listViewExternalCommands.Items)
           item.SubItems[1].Text = String.Empty;
@@ -411,7 +411,7 @@ namespace TvEngine
         string selected = comboBoxCommands.SelectedItem as string;
         string commandString;
 
-        if (selected == Common.UITextRun)
+        if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
         {
           ExternalProgram externalProgram = new ExternalProgram(parameterInfo);
 
@@ -420,7 +420,7 @@ namespace TvEngine
 
           commandString = Common.CmdPrefixRun + externalProgram.CommandString;
         }
-        else if (selected == Common.UITextSerial)
+        else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
         {
           SerialCommand serialCommand = new SerialCommand(parameterInfo);
 
@@ -429,7 +429,7 @@ namespace TvEngine
 
           commandString = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
-        else if (selected == Common.UITextWindowMsg)
+        else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           MessageCommand messageCommand = new MessageCommand();
 
@@ -438,7 +438,7 @@ namespace TvEngine
 
           commandString = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
         }
-        else if (selected == Common.UITextKeys)
+        else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
         {
           KeysCommand keysCommand = new KeysCommand();
 
@@ -447,7 +447,7 @@ namespace TvEngine
 
           commandString = Common.CmdPrefixKeys + keysCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixBlast))
+        else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           BlastCommand blastCommand = new BlastCommand(
             new BlastIrDelegate(TV3BlasterPlugin.BlastIR), 
@@ -460,7 +460,7 @@ namespace TvEngine
 
           commandString = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixMacro))
+        else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
           commandString = selected;
         }

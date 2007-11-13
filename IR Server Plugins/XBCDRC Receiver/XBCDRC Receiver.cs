@@ -25,15 +25,15 @@ namespace XBCDRCReceiver
 
     #region Variables
 
-    RemoteHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler;
     FileStream _deviceStream;
     byte[] _deviceBuffer;
 
-    int _lastPacketID       = 0;
+    int _lastPacketID;
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
 
-    bool _disposed = false;
+    bool _disposed;
 
     #endregion Variables
 
@@ -107,6 +107,8 @@ namespace XBCDRCReceiver
     [DllImport("hid")]
     static extern void HidD_GetHidGuid(
       ref Guid guid);
+
+    // TODO: SetLastError?
 
     [DllImport("setupapi", CharSet = CharSet.Auto)]
     static extern IntPtr SetupDiGetClassDevs(
@@ -265,7 +267,7 @@ namespace XBCDRCReceiver
       HidD_GetHidGuid(ref guid);
 
       string devicePath = FindDevice(guid);
-      if (devicePath == null)
+      if (String.IsNullOrEmpty(devicePath))
         return false;
 
       SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
@@ -351,7 +353,7 @@ namespace XBCDRCReceiver
         DeviceInfoData deviceInfoData = new DeviceInfoData();
         deviceInfoData.Size = Marshal.SizeOf(deviceInfoData);
 
-        if (SetupDiEnumDeviceInfo(handle, deviceIndex, ref deviceInfoData) == false)
+        if (!SetupDiEnumDeviceInfo(handle, deviceIndex, ref deviceInfoData))
         {
           // out of devices or do we have an error?
           lastError = Marshal.GetLastWin32Error();
@@ -368,7 +370,7 @@ namespace XBCDRCReceiver
         DeviceInterfaceData deviceInterfaceData = new DeviceInterfaceData();
         deviceInterfaceData.Size = Marshal.SizeOf(deviceInterfaceData);
 
-        if (SetupDiEnumDeviceInterfaces(handle, ref deviceInfoData, ref classGuid, 0, ref deviceInterfaceData) == false)
+        if (!SetupDiEnumDeviceInterfaces(handle, ref deviceInfoData, ref classGuid, 0, ref deviceInterfaceData))
         {
           SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -376,7 +378,7 @@ namespace XBCDRCReceiver
 
         uint cbData = 0;
 
-        if (SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) == false && cbData == 0)
+        if (!SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) && cbData == 0)
         {
           SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -385,7 +387,7 @@ namespace XBCDRCReceiver
         DeviceInterfaceDetailData deviceInterfaceDetailData = new DeviceInterfaceDetailData();
         deviceInterfaceDetailData.Size = 5;
 
-        if (SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData, IntPtr.Zero, IntPtr.Zero) == false)
+        if (!SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData, IntPtr.Zero, IntPtr.Zero))
         {
           SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());

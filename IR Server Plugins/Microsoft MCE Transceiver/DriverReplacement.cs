@@ -191,7 +191,7 @@ namespace MicrosoftMceTransceiver
     public DriverReplacement(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
       : base(deviceGuid, devicePath, remoteCallback, keyboardCallback, mouseCallback)
     {
-      if (devicePath.IndexOf(VidSMK, StringComparison.InvariantCultureIgnoreCase) != -1 || devicePath.IndexOf(VidTopseed, StringComparison.InvariantCultureIgnoreCase) != -1)
+      if (devicePath.IndexOf(VidSMK, StringComparison.OrdinalIgnoreCase) != -1 || devicePath.IndexOf(VidTopseed, StringComparison.OrdinalIgnoreCase) != -1)
         _deviceType = DeviceType.SmkTopseed;
       else
         _deviceType = DeviceType.Microsoft;
@@ -356,7 +356,7 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     /// <param name="code">IR Command data to send.</param>
     /// <param name="port">IR port to send to.</param>
-    public override void Send(IrCode code, uint port)
+    public override void Send(IrCode code, int port)
     {
 #if DEBUG
       DebugWriteLine("Send()");
@@ -409,7 +409,7 @@ namespace MicrosoftMceTransceiver
       {
         carrier = IrCode.CarrierFrequencyDefault;
 #if DEBUG
-        DebugWriteLine(String.Format("CarrierPacket(): No carrier frequency specificied, using default ({0})", carrier));
+        DebugWriteLine("CarrierPacket(): No carrier frequency specificied, using default ({0})", carrier);
 #endif
       }
 
@@ -444,7 +444,7 @@ namespace MicrosoftMceTransceiver
         bool pulse = (time > 0);
 
 #if DEBUG
-        DebugWrite(String.Format("{0}{1}, ", pulse ? '+' : '-', duration * 50));
+        DebugWrite("{0}{1}, ", pulse ? '+' : '-', duration * 50);
 #endif
 
         while (duration > 0x7F)
@@ -603,11 +603,7 @@ namespace MicrosoftMceTransceiver
     void ReadThread()
     {
       int bytesRead;
-      TimeSpan sinceLastPacket;
-      DateTime lastPacketTime = DateTime.Now;
-
       byte[] packetBytes;
-
       int lastError;
 
       NativeOverlapped lpOverlapped = new NativeOverlapped();
@@ -674,12 +670,6 @@ namespace MicrosoftMceTransceiver
 
           if (bytesRead == 0)
             continue;
-
-          sinceLastPacket = DateTime.Now.Subtract(lastPacketTime);
-          //if (sinceLastPacket.TotalMilliseconds >= PacketTimeout + 50)
-            //IrDecoder.DecodeIR(null, null, null, null);
-
-          lastPacketTime = DateTime.Now;
 
           packetBytes = new byte[bytesRead];
           Marshal.Copy(deviceBufferPtr, packetBytes, 0, bytesRead);

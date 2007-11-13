@@ -46,7 +46,6 @@ namespace Translator
     public List<ButtonMapping> SystemWideMappings
     {
       get { return _systemWideMappings; }
-      set { _systemWideMappings = value; }
     }
 
     /// <summary>
@@ -56,7 +55,6 @@ namespace Translator
     public List<ProgramSettings> Programs
     {
       get { return _programSettings; }
-      set { _programSettings = value; }
     }
 
     /// <summary>
@@ -66,7 +64,6 @@ namespace Translator
     public List<MappedEvent> Events
     {
       get { return _mappedEvents; }
-      set { _mappedEvents = value; }
     }
 
     #endregion Properties

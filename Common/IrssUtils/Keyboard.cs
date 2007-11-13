@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace IrssUtils
@@ -12,25 +15,88 @@ namespace IrssUtils
   public static class Keyboard
   {
 
+    #region Constants
+
+    public const string CommandPause      = "PAUSE=";
+    public const string CommandBeep       = "BEEP=";
+    public const string CommandBraceOpen  = "OPENBRACE";
+    public const string CommandBraceClose = "CLOSEBRACE";
+
+    public const char ModifierAlt     = '%';
+    public const char ModifierControl = '^';
+    public const char ModifierShift   = '+';
+    public const char ModifierWinKey  = '@';
+
+    public const char BracketOpen     = '(';
+    public const char BracketClose    = ')';
+
+    public const char BraceOpen       = '{';
+    public const char BraceClose      = '}';
+
+    public const char EnterShortcut   = '~';
+
+    const string PrefixVK = "VK_";
+
+    #endregion Constants
+
     #region Interop
 
     [DllImport("user32.dll")]
     static extern void keybd_event(
-      byte bVk,
-      byte bScan,
-      uint dwFlags,
-      IntPtr dwExtraInfo);
+      byte vk,
+      byte scan,
+      uint flags,
+      IntPtr extraInfo);
 
     [DllImport("user32.dll")]
     static extern short VkKeyScan(
       char ch);
+
+    [DllImport("user32.dll")]
+    static extern uint MapVirtualKey(
+      uint code,
+      uint mapType);
+
+    [DllImport("Kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool Beep(
+      uint frequency,
+      uint duration);
 
     #endregion Interop
 
     #region Enumerations
 
     /// <summary>
-    /// Virtual Key Codes
+    /// Virtual key modifiers.
+    /// </summary>
+    [Flags]
+    public enum KeyModifiers
+    {
+      /// <summary>
+      /// No modifier.
+      /// </summary>
+      None      = 0x00,
+      /// <summary>
+      /// Shift.
+      /// </summary>
+      Shift     = 0x01,
+      /// <summary>
+      /// Control.
+      /// </summary>
+      Ctrl      = 0x02,
+      /// <summary>
+      /// Alt
+      /// </summary>
+      Alt       = 0x04,
+      
+      //Hankaku   = 0x08,
+      //Reserved1 = 0x10,
+      //Reserved2 = 0x20,
+    }
+
+    /// <summary>
+    /// Virtual Key Codes.
     /// </summary>
     public enum VKey
     {
@@ -187,6 +253,10 @@ namespace IrssUtils
       /// </summary>
       VK_ADD = 0x6B,
       /// <summary>
+      /// Alt (VK_MENU)
+      /// </summary>
+      VK_ALT = VK_MENU,
+      /// <summary>
       /// Apps
       /// </summary>
       VK_APPS = 0x5D,
@@ -197,11 +267,31 @@ namespace IrssUtils
       /// <summary>
       /// Backspace
       /// </summary>
-      VK_BACK = 0x8,
+      VK_BACK = 0x08,
+      /// <summary>
+      /// Backspace (VK_BACK)
+      /// </summary>
+      VK_BACKSPACE = VK_BACK,
+      /// <summary>
+      /// Bell
+      /// </summary>
+      VK_BELL = 0x07,
+      /// <summary>
+      /// Backspace (VK_BACK)
+      /// </summary>
+      VK_BKSP = VK_BACK,
+      /// <summary>
+      /// Break
+      /// </summary>
+      VK_BREAK = 0x03,
+      /// <summary>
+      /// Backspace (VK_BACK)
+      /// </summary>
+      VK_BS = VK_BACK,
       /// <summary>
       /// Cancel
       /// </summary>
-      VK_CANCEL = 0x3,
+      VK_CANCEL = 0x03,
       /// <summary>
       /// Captial
       /// </summary>
@@ -209,7 +299,7 @@ namespace IrssUtils
       /// <summary>
       /// Clear
       /// </summary>
-      VK_CLEAR = 0xC,
+      VK_CLEAR = 0x0C,
       /// <summary>
       /// Control
       /// </summary>
@@ -227,6 +317,10 @@ namespace IrssUtils
       /// </summary>
       VK_DELETE = 0x2E,
       /// <summary>
+      /// Delete (VK_DELETE)
+      /// </summary>
+      VK_DEL = VK_DELETE,
+      /// <summary>
       /// Divide
       /// </summary>
       VK_DIVIDE = 0x6F,
@@ -239,9 +333,17 @@ namespace IrssUtils
       /// </summary>
       VK_END = 0x23,
       /// <summary>
+      /// Enter (VK_RETURN)
+      /// </summary>
+      VK_ENTER = VK_RETURN,
+      /// <summary>
       /// Ereof
       /// </summary>
       VK_EREOF = 0xF9,
+      /// <summary>
+      /// Escape (VK_ESCAPE)
+      /// </summary>
+      VK_ESC = VK_ESCAPE,
       /// <summary>
       /// Escape
       /// </summary>
@@ -363,9 +465,13 @@ namespace IrssUtils
       /// </summary>
       VK_INSERT = 0x2D,
       /// <summary>
+      /// Insert (VK_INSERT)
+      /// </summary>
+      VK_INS = VK_INSERT,
+      /// <summary>
       /// Left Button
       /// </summary>
-      VK_LBUTTON = 0x1,
+      VK_LBUTTON = 0x01,
       /// <summary>
       /// Left Control
       /// </summary>
@@ -374,6 +480,10 @@ namespace IrssUtils
       /// Left
       /// </summary>
       VK_LEFT = 0x25,
+      /// <summary>
+      /// Linefeed
+      /// </summary>
+      VK_LINEFEED = 0x0A,
       /// <summary>
       /// Left Menu
       /// </summary>
@@ -389,7 +499,7 @@ namespace IrssUtils
       /// <summary>
       /// Middle Button
       /// </summary>
-      VK_MBUTTON = 0x4,
+      VK_MBUTTON = 0x04,
       /// <summary>
       /// Menu
       /// </summary>
@@ -407,7 +517,7 @@ namespace IrssUtils
       /// </summary>
       VK_NONAME = 0xFC,
       /// <summary>
-      /// NumLock
+      /// Num Lock
       /// </summary>
       VK_NUMLOCK = 0x90,
       /// <summary>
@@ -527,6 +637,10 @@ namespace IrssUtils
       /// </summary>
       VK_PROCESSKEY = 0xE5,
       /// <summary>
+      /// Print Screen (VK_SNAPSHOT)
+      /// </summary>
+      VK_PRTSC = VK_SNAPSHOT,
+      /// <summary>
       /// Right Button
       /// </summary>
       VK_RBUTTON = 0x2,
@@ -537,7 +651,7 @@ namespace IrssUtils
       /// <summary>
       /// Return
       /// </summary>
-      VK_RETURN = 0xD,
+      VK_RETURN = 0x0D,
       /// <summary>
       /// Right
       /// </summary>
@@ -558,6 +672,10 @@ namespace IrssUtils
       /// Scroll Lock
       /// </summary>
       VK_SCROLL = 0x91,
+      /// <summary>
+      /// Scroll Lock (VK_SCROLL)
+      /// </summary>
+      VK_SCROLLLOCK = VK_SCROLL,
       /// <summary>
       /// Select
       /// </summary>
@@ -591,13 +709,17 @@ namespace IrssUtils
       /// </summary>
       VK_UP = 0x26,
       /// <summary>
+      /// Windows Key (VK_LWIN)
+      /// </summary>
+      VK_WIN = VK_LWIN,
+      /// <summary>
       /// Zoom
       /// </summary>
       VK_ZOOM = 0xFB,
     }
 
     /// <summary>
-    /// Key Event Types
+    /// Key Event Types.
     /// </summary>
     [Flags]
     public enum KeyEvents
@@ -631,77 +753,366 @@ namespace IrssUtils
     /// <summary>
     /// Simulate a key being pressed down.
     /// </summary>
-    /// <param name="vKey">Virtual key to press.</param>
+    /// <param name="vKey">Virtual key to simulate.</param>
     public static void KeyDown(VKey vKey)
     {
-      keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyDown, IntPtr.Zero);
+      bool isExtended = IsExtendedKey(vKey);
+
+      uint scanCode = MapVirtualKey((uint)vKey, 0);
+
+      if (isExtended)
+        keybd_event((byte)vKey, (byte)scanCode, (uint)KeyEvents.KeyDown | (uint)KeyEvents.ExtendedKey, IntPtr.Zero);
+      else
+        keybd_event((byte)vKey, (byte)scanCode, (uint)KeyEvents.KeyDown, IntPtr.Zero);
     }
 
     /// <summary>
     /// Simulate a key being released.
     /// </summary>
-    /// <param name="vKey">Virtual key to release.</param>
+    /// <param name="vKey">Virtual key to simulate.</param>
     public static void KeyUp(VKey vKey)
     {
-      keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyUp, IntPtr.Zero);
+      bool isExtended = IsExtendedKey(vKey);
+
+      uint scanCode = MapVirtualKey((uint)vKey, 0);
+
+      if (isExtended)
+        keybd_event((byte)vKey, (byte)scanCode, (uint)KeyEvents.KeyUp | (uint)KeyEvents.ExtendedKey, IntPtr.Zero);
+      else
+        keybd_event((byte)vKey, (byte)scanCode, (uint)KeyEvents.KeyUp, IntPtr.Zero);
     }
 
     /// <summary>
-    /// Simulate a Virtual Key event.
+    /// Simulate a key being pressed down and immediately released.
     /// </summary>
-    /// <param name="vKey">Virtual Key.</param>
-    /// <param name="scan">Scan code.</param>
-    /// <param name="flags">Event type.</param>
-    /// <param name="extraInfo">Pointer to additional information.</param>
-    public static void Event(VKey vKey, byte scan, KeyEvents flags, IntPtr extraInfo)
+    /// <param name="vKey">Virtual key to simulate.</param>
+    public static void KeyPress(VKey vKey)
     {
-      keybd_event((byte)vKey, scan, (uint)flags, extraInfo);
+      bool isExtended = IsExtendedKey(vKey);
+
+      uint scanCode = MapVirtualKey((uint)vKey, 0);
+
+      if (isExtended)
+      {
+        keybd_event((byte)vKey, (byte)scanCode, (uint)KeyEvents.KeyDown | (uint)KeyEvents.ExtendedKey, IntPtr.Zero);
+        keybd_event((byte)vKey, (byte)scanCode, (uint)KeyEvents.KeyUp | (uint)KeyEvents.ExtendedKey, IntPtr.Zero);
+      }
+      else
+      {
+        keybd_event((byte)vKey, (byte)scanCode, (uint)KeyEvents.KeyDown, IntPtr.Zero);
+        keybd_event((byte)vKey, (byte)scanCode, (uint)KeyEvents.KeyUp, IntPtr.Zero);
+      }
+    }
+    
+    /// <summary>
+    /// Simulate a key being pressed down and immediately released.
+    /// </summary>
+    /// <param name="ch">Key character to simulate.</param>
+    public static void KeyPress(char ch)
+    {
+      short virtualKeyCode = VkKeyScan(ch);
+
+      byte modifiers = Win32.HighByte(virtualKeyCode);
+
+      VKey vKey = (VKey)Win32.LowByte(virtualKeyCode);
+
+      if (modifiers == 0)
+        KeyPress(vKey);
+      else
+        KeyPress(vKey, modifiers);
     }
 
     /// <summary>
-    /// Simulate a Virtual Key event.
+    /// Simulate a key being pressed down and immediately released.
     /// </summary>
-    /// <param name="vKey">Virtual key code.</param>
-    /// <param name="scan">Scan code.</param>
-    /// <param name="flags">Event type.</param>
-    /// <param name="extraInfo">Pointer to additional information.</param>
-    public static void Event(byte vKey, byte scan, KeyEvents flags, IntPtr extraInfo)
+    /// <param name="vKey">Virtual key to simulate.</param>
+    /// <param name="modifiers">Key modifiers in effect.</param>
+    public static void KeyPress(VKey vKey, byte modifiers)
     {
-      keybd_event(vKey, scan, (uint)flags, extraInfo);
+      bool alt    = Win32.CheckMask(modifiers, (byte)KeyModifiers.Alt);
+      bool ctrl   = Win32.CheckMask(modifiers, (byte)KeyModifiers.Ctrl);
+      bool shift  = Win32.CheckMask(modifiers, (byte)KeyModifiers.Shift);
+
+      KeyPress(vKey, alt, ctrl, shift, false);
     }
 
+    /// <summary>
+    /// Simulate a key being pressed down and immediately released.
+    /// </summary>
+    /// <param name="vKey">Virtual key to simulate.</param>
+    /// <param name="alt">Simulate alt key.</param>
+    /// <param name="ctrl">Simulate control key.</param>
+    /// <param name="shift">Simulate shift key.</param>
+    /// <param name="winKey">Simulate windows key.</param>
+    public static void KeyPress(VKey vKey, bool alt, bool ctrl, bool shift, bool winKey)
+    {
+      if (alt)        KeyDown(VKey.VK_MENU);
+      if (ctrl)       KeyDown(VKey.VK_CONTROL);
+      if (shift)      KeyDown(VKey.VK_SHIFT);
+      if (winKey)     KeyDown(VKey.VK_LWIN);
 
-    public static void Process(string keystrokes)
+      KeyPress(vKey);
+
+      if (winKey)     KeyUp(VKey.VK_LWIN);
+      if (shift)      KeyUp(VKey.VK_SHIFT);
+      if (ctrl)       KeyUp(VKey.VK_CONTROL);
+      if (alt)        KeyUp(VKey.VK_MENU);
+    }
+
+    /// <summary>
+    /// Determines if a given virtual key is an extended key.
+    /// </summary>
+    /// <param name="vKey">Virtual key in question.</param>
+    /// <returns>true if the virtual key is an extended key, otherwise false.</returns>
+    public static bool IsExtendedKey(VKey vKey)
+    {
+      switch (vKey)
+      {
+        case VKey.VK_UP:
+        case VKey.VK_DOWN:
+        case VKey.VK_LEFT:
+        case VKey.VK_RIGHT:
+        case VKey.VK_HOME:
+        case VKey.VK_END:
+        case VKey.VK_PRIOR:
+        case VKey.VK_NEXT:
+        case VKey.VK_INSERT:
+        case VKey.VK_DELETE:
+          return true;
+
+        default:
+          return false;
+      }
+    }
+
+    /// <summary>
+    /// Process a keystroke command sequence.
+    /// </summary>
+    /// <param name="keystrokes">The keystroke command sequence.</param>
+    public static void ProcessCommand(string keystrokes)
     {
       if (String.IsNullOrEmpty(keystrokes))
         throw new ArgumentNullException("keystrokes");
 
+      bool inBrackets = false;
 
+      // TODO: Keep track of opening and closing brackets ...
+
+      //List<char> bracketModStack = new List<char>();
+
+      
+      bool Shift      = false;
+      bool Alt        = false;
+      bool Ctrl       = false;
+      bool WinKey     = false;
 
       for (int index = 0; index < keystrokes.Length; index++)
       {
-        char curChar = keystrokes[index];
+        char ch = keystrokes[index];
 
-        short keyScan = VkKeyScan(curChar);
-
-        byte keyCode = (byte)curChar;        
-        byte scanCode = 0;
-        
-        bool isExtended = false;
-
-        if (isExtended)
+        switch (ch)
         {
-          Event(keyCode, scanCode, KeyEvents.ExtendedKey | KeyEvents.KeyDown, IntPtr.Zero);
-          Event(keyCode, scanCode, KeyEvents.ExtendedKey | KeyEvents.KeyUp, IntPtr.Zero);
+          case BraceOpen:
+            {
+              int endBrace = keystrokes.IndexOf(BraceClose, index);
+
+              if (endBrace == -1)
+                throw new ArgumentException("Missing closing brace \"}\" after position " + index.ToString(), "keystrokes");
+
+              index++;
+
+              int length = endBrace - index;
+              if (length < 1)
+                throw new ArgumentException("Invalid braced command \"{}\"", "keystrokes");
+
+              string special = keystrokes.Substring(index, length);
+
+              if (special.Equals(ModifierAlt.ToString(), StringComparison.Ordinal))               KeyPress(ModifierAlt);
+              else if (special.Equals(ModifierControl.ToString(), StringComparison.Ordinal))      KeyPress(ModifierControl);
+              else if (special.Equals(ModifierShift.ToString(), StringComparison.Ordinal))        KeyPress(ModifierShift);
+              else if (special.Equals(ModifierWinKey.ToString(), StringComparison.Ordinal))       KeyPress(ModifierWinKey);
+              else if (special.Equals(BracketOpen.ToString(), StringComparison.Ordinal))          KeyPress(BracketOpen);
+              else if (special.Equals(BracketClose.ToString(), StringComparison.Ordinal))         KeyPress(BracketClose);
+              else if (special.Equals(EnterShortcut.ToString(), StringComparison.Ordinal))        KeyPress(EnterShortcut);
+              else if (special.Equals(CommandBraceOpen, StringComparison.OrdinalIgnoreCase))      KeyPress(BraceOpen);
+              else if (special.Equals(CommandBraceClose, StringComparison.OrdinalIgnoreCase))     KeyPress(BraceClose);
+              else if (special.StartsWith(CommandPause, StringComparison.OrdinalIgnoreCase))
+              {
+                string pauseString = special.Substring(CommandPause.Length);
+                if (String.IsNullOrEmpty(pauseString))
+                  throw new ArgumentException("Invalid pause command: " + special, "keystrokes");
+
+                int time = int.Parse(pauseString);
+
+                Thread.Sleep(time);
+              }
+              else if (special.StartsWith(CommandBeep, StringComparison.OrdinalIgnoreCase))
+              {
+                string beepString = special.Substring(CommandPause.Length);
+                if (String.IsNullOrEmpty(beepString))
+                  throw new ArgumentException("Invalid beep command: " + special, "keystrokes");
+
+                string[] parameters = beepString.Split(new char[] { ',' });
+                if (parameters.Length != 2)
+                  throw new ArgumentException("Invalid beep command structure: " + special, "keystrokes");
+                
+                uint beepFreq = uint.Parse(parameters[0]);
+                uint beepTime = uint.Parse(parameters[1]);
+
+                Beep(beepFreq, beepTime);
+              }
+              else
+              {
+                int count = 1;
+
+                int space = special.IndexOf(' ');
+                if (space != -1)
+                {
+                  string countString = special.Substring(space);
+                  if (!String.IsNullOrEmpty(countString))
+                    count = int.Parse(countString);
+                }
+
+                VKey vKey = VKey.None;
+                try
+                {
+                  if (special.StartsWith(PrefixVK, StringComparison.OrdinalIgnoreCase))
+                    vKey = (VKey)Enum.Parse(typeof(VKey), special, true);
+                  else
+                    vKey = (VKey)Enum.Parse(typeof(VKey), PrefixVK + special, true);
+                }
+                catch (Exception ex)
+                {
+                  throw new ArgumentException("Invalid virtual key code \"" + special + "\"", "keystrokes", ex);
+                }
+
+                for (int repeat = 0; repeat < count; repeat++)
+                  KeyPress(vKey);
+
+                if (!inBrackets)
+                {
+                  UndoModifiers(Alt, Ctrl, Shift, WinKey);
+                  Alt = false;
+                  Ctrl = false;
+                  Shift = false;
+                  WinKey = false;
+                }
+              }
+
+              index = endBrace;
+              break;
+            }
+
+          case BracketOpen:
+            {
+              inBrackets = true;
+              break;
+            }
+
+          case BracketClose:
+            {
+              inBrackets = false;
+
+              if (!inBrackets)
+              {
+                UndoModifiers(Alt, Ctrl, Shift, WinKey);
+                Alt     = false;
+                Ctrl    = false;
+                Shift   = false;
+                WinKey  = false;
+              }
+              break;
+            }
+
+          case ModifierShift:
+            {
+              if (!Shift)
+              {
+                KeyDown(VKey.VK_SHIFT);
+                Shift = true;
+              }
+              break;
+            }
+
+          case ModifierControl:
+            {
+              if (!Ctrl)
+              {
+                KeyDown(VKey.VK_CONTROL);
+                Ctrl = true;
+              }
+              break;
+            }
+
+          case ModifierAlt:
+            {
+              if (!Alt)
+              {
+                KeyDown(VKey.VK_MENU);
+                Alt = true;
+              }
+              break;
+            }
+
+          case ModifierWinKey:
+            {
+              if (!WinKey)
+              {
+                KeyDown(VKey.VK_LWIN);
+                WinKey = true;
+              }
+              break;
+            }
+
+          case EnterShortcut:
+            {
+              KeyPress(VKey.VK_ENTER);
+
+              if (!inBrackets)
+              {
+                UndoModifiers(Alt, Ctrl, Shift, WinKey);
+                Alt     = false;
+                Ctrl    = false;
+                Shift   = false;
+                WinKey  = false;
+              }
+              break;
+            }
+
+          default:
+            {
+              KeyPress(ch);
+
+              if (!inBrackets)
+              {
+                UndoModifiers(Alt, Ctrl, Shift, WinKey);
+                Alt     = false;
+                Ctrl    = false;
+                Shift   = false;
+                WinKey  = false;
+              }
+              break;
+            }
         }
-        else
-        {
-          Event(keyCode, scanCode, KeyEvents.KeyDown, IntPtr.Zero);
-          Event(keyCode, scanCode, KeyEvents.KeyUp, IntPtr.Zero);
-        }
+
       }
 
+      UndoModifiers(Alt, Ctrl, Shift, WinKey);
+    }
 
+    /// <summary>
+    /// Performs a "Key Up" action on any currently held modifiers.
+    /// </summary>
+    /// <param name="alt">Alt key is pressed.</param>
+    /// <param name="ctrl">Control key is pressed.</param>
+    /// <param name="shift">Shift key is pressed.</param>
+    /// <param name="winKey">Windows key is pressed.</param>
+    static void UndoModifiers(bool alt, bool ctrl, bool shift, bool winKey)
+    {
+      if (alt)    KeyUp(VKey.VK_MENU);
+      if (ctrl)   KeyUp(VKey.VK_CONTROL);
+      if (shift)  KeyUp(VKey.VK_SHIFT);
+      if (winKey) KeyUp(VKey.VK_LWIN);
     }
 
     #endregion Public Methods

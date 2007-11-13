@@ -297,7 +297,7 @@ namespace MediaPortal.Plugins
       string selected = comboBoxCommands.SelectedItem as string;
       string command = String.Empty;
 
-      if (selected == Common.UITextRun)
+      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
         ExternalProgram externalProgram = new ExternalProgram();
         if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
@@ -305,7 +305,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (selected == Common.UITextGoto)
+      else if (selected.Equals(Common.UITextGoto, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen();
         if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
@@ -313,7 +313,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixGoto + goToScreen.Screen;
       }
-      else if (selected == Common.UITextSerial)
+      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
       {
         SerialCommand serialCommand = new SerialCommand();
         if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -321,7 +321,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (selected == Common.UITextWindowMsg)
+      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -329,7 +329,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         BlastCommand blastCommand = new BlastCommand(
           new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
@@ -758,7 +758,7 @@ namespace MediaPortal.Plugins
       if (treeViewMenu.SelectedNode.Level != 2)
         return;
 
-      if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixPause))
+      if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
       {
         PauseTime pauseTime = new PauseTime(int.Parse(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixPause.Length)));
         if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
@@ -766,7 +766,7 @@ namespace MediaPortal.Plugins
 
         treeViewMenu.SelectedNode.Text = Common.CmdPrefixPause + pauseTime.Time.ToString();
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixRun))
+      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixRun.Length));
         ExternalProgram executeProgram = new ExternalProgram(commands);
@@ -775,7 +775,7 @@ namespace MediaPortal.Plugins
 
         treeViewMenu.SelectedNode.Text = Common.CmdPrefixRun + executeProgram.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixSerial))
+      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitSerialCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixSerial.Length));
         SerialCommand serialCommand = new SerialCommand(commands);
@@ -784,7 +784,7 @@ namespace MediaPortal.Plugins
 
         treeViewMenu.SelectedNode.Text = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixWindowMsg))
+      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitWindowMessageCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixWindowMsg.Length));
         MessageCommand messageCommand = new MessageCommand(commands);
@@ -793,7 +793,7 @@ namespace MediaPortal.Plugins
 
         treeViewMenu.SelectedNode.Text = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixGoto))
+      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixGoto.Length));
         if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
@@ -801,7 +801,7 @@ namespace MediaPortal.Plugins
 
         treeViewMenu.SelectedNode.Text = Common.CmdPrefixGoto + goToScreen.Screen;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixPopup))
+      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitPopupCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixPopup.Length));
         PopupMessage popupMessage = new PopupMessage(commands);
@@ -810,7 +810,7 @@ namespace MediaPortal.Plugins
 
         treeViewMenu.SelectedNode.Text = Common.CmdPrefixPopup + popupMessage.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixBlast))
+      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitBlastCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixBlast.Length));
 

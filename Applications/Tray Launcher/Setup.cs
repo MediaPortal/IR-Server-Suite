@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using IrssComms;
+using IrssUtils;
 
 namespace TrayLauncher
 {
@@ -67,9 +68,9 @@ namespace TrayLauncher
       comboBoxComputer.Items.Clear();
       comboBoxComputer.Items.Add("localhost");
 
-      string[] networkPCs = IrssUtils.Win32.GetNetworkComputers(false);
+      List<string> networkPCs = Network.GetComputers(false);
       if (networkPCs != null)
-        comboBoxComputer.Items.AddRange(networkPCs);
+        comboBoxComputer.Items.AddRange(networkPCs.ToArray());
     }
 
     #endregion Constructor

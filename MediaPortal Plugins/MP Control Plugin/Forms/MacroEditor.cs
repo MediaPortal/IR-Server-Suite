@@ -367,31 +367,31 @@ namespace MediaPortal.Plugins
 
       string selected = comboBoxCommands.SelectedItem as string;
 
-      if (selected == Common.UITextRun)
+      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
         ExternalProgram externalProgram = new ExternalProgram();
         if (externalProgram.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixRun + externalProgram.CommandString);
       }
-      else if (selected == Common.UITextPause)
+      else if (selected.Equals(Common.UITextPause, StringComparison.OrdinalIgnoreCase))
       {
         PauseTime pauseTime = new PauseTime();
         if (pauseTime.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixPause + pauseTime.Time.ToString());
       }
-      else if (selected == Common.UITextSerial)
+      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
       {
         SerialCommand serialCommand = new SerialCommand();
         if (serialCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixSerial + serialCommand.CommandString);
       }
-      else if (selected == Common.UITextWindowMsg)
+      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
       }
-      else if (selected == Common.UITextTcpMsg)
+      else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
         if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -399,79 +399,79 @@ namespace MediaPortal.Plugins
 
         listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
       }
-      else if (selected == Common.UITextKeys)
+      else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand();
         if (keysCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
       }
-      else if (selected == Common.UITextMouse)
+      else if (selected.Equals(Common.UITextMouse, StringComparison.OrdinalIgnoreCase))
       {
         MouseCommand mouseCommand = new MouseCommand();
         if (mouseCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixMouse + mouseCommand.CommandString);
       }
-      else if (selected == Common.UITextEject)
+      else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
       {
         EjectCommand ejectCommand = new EjectCommand();
         if (ejectCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
       }
-      else if (selected == Common.UITextGoto)
+      else if (selected.Equals(Common.UITextGoto, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen();
         if (goToScreen.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixGoto + goToScreen.Screen);
       }
-      else if (selected == Common.UITextPopup)
+      else if (selected.Equals(Common.UITextPopup, StringComparison.OrdinalIgnoreCase))
       {
         PopupMessage popupMessage = new PopupMessage();
         if (popupMessage.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixPopup + popupMessage.CommandString);
       }
-      else if (selected == Common.UITextMultiMap)
+      else if (selected.Equals(Common.UITextMultiMap, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixMultiMap + "TOGGLE");
       }
-      else if (selected == Common.UITextMouseMode)
+      else if (selected.Equals(Common.UITextMouseMode, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixMouseMode + "TOGGLE");
       }
-      else if (selected == Common.UITextInputLayer)
+      else if (selected.Equals(Common.UITextInputLayer, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixInputLayer);
       }
       /*
-      else if (selected == Common.UITextWindowState)
+      else if (selected.Equals(Common.UITextWindowState, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
       }
       */
-      else if (selected == Common.UITextFocus)
+      else if (selected.Equals(Common.UITextFocus, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixFocus);
       }
-      else if (selected == Common.UITextExit)
+      else if (selected.Equals(Common.UITextExit, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixExit);
       }
-      else if (selected == Common.UITextStandby)
+      else if (selected.Equals(Common.UITextStandby, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixStandby);
       }
-      else if (selected == Common.UITextHibernate)
+      else if (selected.Equals(Common.UITextHibernate, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
       }
-      else if (selected == Common.UITextReboot)
+      else if (selected.Equals(Common.UITextReboot, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixReboot);
       }
-      else if (selected == Common.UITextShutdown)
+      else if (selected.Equals(Common.UITextShutdown, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
       }
-      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         BlastCommand blastCommand = new BlastCommand(
           new BlastIrDelegate(MPControlPlugin.BlastIR),
@@ -482,7 +482,7 @@ namespace MediaPortal.Plugins
         if (blastCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
       }
-      else if (selected.StartsWith(Common.CmdPrefixMacro))
+      else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(selected);
       }

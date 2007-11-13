@@ -64,8 +64,12 @@ namespace MPUtils.Forms
       Array.Sort(items);
 
       for (index = 0; index < items.Length; index++)
-        if (items[index] != "INVALID" && items[index] != "SECOND_HOME")
-          comboBoxScreen.Items.Add(items[index]);
+      {
+        if (items[index].Equals("INVALID", StringComparison.OrdinalIgnoreCase) || items[index].Equals("SECOND_HOME", StringComparison.OrdinalIgnoreCase))
+          continue;
+
+        comboBoxScreen.Items.Add(items[index]);
+      }
     }
 
     private void buttonOK_Click(object sender, EventArgs e)

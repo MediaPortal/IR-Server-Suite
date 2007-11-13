@@ -57,7 +57,7 @@ namespace MediaPortal.Plugins
     static Client _client;
 
     static string _serverHost;
-    static string _learnIRFilename = null;
+    static string _learnIRFilename;
 
     static bool _registered;
 
@@ -71,19 +71,19 @@ namespace MediaPortal.Plugins
     static int _mouseModeStep;
     static bool _mouseModeAcceleration;
 
-    static bool _mouseModeActive = false;
+    static bool _mouseModeActive;
     static RemoteButton _mouseModeLastButton = RemoteButton.None;
-    static long _mouseModeLastButtonTicks = 0;
-    static int _mouseModeRepeatCount = 0;
-    static bool _mouseModeRightHeld = false;
-    static bool _mouseModeLeftHeld = false;
-    static bool _mouseModeMiddleHeld = false;
+    static long _mouseModeLastButtonTicks;
+    static int _mouseModeRepeatCount;
+    static bool _mouseModeRightHeld;
+    static bool _mouseModeLeftHeld;
+    static bool _mouseModeMiddleHeld;
 
     static List<MappedEvent> _eventMappings;
 
     static RemoteButton _multiMappingButton;
     static string[] _multiMaps;
-    static int _multiMappingSet = 0;
+    static int _multiMappingSet;
 
     static InputHandler _defaultInputHandler;
     static List<InputHandler> _multiInputHandlers;
@@ -94,7 +94,7 @@ namespace MediaPortal.Plugins
 
     static bool _mpBasicHome;
 
-    static MappedKeyCode[] _remoteMap = null;
+    static MappedKeyCode[] _remoteMap;
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
@@ -650,7 +650,7 @@ namespace MediaPortal.Plugins
 
       foreach (MappedKeyCode mapping in _remoteMap)
       {
-        if (mapping.KeyCode == keyCode)
+        if (mapping.KeyCode.Equals(keyCode, StringComparison.Ordinal))
         {
           if (MultiMappingEnabled && mapping.Button == MultiMappingButton)
           {
@@ -869,7 +869,7 @@ namespace MediaPortal.Plugins
     {
       Log.Debug("MPControlPlugin: ChangeMultiMapping: {0}", multiMapping);
 
-      if (multiMapping == "TOGGLE")
+      if (multiMapping.Equals("TOGGLE", StringComparison.OrdinalIgnoreCase))
       {
         ChangeMultiMapping();
         return;
@@ -877,7 +877,7 @@ namespace MediaPortal.Plugins
 
       for (int index = 0; index < MultiMaps.Length; index++)
       {
-        if (MultiMaps[index] == multiMapping)
+        if (MultiMaps[index].Equals(multiMapping, StringComparison.OrdinalIgnoreCase))
         {
           _multiMappingSet = index;
 
@@ -988,10 +988,10 @@ namespace MediaPortal.Plugins
 
             switch (mappedEvent.Param)
             {
-              case "Label 1":               matched = (msg.Label == paramValueString);            break;
-              case "Label 2":               matched = (msg.Label2 == paramValueString);           break;
-              case "Label 3":               matched = (msg.Label3 == paramValueString);           break;
-              case "Label 4":               matched = (msg.Label4 == paramValueString);           break;
+              case "Label 1":               matched = (msg.Label.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));   break;
+              case "Label 2":               matched = (msg.Label2.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));  break;
+              case "Label 3":               matched = (msg.Label3.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));  break;
+              case "Label 4":               matched = (msg.Label4.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));  break;
               case "Parameter 1":           matched = (msg.Param1 == paramValueInt);              break;
               case "Parameter 2":           matched = (msg.Param2 == paramValueInt);              break;
               case "Parameter 3":           matched = (msg.Param3 == paramValueInt);              break;
@@ -1186,13 +1186,13 @@ namespace MediaPortal.Plugins
     /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackAdd(string fileName)
     {
-      string lowerCasedFileName = fileName.ToLowerInvariant();
+      string upperCasedFileName = fileName.ToUpperInvariant();
 
       if (_macroStack == null)
       {
         _macroStack = new List<string>();
       }
-      else if (_macroStack.Contains(lowerCasedFileName))
+      else if (_macroStack.Contains(upperCasedFileName))
       {
         StringBuilder macroStackTrace = new StringBuilder();
         macroStackTrace.AppendLine("Macro infinite loop detected!");
@@ -1201,18 +1201,18 @@ namespace MediaPortal.Plugins
 
         foreach (string macro in _macroStack)
         {
-          if (macro.Equals(lowerCasedFileName))
+          if (macro.Equals(upperCasedFileName))
             macroStackTrace.AppendLine(String.Format("--> {0}", macro));
           else
             macroStackTrace.AppendLine(macro);
         }
 
-        macroStackTrace.AppendLine(String.Format("--> {0}", lowerCasedFileName));
+        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
 
         throw new ApplicationException(macroStackTrace.ToString());
       }
 
-      _macroStack.Add(lowerCasedFileName);
+      _macroStack.Add(upperCasedFileName);
     }
     /// <summary>
     /// Removes from the Macro Stack.
@@ -1220,10 +1220,10 @@ namespace MediaPortal.Plugins
     /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackRemove(string fileName)
     {
-      string lowerCasedFileName = fileName.ToLowerInvariant();
+      string upperCasedFileName = fileName.ToUpperInvariant();
 
-      if (_macroStack.Contains(lowerCasedFileName))
-        _macroStack.Remove(lowerCasedFileName);
+      if (_macroStack.Contains(upperCasedFileName))
+        _macroStack.Remove(upperCasedFileName);
 
       if (_macroStack.Count == 0)
         _macroStack = null;
@@ -1291,7 +1291,7 @@ namespace MediaPortal.Plugins
             case Common.XmlTagGoto:
               {
                 if (InConfiguration)
-                  MessageBox.Show(commandProperty, "Go To Window", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show(commandProperty, Common.UITextGoto, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
                   MPCommon.ProcessGoTo(commandProperty, MP_BasicHome);
                 break;
@@ -1326,7 +1326,7 @@ namespace MediaPortal.Plugins
             case Common.XmlTagKeys:
               {
                 if (InConfiguration)
-                  MessageBox.Show(commandProperty, "Keystroke Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
                   Common.ProcessKeyCommand(commandProperty);
                 break;
@@ -1335,7 +1335,7 @@ namespace MediaPortal.Plugins
             case Common.XmlTagMultiMap:
               {
                 if (InConfiguration)
-                  MessageBox.Show(commandProperty, "Change Multi-Mapping Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show(commandProperty, Common.UITextMultiMap, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else if (MultiMappingEnabled)
                   ChangeMultiMapping(commandProperty);
 
@@ -1346,7 +1346,7 @@ namespace MediaPortal.Plugins
               {
                 if (InConfiguration)
                 {
-                  MessageBox.Show("Command to toggle the Mouse Mode cannot be processed in configuration.", "Mouse Mode Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show("Command to toggle the Mouse Mode cannot be processed in configuration.", Common.UITextMouseMode, MessageBoxButtons.OK, MessageBoxIcon.Information);
                   break;
                 }
 
@@ -1404,7 +1404,7 @@ namespace MediaPortal.Plugins
               {
                 if (InConfiguration)
                 {
-                  MessageBox.Show("Command to toggle the input handler layer cannot be processed in configuration.", "Layer Toggle Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show("Command to toggle the input handler layer cannot be processed in configuration.", Common.UITextInputLayer, MessageBoxButtons.OK, MessageBoxIcon.Information);
                   break;
                 }
 
@@ -1427,7 +1427,7 @@ namespace MediaPortal.Plugins
               {
                 if (InConfiguration)
                 {
-                  MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", "Window State Toggle Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", Common.UITextWindowState, MessageBoxButtons.OK, MessageBoxIcon.Information);
                   break;
                 }
 
@@ -1444,7 +1444,7 @@ namespace MediaPortal.Plugins
               {
                 if (InConfiguration)
                 {
-                  MessageBox.Show("Command to get focus cannot be processed in configuration.", "Get Focus Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show("Command to get focus cannot be processed in configuration.", Common.UITextFocus, MessageBoxButtons.OK, MessageBoxIcon.Information);
                   break;
                 }
 
@@ -1577,66 +1577,66 @@ namespace MediaPortal.Plugins
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase)) // Macro
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
         ProcessMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.InvariantCultureIgnoreCase)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.InvariantCultureIgnoreCase)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.InvariantCultureIgnoreCase))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         if (InConfiguration)
-          MessageBox.Show(keyCommand, "Keystroke Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
         else
           Common.ProcessKeyCommand(keyCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.InvariantCultureIgnoreCase)) // Mouse Command
+      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase)) // Mouse Command
       {
         string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
         Common.ProcessMouseCommand(mouseCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.InvariantCultureIgnoreCase)) // Eject Command
+      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase)) // Eject Command
       {
         string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
         Common.ProcessEjectCommand(ejectCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.InvariantCultureIgnoreCase)) // Hibernate Command
+      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase)) // Hibernate Command
       {
         Hibernate();
       }
-      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.InvariantCultureIgnoreCase)) // Reboot Command
+      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase)) // Reboot Command
       {
         Reboot();
       }
-      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.InvariantCultureIgnoreCase)) // Shutdown Command
+      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase)) // Shutdown Command
       {
         ShutDown();
       }
-      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.InvariantCultureIgnoreCase)) // Standby Command
+      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase)) // Standby Command
       {
         Standby();
       }
-      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.InvariantCultureIgnoreCase)) // Go To Screen
+      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase)) // Go To Screen
       {
         MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), MP_BasicHome);
       }

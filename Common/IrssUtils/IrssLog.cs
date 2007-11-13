@@ -185,9 +185,12 @@ namespace IrssUtils
         _streamWriter.WriteLine(message);
         _streamWriter.WriteLine();
       }
-      catch
+      catch (Exception ex)
       {
-        throw;
+#if TRACE
+        Trace.WriteLine(ex.ToString());
+#endif
+        throw ex;
       }
       finally
       {
@@ -229,7 +232,7 @@ namespace IrssUtils
         string message = DateTime.Now.ToString() + " - Warn: \t" + String.Format(format, args);
         _streamWriter.WriteLine(message);
 #if TRACE
-        Trace.WriteLine(message);
+        //Trace.WriteLine(message);
 #endif
       }
     }
@@ -246,7 +249,7 @@ namespace IrssUtils
         string message = DateTime.Now.ToString() + " - Info: \t" + String.Format(format, args);
         _streamWriter.WriteLine(message);
 #if TRACE
-        Trace.WriteLine(message);
+        //Trace.WriteLine(message);
 #endif
       }
     }
@@ -263,7 +266,7 @@ namespace IrssUtils
         string message = DateTime.Now.ToString() + " - Debug:\t" + String.Format(format, args);
         _streamWriter.WriteLine(message);
 #if TRACE
-        Trace.WriteLine(message);
+        //Trace.WriteLine(message);
 #endif
       }
     }

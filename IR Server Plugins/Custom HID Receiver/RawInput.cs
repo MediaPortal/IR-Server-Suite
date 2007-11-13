@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-using Microsoft.Win32;
-
 #if TRACE
 using System.Diagnostics;
 #endif
+
+using Microsoft.Win32;
 
 namespace CustomHIDReceiver
 {
@@ -331,7 +331,7 @@ namespace CustomHIDReceiver
     {
       int NumberOfDevices = 0;
       uint deviceCount = 0;
-      int dwSize = (Marshal.SizeOf(typeof(RAWINPUTDEVICELIST)));
+      int dwSize = Marshal.SizeOf(typeof(RAWINPUTDEVICELIST));
 
       // Get the number of raw input devices in the list,
       // then allocate sufficient memory and get the entire list
@@ -349,9 +349,17 @@ namespace CustomHIDReceiver
           string deviceName;
           uint pcbSize = 0;
 
-          RAWINPUTDEVICELIST rid = (RAWINPUTDEVICELIST)Marshal.PtrToStructure(
-                                     new IntPtr((pRawInputDeviceList.ToInt32() + (dwSize * i))),
-                                     typeof(RAWINPUTDEVICELIST));
+          RAWINPUTDEVICELIST rid;
+
+          IntPtr location;
+          int offset = dwSize * i;
+
+          if (IntPtr.Size == 4)
+            location = new IntPtr(pRawInputDeviceList.ToInt32() + offset);
+          else
+            location = new IntPtr(pRawInputDeviceList.ToInt64() + offset);
+
+          rid = (RAWINPUTDEVICELIST)Marshal.PtrToStructure(location, typeof(RAWINPUTDEVICELIST));
 
           GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICENAME, IntPtr.Zero, ref pcbSize);
 
@@ -368,10 +376,12 @@ namespace CustomHIDReceiver
             // If the device is identified in the list as a keyboard or 
             // HID device, create a DeviceInfo object to store information 
             // about it
+#if TRACE
             Trace.WriteLine(String.Format("\r\n{0} )==============\r\n", NumberOfDevices));
             Trace.WriteLine(String.Format("Name: {0}\r\n", deviceName));
             Trace.WriteLine(String.Format("Type: {0}\r\n", rid.dwType));
             Trace.WriteLine(String.Format("Desc: {0}\r\n", GetFriendlyName(deviceName)));
+#endif
 
             // Get Detailed Info ...
             uint size = (uint)Marshal.SizeOf(typeof(DeviceInfo));
@@ -391,11 +401,13 @@ namespace CustomHIDReceiver
             {
               case RawInputType.HID:
                 {
+#if TRACE
                   Trace.WriteLine(String.Format("Vendor ID: {0:X4}\r\n", di.HIDInfo.VendorID));
                   Trace.WriteLine(String.Format("Product ID: {0:X4}\r\n", di.HIDInfo.ProductID));
                   Trace.WriteLine(String.Format("Version No: {0:f}\r\n", di.HIDInfo.VersionNumber / 256.0));
                   Trace.WriteLine(String.Format("Usage Page: {0:X4}\r\n", di.HIDInfo.UsagePage));
                   Trace.WriteLine(String.Format("Usage: {0:X4}\r\n", di.HIDInfo.Usage));
+#endif
 
                   string vidAndPid = String.Format("Vid_{0:x4}&Pid_{1:x4}", di.HIDInfo.VendorID, di.HIDInfo.ProductID);
                   details.Name = String.Format("HID: {0}", GetFriendlyName(vidAndPid));
@@ -410,12 +422,14 @@ namespace CustomHIDReceiver
 
               case RawInputType.Keyboard:
                 {
+#if TRACE
                   Trace.WriteLine(String.Format("Type: {0}\r\n", di.KeyboardInfo.Type));
                   Trace.WriteLine(String.Format("SubType: {0}\r\n", di.KeyboardInfo.SubType));
                   Trace.WriteLine(String.Format("Keyboard Mode: {0}\r\n", di.KeyboardInfo.KeyboardMode));
                   Trace.WriteLine(String.Format("Function Keys: {0}\r\n", di.KeyboardInfo.NumberOfFunctionKeys));
                   Trace.WriteLine(String.Format("Indicators: {0}\r\n", di.KeyboardInfo.NumberOfIndicators));
                   Trace.WriteLine(String.Format("Total Keys: {0}\r\n", di.KeyboardInfo.NumberOfKeysTotal));
+#endif
 
                   details.Name = "HID Keyboard";
                   //details.ID = String.Format("{0}-{1}", di.KeyboardInfo.Type, di.KeyboardInfo.SubType);
@@ -429,9 +443,11 @@ namespace CustomHIDReceiver
 
               case RawInputType.Mouse:
                 {
+#if TRACE
                   Trace.WriteLine(String.Format("ID: {0}\r\n", di.MouseInfo.ID));
                   Trace.WriteLine(String.Format("Buttons: {0}\r\n", di.MouseInfo.NumberOfButtons));
                   Trace.WriteLine(String.Format("Sample Rate: {0}hz\r\n", di.MouseInfo.SampleRate));
+#endif
 
                   details.Name = "HID Mouse";
 
@@ -466,7 +482,7 @@ namespace CustomHIDReceiver
         {
           foreach (string usbSubKey in USBEnum.GetSubKeyNames())
           {
-            if (usbSubKey.IndexOf(vidAndPid, StringComparison.InvariantCultureIgnoreCase) == -1)
+            if (usbSubKey.IndexOf(vidAndPid, StringComparison.OrdinalIgnoreCase) == -1)
               continue;
 
             using (RegistryKey currentKey = USBEnum.OpenSubKey(usbSubKey))

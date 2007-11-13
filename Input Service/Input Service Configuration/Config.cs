@@ -100,7 +100,7 @@ namespace Configuration
           if (checkBox == null)
             continue;
 
-          if (gridPlugins[row, 0].DisplayText.Equals(value, StringComparison.InvariantCultureIgnoreCase))
+          if (gridPlugins[row, 0].DisplayText.Equals(value, StringComparison.OrdinalIgnoreCase))
             checkBox.Checked = true;
           else
             checkBox.Checked = false;
@@ -259,7 +259,7 @@ namespace Configuration
       for (int row = 1; row < gridPlugins.RowsCount; row++)
       {
         SourceGrid.Cells.CheckBox checkBox = gridPlugins[row, 1] as SourceGrid.Cells.CheckBox;
-        if (checkBox != null && checkBox.Checked && !gridPlugins[row, 0].DisplayText.Equals(plugin, StringComparison.InvariantCultureIgnoreCase))
+        if (checkBox != null && checkBox.Checked && !gridPlugins[row, 0].DisplayText.Equals(plugin, StringComparison.OrdinalIgnoreCase))
           checkBox.Checked = false;
       }
     }
@@ -277,7 +277,7 @@ namespace Configuration
       for (int row = 1; row < gridPlugins.RowsCount; row++)
       {
         SourceGrid.Cells.CheckBox checkBox = gridPlugins[row, 2] as SourceGrid.Cells.CheckBox;
-        if (checkBox != null && checkBox.Checked && !gridPlugins[row, 0].DisplayText.Equals(plugin, StringComparison.InvariantCultureIgnoreCase))
+        if (checkBox != null && checkBox.Checked && !gridPlugins[row, 0].DisplayText.Equals(plugin, StringComparison.OrdinalIgnoreCase))
           checkBox.Checked = false;
       }
     }

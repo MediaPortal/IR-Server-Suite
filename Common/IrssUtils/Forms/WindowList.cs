@@ -59,7 +59,7 @@ namespace IrssUtils.Forms
 
       return true;
     }
-    
+
     private void listBoxWindows_DoubleClick(object sender, EventArgs e)
     {
       this.DialogResult = DialogResult.OK;

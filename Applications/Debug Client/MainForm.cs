@@ -108,7 +108,7 @@ namespace DebugClient
     Client _client;
 
     string _serverHost      = "localhost";
-    string _learnIRFilename = null;
+    string _learnIRFilename;
 
     bool _registered;
 
@@ -117,7 +117,7 @@ namespace DebugClient
     #endregion Variables
 
     delegate void DelegateAddStatusLine(string status);
-    DelegateAddStatusLine _addStatusLine = null;
+    DelegateAddStatusLine _addStatusLine;
 
     void AddStatusLine(string status)
     {
@@ -145,9 +145,9 @@ namespace DebugClient
       comboBoxComputer.Items.Clear();
       comboBoxComputer.Items.Add("localhost");
 
-      string[] networkPCs = IrssUtils.Win32.GetNetworkComputers(false);
+      List<string> networkPCs = Network.GetComputers(false);
       if (networkPCs != null)
-        comboBoxComputer.Items.AddRange(networkPCs);
+        comboBoxComputer.Items.AddRange(networkPCs.ToArray());
 
       comboBoxComputer.Text = _serverHost;
     }
@@ -476,7 +476,7 @@ namespace DebugClient
 
     private void comboBoxRemoteButtons_SelectedIndexChanged(object sender, EventArgs e)
     {
-      if (comboBoxRemoteButtons.SelectedItem.ToString() == "Custom")
+      if (comboBoxRemoteButtons.SelectedItem.ToString().Equals("Custom", StringComparison.OrdinalIgnoreCase))
         numericUpDownButton.Enabled = true;
       else
         numericUpDownButton.Enabled = false;

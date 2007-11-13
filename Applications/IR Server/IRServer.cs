@@ -73,7 +73,7 @@ namespace IRServer
     string _pluginNameTransmit;
     IRServerPluginBase _pluginTransmit;
 
-    bool _inConfiguration = false;
+    bool _inConfiguration;
 
     #endregion Variables
 
@@ -1115,8 +1115,7 @@ namespace IRServer
             }
             else
             {
-              byte[] bytes = null;
-
+              byte[] bytes;
               LearnStatus status = LearnIR(out bytes);
 
               switch (status)

@@ -1107,8 +1107,7 @@ namespace InputService
             }
             else
             {
-              byte[] bytes = null;
-
+              byte[] bytes;
               LearnStatus status = LearnIR(out bytes);
 
               switch (status)

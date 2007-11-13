@@ -24,7 +24,7 @@ namespace SageSetup
 
     private void FormMain_Load(object sender, EventArgs e)
     {
-      string[] networkPCs = Win32.GetNetworkComputers(false);
+      List<string> networkPCs = Network.GetComputers(false);
       if (networkPCs == null)
       {
         MessageBox.Show(this, "No server names detected.", "Network Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -33,7 +33,7 @@ namespace SageSetup
       }
       else
       {
-        comboBoxComputer.Items.AddRange(networkPCs);
+        comboBoxComputer.Items.AddRange(networkPCs.ToArray());
       }
 
       _irBlastLocation = SystemRegistry.GetInstallFolder();

@@ -215,24 +215,16 @@ namespace Translator
               string[] commands = Common.SplitWindowMessageCommand(suffix);
 
               tabControl.SelectTab(tabPageMessage);
-              switch (commands[0].ToLowerInvariant())
+              switch (commands[0].ToUpperInvariant())
               {
-                case "active":
-                  radioButtonActiveWindow.Checked = true;
-                  break;
-                case "application":
-                  radioButtonApplication.Checked = true;
-                  break;
-                case "class":
-                  radioButtonClass.Checked = true;
-                  break;
-                case "window":
-                  radioButtonWindowTitle.Checked = true;
-                  break;
+                case Common.WMTargetActive:       radioButtonActiveWindow.Checked = true;   break;
+                case Common.WMTargetApplication:  radioButtonApplication.Checked = true;    break;
+                case Common.WMTargetClass:        radioButtonClass.Checked = true;          break;
+                case Common.WMTargetWindow:       radioButtonWindowTitle.Checked = true;    break;
               }
 
-              textBoxMsgTarget.Text = commands[1];
-              numericUpDownMsg.Value = decimal.Parse(commands[2]);
+              textBoxMsgTarget.Text     = commands[1];
+              numericUpDownMsg.Value    = decimal.Parse(commands[2]);
               numericUpDownWParam.Value = decimal.Parse(commands[3]);
               numericUpDownLParam.Value = decimal.Parse(commands[4]);
               break;
@@ -262,7 +254,7 @@ namespace Translator
                   else if (suffix.StartsWith(Common.MouseMoveRight))  checkBoxMouseMoveRight.Checked = true;
                   else if (suffix.StartsWith(Common.MouseMoveUp))     checkBoxMouseMoveUp.Checked = true;
 
-                  numericUpDownMouseMove.Value = Decimal.Parse(suffix.Substring(suffix.IndexOf(" ")));
+                  numericUpDownMouseMove.Value = Decimal.Parse(suffix.Substring(suffix.IndexOf(' ')));
                   break;
               }
               break;
@@ -294,7 +286,7 @@ namespace Translator
                   break;
 
                 default:
-                  if (prefix.Equals(Common.CmdPrefixEject, StringComparison.InvariantCultureIgnoreCase))
+                  if (prefix.Equals(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
                     comboBoxMiscCommand.SelectedItem = Common.UITextEject;
                   //else
                   break;
@@ -382,24 +374,24 @@ namespace Translator
 
         case "tabPageMessage":
           {
-            string target = "error";
+            string target = "ERROR";
 
             if (radioButtonActiveWindow.Checked)
             {
-              target = "active";
+              target = Common.WMTargetActive;
               textBoxMsgTarget.Text = "*";
             }
             else if (radioButtonApplication.Checked)
             {
-              target = "application";
+              target = Common.WMTargetApplication;
             }
             else if (radioButtonClass.Checked)
             {
-              target = "class";
+              target = Common.WMTargetClass;
             }
             else if (radioButtonWindowTitle.Checked)
             {
-              target = "window";
+              target = Common.WMTargetWindow;
             }
 
             textBoxCommand.Text = _command =

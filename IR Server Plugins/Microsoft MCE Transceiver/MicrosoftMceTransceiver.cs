@@ -346,7 +346,7 @@ namespace MicrosoftMceTransceiver
 
       //code.Finalize();
 
-      _driver.Send(code, (uint)blasterPort);
+      _driver.Send(code, (int)blasterPort);
 
       return true;
     }
@@ -500,17 +500,17 @@ namespace MicrosoftMceTransceiver
         ServiceController[] services = ServiceController.GetServices();
         foreach (ServiceController service in services)
         {
-          if (service.ServiceName.Equals("ehRecvr", StringComparison.InvariantCultureIgnoreCase))
+          if (service.ServiceName.Equals("ehRecvr", StringComparison.OrdinalIgnoreCase))
           {
             if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
               service.Stop();
           }
-          else if (service.ServiceName.Equals("ehSched", StringComparison.InvariantCultureIgnoreCase))
+          else if (service.ServiceName.Equals("ehSched", StringComparison.OrdinalIgnoreCase))
           {
             if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
               service.Stop();
           }
-          else if (service.ServiceName.Equals("mcrdsvc", StringComparison.InvariantCultureIgnoreCase))
+          else if (service.ServiceName.Equals("mcrdsvc", StringComparison.OrdinalIgnoreCase))
           {
             if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
               service.Stop();
@@ -534,7 +534,7 @@ namespace MicrosoftMceTransceiver
       {
         Process[] processes = Process.GetProcesses();
         foreach (Process proc in processes)
-          if (proc.ProcessName.Equals("ehtray", StringComparison.InvariantCultureIgnoreCase))
+          if (proc.ProcessName.Equals("ehtray", StringComparison.OrdinalIgnoreCase))
             proc.Kill();
       }
 #if TRACE

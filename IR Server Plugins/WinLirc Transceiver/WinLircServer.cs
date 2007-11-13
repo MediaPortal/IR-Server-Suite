@@ -161,7 +161,9 @@ namespace WinLircTransceiver
     private void ProcessData(String data)
     {
       // Ignore commands we do not need (like the startup message)
-      if ((data == "BEGIN") || (data == "END") || (data == "SIGHUP"))
+      if (data.Equals("BEGIN", StringComparison.OrdinalIgnoreCase)  ||
+          data.Equals("END", StringComparison.OrdinalIgnoreCase)    ||
+          data.Equals("SIGHUP", StringComparison.OrdinalIgnoreCase))
         return;
 
       Command command = new Command(data);

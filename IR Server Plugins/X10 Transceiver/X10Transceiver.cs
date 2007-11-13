@@ -28,12 +28,12 @@ namespace X10Transceiver
 
     #region Variables
 
-    static RemoteHandler _remoteButtonHandler = null;
+    static RemoteHandler _remoteButtonHandler;
 
-    X10Interface X10Inter = null;
-    IConnectionPointContainer icpc = null;
-    IConnectionPoint icp = null;
-    int cookie = 0;
+    X10Interface X10Inter;
+    IConnectionPointContainer icpc;
+    IConnectionPoint icp;
+    int cookie;
 
     #endregion Variables
    

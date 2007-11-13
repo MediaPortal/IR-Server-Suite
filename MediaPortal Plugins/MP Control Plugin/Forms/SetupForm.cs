@@ -67,7 +67,7 @@ namespace MediaPortal.Plugins
 
       // Mouse Mode ...
       foreach (string button in Enum.GetNames(typeof(RemoteButton)))
-        if (button != "None")
+        if (!button.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxMouseModeButton.Items.Add(button);
 
       comboBoxMouseModeButton.SelectedItem = Enum.GetName(typeof(RemoteButton), MPControlPlugin.MouseModeButton);
@@ -78,7 +78,7 @@ namespace MediaPortal.Plugins
 
       // Multi-Mapping ...
       foreach (string button in Enum.GetNames(typeof(RemoteButton)))
-        if (button != "None")
+        if (!button.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxMultiButton.Items.Add(button);
 
       comboBoxMultiButton.SelectedItem = Enum.GetName(typeof(RemoteButton), MPControlPlugin.MultiMappingButton);
@@ -91,7 +91,7 @@ namespace MediaPortal.Plugins
 
       comboBoxEvents.Items.Clear();
       foreach (string eventType in Enum.GetNames(typeof(MappedEvent.MappingEvent)))
-        if (eventType != "None")
+        if (!eventType.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxEvents.Items.Add(eventType);
 
       comboBoxParameter.Items.Clear();
@@ -233,7 +233,7 @@ namespace MediaPortal.Plugins
     }
 
     delegate void DelegateAddNode(string keyCode);
-    DelegateAddNode _addNode = null;
+    DelegateAddNode _addNode;
 
     void AddNode(string keyCode)
     {
@@ -539,17 +539,17 @@ namespace MediaPortal.Plugins
     {
       string[] items = new string[2];
 
-      if ((comboBoxParameter.SelectedItem as string) != "Ignore Parameters")
+      if ((comboBoxParameter.SelectedItem as string).Equals("Ignore Parameters", StringComparison.OrdinalIgnoreCase))
+      {
+        items[0] = comboBoxEvents.SelectedItem as string;
+      }
+      else
       {
         items[0] = comboBoxEvents.SelectedItem as string;
         items[0] += ",";
         items[0] += comboBoxParameter.SelectedItem as string;
         items[0] += "=";
         items[0] += textBoxParamValue.Text;
-      }
-      else
-      {
-        items[0] = comboBoxEvents.SelectedItem as string;
       }
 
       items[1] = String.Empty;
@@ -564,7 +564,7 @@ namespace MediaPortal.Plugins
       string selected = comboBoxCommands.SelectedItem as string;
       string command = String.Empty;
 
-      if (selected == Common.UITextRun)
+      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
         ExternalProgram externalProgram = new ExternalProgram();
         if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
@@ -572,7 +572,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (selected == Common.UITextSerial)
+      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
       {
         SerialCommand serialCommand = new SerialCommand();
         if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -580,7 +580,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (selected == Common.UITextWindowMsg)
+      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -588,7 +588,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (selected == Common.UITextTcpMsg)
+      else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
         if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -596,7 +596,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
       }
-      else if (selected == Common.UITextKeys)
+      else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand();
         if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -604,7 +604,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixKeys + keysCommand.CommandString;
       }
-      else if (selected == Common.UITextEject)
+      else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
       {
         EjectCommand ejectCommand = new EjectCommand();
         if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -612,7 +612,7 @@ namespace MediaPortal.Plugins
         
         command = Common.CmdPrefixEject + ejectCommand.CommandString;
       }
-      else if (selected == Common.UITextGoto)
+      else if (selected.Equals(Common.UITextGoto, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen();
         if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
@@ -620,7 +620,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixGoto + goToScreen.Screen;
       }
-      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         BlastCommand blastCommand = new BlastCommand(
           new BlastIrDelegate(MPControlPlugin.BlastIR),
@@ -888,7 +888,7 @@ namespace MediaPortal.Plugins
 
       string command = listViewEventMap.SelectedItems[0].SubItems[1].Text;
 
-      if (command.StartsWith(Common.CmdPrefixRun))
+      if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         ExternalProgram externalProgram = new ExternalProgram(commands);
@@ -897,7 +897,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixGoto))
+      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen(command.Substring(Common.CmdPrefixGoto.Length));
         if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
@@ -905,7 +905,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixGoto + goToScreen.Screen;
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial))
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         SerialCommand serialCommand = new SerialCommand(commands);
@@ -914,7 +914,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg))
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         MessageCommand messageCommand = new MessageCommand(commands);
@@ -923,7 +923,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys))
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand(command.Substring(Common.CmdPrefixKeys.Length));
         if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -931,7 +931,7 @@ namespace MediaPortal.Plugins
 
         command = Common.CmdPrefixKeys + keysCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast))
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
 

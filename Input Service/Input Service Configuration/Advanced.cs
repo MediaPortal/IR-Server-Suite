@@ -7,6 +7,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
+using IrssUtils;
+
 namespace Configuration
 {
 
@@ -58,9 +60,9 @@ namespace Configuration
     {
       InitializeComponent();
 
-      string[] networkPCs = IrssUtils.Win32.GetNetworkComputers(false);
+      List<string> networkPCs = Network.GetComputers(false);
       if (networkPCs != null)
-        comboBoxComputer.Items.AddRange(networkPCs);
+        comboBoxComputer.Items.AddRange(networkPCs.ToArray());
     }
 
     #endregion Constructor

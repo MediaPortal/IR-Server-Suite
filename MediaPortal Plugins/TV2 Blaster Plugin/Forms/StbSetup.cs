@@ -201,7 +201,7 @@ namespace MediaPortal.Plugins
 
     public void SetToXml(string xmlFile)
     {
-      if (xmlFile == "Clear all")
+      if (xmlFile.Equals("Clear all", StringComparison.OrdinalIgnoreCase))
       {
         foreach (ListViewItem item in listViewExternalCommands.Items)
           item.SubItems[1].Text = String.Empty;
@@ -401,7 +401,7 @@ namespace MediaPortal.Plugins
         string selected = comboBoxCommands.SelectedItem as string;
         string commandString;
 
-        if (selected == Common.UITextRun)
+        if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
         {
           ExternalProgram externalProgram = new ExternalProgram(parameterInfo);
 
@@ -410,7 +410,7 @@ namespace MediaPortal.Plugins
 
           commandString = Common.CmdPrefixRun + externalProgram.CommandString;
         }
-        else if (selected == Common.UITextSerial)
+        else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
         {
           SerialCommand serialCommand = new SerialCommand(parameterInfo);
 
@@ -419,7 +419,7 @@ namespace MediaPortal.Plugins
 
           commandString = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
-        else if (selected == Common.UITextWindowMsg)
+        else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           MessageCommand messageCommand = new MessageCommand();
 
@@ -428,7 +428,7 @@ namespace MediaPortal.Plugins
 
           commandString = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
         }
-        else if (selected == Common.UITextKeys)
+        else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
         {
           KeysCommand keysCommand = new KeysCommand();
 
@@ -437,7 +437,7 @@ namespace MediaPortal.Plugins
 
           commandString = Common.CmdPrefixKeys + keysCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixBlast))
+        else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           BlastCommand blastCommand = new BlastCommand(
             new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
@@ -450,7 +450,7 @@ namespace MediaPortal.Plugins
 
           commandString = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixMacro))
+        else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
           commandString = selected;
         }

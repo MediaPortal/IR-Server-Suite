@@ -37,13 +37,13 @@ namespace MediaPortal.Plugins
     /// Main GUI label.
     /// </summary>
     [SkinControlAttribute(2)]
-    protected GUILabelControl mainLabel = null;
+    protected GUILabelControl mainLabel;
     
     /// <summary>
     /// Main GUI Facade View.
     /// </summary>
     [SkinControlAttribute(50)]
-    protected GUIFacadeControl facadeView = null;
+    protected GUIFacadeControl facadeView;
 
     #endregion Skin Elements
 
@@ -69,7 +69,7 @@ namespace MediaPortal.Plugins
     static MenuRoot _menu;
 
     static string _serverHost;
-    static string _learnIRFilename = null;
+    static string _learnIRFilename;
 
     static bool _registered;
 
@@ -309,7 +309,7 @@ namespace MediaPortal.Plugins
         {
           if (facadeView.SelectedListItem.IsFolder)
           {
-            if (facadeView.SelectedListItem.Label == "..")
+            if (facadeView.SelectedListItem.Label.Equals("..", StringComparison.Ordinal))
               PopulateListControl("\\");
             else
               PopulateListControl(facadeView.SelectedListItem.Label);
@@ -343,9 +343,9 @@ namespace MediaPortal.Plugins
     static string GetCommand(string path, string name)
     {
       foreach (string collection in _menu.GetAllItems())
-        if (collection == path)
+        if (collection.Equals(path, StringComparison.OrdinalIgnoreCase))
           foreach (string command in _menu.GetItem(collection).GetAllItems())
-            if (command == name)
+            if (command.Equals(name, StringComparison.OrdinalIgnoreCase))
               return _menu.GetItem(collection).GetItem(command).Command;
 
       return null;
@@ -353,7 +353,7 @@ namespace MediaPortal.Plugins
 
     void PopulateListControl(string path)
     {
-      if (path == "\\")
+      if (path.Equals("\\", StringComparison.Ordinal))
         GUIControl.SetControlLabel(WindowID, mainLabel.GetID, "Blast Zone");
       else
         GUIControl.SetControlLabel(WindowID, mainLabel.GetID, path);
@@ -364,7 +364,7 @@ namespace MediaPortal.Plugins
 
       foreach (string collection in _menu.GetAllItems())
       {
-        if (path == "\\")
+        if (path.Equals("\\", StringComparison.Ordinal))
         {
           item = new GUIListItem(collection);
           item.IsFolder = true;
@@ -373,7 +373,7 @@ namespace MediaPortal.Plugins
           item.IconImageBig = "defaultFolderBig.png";
           facadeView.Add(item);
         }
-        else if (collection == path)
+        else if (collection.Equals(path, StringComparison.OrdinalIgnoreCase))
         {
           item = new GUIListItem("..");
           item.IsFolder = true;
@@ -600,13 +600,13 @@ namespace MediaPortal.Plugins
     /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackAdd(string fileName)
     {
-      string lowerCasedFileName = fileName.ToLowerInvariant();
+      string upperCasedFileName = fileName.ToUpperInvariant();
 
       if (_macroStack == null)
       {
         _macroStack = new List<string>();
       }
-      else if (_macroStack.Contains(lowerCasedFileName))
+      else if (_macroStack.Contains(upperCasedFileName))
       {
         StringBuilder macroStackTrace = new StringBuilder();
         macroStackTrace.AppendLine("Macro infinite loop detected!");
@@ -615,18 +615,18 @@ namespace MediaPortal.Plugins
 
         foreach (string macro in _macroStack)
         {
-          if (macro.Equals(lowerCasedFileName))
+          if (macro.Equals(upperCasedFileName))
             macroStackTrace.AppendLine(String.Format("--> {0}", macro));
           else
             macroStackTrace.AppendLine(macro);
         }
 
-        macroStackTrace.AppendLine(String.Format("--> {0}", lowerCasedFileName));
+        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
 
         throw new ApplicationException(macroStackTrace.ToString());
       }
 
-      _macroStack.Add(lowerCasedFileName);
+      _macroStack.Add(upperCasedFileName);
     }
     /// <summary>
     /// Removes from the Macro Stack.
@@ -634,10 +634,10 @@ namespace MediaPortal.Plugins
     /// <param name="fileName">Name of the macro file.</param>
     static void MacroStackRemove(string fileName)
     {
-      string lowerCasedFileName = fileName.ToLowerInvariant();
+      string upperCasedFileName = fileName.ToUpperInvariant();
 
-      if (_macroStack.Contains(lowerCasedFileName))
-        _macroStack.Remove(lowerCasedFileName);
+      if (_macroStack.Contains(upperCasedFileName))
+        _macroStack.Remove(upperCasedFileName);
 
       if (_macroStack.Count == 0)
         _macroStack = null;
@@ -705,7 +705,7 @@ namespace MediaPortal.Plugins
             case Common.XmlTagGoto:
               {
                 if (InConfiguration)
-                  MessageBox.Show(commandProperty, "Go To Window", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show(commandProperty, Common.UITextGoto, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
                   MPCommon.ProcessGoTo(commandProperty, MP_BasicHome);
                 break;
@@ -735,7 +735,7 @@ namespace MediaPortal.Plugins
               {
                 if (InConfiguration)
                 {
-                  MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", "Window State Toggle Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", Common.UITextWindowState, MessageBoxButtons.OK, MessageBoxIcon.Information);
                   break;
                 }
 
@@ -752,7 +752,7 @@ namespace MediaPortal.Plugins
               {
                 if (InConfiguration)
                 {
-                  MessageBox.Show("Command to get focus cannot be processed in configuration.", "Get Focus Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  MessageBox.Show("Command to get focus cannot be processed in configuration.", Common.UITextFocus, MessageBoxButtons.OK, MessageBoxIcon.Information);
                   break;
                 }
 
@@ -885,66 +885,66 @@ namespace MediaPortal.Plugins
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase)) // Macro
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
         ProcessMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.InvariantCultureIgnoreCase)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.InvariantCultureIgnoreCase)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.InvariantCultureIgnoreCase))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.InvariantCultureIgnoreCase))  // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         if (InConfiguration)
-          MessageBox.Show(keyCommand, "Keystroke Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
         else
           Common.ProcessKeyCommand(keyCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.InvariantCultureIgnoreCase)) // Mouse Command
+      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase)) // Mouse Command
       {
         string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
         Common.ProcessMouseCommand(mouseCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.InvariantCultureIgnoreCase)) // Eject Command
+      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase)) // Eject Command
       {
         string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
         Common.ProcessEjectCommand(ejectCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.InvariantCultureIgnoreCase)) // Hibernate Command
+      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase)) // Hibernate Command
       {
         Hibernate();
       }
-      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.InvariantCultureIgnoreCase)) // Reboot Command
+      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase)) // Reboot Command
       {
         Reboot();
       }
-      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.InvariantCultureIgnoreCase)) // Shutdown Command
+      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase)) // Shutdown Command
       {
         ShutDown();
       }
-      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.InvariantCultureIgnoreCase)) // Standby Command
+      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase)) // Standby Command
       {
         Standby();
       }
-      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.InvariantCultureIgnoreCase)) // Go To Screen
+      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase)) // Go To Screen
       {
         MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), MP_BasicHome);
       }

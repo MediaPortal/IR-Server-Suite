@@ -54,21 +54,21 @@ namespace IRBlast
 
           for (int index = 0; index < args.Length; index++)
           {
-            switch (args[index].ToLowerInvariant())
+            switch (args[index].ToUpperInvariant())
             {
-              case "-host":
+              case "-HOST":
                 _serverHost = args[++index];
                 continue;
 
-              case "-port":
+              case "-PORT":
                 _blastPort = args[++index];
                 continue;
 
-              case "-channel":
+              case "-CHANNEL":
                 _treatAsChannelNumber = true;
                 continue;
 
-              case "-pad":
+              case "-PAD":
                 int.TryParse(args[++index], out _padChannelNumber);
                 continue;
 
