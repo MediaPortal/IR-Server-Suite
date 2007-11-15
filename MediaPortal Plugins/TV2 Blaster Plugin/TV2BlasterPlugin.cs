@@ -503,9 +503,9 @@ namespace MediaPortal.Plugins
           command = config.PreChangeCommand;
           if (!String.IsNullOrEmpty(command))
           {
-            if (command.StartsWith(Common.CmdPrefixRun))
+            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
               ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
-            else if (command.StartsWith(Common.CmdPrefixSerial))
+            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
             else
               ProcessCommand(command);
@@ -522,9 +522,9 @@ namespace MediaPortal.Plugins
           command = config.Digits[charVal];
           if (!String.IsNullOrEmpty(command))
           {
-            if (command.StartsWith(Common.CmdPrefixRun))
+            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
               ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), charVal, channel.ToString());
-            else if (command.StartsWith(Common.CmdPrefixSerial))
+            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), charVal, channel.ToString());
             else
               ProcessCommand(command);
@@ -539,7 +539,7 @@ namespace MediaPortal.Plugins
           command = config.SelectCommand;
           if (!String.IsNullOrEmpty(command))
           {
-            if (command.StartsWith(Common.CmdPrefixRun))
+            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
             {
               ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
 
@@ -551,7 +551,7 @@ namespace MediaPortal.Plugins
                 ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
               }
             }
-            else if (command.StartsWith(Common.CmdPrefixSerial))
+            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
             {
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
 

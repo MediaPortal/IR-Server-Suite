@@ -143,7 +143,7 @@ namespace SkinEditor
     {
       if (openFileDialog.ShowDialog(this) == DialogResult.OK)
       {
-        if (openFileDialog.FileName.EndsWith("*.xml"))
+        if (openFileDialog.FileName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
           return;
 
         LoadImage(openFileDialog.FileName);

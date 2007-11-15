@@ -1,5 +1,6 @@
 namespace SageSetup
 {
+  
   partial class FormMain
   {
     /// <summary>
@@ -242,5 +243,6 @@ namespace SageSetup
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.NumericUpDown numericUpDownPad;
   }
+
 }
 

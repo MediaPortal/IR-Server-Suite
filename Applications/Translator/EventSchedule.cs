@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Translator
 {
-
+/*
   #region Enumerations
-  /*
+
   public enum ScheduleRepeat
   {
     Never,
@@ -48,17 +48,17 @@ namespace Translator
     November,
     December,
   }
-  */
+
   #endregion Enumerations
 
   class EventSchedule
   {
-    //DateTime _start;
+    DateTime _start;
 
-    //ScheduleRepeat _repeat = ScheduleRepeat.Never;
-    //ScheduleDays _days = ScheduleDays.None;
-    //ScheduleMonths _months = ScheduleMonths.None;
+    ScheduleRepeat _repeat = ScheduleRepeat.Never;
+    ScheduleDays _days = ScheduleDays.None;
+    ScheduleMonths _months = ScheduleMonths.None;
 
   }
-
+*/
 }

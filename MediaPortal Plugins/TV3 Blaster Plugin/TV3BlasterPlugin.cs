@@ -169,6 +169,10 @@ namespace TvEngine
         Log.Info("TV3BlasterPlugin: Stopped");
     }
 
+    /// <summary>
+    /// Gets the setup form control.
+    /// </summary>
+    /// <value>The setup form control.</value>
     [CLSCompliant(false)]
     public SetupTv.SectionSettings Setup
     {

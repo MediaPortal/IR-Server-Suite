@@ -107,114 +107,114 @@ namespace MediaPortal.Plugins
           {
             writer.WriteStartElement("action");
 
-            if (item.StartsWith(Common.CmdPrefixMacro))
+            if (item.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagMacro);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMacro.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixBlast))
+            else if (item.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagBlast);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixPause))
+            else if (item.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagPause);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPause.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixRun))
+            else if (item.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagRun);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixRun.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixGoto))
+            else if (item.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagGoto);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixGoto.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixSerial))
+            else if (item.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagSerial);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixSerial.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixWindowMsg))
+            else if (item.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixTcpMsg))
+            else if (item.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagTcpMsg);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixTcpMsg.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixKeys))
+            else if (item.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagKeys);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixMouse))
+            else if (item.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagMouse);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMouse.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixEject))
+            else if (item.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagEject);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixEject.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixPopup))
+            else if (item.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagPopup);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixMultiMap))
+            else if (item.StartsWith(Common.CmdPrefixMultiMap, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagMultiMap);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMultiMap.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixMouseMode))
+            else if (item.StartsWith(Common.CmdPrefixMouseMode, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagMouseMode);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMouseMode.Length));
             }
-            else if (item.StartsWith(Common.CmdPrefixInputLayer))
+            else if (item.StartsWith(Common.CmdPrefixInputLayer, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagInputLayer);
               writer.WriteAttributeString("cmdproperty", String.Empty);
             }
             /*          
-            else if (item.StartsWith(Common.CmdPrefixWindowState))
+            else if (item.StartsWith(Common.CmdPrefixWindowState, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagWindowState);
               writer.WriteAttributeString("cmdproperty", String.Empty);
             }
             */
-            else if (item.StartsWith(Common.CmdPrefixFocus))
+            else if (item.StartsWith(Common.CmdPrefixFocus, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagFocus);
               writer.WriteAttributeString("cmdproperty", String.Empty);
             }
-            else if (item.StartsWith(Common.CmdPrefixExit))
+            else if (item.StartsWith(Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagExit);
               writer.WriteAttributeString("cmdproperty", String.Empty);
             }
-            else if (item.StartsWith(Common.CmdPrefixStandby))
+            else if (item.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagStandby);
               writer.WriteAttributeString("cmdproperty", String.Empty);
             }
-            else if (item.StartsWith(Common.CmdPrefixHibernate))
+            else if (item.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagHibernate);
               writer.WriteAttributeString("cmdproperty", String.Empty);
             }
-            else if (item.StartsWith(Common.CmdPrefixReboot))
+            else if (item.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagReboot);
               writer.WriteAttributeString("cmdproperty", String.Empty);
             }
-            else if (item.StartsWith(Common.CmdPrefixShutdown))
+            else if (item.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagShutdown);
               writer.WriteAttributeString("cmdproperty", String.Empty);
@@ -592,7 +592,7 @@ namespace MediaPortal.Plugins
 
       string selected = listBoxMacro.SelectedItem as string;
 
-      if (selected.StartsWith(Common.CmdPrefixPause))
+      if (selected.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
       {
         PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
         if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
@@ -603,7 +603,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixPause + pauseTime.Time.ToString());
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixRun))
+      else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
 
@@ -616,7 +616,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixRun + executeProgram.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixSerial))
+      else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
 
@@ -629,7 +629,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixSerial + serialCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
+      else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
 
@@ -642,7 +642,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixTcpMsg))
+      else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
@@ -654,7 +654,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixKeys))
+      else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
         if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -665,7 +665,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixMouse))
+      else if (selected.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
       {
         MouseCommand mouseCommand = new MouseCommand(selected.Substring(Common.CmdPrefixMouse.Length));
         if (mouseCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -676,7 +676,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixMouse + mouseCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixEject))
+      else if (selected.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
       {
         EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
         if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
@@ -687,7 +687,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixEject + ejectCommand.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixGoto))
+      else if (selected.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen(selected.Substring(Common.CmdPrefixGoto.Length));
         if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
@@ -698,7 +698,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixGoto + goToScreen.Screen);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixPopup))
+      else if (selected.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
         PopupMessage popupMessage = new PopupMessage(commands);
@@ -710,7 +710,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.Items.Insert(index, Common.CmdPrefixPopup + popupMessage.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
-      else if (selected.StartsWith(Common.CmdPrefixBlast))
+      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 

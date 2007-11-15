@@ -940,7 +940,7 @@ namespace MediaPortal.Plugins
       try
 #endif
       {
-        DirectoryInfo dir = Directory.CreateDirectory(Config.GetFolder(Config.Dir.CustomInputDevice));
+        Directory.CreateDirectory(Config.GetFolder(Config.Dir.CustomInputDevice));
       }
 #if !DEBUG
       catch

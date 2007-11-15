@@ -249,10 +249,10 @@ namespace Translator
                 case Common.MouseScrollUp:    checkBoxMouseScrollUp.Checked = true;     break;
 
                 default:
-                  if (suffix.StartsWith(Common.MouseMoveDown))        checkBoxMouseMoveDown.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveLeft))   checkBoxMouseMoveLeft.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveRight))  checkBoxMouseMoveRight.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveUp))     checkBoxMouseMoveUp.Checked = true;
+                  if (suffix.StartsWith(Common.MouseMoveDown, StringComparison.OrdinalIgnoreCase))        checkBoxMouseMoveDown.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveLeft, StringComparison.OrdinalIgnoreCase))   checkBoxMouseMoveLeft.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveRight, StringComparison.OrdinalIgnoreCase))  checkBoxMouseMoveRight.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveUp, StringComparison.OrdinalIgnoreCase))     checkBoxMouseMoveUp.Checked = true;
 
                   numericUpDownMouseMove.Value = Decimal.Parse(suffix.Substring(suffix.IndexOf(' ')));
                   break;
@@ -288,7 +288,6 @@ namespace Translator
                 default:
                   if (prefix.Equals(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
                     comboBoxMiscCommand.SelectedItem = Common.UITextEject;
-                  //else
                   break;
               }
               break;
@@ -474,8 +473,10 @@ namespace Translator
 
     private void buttonTest_Click(object sender, EventArgs e)
     {
-      if (_command.StartsWith(Common.CmdPrefixKeys))
+      if (_command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+      {
         MessageBox.Show(this, "Keystroke commands cannot be tested here", "Cannot test Keystroke command", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+      }
       else
       {
         try

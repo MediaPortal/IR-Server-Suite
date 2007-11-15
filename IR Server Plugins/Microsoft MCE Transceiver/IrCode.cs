@@ -256,7 +256,7 @@ namespace MicrosoftMceTransceiver
     /// <returns>New IrCode object.</returns>
     public static IrCode FromByteArray(byte[] data)
     {
-      if (data[4] != ' ')
+      if (data[4] == ' ')
       {
         string code = Encoding.ASCII.GetString(data);
 

@@ -1854,6 +1854,7 @@ namespace IrssUtils
       [MarshalAs(UnmanagedType.Bool)]
       bool attach);
 
+    /*
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool IsWindowVisible(IntPtr hWnd);
@@ -1861,6 +1862,7 @@ namespace IrssUtils
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool IsIconic(IntPtr hWnd);
+    */
 
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
     static extern int GetWindowTextLength(IntPtr hWnd);
@@ -1919,6 +1921,9 @@ namespace IrssUtils
     /// <returns>File icon.</returns>
     public static Icon GetIconFor(string fileName)
     {
+      if (String.IsNullOrEmpty(fileName))
+        throw new ArgumentNullException("fileName");
+
       SHFILEINFO shinfo = new SHFILEINFO();
 
       SHGetFileInfo(fileName, 0, ref shinfo, (uint)Marshal.SizeOf(shinfo), SHGFI.Icon | SHGFI.LargeIcon);

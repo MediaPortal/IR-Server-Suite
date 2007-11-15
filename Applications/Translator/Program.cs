@@ -115,8 +115,11 @@ namespace Translator
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-      // TODO: Change log level to info for release.
+#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
+#else
+      IrssLog.LogLevel = IrssLog.Level.Info;
+#endif
       IrssLog.Open(Common.FolderIrssLogs + "Translator.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
@@ -272,6 +275,28 @@ namespace Translator
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixTranslator);
             continue;
 
+          case "-CHANNEL":
+            {
+              if (args.Length > index + 3)
+              {
+                string channel = args[++index];
+                int padding = int.Parse(args[++index]);
+                string port = args[++index];
+
+                while (channel.Length < padding)
+                  channel = '0' + channel;
+
+                foreach (char digit in channel)
+                  CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + digit + '|' + port);
+              }
+              else
+              {
+                Console.WriteLine("Channel command requires three parameters.");
+              }
+
+              continue;
+            }
+
           //TODO: Add more command line options.
         }
       }
@@ -281,20 +306,26 @@ namespace Translator
     {
       IrssLog.Info("Show OSD");
 
-      Thread thread = new Thread(new ThreadStart(MenuThread));
-      thread.Start();
-    }
-
-    static void MenuThread()
-    {
       if (_menuForm.Visible)
       {
         IrssLog.Info("OSD already visible");
-
-        return;
       }
-
-      _menuForm.ShowDialog();
+      else
+      {
+        Thread thread = new Thread(new ThreadStart(MenuThread));
+        thread.Start();
+      }
+    }
+    static void MenuThread()
+    {
+      try
+      {
+        _menuForm.ShowDialog();
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
     }
 
     static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
@@ -693,7 +724,7 @@ namespace Translator
 
           case MessageType.BlastIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
-              IrssLog.Debug("Blast successful");
+              IrssLog.Info("Blast successful");
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
               IrssLog.Error("Failed to blast IR command");
             break;
@@ -767,7 +798,7 @@ namespace Translator
         int pid = Win32.GetForegroundWindowPID();
         if (pid == -1)
         {
-          IrssLog.Debug("Error retreiving foreground window process ID");
+          IrssLog.Debug("Failed to retreive foreground window process ID");
           return null;
         }
 

@@ -9,10 +9,16 @@ using System.ServiceProcess;
 namespace InputService
 {
 
+  /// <summary>
+  /// Installer for the Input Service.
+  /// </summary>
   [RunInstaller(true)]
   public class InputServiceInstaller : Installer
   {
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InputServiceInstaller"/> class.
+    /// </summary>
     public InputServiceInstaller()
     {
       //this.Committing += new InstallEventHandler(InputServiceInstaller_Committing);
@@ -46,10 +52,10 @@ namespace InputService
         serviceController.Start();
     }
 
+    /*
     /// <summary>
     /// Used to set the "Allow service to interact with the desktop" setting.
     /// </summary>
-    /*
     void InputServiceInstaller_Committing(object sender, InstallEventArgs e)
     {
       ManagementBaseObject InParam  = null;

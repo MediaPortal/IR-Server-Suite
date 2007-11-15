@@ -123,7 +123,12 @@ namespace Translator
       {
         checkBoxAutoRun.Checked = SystemRegistry.GetAutoRun("Translator");
       }
-      catch { }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+
+        checkBoxAutoRun.Checked = false;
+      }
     }
 
     #endregion Constructor
@@ -175,8 +180,11 @@ namespace Translator
       int imageIndex = 2;
       foreach (ProgramSettings progSettings in Program.Config.Programs)
       {
-        Icon icon = Win32.GetIconFor(progSettings.FileName);
+        Icon icon = null;
 
+        if (!String.IsNullOrEmpty(progSettings.FileName))
+          icon = Win32.GetIconFor(progSettings.FileName);
+        
         if (icon != null)
         {
           imageListPrograms.Images.Add(icon);
@@ -1266,7 +1274,11 @@ namespace Translator
         if (programSettings.Name.Equals(selectedItem))
           continue;
 
+        if (String.IsNullOrEmpty(programSettings.FileName))
+          continue;
+
         Icon icon = Win32.GetIconFor(programSettings.FileName);
+
         Image image = null;
         if (icon != null)
           image = icon.ToBitmap();

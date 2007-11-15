@@ -19,20 +19,33 @@ namespace Translator
   public partial class MenuForm : Form
   {
 
+    #region Enumerations
+
+    enum Menus
+    {
+      Main,
+
+      Launch,
+      Tasks,
+      Macros,
+      System,
+      Windows,
+      Power,
+      Audio,
+      Eject,
+
+      WindowActivate,
+      WindowClose,
+      WindowMinimize,
+      WindowMaximize,
+
+    }
+
+    #endregion Enumerations
+
     #region Constants
 
     const string WindowTitle = "Translator OSD";
-
-    // Menus
-    const string MenuMain     = "Main";
-    const string MenuLaunch   = "Launch";
-    const string MenuTasks    = "Tasks";
-    const string MenuMacros   = "Macros";
-    const string MenuSystem   = "System";
-    const string MenuWindows  = "Windows";
-    const string MenuPower    = "Power";
-    const string MenuAudio    = "Audio";
-    const string MenuEject    = "Eject";
 
     // Menu UI Text
     const string UITextMain     = "Main Menu";
@@ -90,9 +103,7 @@ namespace Translator
     ListViewItem _macro;
     ListViewItem _system;
 
-    List<string> _menuStack;
-
-    string _startMenu = "Main";
+    List<Menus> _menuStack;
 
     #endregion Variables
 
@@ -107,40 +118,43 @@ namespace Translator
 
       _launch = new ListViewItem(UITextLaunch, 0);
       _launch.ToolTipText = DescLaunch;
-      _launch.Tag = TagMenu + MenuLaunch;
+      _launch.Tag = Menus.Launch;
 
       _taskSwitch = new ListViewItem(UITextTasks, 1);
       _taskSwitch.ToolTipText = DescTasks;
-      _taskSwitch.Tag = TagMenu + MenuTasks;
+      _taskSwitch.Tag = Menus.Tasks;
 
       _macro = new ListViewItem(UITextMacros, 2);
       _macro.ToolTipText = DescMacros;
-      _macro.Tag = TagMenu + MenuMacros;
+      _macro.Tag = Menus.Macros;
 
       _system = new ListViewItem(UITextSystem, 3);
       _system.ToolTipText = DescSystem;
-      _system.Tag = TagMenu + MenuSystem;
-
-      _menuStack = new List<string>();
+      _system.Tag = Menus.System;
     }
-    
+
+    private void MenuForm_Load(object sender, EventArgs e)
+    {
+      _menuStack = new List<Menus>();
+
+      SwitchMenu(Menus.Main);
+    }
     private void MenuForm_Shown(object sender, EventArgs e)
     {
-      SwitchMenu(_startMenu);
-      _startMenu = MenuMain;
-
       Win32.SetForegroundWindow(this.Handle, true);
-
-      //listViewMenu.Select();
     }
-
     private void MenuForm_Deactivate(object sender, EventArgs e)
     {
       this.Close();
     }
+    private void MenuForm_FormClosed(object sender, FormClosedEventArgs e)
+    {
+      listViewMenu.SelectedItems.Clear();
+      listViewMenu.Items.Clear();
 
+      _menuStack = null;
+    }
 
-    
     void CreateMainImageList()
     {
       _listMain = new ImageList();
@@ -169,17 +183,13 @@ namespace Translator
     {
       listViewMenu.View = View.LargeIcon;
       listViewMenu.Alignment = ListViewAlignment.Left;
-      listViewMenu.Scrollable = true;
-
     }
     void SetToListStyle()
     {
       listViewMenu.View = View.Details;
       listViewMenu.Alignment = ListViewAlignment.Top;
-      listViewMenu.Scrollable = true;
-
     }
-    
+
     void SetWindowTitle(string subMenuName)
     {
       if (String.IsNullOrEmpty(subMenuName))
@@ -195,53 +205,17 @@ namespace Translator
 
       listViewMenu.LargeImageList = _listMain;
 
-      //listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
-
       SetToIconStyle();
 
+      listViewMenu.Items.Add(_taskSwitch);
       listViewMenu.Items.Add(_launch);
-      listViewMenu.Items.Add(_taskSwitch); 
       listViewMenu.Items.Add(_macro);
       listViewMenu.Items.Add(_system);
-
-      _launch.Selected = true;
     }
 
-    void LoadMenuLaunch()
-    {
-      SetWindowTitle(UITextLaunch);
-
-      //listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
-
-      ImageList newList = new ImageList();
-      newList.ColorDepth = ColorDepth.Depth32Bit;
-      newList.ImageSize = new Size(32, 32);
-
-      listViewMenu.LargeImageList = newList;
-
-      SetToIconStyle();
-
-      int index = 0;
-      foreach (ProgramSettings program in Program.Config.Programs)
-      {
-        newList.Images.Add(Win32.GetIconFor(program.FileName));
-        ListViewItem item = new ListViewItem(program.Name, index++);
-        item.ToolTipText = program.FileName;
-        item.Tag = TagLaunch + program.FileName;
-
-        listViewMenu.Items.Add(item);
-      }
-
-      listViewMenu.Items[0].Selected = true;
-    }
     void LoadMenuTasks()
     {
       SetWindowTitle(UITextTasks);
-
-      //listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
 
       ImageList newList = new ImageList();
       newList.ColorDepth = ColorDepth.Depth32Bit;
@@ -263,19 +237,43 @@ namespace Translator
       ListViewItem desktop = new ListViewItem("Desktop", 0);
       desktop.ToolTipText = "Show the Desktop";
       desktop.Tag = IntPtr.Zero;
-      desktop.Selected = true;
       listViewMenu.Items.Add(desktop);
 
       PopulateTaskList();
+    }
+    void LoadMenuLaunch()
+    {
+      SetWindowTitle(UITextLaunch);
+
+      ImageList newList = new ImageList();
+      newList.ColorDepth = ColorDepth.Depth32Bit;
+      newList.ImageSize = new Size(32, 32);
+
+      listViewMenu.LargeImageList = newList;
+
+      SetToIconStyle();
+
+      int index = 0;
+      foreach (ProgramSettings program in Program.Config.Programs)
+      {
+        if (String.IsNullOrEmpty(program.FileName))
+          continue;
+
+        Icon icon = Win32.GetIconFor(program.FileName);
+        newList.Images.Add(icon);
+
+        ListViewItem item = new ListViewItem(program.Name, index++);
+        item.ToolTipText = program.FileName;
+        item.Tag = TagLaunch + program.FileName;
+
+        listViewMenu.Items.Add(item);
+      }
     }
     void LoadMenuMacros()
     {
       SetWindowTitle(UITextMacros);
 
       listViewMenu.LargeImageList = null;
-
-      //listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
 
       SetToListStyle();
 
@@ -290,15 +288,10 @@ namespace Translator
 
         listViewMenu.Items.Add(item);
       }
-
-      listViewMenu.Items[0].Selected = true;
     }
     void LoadMenuSystem()
     {
       SetWindowTitle(UITextSystem);
-
-      listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
 
       SetToIconStyle();
 
@@ -330,33 +323,28 @@ namespace Translator
 
       item = new ListViewItem(UITextWindows, 0);
       item.ToolTipText = DescWindows;
-      item.Tag = TagMenu + MenuWindows;
+      item.Tag = Menus.Windows;
       listViewMenu.Items.Add(item);
 
       item = new ListViewItem(UITextPower, 1);
       item.ToolTipText = DescPower;
-      item.Tag = TagMenu + MenuPower;
+      item.Tag = Menus.Power;
       listViewMenu.Items.Add(item);
 
-      item = new ListViewItem(UITextAudio, 2);
-      item.ToolTipText = DescAudio;
-      item.Tag = TagMenu + MenuAudio;
-      listViewMenu.Items.Add(item);
+      //item = new ListViewItem(UITextAudio, 2);
+      //item.ToolTipText = DescAudio;
+      //item.Tag = Menus.Audio;
+      //listViewMenu.Items.Add(item);
 
       item = new ListViewItem(UITextEject, 3);
       item.ToolTipText = DescEject;
-      item.Tag = TagMenu + MenuEject;
+      item.Tag = Menus.Eject;
       listViewMenu.Items.Add(item);
-
-      listViewMenu.Items[0].Selected = true;
     }
 
     void LoadMenuWindows()
     {
       SetWindowTitle(UITextWindows);
-
-      //listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
 
       SetToIconStyle();
 
@@ -372,25 +360,52 @@ namespace Translator
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
       string file = folder + "\\shell32.dll";
 
+      Win32.ExtractIcons(file, IconTasks, out large, out small);
+      newList.Images.Add(large);
+
+      Win32.ExtractIcons(file, 131, out large, out small);
+      newList.Images.Add(large);
+
+      Win32.ExtractIcons(file, IconDesktop, out large, out small);
+      newList.Images.Add(large);
+
+      Win32.ExtractIcons(file, IconDesktop, out large, out small);
+      newList.Images.Add(large);
+
       Win32.ExtractIcons(file, IconDesktop, out large, out small);
       newList.Images.Add(large);
 
       ListViewItem item;
 
-      item = new ListViewItem("Minimize all", 0);
+      item = new ListViewItem("Activate", 0);
+      item.ToolTipText = "Activate a window";
+      item.Tag = Menus.WindowActivate;
+      listViewMenu.Items.Add(item);
+
+      item = new ListViewItem("Close", 1);
+      item.ToolTipText = "Close a window";
+      item.Tag = Menus.WindowClose;
+      listViewMenu.Items.Add(item);
+
+      item = new ListViewItem("Maximize", 2);
+      item.ToolTipText = "Maximize a window";
+      item.Tag = Menus.WindowMaximize;
+      listViewMenu.Items.Add(item);
+
+      item = new ListViewItem("Minimize", 3);
+      item.ToolTipText = "Minimize a window";
+      item.Tag = Menus.WindowMinimize;
+      listViewMenu.Items.Add(item);
+
+      item = new ListViewItem("Minimize all", 4);
       item.ToolTipText = "Minimize all open windows";
       item.Tag = IntPtr.Zero;
       listViewMenu.Items.Add(item);
 
-      item.Selected = true;
-
     }
     void LoadMenuPower()
     {
-      SetWindowTitle("Power");
-
-      listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
+      SetWindowTitle(UITextPower);
 
       SetToIconStyle();
 
@@ -415,8 +430,6 @@ namespace Translator
       item.ToolTipText = "Shutdown windows";
       item.Tag = TagCommand + CommandShutdown;
       listViewMenu.Items.Add(item);
-      
-      item.Selected = true;
 
       item = new ListViewItem("Reboot", 0);
       item.ToolTipText = "Reboot windows";
@@ -442,9 +455,6 @@ namespace Translator
     {
       SetWindowTitle(UITextAudio);
 
-      //listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
-
       SetToIconStyle();
 
       ImageList newList = new ImageList();
@@ -469,8 +479,6 @@ namespace Translator
       item.Tag = TagCommand + "Volume Up";
       listViewMenu.Items.Add(item);
 
-      item.Selected = true;
-
       item = new ListViewItem("Volume Down", 0);
       item.ToolTipText = "Decreases the audio volume";
       item.Tag = TagCommand + "Volume Down";
@@ -484,10 +492,7 @@ namespace Translator
     }
     void LoadMenuEject()
     {
-      SetWindowTitle(UITextAudio);
-
-      //listViewMenu.SelectedItems.Clear();
-      listViewMenu.Items.Clear();
+      SetWindowTitle(UITextEject);
 
       SetToIconStyle();
 
@@ -519,77 +524,149 @@ namespace Translator
           listViewMenu.Items.Add(item);
         }
       }
-
-      if (drives.Length > 0)
-        listViewMenu.Items[0].Selected = true;
     }
 
-    void SwitchMenu(string menuName)
+    void LoadMenuWindowActivate()
     {
-      _menuStack.Add(menuName);
+      SetWindowTitle("Activate Window");
 
-      switch (menuName)
+      ImageList newList = new ImageList();
+      newList.ColorDepth = ColorDepth.Depth32Bit;
+      newList.ImageSize = new Size(32, 32);
+
+      listViewMenu.LargeImageList = newList;
+
+      SetToIconStyle();
+
+      PopulateTaskList();
+    }
+    void LoadMenuWindowClose()
+    {
+      SetWindowTitle("Close Window");
+
+      ImageList newList = new ImageList();
+      newList.ColorDepth = ColorDepth.Depth32Bit;
+      newList.ImageSize = new Size(32, 32);
+
+      listViewMenu.LargeImageList = newList;
+
+      SetToIconStyle();
+
+      PopulateTaskList();
+    }
+    void LoadMenuWindowMaximize()
+    {
+      SetWindowTitle("Maximize Window");
+
+      ImageList newList = new ImageList();
+      newList.ColorDepth = ColorDepth.Depth32Bit;
+      newList.ImageSize = new Size(32, 32);
+
+      listViewMenu.LargeImageList = newList;
+
+      SetToIconStyle();
+
+      PopulateTaskList();
+    }
+    void LoadMenuWindowMinimize()
+    {
+      SetWindowTitle("Minimize Window");
+
+      ImageList newList = new ImageList();
+      newList.ColorDepth = ColorDepth.Depth32Bit;
+      newList.ImageSize = new Size(32, 32);
+
+      listViewMenu.LargeImageList = newList;
+
+      SetToIconStyle();
+
+      PopulateTaskList();
+    }
+
+
+
+    void SwitchMenu(Menus menu)
+    {
+      _menuStack.Add(menu);
+
+      listViewMenu.SelectedItems.Clear();
+      listViewMenu.Items.Clear();
+
+      switch (menu)
       {
-        case MenuMain:    LoadMenuMain(); break;
+        case Menus.Tasks:   LoadMenuTasks();    break;
+        case Menus.Launch:  LoadMenuLaunch();   break;
+        case Menus.Macros:  LoadMenuMacros();   break;
+        case Menus.System:  LoadMenuSystem();   break;
 
-        case MenuLaunch:  LoadMenuLaunch(); break;
-        case MenuTasks:   LoadMenuTasks(); break;
-        case MenuMacros:  LoadMenuMacros(); break;
-        case MenuSystem:  LoadMenuSystem(); break;
+        case Menus.Windows: LoadMenuWindows();  break;
+        case Menus.Power:   LoadMenuPower();    break;
+        case Menus.Audio:   LoadMenuAudio();    break;
+        case Menus.Eject:   LoadMenuEject();    break;
 
-        case MenuWindows: LoadMenuWindows(); break;
-        case MenuPower:   LoadMenuPower(); break;
-        case MenuAudio:   LoadMenuAudio(); break;
-        case MenuEject:   LoadMenuEject(); break;
+        case Menus.WindowActivate: LoadMenuWindowActivate(); break;
+        case Menus.WindowClose: LoadMenuWindowClose(); break;
+        case Menus.WindowMaximize: LoadMenuWindowMaximize(); break;
+        case Menus.WindowMinimize: LoadMenuWindowMinimize(); break;
+
+        default:            LoadMenuMain();     break;
       }
 
       ResizeWindow();
 
-      //listViewMenu.Focus();
+      if (listViewMenu.Items.Count > 0)
+      {
+        listViewMenu.Items[0].Selected = true;
+        listViewMenu.Items[0].Focused = true;
+      }
     }
 
     void ResizeWindow()
     {
+      int newWidth = 0;
+      int newHeight = 0;
+
       if (listViewMenu.View == View.Details)
       {
-        this.Size = this.MinimumSize;
+        newWidth = this.MinimumSize.Width;
+        foreach (ListViewItem item in listViewMenu.Items)
+          newHeight += item.Bounds.Height + 2;
+
+        //newHeight += 1;
       }
       else
       {
-        int requiredWidth = 0;
-        int requiredHeight = 0;
-
         foreach (ListViewItem item in listViewMenu.Items)
         {
-          requiredWidth += item.Bounds.Width + 4;
+          newWidth += item.Bounds.Width + 4;
 
-          if (requiredHeight < item.Bounds.Height)
-            requiredHeight = item.Bounds.Height;
+          if (newHeight < item.Bounds.Height)
+            newHeight = item.Bounds.Height;
         }
 
-        int finalWidth = requiredWidth;
-        int finalHeight = requiredHeight + 16;
-
-        if (finalWidth > this.MaximumSize.Width)
-          finalWidth = this.MaximumSize.Width;
-        else if (finalWidth < this.MinimumSize.Width)
-          finalWidth = this.MinimumSize.Width;
-
-        if (finalHeight > this.MaximumSize.Height)
-          finalHeight = this.MaximumSize.Height;
-        else if (finalHeight < this.MinimumSize.Height)
-          finalHeight = this.MinimumSize.Height;
-
-        this.Size = new Size(finalWidth, finalHeight);
+        newHeight += 16;
+        newWidth += 8;
       }
+
+      if (newWidth > this.MaximumSize.Width)
+        newWidth = this.MaximumSize.Width;
+      else if (newWidth < this.MinimumSize.Width)
+        newWidth = this.MinimumSize.Width;
+
+      if (newHeight > this.MaximumSize.Height)
+        newHeight = this.MaximumSize.Height;
+      else if (newHeight < this.MinimumSize.Height)
+        newHeight = this.MinimumSize.Height;
+
+      this.Size = new Size(newWidth, newHeight);
 
       Screen thisScreen = Screen.FromPoint(this.Location);
       Rectangle workingArea = thisScreen.Bounds;
 
       this.Location =
         new Point(
-          workingArea.X + (workingArea.Width / 2) - (this.Size.Width / 2),
-          workingArea.Y + (workingArea.Height / 2) - (this.Size.Height / 2));
+          workingArea.X + (workingArea.Width / 2) - (newWidth / 2),
+          workingArea.Y + (workingArea.Height / 2) - (newHeight / 2));
     }
 
     void Launch(string programFile)
@@ -612,7 +689,7 @@ namespace Translator
     {
       this.Close();
 
-      Program.ProcessMacro(Program.FolderMacros + macroName);
+      Program.ProcessMacro(Program.FolderMacros + macroName + Common.FileExtensionMacro);
     }
     void TaskSwap(IntPtr window)
     {
@@ -629,11 +706,11 @@ namespace Translator
 
       switch (command)
       {
-        case CommandShutdown:   Shutdown(); break;
-        case CommandReboot:     Reboot(); break;
-        case CommandLogOff:     LogOff(); break;
-        case CommandStandby:    Standby(); break;
-        case CommandHibernate:  Hibernate(); break;
+        case CommandShutdown:   Shutdown();   break;
+        case CommandReboot:     Reboot();     break;
+        case CommandLogOff:     LogOff();     break;
+        case CommandStandby:    Standby();    break;
+        case CommandHibernate:  Hibernate();  break;
 
 
       }
@@ -645,18 +722,43 @@ namespace Translator
       CDRom.Open(drive);
     }
 
+    void Close(IntPtr window)
+    {
+      this.Close();
+
+      if (window == IntPtr.Zero)
+        return;
+
+      Win32.SendWindowsMessage(window, (int)Win32.WindowsMessage.WM_SYSCOMMAND, (int)Win32.SysCommand.SC_CLOSE, 0);
+    }
+    void Minimize(IntPtr window)
+    {
+      this.Close();
+
+      if (window == IntPtr.Zero)
+        return;
+
+      Win32.SendWindowsMessage(window, (int)Win32.WindowsMessage.WM_SYSCOMMAND, (int)Win32.SysCommand.SC_MINIMIZE, 0);
+    }
+    void Maximize(IntPtr window)
+    {
+      this.Close();
+
+      if (window == IntPtr.Zero)
+        return;
+
+      Win32.SendWindowsMessage(window, (int)Win32.WindowsMessage.WM_SYSCOMMAND, (int)Win32.SysCommand.SC_MAXIMIZE, 0);
+    }
 
     static void Hibernate()
     {
       IrssLog.Info("Hibernate");
-
       if (!Application.SetSuspendState(PowerState.Hibernate, false, false))
         IrssLog.Warn("Hibernate request was rejected by another application.");
     }
     static void Standby()
     {
       IrssLog.Info("Standby");
-
       if (!Application.SetSuspendState(PowerState.Suspend, false, false))
         IrssLog.Warn("Standby request was rejected by another application.");
     }
@@ -676,72 +778,105 @@ namespace Translator
       Win32.WindowsExit(Win32.ExitWindows.ShutDown, Win32.ShutdownReasons.FlagUserDefined);
     }
 
-    private void listViewMenu_ItemActivate(object sender, EventArgs e)
+    void ActivateItem(int index)
     {
-      ListViewItem selectedItem = listViewMenu.SelectedItems[0];
+      if (index >= listViewMenu.Items.Count)
+        return;
 
-      if (selectedItem.Tag is string)
+      ListViewItem selectedItem = listViewMenu.Items[index];
+            
+      if (selectedItem.Tag == null)
       {
-        string tag = selectedItem.Tag as string;
-
-        if (tag.StartsWith(TagMenu))
-        {
-          string menu = tag.Substring(TagMenu.Length);
-          SwitchMenu(menu);
-        }
-        else if (tag.StartsWith(TagLaunch))
-        {
-          string program = tag.Substring(TagLaunch.Length);
-          Launch(program);
-        }
-        else if (tag.StartsWith(TagMacro))
-        {
-          string macro = tag.Substring(TagMacro.Length);
-          Macro(macro);
-        }
-        else if (tag.StartsWith(TagCommand))
-        {
-          string command = tag.Substring(TagCommand.Length);
-          Command(command);
-        }
-        else if (tag.StartsWith(TagEject))
-        {
-          string drive = tag.Substring(TagEject.Length);
-          Eject(drive);
-        }
+        return;
+      }
+      else if (selectedItem.Tag is Menus)
+      {
+        SwitchMenu((Menus)selectedItem.Tag);
       }
       else if (selectedItem.Tag is IntPtr)
       {
-        TaskSwap((IntPtr)selectedItem.Tag);
+        IntPtr handle = (IntPtr)selectedItem.Tag;
+
+        switch (GetCurrentMenu())
+        {
+          case Menus.Tasks:           TaskSwap(handle);   break;
+          case Menus.Windows:         TaskSwap(handle);   break;
+          case Menus.WindowActivate:  TaskSwap(handle);   break;
+          case Menus.WindowClose:     Close(handle);      break;
+          case Menus.WindowMaximize:  Maximize(handle);   break;
+          case Menus.WindowMinimize:  Minimize(handle);   break;
+        }
+      }
+      else if (selectedItem.Tag is string)
+      {
+        string tag = (string)selectedItem.Tag;
+
+        if (tag.StartsWith(TagLaunch, StringComparison.OrdinalIgnoreCase))
+          Launch(tag.Substring(TagLaunch.Length));
+        else if (tag.StartsWith(TagMacro, StringComparison.OrdinalIgnoreCase))
+          Macro(tag.Substring(TagMacro.Length));
+        else if (tag.StartsWith(TagCommand, StringComparison.OrdinalIgnoreCase))
+          Command(tag.Substring(TagCommand.Length));
+        else if (tag.StartsWith(TagEject, StringComparison.OrdinalIgnoreCase))
+          Eject(tag.Substring(TagEject.Length));
+
       }
 
     }
 
+
+    private void listViewMenu_ItemActivate(object sender, EventArgs e)
+    {
+      ActivateItem(listViewMenu.SelectedItems[0].Index);
+    }
+
     private void listViewMenu_KeyPress(object sender, KeyPressEventArgs e)
     {
-      if (e.KeyChar == 27)
-      {
-        if (_menuStack.Count == 1)
-        {
-          this.Close();
-        }
-        else
-        {
-          // Remove current
-          _menuStack.RemoveAt(_menuStack.Count - 1);
-          
-          // Get previous
-          string previous = _menuStack[_menuStack.Count - 1];
-          
-          // Remove previous
-          _menuStack.RemoveAt(_menuStack.Count - 1);
+      e.Handled = true;
 
-          // Switch to previous
-          SwitchMenu(previous);
-        }
-        
-        e.Handled = true;
+      switch (e.KeyChar)
+      {
+        case (char)27:  // ESC
+          if (_menuStack.Count == 1)
+          {
+            this.Close();
+          }
+          else
+          {
+            // Remove current
+            _menuStack.RemoveAt(_menuStack.Count - 1);
+
+            // Get previous
+            Menus previous = _menuStack[_menuStack.Count - 1];
+
+            // Remove previous
+            _menuStack.RemoveAt(_menuStack.Count - 1);
+
+            // Switch to previous
+            SwitchMenu(previous);
+          }
+          break;
+
+        case '1': ActivateItem(0); break;
+        case '2': ActivateItem(1); break;
+        case '3': ActivateItem(2); break;
+        case '4': ActivateItem(3); break;
+        case '5': ActivateItem(4); break;
+        case '6': ActivateItem(5); break;
+        case '7': ActivateItem(6); break;
+        case '8': ActivateItem(7); break;
+        case '9': ActivateItem(8); break;
+
+        default:
+          e.Handled = false;
+          break;
       }
+
+    }
+
+    Menus GetCurrentMenu()
+    {
+      return _menuStack[_menuStack.Count - 1];
     }
 
     void PopulateTaskList()

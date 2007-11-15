@@ -234,7 +234,7 @@ namespace MediaPortal.Plugins
           else
             command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
-          if (command.StartsWith(Common.CmdPrefixSTB))
+          if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
             blastCommandCount++;
         }
 
@@ -247,7 +247,7 @@ namespace MediaPortal.Plugins
           else
             command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
-          if (command.StartsWith(Common.CmdPrefixSTB))
+          if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
           {
             blastCommand = new BlastCommand(
               new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
@@ -338,7 +338,7 @@ namespace MediaPortal.Plugins
       {
         string selected = listViewExternalCommands.SelectedItems[0].SubItems[1].Text;
 
-        if (selected.StartsWith(Common.CmdPrefixBlast))
+        if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
@@ -351,7 +351,7 @@ namespace MediaPortal.Plugins
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixSTB))
+        else if (selected.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixSTB.Length));
 
@@ -364,28 +364,28 @@ namespace MediaPortal.Plugins
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixRun))
+        else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
           ExternalProgram executeProgram = new ExternalProgram(commands, parameterInfo);
           if (executeProgram.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixRun + executeProgram.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixSerial))
+        else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
           SerialCommand serialCommand = new SerialCommand(commands, parameterInfo);
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
+        else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
           MessageCommand messageCommand = new MessageCommand(commands);
           if (messageCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixKeys))
+        else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
           if (keysCommand.ShowDialog(this) == DialogResult.OK)

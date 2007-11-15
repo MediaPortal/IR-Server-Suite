@@ -10,31 +10,72 @@ namespace IrssUtils
 
   /// <summary>
   /// Win32 native method wrapper for Keyboard control functions.
-  /// http://msdn2.microsoft.com/en-us/library/ms646304.aspx
   /// </summary>
   public static class Keyboard
   {
 
     #region Constants
 
+    /// <summary>
+    /// Pause command format.
+    /// </summary>
     public const string CommandPause      = "PAUSE=";
+    /// <summary>
+    /// Beep command format.
+    /// </summary>
     public const string CommandBeep       = "BEEP=";
+    /// <summary>
+    /// Open Brace command.
+    /// </summary>
     public const string CommandBraceOpen  = "OPENBRACE";
+    /// <summary>
+    /// Close Brace command.
+    /// </summary>
     public const string CommandBraceClose = "CLOSEBRACE";
 
+    /// <summary>
+    /// Key modifier for Alt.
+    /// </summary>
     public const char ModifierAlt     = '%';
+    /// <summary>
+    /// Key modifier for Control.
+    /// </summary>
     public const char ModifierControl = '^';
+    /// <summary>
+    /// Key modifier for Shift.
+    /// </summary>
     public const char ModifierShift   = '+';
+    /// <summary>
+    /// Key modifier for the Windows Key.
+    /// </summary>
     public const char ModifierWinKey  = '@';
-
+ 
+    /// <summary>
+    /// Open Bracket character.
+    /// </summary>
     public const char BracketOpen     = '(';
+    /// <summary>
+    /// Close Bracket character.
+    /// </summary>
     public const char BracketClose    = ')';
 
+    /// <summary>
+    /// Open Brace character.
+    /// </summary>
     public const char BraceOpen       = '{';
+    /// <summary>
+    /// Close Brace character.
+    /// </summary>
     public const char BraceClose      = '}';
 
+    /// <summary>
+    /// Enter key shortcut.
+    /// </summary>
     public const char EnterShortcut   = '~';
 
+    /// <summary>
+    /// Virtual Key prefix.
+    /// </summary>
     const string PrefixVK = "VK_";
 
     #endregion Constants
@@ -56,12 +97,6 @@ namespace IrssUtils
     static extern uint MapVirtualKey(
       uint code,
       uint mapType);
-
-    [DllImport("Kernel32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool Beep(
-      uint frequency,
-      uint duration);
 
     #endregion Interop
 
@@ -952,14 +987,9 @@ namespace IrssUtils
                 if (String.IsNullOrEmpty(beepString))
                   throw new ArgumentException("Invalid beep command: " + special, "keystrokes");
 
-                string[] parameters = beepString.Split(new char[] { ',' });
-                if (parameters.Length != 2)
-                  throw new ArgumentException("Invalid beep command structure: " + special, "keystrokes");
-                
-                uint beepFreq = uint.Parse(parameters[0]);
-                uint beepTime = uint.Parse(parameters[1]);
+                string[] parameters = Common.SplitBeepCommand(beepString);
 
-                Beep(beepFreq, beepTime);
+                Common.ProcessBeepCommand(parameters);
               }
               else
               {
@@ -992,10 +1022,10 @@ namespace IrssUtils
                 if (!inBrackets)
                 {
                   UndoModifiers(Alt, Ctrl, Shift, WinKey);
-                  Alt = false;
-                  Ctrl = false;
-                  Shift = false;
-                  WinKey = false;
+                  Alt     = false;
+                  Ctrl    = false;
+                  Shift   = false;
+                  WinKey  = false;
                 }
               }
 

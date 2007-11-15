@@ -329,7 +329,6 @@ namespace CustomHIDReceiver
 
     public static List<DeviceDetails> EnumerateDevices()
     {
-      int NumberOfDevices = 0;
       uint deviceCount = 0;
       int dwSize = Marshal.SizeOf(typeof(RAWINPUTDEVICELIST));
 
@@ -377,7 +376,7 @@ namespace CustomHIDReceiver
             // HID device, create a DeviceInfo object to store information 
             // about it
 #if TRACE
-            Trace.WriteLine(String.Format("\r\n{0} )==============\r\n", NumberOfDevices));
+            Trace.WriteLine(String.Format("\r\n==============\r\n"));
             Trace.WriteLine(String.Format("Name: {0}\r\n", deviceName));
             Trace.WriteLine(String.Format("Type: {0}\r\n", rid.dwType));
             Trace.WriteLine(String.Format("Desc: {0}\r\n", GetFriendlyName(deviceName)));

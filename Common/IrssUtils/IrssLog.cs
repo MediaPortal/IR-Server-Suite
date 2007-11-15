@@ -185,13 +185,13 @@ namespace IrssUtils
         _streamWriter.WriteLine(message);
         _streamWriter.WriteLine();
       }
+#if TRACE
       catch (Exception ex)
       {
-#if TRACE
         Trace.WriteLine(ex.ToString());
-#endif
-        throw ex;
+        throw;
       }
+#endif
       finally
       {
         _streamWriter.Dispose();

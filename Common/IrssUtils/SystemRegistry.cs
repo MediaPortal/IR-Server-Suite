@@ -42,7 +42,9 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      return (Registry.GetValue(AutoRunPath, name, null) != null);
+      string value = Registry.GetValue(AutoRunPath, name, null) as string;
+
+      return !String.IsNullOrEmpty(value);
     }
 
     /// <summary>

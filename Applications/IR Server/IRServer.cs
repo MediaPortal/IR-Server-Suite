@@ -43,6 +43,9 @@ namespace IRServer
 
   #endregion Enumerations
 
+  /// <summary>
+  /// IR Server.
+  /// </summary>
   public class IRServer : IDisposable
   {
 
@@ -79,6 +82,9 @@ namespace IRServer
 
     #region Constructor / Destructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IRServer"/> class.
+    /// </summary>
     public IRServer()
     {
       // Setup taskbar icon
@@ -104,12 +110,19 @@ namespace IRServer
 
     #region IDisposable
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
     public void Dispose()
     {
       Dispose(true);
       GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
       if (disposing)
@@ -132,7 +145,7 @@ namespace IRServer
     #region Implementation
 
     /// <summary>
-    /// Start the server
+    /// Start the server.
     /// </summary>
     /// <returns>success.</returns>
     internal bool Start()
@@ -295,7 +308,7 @@ namespace IRServer
     }
 
     /// <summary>
-    /// Stop the server
+    /// Stop the server.
     /// </summary>
     internal void Stop()
     {
@@ -954,7 +967,7 @@ namespace IRServer
     {
       try
       {
-        IrssLog.Debug("Blast IR");
+        IrssLog.Info("Blast IR");
 
         if (_pluginTransmit == null || !(_pluginTransmit is ITransmitIR))
           return false;
@@ -978,18 +991,18 @@ namespace IRServer
     }
     LearnStatus LearnIR(out byte[] data)
     {
-      IrssLog.Debug("Learn IR");
+      IrssLog.Info("Learn IR");
 
       data = null;
 
       if (_pluginTransmit == null)
       {
-        IrssLog.Debug("No transmit plugin loaded, can't learn");
+        IrssLog.Warn("No transmit plugin loaded, can't learn");
         return LearnStatus.Failure;
       }
       else if (!(_pluginTransmit is ILearnIR))
       {
-        IrssLog.Debug("Active transmit plugin doesn't support learn");
+        IrssLog.Warn("Active transmit plugin doesn't support learn");
         return LearnStatus.Failure;
       }
 

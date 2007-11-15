@@ -109,6 +109,7 @@ namespace IrssUtils
     public const string CmdPrefixMouse        = "Mouse: ";
     public const string CmdPrefixEject        = "Eject: ";
     public const string CmdPrefixSound        = "Sound: ";
+    public const string CmdPrefixBeep         = "Beep: ";
 
     public const string CmdPrefixTranslator   = "Show Translator OSD";
 
@@ -147,6 +148,7 @@ namespace IrssUtils
     public const string XmlTagMouse           = "MOUSE";
     public const string XmlTagEject           = "EJECT";
     public const string XmlTagSound           = "SOUND";
+    public const string XmlTagBeep            = "BEEP";
 
     public const string XmlTagTranslator      = "TRANSLATOR";
 
@@ -177,6 +179,7 @@ namespace IrssUtils
     public const string UITextMouse           = "Mouse Command";
     public const string UITextEject           = "Eject CD";
     public const string UITextSound           = "Play Sound";
+    public const string UITextBeep            = "Beep";
 
     public const string UITextTranslator      = "Show Translator OSD";
 
@@ -206,9 +209,21 @@ namespace IrssUtils
 
     #region Windows Message Target
 
+    /// <summary>
+    /// Windows Message target the active window.
+    /// </summary>
     public const string WMTargetActive      = "ACTIVE";
+    /// <summary>
+    /// Windows Message target an application.
+    /// </summary>
     public const string WMTargetApplication = "APPLICATION";
+    /// <summary>
+    /// Windows Message target a class.
+    /// </summary>
     public const string WMTargetClass       = "CLASS";
+    /// <summary>
+    /// Windows Message target a window title.
+    /// </summary>
     public const string WMTargetWindow      = "WINDOW";
 
     #endregion Windows Message Target
@@ -245,6 +260,10 @@ namespace IrssUtils
     /// Number of Segments in a HTTP Message Command.
     /// </summary>
     public const int SegmentsHttpMessageCommand = 4;
+    /// <summary>
+    /// Number of Segments in a Beep Command.
+    /// </summary>
+    public const int SegmentsBeepCommand = 2;
 
     #endregion Command Segments
 
@@ -322,6 +341,16 @@ namespace IrssUtils
     public static string[] SplitHttpMessageCommand(string command)
     {
       return SplitCommand(command, SegmentsHttpMessageCommand);
+    }
+
+    /// <summary>
+    /// Splits a Beep Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
+    public static string[] SplitBeepCommand(string command)
+    {
+      return SplitCommand(command, SegmentsBeepCommand);
     }
 
     static string[] SplitCommand(string command, int elements)
@@ -625,7 +654,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (!Audio.Play(command, false))
+      if (!Audio.PlayFile(command, false))
         throw new ApplicationException(String.Format("Sound Command ({0}) failed to play", command));
     }
 
@@ -649,6 +678,21 @@ namespace IrssUtils
         using (Stream responseStream = response.GetResponseStream())
           using (StreamReader streamReader = new StreamReader(responseStream))
             return streamReader.ReadToEnd();
+    }
+
+    /// <summary>
+    /// Given a split Beep Command this method will sound a Beep according to the command structure supplied.
+    /// </summary>
+    /// <param name="commands">An array of arguments for the method (the output of SplitBeepCommand).</param>
+    public static void ProcessBeepCommand(string[] commands)
+    {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
+
+      int beepFreq = int.Parse(commands[0]);
+      int beepTime = int.Parse(commands[1]);
+
+      Audio.PlayBeep(beepFreq, beepTime);
     }
 
     #endregion Command Execution

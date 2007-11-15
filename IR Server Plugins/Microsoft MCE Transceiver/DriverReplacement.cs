@@ -230,6 +230,8 @@ namespace MicrosoftMceTransceiver
 
       // Initialize device ...
       WriteSync(StartPacket);
+      Thread.Sleep(PacketTimeout);
+
       SetTimeout(PacketTimeout);
       SetInputPort(InputPort.Receive);
 
@@ -251,7 +253,21 @@ namespace MicrosoftMceTransceiver
       _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
 
-      WriteSync(StopPacket);
+      try
+      {
+        WriteSync(StopPacket);
+        Thread.Sleep(PacketTimeout);
+      }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
 
       StopReadThread();
 
@@ -540,13 +556,13 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StopReadThread()");
 #endif
 
-      if (_readThread != null)
+      if (_readThread != null && _readThread.ThreadState == ThreadState.Running)
       {
         _readThreadMode = ReadThreadMode.Stop;
         _stopReadThread.Set();
 
-        if (Thread.CurrentThread != _readThread)
-          _readThread.Join();
+        if (!_readThread.Join(PacketTimeout * 2))
+          _readThread.Abort();
 
         _stopReadThread.Close();
         _stopReadThread = null;
@@ -607,10 +623,10 @@ namespace MicrosoftMceTransceiver
       int lastError;
 
       NativeOverlapped lpOverlapped = new NativeOverlapped();
-      lpOverlapped.InternalLow = IntPtr.Zero;
+      lpOverlapped.InternalLow  = IntPtr.Zero;
       lpOverlapped.InternalHigh = IntPtr.Zero;
-      lpOverlapped.OffsetLow = 0;
-      lpOverlapped.OffsetHigh = 0;
+      lpOverlapped.OffsetLow    = 0;
+      lpOverlapped.OffsetHigh   = 0;
 
       WaitHandle waitHandle = new ManualResetEvent(false);
       SafeHandle safeWaitHandle = waitHandle.SafeWaitHandle;
@@ -621,7 +637,7 @@ namespace MicrosoftMceTransceiver
       if (!success)
       {
         waitHandle.Close();
-        return;
+        throw new ApplicationException("Failed to initialize safe wait handle");
       }
 
       IntPtr deviceBufferPtr = IntPtr.Zero;
@@ -661,11 +677,8 @@ namespace MicrosoftMceTransceiver
             bool getOverlapped = GetOverlappedResult(_readHandle, ref lpOverlapped, out bytesRead, true);
             lastError = Marshal.GetLastWin32Error();
 
-            if (!getOverlapped)
-            {
-              if (lastError != Win32ErrorCodes.ERROR_SUCCESS)
-                throw new Win32Exception(lastError);
-            }
+            if (!getOverlapped && lastError != Win32ErrorCodes.ERROR_SUCCESS)
+              throw new Win32Exception(lastError);
           }
 
           if (bytesRead == 0)
@@ -718,9 +731,9 @@ namespace MicrosoftMceTransceiver
                     int onTime, onCount;
                     GetIrCodeLengths(_learningCode, out onTime, out onCount);
 
-                    double carrierCount = ((b1 * 256) + b2);
+                    double carrierCount = (b1 * 256) + b2;
 
-                    if (carrierCount / onCount < 2)
+                    if (carrierCount / onCount < 2.0)
                     {
                       _learningCode.Carrier = IrCode.CarrierFrequencyDCMode;
                     }
@@ -775,6 +788,10 @@ namespace MicrosoftMceTransceiver
         safeWaitHandle.DangerousRelease();
         waitHandle.Close();
       }
+
+#if DEBUG
+      DebugWriteLine("Read Thread Ended");
+#endif
     }
 
     /// <summary>
@@ -789,10 +806,10 @@ namespace MicrosoftMceTransceiver
 #endif
 
       NativeOverlapped lpOverlapped = new NativeOverlapped();
-      lpOverlapped.InternalLow = IntPtr.Zero;
+      lpOverlapped.InternalLow  = IntPtr.Zero;
       lpOverlapped.InternalHigh = IntPtr.Zero;
-      lpOverlapped.OffsetLow = 0;
-      lpOverlapped.OffsetHigh = 0;
+      lpOverlapped.OffsetLow    = 0;
+      lpOverlapped.OffsetHigh   = 0;
 
       int bytesWritten = 0;
 
@@ -805,7 +822,10 @@ namespace MicrosoftMceTransceiver
       bool success = false;
       safeWaitHandle.DangerousAddRef(ref success);
       if (!success)
-        return;
+      {
+        waitHandle.Close();
+        throw new ApplicationException("Failed to initialize safe wait handle");
+      }
 
       try
       {
@@ -814,27 +834,24 @@ namespace MicrosoftMceTransceiver
         bool writeDevice = WriteFile(_writeHandle, data, data.Length, out bytesWritten, ref lpOverlapped);
         lastError = Marshal.GetLastWin32Error();
 
-        if (!writeDevice)
-        {
-          if (lastError != Win32ErrorCodes.ERROR_SUCCESS && lastError != Win32ErrorCodes.ERROR_IO_PENDING)
-            throw new Win32Exception(lastError);
+        if (writeDevice)
+          return;
 
-          int handle = WaitHandle.WaitAny(waitHandles, WriteSyncTimeout, false);
+        if (lastError != Win32ErrorCodes.ERROR_SUCCESS && lastError != Win32ErrorCodes.ERROR_IO_PENDING)
+          throw new Win32Exception(lastError);
 
-          if (handle == Win32ErrorCodes.WAIT_TIMEOUT)
-            throw new ApplicationException("Timeout trying to write data to device");
-          else if (handle != 0)
-            throw new ApplicationException("Invalid wait handle return");
+        int handle = WaitHandle.WaitAny(waitHandles, WriteSyncTimeout, false);
 
-          bool getOverlapped = GetOverlappedResult(_writeHandle, ref lpOverlapped, out bytesWritten, true);
-          lastError = Marshal.GetLastWin32Error();
+        if (handle == Win32ErrorCodes.WAIT_TIMEOUT)
+          throw new ApplicationException("Timeout trying to write data to device");
+        else if (handle != 0)
+          throw new ApplicationException("Invalid wait handle return");
 
-          if (!getOverlapped)
-          {
-            if (lastError != Win32ErrorCodes.ERROR_SUCCESS)
-              throw new Win32Exception(lastError);
-          }
-        }
+        bool getOverlapped = GetOverlappedResult(_writeHandle, ref lpOverlapped, out bytesWritten, true);
+        lastError = Marshal.GetLastWin32Error();
+
+        if (!getOverlapped && lastError != Win32ErrorCodes.ERROR_SUCCESS)
+          throw new Win32Exception(lastError);
       }
       catch
       {

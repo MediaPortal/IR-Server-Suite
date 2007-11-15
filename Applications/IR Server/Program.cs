@@ -40,8 +40,11 @@ namespace IRServer
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-      // TODO: Change log level to info for release.
+#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
+#else
+      IrssLog.LogLevel = IrssLog.Level.Info;
+#endif
       IrssLog.Open(Common.FolderIrssLogs + "IR Server.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);

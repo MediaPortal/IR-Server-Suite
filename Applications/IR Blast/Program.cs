@@ -40,8 +40,11 @@ namespace IRBlast
     [STAThread]
     static void Main(string[] args)
     {
-      // TODO: Change log level to info for release.
+#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
+#else
+      IrssLog.LogLevel = IrssLog.Level.Info;
+#endif
       IrssLog.Append(Common.FolderIrssLogs + "IR Blast.log");
 
       ShowHeader();

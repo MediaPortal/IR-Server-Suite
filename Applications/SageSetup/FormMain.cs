@@ -13,10 +13,17 @@ using IrssUtils;
 namespace SageSetup
 {
 
+  /// <summary>
+  /// Main Sage Setup form.
+  /// </summary>
   public partial class FormMain : Form
   {
-    string _irBlastLocation = null;
 
+    string _irBlastLocation = null;
+    
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FormMain"/> class.
+    /// </summary>
     public FormMain()
     {
       InitializeComponent();

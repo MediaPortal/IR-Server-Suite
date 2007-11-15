@@ -12,6 +12,12 @@ namespace IrssUtils
 
     #region Interop
 
+    [DllImport("Kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool Beep(
+      uint frequency,
+      uint duration);
+
     [DllImport("winmm.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool PlaySound(
@@ -100,13 +106,15 @@ namespace IrssUtils
 
     #endregion Enumerations
 
+    #region Implementation
+
     /// <summary>
     /// Play an audio file.
     /// </summary>
     /// <param name="fileName">The file to play.</param>
     /// <param name="async">true to play asynchronously, false to wait for the sound to finish.</param>
     /// <returns>true if played successfully, otherwise false.</returns>
-    public static bool Play(string fileName, bool async)
+    public static bool PlayFile(string fileName, bool async)
     {
       if (async)
         return PlaySound(fileName, IntPtr.Zero, SoundFlags.SND_ASYNC | SoundFlags.SND_FILENAME);
@@ -114,7 +122,18 @@ namespace IrssUtils
         return PlaySound(fileName, IntPtr.Zero, SoundFlags.SND_SYNC | SoundFlags.SND_FILENAME);
     }
 
+    /// <summary>
+    /// Plays a beep.
+    /// </summary>
+    /// <param name="frequency">The frequency in hertz.</param>
+    /// <param name="duration">The duration in milliseconds.</param>
+    /// <returns><c>true</c> if successfuly, otherwise <c>false</c>.</returns>
+    public static bool PlayBeep(int frequency, int duration)
+    {
+      return Beep((uint)frequency, (uint)duration);
+    }
 
+    #endregion Implementation
 
   }
 

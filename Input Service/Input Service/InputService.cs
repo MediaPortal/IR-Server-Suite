@@ -46,6 +46,9 @@ namespace InputService
 
   #endregion Enumerations
 
+  /// <summary>
+  /// MediaPortal Input Service.
+  /// </summary>
   public class InputService : ServiceBase
   {
 
@@ -78,6 +81,9 @@ namespace InputService
 
     #region Constructor / Destructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InputService"/> class.
+    /// </summary>
     public InputService()
     {
       this.ServiceName = Program.ServiceName;
@@ -96,6 +102,10 @@ namespace InputService
 
     #region IDisposable
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
       try
@@ -121,10 +131,17 @@ namespace InputService
 
     #region Service Methods
 
+    /// <summary>
+    /// Called when the service is started.
+    /// </summary>
+    /// <param name="args">The arguments.</param>
     protected override void OnStart(string[] args)
     {
-      // TODO: Change log level to info for release.
+#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
+#else
+      IrssLog.LogLevel = IrssLog.Level.Info;
+#endif
       IrssLog.Open(Common.FolderIrssLogs + "Input Service.log");
 
       try
@@ -278,6 +295,9 @@ namespace InputService
       }
     }
 
+    /// <summary>
+    /// Called when the service is stopped.
+    /// </summary>
     protected override void OnStop()
     {
       IrssLog.Info("Stopping Input Service ...");
@@ -368,11 +388,19 @@ namespace InputService
       IrssLog.Close();
     }
 
+    /// <summary>
+    /// Called when the service is shut down.
+    /// </summary>
     protected override void OnShutdown()
     {
       OnStop();
     }
 
+    /// <summary>
+    /// Called when there is a power event.
+    /// </summary>
+    /// <param name="powerStatus">The power status.</param>
+    /// <returns>true if the event is handled, otherwise false.</returns>
     protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
     {
       switch (powerStatus)
@@ -474,45 +502,6 @@ namespace InputService
 
       return true;
     }
-
-    #region Unused
-
-    protected override void OnPause()
-    {
-      base.OnPause();
-    }
-
-    protected override void OnContinue()
-    {
-      base.OnContinue();
-    }
-
-    protected override void OnSessionChange(SessionChangeDescription changeDescription)
-    {
-      switch (changeDescription.Reason)
-      {
-        case SessionChangeReason.SessionLogon:
-          break;
-
-        case SessionChangeReason.SessionLogoff:
-          break;
-      }
-
-      base.OnSessionChange(changeDescription);
-    }
-
-    protected override void OnCustomCommand(int command)
-    {
-      switch (command)
-      {
-        case 128:
-          break;
-      }
-
-      base.OnCustomCommand(command);
-    }
-
-    #endregion Unused
 
     #endregion Service Methods
 
@@ -946,7 +935,7 @@ namespace InputService
     {
       try
       {
-        IrssLog.Debug("Blast IR");
+        IrssLog.Info("Blast IR");
 
         if (_pluginTransmit == null || !(_pluginTransmit is ITransmitIR))
           return false;
@@ -970,18 +959,18 @@ namespace InputService
     }
     LearnStatus LearnIR(out byte[] data)
     {
-      IrssLog.Debug("Learn IR");
+      IrssLog.Info("Learn IR");
 
       data = null;
 
       if (_pluginTransmit == null)
       {
-        IrssLog.Debug("No transmit plugin loaded, can't learn");
+        IrssLog.Warn("No transmit plugin loaded, can't learn");
         return LearnStatus.Failure;
       }
       else if (!(_pluginTransmit is ILearnIR))
       {
-        IrssLog.Debug("Active transmit plugin doesn't support learn");
+        IrssLog.Warn("Active transmit plugin doesn't support learn");
         return LearnStatus.Failure;
       }
 

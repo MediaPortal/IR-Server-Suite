@@ -253,12 +253,20 @@ namespace MediaPortal.Plugins
 
     #region GUIWindow Members
 
+    /// <summary>
+    /// Gets the GUI Window ID.
+    /// </summary>
+    /// <value>The GUI Window ID.</value>
     public override int GetID
     {
       get { return WindowID; }
       set { }
     }
 
+    /// <summary>
+    /// Inits this GUI Window.
+    /// </summary>
+    /// <returns><c>true</c> if successfully initialized, otherwise <c>false</c>.</returns>
     public override bool Init()
     {
       InConfiguration = false;
@@ -285,6 +293,9 @@ namespace MediaPortal.Plugins
       }
     }
 
+    /// <summary>
+    /// Deinitializes this GUI Window.
+    /// </summary>
     public override void DeInit()
     {
       StopClient();
@@ -295,12 +306,21 @@ namespace MediaPortal.Plugins
         Log.Info("MPBlastZonePlugin: Stopped");
     }
 
+    /// <summary>
+    /// Called when the page loads.
+    /// </summary>
     protected override void OnPageLoad()
     {
       if (facadeView.Count == 0)
         PopulateListControl("\\");
     }
 
+    /// <summary>
+    /// Called when a control is clicked.
+    /// </summary>
+    /// <param name="controlId">The control id.</param>
+    /// <param name="control">The control.</param>
+    /// <param name="actionType">Type of the action.</param>
     protected override void OnClicked(int controlId, GUIControl control, Action.ActionType actionType)
     {
       if (control == facadeView)
@@ -325,6 +345,10 @@ namespace MediaPortal.Plugins
       base.OnClicked(controlId, control, actionType);
     }
 
+    /// <summary>
+    /// Called when an action is performed.
+    /// </summary>
+    /// <param name="action">The action.</param>
     public override void OnAction(Action action)
     {
       if (action.wID == Action.ActionType.ACTION_PREVIOUS_MENU)

@@ -281,17 +281,16 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Used to set the carrier mode for IR blasting.
     /// </summary>
-    [Flags]
-    enum TransmitFlags
+    enum TransmitMode
     {
       /// <summary>
-      /// Pulse Mode.
+      /// Carrier Mode.
       /// </summary>
-      PulseMode = 1,
+      CarrierMode = 0,
       /// <summary>
       /// DC Mode.
       /// </summary>
-      DCMode    = 2,
+      DCMode = 1,
     }
 
     /// <summary>
@@ -321,9 +320,8 @@ namespace MicrosoftMceTransceiver
     #region Device Details
 
     int _numTxPorts;
+    int _txPortMask;
     int _learnPortMask;
-
-    bool[] _blasters;
 
     int _receivePort;
     int _learnPort;
@@ -461,14 +459,10 @@ namespace MicrosoftMceTransceiver
           Marshal.FreeHGlobal(structPtr);
       }
 
-      int data = structure.Blasters.ToInt32();
-
-      _blasters = new bool[_numTxPorts];
-      for (int j = 0; j < _blasters.Length; j++)
-        _blasters[j] = ((data & (1 << j)) != 0);
+      _txPortMask = structure.Blasters.ToInt32();
 
 #if DEBUG
-      DebugWriteLine("BlastersMask:   {0}", data);
+      DebugWriteLine("TxPortMask:     {0}", _txPortMask);
 #endif
     }
 
@@ -482,16 +476,13 @@ namespace MicrosoftMceTransceiver
       if (carrier == IrCode.CarrierFrequencyUnknown)
         carrier = IrCode.CarrierFrequencyDefault;
 
-      if (IsPulseMode(carrier))
-      {
-        transmitParams.Flags          = new IntPtr((int)TransmitFlags.PulseMode);
-        transmitParams.CarrierPeriod  = new IntPtr(GetCarrierPeriod(carrier));        
-      }
+      TransmitMode mode = GetTransmitMode(carrier);
+      if (mode == TransmitMode.CarrierMode)
+        transmitParams.CarrierPeriod = new IntPtr(GetCarrierPeriod(carrier));
       else
-      {
-        transmitParams.Flags          = new IntPtr((int)TransmitFlags.DCMode);
-        //transmitParams.PulseSize      = new IntPtr(carrier);
-      }
+        transmitParams.PulseSize = new IntPtr(carrier);
+
+      transmitParams.Flags = new IntPtr((int)mode);
 
       TransmitChunk transmitChunk     = new TransmitChunk();
       transmitChunk.OffsetToNextChunk = new IntPtr(0);
@@ -597,7 +588,8 @@ namespace MicrosoftMceTransceiver
         throw new Win32Exception(lastError);
 
       // Initialize device ...
-      GetAllDeviceInformation();
+      GetDeviceCapabilities();
+      GetBlasters();
 
       StartReceive(_receivePort, PacketTimeout);
 
@@ -745,7 +737,15 @@ namespace MicrosoftMceTransceiver
 
       byte[] data = DataPacket(code);
 
-      TransmitIR(data, code.Carrier, port);
+      int portMask = 0;
+      switch ((BlasterPort)port)
+      {
+        case BlasterPort.Both:    portMask = _txPortMask; break;
+        case BlasterPort.Port_1:  portMask = GetHighBit(_txPortMask, 1); break;
+        case BlasterPort.Port_2:  portMask = GetHighBit(_txPortMask, 2); break;
+      }
+
+      TransmitIR(data, code.Carrier, portMask);
     }
 
     #endregion Driver overrides
@@ -772,12 +772,6 @@ namespace MicrosoftMceTransceiver
       }
 
       return data;
-    }
-
-    void GetAllDeviceInformation()
-    {
-      GetDeviceCapabilities();
-      GetBlasters();
     }
 
     void StartReadThread()
@@ -928,6 +922,10 @@ namespace MicrosoftMceTransceiver
 
         StopReceive();
       }
+
+#if DEBUG
+        DebugWriteLine("Read Thread Ended");
+#endif
     }
 
     #endregion Implementation
@@ -940,13 +938,34 @@ namespace MicrosoftMceTransceiver
       byte[] rawData = new byte[rawSize];
 
       GCHandle handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
-      IntPtr buffer = handle.AddrOfPinnedObject();
+      
+      try
+      {
+        IntPtr buffer = handle.AddrOfPinnedObject();
 
-      Marshal.StructureToPtr(anything, buffer, false);
-
-      handle.Free();
+        Marshal.StructureToPtr(anything, buffer, false);
+      }
+      finally
+      {
+        handle.Free();
+      }
 
       return rawData;
+    }
+
+    static int GetHighBit(int mask, int bitCount)
+    {
+      int count = 0;
+      for (int i = 0; i < 32; i++)
+      {
+        int bitMask = 1 << i;
+
+        if ((mask & bitMask) != 0)
+          if (++count == bitCount)
+            return bitMask;
+      }
+
+      return 0;
     }
 
     static int FirstHighBit(int mask)
@@ -968,12 +987,15 @@ namespace MicrosoftMceTransceiver
 
     static int GetCarrierPeriod(int carrier)
     {
-      return 1000000 / carrier;
+      return (int)Math.Round(1000000.0 / (double)carrier);
     }
 
-    static bool IsPulseMode(int carrier)
+    static TransmitMode GetTransmitMode(int carrier)
     {
-      return carrier > 100;
+      if (carrier > 100)
+        return TransmitMode.CarrierMode;
+      else
+        return TransmitMode.DCMode;
     }
 
     static int[] GetTimingDataFromPacket(byte[] packetBytes)

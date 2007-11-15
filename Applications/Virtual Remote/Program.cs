@@ -79,8 +79,11 @@ namespace VirtualRemote
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-      // TODO: Change log level to info for release.
+#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
+#else
+      IrssLog.LogLevel = IrssLog.Level.Info;
+#endif
       IrssLog.Open(Common.FolderIrssLogs + "Virtual Remote.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
@@ -132,7 +135,7 @@ namespace VirtualRemote
           {
             foreach (String button in virtualButtons)
             {
-              if (button.StartsWith("~"))
+              if (button.StartsWith("~", StringComparison.OrdinalIgnoreCase))
               {
                 Thread.Sleep(button.Length * 500);
               }

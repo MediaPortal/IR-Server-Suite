@@ -528,7 +528,7 @@ namespace MicrosoftMceTransceiver
       }
 #endif
 
-      // XP ...
+      // XP & Vista ...
       // Kill Microsoft MCE ehtray process (if it exists)
       try
       {

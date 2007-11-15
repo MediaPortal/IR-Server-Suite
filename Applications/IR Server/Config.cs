@@ -134,6 +134,8 @@ namespace IRServer
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
+
+        checkBoxRunAtBoot.Checked = false;
       }
     }
 

@@ -73,6 +73,7 @@ namespace MicrosoftMceTransceiver
 
     #region Public Methods
 
+    /*
     /// <summary>
     /// Write Pronto data to a file.
     /// </summary>
@@ -96,6 +97,7 @@ namespace MicrosoftMceTransceiver
         }
       }
     }
+    */
 
     public static IrCode ConvertProntoDataToIrCode(ushort[] prontoData)
     {

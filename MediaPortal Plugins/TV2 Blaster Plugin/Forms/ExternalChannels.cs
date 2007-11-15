@@ -147,9 +147,9 @@ namespace MediaPortal.Plugins
 
           if (setup.UsePreChangeCommand && !String.IsNullOrEmpty(setup.PreChangeCommand))
           {
-            if (setup.PreChangeCommand.StartsWith(Common.CmdPrefixRun))
+            if (setup.PreChangeCommand.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
               ProcessExternalChannelProgram(setup.PreChangeCommand.Substring(Common.CmdPrefixRun.Length), -1, channel);
-            else if (setup.PreChangeCommand.StartsWith(Common.CmdPrefixSerial))
+            else if (setup.PreChangeCommand.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
               ProcessSerialCommand(setup.PreChangeCommand.Substring(Common.CmdPrefixSerial.Length), -1, channel);
             else
               TV2BlasterPlugin.ProcessCommand(setup.PreChangeCommand);
@@ -165,9 +165,9 @@ namespace MediaPortal.Plugins
             command = setup.Digits[charVal];
             if (!String.IsNullOrEmpty(command))
             {
-              if (command.StartsWith(Common.CmdPrefixRun))
+              if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
                 ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), charVal, channel);
-              else if (command.StartsWith(Common.CmdPrefixSerial))
+              else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
                 ProcessSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), charVal, channel);
               else
                 TV2BlasterPlugin.ProcessCommand(command);
@@ -179,7 +179,7 @@ namespace MediaPortal.Plugins
 
           if (setup.SendSelect && !String.IsNullOrEmpty(setup.SelectCommand))
           {
-            if (setup.SelectCommand.StartsWith(Common.CmdPrefixRun))
+            if (setup.SelectCommand.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
             {
               ProcessExternalChannelProgram(setup.SelectCommand.Substring(Common.CmdPrefixRun.Length), -1, channel);
 
@@ -191,7 +191,7 @@ namespace MediaPortal.Plugins
                 ProcessExternalChannelProgram(setup.SelectCommand.Substring(Common.CmdPrefixRun.Length), -1, channel);
               }
             }
-            else if (setup.SelectCommand.StartsWith(Common.CmdPrefixSerial))
+            else if (setup.SelectCommand.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
             {
               ProcessSerialCommand(setup.SelectCommand.Substring(Common.CmdPrefixSerial.Length), -1, channel);
 
