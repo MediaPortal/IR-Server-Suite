@@ -25,10 +25,6 @@ ShowUninstDetails show
 ; Set the compression method
 SetCompressor /SOLID /FINAL lzma
 
-SetDateSave on
-
-XPStyle on
-
 !include "x64.nsh"
 
 ;--------------------------------
@@ -82,7 +78,7 @@ Section "-Core"
   CreateDirectory "$APPDATA\IR Server Suite\Set Top Boxes"
   SetOutPath "$APPDATA\IR Server Suite\Set Top Boxes"
   SetOverwrite ifnewer
-  File /r "Set Top Boxes\*.*"
+  File /r /x .svn "Set Top Boxes\*.*"
 
   ; Set output path to install dir
   SetOutPath "$INSTDIR"
@@ -183,7 +179,7 @@ Section "MP Control Plugin"
   CreateDirectory "$APPDATA\IR Server Suite\MP Control Plugin"
   SetOutPath "$APPDATA\IR Server Suite\MP Control Plugin"
   SetOverwrite ifnewer
-  File /r "MediaPortal Plugins\MP Control Plugin\AppData\*.*"
+  File /r /x .svn "MediaPortal Plugins\MP Control Plugin\AppData\*.*"
 
   ; Create Macro folder
   CreateDirectory "$APPDATA\IR Server Suite\MP Control Plugin\Macro"
@@ -216,11 +212,11 @@ Section "MP Blast Zone Plugin"
   ; Write skin files
   SetOutPath "$PROGRAMFILES\Team MediaPortal\MediaPortal\Skin\BlueTwo"
   SetOverwrite on
-  File /r "MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
+  File /r /x .svn "MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   SetOutPath "$PROGRAMFILES\Team MediaPortal\MediaPortal\Skin\BlueTwo wide"
   SetOverwrite on
-  File /r "MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
+  File /r /x .svn "MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   ; Create Macro folder
   CreateDirectory "$APPDATA\IR Server Suite\MP Blast Zone Plugin\Macro"
