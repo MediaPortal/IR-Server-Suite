@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<skin>
+	<button name="9" code="198" shortcut="NumPad9" top="372" left="150" height="20" width="24" />
+	<button name="8" code="199" shortcut="NumPad8" top="374" left="100" height="20" width="24" />
+	<button name="7" code="200" shortcut="NumPad7" top="371" left="49" height="20" width="24" />
+	<button name="6" code="201" shortcut="NumPad6" top="336" left="150" height="20" width="24" />
+	<button name="5" code="202" shortcut="NumPad5" top="335" left="100" height="20" width="24" />
+	<button name="4" code="203" shortcut="NumPad4" top="337" left="49" height="20" width="24" />
+	<button name="3" code="204" shortcut="NumPad3" top="301" left="149" height="20" width="24" />
+	<button name="2" code="205" shortcut="NumPad2" top="301" left="99" height="20" width="24" />
+	<button name="1" code="206" shortcut="NumPad1" top="301" left="50" height="20" width="24" />
+	<button name="0" code="207" shortcut="NumPad0" top="408" left="99" height="20" width="24" />
+	<button name="Menu" code="247" shortcut="None" top="258" left="46" height="20" width="24" />
+	<button name="Title" code="229" shortcut="None" top="182" left="46" height="20" width="24" />
+	<button name="Select" code="11" shortcut="Enter" top="218" left="87" height="23" width="48" />
+	<button name="Right" code="168" shortcut="Right" top="210" left="144" height="41" width="34" />
+	<button name="Left" code="169" shortcut="Left" top="208" left="47" height="43" width="33" />
+	<button name="Down" code="167" shortcut="Down" top="254" left="85" height="25" width="52" />
+	<button name="Up" code="166" shortcut="Up" top="181" left="84" height="25" width="52" />
+	<button name="Info" code="195" shortcut="None" top="182" left="153" height="19" width="23" />
+	<button name="Back" code="216" shortcut="Back" top="256" left="154" height="20" width="22" />
+	<button name="Skip +" code="223" shortcut="MediaNextTrack" top="141" left="154" height="20" width="20" />
+	<button name="Skip -" code="221" shortcut="MediaPreviousTrack" top="141" left="48" height="20" width="20" />
+	<button name="Forward" code="227" shortcut="None" top="97" left="142" height="22" width="32" />
+	<button name="Reverse" code="226" shortcut="None" top="97" left="47" height="23" width="31" />
+	<button name="Pause" code="230" shortcut="None" top="138" left="117" height="24" width="24" />
+	<button name="Play" code="234" shortcut="None" top="95" left="93" height="28" width="39" />
+	<button name="Stop" code="224" shortcut="MediaStop" top="138" left="82" height="22" width="22" />
+	<button name="Display" code="213" shortcut="None" top="54" left="80" height="25" width="63" />
+</skin>

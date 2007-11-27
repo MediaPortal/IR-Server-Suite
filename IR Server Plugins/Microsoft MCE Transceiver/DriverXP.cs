@@ -21,30 +21,12 @@ namespace MicrosoftMceTransceiver
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool GetOverlappedResult(
-      SafeFileHandle handle,
-      ref NativeOverlapped overlapped,
-      out int bytesTransferred,
-      [MarshalAs(UnmanagedType.Bool)] bool wait);
-
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern SafeFileHandle CreateFile(
-      [MarshalAs(UnmanagedType.LPTStr)] string fileName,
-      [MarshalAs(UnmanagedType.U4)] CreateFileAccessTypes fileAccess,
-      [MarshalAs(UnmanagedType.U4)] CreateFileShares fileShare,
-      IntPtr securityAttributes,
-      [MarshalAs(UnmanagedType.U4)] CreateFileDisposition creationDisposition,
-      [MarshalAs(UnmanagedType.U4)] CreateFileAttributes flags,
-      IntPtr templateFile);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool ReadFile(
       SafeFileHandle handle,
       IntPtr buffer,
       int bytesToRead,
       out int bytesRead,
-      ref NativeOverlapped overlapped);
+      IntPtr overlapped);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -53,17 +35,7 @@ namespace MicrosoftMceTransceiver
       byte[] buffer,
       int bytesToWrite,
       out int bytesWritten,
-      ref NativeOverlapped overlapped);
-
-    [DllImport("kernel32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CancelIo(
-      SafeFileHandle handle);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CloseHandle(
-      SafeFileHandle handle);
+      IntPtr overlapped);
 
     #endregion Interop
 
@@ -608,37 +580,29 @@ namespace MicrosoftMceTransceiver
       byte[] packetBytes;
       int lastError;
 
-      NativeOverlapped lpOverlapped = new NativeOverlapped();
-      lpOverlapped.InternalLow  = IntPtr.Zero;
-      lpOverlapped.InternalHigh = IntPtr.Zero;
-      lpOverlapped.OffsetLow    = 0;
-      lpOverlapped.OffsetHigh   = 0;
-
       WaitHandle waitHandle = new ManualResetEvent(false);
       SafeHandle safeWaitHandle = waitHandle.SafeWaitHandle;
       WaitHandle[] waitHandles = new WaitHandle[] { waitHandle, _stopReadThread };
-
-      bool success = false;
-      safeWaitHandle.DangerousAddRef(ref success);
-      if (!success)
-      {
-        waitHandle.Close();
-        throw new ApplicationException("Failed to initialize safe wait handle");
-      }
 
       IntPtr deviceBufferPtr = IntPtr.Zero;
 
       try
       {
+        bool success = false;
+        safeWaitHandle.DangerousAddRef(ref success);
+        if (!success)
+          throw new ApplicationException("Failed to initialize safe wait handle");
+
+        DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
+        overlapped.ClearAndSetEvent(safeWaitHandle.DangerousGetHandle());
+        
         deviceBufferPtr = Marshal.AllocHGlobal(DeviceBufferSize);
 
         while (_readThreadMode != ReadThreadMode.Stop)
         {
           bytesRead = 0;
 
-          lpOverlapped.EventHandle = safeWaitHandle.DangerousGetHandle();
-
-          bool readDevice = ReadFile(_eHomeHandle, deviceBufferPtr, DeviceBufferSize, out bytesRead, ref lpOverlapped);
+          bool readDevice = ReadFile(_eHomeHandle, deviceBufferPtr, DeviceBufferSize, out bytesRead, overlapped.Overlapped);
           lastError = Marshal.GetLastWin32Error();
 
           if (!readDevice)
@@ -660,7 +624,7 @@ namespace MicrosoftMceTransceiver
                 throw new ApplicationException("Invalid wait handle return");
             }
 
-            bool getOverlapped = GetOverlappedResult(_eHomeHandle, ref lpOverlapped, out bytesRead, true);
+            bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesRead, true);
             lastError = Marshal.GetLastWin32Error();
 
             if (!getOverlapped && lastError != Win32ErrorCodes.ERROR_SUCCESS)
@@ -791,33 +755,24 @@ namespace MicrosoftMceTransceiver
       DebugDump(data);
 #endif
 
-      NativeOverlapped lpOverlapped = new NativeOverlapped();
-      lpOverlapped.InternalLow  = IntPtr.Zero;
-      lpOverlapped.InternalHigh = IntPtr.Zero;
-      lpOverlapped.OffsetLow    = 0;
-      lpOverlapped.OffsetHigh   = 0;
-
-      int bytesWritten = 0;
-
       int lastError;
 
       WaitHandle waitHandle = new ManualResetEvent(false);
       SafeHandle safeWaitHandle = waitHandle.SafeWaitHandle;
       WaitHandle[] waitHandles = new WaitHandle[] { waitHandle };
 
-      bool success = false;
-      safeWaitHandle.DangerousAddRef(ref success);
-      if (!success)
-      {
-        waitHandle.Close();
-        throw new ApplicationException("Failed to initialize safe wait handle");
-      }
-
       try
       {
-        lpOverlapped.EventHandle = safeWaitHandle.DangerousGetHandle();
+        bool success = false;
+        safeWaitHandle.DangerousAddRef(ref success);
+        if (!success)
+          throw new ApplicationException("Failed to initialize safe wait handle");
 
-        bool writeDevice = WriteFile(_eHomeHandle, data, data.Length, out bytesWritten, ref lpOverlapped);
+        DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
+        overlapped.ClearAndSetEvent(safeWaitHandle.DangerousGetHandle());
+
+        int bytesWritten = 0;
+        bool writeDevice = WriteFile(_eHomeHandle, data, data.Length, out bytesWritten, overlapped.Overlapped);
         lastError = Marshal.GetLastWin32Error();
 
         if (writeDevice)
@@ -833,7 +788,7 @@ namespace MicrosoftMceTransceiver
         else if (handle != 0)
           throw new ApplicationException("Invalid wait handle return");
 
-        bool getOverlapped = GetOverlappedResult(_eHomeHandle, ref lpOverlapped, out bytesWritten, true);
+        bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesWritten, true);
         lastError = Marshal.GetLastWin32Error();
 
         if (!getOverlapped && lastError != Win32ErrorCodes.ERROR_SUCCESS)

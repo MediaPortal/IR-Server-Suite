@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<UsePreChangeCommand>False</UsePreChangeCommand>
+	<SendSelect>False</SendSelect>
+	<Digit0>STB: D-Box\0</Digit0>
+	<Digit1>STB: D-Box\1</Digit1>
+	<Digit2>STB: D-Box\2</Digit2>
+	<Digit3>STB: D-Box\3</Digit3>
+	<Digit4>STB: D-Box\4</Digit4>
+	<Digit5>STB: D-Box\5</Digit5>
+	<Digit6>STB: D-Box\6</Digit6>
+	<Digit7>STB: D-Box\7</Digit7>
+	<Digit8>STB: D-Box\8</Digit8>
+	<Digit9>STB: D-Box\9</Digit9>
+</config>

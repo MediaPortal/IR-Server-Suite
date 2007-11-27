@@ -545,7 +545,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        MPControlPlugin.ProcessMacro(fileName);
+        MPControlPlugin.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
       catch (Exception ex)
       {

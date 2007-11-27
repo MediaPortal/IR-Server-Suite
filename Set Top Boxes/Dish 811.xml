@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <UsePreChangeCommand>False</UsePreChangeCommand>
+  <SendSelect>True</SendSelect>
+  <Digit0>STB: Dish 811\0</Digit0>
+	<Digit1>STB: Dish 811\1</Digit1>
+	<Digit2>STB: Dish 811\2</Digit2>
+	<Digit3>STB: Dish 811\3</Digit3>
+	<Digit4>STB: Dish 811\4</Digit4>
+	<Digit5>STB: Dish 811\5</Digit5>
+	<Digit6>STB: Dish 811\6</Digit6>
+	<Digit7>STB: Dish 811\7</Digit7>
+	<Digit8>STB: Dish 811\8</Digit8>
+	<Digit9>STB: Dish 811\9</Digit9>
+	<SelectCommand>STB: Dish 811\GO</SelectCommand>
+</config>

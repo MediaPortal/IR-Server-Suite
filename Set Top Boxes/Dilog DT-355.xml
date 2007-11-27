@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <UsePreChangeCommand>False</UsePreChangeCommand>
+  <SendSelect>True</SendSelect>
+  <Digit0>STB: Dilog DT-355\0</Digit0>
+	<Digit1>STB: Dilog DT-355\1</Digit1>
+	<Digit2>STB: Dilog DT-355\2</Digit2>
+	<Digit3>STB: Dilog DT-355\3</Digit3>
+	<Digit4>STB: Dilog DT-355\4</Digit4>
+	<Digit5>STB: Dilog DT-355\5</Digit5>
+	<Digit6>STB: Dilog DT-355\6</Digit6>
+	<Digit7>STB: Dilog DT-355\7</Digit7>
+	<Digit8>STB: Dilog DT-355\8</Digit8>
+	<Digit9>STB: Dilog DT-355\9</Digit9>
+	<SelectCommand>STB: Dilog DT-355\SELECT</SelectCommand>
+</config>

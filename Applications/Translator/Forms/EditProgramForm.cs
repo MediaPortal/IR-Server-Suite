@@ -99,8 +99,8 @@ namespace Translator
         textBoxApp.Text = find.FileName;
         if (String.IsNullOrEmpty(textBoxAppStartFolder.Text))
           textBoxAppStartFolder.Text = Path.GetDirectoryName(find.FileName);
-        
-        if (String.IsNullOrEmpty(textBoxDisplayName.Text) || textBoxDisplayName.Text.Equals("New Program", StringComparison.Ordinal))
+
+        if (String.IsNullOrEmpty(textBoxDisplayName.Text) || textBoxDisplayName.Text.Equals(ProgramSettings.NewProgramName, StringComparison.Ordinal))
           textBoxDisplayName.Text = Path.GetFileNameWithoutExtension(find.FileName);
       }
     }
@@ -134,13 +134,12 @@ namespace Translator
         // Give new process focus ...
         if (StartState != ProcessWindowStyle.Hidden && ForceWindowFocus)
         {
-          IntPtr processWindow = IntPtr.Zero;
-          while (!process.HasExited)
+          int attempt = 0;
+          while (!process.HasExited && attempt++ < 50)
           {
-            processWindow = process.MainWindowHandle;
-            if (processWindow != IntPtr.Zero)
+            if (process.MainWindowHandle != IntPtr.Zero)
             {
-              Win32.SetForegroundWindow(processWindow, true);
+              Win32.SetForegroundWindow(process.MainWindowHandle, true);
               break;
             }
 
@@ -152,7 +151,6 @@ namespace Translator
       {
         IrssLog.Error("Test Application: {0}", ex.ToString());
       }
-
     }
 
     private void buttonOK_Click(object sender, EventArgs e)

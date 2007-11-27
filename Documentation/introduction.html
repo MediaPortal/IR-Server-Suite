@@ -1,0 +1,51 @@
+<HTML>
+<HEAD><TITLE>Introduction</TITLE></HEAD>
+<BODY>
+
+<H2>Introduction<BR><HR COLOR="RED"></H2>
+<P>This package was designed as a highly flexible IR remote control suite of plugins and applications specifically for (but not limited to) controlling a MediaPortal Client and Server setup.</P>
+<P>The original reason for developing this system was to extend the capabilities of the MCE Replacement Plugin for MediaPortal.  The project was started only a few short weeks after the MCE Replacement Plugin was started when limitations of that implementation became obvious.</P>
+
+<P><B>How does this work?</B><BR>
+<BR>
+You install IR Server on a computer that has an IR Device attached to it.  IR Server then provides access to that IR Device for all the plugins and applications in the suite, no matter where those applications and plugins are running on your network.<BR>
+<BR>
+You don't have to have a LAN (Network) to use IR Server Suite, because all the applications and plugins can operate on the one machine too.<BR>
+<BR>
+By having one point of access to the IR Device, IR Server regulates the communications with the IR Device.  This means that multiple plugins and applications can be accessing the device at effectively the same time without interfering with each other.<BR>
+<BR>
+This means, for example, the MediaPortal TV Server as well as the MediaPortal client can share the device.  And by using other applications in the suite you can control your whole PC.<BR>
+
+</P>
+
+<P><B>Suite Overview</B><BR>
+<BR>
+<A HREF="IR Server\index.html">IR Server</A><BR>
+IR Server is the centre-piece of the system.  As the name suggests, it is the server of the IR device.  Other applications and plugins communicate with the IR Server to receive button press notification and to blast (transmit) or learn IR commands.<BR>
+<BR>
+<A HREF="Plugins\MP Control Plugin\index.html">MP Control Plugin</A><BR>
+This MediaPortal plugin is the equivalent of the MCE Replacement Plugin, it connects to the IR Server to control MediaPortal.<BR>
+<BR>
+<A HREF="Plugins\MP Blast Zone Plugin\index.html">MP Blast Zone Plugin</A><BR>
+This MediaPortal plugin lets you control your IR devices from within the MediaPortal GUI.  By organising a menu structure inside the plugin you can blast IR commands, execute macros, launch applications, send windows messages, and jump to other screens within MediaPortal.<BR>
+<BR>
+<A HREF="Plugins\TV2 Blaster Plugin\index.html">TV2 Blaster Plugin</A><BR>
+This MediaPortal plugin is for tuning external channels (on Set Top Boxes) for the MediaPortal TV Engine 2 (the default TV system built into MediaPortal 0.2.3.0).<BR>
+<BR>
+<A HREF="Plugins\TV3 Blaster Plugin\index.html">TV3 Blaster Plugin</A><BR>
+This MediaPortal TV Server plugin is for tuning external channels (on Set Top Boxes) for the TV Engine 3 (the MediaPortal TV Server).<BR>
+<BR>
+<A HREF="Tray Launcher\index.html">Tray Launcher</A><BR>
+This application loads into the system tray and waits for a user defined button to be pressed and then launches an application of your choosing.<BR>
+<BR>
+<A HREF="Translator\index.html">Translator</A><BR>
+This is a program in the same style as HIP and to a lesser extent Girder.  It is designed to control your whole PC via Infrared Remote.<BR>
+<BR>
+<A HREF="Virtual Remote\index.html">Virtual Remote</A><BR>
+Virtual Remote is a software remote control, styled as an Infrared remote control.  It lets you simulate Infrared remote control commands either locally or over a network.<BR>
+<BR>
+
+</P>
+
+</BODY>
+</HTML>

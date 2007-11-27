@@ -1,0 +1,105 @@
+<HTML>
+<HEAD><TITLE>What's new?</TITLE></HEAD>
+<BODY>
+
+<H2>What's new?<BR><HR COLOR="RED"></H2>
+
+
+<P>Version 1.0.3.5
+<UL>
+<LI>Fixed a bug in the macro and IR command renaming.</LI>
+<LI>Modified IR learn method for MCE device.  This should improve blasting for some people.</LI>
+<LI>Fixed repeating IR decoding in JVC, RC5, RC6 and NEC protocols on MCE device.</LI>
+<LI>Fixed Sony SIRC IR decoding on MCE device, now works for 8, 12, 15 and 20 bit protocol variations (instead of just 15-bit).</LI>
+<LI>Added Daewoo, Matsushita, Mitsubishi, Nokia NRC17, Panasonic, and Toshiba protocol decoding on MCE device.</LI>
+<LI>Made IR and Macro file renaming more intelligent.</LI>
+<LI>Made more macro commands available in Translator and the Plugins (Mouse commands, CD Eject, TCP Messages).</LI>
+<LI>Modified IR Blasting to set Carrier Frequency more accurately.</LI>
+<LI>Added command line options to Translator to let you blast IR Commands and execute macros.</LI>
+<LI>Reworked the Translator program list interface slightly.</LI>
+<LI>Reworked and reintroduced IgorPlug device plugin.</LI>
+<LI>Looks like 64-bit support wasn't working, so I've had another try.</LI>
+<LI>Added a Translator OSD that can task swap, run macros and some other useful things.</LI>
+<LI>Added some new macro commands (HTTP requests, beep sound, wave file playback).</LI>
+<LI>Commands (including macros) now execute on separate threads.  In the past calling a macro for example would block the caller until it finished, now the caller can continue while the macro executes independantly.  Note that this will cause a subtle change in flow control.</LI>
+</UL></P>
+<BR>
+
+<P>Version 1.0.3.4
+<UL>
+<LI>No longer uses Named Pipes IPC, now uses TCP for communications between server and clients.  This should solve a lot of problems.</LI>
+<LI>The Vista eHome MCE device driver (default driver) is now supported!</LI>
+<LI>Automatic OS, driver and blaster manufacturer detection.  Supporting XP & Vista with eHome or Replacement driver.</LI>
+<LI>Documentation now includes information on how to make eHome driver act like Replacement Driver.  Replacement Driver is obsolete.</LI>
+<LI>No longer includes MCE Replacement Driver files in package, but does still support using the driver.</LI>
+<LI>MCE Transceiver plugin now stores IR Commands in Philips Pronto format, but still supports old files.</LI>
+<LI>Re-learning IR codes is highly recommended to improve IR blasting accuracy.</LI>
+<LI>More improvements to MCE device interface.</LI>
+<LI>Improved support for suspend/resume, should positively effect all devices but especially with MCE device.</LI>
+<LI>Fixed several bugs in USB-UIRT support, including learning IR Commands.</LI>
+<LI>WinLirc IR Server plugin configuration now can create IR Command files for blasting.</LI>
+<LI>Now IR Server only restarts it's Comms if you change settings.</LI>
+<LI>Fixed program launching bug in Translator.</LI>
+<LI>Moved to typed messages, this will not effect the end user.</LI>
+<LI>Refactored some more dialog boxes into a common code library.</LI>
+<LI>Added a use for all option for the blaster port selection when importing a quick-setup option in the TV2 & TV3 blaster plugins.</LI>
+<LI>Fixed an IR testing bug in the TV2 & TV3 blaster plugins.</LI>
+<LI>You can now select multiple IR Server Receiver plugins at the same time.</LI>
+<LI>Fixed a startup bug in Tray Launcher that was related to the new tcp comms system.</LI>
+<LI>Fix a bug in IRMan support that was stopping IR Server form starting if the device wasn't pluged in / responding / configured correctly.</LI>
+<LI>Removed local machine name from server host lists.  Added localhost instead, which should be more robust.</LI>
+<LI>Added experimental Serial IR Blaster support.</LI>
+<LI>Attempted to fix Tray Launcher focus issue.</LI>
+<LI>Added several new Set Top Box Quick-Setup options.</LI>
+<LI>Added Automatic Detection of IR Devices.</LI>
+<LI>Fixed a bug in setting up Windows Message commands in Translator.</LI>
+<LI>Added the ability to nest macros.  Looping macros will fail at runtime producing an error log entry, so you should always test your macros.</LI>
+<LI>Can now rename IR Commands and Macros by clicking on them in their lists.  Just like renaming a file in Windows Explorer.</LI>
+</UL></P>
+<BR>
+
+<P>Version 1.0.3.3
+<UL>
+<LI>New Microsoft MCE Transceiver plugin for IR Server.
+<UL>
+<LI>Now supports Microsoft MCE Remote Keyboard (with mouse), for both the eHome (XP) and Replacement driver (XP & Vista).</LI>
+<LI>Supports additional IR Protocols for remote button presses.</LI>
+<LI>Improved IR Blasting and IR <B>Learning</B>.</LI>
+<LI>Uses correct IR Carrier Frequency for Pronto IR Codes, but fixes to 38khz for learned IR codes <I>for now</I>.</LI>
+<LI>This is still a work in progress ...</LI>
+</UL></LI>
+<LI>Removed "MCE Replacement" IR Server plugin, the replacement (and eHome) driver is now supported by "Microsoft MCE" IR Server plugin.</LI>
+<LI>Removed Blaster Speed settings, which was only there to support MCE blasting without a known IR carrier frequency.</LI>
+<LI>Added a "Wait for response" option to Serial Commands.</LI>
+<LI>Now targeted specifically for x86 32-bit platform.  Which should force it to run in emulated 32-bit on 64-bit platforms.</LI>
+<LI>IR Blast now appends log entries, instead of starting a new log every run (logs are restarted after 1 week).</LI>
+<LI>Unhandled exceptions are now logged.</LI>
+<LI>Fixed a major bug in the TV2 and TV3 Blaster plugins.</LI>
+</UL></P>
+<BR>
+
+<P>Version 1.0.3.2
+<UL>
+<LI>Translator can now control the mouse.</LI>
+<LI>Added configurable learn IR timeout for MCE and USBUIRT reciever types.</LI>
+<LI>New command line application "IR Blast" for interfacing with other software.</LI>
+<LI>Virtual Remote now accepts command line parameters for simulating button presses.</LI>
+<LI>Each installation now has one location for Set Top Box setups and one location for IR codes.</LI>
+<LI>Standardized GUI components and broke out common forms and code into a common library.</LI>
+<LI>Improved comms down situation with Apps and Plugins.</LI>
+<LI>Reduced CPU load of applications and plugins.</LI>
+<LI>Enabled selecting a separate receiver and transmitter of IR codes.</LI>
+<LI>Completed first draft of documentation.</LI>
+<LI>Fixed bug in MP Control Plugin mapping blast commands to remote buttons.</LI>
+</UL></P>
+<BR>
+
+<P>Version 1.0.3.1
+<UL>
+<LI>Microsoft MCE IR Server Plugin now stops Microsoft Windows MCE ehRecvr service before starting.</LI>
+<LI>Fixed a major bug in the IR command learning in each of the MediaPortal plugins.</LI>
+</UL></P>
+<BR>
+
+</BODY>
+</HTML>

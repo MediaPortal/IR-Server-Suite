@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <UsePreChangeCommand>False</UsePreChangeCommand>
+  <SendSelect>True</SendSelect>
+  <Digit0>STB: OnDigital DTR730\0</Digit0>
+	<Digit1>STB: OnDigital DTR730\1</Digit1>
+	<Digit2>STB: OnDigital DTR730\2</Digit2>
+	<Digit3>STB: OnDigital DTR730\3</Digit3>
+	<Digit4>STB: OnDigital DTR730\4</Digit4>
+	<Digit5>STB: OnDigital DTR730\5</Digit5>
+	<Digit6>STB: OnDigital DTR730\6</Digit6>
+	<Digit7>STB: OnDigital DTR730\7</Digit7>
+	<Digit8>STB: OnDigital DTR730\8</Digit8>
+	<Digit9>STB: OnDigital DTR730\9</Digit9>
+	<SelectCommand>STB: OnDigital DTR730\SELECT</SelectCommand>
+</config>

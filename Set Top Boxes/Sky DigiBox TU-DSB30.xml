@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<Digit0>STB: Sky DigiBox TU-DSB30\0</Digit0>
+	<Digit1>STB: Sky DigiBox TU-DSB30\1</Digit1>
+	<Digit2>STB: Sky DigiBox TU-DSB30\2</Digit2>
+	<Digit3>STB: Sky DigiBox TU-DSB30\3</Digit3>
+	<Digit4>STB: Sky DigiBox TU-DSB30\4</Digit4>
+	<Digit5>STB: Sky DigiBox TU-DSB30\5</Digit5>
+	<Digit6>STB: Sky DigiBox TU-DSB30\6</Digit6>
+	<Digit7>STB: Sky DigiBox TU-DSB30\7</Digit7>
+	<Digit8>STB: Sky DigiBox TU-DSB30\8</Digit8>
+	<Digit9>STB: Sky DigiBox TU-DSB30\9</Digit9>
+	<SelectCommand>STB: Sky DigiBox TU-DSB30\OK</SelectCommand>
+</config>

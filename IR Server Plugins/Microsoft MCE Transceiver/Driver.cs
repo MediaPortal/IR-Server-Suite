@@ -124,6 +124,34 @@ namespace MicrosoftMceTransceiver
 
     #region Interop
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    protected static extern bool GetOverlappedResult(
+      SafeFileHandle handle,
+      IntPtr overlapped,
+      out int bytesTransferred,
+      [MarshalAs(UnmanagedType.Bool)] bool wait);
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    protected static extern SafeFileHandle CreateFile(
+      [MarshalAs(UnmanagedType.LPTStr)] string fileName,
+      [MarshalAs(UnmanagedType.U4)] CreateFileAccessTypes fileAccess,
+      [MarshalAs(UnmanagedType.U4)] CreateFileShares fileShare,
+      IntPtr securityAttributes,
+      [MarshalAs(UnmanagedType.U4)] CreateFileDisposition creationDisposition,
+      [MarshalAs(UnmanagedType.U4)] CreateFileAttributes flags,
+      IntPtr templateFile);
+
+    [DllImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    protected static extern bool CancelIo(
+      SafeFileHandle handle);
+
+    [DllImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    protected static extern bool CloseHandle(
+      SafeFileHandle handle);
+
     [DllImport("setupapi.dll", CharSet = CharSet.Auto)]
     static extern IntPtr SetupDiGetClassDevs(
       ref Guid classGuid,

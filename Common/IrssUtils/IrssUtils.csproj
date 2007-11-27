@@ -69,11 +69,18 @@
     <Compile Include="Audio.cs" />
     <Compile Include="CDRom.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Display.cs" />
     <Compile Include="Forms\BlastCommand.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\BlastCommand.Designer.cs">
       <DependentUpon>BlastCommand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DisplayModeCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DisplayModeCommand.Designer.cs">
+      <DependentUpon>DisplayModeCommand.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\EjectCommand.cs">
       <SubType>Form</SubType>
@@ -166,6 +173,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\BlastCommand.resx">
       <DependentUpon>BlastCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DisplayModeCommand.resx">
+      <DependentUpon>DisplayModeCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EjectCommand.resx">

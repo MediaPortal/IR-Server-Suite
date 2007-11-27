@@ -188,7 +188,7 @@ namespace IRServer
               {
                 plugins.Add(plugin);
 
-                if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit))
+                if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
                   _pluginTransmit = plugin;
               }
             }
@@ -198,7 +198,7 @@ namespace IRServer
 
           if (String.IsNullOrEmpty(_pluginNameTransmit))
           {
-            IrssLog.Warn("No transmit plugin loaded");
+            IrssLog.Info("No transmit plugin loaded");
           }
           else if (_pluginTransmit == null)
           {
@@ -253,7 +253,7 @@ namespace IRServer
                 if (mouseReceiver != null)
                   mouseReceiver.MouseCallback += new MouseHandler(MouseHandlerCallback);
 
-                if (plugin.Name.Equals(_pluginTransmit.Name))
+                if (plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
                 {
                   startedTransmit = true;
                   IrssLog.Info("Transmit and Receive plugin started: \"{0}\"", plugin.Name);

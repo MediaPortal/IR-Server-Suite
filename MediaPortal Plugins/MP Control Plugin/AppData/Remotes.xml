@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<remotes>
+	<remote name="Microsoft MCE">
+		<button name="PowerTV">
+			<code value="31642" />
+		</button>
+		<button name="Power2">
+			<code value="31731" />
+		</button>
+		<button name="Stop">
+			<code value="31718" />
+		</button>
+		<button name="Record">
+			<code value="31720" />
+		</button>
+		<button name="Pause">
+			<code value="31719" />
+		</button>
+		<button name="Play">
+			<code value="31721" />
+		</button>
+		<button name="Rewind">
+			<code value="31722" />
+		</button>
+		<button name="Forward">
+			<code value="31723" />
+		</button>
+		<button name="Replay">
+			<code value="31716" />
+		</button>
+		<button name="Skip">
+			<code value="31717" />
+		</button>
+		<button name="Back">
+			<code value="31708" />
+		</button>
+		<button name="Info">
+			<code value="31728" />
+		</button>		
+		<button name="VolumeUp">
+			<code value="31727" />
+		</button>
+		<button name="VolumeDown">
+			<code value="31726" />
+		</button>
+		<button name="Start">
+			<code value="31730" />
+		</button>
+		<button name="ChannelUp">
+			<code value="31725" />
+		</button>
+		<button name="ChannelDown">
+			<code value="31724" />
+		</button>
+		<button name="Mute">
+			<code value="31729" />
+		</button>
+		<button name="RecordedTV">
+			<code value="31671" />
+		</button>
+		<button name="Guide">
+			<code value="31705" />
+		</button>
+		<button name="LiveTV">
+			<code value="31706" />
+		</button>
+		<button name="DVDMenu">
+			<code value="31707" />
+		</button>
+		<button name="Teletext">
+			<code value="31653" />
+		</button>		
+		<button name="Red">
+			<code value="31652" />
+		</button>
+		<button name="Green">
+			<code value="31651" />
+		</button>
+		<button name="Yellow">
+			<code value="31650" />
+		</button>
+		<button name="Blue">
+			<code value="31649" />
+		</button>
+		<button name="MyMusic">
+			<code value="31672" />
+		</button>
+		<button name="MyPictures">
+			<code value="31670" />
+		</button>
+		<button name="MyRadio">
+			<code value="31663" />
+		</button>
+		<button name="MyTV">
+			<code value="31673" />
+		</button>
+		<button name="MyVideos">
+			<code value="31669" />
+		</button>
+		<button name="Print">
+			<code value="31665" />
+		</button>
+		<button name="AspectRatio">
+			<code value="31704" />
+		</button>
+		<button name="Messenger">
+			<code value="31638" />
+		</button>
+		<button name="Power1" />
+		<button name="Up" />
+		<button name="Left" />
+		<button name="Ok" />
+		<button name="Right" />
+		<button name="Down" />
+		<button name="NumPad1" />
+		<button name="NumPad2" />
+		<button name="NumPad3" />
+		<button name="NumPad4" />
+		<button name="NumPad5" />
+		<button name="NumPad6" />
+		<button name="NumPad7" />
+		<button name="NumPad8" />
+		<button name="NumPad9" />
+		<button name="NumPad0" />
+		<button name="Oem8" />
+		<button name="OemGate" />
+		<button name="Clear" />
+		<button name="Enter" />
+	</remote>
+</remotes>

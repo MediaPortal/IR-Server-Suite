@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="Window Styles" value="0x800025">
+<param name="Font" value="Arial,8,0">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Introduction">
+		<param name="Local" value="introduction.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="IR Server">
+		<param name="Local" value="IR Server\index.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Tray Launcher">
+		<param name="Local" value="Tray Launcher\index.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Translator">
+		<param name="Local" value="Translator\index.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Virtual Remote">
+		<param name="Local" value="Virtual Remote\index.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Skin Editor">
+			<param name="Local" value="Virtual Remote\Skin Editor\index.html">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Plugins">
+		<param name="Local" value="Plugins\index.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MP Control Plugin">
+			<param name="Local" value="Plugins\MP Control Plugin\index.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MP Blast Zone Plugin">
+			<param name="Local" value="Plugins\MP Blast Zone Plugin\index.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="TV2 Blaster Plugin">
+			<param name="Local" value="Plugins\TV2 Blaster Plugin\index.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="TV3 Blaster Plugin">
+			<param name="Local" value="Plugins\TV3 Blaster Plugin\index.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Known Set Top Boxes">
+			<param name="Local" value="Plugins\stb.html">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="What's new?">
+		<param name="Local" value="new.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Appendices">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="The Macro Editor">
+			<param name="Local" value="Common\macro_editor.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Using Philips Pronto CCF files">
+			<param name="Local" value="pronto.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Tutorial: MP Control Plugin event mapper">
+			<param name="Local" value="Plugins\MP Control Plugin\event_tutorial.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="IR Blast (Command line tool)">
+			<param name="Local" value="irblast.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MCE IR device driver improvement">
+			<param name="Local" value="ehome_driver.html">
+			</OBJECT>
+	</UL>
+</UL>
+</BODY></HTML>

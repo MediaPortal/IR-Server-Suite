@@ -604,10 +604,10 @@ namespace Translator
         case Menus.Audio:   LoadMenuAudio();    break;
         case Menus.Eject:   LoadMenuEject();    break;
 
-        case Menus.WindowActivate: LoadMenuWindowActivate(); break;
-        case Menus.WindowClose: LoadMenuWindowClose(); break;
-        case Menus.WindowMaximize: LoadMenuWindowMaximize(); break;
-        case Menus.WindowMinimize: LoadMenuWindowMinimize(); break;
+        case Menus.WindowActivate:  LoadMenuWindowActivate(); break;
+        case Menus.WindowClose:     LoadMenuWindowClose();    break;
+        case Menus.WindowMaximize:  LoadMenuWindowMaximize(); break;
+        case Menus.WindowMinimize:  LoadMenuWindowMinimize(); break;
 
         default:            LoadMenuMain();     break;
       }
@@ -677,10 +677,7 @@ namespace Translator
       {
         if (settings.FileName.Equals(programFile))
         {
-          string launchCommand = settings.LaunchCommand();
-          string[] commands = Common.SplitRunCommand(launchCommand);
-
-          Common.ProcessRunCommand(commands);
+          Program.ProcessCommand(Common.CmdPrefixRun + settings.RunCommandString, true);
           break;
         }
       }
@@ -689,7 +686,7 @@ namespace Translator
     {
       this.Close();
 
-      Program.ProcessMacro(Program.FolderMacros + macroName + Common.FileExtensionMacro);
+      Program.ProcessCommand(Common.CmdPrefixMacro + macroName, true);
     }
     void TaskSwap(IntPtr window)
     {
@@ -706,11 +703,11 @@ namespace Translator
 
       switch (command)
       {
-        case CommandShutdown:   Shutdown();   break;
-        case CommandReboot:     Reboot();     break;
-        case CommandLogOff:     LogOff();     break;
-        case CommandStandby:    Standby();    break;
-        case CommandHibernate:  Hibernate();  break;
+        case CommandShutdown:   Program.ProcessCommand(Common.CmdPrefixShutdown, true);   break;
+        case CommandReboot:     Program.ProcessCommand(Common.CmdPrefixReboot, true);     break;
+        case CommandLogOff:     Program.ProcessCommand(Common.CmdPrefixLogOff, true);     break;
+        case CommandStandby:    Program.ProcessCommand(Common.CmdPrefixStandby, true);    break;
+        case CommandHibernate:  Program.ProcessCommand(Common.CmdPrefixHibernate, true);  break;
 
 
       }
@@ -719,7 +716,7 @@ namespace Translator
     {
       this.Close();
 
-      CDRom.Open(drive);
+      Program.ProcessCommand(Common.CmdPrefixEject + drive, true);
     }
 
     void Close(IntPtr window)
@@ -748,34 +745,6 @@ namespace Translator
         return;
 
       Win32.SendWindowsMessage(window, (int)Win32.WindowsMessage.WM_SYSCOMMAND, (int)Win32.SysCommand.SC_MAXIMIZE, 0);
-    }
-
-    static void Hibernate()
-    {
-      IrssLog.Info("Hibernate");
-      if (!Application.SetSuspendState(PowerState.Hibernate, false, false))
-        IrssLog.Warn("Hibernate request was rejected by another application.");
-    }
-    static void Standby()
-    {
-      IrssLog.Info("Standby");
-      if (!Application.SetSuspendState(PowerState.Suspend, false, false))
-        IrssLog.Warn("Standby request was rejected by another application.");
-    }
-    static void Reboot()
-    {
-      IrssLog.Info("Reboot");
-      Win32.WindowsExit(Win32.ExitWindows.Reboot, Win32.ShutdownReasons.FlagUserDefined);
-    }
-    static void LogOff()
-    {
-      IrssLog.Info("LogOff");
-      Win32.WindowsExit(Win32.ExitWindows.LogOff, Win32.ShutdownReasons.FlagUserDefined);
-    }
-    static void Shutdown()
-    {
-      IrssLog.Info("ShutDown");
-      Win32.WindowsExit(Win32.ExitWindows.ShutDown, Win32.ShutdownReasons.FlagUserDefined);
     }
 
     void ActivateItem(int index)

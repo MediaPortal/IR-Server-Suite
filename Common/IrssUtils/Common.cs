@@ -100,6 +100,7 @@ namespace IrssUtils
     public const string CmdPrefixPopup        = "Popup: ";
     public const string CmdPrefixMouseMode    = "Mouse Mode: ";
 //  public const string CmdPrefixWindowState  = "Toggle Window State";
+    
     public const string CmdPrefixStandby      = "Standby";
     public const string CmdPrefixHibernate    = "Hibernate";
     public const string CmdPrefixReboot       = "Reboot";
@@ -110,6 +111,7 @@ namespace IrssUtils
     public const string CmdPrefixEject        = "Eject: ";
     public const string CmdPrefixSound        = "Sound: ";
     public const string CmdPrefixBeep         = "Beep: ";
+    public const string CmdPrefixDisplay      = "Display: ";
 
     public const string CmdPrefixTranslator   = "Show Translator OSD";
 
@@ -139,6 +141,7 @@ namespace IrssUtils
 //  public const string XmlTagWindowState     = "WINDOW_STATE";
     public const string XmlTagFocus           = "GET_FOCUS";
     public const string XmlTagExit            = "EXIT";
+    
     public const string XmlTagStandby         = "STANDBY";
     public const string XmlTagHibernate       = "HIBERNATE";
     public const string XmlTagReboot          = "REBOOT";
@@ -149,6 +152,7 @@ namespace IrssUtils
     public const string XmlTagEject           = "EJECT";
     public const string XmlTagSound           = "SOUND";
     public const string XmlTagBeep            = "BEEP";
+    public const string XmlTagDisplay         = "DISPLAY";
 
     public const string XmlTagTranslator      = "TRANSLATOR";
 
@@ -170,6 +174,7 @@ namespace IrssUtils
 //  public const string UITextWindowState     = "Change Window State";
     public const string UITextFocus           = "Get Focus";
     public const string UITextExit            = "Exit MediaPortal";
+    
     public const string UITextStandby         = "Standby";
     public const string UITextHibernate       = "Hibernate";
     public const string UITextReboot          = "Reboot";
@@ -180,6 +185,7 @@ namespace IrssUtils
     public const string UITextEject           = "Eject CD";
     public const string UITextSound           = "Play Sound";
     public const string UITextBeep            = "Beep";
+    public const string UITextDisplay         = "Display";
 
     public const string UITextTranslator      = "Show Translator OSD";
 
@@ -264,6 +270,10 @@ namespace IrssUtils
     /// Number of Segments in a Beep Command.
     /// </summary>
     public const int SegmentsBeepCommand = 2;
+    /// <summary>
+    /// Number of Segments in a Display Mode Command.
+    /// </summary>
+    public const int SegmentsDisplayModeCommand = 4;
 
     #endregion Command Segments
 
@@ -353,6 +363,16 @@ namespace IrssUtils
       return SplitCommand(command, SegmentsBeepCommand);
     }
 
+    /// <summary>
+    /// Splits a Display Mode Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
+    public static string[] SplitDisplayModeCommand(string command)
+    {
+      return SplitCommand(command, SegmentsDisplayModeCommand);
+    }
+
     static string[] SplitCommand(string command, int elements)
     {
       if (String.IsNullOrEmpty(command))
@@ -397,13 +417,12 @@ namespace IrssUtils
         process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
         forceFocus)
       {
-        IntPtr processWindow = IntPtr.Zero;
-        while (!process.HasExited)
+        int attempt = 0;
+        while (!process.HasExited && attempt++ < 50)
         {
-          processWindow = process.MainWindowHandle;
-          if (processWindow != IntPtr.Zero)
+          if (process.MainWindowHandle != IntPtr.Zero)
           {
-            Win32.SetForegroundWindow(processWindow, true);
+            Win32.SetForegroundWindow(process.MainWindowHandle, true);
             break;
           }
 
@@ -642,9 +661,9 @@ namespace IrssUtils
       if (CDRom.IsCDRom(command))
         CDRom.Open(command);
       else
-        throw new ApplicationException(String.Format("Drive ({0}) is not an optical drive", command));
+        throw new ArgumentException(String.Format("Drive ({0}) is not a recognised optical drive", command), "command");
     }
-    
+
     /// <summary>
     /// Given a path to a wave file this method will play the sound.
     /// </summary>
@@ -693,6 +712,23 @@ namespace IrssUtils
       int beepTime = int.Parse(commands[1]);
 
       Audio.PlayBeep(beepFreq, beepTime);
+    }
+
+    /// <summary>
+    /// Given a split Display Mode Command this method will change the display mode according to the command structure supplied.
+    /// </summary>
+    /// <param name="commands">An array of arguments for the method (the output of SplitDisplayModeCommand).</param>
+    public static void ProcessDisplayModeCommand(string[] commands)
+    {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
+
+      int width   = int.Parse(commands[0]);
+      int height  = int.Parse(commands[1]);
+      short bpp   = short.Parse(commands[2]);
+      int refresh = int.Parse(commands[3]);
+
+      Display.ChangeDisplayMode(width, height, bpp, refresh);
     }
 
     #endregion Command Execution
@@ -845,6 +881,51 @@ namespace IrssUtils
       }
 
       return output;
+    }
+
+    /// <summary>
+    /// Hibernate the PC.
+    /// </summary>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public static bool Hibernate()
+    {
+      return Application.SetSuspendState(PowerState.Hibernate, false, false);
+    }
+    
+    /// <summary>
+    /// Standby the PC.
+    /// </summary>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public static bool Standby()
+    {
+      return Application.SetSuspendState(PowerState.Suspend, false, false);
+    }
+    
+    /// <summary>
+    /// Reboot the PC.
+    /// </summary>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public static bool Reboot()
+    {
+      return Win32.WindowsExit(Win32.ExitWindows.Reboot, Win32.ShutdownReasons.FlagUserDefined);
+    }
+        
+    /// <summary>
+    /// LogOff the current user.
+    /// </summary>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public static bool LogOff()
+    {
+      return Win32.WindowsExit(Win32.ExitWindows.LogOff, Win32.ShutdownReasons.FlagUserDefined);
+    }
+    
+    /// <summary>
+    /// Shut Down the computer.
+    /// </summary>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public static bool ShutDown()
+    {
+      return Win32.WindowsExit(Win32.ExitWindows.ShutDown, Win32.ShutdownReasons.FlagUserDefined);
     }
 
     #endregion Misc

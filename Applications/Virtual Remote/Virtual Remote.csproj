@@ -32,7 +32,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\VirtualRemote.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -78,6 +79,30 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="Skins\FusionREMOTE Tiger.png">
+    </Content>
+    <Content Include="Skins\FusionREMOTE.png">
+    </Content>
+    <Content Include="Skins\FusionREMOTE.xml">
+    </Content>
+    <Content Include="Skins\MCE Dark.png">
+    </Content>
+    <Content Include="Skins\MCE Gold.png">
+    </Content>
+    <Content Include="Skins\MCE Grass.png">
+    </Content>
+    <Content Include="Skins\MCE.png">
+    </Content>
+    <Content Include="Skins\MCE.xml">
+    </Content>
+    <Content Include="Skins\Xbox Blue Plasma.png">
+    </Content>
+    <Content Include="Skins\Xbox Orange.png">
+    </Content>
+    <Content Include="Skins\Xbox.png">
+    </Content>
+    <Content Include="Skins\Xbox.xml">
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">

@@ -481,7 +481,7 @@ namespace Translator
       {
         try
         {
-          Program.ProcessCommand(_command);
+          Program.ProcessCommand(_command, false);
         }
         catch (Exception ex)
         {

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<config>
+	<PauseTime>250</PauseTime>
+	<UsePreChangeCommand>True</UsePreChangeCommand>
+	<SendSelect>False</SendSelect>
+	<DoubleChannelSelect>False</DoubleChannelSelect>
+	<ChannelDigits>3</ChannelDigits>
+	<RepeatChannelCommands>0</RepeatChannelCommands>
+	<RepeatDelay>1000</RepeatDelay>
+	<PreChangeCommand>STB: Samsung SMT 2100C\Prechange</PreChangeCommand>
+	<Digit0>STB: Samsung SMT 2100C\0</Digit0>
+	<Digit1>STB: Samsung SMT 2100C\1</Digit1>
+	<Digit2>STB: Samsung SMT 2100C\2</Digit2>
+	<Digit3>STB: Samsung SMT 2100C\3</Digit3>
+	<Digit4>STB: Samsung SMT 2100C\4</Digit4>
+	<Digit5>STB: Samsung SMT 2100C\5</Digit5>
+	<Digit6>STB: Samsung SMT 2100C\6</Digit6>
+	<Digit7>STB: Samsung SMT 2100C\7</Digit7>
+	<Digit8>STB: Samsung SMT 2100C\8</Digit8>
+	<Digit9>STB: Samsung SMT 2100C\9</Digit9>
+</config>

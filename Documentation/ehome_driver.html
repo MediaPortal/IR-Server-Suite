@@ -1,0 +1,56 @@
+<HTML>
+<HEAD><TITLE>MCE IR device driver improvement</TITLE></HEAD>
+<BODY>
+
+<H2>MCE IR device driver improvement<BR><HR COLOR="RED"></H2>
+
+<H3>With IR Server Suite there is no reason to use the MCE Replacement Driver.</H3>
+
+<P>By default Windows will handle most of the MCE Remote buttons, the arrow buttons, number buttons, etc ...<BR>
+But I've now figured out a way to stop this behaviour ...</P>
+
+<P>To handle the MCE device Windows loads a series of device drivers onto the system.<BR>
+The main driver is the USB device driver, it provides access to the MCE device.  Without it you can't use the device at all.</P>
+
+<P>There are also a series of Human Interface Device (HID) drivers that are there to translate raw information from the USB device into remote button presses, keyboard and mouse inputs.</P>
+
+<P>You can't disable the HID drivers but you can uninstall them.  However, the next time you start the computer they will be automatically re-installed.</P>
+
+<P>But there is a way around this.</P>
+
+<P>The HidIr.sys service is required for the HID drivers to work, by disabling the HidIr service Windows will no longer act on remote buttons or MCE keyboard/mouse input.  Once the service is disabled you can either leave it disabled or also disable the main MCE HID driver and return the HidIr service to it's previous enabled state.  I recommend re-enabling the HidIr service because I can't be sure that there are no other devices that might need it.</P>
+
+<P>This process should work on all version of Windows that support the Microsoft eHome Infrared Transceiver.  I've tested on Windows XP Pro and Windows Vista Home Premium and it worked on both.</P>
+
+<P>However, please note that HIP, Girder and EventGhost can't use the default Windows eHome driver in Vista.  On Windows XP these programs are fine, but these programs need the Replacement driver for Vista and I haven't been able to get the Replacement driver to work on 64-bit Vista yet, only 32-bit Vista.</P>
+
+<H3>How to ...<BR><HR COLOR="RED"></H3>
+
+<P>To disable the HidIr service load "regedit.exe" and navigate to:</P>
+
+<P>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\HidIr</P>
+
+<P>Then change the value of "Start" from "3" to "4".</P>
+
+<P>You can re-enable the service later by changing the value back to "3".</P>
+
+<P>Once the registry has been changed you will need to reboot for the change to take effect.</P>
+
+<P>Once you've rebooted the job is practically done, but just to be safe you should now disable the main HID driver and re-enable the HidIr Service, like so:</P>
+
+<OL>
+<LI>Go to Control Panel (Classic View if you're using Vista)</LI>
+<LI>Open the System control panel.</LI>
+<LI>Open "Device Manager".</LI>
+<LI>Locate the "Microsoft eHome Infrared Transceiver" device in the "Human Interface Devices" section.</LI>
+<LI>Right-click the device and select "Disable".</LI>
+</OL>
+
+<P>Once the HID device driver is disabled return the HidIr service back to it's enabled state either by loading "HidIr_Enable.reg" into your registry or by following the manual registry editing method and setting "Start" to "3".</P>
+
+<P>You can't disable the "Microsoft eHome Infrared Transceiver" while the HidIr service is enabled.  You must disable the service, reboot and then disable the HID driver.  Disabling the HID driver and re-enabling the HidIr service doesn't seem to be 100% neccessary, just disabling the HidIr service seems to be enough, but I would rather be safe than sorry.</P>
+
+<P>Now if you ever want to re-enable the automatic handling of the MCE Remote and MCE Keyboard you just need to re-enable the HID driver.</P>
+
+</BODY>
+</HTML>

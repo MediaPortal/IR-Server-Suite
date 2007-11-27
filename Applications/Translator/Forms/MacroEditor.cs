@@ -286,7 +286,7 @@ namespace Translator
 
       if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
-        ExternalProgram externalProgram = new ExternalProgram(false);
+        ExternalProgram externalProgram = new ExternalProgram(true);
         if (externalProgram.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixRun + externalProgram.CommandString);
       }
@@ -416,13 +416,11 @@ namespace Translator
         return;
       }
 
-      string fileName = Program.FolderMacros + name + Common.FileExtensionMacro;
-
-      WriteToFile(fileName);
+      WriteToFile(Program.FolderMacros + name + Common.FileExtensionMacro);
 
       try
       {
-        Program.ProcessMacro(fileName);
+        Program.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
       catch (Exception ex)
       {
@@ -484,7 +482,7 @@ namespace Translator
       {
         string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
 
-        ExternalProgram executeProgram = new ExternalProgram(commands, false);
+        ExternalProgram executeProgram = new ExternalProgram(commands, true);
         if (executeProgram.ShowDialog(this) == DialogResult.Cancel)
           return;
 

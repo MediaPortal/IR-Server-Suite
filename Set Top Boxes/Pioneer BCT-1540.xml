@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<UsePreChangeCommand>False</UsePreChangeCommand>
+	<SendSelect>False</SendSelect>
+	<ChannelDigits>0</ChannelDigits>
+	<Digit0>STB: Pioneer BCT-1540\0</Digit0>
+	<Digit1>STB: Pioneer BCT-1540\1</Digit1>
+	<Digit2>STB: Pioneer BCT-1540\2</Digit2>
+	<Digit3>STB: Pioneer BCT-1540\3</Digit3>
+	<Digit4>STB: Pioneer BCT-1540\4</Digit4>
+	<Digit5>STB: Pioneer BCT-1540\5</Digit5>
+	<Digit6>STB: Pioneer BCT-1540\6</Digit6>
+	<Digit7>STB: Pioneer BCT-1540\7</Digit7>
+	<Digit8>STB: Pioneer BCT-1540\8</Digit8>
+	<Digit9>STB: Pioneer BCT-1540\9</Digit9>
+</config>

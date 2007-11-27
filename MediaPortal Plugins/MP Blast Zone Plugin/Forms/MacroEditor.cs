@@ -501,7 +501,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        MPBlastZonePlugin.ProcessMacro(fileName);
+        MPBlastZonePlugin.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
       catch (Exception ex)
       {

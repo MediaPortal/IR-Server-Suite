@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<UsePreChangeCommand>True</UsePreChangeCommand>
+	<SendSelect>False</SendSelect>
+	<Digit0>STB: Force 536\0</Digit0>
+	<Digit1>STB: Force 536\1</Digit1>
+	<Digit2>STB: Force 536\2</Digit2>
+	<Digit3>STB: Force 536\3</Digit3>
+	<Digit4>STB: Force 536\4</Digit4>
+	<Digit5>STB: Force 536\5</Digit5>
+	<Digit6>STB: Force 536\6</Digit6>
+	<Digit7>STB: Force 536\7</Digit7>
+	<Digit8>STB: Force 536\8</Digit8>
+	<Digit9>STB: Force 536\9</Digit9>
+	<PreChangeCommand>STB: Force 536\EXIT</PreChangeCommand>
+</config>

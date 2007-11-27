@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <UsePreChangeCommand>False</UsePreChangeCommand>
+  <SendSelect>True</SendSelect>
+  <Digit0>STB: Coolsat\0</Digit0>
+	<Digit1>STB: Coolsat\1</Digit1>
+	<Digit2>STB: Coolsat\2</Digit2>
+	<Digit3>STB: Coolsat\3</Digit3>
+	<Digit4>STB: Coolsat\4</Digit4>
+	<Digit5>STB: Coolsat\5</Digit5>
+	<Digit6>STB: Coolsat\6</Digit6>
+	<Digit7>STB: Coolsat\7</Digit7>
+	<Digit8>STB: Coolsat\8</Digit8>
+	<Digit9>STB: Coolsat\9</Digit9>
+	<SelectCommand>STB: Coolsat\OK</SelectCommand>
+</config>

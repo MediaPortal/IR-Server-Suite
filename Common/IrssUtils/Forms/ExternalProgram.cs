@@ -130,7 +130,7 @@ namespace IrssUtils.Forms
 
     private void ExternalProgram_Load(object sender, EventArgs e)
     {
-      if (_parametersMessage.Trim().Length == 0)
+      if (String.IsNullOrEmpty(_parametersMessage) || _parametersMessage.Trim().Length == 0)
         buttonParamQuestion.Visible = false;
     }
 
@@ -205,13 +205,12 @@ namespace IrssUtils.Forms
           process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
           checkBoxForceFocus.Checked)
         {
-          IntPtr processWindow = IntPtr.Zero;
-          while (!process.HasExited)
+          int attempt = 0;
+          while (!process.HasExited && attempt++ < 50)
           {
-            processWindow = process.MainWindowHandle;
-            if (processWindow != IntPtr.Zero)
+            if (process.MainWindowHandle != IntPtr.Zero)
             {
-              Win32.SetForegroundWindow(processWindow, true);
+              Win32.SetForegroundWindow(process.MainWindowHandle, true);
               break;
             }
 

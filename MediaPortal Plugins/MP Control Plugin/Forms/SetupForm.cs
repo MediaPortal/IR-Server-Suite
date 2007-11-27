@@ -520,9 +520,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        string fileName = MPControlPlugin.FolderMacros + listViewMacro.SelectedItems[0].Text + Common.FileExtensionMacro;
-
-        MPControlPlugin.ProcessMacro(fileName);
+        MPControlPlugin.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
       }
       catch (Exception ex)
       {

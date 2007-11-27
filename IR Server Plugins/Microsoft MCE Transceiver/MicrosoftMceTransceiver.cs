@@ -175,22 +175,24 @@ namespace MicrosoftMceTransceiver
       Guid deviceGuid;
       string devicePath;
 
+      Driver newDriver = null;
+
       if (FindDevice(out deviceGuid, out devicePath))
       {
         if (deviceGuid == MicrosoftGuid)
         {
           if (_forceVistaDriver || Environment.OSVersion.Version.Major >= VistaVersionNumber)
           {
-            _driver = new DriverVista(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+            newDriver = new DriverVista(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
           }
           else
           {
-            _driver = new DriverXP(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+            newDriver = new DriverXP(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
           }
         }
         else
         {
-          _driver = new DriverReplacement(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+          newDriver = new DriverReplacement(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
         }
       }
       else
@@ -198,7 +200,9 @@ namespace MicrosoftMceTransceiver
         return false;
       }
 
-      _driver.Start();
+      newDriver.Start();
+
+      _driver = newDriver;
 
       return true;
     }

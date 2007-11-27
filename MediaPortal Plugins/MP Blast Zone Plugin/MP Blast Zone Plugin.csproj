@@ -157,6 +157,7 @@ copy "*.*" "\MediaPortal Development\Plugin Releases\IR Server Suite\$(ProjectNa
     <None Include="Graphics\Edit.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AppData\Menu.xml" />
     <Content Include="Skin\BlastZone.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

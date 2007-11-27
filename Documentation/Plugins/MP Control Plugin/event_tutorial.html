@@ -1,0 +1,30 @@
+<HTML>
+<HEAD><TITLE>Tutorial: Using event mapper to catch MediaPortal on-screen buttons</TITLE></HEAD>
+<BODY>
+
+<H2>Tutorial: Using event mapper to catch MediaPortal on-screen buttons<BR><HR COLOR="RED"></H2>
+
+<P>With the event mapper you can now match a parameter of a GUI Message and only execute the mapping if the message type and parameter match.  One of the many things this lets us do is create new buttons in a skin and then have them blast ir codes or macros.  Here's a quick example:</P>
+
+<IMG SRC="new_button.png"><BR>
+
+<P>Place this code in your skins "myvideos.xml" to add a new button:<BR>
+&lt;control&gt;<br>
+&lt;description&gt;Blast IR&lt;/description&gt;<br>
+&lt;type&gt;button&lt;/type&gt;<br>
+&lt;id&gt;818181&lt;/id&gt;<br>
+&lt;label&gt;818181&lt;/label&gt;<br>
+&lt;/control&gt;
+</P>
+
+<P>Place this code in your "strings.xml" to add the label for the button:<BR>
+&lt;string&gt;<br>
+&lt;id&gt;818181&lt;/id&gt;<br>
+&lt;value&gt;Blast IR&lt;/value&gt;<br>
+&lt;/string&gt;
+</P>
+
+<P>Now, set up the event mapper to watch for "Clicked" events and match the "Sender Control ID" parameter to "818181".  With this in place you will now have a fully programmable button in your skin.  It can blast IR, send serial commands, launch external apps, etc ...</P>
+
+</BODY>
+</HTML>

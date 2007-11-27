@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<PauseTime>750</PauseTime>
+	<UsePreChangeCommand>False</UsePreChangeCommand>
+	<SendSelect>False</SendSelect>
+	<ChannelDigits>0</ChannelDigits>
+	<RepeatChannelCommands>0</RepeatChannelCommands>
+	<Digit0>Serial: e$ts\r\n\x0h|COM1|57600|None|8|One|False</Digit0>
+	<Digit1>Serial: e$ts\r\n\x1h|COM1|57600|None|8|One|False</Digit1>
+	<Digit2>Serial: e$ts\r\n\x2h|COM1|57600|None|8|One|False</Digit2>
+	<Digit3>Serial: e$ts\r\n\x3h|COM1|57600|None|8|One|False</Digit3>
+	<Digit4>Serial: e$ts\r\n\x4h|COM1|57600|None|8|One|False</Digit4>
+	<Digit5>Serial: e$ts\r\n\x5h|COM1|57600|None|8|One|False</Digit5>
+	<Digit6>Serial: e$ts\r\n\x6h|COM1|57600|None|8|One|False</Digit6>
+	<Digit7>Serial: e$ts\r\n\x7h|COM1|57600|None|8|One|False</Digit7>
+	<Digit8>Serial: e$ts\r\n\x8h|COM1|57600|None|8|One|False</Digit8>
+	<Digit9>Serial: e$ts\r\n\x9h|COM1|57600|None|8|One|False</Digit9>
+</config>

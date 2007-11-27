@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <Digit0>STB: MultiChoice DSD660\0</Digit0>
+  <Digit1>STB: MultiChoice DSD660\1</Digit1>
+  <Digit2>STB: MultiChoice DSD660\2</Digit2>
+  <Digit3>STB: MultiChoice DSD660\3</Digit3>
+  <Digit4>STB: MultiChoice DSD660\4</Digit4>
+  <Digit5>STB: MultiChoice DSD660\5</Digit5>
+  <Digit6>STB: MultiChoice DSD660\6</Digit6>
+  <Digit7>STB: MultiChoice DSD660\7</Digit7>
+  <Digit8>STB: MultiChoice DSD660\8</Digit8>
+  <Digit9>STB: MultiChoice DSD660\9</Digit9>
+</config>

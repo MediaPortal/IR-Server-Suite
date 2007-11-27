@@ -1,0 +1,41 @@
+[OPTIONS]
+Auto Index=Yes
+Compatibility=1.1 or later
+Compiled file=IR Server Suite.chm
+Contents file=IR Server Suite.hhc
+Default Font=Arial,8,0
+Default topic=introduction.html
+Display compile progress=No
+Full-text search=Yes
+Language=0xc09 English (Australia)
+Title=IR Server Suite
+
+
+[FILES]
+introduction.html
+new.html
+IR Server\index.html
+Plugins\index.html
+Plugins\MP Blast Zone Plugin\index.html
+Plugins\MP Control Plugin\index.html
+Plugins\MP Control Plugin\event_tutorial.html
+Plugins\TV2 Blaster Plugin\index.html
+Plugins\TV3 Blaster Plugin\index.html
+Translator\index.html
+Tray Launcher\index.html
+Virtual Remote\index.html
+Virtual Remote\Skin Editor\index.html
+Plugins\stb.html
+Common\external_program.html
+Common\keystrokes.html
+Common\keystrokes_info.html
+Common\learn_ir.html
+Common\macro_editor.html
+Common\message_command.html
+Common\serial_command.html
+pronto.html
+irblast.html
+ehome_driver.html
+
+[INFOTYPES]
+

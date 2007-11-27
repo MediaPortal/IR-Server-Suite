@@ -434,9 +434,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        string fileName = MPBlastZonePlugin.FolderMacros + listViewMacro.SelectedItems[0].Text + Common.FileExtensionMacro;
-
-        MPBlastZonePlugin.ProcessMacro(fileName);
+        MPBlastZonePlugin.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
       }
       catch (Exception ex)
       {

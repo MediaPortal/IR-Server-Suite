@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <UsePreChangeCommand>False</UsePreChangeCommand>
+  <SendSelect>False</SendSelect>
+  <Digit0>STB: SkyNZ Pace DSR6000\0</Digit0>
+  <Digit1>STB: SkyNZ Pace DSR6000\1</Digit1>
+  <Digit2>STB: SkyNZ Pace DSR6000\2</Digit2>
+  <Digit3>STB: SkyNZ Pace DSR6000\3</Digit3>
+  <Digit4>STB: SkyNZ Pace DSR6000\4</Digit4>
+  <Digit5>STB: SkyNZ Pace DSR6000\5</Digit5>
+  <Digit6>STB: SkyNZ Pace DSR6000\6</Digit6>
+  <Digit7>STB: SkyNZ Pace DSR6000\7</Digit7>
+  <Digit8>STB: SkyNZ Pace DSR6000\8</Digit8>
+  <Digit9>STB: SkyNZ Pace DSR6000\9</Digit9>
+</config>

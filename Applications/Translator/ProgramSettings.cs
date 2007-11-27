@@ -13,6 +13,15 @@ namespace Translator
   public class ProgramSettings
   {
 
+    #region Constants
+
+    /// <summary>
+    /// The default name given to a new program settings object.
+    /// </summary>
+    internal const string NewProgramName = "New Program";
+
+    #endregion Constants
+
     #region Variables
 
     string _name;
@@ -118,6 +127,28 @@ namespace Translator
       get { return _buttonMappings; }
     }
 
+
+    /// <summary>
+    /// Get the Command String to launch the program.
+    /// </summary>
+    /// <returns>Returns the Command String to launch the program.</returns>
+    [XmlIgnore]
+    internal string RunCommandString
+    {
+      get
+      {
+        return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
+          _fileName,
+          _folder,
+          _arguments,
+          _windowState.ToString(),
+          false,
+          _useShellExecute,
+          false,
+          _forceWindowFocus);
+      }
+    }
+
     #endregion Properties
 
     #region Constructors
@@ -127,7 +158,7 @@ namespace Translator
     /// </summary>
     public ProgramSettings()
     {
-      _name             = "New Program";
+      _name             = NewProgramName;
       _fileName         = String.Empty;
       _folder           = String.Empty;
       _arguments        = String.Empty;
@@ -139,27 +170,6 @@ namespace Translator
     }
     
     #endregion Constructors
-
-    #region Members
-
-    /// <summary>
-    /// Get the Command String to launch the program.
-    /// </summary>
-    /// <returns>Returns the Command String to launch the program.</returns>
-    internal string LaunchCommand()
-    {
-      return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
-        _fileName,
-        _folder,
-        _arguments,
-        _windowState.ToString(),
-        false,
-        _useShellExecute,
-        false,
-        _forceWindowFocus);
-    }
-
-    #endregion Members
 
   }
 

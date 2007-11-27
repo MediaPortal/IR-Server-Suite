@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<PauseTime>750</PauseTime>
+	<UsePreChangeCommand>False</UsePreChangeCommand>
+	<SendSelect>False</SendSelect>
+	<ChannelDigits>0</ChannelDigits>
+	<RepeatChannelCommands>0</RepeatChannelCommands>
+	<Digit0>Serial: \xFAh\xE0h|COM1|9600|None|8|One|False</Digit0>
+	<Digit1>Serial: \xFAh\xE1h|COM1|9600|None|8|One|False</Digit1>
+	<Digit2>Serial: \xFAh\xE2h|COM1|9600|None|8|One|False</Digit2>
+	<Digit3>Serial: \xFAh\xE3h|COM1|9600|None|8|One|False</Digit3>
+	<Digit4>Serial: \xFAh\xE4h|COM1|9600|None|8|One|False</Digit4>
+	<Digit5>Serial: \xFAh\xE5h|COM1|9600|None|8|One|False</Digit5>
+	<Digit6>Serial: \xFAh\xE6h|COM1|9600|None|8|One|False</Digit6>
+	<Digit7>Serial: \xFAh\xE7h|COM1|9600|None|8|One|False</Digit7>
+	<Digit8>Serial: \xFAh\xE8h|COM1|9600|None|8|One|False</Digit8>
+	<Digit9>Serial: \xFAh\xE9h|COM1|9600|None|8|One|False</Digit9>
+	<SelectCommand>Serial: \xFAh\xC3h|COM1|9600|None|8|One|False</SelectCommand>
+	<PreChangeCommand>Serial: \xFAh\x82h|COM1|9600|None|8|One|False</PreChangeCommand>
+</config>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<UsePreChangeCommand>False</UsePreChangeCommand>
+	<SendSelect>True</SendSelect>
+	<Digit0>STB: ADB ABQ-1H4G\0</Digit0>
+	<Digit1>STB: ADB ABQ-1H4G\1</Digit1>
+	<Digit2>STB: ADB ABQ-1H4G\2</Digit2>
+	<Digit3>STB: ADB ABQ-1H4G\3</Digit3>
+	<Digit4>STB: ADB ABQ-1H4G\4</Digit4>
+	<Digit5>STB: ADB ABQ-1H4G\5</Digit5>
+	<Digit6>STB: ADB ABQ-1H4G\6</Digit6>
+	<Digit7>STB: ADB ABQ-1H4G\7</Digit7>
+	<Digit8>STB: ADB ABQ-1H4G\8</Digit8>
+	<Digit9>STB: ADB ABQ-1H4G\9</Digit9>
+	<SelectCommand>STB: ADB ABQ-1H4G\OK</SelectCommand>
+</config>

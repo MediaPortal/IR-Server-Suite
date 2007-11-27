@@ -108,9 +108,7 @@ namespace XBCDRCReceiver
     static extern void HidD_GetHidGuid(
       ref Guid guid);
 
-    // TODO: SetLastError?
-
-    [DllImport("setupapi", CharSet = CharSet.Auto)]
+    [DllImport("setupapi", CharSet = CharSet.Auto, SetLastError = true)]
     static extern IntPtr SetupDiGetClassDevs(
       ref Guid ClassGuid,
       [MarshalAs(UnmanagedType.LPTStr)] string Enumerator,
@@ -271,9 +269,10 @@ namespace XBCDRCReceiver
         return false;
 
       SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
+      int lastError = Marshal.GetLastWin32Error();
 
       if (deviceHandle.IsInvalid)
-        throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to open remote");
+        throw new Win32Exception(lastError, "Failed to open remote");
 
       //_deviceWatcher.RegisterDeviceRemoval(deviceHandle);
 
@@ -360,7 +359,7 @@ namespace XBCDRCReceiver
           if (lastError != 0x0103 && lastError != 0x007E)
           {
             SetupDiDestroyDeviceInfoList(handle);
-            throw new Win32Exception(Marshal.GetLastWin32Error());
+            throw new Win32Exception(lastError);
           }
 
           SetupDiDestroyDeviceInfoList(handle);

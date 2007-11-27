@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -45,7 +46,7 @@ namespace Translator
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
-    static List<string> _macroStack;
+    static Hashtable _macroStacks;
 
     #endregion Variables
 
@@ -123,6 +124,9 @@ namespace Translator
       IrssLog.Open(Common.FolderIrssLogs + "Translator.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+
+      // Hashtable for storing active macro stacks in.
+      _macroStacks = new Hashtable();
 
       _config = Configuration.Load(ConfigFile);
       if (_config == null)
@@ -443,38 +447,13 @@ namespace Translator
         {
           IrssLog.Info("Launching {0}", program);
 
-          try
-          {
-            string launchCommand = programSettings.LaunchCommand();
-            string[] commands = Common.SplitRunCommand(launchCommand);
-            
-            Common.ProcessRunCommand(commands);
-          }
-          catch (Exception ex)
-          {
-            IrssLog.Error(ex.ToString());
-          }
-
+          ProcessCommand(Common.CmdPrefixRun + programSettings.RunCommandString, true);
           return;
         }
       }
 
       IrssLog.Warn("Failed to launch (could not find program details): {0}", program);
     }
-
-    /*
-    static void ClickIrCommand(object sender, EventArgs e)
-    {
-      IrssLog.Info("Click IR Command");
-
-      ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-      if (menuItem == null)
-        return;
-
-      string irCommand = menuItem.Text;
-    }
-    */
-
     static void ClickMacro(object sender, EventArgs e)
     {
       IrssLog.Info("Click Macro");
@@ -483,11 +462,9 @@ namespace Translator
       if (menuItem == null)
         return;
 
-      string fileName = FolderMacros + menuItem.Text + Common.FileExtensionMacro;
-
       try
       {
-        ProcessMacro(fileName);
+        ProcessCommand(Common.CmdPrefixMacro + menuItem.Text, true);
       }
       catch (Exception ex)
       {
@@ -508,27 +485,28 @@ namespace Translator
         switch (menuItem.Text)
         {
           case "System Standby":
-            Standby();
+            ProcessCommand(Common.CmdPrefixStandby, true);
             break;
 
           case "System Hibernate":
-            Hibernate();
+            ProcessCommand(Common.CmdPrefixHibernate, true);
             break;
 
           case "System Reboot":
-            Reboot();
+            ProcessCommand(Common.CmdPrefixReboot, true);
             break;
 
           case "System LogOff":
-            LogOff();
+            ProcessCommand(Common.CmdPrefixLogOff, true);
             break;
 
           case "System Shutdown":
-            ShutDown();
+            ProcessCommand(Common.CmdPrefixShutdown, true);
             break;
 
 
           case "Volume Up":
+            // TODO: Replace with Volume Commands
             Win32.SendWindowsMessage(
               Win32.ForegroundWindow(),
               (int)Win32.WindowsMessage.WM_APPCOMMAND,
@@ -571,7 +549,7 @@ namespace Translator
       if (menuItem == null)
         return;
 
-      CDRom.Open(menuItem.Text);
+      ProcessCommand(Common.CmdPrefixEject + menuItem.Text, true);
     }
 
     static void ClickOSD(object sender, EventArgs e)
@@ -837,7 +815,7 @@ namespace Translator
             IrssLog.Debug("KeyCode {0} mapped in System Wide mappings", keyCode);
             try
             {
-              ProcessCommand(buttonMap.Command);
+              ProcessCommand(buttonMap.Command, true);
             }
             catch (Exception ex) { IrssLog.Error(ex.ToString()); }
             return;
@@ -854,7 +832,7 @@ namespace Translator
             IrssLog.Debug("KeyCode {0} mapped in \"{1}\" mappings", keyCode, active.Name);
             try
             {
-              ProcessCommand(buttonMap.Command);
+              ProcessCommand(buttonMap.Command, true);
             }
             catch (Exception ex) { IrssLog.Error(ex.ToString()); }
             return;
@@ -871,7 +849,7 @@ namespace Translator
               IrssLog.Debug("KeyCode {0} mapped in System Wide mappings", keyCode);
               try
               {
-                ProcessCommand(buttonMap.Command);
+                ProcessCommand(buttonMap.Command, true);
               }
               catch (Exception ex) { IrssLog.Error(ex.ToString()); }
               return;
@@ -896,36 +874,6 @@ namespace Translator
 
       if (deltaX != 0 || deltaY != 0)
         Mouse.Move(deltaX, deltaY, false);
-    }
-
-    static void Hibernate()
-    {
-      IrssLog.Info("Hibernate");
-
-      if (!Application.SetSuspendState(PowerState.Hibernate, false, false))
-        IrssLog.Warn("Hibernate request was rejected by another application.");
-    }
-    static void Standby()
-    {
-      IrssLog.Info("Standby");
-
-      if (!Application.SetSuspendState(PowerState.Suspend, false, false))
-        IrssLog.Warn("Standby request was rejected by another application.");
-    }
-    static void Reboot()
-    {
-      IrssLog.Info("Reboot");
-      Win32.WindowsExit(Win32.ExitWindows.Reboot, Win32.ShutdownReasons.FlagUserDefined);
-    }
-    static void LogOff()
-    {
-      IrssLog.Info("LogOff");
-      Win32.WindowsExit(Win32.ExitWindows.LogOff, Win32.ShutdownReasons.FlagUserDefined);
-    }
-    static void ShutDown()
-    {
-      IrssLog.Info("ShutDown");
-      Win32.WindowsExit(Win32.ExitWindows.ShutDown, Win32.ShutdownReasons.FlagUserDefined);
     }
 
     static void MapEvent(MappingEvent theEvent)
@@ -956,7 +904,7 @@ namespace Translator
             try
             {
               IrssLog.Info("Event mapped: {0}, {1}", eventName, mappedEvent.Command);
-              ProcessCommand(mappedEvent.Command);
+              ProcessCommand(mappedEvent.Command, true);
             }
             catch (Exception ex)
             {
@@ -964,184 +912,6 @@ namespace Translator
             }
           }
         }
-      }
-    }
-
-    /// <summary>
-    /// Adds to the Macro Stack.
-    /// </summary>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackAdd(string fileName)
-    {
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (_macroStack == null)
-      {
-        _macroStack = new List<string>();
-      }
-      else if (_macroStack.Contains(upperCasedFileName))
-      {
-        StringBuilder macroStackTrace = new StringBuilder();
-        macroStackTrace.AppendLine("Macro infinite loop detected!");
-        macroStackTrace.AppendLine();
-        macroStackTrace.AppendLine("Stack trace:");
-
-        foreach (string macro in _macroStack)
-        {
-          if (macro.Equals(upperCasedFileName))
-            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
-          else
-            macroStackTrace.AppendLine(macro);
-        }
-
-        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
-
-        throw new ApplicationException(macroStackTrace.ToString());
-      }
-
-      _macroStack.Add(upperCasedFileName);
-    }
-    /// <summary>
-    /// Removes from the Macro Stack.
-    /// </summary>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackRemove(string fileName)
-    {
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (_macroStack.Contains(upperCasedFileName))
-        _macroStack.Remove(upperCasedFileName);
-
-      if (_macroStack.Count == 0)
-        _macroStack = null;
-    }
-
-    /// <summary>
-    /// Process the supplied Macro file.
-    /// </summary>
-    /// <param name="fileName">Macro file to process (absolute path).</param>
-    internal static void ProcessMacro(string fileName)
-    {
-      MacroStackAdd(fileName);
-
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(fileName);
-
-        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
-          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
-
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-        string commandProperty;
-
-        foreach (XmlNode item in commandSequence)
-        {
-          commandProperty = item.Attributes["cmdproperty"].Value;
-
-          switch (item.Attributes["command"].Value)
-          {
-            case Common.XmlTagMacro:
-              {
-                ProcessMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
-                break;
-              }
-
-            case Common.XmlTagBlast:
-              {
-                string[] commands = Common.SplitBlastCommand(commandProperty);
-                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-                break;
-              }
-
-            case Common.XmlTagPause:
-              {
-                int sleep = int.Parse(commandProperty);
-                Thread.Sleep(sleep);
-                break;
-              }
-
-            case Common.XmlTagRun:
-              {
-                string[] commands = Common.SplitRunCommand(commandProperty);
-                Common.ProcessRunCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagSerial:
-              {
-                string[] commands = Common.SplitSerialCommand(commandProperty);
-                Common.ProcessSerialCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagWindowMsg:
-              {
-                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-                Common.ProcessWindowMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagTcpMsg:
-              {
-                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
-                Common.ProcessTcpMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagKeys:
-              {
-                Common.ProcessKeyCommand(commandProperty);
-                break;
-              }
-
-            case Common.XmlTagMouse:
-              {
-                Common.ProcessMouseCommand(commandProperty);
-                break;
-              }
-
-            case Common.XmlTagEject:
-              {
-                Common.ProcessEjectCommand(commandProperty);
-                break;
-              }
-
-            case Common.XmlTagStandby:
-              {
-                Standby();
-                break;
-              }
-
-            case Common.XmlTagHibernate:
-              {
-                Hibernate();
-                break;
-              }
-
-            case Common.XmlTagShutdown:
-              {
-                ShutDown();
-                break;
-              }
-
-            case Common.XmlTagReboot:
-              {
-                Reboot();
-                break;
-              }
-
-            case Common.XmlTagLogOff:
-              {
-                LogOff();
-                break;
-              }
-          }
-        }
-      }
-      finally
-      {
-        MacroStackRemove(fileName);
       }
     }
 
@@ -1218,72 +988,100 @@ namespace Translator
     /// Given a command this method processes the request accordingly.
     /// </summary>
     /// <param name="command">Command to process.</param>
-    internal static void ProcessCommand(string command)
+    /// <param name="async">Process command asynchronously?</param>
+    internal static void ProcessCommand(string command, bool async)
     {
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
+      if (async)
+      {
+        Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+        newThread.Name = "ProcessCommand";
+        newThread.Priority = ThreadPriority.BelowNormal;
+        newThread.Start(command);
+      }
+      else
+      {
+        ProcCommand(command);
+      }
+    }
+    
+    /// <summary>
+    /// Used by ProcessCommand to actually handle the command.
+    /// Can be called Synchronously or as a Parameterized Thread.
+    /// </summary>
+    /// <param name="commandObj">Command string to process.</param>
+    static void ProcCommand(object commandObj)
+    {
+      string command = commandObj as string;
+
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
-        ProcessMacro(fileName);
+        ProcMacro(fileName);
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
         BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
       }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         Common.ProcessRunCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         Common.ProcessSerialCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         Common.ProcessWindowMessageCommand(commands);
       }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
         Common.ProcessKeyCommand(keyCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase)) // Mouse Command
+      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
       {
         string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
         Common.ProcessMouseCommand(mouseCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase)) // Eject Command
+      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
       {
         string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
         Common.ProcessEjectCommand(ejectCommand);
       }
-      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase)) // Hibernate Command
+      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
       {
-        Hibernate();
+       if (!Common.Hibernate())
+         IrssLog.Warn("Hibernate request was rejected by another application.");
       }
-      else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.OrdinalIgnoreCase)) // LogOff Command
+      else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.OrdinalIgnoreCase))
       {
-        LogOff();
+        if (!Common.LogOff())
+          IrssLog.Warn("LogOff request failed.");
       }
-      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase)) // Reboot Command
+      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
       {
-        Reboot();
+        if (!Common.Reboot())
+          IrssLog.Warn("Reboot request failed.");
       }
-      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase)) // Shutdown Command
+      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
       {
-        ShutDown();
+        if (!Common.ShutDown())
+          IrssLog.Warn("ShutDown request failed.");
       }
-      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase)) // Standby Command
+      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
       {
-        Standby();
+        if (!Common.Standby())
+          IrssLog.Warn("Standby request was rejected by another application.");
       }
-      else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.OrdinalIgnoreCase)) // Translator Command
+      else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.OrdinalIgnoreCase))
       {
         ShowOSD();
       }
@@ -1291,6 +1089,231 @@ namespace Translator
       {
         throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
       }
+    }
+
+    /// <summary>
+    /// Called by ProcCommand to process the supplied Macro file.
+    /// </summary>
+    /// <param name="fileName">Macro file to process (absolute path).</param>
+    static void ProcMacro(string fileName)
+    {
+      MacroStackAdd(Thread.CurrentThread.ManagedThreadId, fileName);
+
+      try
+      {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(fileName);
+
+        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
+
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
+        string commandProperty;
+
+        foreach (XmlNode item in commandSequence)
+        {
+          commandProperty = item.Attributes["cmdproperty"].Value;
+
+          switch (item.Attributes["command"].Value)
+          {
+            case Common.XmlTagMacro:
+              {
+                ProcMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
+                break;
+              }
+
+            case Common.XmlTagBlast:
+              {
+                string[] commands = Common.SplitBlastCommand(commandProperty);
+                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+                break;
+              }
+
+            case Common.XmlTagPause:
+              {
+                int sleep = int.Parse(commandProperty);
+                Thread.Sleep(sleep);
+                break;
+              }
+
+            case Common.XmlTagRun:
+              {
+                string[] commands = Common.SplitRunCommand(commandProperty);
+                Common.ProcessRunCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagSerial:
+              {
+                string[] commands = Common.SplitSerialCommand(commandProperty);
+                Common.ProcessSerialCommand(commands);
+                break;
+              }
+              
+            case Common.XmlTagPopup:
+              {
+                string[] commands = Common.SplitPopupCommand(commandProperty);
+                MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
+                break;
+              }
+
+            case Common.XmlTagWindowMsg:
+              {
+                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
+                Common.ProcessWindowMessageCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagTcpMsg:
+              {
+                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
+                Common.ProcessTcpMessageCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagKeys:
+              {
+                if (_inConfiguration)
+                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  Common.ProcessKeyCommand(commandProperty);
+                break;
+              }
+
+            case Common.XmlTagMouse:
+              {
+                Common.ProcessMouseCommand(commandProperty);
+                break;
+              }
+
+            case Common.XmlTagEject:
+              {
+                Common.ProcessEjectCommand(commandProperty);
+                break;
+              }
+
+            case Common.XmlTagStandby:
+              {
+                if (_inConfiguration)
+                  MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  Common.Standby();
+                break;
+              }
+
+            case Common.XmlTagHibernate:
+              {
+                if (_inConfiguration)
+                  MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  Common.Hibernate();
+                break;
+              }
+
+            case Common.XmlTagShutdown:
+              {
+                if (_inConfiguration)
+                  MessageBox.Show("Cannot ShutDown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  Common.ShutDown();
+                break;
+              }
+
+            case Common.XmlTagReboot:
+              {
+                if (_inConfiguration)
+                  MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  Common.Reboot();
+                break;
+              }
+
+            case Common.XmlTagLogOff:
+              {
+                if (_inConfiguration)
+                  MessageBox.Show("Cannot Log off in configuration", Common.UITextLogOff, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  Common.LogOff();
+                break;
+              }
+          }
+        }
+      }
+      finally
+      {
+        MacroStackRemove(Thread.CurrentThread.ManagedThreadId, fileName);
+      }
+    }
+
+    /// <summary>
+    /// Retreives the required Macro Stack from the Hashtable.
+    /// </summary>
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <returns>Macro Stack.</returns>
+    static List<string> GetMacroStack(int hash)
+    {
+      if (_macroStacks.ContainsKey(hash))
+      {
+        return (List<string>)_macroStacks[hash];
+      }
+      else
+      {
+        List<string> newStack = new List<string>();
+        _macroStacks.Add(hash, newStack);
+        return newStack;
+      }
+    }
+
+    /// <summary>
+    /// Adds to the Macro Stack.
+    /// </summary>
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <param name="fileName">Name of the macro file.</param>
+    static void MacroStackAdd(int hash, string fileName)
+    {
+      List<string> stack = GetMacroStack(hash);
+
+      string upperCasedFileName = fileName.ToUpperInvariant();
+
+      if (stack.Contains(upperCasedFileName))
+      {
+        StringBuilder macroStackTrace = new StringBuilder();
+        macroStackTrace.AppendLine("Macro infinite loop detected!");
+        macroStackTrace.AppendLine();
+        macroStackTrace.AppendLine("Stack trace:");
+
+        foreach (string macro in stack)
+        {
+          if (macro.Equals(upperCasedFileName))
+            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
+          else
+            macroStackTrace.AppendLine(macro);
+        }
+
+        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
+
+        throw new ApplicationException(macroStackTrace.ToString());
+      }
+
+      stack.Add(upperCasedFileName);
+    }
+    
+    /// <summary>
+    /// Removes from the Macro Stack.
+    /// </summary>
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <param name="fileName">Name of the macro file.</param>
+    static void MacroStackRemove(int hash, string fileName)
+    {
+      List<string> stack = GetMacroStack(hash);
+
+      string upperCasedFileName = fileName.ToUpperInvariant();
+
+      if (stack.Contains(upperCasedFileName))
+        stack.Remove(upperCasedFileName);
+
+      if (stack.Count == 0)
+        _macroStacks.Remove(hash);
     }
 
     /// <summary>

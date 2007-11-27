@@ -21,41 +21,13 @@ namespace MicrosoftMceTransceiver
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool GetOverlappedResult(
-      SafeFileHandle handle,
-      ref NativeOverlapped overlapped,
-      out int bytesTransferred,
-      [MarshalAs(UnmanagedType.Bool)] bool wait);
-
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern SafeFileHandle CreateFile(
-      [MarshalAs(UnmanagedType.LPTStr)] string fileName,
-      [MarshalAs(UnmanagedType.U4)] CreateFileAccessTypes fileAccess,
-      [MarshalAs(UnmanagedType.U4)] CreateFileShares fileShare,
-      IntPtr securityAttributes,
-      [MarshalAs(UnmanagedType.U4)] CreateFileDisposition creationDisposition,
-      [MarshalAs(UnmanagedType.U4)] CreateFileAttributes flags,
-      IntPtr templateFile);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool DeviceIoControl(
       SafeFileHandle handle,
       [MarshalAs(UnmanagedType.U4)] IoCtrl ioControlCode,
       IntPtr inBuffer, int inBufferSize,
       IntPtr outBuffer, int outBufferSize,
       out int bytesReturned,
-      ref NativeOverlapped overlapped);
-
-    [DllImport("kernel32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CancelIo(
-      SafeFileHandle handle);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CloseHandle(
-      SafeFileHandle handle);
+      IntPtr overlapped);
 
     #endregion Interop
 
@@ -523,33 +495,30 @@ namespace MicrosoftMceTransceiver
 
     void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
     {
-      NativeOverlapped overlapped;
-      overlapped.InternalLow  = IntPtr.Zero;
-      overlapped.InternalHigh = IntPtr.Zero;
-      overlapped.OffsetLow    = 0;
-      overlapped.OffsetHigh   = 0;
-
       try
       {
         int lastError;
 
         using (WaitHandle waitHandle = new ManualResetEvent(false))
         {
-          overlapped.EventHandle = waitHandle.SafeWaitHandle.DangerousGetHandle();
+          DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
+          overlapped.ClearAndSetEvent(waitHandle.SafeWaitHandle.DangerousGetHandle());
 
-          if (!DeviceIoControl(_eHomeHandle, ioControlCode, inBuffer, inBufferSize, outBuffer, outBufferSize, out bytesReturned, ref overlapped))
+          bool deviceIoControl = DeviceIoControl(_eHomeHandle, ioControlCode, inBuffer, inBufferSize, outBuffer, outBufferSize, out bytesReturned, overlapped.Overlapped);
+          lastError = Marshal.GetLastWin32Error();
+
+          if (!deviceIoControl)
           {
-            lastError = Marshal.GetLastWin32Error();
             if (lastError != Win32ErrorCodes.ERROR_IO_PENDING)
               throw new Win32Exception(lastError);
 
             waitHandle.WaitOne();
 
-            if (!GetOverlappedResult(_eHomeHandle, ref overlapped, out bytesReturned, false))
-            {
-              lastError = Marshal.GetLastWin32Error();
+            bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesReturned, false);
+            lastError = Marshal.GetLastWin32Error();
+
+            if (!getOverlapped)
               throw new Win32Exception(lastError);
-            }
           }
         }
 

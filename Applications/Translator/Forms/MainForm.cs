@@ -831,11 +831,9 @@ namespace Translator
       if (listViewMacro.SelectedItems.Count != 1)
         return;
 
-      string fileName = Program.FolderMacros + listViewMacro.SelectedItems[0].Text + Common.FileExtensionMacro;
-
       try
       {
-        Program.ProcessMacro(fileName);
+        Program.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
       }
       catch (Exception ex)
       {
@@ -972,7 +970,7 @@ namespace Translator
 
       if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
-        ExternalProgram externalProgram = new ExternalProgram(false);
+        ExternalProgram externalProgram = new ExternalProgram(true);
 
         if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
           return;
@@ -1046,7 +1044,7 @@ namespace Translator
       if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-        ExternalProgram externalProgram = new ExternalProgram(commands, false);
+        ExternalProgram externalProgram = new ExternalProgram(commands, true);
         if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
           return;
 

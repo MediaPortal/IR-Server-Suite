@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<UsePreChangeCommand>False</UsePreChangeCommand>
+	<SendSelect>True</SendSelect>
+	<Digit0>STB: General Instruments DCT2224\0</Digit0>
+	<Digit1>STB: General Instruments DCT2224\1</Digit1>
+	<Digit2>STB: General Instruments DCT2224\2</Digit2>
+	<Digit3>STB: General Instruments DCT2224\3</Digit3>
+	<Digit4>STB: General Instruments DCT2224\4</Digit4>
+	<Digit5>STB: General Instruments DCT2224\5</Digit5>
+	<Digit6>STB: General Instruments DCT2224\6</Digit6>
+	<Digit7>STB: General Instruments DCT2224\7</Digit7>
+	<Digit8>STB: General Instruments DCT2224\8</Digit8>
+	<Digit9>STB: General Instruments DCT2224\9</Digit9>
+	<SelectCommand>STB: General Instruments DCT2224\OK</SelectCommand>
+</config>

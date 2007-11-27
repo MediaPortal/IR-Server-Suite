@@ -1,0 +1,60 @@
+<HTML>
+<HEAD><TITLE>TV3 Blaster Plugin</TITLE></HEAD>
+<BODY>
+
+<H2>TV3 Blaster Plugin<BR><HR COLOR="RED"></H2>
+
+<IMG SRC="configuration.png"><BR>
+This is the plugin configuration window.<BR>
+
+<P><B>Extended logging:</B><BR>
+With this enabled there is more detailed logging of the plugins actions inside your MediaPortal log files.</P>
+
+<P><B>Change Server:</B><BR>
+Click here to change the IR Server host.</P>
+
+<P><B>Help:</B><BR>
+Click here to show this help system.</P>
+
+<P><B>STB Setup:</B><BR>
+Click here to set up your Set Top Box for external channel changing.</P>
+
+<HR COLOR="GREEN" SIZE="1">
+
+<IMG SRC="ir_commands.png"><BR>
+<P>In this tab you can teach the plugin all the commands you want to be able to blast back to your equipment. Use NEW, EDIT, DELETE and TEST to learn, re-learn, remove and test IR commands.  Double click an IR command to re-learn.</P>
+
+<HR COLOR="GREEN" SIZE="1">
+
+<IMG SRC="macros.png"><BR>
+<P>In this tab you can set up macros, which are lists of commands to execute. Macros include blasting IR commands, pausing, running external programs, sending serial port commands, simulating keystrokes, and sending window messages to other programs.</P>
+
+<P>Macros are usefull when you need to blast multiple button presses to your equipment to get the desired results. Use NEW, EDIT, DELETE and TEST to create, modify, remove and test Macros. Double click a macro to edit.</P>
+
+<P>Creating or modifying a macro will start the Macro Editor, <A HREF="../../Common/macro_editor.html">click here</A> for more information on the Macro Editor.</P>
+
+<HR COLOR="GREEN" SIZE="1">
+
+<IMG SRC="external_channel.png"><BR>
+This window will appear when you click "Setup STB"<BR>
+<P><B>TV Card Buttons:</B><BR>You can setup each TV card with a different set top box.</P>
+<P><B>Quick Setup:</B><BR>Select your set top box from the list of know boxes and click "Set" to get configured quickly. Or select "Clear all" to reset all commands. Please note that all set top box configurations in Quick Setup are untested. If you find an error, please report it. If you have a set top box that is not on the list please send me the details and IR files for inclusion in the next release.</P>
+<P><B>Commands:</B><BR>Select the external command you want to map in the list, then the IR command or Macro you want to map to it from the combo box. Then click "Set". You can also map an external program, serial port command, simulated keystrokes or window messages by selecting them in the list and clicking "Set".</P>
+<P><B>Options:</B><BR>
+<UL>
+<LI>Wait between digits - Select this to put a pause between each digit IR blasting. (Recommended)</LI>
+<LI>Wait x milliseconds - This is how long to wait between each digit IR blasting. There are 1000 milliseconds in a second. (default: 500 = one half of a second)</LI>
+<LI>Use pre-change command - This option will execute a command before it starts the channel change, this can be used to get your STB out of a menu it might be in, or back to a selection menu if that is needed.</LI>
+<LI>Send select command - Select this if your set top box requires a "select" (enter, ok, etc...) button to be pressed after keying in channel numbers, you can also use this to execute a program that requires the whole channel number as a command line paramater.</LI>
+<LI>Send select twice - If you have chosen to send a "select" code, this can be used to make it send twice (this is a precaution to ensure the set top box received the command, some set top boxes are more sensitive than others)</LI>
+<LI>Ch. Digits - Use this to pad out the channel number with leading 0's. "Simple" leaves the number unchanged, other options will add zero's to the start of the channel number to make up the number of digits.</LI>
+<LI>Blaster port - This is the MCE remote transceiver blaster port you wish to control your set top box from. This setting is seperate from the blaster port setting on the main plugin configuration window.</LI>
+<LI>Repeat count - Use this to repeat channel change commands as many times as you'd like to decrease the chances of the set top box failing to recognise the blasted commands. 0 = no repeats, it only gets sent once. 1 = 1 repeat, that is a total of two times. etc ...</LI>
+<LI>Repeat delay - This is the time to wait between repeating the channel change commands.</LI>
+</UL>
+</P>
+<P><B>Test:</B><BR>Select a channel number and click "Test" to check the setup.</P>
+<P><B>Copy from:</B><BR>This lets you copy the configuration for one TV card/STB to another.</P>
+
+</BODY>
+</HTML>

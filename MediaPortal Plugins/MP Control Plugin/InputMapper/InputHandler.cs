@@ -414,7 +414,7 @@ namespace MediaPortal.Plugins
           }
           break;
         case "BLAST":
-          MPControlPlugin.ProcessCommand(map.CmdProperty);
+          MPControlPlugin.ProcessCommand(map.CmdProperty, true);
           break;
         default:
           return false;
