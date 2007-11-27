@@ -18,11 +18,14 @@ InstallDir "$PROGRAMFILES\IR Server Suite"
 ; Registry key to check for directory (so if you install again, it will overwrite the old one automatically)
 InstallDirRegKey HKLM "Software\IR Server Suite" "Install_Dir"
 
-; Show the installation steps to the user
+; Show the installation/uninstallation steps to the user
 ShowInstDetails show
+ShowUninstDetails show
 
 ; Set the compression method
 SetCompressor /SOLID /FINAL lzma
+
+SetDateSave on
 
 XPStyle on
 
