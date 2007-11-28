@@ -111,9 +111,8 @@
     </Reference>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy "Skin\*.*" "\MediaPortal Development\Plugin Releases\IR Server Suite\$(ProjectName)\Skin\"
-copy "Skin\Media\*.*" "\MediaPortal Development\Plugin Releases\IR Server Suite\$(ProjectName)\Skin\Media\"
-copy "*.*" "\MediaPortal Development\Plugin Releases\IR Server Suite\$(ProjectName)\Release\"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">

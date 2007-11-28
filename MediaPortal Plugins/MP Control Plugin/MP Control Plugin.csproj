@@ -154,7 +154,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy "*.*" "\MediaPortal Development\Plugin Releases\IR Server Suite\$(ProjectName)\Release\"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">

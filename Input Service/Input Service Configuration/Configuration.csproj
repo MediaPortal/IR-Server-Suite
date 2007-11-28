@@ -127,6 +127,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy "*.*" "\MediaPortal Development\Plugin Releases\IR Server Suite\Input Service\"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
