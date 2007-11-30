@@ -59,6 +59,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -76,6 +77,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="RemoteButton.cs" />
+    <Compile Include="WebServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
@@ -95,6 +97,7 @@
     </Content>
     <Content Include="Skins\MCE.xml">
     </Content>
+    <Content Include="Skins\web.html" />
     <Content Include="Skins\Xbox Blue Plasma.png">
     </Content>
     <Content Include="Skins\Xbox Orange.png">

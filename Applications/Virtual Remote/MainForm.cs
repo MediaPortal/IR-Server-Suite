@@ -23,8 +23,6 @@ namespace VirtualRemote
 
     #region Variables
 
-    RemoteButton []_buttons;
-
     //Thread _updateThread;
 
     #endregion Variables
@@ -57,31 +55,18 @@ namespace VirtualRemote
       if (e.Button != MouseButtons.Left)
         return;
 
-      if (_buttons == null)
-        return;
-
-      foreach (RemoteButton button in _buttons)
-      {
-        if (e.Y >= button.Top &&
-            e.Y < button.Top + button.Height &&
-            e.X >= button.Left &&
-            e.X <= button.Left + button.Width)
-        {
-          ButtonPress(button.Code);
-          break;
-        }
-      }
+      Program.ProcessClick(e.X, e.Y);
     }
     private void MainForm_KeyDown(object sender, KeyEventArgs e)
     {
       if (e.KeyCode == Keys.None)
         return;
 
-      foreach (RemoteButton button in _buttons)
+      foreach (RemoteButton button in Program.Buttons)
       {
         if (button.Shortcut == e.KeyCode)
         {
-          ButtonPress(button.Code);
+          Program.ButtonPress(button.Code);
           break;
         }
       }
@@ -123,7 +108,7 @@ namespace VirtualRemote
         buttons.Add(temp);
       }
 
-      _buttons = (RemoteButton[])buttons.ToArray(typeof(RemoteButton));
+      Program.Buttons = (RemoteButton[])buttons.ToArray(typeof(RemoteButton));
 
       return true;
     }
@@ -183,15 +168,6 @@ namespace VirtualRemote
       {
         MessageBox.Show(this, ex.Message, "Virtual Remote - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
-    }
-
-    static void ButtonPress(string keyCode)
-    {
-      if (!Program.Registered)
-        return;
-
-      IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, keyCode);
-      Program.SendMessage(message);
     }
 
     void SetLabel()

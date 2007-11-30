@@ -50,13 +50,13 @@ namespace VirtualRemote
       this.contextMenuStrip.Name = "contextMenuStrip";
       this.contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
       this.contextMenuStrip.ShowImageMargin = false;
-      this.contextMenuStrip.Size = new System.Drawing.Size(156, 97);
+      this.contextMenuStrip.Size = new System.Drawing.Size(156, 95);
       // 
       // toolStripComboBoxSkin
       // 
       this.toolStripComboBoxSkin.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.toolStripComboBoxSkin.Name = "toolStripComboBoxSkin";
-      this.toolStripComboBoxSkin.Size = new System.Drawing.Size(120, 23);
+      this.toolStripComboBoxSkin.Size = new System.Drawing.Size(120, 21);
       this.toolStripComboBoxSkin.ToolTipText = "Select a custom skin";
       this.toolStripComboBoxSkin.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxSkin_SelectedIndexChanged);
       // 
@@ -108,7 +108,6 @@ namespace VirtualRemote
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
-      this.MinimizeBox = false;
       this.Name = "MainForm";
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
       this.Text = "Virtual Remote";

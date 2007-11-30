@@ -25,6 +25,7 @@ namespace VirtualRemote
     #region Constants
 
     const string DefaultSkin = "MCE";
+    const int DefaultWebPort = 2481;
 
     static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Virtual Remote.xml";
 
@@ -41,6 +42,12 @@ namespace VirtualRemote
     static string _installFolder;
 
     static string _remoteSkin;
+
+    static RemoteButton[] _buttons;
+
+    static WebServer _webServer;
+
+    static int _webPort;
 
     #endregion Variables
 
@@ -66,6 +73,12 @@ namespace VirtualRemote
     {
       get { return _remoteSkin; }
       set { _remoteSkin = value; }
+    }
+
+    internal static RemoteButton[] Buttons
+    {
+      get { return _buttons; }
+      set { _buttons = value; }
     }
 
     #endregion Properties
@@ -181,7 +194,14 @@ namespace VirtualRemote
         }
 
         if (clientStarted)
+        {
+          _webServer = new WebServer(_webPort);
+          _webServer.Run();
+
           Application.Run(new MainForm());
+
+          _webServer.Stop();
+        }
 
         SaveSettings();
       }
@@ -220,13 +240,11 @@ namespace VirtualRemote
         _installFolder = ".";
       }
 
+      XmlDocument doc = new XmlDocument();
+
       try
       {
-        XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
-
-        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
-        _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value;
       }
       catch (Exception ex)
       {
@@ -234,7 +252,14 @@ namespace VirtualRemote
 
         _serverHost = "localhost";
         _remoteSkin = DefaultSkin;
+        _webPort = DefaultWebPort;
+
+        return;
       }
+
+      try { _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value; } catch { _serverHost = "localhost"; }
+      try { _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value; } catch { _remoteSkin = DefaultSkin; }
+      try { _webPort = int.Parse(doc.DocumentElement.Attributes["WebPort"].Value); } catch { _webPort = DefaultWebPort; }
     }
     static void SaveSettings()
     {
@@ -250,6 +275,7 @@ namespace VirtualRemote
 
           writer.WriteAttributeString("ServerHost", _serverHost);
           writer.WriteAttributeString("RemoteSkin", _remoteSkin);
+          writer.WriteAttributeString("WebPort", _webPort.ToString());
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
@@ -319,7 +345,36 @@ namespace VirtualRemote
       _client = null;
     }
 
-    internal static void SendMessage(IrssMessage message)
+    internal static bool ProcessClick(int x, int y)
+    {
+      if (_buttons != null)
+      {
+        foreach (RemoteButton button in _buttons)
+        {
+          if (y >= button.Top &&
+              y < button.Top + button.Height &&
+              x >= button.Left &&
+              x <= button.Left + button.Width)
+          {
+            ButtonPress(button.Code);
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    internal static void ButtonPress(string keyCode)
+    {
+      if (!_registered)
+        return;
+
+      IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, keyCode);
+      SendMessage(message);
+    }
+
+    static void SendMessage(IrssMessage message)
     {
       if (message == null)
         throw new ArgumentNullException("message");
