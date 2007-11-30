@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Forms;
 
 namespace IRServerPluginInterface
 {
@@ -12,7 +13,8 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Configure the IR Server plugin.
     /// </summary>
-    void Configure();
+    /// <param name="owner">The owner window to use for creating modal dialogs.</param>
+    void Configure(IWin32Window owner);
 
   }
 

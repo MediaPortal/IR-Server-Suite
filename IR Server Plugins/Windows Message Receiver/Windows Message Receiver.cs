@@ -127,7 +127,7 @@ namespace WindowsMessageReceiver
     /// <summary>
     /// Configure the IR Server plugin.
     /// </summary>
-    public void Configure()
+    public void Configure(IWin32Window owner)
     {
       LoadSettings();
 
@@ -136,7 +136,7 @@ namespace WindowsMessageReceiver
       config.MessageType  = _messageType;
       config.WParam       = _wParam;
 
-      if (config.ShowDialog() == DialogResult.OK)
+      if (config.ShowDialog(owner) == DialogResult.OK)
       {
         _messageType      = config.MessageType;
         _wParam           = config.WParam;

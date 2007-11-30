@@ -266,7 +266,7 @@ namespace IRServer
 
       foreach (IRServerPluginBase transceiver in _transceivers)
         if (transceiver.Name.Equals(plugin, StringComparison.OrdinalIgnoreCase))
-          (transceiver as IConfigure).Configure();
+          (transceiver as IConfigure).Configure(this);
     }
     /*
     private void ReceiveChanged(object sender, EventArgs e)

@@ -229,7 +229,7 @@ namespace UirtTransceiver
     /// <summary>
     /// Configure the IR Server plugin.
     /// </summary>
-    public void Configure()
+    public void Configure(IWin32Window owner)
     {
       LoadSettings();
 
@@ -239,7 +239,7 @@ namespace UirtTransceiver
       config.BlastRepeats = _blastRepeats;
       config.LearnTimeout = _learnTimeout;
 
-      if (config.ShowDialog() == DialogResult.OK)
+      if (config.ShowDialog(owner) == DialogResult.OK)
       {
         _repeatDelay  = config.RepeatDelay;
         _blastRepeats = config.BlastRepeats;

@@ -40,10 +40,10 @@ namespace IrFileTool
       this.textBoxPronto = new System.Windows.Forms.TextBox();
       this.labelCarrier = new System.Windows.Forms.Label();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-      this.textBoxCarrier = new System.Windows.Forms.TextBox();
       this.buttonSetCarrier = new System.Windows.Forms.Button();
       this.checkBoxStoreBinary = new System.Windows.Forms.CheckBox();
       this.buttonAttemptDecode = new System.Windows.Forms.Button();
+      this.textBoxCarrier = new System.Windows.Forms.TextBox();
       this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
       this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
       this.menuStrip.SuspendLayout();
@@ -135,14 +135,6 @@ namespace IrFileTool
       this.labelCarrier.Text = "Carrier:";
       this.labelCarrier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // textBoxCarrier
-      // 
-      this.textBoxCarrier.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.textBoxCarrier.Location = new System.Drawing.Point(64, 176);
-      this.textBoxCarrier.Name = "textBoxCarrier";
-      this.textBoxCarrier.Size = new System.Drawing.Size(64, 20);
-      this.textBoxCarrier.TabIndex = 3;
-      // 
       // buttonSetCarrier
       // 
       this.buttonSetCarrier.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -176,7 +168,16 @@ namespace IrFileTool
       this.buttonAttemptDecode.Text = "Attempt decode";
       this.toolTips.SetToolTip(this.buttonAttemptDecode, "Try to decode the IR signal into a recognised format");
       this.buttonAttemptDecode.UseVisualStyleBackColor = true;
+      this.buttonAttemptDecode.Visible = false;
       this.buttonAttemptDecode.Click += new System.EventHandler(this.buttonAttemptDecode_Click);
+      // 
+      // textBoxCarrier
+      // 
+      this.textBoxCarrier.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.textBoxCarrier.Location = new System.Drawing.Point(64, 176);
+      this.textBoxCarrier.Name = "textBoxCarrier";
+      this.textBoxCarrier.Size = new System.Drawing.Size(64, 20);
+      this.textBoxCarrier.TabIndex = 3;
       // 
       // openFileDialog
       // 

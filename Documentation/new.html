@@ -21,7 +21,8 @@
 <LI>Looks like 64-bit support wasn't working, so I've had another try.</LI>
 <LI>Added a Translator OSD that can task swap, run macros and some other useful things.</LI>
 <LI>Added some new macro commands (HTTP requests, beep sound, wave file playback).</LI>
-<LI>Commands (including macros) now execute on separate threads.  In the past calling a macro for example would block the caller until it finished, now the caller can continue while the macro executes independantly.  Note that this will cause a subtle change in flow control.</LI>
+<LI>Commands (including macros) now execute on separate threads.  In the past calling a macro for example would block the caller until it finished, now the caller can continue while the macro executes independantly.  Note that this will cause a subtle change in flow control, but shouldn't effect anyone.</LI>
+<LI>Added support for Girder 3.x plugins, still experimental at this stage. Expect to see improvements in this area, like multiple Girder plugins active at the same time.</LI>
 </UL></P>
 <BR>
 

@@ -316,7 +316,7 @@ namespace IRTransTransceiver
     /// <summary>
     /// Configure the IR Server plugin.
     /// </summary>
-    public void Configure()
+    public void Configure(IWin32Window owner)
     {
       LoadSettings();
 
@@ -326,7 +326,7 @@ namespace IRTransTransceiver
       config.ServerPort     = _irTransServerPort;
       config.RemoteModel    = _irTransRemoteModel;
 
-      if (config.ShowDialog() == DialogResult.OK)
+      if (config.ShowDialog(owner) == DialogResult.OK)
       {
         _irTransServerAddress = config.ServerAddress;
         _irTransServerPort    = config.ServerPort;

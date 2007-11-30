@@ -2,149 +2,141 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
-
-using Microsoft.Win32.SafeHandles;
+using System.Windows.Forms;
+using System.Xml;
 
 using IRServerPluginInterface;
 
 namespace GirderPlugin
 {
 
-  public class GirderPlugin : IRServerPluginBase, IRemoteReceiver, ITransmitIR, ILearnIR, IConfigure
+  /// <summary>
+  /// IR Server Plugin for using Girder 3.x plugins.
+  /// </summary>
+  public class GirderPlugin : IRServerPluginBase, IRemoteReceiver, IConfigure
   {
 
     #region Constants
 
+    static readonly string ConfigurationFile =
+      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
+      "\\IR Server Suite\\IR Server\\Girder Plugin.xml";
+
     static readonly string[] Ports  = new string[] { "None" };
+
+    const int GIRINFO_POWERBROADCAST = 2;
+    const int PBT_APMSUSPEND = 4;
+    const int PBT_APMRESUMEAUTOMATIC = 18;
 
     #endregion Constants
 
     #region Variables
 
+    string _pluginFile;
+
     RemoteHandler _remoteButtonHandler = null;
 
-    IntPtr _pluginDll;
+    GirderPluginWrapper _pluginWrapper;
 
     #endregion Variables
 
-    #region Interop
-
-    [DllImport("kernel32")]
-    extern static IntPtr LoadLibrary(
-      string dllFileName);
-
-    [DllImport("kernel32.dll")]
-    static extern IntPtr GetProcAddress(
-      IntPtr module,
-      string functionName);
-
-    [DllImport("kernel32")]
-    extern static Int32 FreeLibrary(
-      IntPtr handle);
-
-    #endregion Interop
-
-    #region Girder Plugin Delegates
-
-    /*
-void WINAPI gir_version       (char *data, int size);
-void WINAPI gir_name          (char *data, int size);
-void WINAPI gir_description   (char *data, int size);
-int  WINAPI gir_devicenum     ();
-int  WINAPI gir_requested_api (int max_api);
-
-int WINAPI gir_open  (int gir_major_ver, int gir_minor_ver, int gir_micro_ver, p_functions api_functions );
-int WINAPI gir_close ();
-int WINAPI gir_learn_event(char *old, char *newevent, int len);
-int WINAPI gir_info  (int message, int wparam, int lparam);
-
-int WINAPI gir_start ();
-int WINAPI gir_stop  ();
-
-int WINAPI gir_event(p_command command, char *eventstring, void *payload, int len, char * status, int statuslen);
-void WINAPI gir_command_gui();
-void WINAPI gir_command_changed(p_command command);
-    */
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    delegate void gir_version(string data, int size);
-    gir_version _girVersion;
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    delegate void gir_name(string data, int size);
-    gir_name _girName;
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    delegate void gir_description(string data, int size);
-    gir_description _girDescription;
-
-    /*
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    delegate int gir_devicenum();
-    gir_devicenum _girDevicenum;
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    delegate int gir_requested_api();
-    gir_requested_api _girRequestedApi;
-    */
-
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    delegate int gir_start();
-    gir_start _girStart;
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    delegate int gir_stop();
-    gir_stop _girStop;
-
-
-
-    #endregion Girder Plugin Delegates
-
-
     #region IRServerPluginBase Members
 
+    /// <summary>
+    /// Name of the IR Server plugin.
+    /// </summary>
+    /// <value>The name.</value>
     public override string Name         { get { return "Girder Plugin"; } }
-    public override string Version      { get { return "1.0.3.4"; } }
+    /// <summary>
+    /// IR Server plugin version.
+    /// </summary>
+    /// <value>The version.</value>
+    public override string Version      { get { return "1.0.3.5"; } }
+    /// <summary>
+    /// The IR Server plugin's author.
+    /// </summary>
+    /// <value>The author.</value>
     public override string Author       { get { return "and-81"; } }
-    public override string Description  { get { return "Supports using Girder plugins"; } }
+    /// <summary>
+    /// A description of the IR Server plugin.
+    /// </summary>
+    /// <value>The description.</value>
+    public override string Description  { get { return "Supports using Girder 3.x plugins with IR Server"; } }
 
+    /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns>
+    /// true if the device is present, otherwise false.
+    /// </returns>
     public override bool Detect()
     {
       return false;
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
-    {      
-      LoadGirderPlugin("MceIr.dll");
-      
-      _girStart();
+    {
+      LoadSettings();
 
-      return true;
+      _pluginWrapper = new GirderPluginWrapper(_pluginFile);
+
+      _pluginWrapper.EventCallback += new GirderPluginWrapper.PluginEventCallback(PluginCallback);
+
+      bool open = _pluginWrapper.GirOpen();
+      if (open)
+        _pluginWrapper.GirStart();
+
+      return open;
     }
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
     public override void Suspend()
     {
-
-    }
-    public override void Resume()
-    {
-
-    }
-    public override void Stop()
-    {
-      if (_pluginDll == IntPtr.Zero)
+      if (_pluginWrapper == null)
         return;
 
-      _girStop();
+      _pluginWrapper.GirInfo(GIRINFO_POWERBROADCAST, PBT_APMSUSPEND, 0);
+    }
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
+    public override void Resume()
+    {
+      if (_pluginWrapper == null)
+        return;
 
-      FreeLibrary(_pluginDll);
+      _pluginWrapper.GirInfo(GIRINFO_POWERBROADCAST, PBT_APMRESUMEAUTOMATIC, 0);
+    }
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
+    public override void Stop()
+    {
+      if (_pluginWrapper == null)
+        return;
+
+      _pluginWrapper.GirStop();
+
+      _pluginWrapper.GirClose();
+
+      _pluginWrapper.Dispose();
+
+      _pluginWrapper = null;
     }
 
     #endregion IRServerPluginBase Members
 
     #region IRemoteReceiver Members
 
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
     public RemoteHandler RemoteCallback
     {
       get { return _remoteButtonHandler; }
@@ -155,11 +147,21 @@ void WINAPI gir_command_changed(p_command command);
 
     #region ITransmitIR Members
 
+    /// <summary>
+    /// Lists the available blaster ports.
+    /// </summary>
+    /// <value>The available ports.</value>
     public string[] AvailablePorts
     {
       get { return Ports; }
     }
 
+    /// <summary>
+    /// Transmit an infrared command.
+    /// </summary>
+    /// <param name="port">Port to transmit on.</param>
+    /// <param name="data">Data to transmit.</param>
+    /// <returns>true if successful, otherwise false.</returns>
     public bool Transmit(string port, byte[] data)
     {
       throw new Exception("The method or operation is not implemented.");
@@ -167,60 +169,76 @@ void WINAPI gir_command_changed(p_command command);
 
     #endregion ITransmitIR Members
 
-    #region ILearnIR Members
-
-    public LearnStatus Learn(out byte[] data)
-    {
-      throw new Exception("The method or operation is not implemented.");
-    }
-
-    #endregion ILearnIR Members
-
     #region IConfigure Members
 
-    public void Configure()
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
+    public void Configure(IWin32Window owner)
     {
+      LoadSettings();
+
+      Config config = new Config();
+      config.FileName = _pluginFile;
+
+      if (config.ShowDialog(owner) == DialogResult.OK)
+      {
+        _pluginFile = config.FileName;
+
+        SaveSettings();
+      }
     }
 
     #endregion IConfigure Members
 
     #region Implementation
 
-    void LoadGirderPlugin(string girderPluginFile)
+    void PluginCallback(string eventstring, IntPtr payload, int len, int device)
     {
-      IntPtr function;
+      if (_remoteButtonHandler != null)
+        _remoteButtonHandler(eventstring);
+    }
 
-      _pluginDll = LoadLibrary(girderPluginFile);
-      if (_pluginDll == IntPtr.Zero)
-        throw new ApplicationException(String.Format("Failed to load girder plugin ({0})", girderPluginFile));
-      
+    void LoadSettings()
+    {
+      XmlDocument doc = new XmlDocument();
+
+      try { doc.Load(ConfigurationFile); }
+      catch { return; }
+
+      try { _pluginFile = doc.DocumentElement.Attributes["PluginFile"].Value; }
+      catch { }
+    }
+    void SaveSettings()
+    {
       try
       {
-        function = GetProcAddress(_pluginDll, "gir_version");
-        _girVersion = (gir_version)Marshal.GetDelegateForFunctionPointer(function, typeof(gir_version));
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
 
-        function = GetProcAddress(_pluginDll, "gir_name");
-        _girName = (gir_name)Marshal.GetDelegateForFunctionPointer(function, typeof(gir_name));
+          writer.WriteAttributeString("PluginFile", _pluginFile);
 
-        function = GetProcAddress(_pluginDll, "gir_description");
-        _girDescription = (gir_description)Marshal.GetDelegateForFunctionPointer(function, typeof(gir_description));
-
-
-
-        function = GetProcAddress(_pluginDll, "gir_start");
-        _girStart = (gir_start)Marshal.GetDelegateForFunctionPointer(function, typeof(gir_start));
-
-        function = GetProcAddress(_pluginDll, "gir_stop");
-        _girStop = (gir_stop)Marshal.GetDelegateForFunctionPointer(function, typeof(gir_stop));
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
       }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
       catch
       {
-        FreeLibrary(_pluginDll);
-        throw;
       }
-
+#endif
     }
-    
+
     #endregion Implementation
 
   }

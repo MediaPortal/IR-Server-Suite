@@ -162,6 +162,7 @@
     <None Include="Icon16Connecting.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Default Settings\Default.xml" />
     <Content Include="Graphics\ClickLeft.png" />
     <Content Include="Graphics\ClickMiddle.png" />
     <Content Include="Graphics\ClickRight.png" />
@@ -177,9 +178,6 @@
     <Content Include="Graphics\ScrollDown.png" />
     <Content Include="Graphics\ScrollUp.png" />
     <Content Include="Graphics\WinLogo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Default Settings\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -139,7 +139,7 @@ namespace WinLircTransceiver
     /// <summary>
     /// Configure the IR Server plugin.
     /// </summary>
-    public void Configure()
+    public void Configure(IWin32Window owner)
     {
       LoadSettings();
 
@@ -151,7 +151,7 @@ namespace WinLircTransceiver
       config.ServerPath         = _serverPath;
       config.ButtonReleaseTime  = _buttonReleaseTime;
 
-      if (config.ShowDialog() == DialogResult.OK)
+      if (config.ShowDialog(owner) == DialogResult.OK)
       {
         _serverIP           = config.ServerIP;
         _serverPort         = config.ServerPort;

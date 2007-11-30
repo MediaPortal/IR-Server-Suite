@@ -243,7 +243,7 @@ namespace Configuration
 
       foreach (IRServerPluginBase transceiver in _transceivers)
         if (transceiver.Name == plugin)
-          (transceiver as IConfigure).Configure();
+          (transceiver as IConfigure).Configure(this);
     }
     /*
     private void ReceiveChanged(object sender, EventArgs e)

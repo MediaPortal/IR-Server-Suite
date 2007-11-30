@@ -263,11 +263,11 @@ namespace IgorPlugReceiver
         }
       }
 #if TRACE
-      catch (ThreadAbortException ex)
+      catch (Exception ex) // (ThreadAbortException ex)
       {
         Trace.WriteLine(ex.ToString());
 #else
-      catch (ThreadAbortException)
+      catch // (ThreadAbortException)
       {
 #endif
       }

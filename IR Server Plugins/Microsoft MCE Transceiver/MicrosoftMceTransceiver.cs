@@ -249,7 +249,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Configure the IR Server plugin.
     /// </summary>
-    public void Configure()
+    public void Configure(IWin32Window owner)
     {
       LoadSettings();
 
@@ -271,7 +271,7 @@ namespace MicrosoftMceTransceiver
       config.HandleMouseLocal     = _handleMouseLocally;
       config.MouseSensitivity     = _mouseSensitivity;
 
-      if (config.ShowDialog() == DialogResult.OK)
+      if (config.ShowDialog(owner) == DialogResult.OK)
       {
         _learnTimeout           = config.LearnTimeout;
         _disableMceServices     = config.DisableMceServices;

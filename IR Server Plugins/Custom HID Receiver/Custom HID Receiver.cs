@@ -67,7 +67,6 @@ namespace CustomHIDReceiver
       LoadSettings();
 
       _receiverWindow = new ReceiverWindow("Custom HID Receiver");
-      _receiverWindow.ProcMsg += new ProcessMessage(ProcMessage);
     }
 
     #endregion Constructor
@@ -111,6 +110,8 @@ namespace CustomHIDReceiver
     /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
+      _receiverWindow.ProcMsg += new ProcessMessage(ProcMessage);
+
       _device.dwFlags = RawInput.RawInputDeviceFlags.InputSink;      
       _device.hwndTarget = _receiverWindow.Handle;
       
@@ -137,15 +138,18 @@ namespace CustomHIDReceiver
     {
       _device.dwFlags |= RawInput.RawInputDeviceFlags.Remove;
       RegisterForRawInput(_device);
+
+      _receiverWindow.ProcMsg -= new ProcessMessage(ProcMessage);
     }
 
     /// <summary>
     /// Configure the IR Server plugin.
     /// </summary>
-    public void Configure()
+    public void Configure(IWin32Window owner)
     {
       DeviceSelect deviceSelect = new DeviceSelect();
-      if (deviceSelect.ShowDialog() == DialogResult.OK)
+
+      if (deviceSelect.ShowDialog(owner) == DialogResult.OK)
       {
         _device = deviceSelect.SelectedDevice;
         SaveSettings();
