@@ -66,6 +66,10 @@
 		<param name="Local" value="new.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Legal">
+		<param name="Local" value="legal.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Appendices">
 		</OBJECT>
 	<UL>

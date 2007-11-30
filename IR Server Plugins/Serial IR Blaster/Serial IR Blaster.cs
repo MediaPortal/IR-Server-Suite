@@ -162,7 +162,7 @@ namespace SerialIRBlaster
     /// <summary>
     /// Transmit an infrared command.
     /// </summary>
-    /// <param name="port">Port to transmit on.</param>
+    /// <param name="port">Port to transmit on (ignored).</param>
     /// <param name="data">Data to transmit.</param>
     /// <returns>true if successful, otherwise false.</returns>
     public bool Transmit(string port, byte[] data)

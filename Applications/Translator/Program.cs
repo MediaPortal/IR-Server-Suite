@@ -317,6 +317,7 @@ namespace Translator
       else
       {
         Thread thread = new Thread(new ThreadStart(MenuThread));
+        thread.Name = "Translator OSD";
         thread.Start();
       }
     }
