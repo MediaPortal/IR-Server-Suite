@@ -79,29 +79,30 @@ namespace XBCDRCReceiver
       FirstPipeInstance = 0x00080000,
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     struct DeviceInfoData
     {
       public int Size;
       public Guid Class;
-      public uint DevInst;
+      public int DevInst;
       public IntPtr Reserved;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     struct DeviceInterfaceData
     {
       public int Size;
       public Guid Class;
-      public uint Flags;
-      public uint Reserved;
+      public int Flags;
+      public IntPtr Reserved;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct DeviceInterfaceDetailData
     {
       public int Size;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string DevicePath;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+      public string DevicePath;
     }
 
     [DllImport("hid")]
@@ -384,7 +385,10 @@ namespace XBCDRCReceiver
         }
 
         DeviceInterfaceDetailData deviceInterfaceDetailData = new DeviceInterfaceDetailData();
-        deviceInterfaceDetailData.Size = 5;
+        if (IntPtr.Size == 8)
+          deviceInterfaceDetailData.Size = 8;
+        else
+          deviceInterfaceDetailData.Size = 5;
 
         if (!SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData, IntPtr.Zero, IntPtr.Zero))
         {
