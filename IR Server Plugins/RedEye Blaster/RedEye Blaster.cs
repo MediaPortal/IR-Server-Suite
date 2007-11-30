@@ -50,9 +50,9 @@ namespace RedEyeBlaster
 
     static readonly string[] Ports = new string[] { "Default" };
 
-    static const string BlastModeIRDA = "%";
-    static const string BlastModeRC5  = "&";
-    static const string BlastModeSky  = "$";
+    const string BlastModeIRDA = "%";
+    const string BlastModeRC5  = "&";
+    const string BlastModeSky  = "$";
 
     #endregion Constants
 

@@ -7,7 +7,7 @@ using System.IO.Ports;
 using System.Text;
 using System.Windows.Forms;
 
-namespace SerialIRBlaster
+namespace RedEyeBlaster
 {
 
   partial class Configure : Form

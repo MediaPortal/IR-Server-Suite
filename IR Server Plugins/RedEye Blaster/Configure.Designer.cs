@@ -1,4 +1,4 @@
-namespace SerialIRBlaster
+namespace RedEyeBlaster
 {
   partial class Configure
   {
