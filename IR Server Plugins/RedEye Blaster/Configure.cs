@@ -21,10 +21,37 @@ namespace RedEyeBlaster
     
     #region Properties
 
+    /// <summary>
+    /// Gets or sets the communications port.
+    /// </summary>
+    /// <value>The communications port.</value>
     public string CommPort
     {
       get { return comboBoxPort.SelectedItem as string; }
       set { comboBoxPort.SelectedItem = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the blaster mode.
+    /// </summary>
+    /// <value>The blaster mode.</value>
+    public BlastMode BlasterMode
+    {
+      get
+      {
+        if (radioButtonIRDA.Checked)      return BlastMode.IRDA;
+        else if (radioButtonRC5.Checked)  return BlastMode.RC5;
+        else                              return BlastMode.Sky;
+      }
+      set
+      {
+        switch (value)
+        {
+          case BlastMode.IRDA:  radioButtonIRDA.Checked = true;   break;
+          case BlastMode.RC5:   radioButtonRC5.Checked = true;    break;
+          case BlastMode.Sky:   radioButtonSky.Checked = true;    break;
+        }
+      }
     }
 
     #endregion Properties

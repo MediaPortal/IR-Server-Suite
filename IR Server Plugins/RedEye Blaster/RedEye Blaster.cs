@@ -13,34 +13,34 @@ using IRServerPluginInterface;
 namespace RedEyeBlaster
 {
 
+  #region Enumerations
+
+  /// <summary>
+  /// Used to determine the blaster mode.
+  /// </summary>
+  internal enum BlastMode
+  {
+    /// <summary>
+    /// Use the IRDA protocol.
+    /// </summary>
+    IRDA,
+    /// <summary>
+    /// Use the RC5 protocol.
+    /// </summary>
+    RC5,
+    /// <summary>
+    /// Use the Sky STB protocol.
+    /// </summary>
+    Sky,
+  }
+
+  #endregion Enumerations
+
   /// <summary>
   /// IR Server Plugin for RedEye serial IR Blaster device.  http://www.redremote.co.uk/serial/
   /// </summary>
   public class SerialIRBlaster : IRServerPluginBase, IConfigure, ITransmitIR
   {
-
-    #region Enumerations
-
-    /// <summary>
-    /// Used to determine the blaster mode.
-    /// </summary>
-    enum BlastMode
-    {
-      /// <summary>
-      /// Use the IRDA protocol.
-      /// </summary>
-      IRDA,
-      /// <summary>
-      /// Use the RC5 protocol.
-      /// </summary>
-      RC5,
-      /// <summary>
-      /// Use the Sky STB protocol.
-      /// </summary>
-      Sky,
-    }
-
-    #endregion Enumerations
 
     #region Constants
 
@@ -181,10 +181,12 @@ namespace RedEyeBlaster
 
       Configure config = new Configure();
       config.CommPort = _serialPortName;
+      config.BlasterMode = _blastMode;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
         _serialPortName = config.CommPort;
+        _blastMode = config.BlasterMode;
 
         SaveSettings();
       }
@@ -209,6 +211,15 @@ namespace RedEyeBlaster
     {
       if (_serialPort == null)
         return false;
+
+      switch (_blastMode)
+      {
+        case BlastMode.IRDA:  _serialPort.Write(BlastModeIRDA); break;
+        case BlastMode.RC5:   _serialPort.Write(BlastModeRC5);  break;
+        case BlastMode.Sky:   _serialPort.Write(BlastModeSky);  break;
+      }
+
+      Thread.Sleep(50);
 
       _serialPort.Write(data, 0, data.Length);
 
