@@ -5,8 +5,15 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Web;
+using System.Windows.Forms;
 
-namespace VirtualRemote
+#if TRACE
+using System.Diagnostics;
+#endif
+
+using IrssUtils;
+
+namespace WebRemote
 {
 
   /// <summary>
@@ -17,9 +24,7 @@ namespace VirtualRemote
 
     #region Constants
 
-    const string ServerName = "Virtual Remote";
-
-    const string ButtonClickPrefix = "click?";
+    const string ServerName = "Web Remote";
 
     #endregion Constants
 
@@ -70,6 +75,8 @@ namespace VirtualRemote
     {
       if (_runningThread != null)
       {
+        _serverSocket.Close(200);
+
         try
         {
           _runningThread.Abort();
@@ -108,34 +115,16 @@ namespace VirtualRemote
           _networkStream.Flush();
           _networkStream.Close();
         }
-      
+
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
       }
       finally
       {
         _serverSocket.Close();
       }
-    }
-
-    string CreateImageMap()
-    {
-      StringBuilder imageMap = new StringBuilder();
-      imageMap.AppendLine("<MAP NAME=\"REMOTE_MAP\">");
-
-      foreach (RemoteButton button in Program.Buttons)
-      {
-        string area = String.Format(
-          "<AREA SHAPE=\"rect\" COORDS=\"{0},{1},{2},{3}\" TITLE=\"{4}\" HREF=\"{5}{6}\">",
-          button.Left, button.Top, button.Left + button.Width, button.Top + button.Height,
-          button.Name,
-          ButtonClickPrefix, button.Code);
-
-        imageMap.AppendLine(area);
-      }
-
-      imageMap.AppendLine("<AREA SHAPE=\"default\" NOHREF>");
-      imageMap.AppendLine("</MAP>");
-
-      return imageMap.ToString();
     }
 
     void DoGet(string argument)
@@ -148,13 +137,21 @@ namespace VirtualRemote
       if (url.Length == 0)
         url = "INDEX.HTML";
 
-      if (url.StartsWith(ButtonClickPrefix, StringComparison.OrdinalIgnoreCase))
+#if TRACE
+      Trace.WriteLine(DateTime.Now.TimeOfDay.ToString());
+      Trace.WriteLine("Arg: " + argument);
+      Trace.WriteLine("Url: " + url);
+      Trace.WriteLine("");
+#endif
+
+      if (url.StartsWith(Program.ButtonClickPrefix, StringComparison.OrdinalIgnoreCase))
       {
-        string command = url.Substring(ButtonClickPrefix.Length);
+        string command = url.Substring(Program.ButtonClickPrefix.Length);
 
         Program.ButtonPress(command);
 
-        url = "INDEX.HTML";
+        SendError(404, "File Not Found");
+        return;
       }
 
       switch (url.ToUpperInvariant())
@@ -162,14 +159,14 @@ namespace VirtualRemote
         case "INDEX.HTML":
           SendOK("text/html; charset=utf-8");
           SendString("<HTML>");
-          SendFile(String.Format("{0}\\Skins\\web.html", Program.InstallFolder));
-          SendString(CreateImageMap());
+          SendFile(Program.WebFile);
+          SendString(Program.ImageMap);
           SendString("</HTML>");
           break;
 
-        case "REMOTE_SKIN":
+        case "REMOTE_SKIN.PNG":
           SendOK("image/png");
-          SendFile(String.Format("{0}\\Skins\\{1}.png", Program.InstallFolder, Program.RemoteSkin));
+          SendFile(Program.ImageFile);
           break;
 
         default:
@@ -197,7 +194,6 @@ namespace VirtualRemote
     
     Socket AcceptConnection()
     {
-
       _serverSocket.Listen(1);
       Socket socket = _serverSocket.Accept();
 
@@ -270,6 +266,14 @@ namespace VirtualRemote
       SendString("Date:{0}\r\n", DateTime.Now);
       SendString("Server:{0}\r\n", ServerName);
       SendString("Content-Type: {0}\r\n\r\n", contentType);
+    }
+
+    void SendRedirect(string newLocation)
+    {
+      SendString("HTTP/1.1 301 Moved Permanently\r\n");
+      SendString("Date:{0}\r\n", DateTime.Now);
+      SendString("Server:{0}\r\n", ServerName);
+      SendString("Location: {0}\r\n\r\n", newLocation);
     }
 
     #endregion Implementation

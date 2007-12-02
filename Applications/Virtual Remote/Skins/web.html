@@ -1,7 +1,22 @@
 <HEAD>
-<TITLE>Virtual Remote</TITLE>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="expires" CONTENT="0">
+
+<TITLE>Web Remote</TITLE>
+<SCRIPT LANGUAGE="JavaScript1.2">
+// <!--
+
+function SendMessage(message)
+{
+  xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("GET", message, true);
+  xmlhttp.send(null);
+}
+
+// -->
+</SCRIPT>
 </HEAD>
 
 <BODY STYLE="margin: 0;">
-<IMG SRC="REMOTE_SKIN" BORDER="0" USEMAP="#REMOTE_MAP">
+<IMG SRC="REMOTE_SKIN.PNG" BORDER="0" USEMAP="#REMOTE_MAP">
 </BODY>

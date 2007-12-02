@@ -72,11 +72,8 @@ namespace VirtualRemote
       }
     }
 
-    bool LoadSkinXml(string xmlFile)
+    void LoadSkinXml(string xmlFile)
     {
-      if (!File.Exists(xmlFile))
-        return false;
-
       XmlDocument doc = new XmlDocument();
       doc.Load(xmlFile);
 
@@ -109,8 +106,6 @@ namespace VirtualRemote
       }
 
       Program.Buttons = (RemoteButton[])buttons.ToArray(typeof(RemoteButton));
-
-      return true;
     }
 
     void SetSkinList()
@@ -141,7 +136,7 @@ namespace VirtualRemote
 
         string skinFile = String.Format("{0}\\Skins\\{1}.png", Program.InstallFolder, skin);
         if (!File.Exists(skinFile))
-          throw new FileNotFoundException("Skin graphic file not found", skin);
+          throw new FileNotFoundException("Skin graphic file not found", skinFile);
 
         // Try to load xml file of same name, failing that load using first word of skin name ...
         string xmlFile = String.Format("{0}\\Skins\\{1}.xml", Program.InstallFolder, skin);
@@ -155,14 +150,12 @@ namespace VirtualRemote
             throw new FileNotFoundException("Skin file not found", xmlFile);
         }
 
-        if (LoadSkinXml(xmlFile))
-        {
-          this.BackgroundImage = new Bitmap(skinFile);
-          this.ClientSize = new System.Drawing.Size(this.BackgroundImage.Width, this.BackgroundImage.Height);
-          Program.RemoteSkin = skin;
-        }
-        else
-          throw new FileNotFoundException("Failed to load skin, file not found", xmlFile);
+        LoadSkinXml(xmlFile);
+
+        this.BackgroundImage = new Bitmap(skinFile);
+        this.ClientSize = new Size(this.BackgroundImage.Width, this.BackgroundImage.Height);
+        
+        Program.RemoteSkin = skin;
       }
       catch (Exception ex)
       {

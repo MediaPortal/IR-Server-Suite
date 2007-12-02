@@ -65,6 +65,7 @@ Section "-Core"
   ExecWait '"taskkill" /F /IM IRServer.exe'
   ExecWait '"taskkill" /F /IM Translator.exe'
   ExecWait '"taskkill" /F /IM TrayLauncher.exe'
+  ExecWait '"taskkill" /F /IM WebRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
@@ -129,7 +130,7 @@ Section "IR Server"
   SetOverwrite ifnewer
   File "IR Server Plugins\Custom HID Receiver\bin\Release\*.*"
   File "IR Server Plugins\FusionRemote Receiver\bin\Release\*.*"
-  ;File "IR Server Plugins\Girder Plugin\bin\Release\*.*"
+  File "IR Server Plugins\Girder Plugin\bin\Release\*.*"
   ;File "IR Server Plugins\HCW Transceiver\bin\Release\*.*"
   File "IR Server Plugins\IgorPlug Receiver\bin\Release\*.*"
   File "IR Server Plugins\IRMan Receiver\bin\Release\*.*"
@@ -312,15 +313,16 @@ SectionEnd
 
 ;--------------------------------
 
-Section "Virtual Remote"
+Section "Virtual Remote and Web Remote"
 
-  DetailPrint "Installing Virtual Remote ..."
+  DetailPrint "Installing Virtual Remote and Web Remote..."
 
-  ; Installing Virtual Remote
+  ; Installing Virtual Remote and Web Remote
   CreateDirectory "$INSTDIR\Virtual Remote"
   SetOutPath "$INSTDIR\Virtual Remote"
   SetOverwrite ifnewer
   File "Applications\Virtual Remote\bin\Release\*.*"
+  File "Applications\Web Remote\bin\Release\WebRemote.exe"
 
   CreateDirectory "$INSTDIR\Virtual Remote\Skins"
   SetOutPath "$INSTDIR\Virtual Remote\Skins"
@@ -332,6 +334,7 @@ Section "Virtual Remote"
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\IR Server Suite\Virtual Remote.lnk" "$INSTDIR\Virtual Remote\VirtualRemote.exe" "" "$INSTDIR\Virtual Remote\VirtualRemote.exe" 0
+  CreateShortCut "$SMPROGRAMS\IR Server Suite\Web Remote.lnk" "$INSTDIR\Virtual Remote\WebRemote.exe" "" "$INSTDIR\Virtual Remote\WebRemote.exe" 0
 
 SectionEnd
 

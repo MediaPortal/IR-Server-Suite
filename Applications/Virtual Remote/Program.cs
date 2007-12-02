@@ -25,7 +25,6 @@ namespace VirtualRemote
     #region Constants
 
     const string DefaultSkin = "MCE";
-    const int DefaultWebPort = 2481;
 
     static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Virtual Remote.xml";
 
@@ -44,10 +43,6 @@ namespace VirtualRemote
     static string _remoteSkin;
 
     static RemoteButton[] _buttons;
-
-    static WebServer _webServer;
-
-    static int _webPort;
 
     #endregion Variables
 
@@ -194,14 +189,7 @@ namespace VirtualRemote
         }
 
         if (clientStarted)
-        {
-          _webServer = new WebServer(_webPort);
-          _webServer.Run();
-
           Application.Run(new MainForm());
-
-          _webServer.Stop();
-        }
 
         SaveSettings();
       }
@@ -252,14 +240,12 @@ namespace VirtualRemote
 
         _serverHost = "localhost";
         _remoteSkin = DefaultSkin;
-        _webPort = DefaultWebPort;
 
         return;
       }
 
       try { _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value; } catch { _serverHost = "localhost"; }
       try { _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value; } catch { _remoteSkin = DefaultSkin; }
-      try { _webPort = int.Parse(doc.DocumentElement.Attributes["WebPort"].Value); } catch { _webPort = DefaultWebPort; }
     }
     static void SaveSettings()
     {
@@ -275,7 +261,6 @@ namespace VirtualRemote
 
           writer.WriteAttributeString("ServerHost", _serverHost);
           writer.WriteAttributeString("RemoteSkin", _remoteSkin);
-          writer.WriteAttributeString("WebPort", _webPort.ToString());
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
