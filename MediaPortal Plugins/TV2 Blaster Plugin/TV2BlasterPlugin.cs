@@ -63,7 +63,7 @@ namespace MediaPortal.Plugins
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
-    static List<string> _macroStack;
+    static Hashtable _macroStacks;
 
     #endregion Variables
 
@@ -137,6 +137,9 @@ namespace MediaPortal.Plugins
 
       Log.Info("TV2BlasterPlugin: Starting ({0})", PluginVersion);
 
+      // Hashtable for storing active macro stacks in.
+      _macroStacks = new Hashtable();
+
       // Load basic settings
       LoadSettings();
 
@@ -162,6 +165,8 @@ namespace MediaPortal.Plugins
       GUIWindowManager.Receivers -= new SendMessageHandler(OnMessage);
 
       StopClient();
+
+      _macroStacks = null;
 
       if (LogVerbose)
         Log.Info("TV2BlasterPlugin: Stopped");
@@ -508,7 +513,7 @@ namespace MediaPortal.Plugins
             else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
             else
-              ProcessCommand(command);
+              ProcessCommand(command, false);
 
             if (config.PauseTime > 0)
               Thread.Sleep(config.PauseTime);
@@ -527,7 +532,7 @@ namespace MediaPortal.Plugins
             else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), charVal, channel.ToString());
             else
-              ProcessCommand(command);
+              ProcessCommand(command, false);
 
             if (config.PauseTime > 0)
               Thread.Sleep(config.PauseTime);
@@ -565,14 +570,14 @@ namespace MediaPortal.Plugins
             }
             else
             {
-              ProcessCommand(command);
+              ProcessCommand(command, false);
 
               if (config.DoubleChannelSelect)
               {
                 if (config.PauseTime > 0)
                   Thread.Sleep(config.PauseTime);
 
-                ProcessCommand(command);
+                ProcessCommand(command, false);
               }
             }
           }
@@ -613,61 +618,161 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Adds to the Macro Stack.
+    /// Learn an IR command.
     /// </summary>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackAdd(string fileName)
+    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
+    /// <returns>true if successful, otherwise false.</returns>
+    internal static bool LearnIR(string fileName)
     {
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (_macroStack == null)
+      try
       {
-        _macroStack = new List<string>();
-      }
-      else if (_macroStack.Contains(upperCasedFileName))
-      {
-        StringBuilder macroStackTrace = new StringBuilder();
-        macroStackTrace.AppendLine("Macro infinite loop detected!");
-        macroStackTrace.AppendLine();
-        macroStackTrace.AppendLine("Stack trace:");
-
-        foreach (string macro in _macroStack)
+        if (String.IsNullOrEmpty(fileName))
         {
-          if (macro.Equals(upperCasedFileName))
-            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
-          else
-            macroStackTrace.AppendLine(macro);
+          Log.Error("TV2BlasterPlugin: Null or Empty file name for LearnIR()");
+          return false;
         }
 
-        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
+        if (!_registered)
+        {
+          Log.Warn("TV2BlasterPlugin: Not registered to an active IR Server");
+          return false;
+        }
 
-        throw new ApplicationException(macroStackTrace.ToString());
+        if (_learnIRFilename != null)
+        {
+          Log.Warn("TV2BlasterPlugin: Already trying to learn an IR command");
+          return false;
+        }
+
+        _learnIRFilename = fileName;
+
+        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
+        _client.Send(message);
+      }
+      catch (Exception ex)
+      {
+        _learnIRFilename = null;
+        Log.Error("TV2BlasterPlugin - LearnIR(): {0}", ex.Message);
+        return false;
       }
 
-      _macroStack.Add(upperCasedFileName);
+      return true;
     }
+
     /// <summary>
-    /// Removes from the Macro Stack.
+    /// Blast an IR command.
     /// </summary>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackRemove(string fileName)
+    /// <param name="fileName">File to blast (absolute path).</param>
+    /// <param name="port">Port to blast to.</param>
+    internal static void BlastIR(string fileName, string port)
     {
-      string upperCasedFileName = fileName.ToUpperInvariant();
+      if (!_registered)
+        throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
 
-      if (_macroStack.Contains(upperCasedFileName))
-        _macroStack.Remove(upperCasedFileName);
+      using (FileStream file = File.OpenRead(fileName))
+      {
+        if (file.Length == 0)
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
 
-      if (_macroStack.Count == 0)
-        _macroStack = null;
+        byte[] outData = new byte[4 + port.Length + file.Length];
+
+        BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+        Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+
+        file.Read(outData, 4 + port.Length, (int)file.Length);
+
+        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+        _client.Send(message);
+      }
     }
 
     /// <summary>
-    /// Process the supplied Macro file.
+    /// Given a command this method processes the request accordingly.
+    /// </summary>
+    /// <param name="command">Command to process.</param>
+    /// <param name="async">Process command asynchronously?</param>
+    internal static void ProcessCommand(string command, bool async)
+    {
+      if (String.IsNullOrEmpty(command))
+        throw new ArgumentNullException("command");
+
+      if (async)
+      {
+        Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+        newThread.Name = "ProcessCommand";
+        newThread.Priority = ThreadPriority.BelowNormal;
+        newThread.Start(command);
+      }
+      else
+      {
+        ProcCommand(command);
+      }
+    }
+
+    /// <summary>
+    /// Used by ProcessCommand to actually handle the command.
+    /// Can be called Synchronously or as a Parameterized Thread.
+    /// </summary>
+    /// <param name="commandObj">Command string to process.</param>
+    static void ProcCommand(object commandObj)
+    {
+      string command = commandObj as string;
+
+      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
+      {
+        string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+        ProcMacro(fileName);
+      }
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
+      {
+        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
+        BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+      }
+      else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))  // STB IR Code
+      {
+        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
+        BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
+      }
+      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
+      {
+        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
+        Common.ProcessRunCommand(commands);
+      }
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
+      {
+        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
+        Common.ProcessSerialCommand(commands);
+      }
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
+      {
+        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
+        Common.ProcessWindowMessageCommand(commands);
+      }
+      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
+      {
+        string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
+        if (InConfiguration)
+          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        else
+          Common.ProcessKeyCommand(keyCommand);
+      }
+      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase)) // Go To Screen
+      {
+        MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), _mpBasicHome);
+      }
+      else
+      {
+        throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+      }
+    }
+
+    /// <summary>
+    /// Called by ProcCommand to process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
-    internal static void ProcessMacro(string fileName)
+    static void ProcMacro(string fileName)
     {
-      MacroStackAdd(fileName);
+      MacroStackAdd(Thread.CurrentThread.ManagedThreadId, fileName);
 
       try
       {
@@ -688,7 +793,7 @@ namespace MediaPortal.Plugins
           {
             case Common.XmlTagMacro:
               {
-                ProcessMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
+                ProcMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
                 break;
               }
 
@@ -768,134 +873,79 @@ namespace MediaPortal.Plugins
       }
       finally
       {
-        MacroStackRemove(fileName);
+        MacroStackRemove(Thread.CurrentThread.ManagedThreadId, fileName);
       }
     }
 
     /// <summary>
-    /// Learn an IR command.
+    /// Retreives the required Macro Stack from the Hashtable.
     /// </summary>
-    /// <param name="fileName">File to place learned IR command in (absolute path).</param>
-    /// <returns>true if successful, otherwise false.</returns>
-    internal static bool LearnIR(string fileName)
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <returns>Macro Stack.</returns>
+    static List<string> GetMacroStack(int hash)
     {
-      try
+      if (_macroStacks.ContainsKey(hash))
       {
-        if (String.IsNullOrEmpty(fileName))
-        {
-          Log.Error("TV2BlasterPlugin: Null or Empty file name for LearnIR()");
-          return false;
-        }
-
-        if (!_registered)
-        {
-          Log.Warn("TV2BlasterPlugin: Not registered to an active IR Server");
-          return false;
-        }
-
-        if (_learnIRFilename != null)
-        {
-          Log.Warn("TV2BlasterPlugin: Already trying to learn an IR command");
-          return false;
-        }
-
-        _learnIRFilename = fileName;
-
-        IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
-        _client.Send(message);
-      }
-      catch (Exception ex)
-      {
-        _learnIRFilename = null;
-        Log.Error("TV2BlasterPlugin - LearnIR(): {0}", ex.Message);
-        return false;
-      }
-
-      return true;
-    }
-
-    /// <summary>
-    /// Blast an IR command.
-    /// </summary>
-    /// <param name="fileName">File to blast (absolute path).</param>
-    /// <param name="port">Port to blast to.</param>
-    internal static void BlastIR(string fileName, string port)
-    {
-      if (!_registered)
-        throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
-
-      using (FileStream file = File.OpenRead(fileName))
-      {
-        if (file.Length == 0)
-          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
-
-        byte[] outData = new byte[4 + port.Length + file.Length];
-
-        BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
-        Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
-
-        file.Read(outData, 4 + port.Length, (int)file.Length);
-
-        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
-        _client.Send(message);
-      }
-    }
-
-    /// <summary>
-    /// Given a command this method processes the request accordingly.
-    /// </summary>
-    /// <param name="command">Command to process.</param>
-    internal static void ProcessCommand(string command)
-    {
-      if (String.IsNullOrEmpty(command))
-        throw new ArgumentNullException("command");
-
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
-      {
-        string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
-        ProcessMacro(fileName);
-      }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
-      {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-        BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-      }
-      else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))  // STB IR Code
-      {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
-        BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
-      }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
-      {
-        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-        Common.ProcessRunCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
-      {
-        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-        Common.ProcessSerialCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
-      {
-        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-        Common.ProcessWindowMessageCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
-      {
-        string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-        if (InConfiguration)
-          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        else
-          Common.ProcessKeyCommand(keyCommand);
-      }
-      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase)) // Go To Screen
-      {
-        MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), _mpBasicHome);
+        return (List<string>)_macroStacks[hash];
       }
       else
       {
-        throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+        List<string> newStack = new List<string>();
+        _macroStacks.Add(hash, newStack);
+        return newStack;
       }
+    }
+
+    /// <summary>
+    /// Adds to the Macro Stack.
+    /// </summary>
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <param name="fileName">Name of the macro file.</param>
+    static void MacroStackAdd(int hash, string fileName)
+    {
+      List<string> stack = GetMacroStack(hash);
+
+      string upperCasedFileName = fileName.ToUpperInvariant();
+
+      if (stack.Contains(upperCasedFileName))
+      {
+        StringBuilder macroStackTrace = new StringBuilder();
+        macroStackTrace.AppendLine("Macro infinite loop detected!");
+        macroStackTrace.AppendLine();
+        macroStackTrace.AppendLine("Stack trace:");
+
+        foreach (string macro in stack)
+        {
+          if (macro.Equals(upperCasedFileName))
+            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
+          else
+            macroStackTrace.AppendLine(macro);
+        }
+
+        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
+
+        throw new ApplicationException(macroStackTrace.ToString());
+      }
+
+      stack.Add(upperCasedFileName);
+    }
+
+    /// <summary>
+    /// Removes from the Macro Stack.
+    /// </summary>
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <param name="fileName">Name of the macro file.</param>
+    static void MacroStackRemove(int hash, string fileName)
+    {
+      List<string> stack = GetMacroStack(hash);
+
+      string upperCasedFileName = fileName.ToUpperInvariant();
+
+      if (stack.Contains(upperCasedFileName))
+        stack.Remove(upperCasedFileName);
+
+      if (stack.Count == 0)
+        _macroStacks.Remove(hash);
     }
 
     /// <summary>

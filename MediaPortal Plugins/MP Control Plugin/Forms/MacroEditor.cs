@@ -182,7 +182,7 @@ namespace MediaPortal.Plugins
               writer.WriteAttributeString("command", Common.XmlTagInputLayer);
               writer.WriteAttributeString("cmdproperty", String.Empty);
             }
-            /*          
+            /*
             else if (item.StartsWith(Common.CmdPrefixWindowState, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagWindowState);
@@ -394,10 +394,8 @@ namespace MediaPortal.Plugins
       else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
-        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
       }
       else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
       {

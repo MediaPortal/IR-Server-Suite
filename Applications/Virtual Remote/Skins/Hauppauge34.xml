@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<skin>
+	<button name="Blue" code="1041" shortcut="None" top="277" left="127" height="22" width="22" />
+	<button name="Yellow" code="1056" shortcut="None" top="277" left="25" height="21" width="21" />
+	<button name="Green" code="1046" shortcut="None" top="185" left="127" height="21" width="21" />
+	<button name="Red" code="1011" shortcut="None" top="186" left="26" height="21" width="21" />
+	<button name="9" code="1009" shortcut="NumPad9" top="120" left="124" height="24" width="26" />
+	<button name="8" code="1008" shortcut="NumPad8" top="120" left="75" height="24" width="26" />
+	<button name="7" code="1007" shortcut="NumPad7" top="121" left="25" height="23" width="26" />
+	<button name="6" code="1006" shortcut="NumPad6" top="90" left="125" height="23" width="26" />
+	<button name="5" code="1005" shortcut="NumPad5" top="90" left="76" height="23" width="25" />
+	<button name="4" code="1004" shortcut="NumPad4" top="91" left="26" height="23" width="26" />
+	<button name="3" code="1003" shortcut="NumPad3" top="60" left="125" height="23" width="25" />
+	<button name="2" code="1002" shortcut="NumPad2" top="60" left="76" height="23" width="25" />
+	<button name="1" code="1001" shortcut="NumPad1" top="61" left="27" height="22" width="25" />
+	<button name="0" code="1000" shortcut="NumPad0" top="150" left="75" height="24" width="26" />
+	<button name="Menu" code="1013" shortcut="None" top="154" left="125" height="22" width="25" />
+	<button name="Mute" code="1015" shortcut="None" top="324" left="31" height="20" width="25" />
+	<button name="ChDown" code="1033" shortcut="None" top="261" left="59" height="22" width="56" />
+	<button name="ChUp" code="1032" shortcut="None" top="201" left="59" height="23" width="57" />
+	<button name="Func" code="1012" shortcut="None" top="323" left="74" height="22" width="27" />
+	<button name="VolDown" code="1017" shortcut="None" top="218" left="35" height="51" width="26" />
+	<button name="VolUp" code="1016" shortcut="None" top="217" left="113" height="50" width="27" />
+	<button name="OK" code="1037" shortcut="Enter" top="228" left="72" height="29" width="30" />
+	<button name="Back" code="1031" shortcut="Back" top="155" left="25" height="21" width="26" />
+	<button name="Skip Forward" code="1030" shortcut="MediaNextTrack" top="423" left="96" height="21" width="26" />
+	<button name="Skip Previous" code="1036" shortcut="MediaPreviousTrack" top="423" left="52" height="22" width="25" />
+	<button name="FastForward" code="1052" shortcut="None" top="357" left="118" height="20" width="25" />
+	<button name="Rewind" code="1050" shortcut="None" top="358" left="30" height="20" width="25" />
+	<button name="Pause" code="1048" shortcut="None" top="390" left="118" height="21" width="26" />
+	<button name="Play" code="1053" shortcut="None" top="356" left="74" height="23" width="25" />
+	<button name="Record" code="1055" shortcut="None" top="390" left="30" height="20" width="25" />
+	<button name="Power" code="1061" shortcut="None" top="32" left="27" height="23" width="25" />
+	<button name="Stop" code="1054" shortcut="MediaStop" top="390" left="74" height="21" width="26" />
+	<button name="Home" code="1059" shortcut="None" top="32" left="125" height="20" width="25" />
+	<button name="Full" code="1060" shortcut="None" top="324" left="118" height="22" width="26" />
+</skin>

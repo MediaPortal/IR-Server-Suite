@@ -280,9 +280,7 @@ namespace SetupTv.Sections
 
       try
       {
-        string fileName = TV3BlasterPlugin.FolderMacros + listViewMacro.SelectedItems[0].Text + Common.FileExtensionMacro;
-
-        TV3BlasterPlugin.ProcessMacro(fileName);
+        TV3BlasterPlugin.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
       }
       catch (Exception ex)
       {

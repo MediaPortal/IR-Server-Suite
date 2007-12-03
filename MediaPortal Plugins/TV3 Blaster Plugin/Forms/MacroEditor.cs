@@ -404,7 +404,7 @@ namespace TvEngine
 
       try
       {
-        TV3BlasterPlugin.ProcessMacro(fileName);
+        TV3BlasterPlugin.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
       catch (Exception ex)
       {

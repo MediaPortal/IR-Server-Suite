@@ -152,7 +152,7 @@ namespace MediaPortal.Plugins
             else if (setup.PreChangeCommand.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
               ProcessSerialCommand(setup.PreChangeCommand.Substring(Common.CmdPrefixSerial.Length), -1, channel);
             else
-              TV2BlasterPlugin.ProcessCommand(setup.PreChangeCommand);
+              TV2BlasterPlugin.ProcessCommand(setup.PreChangeCommand, false);
 
             if (setup.PauseTime > 0)
                 Thread.Sleep(setup.PauseTime);
@@ -170,7 +170,7 @@ namespace MediaPortal.Plugins
               else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
                 ProcessSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), charVal, channel);
               else
-                TV2BlasterPlugin.ProcessCommand(command);
+                TV2BlasterPlugin.ProcessCommand(command, false);
 
               if (setup.PauseTime > 0)
               Thread.Sleep(setup.PauseTime);
@@ -205,14 +205,14 @@ namespace MediaPortal.Plugins
             }
             else
             {
-              TV2BlasterPlugin.ProcessCommand(setup.SelectCommand);
+              TV2BlasterPlugin.ProcessCommand(setup.SelectCommand, false);
 
               if (setup.DoubleChannelSelect)
               {
                 if (setup.PauseTime > 0)
                   Thread.Sleep(setup.PauseTime);
 
-                TV2BlasterPlugin.ProcessCommand(setup.SelectCommand);
+                TV2BlasterPlugin.ProcessCommand(setup.SelectCommand, false);
               }
             }
           }

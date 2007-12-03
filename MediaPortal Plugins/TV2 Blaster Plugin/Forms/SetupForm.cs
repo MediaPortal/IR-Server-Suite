@@ -230,9 +230,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        string fileName = TV2BlasterPlugin.FolderMacros + listViewMacro.SelectedItems[0].Text + Common.FileExtensionMacro;
-
-        TV2BlasterPlugin.ProcessMacro(fileName);
+        TV2BlasterPlugin.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
       }
       catch (Exception ex)
       {

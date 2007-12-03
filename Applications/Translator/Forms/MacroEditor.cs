@@ -26,7 +26,7 @@ namespace Translator
     public MacroEditor()
     {
       InitializeComponent();
-      
+
       textBoxName.Text    = "New";
       textBoxName.Enabled = true;
     }
@@ -64,6 +64,7 @@ namespace Translator
       comboBoxCommands.Items.Add(Common.UITextKeys);
       comboBoxCommands.Items.Add(Common.UITextMouse);
       comboBoxCommands.Items.Add(Common.UITextEject);
+      comboBoxCommands.Items.Add(Common.UITextPopup);
       comboBoxCommands.Items.Add(Common.UITextStandby);
       comboBoxCommands.Items.Add(Common.UITextHibernate);
       comboBoxCommands.Items.Add(Common.UITextReboot);
@@ -147,6 +148,11 @@ namespace Translator
             {
               writer.WriteAttributeString("command", Common.XmlTagEject);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixEject.Length));
+            }
+            else if (item.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagPopup);
+              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
             }
             else if (item.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
             {
@@ -248,10 +254,14 @@ namespace Translator
               listBoxMacro.Items.Add(Common.CmdPrefixEject + commandProperty);
               break;
 
+            case Common.XmlTagPopup:
+              listBoxMacro.Items.Add(Common.CmdPrefixPopup + commandProperty);
+              break;
+
             case Common.XmlTagStandby:
               listBoxMacro.Items.Add(Common.CmdPrefixStandby);
               break;
-            
+
             case Common.XmlTagHibernate:
               listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
               break;
@@ -331,6 +341,12 @@ namespace Translator
         EjectCommand ejectCommand = new EjectCommand();
         if (ejectCommand.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
+      }
+      else if (selected.Equals(Common.UITextPopup, StringComparison.OrdinalIgnoreCase))
+      {
+        PopupMessage popupMessage = new PopupMessage();
+        if (popupMessage.ShowDialog(this) == DialogResult.OK)
+          listBoxMacro.Items.Add(Common.CmdPrefixPopup + popupMessage.CommandString);
       }
       else if (selected.Equals(Common.UITextStandby, StringComparison.OrdinalIgnoreCase))
       {
@@ -416,7 +432,9 @@ namespace Translator
         return;
       }
 
-      WriteToFile(Program.FolderMacros + name + Common.FileExtensionMacro);
+      string fileName = Program.FolderMacros + name + Common.FileExtensionMacro;
+
+      WriteToFile(fileName);
 
       try
       {
@@ -560,6 +578,18 @@ namespace Translator
         int index = listBoxMacro.SelectedIndex;
         listBoxMacro.Items.RemoveAt(index);
         listBoxMacro.Items.Insert(index, Common.CmdPrefixEject + ejectCommand.CommandString);
+        listBoxMacro.SelectedIndex = index;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+      {
+        string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
+        PopupMessage popupMessage = new PopupMessage(commands);
+        if (popupMessage.ShowDialog(this) == DialogResult.Cancel)
+          return;
+
+        int index = listBoxMacro.SelectedIndex;
+        listBoxMacro.Items.RemoveAt(index);
+        listBoxMacro.Items.Insert(index, Common.CmdPrefixPopup + popupMessage.CommandString);
         listBoxMacro.SelectedIndex = index;
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))

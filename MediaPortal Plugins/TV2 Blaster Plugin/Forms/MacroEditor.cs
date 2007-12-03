@@ -71,6 +71,8 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextEject);
       comboBoxCommands.Items.Add(Common.UITextGoto);
       comboBoxCommands.Items.Add(Common.UITextPopup);
+      comboBoxCommands.Items.Add(Common.UITextInputLayer);
+      //comboBoxCommands.Items.Add(Common.UITextWindowState);
       comboBoxCommands.Items.Add(Common.UITextFocus);
       comboBoxCommands.Items.Add(Common.UITextExit);
       comboBoxCommands.Items.Add(Common.UITextStandby);
@@ -163,6 +165,18 @@ namespace MediaPortal.Plugins
               writer.WriteAttributeString("command", Common.XmlTagPopup);
               writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPopup.Length));
             }
+            else if (item.StartsWith(Common.CmdPrefixInputLayer, StringComparison.OrdinalIgnoreCase))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagInputLayer);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            /*
+            else if (item.StartsWith(Common.CmdPrefixWindowState, StringComparison.OrdinalIgnoreCase))
+            {
+              writer.WriteAttributeString("command", Common.XmlTagWindowState);
+              writer.WriteAttributeString("cmdproperty", String.Empty);
+            }
+            */
             else if (item.StartsWith(Common.CmdPrefixFocus, StringComparison.OrdinalIgnoreCase))
             {
               writer.WriteAttributeString("command", Common.XmlTagFocus);
@@ -281,6 +295,14 @@ namespace MediaPortal.Plugins
               listBoxMacro.Items.Add(Common.CmdPrefixPopup + commandProperty);
               break;
 
+            case Common.XmlTagInputLayer:
+              listBoxMacro.Items.Add(Common.CmdPrefixInputLayer);
+              break;
+            /*
+            case Common.XmlTagWindowState:
+              listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
+              break;
+            */
             case Common.XmlTagFocus:
               listBoxMacro.Items.Add(Common.CmdPrefixFocus);
               break;
@@ -385,6 +407,16 @@ namespace MediaPortal.Plugins
         if (popupMessage.ShowDialog(this) == DialogResult.OK)
           listBoxMacro.Items.Add(Common.CmdPrefixPopup + popupMessage.CommandString);
       }
+      else if (selected.Equals(Common.UITextInputLayer, StringComparison.OrdinalIgnoreCase))
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixInputLayer);
+      }
+      /*
+      else if (selected.Equals(Common.UITextWindowState, StringComparison.OrdinalIgnoreCase))
+      {
+        listBoxMacro.Items.Add(Common.CmdPrefixWindowState);
+      }
+      */
       else if (selected.Equals(Common.UITextFocus, StringComparison.OrdinalIgnoreCase))
       {
         listBoxMacro.Items.Add(Common.CmdPrefixFocus);
@@ -483,7 +515,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        TV2BlasterPlugin.ProcessMacro(fileName);
+        TV2BlasterPlugin.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
       catch (Exception ex)
       {

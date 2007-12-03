@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<skin>
+	<button name="Blue" code="2041" shortcut="None" top="459" left="124" height="20" width="20" />
+	<button name="Yellow" code="2056" shortcut="None" top="459" left="94" height="20" width="20" />
+	<button name="Green" code="2046" shortcut="None" top="460" left="64" height="20" width="20" />
+	<button name="Red" code="2011" shortcut="None" top="460" left="34" height="20" width="20" />
+	<button name="Hash" code="2014" shortcut="None" top="429" left="117" height="20" width="28" />
+	<button name="Star" code="2010" shortcut="None" top="429" left="33" height="20" width="28" />
+	<button name="9" code="2009" shortcut="NumPad9" top="399" left="116" height="20" width="27" />
+	<button name="8" code="2008" shortcut="NumPad8" top="399" left="75" height="20" width="27" />
+	<button name="7" code="2007" shortcut="NumPad7" top="399" left="34" height="20" width="27" />
+	<button name="6" code="2006" shortcut="NumPad6" top="369" left="117" height="20" width="27" />
+	<button name="5" code="2005" shortcut="NumPad5" top="369" left="76" height="20" width="27" />
+	<button name="4" code="2004" shortcut="NumPad4" top="369" left="34" height="20" width="27" />
+	<button name="3" code="2003" shortcut="NumPad3" top="340" left="116" height="20" width="28" />
+	<button name="2" code="2002" shortcut="NumPad2" top="340" left="74" height="20" width="28" />
+	<button name="1" code="2001" shortcut="NumPad1" top="340" left="34" height="20" width="28" />
+	<button name="0" code="2000" shortcut="NumPad0" top="429" left="75" height="20" width="28" />
+	<button name="TV" code="2028" shortcut="None" top="54" left="33" height="20" width="21" />
+	<button name="Guide" code="2027" shortcut="None" top="81" left="33" height="20" width="21" />
+	<button name="Mute" code="2015" shortcut="None" top="215" left="78" height="20" width="22" />
+	<button name="ChDown" code="2033" shortcut="None" top="208" left="110" height="28" width="30" />
+	<button name="ChUp" code="2032" shortcut="None" top="185" left="117" height="24" width="27" />
+	<button name="Prev Ch" code="2018" shortcut="None" top="185" left="73" height="23" width="31" />
+	<button name="VolDown" code="2017" shortcut="None" top="211" left="38" height="25" width="29" />
+	<button name="VolUp" code="2016" shortcut="None" top="183" left="31" height="27" width="28" />
+	<button name="OK" code="2037" shortcut="Enter" top="115" left="74" height="29" width="30" />
+	<button name="Right" code="2023" shortcut="Right" top="106" left="115" height="46" width="21" />
+	<button name="Left" code="2022" shortcut="Left" top="106" left="39" height="46" width="22" />
+	<button name="Down" code="2021" shortcut="Down" top="154" left="65" height="20" width="46" />
+	<button name="Up" code="2020" shortcut="Up" top="82" left="65" height="22" width="47" />
+	<button name="Info" code="2013" shortcut="None" top="159" left="124" height="18" width="20" />
+	<button name="Back" code="2031" shortcut="Back" top="158" left="33" height="20" width="20" />
+	<button name="Skip Forward" code="2030" shortcut="MediaNextTrack" top="298" left="115" height="25" width="30" />
+	<button name="Skip Previous" code="2036" shortcut="MediaPreviousTrack" top="298" left="32" height="24" width="28" />
+	<button name="FastForward" code="2052" shortcut="None" top="271" left="118" height="20" width="25" />
+	<button name="Rewind" code="2050" shortcut="None" top="271" left="34" height="20" width="25" />
+	<button name="Pause" code="2048" shortcut="None" top="300" left="78" height="23" width="21" />
+	<button name="Play" code="2053" shortcut="None" top="261" left="71" height="33" width="34" />
+	<button name="Record" code="2055" shortcut="None" top="240" left="32" height="24" width="28" />
+	<button name="Power" code="2061" shortcut="None" top="23" left="110" height="23" width="25" />
+	<button name="Stop" code="2054" shortcut="MediaStop" top="240" left="116" height="24" width="29" />
+	<button name="Home" code="2059" shortcut="None" top="25" left="44" height="19" width="22" />
+	<button name="Videos" code="2024" shortcut="None" top="52" left="63" height="21" width="22" />
+	<button name="Music" code="2025" shortcut="None" top="52" left="92" height="21" width="22" />
+	<button name="Pictures" code="2026" shortcut="None" top="52" left="122" height="21" width="22" />
+	<button name="Radio" code="2012" shortcut="None" top="80" left="122" height="21" width="22" />
+</skin>

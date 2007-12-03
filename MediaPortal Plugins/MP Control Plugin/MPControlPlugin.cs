@@ -1310,7 +1310,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Process the supplied Macro file.
+    /// Called by ProcCommand to process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
     static void ProcMacro(string fileName)

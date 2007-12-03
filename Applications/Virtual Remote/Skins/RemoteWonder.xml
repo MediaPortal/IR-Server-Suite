@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<skin>
+	<button name="A" code="74" shortcut="A" top="37" left="28" height="20" width="20" />
+	<button name="B" code="75" shortcut="B" top="33" left="70" height="20" width="20" />
+	<button name="TV" code="80" shortcut="None" top="72" left="20" height="20" width="20" />
+	<button name="DVD" code="81" shortcut="None" top="65" left="44" height="20" width="20" />
+	<button name="Web" code="82" shortcut="None" top="63" left="70" height="20" width="20" />
+	<button name="9" code="21" shortcut="NumPad9" top="248" left="105" height="20" width="32" />
+	<button name="8" code="26" shortcut="NumPad8" top="254" left="64" height="20" width="33" />
+	<button name="7" code="23" shortcut="NumPad7" top="249" left="24" height="19" width="32" />
+	<button name="6" code="25" shortcut="NumPad6" top="224" left="104" height="20" width="32" />
+	<button name="5" code="27" shortcut="NumPad5" top="230" left="64" height="19" width="32" />
+	<button name="4" code="22" shortcut="NumPad4" top="224" left="24" height="20" width="32" />
+	<button name="3" code="42" shortcut="NumPad3" top="200" left="104" height="20" width="32" />
+	<button name="2" code="47" shortcut="NumPad2" top="205" left="64" height="20" width="32" />
+	<button name="1" code="44" shortcut="NumPad1" top="199" left="24" height="20" width="32" />
+	<button name="0" code="20" shortcut="NumPad0" top="279" left="65" height="20" width="32" />
+	<button name="Book Symbol" code="83" shortcut="None" top="65" left="96" height="20" width="20" />
+	<button name="Hand Symbol" code="84" shortcut="None" top="72" left="121" height="19" width="19" />
+	<button name="Mute" code="40" shortcut="None" top="221" left="69" height="17" width="20" />
+	<button name="ChDown" code="48" shortcut="None" top="202" left="113" height="21" width="20" />
+	<button name="ChUp" code="41" shortcut="None" top="207" left="93" height="19" width="20" />
+	<button name="ATI" code="31730" shortcut="None" top="525" left="54" height="34" width="48" />
+	<button name="VolDown" code="37" shortcut="None" top="207" left="45" height="21" width="20" />
+	<button name="VolUp" code="35" shortcut="None" top="203" left="25" height="22" width="20" />
+	<button name="OK" code="15" shortcut="Enter" top="392" left="69" height="21" width="22" />
+	<button name="Right" code="11" shortcut="Right" top="384" left="92" height="36" width="21" />
+	<button name="Left" code="13" shortcut="Left" top="384" left="46" height="37" width="21" />
+	<button name="Down" code="12" shortcut="Down" top="415" left="62" height="21" width="35" />
+	<button name="Up" code="19" shortcut="Up" top="369" left="62" height="20" width="35" />
+	<button name="Fast Forward" code="4" shortcut="None" top="448" left="112" height="25" width="25" />
+	<button name="Rewind" code="2" shortcut="None" top="448" left="23" height="25" width="24" />
+	<button name="Pause" code="0" shortcut="None" top="482" left="109" height="25" width="23" />
+	<button name="Play" code="6" shortcut="None" top="456" left="61" height="24" width="38" />
+	<button name="Record" code="1" shortcut="None" top="483" left="27" height="23" width="23" />
+	<button name="Power" code="30" shortcut="None" top="28" left="99" height="31" width="31" />
+	<button name="Stop" code="5" shortcut="MediaStop" top="490" left="61" height="24" width="38" />
+	<button name="MouseButtonLeft" code="85" shortcut="None" top="176" left="13" height="26" width="19" />
+	<button name="MouseButtonRight" code="87" shortcut="None" top="176" left="128" height="27" width="19" />
+	<button name="Resize" code="98" shortcut="None" top="389" left="120" height="27" width="18" />
+	<button name="Stopwatch" code="97" shortcut="None" top="389" left="22" height="26" width="17" />
+	<button name="List Symbol" code="156" shortcut="None" top="330" left="24" height="25" width="31" />
+	<button name="Checkmark Symbol" code="157" shortcut="None" top="331" left="105" height="24" width="30" />
+	<button name="C" code="76" shortcut="C" top="362" left="35" height="19" width="18" />
+	<button name="D" code="77" shortcut="D" top="362" left="106" height="18" width="18" />
+	<button name="E" code="78" shortcut="E" top="424" left="35" height="18" width="18" />
+	<button name="F" code="79" shortcut="F" top="424" left="106" height="18" width="19" />
+	<button name="MouseUp" code="MouseUp" shortcut="None" top="107" left="68" height="37" width="25" />
+	<button name="MouseDown" code="MouseDown" shortcut="None" top="169" left="68" height="37" width="25" />
+	<button name="MouseRight" code="MouseRight" shortcut="None" top="144" left="93" height="25" width="37" />
+	<button name="MouseLeft" code="MouseLeft" shortcut="None" top="144" left="31" height="25" width="37" />
+	<button name="MouseUpRight" code="MouseUpRight" shortcut="None" top="118" left="93" height="26" width="26" />
+	<button name="MouseUpLeft" code="MouseUpLeft" shortcut="None" top="118" left="42" height="26" width="26" />
+	<button name="MouseDownRight" code="MouseDownRight" shortcut="None" top="169" left="93" height="26" width="26" />
+	<button name="MouseDownLeft" code="MouseDownLeft" shortcut="None" top="169" left="42" height="26" width="26" />
+</skin>

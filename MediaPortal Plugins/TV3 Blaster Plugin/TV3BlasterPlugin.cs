@@ -64,7 +64,7 @@ namespace TvEngine
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
-    static List<string> _macroStack;
+    static Hashtable _macroStacks;
 
     #endregion Variables
 
@@ -138,6 +138,9 @@ namespace TvEngine
 
       Log.Info("TV3BlasterPlugin: Starting ({0})", PluginVersion);
 
+      // Hashtable for storing active macro stacks in.
+      _macroStacks = new Hashtable();
+
       // Load basic settings
       LoadSettings();
 
@@ -164,6 +167,8 @@ namespace TvEngine
       events.OnTvServerEvent -= new TvServerEventHandler(events_OnTvServerEvent);
 
       StopClient();
+
+      _macroStacks = null;
 
       if (LogVerbose)
         Log.Info("TV3BlasterPlugin: Stopped");
@@ -438,7 +443,7 @@ namespace TvEngine
             else if (command.StartsWith(Common.CmdPrefixSerial))
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
             else
-              ProcessCommand(command);
+              ProcessCommand(command, false);
 
             if (config.PauseTime > 0)
               Thread.Sleep(config.PauseTime);
@@ -457,7 +462,7 @@ namespace TvEngine
             else if (command.StartsWith(Common.CmdPrefixSerial))
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), charVal, channel.ToString());
             else
-              ProcessCommand(command);
+              ProcessCommand(command, false);
 
             if (config.PauseTime > 0)
               Thread.Sleep(config.PauseTime);
@@ -495,14 +500,14 @@ namespace TvEngine
             }
             else
             {
-              ProcessCommand(command);
+              ProcessCommand(command, false);
 
               if (config.DoubleChannelSelect)
               {
                 if (config.PauseTime > 0)
                   Thread.Sleep(config.PauseTime);
 
-                ProcessCommand(command);
+                ProcessCommand(command, false);
               }
             }
           }
@@ -540,145 +545,6 @@ namespace TvEngine
       commands[0] = commands[0].Replace("%2", fullChannelString);
 
       Common.ProcessSerialCommand(commands);
-    }
-
-    /// <summary>
-    /// Adds to the Macro Stack.
-    /// </summary>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackAdd(string fileName)
-    {
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (_macroStack == null)
-      {
-        _macroStack = new List<string>();
-      }
-      else if (_macroStack.Contains(upperCasedFileName))
-      {
-        StringBuilder macroStackTrace = new StringBuilder();
-        macroStackTrace.AppendLine("Macro infinite loop detected!");
-        macroStackTrace.AppendLine();
-        macroStackTrace.AppendLine("Stack trace:");
-
-        foreach (string macro in _macroStack)
-        {
-          if (macro.Equals(upperCasedFileName))
-            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
-          else
-            macroStackTrace.AppendLine(macro);
-        }
-
-        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
-
-        throw new ApplicationException(macroStackTrace.ToString());
-      }
-
-      _macroStack.Add(upperCasedFileName);
-    }
-    /// <summary>
-    /// Removes from the Macro Stack.
-    /// </summary>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackRemove(string fileName)
-    {
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (_macroStack.Contains(upperCasedFileName))
-        _macroStack.Remove(upperCasedFileName);
-
-      if (_macroStack.Count == 0)
-        _macroStack = null;
-    }
-
-    /// <summary>
-    /// Process the supplied Macro file.
-    /// </summary>
-    /// <param name="fileName">Macro file to process (absolute path).</param>
-    internal static void ProcessMacro(string fileName)
-    {
-      MacroStackAdd(fileName);
-
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(fileName);
-
-        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
-          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
-
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-        string commandProperty;
-
-        foreach (XmlNode item in commandSequence)
-        {
-          commandProperty = item.Attributes["cmdproperty"].Value;
-
-          switch (item.Attributes["command"].Value)
-          {
-            case Common.XmlTagMacro:
-              {
-                ProcessMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
-                break;
-              }
-
-            case Common.XmlTagBlast:
-              {
-                string[] commands = Common.SplitBlastCommand(commandProperty);
-                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-                break;
-              }
-
-            case Common.XmlTagPause:
-              {
-                int sleep = int.Parse(commandProperty);
-                Thread.Sleep(sleep);
-                break;
-              }
-
-            case Common.XmlTagRun:
-              {
-                string[] commands = Common.SplitRunCommand(commandProperty);
-                Common.ProcessRunCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagSerial:
-              {
-                string[] commands = Common.SplitSerialCommand(commandProperty);
-                Common.ProcessSerialCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagWindowMsg:
-              {
-                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-                Common.ProcessWindowMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagTcpMsg:
-              {
-                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
-                Common.ProcessTcpMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagKeys:
-              {
-                if (InConfiguration)
-                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.ProcessKeyCommand(commandProperty);
-                break;
-              }
-          }
-        }
-      }
-      finally
-      {
-        MacroStackRemove(fileName);
-      }
     }
 
     /// <summary>
@@ -754,15 +620,38 @@ namespace TvEngine
     /// Given a command this method processes the request accordingly.
     /// </summary>
     /// <param name="command">Command to process.</param>
-    internal static void ProcessCommand(string command)
+    /// <param name="async">Process command asynchronously?</param>
+    internal static void ProcessCommand(string command, bool async)
     {
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
+      if (async)
+      {
+        Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+        newThread.Name = "ProcessCommand";
+        newThread.Priority = ThreadPriority.BelowNormal;
+        newThread.Start(command);
+      }
+      else
+      {
+        ProcCommand(command);
+      }
+    }
+
+    /// <summary>
+    /// Used by ProcessCommand to actually handle the command.
+    /// Can be called Synchronously or as a Parameterized Thread.
+    /// </summary>
+    /// <param name="commandObj">Command string to process.</param>
+    static void ProcCommand(object commandObj)
+    {
+      string command = commandObj as string;
+
       if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
       {
         string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
-        ProcessMacro(fileName);
+        ProcMacro(fileName);
       }
       else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
       {
@@ -801,6 +690,167 @@ namespace TvEngine
       {
         throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
       }
+    }
+
+    /// <summary>
+    /// Called by ProcCommand to process the supplied Macro file.
+    /// </summary>
+    /// <param name="fileName">Macro file to process (absolute path).</param>
+    static void ProcMacro(string fileName)
+    {
+      MacroStackAdd(Thread.CurrentThread.ManagedThreadId, fileName);
+
+      try
+      {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(fileName);
+
+        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
+
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
+        string commandProperty;
+
+        foreach (XmlNode item in commandSequence)
+        {
+          commandProperty = item.Attributes["cmdproperty"].Value;
+
+          switch (item.Attributes["command"].Value)
+          {
+            case Common.XmlTagMacro:
+              {
+                ProcMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
+                break;
+              }
+
+            case Common.XmlTagBlast:
+              {
+                string[] commands = Common.SplitBlastCommand(commandProperty);
+                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+                break;
+              }
+
+            case Common.XmlTagPause:
+              {
+                int sleep = int.Parse(commandProperty);
+                Thread.Sleep(sleep);
+                break;
+              }
+
+            case Common.XmlTagRun:
+              {
+                string[] commands = Common.SplitRunCommand(commandProperty);
+                Common.ProcessRunCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagSerial:
+              {
+                string[] commands = Common.SplitSerialCommand(commandProperty);
+                Common.ProcessSerialCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagWindowMsg:
+              {
+                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
+                Common.ProcessWindowMessageCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagTcpMsg:
+              {
+                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
+                Common.ProcessTcpMessageCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagKeys:
+              {
+                if (InConfiguration)
+                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                  Common.ProcessKeyCommand(commandProperty);
+                break;
+              }
+          }
+        }
+      }
+      finally
+      {
+        MacroStackRemove(Thread.CurrentThread.ManagedThreadId, fileName);
+      }
+    }
+
+    /// <summary>
+    /// Retreives the required Macro Stack from the Hashtable.
+    /// </summary>
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <returns>Macro Stack.</returns>
+    static List<string> GetMacroStack(int hash)
+    {
+      if (_macroStacks.ContainsKey(hash))
+      {
+        return (List<string>)_macroStacks[hash];
+      }
+      else
+      {
+        List<string> newStack = new List<string>();
+        _macroStacks.Add(hash, newStack);
+        return newStack;
+      }
+    }
+
+    /// <summary>
+    /// Adds to the Macro Stack.
+    /// </summary>
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <param name="fileName">Name of the macro file.</param>
+    static void MacroStackAdd(int hash, string fileName)
+    {
+      List<string> stack = GetMacroStack(hash);
+
+      string upperCasedFileName = fileName.ToUpperInvariant();
+
+      if (stack.Contains(upperCasedFileName))
+      {
+        StringBuilder macroStackTrace = new StringBuilder();
+        macroStackTrace.AppendLine("Macro infinite loop detected!");
+        macroStackTrace.AppendLine();
+        macroStackTrace.AppendLine("Stack trace:");
+
+        foreach (string macro in stack)
+        {
+          if (macro.Equals(upperCasedFileName))
+            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
+          else
+            macroStackTrace.AppendLine(macro);
+        }
+
+        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
+
+        throw new ApplicationException(macroStackTrace.ToString());
+      }
+
+      stack.Add(upperCasedFileName);
+    }
+
+    /// <summary>
+    /// Removes from the Macro Stack.
+    /// </summary>
+    /// <param name="hash">Hash table lookup value.</param>
+    /// <param name="fileName">Name of the macro file.</param>
+    static void MacroStackRemove(int hash, string fileName)
+    {
+      List<string> stack = GetMacroStack(hash);
+
+      string upperCasedFileName = fileName.ToUpperInvariant();
+
+      if (stack.Contains(upperCasedFileName))
+        stack.Remove(upperCasedFileName);
+
+      if (stack.Count == 0)
+        _macroStacks.Remove(hash);
     }
 
     /// <summary>

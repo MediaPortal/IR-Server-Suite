@@ -1007,7 +1007,7 @@ namespace Translator
         ProcCommand(command);
       }
     }
-    
+
     /// <summary>
     /// Used by ProcessCommand to actually handle the command.
     /// Can be called Synchronously or as a Parameterized Thread.
@@ -1045,7 +1045,10 @@ namespace Translator
       else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
         string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-        Common.ProcessKeyCommand(keyCommand);
+        if (_inConfiguration)
+          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        else
+          Common.ProcessKeyCommand(keyCommand);
       }
       else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
       {
@@ -1298,7 +1301,7 @@ namespace Translator
 
       stack.Add(upperCasedFileName);
     }
-    
+
     /// <summary>
     /// Removes from the Macro Stack.
     /// </summary>
