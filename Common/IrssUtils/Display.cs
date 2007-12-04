@@ -98,6 +98,10 @@ namespace IrssUtils
       return devMode;
     }
 
+    /// <summary>
+    /// Gets the resolution.
+    /// </summary>
+    /// <returns>The current screen resolution.</returns>
     public static Size GetResolution()
     {
       DEVMODE devMode = GetDevMode();
@@ -105,6 +109,10 @@ namespace IrssUtils
       return new Size(devMode.dmPelsWidth, devMode.dmPelsHeight);
     }
 
+    /// <summary>
+    /// Gets the BPP.
+    /// </summary>
+    /// <returns>The current screen Bits Per Pixel.</returns>
     public static int GetBpp()
     {
       DEVMODE devMode = GetDevMode();
@@ -112,6 +120,10 @@ namespace IrssUtils
       return devMode.dmBitsPerPel;
     }
 
+    /// <summary>
+    /// Gets the refresh rate.
+    /// </summary>
+    /// <returns>The current refresh rate in Hertz.</returns>
     public static int GetRefreshRate()
     {
       DEVMODE devMode = GetDevMode();
@@ -119,16 +131,34 @@ namespace IrssUtils
       return devMode.dmDisplayFrequency;
     }
 
+    /// <summary>
+    /// Changes the display mode.
+    /// </summary>
+    /// <param name="width">The width.</param>
+    /// <param name="height">The height.</param>
     public static void ChangeDisplayMode(int width, int height)
     {
       ChangeDisplayMode(height, width, -1, -1);
     }
 
+    /// <summary>
+    /// Changes the display mode.
+    /// </summary>
+    /// <param name="width">The width.</param>
+    /// <param name="height">The height.</param>
+    /// <param name="bpp">The BPP.</param>
     public static void ChangeDisplayMode(int width, int height, short bpp)
     {
       ChangeDisplayMode(height, width, bpp, -1);
     }
 
+    /// <summary>
+    /// Changes the display mode.
+    /// </summary>
+    /// <param name="width">The width.</param>
+    /// <param name="height">The height.</param>
+    /// <param name="bpp">The BPP.</param>
+    /// <param name="refreshRate">The refresh rate in Hertz.</param>
     public static void ChangeDisplayMode(int width, int height, short bpp, int refreshRate)
     {
       DEVMODE devMode = GetDevMode();

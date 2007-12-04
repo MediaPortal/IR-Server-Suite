@@ -461,8 +461,14 @@ namespace IrssUtils
 
         if (waitForResponse)
         {
-          serialPort.ReadTimeout = 5000;
-          serialPort.ReadByte();
+          try
+          {
+            serialPort.ReadTimeout = 5000;
+            serialPort.ReadByte();
+          }
+          catch
+          {
+          }
         }
       }
       finally
