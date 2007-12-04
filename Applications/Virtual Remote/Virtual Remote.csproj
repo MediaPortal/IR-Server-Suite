@@ -34,6 +34,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>
     </DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -90,6 +91,9 @@
     <Content Include="Skins\Medion.xml" />
     <Content Include="Skins\RemoteWonder.xml" />
     <Content Include="Skins\web.html" />
+    <Content Include="Skins\WiiAll.xml" />
+    <Content Include="Skins\WiiClassic.xml" />
+    <Content Include="Skins\WiiRemote.xml" />
     <Content Include="Skins\Xbox.xml">
     </Content>
   </ItemGroup>
