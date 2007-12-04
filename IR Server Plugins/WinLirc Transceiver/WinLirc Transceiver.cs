@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.IO;
 using System.Net;
 using System.Net.Sockets;

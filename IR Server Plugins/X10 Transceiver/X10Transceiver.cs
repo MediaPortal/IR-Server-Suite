@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;

@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.Threading;
 
 namespace IrssComms

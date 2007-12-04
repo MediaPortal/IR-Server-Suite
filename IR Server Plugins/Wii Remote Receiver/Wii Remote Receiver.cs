@@ -1,7 +1,10 @@
 using System;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.Drawing;
 using System.Windows.Forms;
+using System.Xml;
 
 using IRServerPluginInterface;
 
@@ -13,20 +16,38 @@ namespace WiiRemoteReceiver
   /// <summary>
   /// IR Server Plugin for the Wii Remote.
   /// </summary>
-  public class WiiRemoteReceiver : IRServerPluginBase, IRemoteReceiver, IMouseReceiver
+  public class WiiRemoteReceiver : IRServerPluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
   {
+
+    #region Constants
+
+    static readonly string ConfigurationFile =
+      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
+      "\\IR Server Suite\\IR Server\\Wii Remote Receiver.xml";
+
+
+    #endregion Constants
 
     #region Variables
 
     RemoteHandler _remoteButtonHandler;
     MouseHandler _mouseHandler;
 
+    bool _handleMouseLocally = true;
+    bool _useNunchukAsMouse = false;
+    double _mouseSensitivity = 1.5;
+
+    bool _led1 = false;
+    bool _led2 = true;
+    bool _led3 = true;
+    bool _led4 = false;
+
     Wiimote _wiimote;
 
     WiimoteState _previousState;
 
-    int screenWidth = Screen.PrimaryScreen.WorkingArea.Width;
-    int screenHeight = Screen.PrimaryScreen.WorkingArea.Height;
+    int _screenWidth = Screen.PrimaryScreen.WorkingArea.Width;
+    int _screenHeight = Screen.PrimaryScreen.WorkingArea.Height;
 
     #endregion Variables
 
@@ -51,7 +72,7 @@ namespace WiiRemoteReceiver
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports the Wii Remote"; } }
+    public override string Description  { get { return "Supports the Nintendo Wii Remote"; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
@@ -70,6 +91,8 @@ namespace WiiRemoteReceiver
     /// <returns>true if successful, otherwise false.</returns>
     public override bool Start()
     {
+      LoadSettings();
+
       _wiimote = new Wiimote();
 
       _wiimote.WiimoteChanged += new WiimoteChangedEventHandler(WiimoteChanged);
@@ -77,7 +100,7 @@ namespace WiiRemoteReceiver
 
       _wiimote.Connect();
       _wiimote.SetReportType(Wiimote.InputReport.IRAccel, true);
-      _wiimote.SetLEDs(false, true, true, false);
+      _wiimote.SetLEDs(_led1, _led2, _led3, _led4);
       _wiimote.SetRumble(false);
 
       return true;
@@ -110,6 +133,39 @@ namespace WiiRemoteReceiver
     }
 
     /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
+    /// <param name="owner">The owner window to use for creating modal dialogs.</param>
+    public void Configure(IWin32Window owner)
+    {
+      LoadSettings();
+
+      Setup setup = new Setup();
+
+      setup.HandleMouseLocal  = _handleMouseLocally;
+      setup.UseNunchukAsMouse = _useNunchukAsMouse;
+      setup.MouseSensitivity  = _mouseSensitivity;
+      setup.LED1 = _led1;
+      setup.LED2 = _led2;
+      setup.LED3 = _led3;
+      setup.LED4 = _led4;
+
+
+      if (setup.ShowDialog(owner) == DialogResult.OK)
+      {
+        _handleMouseLocally   = setup.HandleMouseLocal;
+        _useNunchukAsMouse    = setup.UseNunchukAsMouse;
+        _mouseSensitivity     = setup.MouseSensitivity;
+        _led1 = setup.LED1;
+        _led2 = setup.LED2;
+        _led3 = setup.LED3;
+        _led4 = setup.LED4;
+
+        SaveSettings();
+      }
+    }
+
+    /// <summary>
     /// Callback for remote button presses.
     /// </summary>
     /// <value>The remote callback.</value>
@@ -128,6 +184,70 @@ namespace WiiRemoteReceiver
       get { return _mouseHandler; }
       set { _mouseHandler = value; }
     }
+
+    void LoadSettings()
+    {
+      XmlDocument doc = new XmlDocument();
+
+      try { doc.Load(ConfigurationFile); }
+      catch { return; }
+
+      try { _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); }
+      catch { }
+
+      try { _useNunchukAsMouse = bool.Parse(doc.DocumentElement.Attributes["UseNunchukAsMouse"].Value); }
+      catch { }
+
+      try { _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); }
+      catch { }
+
+      try { _led1 = bool.Parse(doc.DocumentElement.Attributes["LED1"].Value); }
+      catch { }
+      try { _led2 = bool.Parse(doc.DocumentElement.Attributes["LED2"].Value); }
+      catch { }
+      try { _led3 = bool.Parse(doc.DocumentElement.Attributes["LED3"].Value); }
+      catch { }
+      try { _led4 = bool.Parse(doc.DocumentElement.Attributes["LED4"].Value); }
+      catch { }
+    }
+    void SaveSettings()
+    {
+      try
+      {
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
+
+          writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
+          writer.WriteAttributeString("UseNunchukAsMouse", _useNunchukAsMouse.ToString());
+          writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString());
+
+          writer.WriteAttributeString("LED1", _led1.ToString());
+          writer.WriteAttributeString("LED2", _led2.ToString());
+          writer.WriteAttributeString("LED3", _led3.ToString());
+          writer.WriteAttributeString("LED4", _led4.ToString());
+
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
+    }
+
+
 
 
     void WiimoteChanged(object sender, WiimoteChangedEventArgs args)
@@ -151,8 +271,38 @@ namespace WiiRemoteReceiver
 
         if (ws.ExtensionType == ExtensionType.Nunchuk)
         {
-          if (ws.NunchukState.C && !_previousState.NunchukState.C)      RemoteCallback("WiimoteNunchuk_Button:C");
-          if (ws.NunchukState.Z && !_previousState.NunchukState.Z)      RemoteCallback("WiimoteNunchuk_Button:Z");
+          if (_useNunchukAsMouse) // Use nunchuk as mouse?
+          {
+            Mouse.MouseEvents mouseButtons = Mouse.MouseEvents.None;
+
+            if (ws.NunchukState.C != _previousState.NunchukState.C)
+              mouseButtons |= ws.NunchukState.C ? Mouse.MouseEvents.RightDown : Mouse.MouseEvents.RightUp;
+
+            if (ws.NunchukState.Z != _previousState.NunchukState.Z)
+              mouseButtons |= ws.NunchukState.Z ? Mouse.MouseEvents.LeftDown : Mouse.MouseEvents.LeftUp;
+
+            int deltaX = (int)(ws.NunchukState.X * 10 * _mouseSensitivity);
+            int deltaY = (int)(ws.NunchukState.Y * -10 * _mouseSensitivity);
+
+            if (_handleMouseLocally)
+            {
+              if (deltaX != 0 || deltaY != 0)
+                Mouse.Move(deltaX, deltaY, false);
+
+              if (mouseButtons != Mouse.MouseEvents.None)
+                Mouse.Button(mouseButtons);
+            }
+            else
+            {
+              if (deltaX != 0 || deltaY != 0 || mouseButtons != Mouse.MouseEvents.None)
+                MouseCallback(deltaX, deltaY, (int)mouseButtons);
+            }
+          }
+          else
+          {
+            if (ws.NunchukState.C && !_previousState.NunchukState.C) RemoteCallback("WiimoteNunchuk_Button:C");
+            if (ws.NunchukState.Z && !_previousState.NunchukState.Z) RemoteCallback("WiimoteNunchuk_Button:Z");
+          }
         }
 
         if (ws.ExtensionType == ExtensionType.ClassicController)
@@ -177,17 +327,17 @@ namespace WiiRemoteReceiver
 
         if (ws.IRState.Found1 && ws.IRState.Found2)
         {
-          int x = (int)(screenWidth - (ws.IRState.X1 + ws.IRState.X2) / 2 * screenWidth);
-          int y = (int)((ws.IRState.Y1 + ws.IRState.Y2) / 2 * screenHeight);
+          int x = (int)(_screenWidth - (ws.IRState.X1 + ws.IRState.X2) / 2 * _screenWidth);
+          int y = (int)((ws.IRState.Y1 + ws.IRState.Y2) / 2 * _screenHeight);
 
-          if (_mouseHandler == null)
+          if (_handleMouseLocally)
           {
             Cursor.Position = new Point(x, y);
           }
           else
           {
-            int prevX = (int)(screenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * screenWidth);
-            int prevY = (int)((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * screenHeight);
+            int prevX = (int)(_screenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * _screenWidth);
+            int prevY = (int)((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * _screenHeight);
 
             int deltaX = x - prevX;
             int deltaY = y - prevY;
@@ -250,7 +400,6 @@ namespace WiiRemoteReceiver
 
       _previousState.NunchukState.C = ws.NunchukState.C;
       _previousState.NunchukState.Z = ws.NunchukState.Z;
-
     }
 
     void WiimoteExtensionChanged(object sender, WiimoteExtensionChangedEventArgs args)
@@ -260,7 +409,6 @@ namespace WiiRemoteReceiver
       else
         _wiimote.SetReportType(Wiimote.InputReport.IRAccel, true);
     }
-        
 
     #endregion Implementation
 

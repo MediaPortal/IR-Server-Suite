@@ -1,5 +1,7 @@
 using System;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;

@@ -25,11 +25,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Diagnostics;
 
 namespace WinLircTransceiver
 {
@@ -40,6 +40,7 @@ namespace WinLircTransceiver
   /// </summary>
   class WinLircServer
   {
+
     #region Variables
 
     public delegate void CommandEventHandler(Command cmd);
@@ -50,7 +51,7 @@ namespace WinLircTransceiver
     IAsyncResult _dataCallbackResult; // Result of the callback function
     Command _lastCommand;      // Last command actually sent to InputHandler
 
-    #endregion
+    #endregion Variables
 
     #region Constructors + Initialization
 
@@ -84,7 +85,8 @@ namespace WinLircTransceiver
         Trace.WriteLine("WLirc: Error listening to socket: " + se.Message);
       }
     }
-    #endregion
+
+    #endregion Constructors + Initialization
 
     #region Public Methods
 
@@ -120,9 +122,10 @@ namespace WinLircTransceiver
       _socket.Send(Encoding.ASCII.GetBytes(transmit));
     }
 
-    #endregion
+    #endregion Public Methods
 
     #region Private Methods
+
     /// <summary>
     /// Callback function receiving data from WinLIRC
     /// </summary>
@@ -183,9 +186,11 @@ namespace WinLircTransceiver
       if (CommandEvent != null)
         CommandEvent(command);
     }
-    #endregion
+
+    #endregion Private Methods
 
     #region Helper classes
+
     /// <summary>
     /// Class containing information for the data callback function
     /// </summary>
@@ -228,7 +233,9 @@ namespace WinLircTransceiver
       public String Remote { get { return _remote; } }
       public DateTime Time { get { return _time; } }
     }
-    #endregion
+
+    #endregion Helper classes
+
   }
 
 }

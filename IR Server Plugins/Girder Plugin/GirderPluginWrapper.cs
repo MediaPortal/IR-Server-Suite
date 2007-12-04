@@ -1,11 +1,10 @@
 using System;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
 
 namespace GirderPlugin
 {

@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration.Install;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.IO;
 using System.Reflection;
 using System.ServiceProcess;

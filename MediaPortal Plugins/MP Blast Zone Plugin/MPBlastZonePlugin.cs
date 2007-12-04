@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;
@@ -59,6 +61,8 @@ namespace MediaPortal.Plugins
     internal static readonly string MenuFile = Common.FolderAppData + "MP Blast Zone Plugin\\Menu.xml";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "MP Blast Zone Plugin\\Macro\\";
+
+    const string ProcessCommandThreadName = "ProcessCommand";
 
     #endregion Constants
 
@@ -638,20 +642,25 @@ namespace MediaPortal.Plugins
 
     /// <summary>
     /// Given a command this method processes the request accordingly.
+    /// Throws exceptions only if run synchronously, if async exceptions are logged instead.
     /// </summary>
     /// <param name="command">Command to process.</param>
     /// <param name="async">Process command asynchronously?</param>
     internal static void ProcessCommand(string command, bool async)
     {
-      if (String.IsNullOrEmpty(command))
-        throw new ArgumentNullException("command");
-
       if (async)
       {
-        Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
-        newThread.Name = "ProcessCommand";
-        newThread.Priority = ThreadPriority.BelowNormal;
-        newThread.Start(command);
+        try
+        {
+          Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+          newThread.Name = ProcessCommandThreadName;
+          newThread.Priority = ThreadPriority.BelowNormal;
+          newThread.Start(command);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex.ToString());
+        }
       }
       else
       {
@@ -666,86 +675,102 @@ namespace MediaPortal.Plugins
     /// <param name="commandObj">Command string to process.</param>
     static void ProcCommand(object commandObj)
     {
-      string command = commandObj as string;
+      try
+      {
+        if (commandObj == null)
+          throw new ArgumentNullException("commandObj");
 
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-      {
-        string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
-        ProcMacro(fileName);
-      }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-        BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-      }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-        Common.ProcessRunCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-        Common.ProcessSerialCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-        Common.ProcessWindowMessageCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-        if (InConfiguration)
-          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        string command = commandObj as string;
+
+        if (String.IsNullOrEmpty(command))
+          throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
+
+        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+        {
+          string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+          ProcMacro(fileName);
+        }
+        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
+          BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+        }
+        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
+          Common.ProcessRunCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
+          Common.ProcessSerialCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
+          Common.ProcessWindowMessageCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+        {
+          string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
+          if (InConfiguration)
+            MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            Common.ProcessKeyCommand(keyCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
+        {
+          string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
+          Common.ProcessMouseCommand(mouseCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
+        {
+          string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
+          Common.ProcessEjectCommand(ejectCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
+        {
+          if (InConfiguration)
+            MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.Hibernate();
+        }
+        else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
+        {
+          if (InConfiguration)
+            MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.Reboot();
+        }
+        else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
+        {
+          if (InConfiguration)
+            MessageBox.Show("Cannot Shutdown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.ShutDown();
+        }
+        else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
+        {
+          if (InConfiguration)
+            MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.Standby();
+        }
+        else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
+        {
+          MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), MP_BasicHome);
+        }
         else
-          Common.ProcessKeyCommand(keyCommand);
+        {
+          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+        }
       }
-      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
+      catch (Exception ex)
       {
-        string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
-        Common.ProcessMouseCommand(mouseCommand);
-      }
-      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-      {
-        string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
-        Common.ProcessEjectCommand(ejectCommand);
-      }
-      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
-      {
-        if (InConfiguration)
-          MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+          Log.Error(ex.ToString());
         else
-          MPCommon.Hibernate();
-      }
-      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
-      {
-        if (InConfiguration)
-          MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        else
-          MPCommon.Reboot();
-      }
-      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
-      {
-        if (InConfiguration)
-          MessageBox.Show("Cannot Shutdown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        else
-          MPCommon.ShutDown();
-      }
-      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
-      {
-        if (InConfiguration)
-          MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        else
-          MPCommon.Standby();
-      }
-      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
-      {
-        MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), MP_BasicHome);
-      }
-      else
-      {
-        throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+          throw ex;
       }
     }
 

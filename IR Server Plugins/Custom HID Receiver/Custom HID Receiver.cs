@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -70,8 +72,7 @@ namespace CustomHIDReceiver
     }
 
     #endregion Constructor
-
-
+    
     /// <summary>
     /// Name of the IR Server plugin.
     /// </summary>
@@ -155,8 +156,7 @@ namespace CustomHIDReceiver
         SaveSettings();
       }
     }
-
-
+    
     /// <summary>
     /// Callback for remote button presses.
     /// </summary>
@@ -200,11 +200,16 @@ namespace CustomHIDReceiver
         _useAllBytes  = bool.Parse(doc.DocumentElement.Attributes["UseAllBytes"].Value);
         _repeatDelay  = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
 
-        _device.usUsage = 0x00;
+        _device.usUsage     = 0x00;
         _device.usUsagePage = 0x00;        
         
         _inputByte    = 3;
@@ -239,10 +244,16 @@ namespace CustomHIDReceiver
         writer.WriteEndDocument();
         writer.Close();
       }
+#if TRACE
       catch (Exception ex)
       {
         Trace.WriteLine(ex.ToString());
       }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     bool RegisterForRawInput(RawInput.RAWINPUTDEVICE device)
@@ -341,7 +352,9 @@ namespace CustomHIDReceiver
               foreach (byte b in newArray)
                 str.Append(String.Format("{0:X2} ", b));
 
+#if TRACE
               Trace.WriteLine(str.ToString());
+#endif
 
               if (_remoteHandler != null)
                 _remoteHandler(str.ToString());

@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+#if TRACE
+using System.Diagnostics;
+#endif
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -11,10 +14,6 @@ using System.Threading;
 using System.Web;
 using System.Windows.Forms;
 using System.Xml;
-
-#if TRACE
-using System.Diagnostics;
-#endif
 
 using IrssComms;
 using IrssUtils;

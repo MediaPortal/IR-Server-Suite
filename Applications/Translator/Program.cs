@@ -30,6 +30,8 @@ namespace Translator
 
     internal static readonly string FolderMacros = Common.FolderAppData + "Translator\\Macro\\";
 
+    const string ProcessCommandThreadName = "ProcessCommand";
+
     #endregion Constants
 
     #region Variables
@@ -96,16 +98,11 @@ namespace Translator
         {
           ProcessCommandLine(args);
         }
-#if TRACE
         catch (Exception ex)
         {
-          Trace.WriteLine(ex.ToString());
+          MessageBox.Show(ex.ToString(), "Translator - Error processing command line", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-#else
-        catch
-        {
-        }
-#endif
+
         return;
       }
 
@@ -987,20 +984,25 @@ namespace Translator
 
     /// <summary>
     /// Given a command this method processes the request accordingly.
+    /// Throws exceptions only if run synchronously, if async exceptions are logged instead.
     /// </summary>
     /// <param name="command">Command to process.</param>
     /// <param name="async">Process command asynchronously?</param>
     internal static void ProcessCommand(string command, bool async)
     {
-      if (String.IsNullOrEmpty(command))
-        throw new ArgumentNullException("command");
-
       if (async)
       {
-        Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
-        newThread.Name = "ProcessCommand";
-        newThread.Priority = ThreadPriority.BelowNormal;
-        newThread.Start(command);
+        try
+        {
+          Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+          newThread.Name = ProcessCommandThreadName;
+          newThread.Priority = ThreadPriority.BelowNormal;
+          newThread.Start(command);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex.ToString());
+        }
       }
       else
       {
@@ -1015,83 +1017,99 @@ namespace Translator
     /// <param name="commandObj">Command string to process.</param>
     static void ProcCommand(object commandObj)
     {
-      string command = commandObj as string;
+      try
+      {
+        if (commandObj == null)
+          throw new ArgumentNullException("commandObj");
 
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-      {
-        string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
-        ProcMacro(fileName);
-      }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-        BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-      }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-        Common.ProcessRunCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-        Common.ProcessSerialCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-        Common.ProcessWindowMessageCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-        if (_inConfiguration)
-          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        string command = commandObj as string;
+
+        if (String.IsNullOrEmpty(command))
+          throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
+
+        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+        {
+          string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+          ProcMacro(fileName);
+        }
+        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
+          BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+        }
+        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
+          Common.ProcessRunCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
+          Common.ProcessSerialCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
+          Common.ProcessWindowMessageCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+        {
+          string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
+          if (_inConfiguration)
+            MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            Common.ProcessKeyCommand(keyCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
+        {
+          string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
+          Common.ProcessMouseCommand(mouseCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
+        {
+          string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
+          Common.ProcessEjectCommand(ejectCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
+        {
+          if (!Common.Hibernate())
+            IrssLog.Warn("Hibernate request was rejected by another application.");
+        }
+        else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.OrdinalIgnoreCase))
+        {
+          if (!Common.LogOff())
+            IrssLog.Warn("LogOff request failed.");
+        }
+        else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
+        {
+          if (!Common.Reboot())
+            IrssLog.Warn("Reboot request failed.");
+        }
+        else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
+        {
+          if (!Common.ShutDown())
+            IrssLog.Warn("ShutDown request failed.");
+        }
+        else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
+        {
+          if (!Common.Standby())
+            IrssLog.Warn("Standby request was rejected by another application.");
+        }
+        else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.OrdinalIgnoreCase))
+        {
+          ShowOSD();
+        }
         else
-          Common.ProcessKeyCommand(keyCommand);
+        {
+          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+        }
       }
-      else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
+      catch (Exception ex)
       {
-        string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
-        Common.ProcessMouseCommand(mouseCommand);
-      }
-      else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-      {
-        string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
-        Common.ProcessEjectCommand(ejectCommand);
-      }
-      else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
-      {
-       if (!Common.Hibernate())
-         IrssLog.Warn("Hibernate request was rejected by another application.");
-      }
-      else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.OrdinalIgnoreCase))
-      {
-        if (!Common.LogOff())
-          IrssLog.Warn("LogOff request failed.");
-      }
-      else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
-      {
-        if (!Common.Reboot())
-          IrssLog.Warn("Reboot request failed.");
-      }
-      else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
-      {
-        if (!Common.ShutDown())
-          IrssLog.Warn("ShutDown request failed.");
-      }
-      else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
-      {
-        if (!Common.Standby())
-          IrssLog.Warn("Standby request was rejected by another application.");
-      }
-      else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.OrdinalIgnoreCase))
-      {
-        ShowOSD();
-      }
-      else
-      {
-        throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+        if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+          IrssLog.Error(ex.ToString());
+        else
+          throw ex;
       }
     }
 
@@ -1238,6 +1256,20 @@ namespace Translator
                   MessageBox.Show("Cannot Log off in configuration", Common.UITextLogOff, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
                   Common.LogOff();
+                break;
+              }
+
+            case Common.XmlTagBeep:
+              {
+                string[] commands = Common.SplitBeepCommand(commandProperty);
+                Common.ProcessBeepCommand(commands);
+                break;
+              }
+
+            case Common.XmlTagDisplay:
+              {
+                string[] commands = Common.SplitDisplayModeCommand(commandProperty);
+                Common.ProcessDisplayModeCommand(commands);
                 break;
               }
           }

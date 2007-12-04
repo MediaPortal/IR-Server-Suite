@@ -1,5 +1,7 @@
 using System;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.IO;
 
 namespace IrssUtils

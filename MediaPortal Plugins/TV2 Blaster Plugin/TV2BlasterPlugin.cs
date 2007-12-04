@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.IO;
 using System.IO.Ports;
 using System.Net;
@@ -39,6 +41,8 @@ namespace MediaPortal.Plugins
     internal static readonly string FolderMacros = Common.FolderAppData + "TV2 Blaster Plugin\\Macro\\";
 
     internal static readonly string ExtCfgFolder = Common.FolderAppData + "TV2 Blaster Plugin\\";
+
+    const string ProcessCommandThreadName = "ProcessCommand";
 
     #endregion Constants
 
@@ -688,20 +692,25 @@ namespace MediaPortal.Plugins
 
     /// <summary>
     /// Given a command this method processes the request accordingly.
+    /// Throws exceptions only if run synchronously, if async exceptions are logged instead.
     /// </summary>
     /// <param name="command">Command to process.</param>
     /// <param name="async">Process command asynchronously?</param>
     internal static void ProcessCommand(string command, bool async)
     {
-      if (String.IsNullOrEmpty(command))
-        throw new ArgumentNullException("command");
-
       if (async)
       {
-        Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
-        newThread.Name = "ProcessCommand";
-        newThread.Priority = ThreadPriority.BelowNormal;
-        newThread.Start(command);
+        try
+        {
+          Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+          newThread.Name = ProcessCommandThreadName;
+          newThread.Priority = ThreadPriority.BelowNormal;
+          newThread.Start(command);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex.ToString());
+        }
       }
       else
       {
@@ -716,53 +725,69 @@ namespace MediaPortal.Plugins
     /// <param name="commandObj">Command string to process.</param>
     static void ProcCommand(object commandObj)
     {
-      string command = commandObj as string;
+      try
+      {
+        if (commandObj == null)
+          throw new ArgumentNullException("commandObj");
 
-      if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
-      {
-        string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
-        ProcMacro(fileName);
-      }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
-      {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-        BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-      }
-      else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))  // STB IR Code
-      {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
-        BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
-      }
-      else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
-      {
-        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-        Common.ProcessRunCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
-      {
-        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-        Common.ProcessSerialCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
-      {
-        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-        Common.ProcessWindowMessageCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
-      {
-        string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-        if (InConfiguration)
-          MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        string command = commandObj as string;
+
+        if (String.IsNullOrEmpty(command))
+          throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
+
+        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
+        {
+          string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+          ProcMacro(fileName);
+        }
+        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
+        {
+          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
+          BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+        }
+        else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))  // STB IR Code
+        {
+          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
+          BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
+        }
+        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
+        {
+          string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
+          Common.ProcessRunCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
+        {
+          string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
+          Common.ProcessSerialCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
+        {
+          string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
+          Common.ProcessWindowMessageCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
+        {
+          string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
+          if (InConfiguration)
+            MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            Common.ProcessKeyCommand(keyCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase)) // Go To Screen
+        {
+          MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), _mpBasicHome);
+        }
         else
-          Common.ProcessKeyCommand(keyCommand);
+        {
+          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+        }
       }
-      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase)) // Go To Screen
+      catch (Exception ex)
       {
-        MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), _mpBasicHome);
-      }
-      else
-      {
-        throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+        if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+          Log.Error(ex.ToString());
+        else
+          throw ex;
       }
     }
 

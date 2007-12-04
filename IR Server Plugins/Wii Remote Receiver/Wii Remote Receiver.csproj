@@ -62,7 +62,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mouse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Setup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Setup.Designer.cs">
+      <DependentUpon>Setup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Wii Remote Receiver.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +82,12 @@
       <Project>{37A555DF-7012-4B99-8A47-1C922A361E52}</Project>
       <Name>WiimoteLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Setup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Setup.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.Net;
 using System.Net.Sockets;
 using System.Text;

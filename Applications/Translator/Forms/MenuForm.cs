@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+#if TRACE
 using System.Diagnostics;
+#endif
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -788,9 +790,7 @@ namespace Translator
           Command(tag.Substring(TagCommand.Length));
         else if (tag.StartsWith(TagEject, StringComparison.OrdinalIgnoreCase))
           Eject(tag.Substring(TagEject.Length));
-
       }
-
     }
 
 
