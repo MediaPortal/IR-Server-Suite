@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<skin>
+	<button name="Up" code="Wiimote_Pad:Up" shortcut="Up" top="58" left="57" height="25" width="25" />
+	<button name="Left" code="Wiimote_Pad:Left" shortcut="Left" top="81" left="34" height="25" width="25" />
+	<button name="Right" code="Wiimote_Pad:Right" shortcut="Right" top="81" left="81" height="25" width="25" />
+	<button name="Down" code="Wiimote_Pad:Down" shortcut="Down" top="105" left="57" height="25" width="25" />
+	<button name="A" code="Wiimote_Button:A" shortcut="A" top="156" left="46" height="50" width="50" />
+	<button name="Minus" code="Wiimote_Button:Minus" shortcut="Subtract" top="263" left="20" height="25" width="25" />
+	<button name="Home" code="Wiimote_Button:Home" shortcut="None" top="263" left="58" height="25" width="25" />
+	<button name="Plus" code="Wiimote_Button:Plus" shortcut="Add" top="263" left="97" height="25" width="25" />
+	<button name="One" code="Wiimote_Button:One" shortcut="NumPad1" top="407" left="55" height="32" width="32" />
+	<button name="Two" code="Wiimote_Button:Two" shortcut="NumPad2" top="458" left="55" height="32" width="32" />
+	<button name="B" code="Wiimote_Button:B" shortcut="B" top="90" left="268" height="77" width="57" />
+	<button name="Power" code="Wiimote_Special" shortcut="None" top="16" left="21" height="25" width="25" />
+</skin>

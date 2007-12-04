@@ -13,12 +13,13 @@ namespace WiiRemoteReceiver
   /// <summary>
   /// IR Server Plugin for the Wii Remote.
   /// </summary>
-  public class WiiRemoteReceiver : IRServerPluginBase, IRemoteReceiver
+  public class WiiRemoteReceiver : IRServerPluginBase, IRemoteReceiver, IMouseReceiver
   {
 
     #region Variables
 
     RemoteHandler _remoteButtonHandler;
+    MouseHandler _mouseHandler;
 
     Wiimote _wiimote;
 
@@ -118,6 +119,16 @@ namespace WiiRemoteReceiver
       set { _remoteButtonHandler = value; }
     }
     
+    /// <summary>
+    /// Callback for mouse events.
+    /// </summary>
+    /// <value>The mouse callback.</value>
+    public MouseHandler MouseCallback
+    {
+      get { return _mouseHandler; }
+      set { _mouseHandler = value; }
+    }
+
 
     void WiimoteChanged(object sender, WiimoteChangedEventArgs args)
     {
@@ -169,16 +180,20 @@ namespace WiiRemoteReceiver
           int x = (int)(screenWidth - (ws.IRState.X1 + ws.IRState.X2) / 2 * screenWidth);
           int y = (int)((ws.IRState.Y1 + ws.IRState.Y2) / 2 * screenHeight);
 
-          Cursor.Position = new Point(x, y);
+          if (_mouseHandler == null)
+          {
+            Cursor.Position = new Point(x, y);
+          }
+          else
+          {
+            int prevX = (int)(screenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * screenWidth);
+            int prevY = (int)((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * screenHeight);
 
-          int prevX = (int)(screenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * screenWidth);
-          int prevY = (int)((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * screenHeight);
+            int deltaX = x - prevX;
+            int deltaY = y - prevY;
 
-          int deltaX = x - prevX;
-          int deltaY = y - prevY;
-
-          Trace.WriteLine("DeltaX: " + deltaX.ToString() + "  DeltaY: " + deltaY.ToString());
-
+            MouseCallback(deltaX, deltaY, 0);
+          }
         }
       }
       else

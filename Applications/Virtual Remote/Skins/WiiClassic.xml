@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<skin>
+	<button name="Up" code="WiimoteClassic_Pad:Up" shortcut="Up" top="78" left="86" height="30" width="30" />
+	<button name="Left" code="WiimoteClassic_Pad:Left" shortcut="Left" top="104" left="56" height="30" width="30" />
+	<button name="Right" code="WiimoteClassic_Pad:Right" shortcut="Right" top="104" left="117" height="30" width="30" />
+	<button name="Down" code="WiimoteClassic_Pad:Down" shortcut="Down" top="132" left="86" height="30" width="30" />
+	<button name="Minus" code="WiimoteClassic_Button:Minus" shortcut="Subtract" top="109" left="210" height="23" width="23" />
+	<button name="Home" code="WiimoteClassic_Button:Home" shortcut="None" top="109" left="248" height="23" width="23" />
+	<button name="Plus" code="WiimoteClassic_Button:Plus" shortcut="Add" top="109" left="287" height="23" width="23" />
+	<button name="Y" code="WiimoteClassic_Button:Y" shortcut="Y" top="101" left="347" height="40" width="40" />
+	<button name="X" code="WiimoteClassic_Button:X" shortcut="X" top="66" left="398" height="40" width="40" />
+	<button name="B" code="WiimoteClassic_Button:B" shortcut="B" top="134" left="395" height="40" width="40" />
+	<button name="A" code="WiimoteClassic_Button:A" shortcut="A" top="100" left="446" height="40" width="40" />
+	<button name="L" code="WiimoteClassic_Button:TriggerL" shortcut="L" top="0" left="51" height="36" width="95" />
+	<button name="R" code="WiimoteClassic_Button:TriggerR" shortcut="R" top="0" left="373" height="36" width="95" />
+	<button name="ZL" code="WiimoteClassic_Button:ZL" shortcut="None" top="0" left="178" height="20" width="40" />
+	<button name="ZR" code="WiimoteClassic_Button:ZR" shortcut="None" top="0" left="302" height="20" width="40" />
+</skin>

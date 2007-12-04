@@ -43,10 +43,17 @@ UninstPage instfiles
 Function .onInit
 
   ${If} ${RunningX64}
-	SetRegView 64
+
 	${DisableX64FSRedirection}
+	StrCpy '$INSTDIR' '$PROGRAMFILES\IR Server Suite'
+	${EnableX64FSRedirection}
+
+	SetRegView 64
+
   ${Else}
+
 	SetRegView 32
+
   ${Endif}
 
 FunctionEnd
@@ -138,6 +145,8 @@ Section "IR Server"
   File "IR Server Plugins\Microsoft MCE Transceiver\bin\Release\*.*"
   File "IR Server Plugins\Serial IR Blaster\bin\Release\*.*"
   File "IR Server Plugins\USB-UIRT Transceiver\bin\Release\*.*"
+  File "IR Server Plugins\Wii Remote Receiver\bin\Debug\*.*"
+  File "IR Server Plugins\WiimoteLib\bin\Debug\*.*"
   File "IR Server Plugins\Windows Message Receiver\bin\Release\*.*"
   File "IR Server Plugins\WinLirc Transceiver\bin\Release\*.*"
   File "IR Server Plugins\X10 Transceiver\bin\Release\*.*"
