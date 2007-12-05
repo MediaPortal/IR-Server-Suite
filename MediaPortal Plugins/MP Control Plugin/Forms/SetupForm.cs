@@ -196,7 +196,7 @@ namespace MediaPortal.Plugins
     }
     void SaveRemotes(string file)
     {
-      using (XmlTextWriter writer = new XmlTextWriter(file, System.Text.Encoding.UTF8))
+      using (XmlTextWriter writer = new XmlTextWriter(file, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
@@ -318,26 +318,35 @@ namespace MediaPortal.Plugins
       if (listViewIR.SelectedItems.Count != 1)
         return;
 
-      string command = listViewIR.SelectedItems[0].Text;
-      string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
-
-      if (File.Exists(fileName))
+      try
       {
-        _learnIR = new LearnIR(
-          new LearnIrDelegate(MPControlPlugin.LearnIR),
-          new BlastIrDelegate(MPControlPlugin.BlastIR),
-          MPControlPlugin.TransceiverInformation.Ports,
-          command);
+        string command = listViewIR.SelectedItems[0].Text;
+        string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
 
-        _learnIR.ShowDialog(this);
+        if (File.Exists(fileName))
+        {
+          _learnIR = new LearnIR(
+            new LearnIrDelegate(MPControlPlugin.LearnIR),
+            new BlastIrDelegate(MPControlPlugin.BlastIR),
+            MPControlPlugin.TransceiverInformation.Ports,
+            command);
 
-        _learnIR = null;
+          _learnIR.ShowDialog(this);
+
+          _learnIR = null;
+        }
+        else
+        {
+          RefreshIRList();
+          RefreshEventMapperCommands();
+
+          throw new FileNotFoundException("IR file missing", fileName);
+        }
       }
-      else
+      catch (Exception ex)
       {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        RefreshIRList();
-        RefreshEventMapperCommands();
+        Log.Error("MPControlPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     void EditMacro()
@@ -345,19 +354,28 @@ namespace MediaPortal.Plugins
       if (listViewMacro.SelectedItems.Count != 1)
         return;
 
-      string command = listViewMacro.SelectedItems[0].Text;
-      string fileName = MPControlPlugin.FolderMacros + command + Common.FileExtensionMacro;
+      try
+      {
+        string command = listViewMacro.SelectedItems[0].Text;
+        string fileName = MPControlPlugin.FolderMacros + command + Common.FileExtensionMacro;
 
-      if (File.Exists(fileName))
-      {
-        MacroEditor macroEditor = new MacroEditor(command);
-        macroEditor.ShowDialog(this);
+        if (File.Exists(fileName))
+        {
+          MacroEditor macroEditor = new MacroEditor(command);
+          macroEditor.ShowDialog(this);
+        }
+        else
+        {
+          RefreshMacroList();
+          RefreshEventMapperCommands();
+
+          throw new FileNotFoundException("Macro file missing", fileName);
+        }
       }
-      else
+      catch (Exception ex)
       {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        RefreshMacroList();
-        RefreshEventMapperCommands();
+        Log.Error("MPControlPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to edit macro", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -381,7 +399,7 @@ namespace MediaPortal.Plugins
     }
     void SaveEvents()
     {
-      using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.EventMappingFile, System.Text.Encoding.UTF8))
+      using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.EventMappingFile, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
@@ -406,7 +424,7 @@ namespace MediaPortal.Plugins
 
     void SaveMultiMappings()
     {
-      using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.MultiMappingFile, System.Text.Encoding.UTF8))
+      using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.MultiMappingFile, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;

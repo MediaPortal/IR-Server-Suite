@@ -123,7 +123,10 @@ namespace TvEngine
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
 
-      comboBoxCommands.Items.AddRange(TV3BlasterPlugin.GetFileList(true));
+      string[] fileList = TV3BlasterPlugin.GetFileList(true);
+      if (fileList != null)
+        comboBoxCommands.Items.AddRange(fileList);
+
       comboBoxCommands.SelectedIndex = 0;
 
       // Setup command list
@@ -189,6 +192,9 @@ namespace TvEngine
     {
       ExternalChannelConfig config = TV3BlasterPlugin.GetExternalChannelConfig(cardId);
 
+      if (config == null)
+        return;
+
       config.CardId = cardId;
 
       config.PauseTime = Decimal.ToInt32(numericUpDownPauseTime.Value);
@@ -223,104 +229,97 @@ namespace TvEngine
 
       string fileName = Common.FolderSTB + xmlFile + ".xml";
 
-      try
+      XmlDocument doc = new XmlDocument();
+      doc.Load(fileName);
+
+      XmlNodeList nodeList = doc.DocumentElement.ChildNodes;
+
+      string command;
+      BlastCommand blastCommand;
+
+      bool useForAllBlastCommands = false;
+      string useForAllBlasterPort = String.Empty;
+
+      int blastCommandCount = 0;
+      for (int i = 0; i < 12; i++)
       {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(fileName);
+        if (i == 10)
+          command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
+        else if (i == 11)
+          command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
+        else
+          command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
-        XmlNodeList nodeList = doc.DocumentElement.ChildNodes;
+        if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
+          blastCommandCount++;
+      }
 
-        string command;
-        BlastCommand blastCommand;
+      for (int i = 0; i < 12; i++)
+      {
+        if (i == 10)
+          command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
+        else if (i == 11)
+          command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
+        else
+          command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
-        bool useForAllBlastCommands = false;
-        string useForAllBlasterPort = String.Empty;
-
-        int blastCommandCount = 0;
-        for (int i = 0; i < 12; i++)
+        if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
-          if (i == 10)
-            command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
-          else if (i == 11)
-            command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
-          else
-            command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
+          blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            Common.FolderSTB,
+            TV3BlasterPlugin.TransceiverInformation.Ports,
+            command.Substring(Common.CmdPrefixSTB.Length),
+            blastCommandCount--);
 
-          if (command.StartsWith(Common.CmdPrefixSTB))
-            blastCommandCount++;
-        }
-
-        for (int i = 0; i < 12; i++)
-        {
-          if (i == 10)
-            command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
-          else if (i == 11)
-            command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
-          else
-            command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
-
-          if (command.StartsWith(Common.CmdPrefixSTB))
+          if (useForAllBlastCommands)
           {
-            blastCommand = new BlastCommand(
-              new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
-              Common.FolderSTB, 
-              TV3BlasterPlugin.TransceiverInformation.Ports, 
-              command.Substring(Common.CmdPrefixSTB.Length), 
-              blastCommandCount--);
-
-            if (useForAllBlastCommands)
+            blastCommand.BlasterPort = useForAllBlasterPort;
+            listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+          }
+          else
+          {
+            if (blastCommand.ShowDialog(this) == DialogResult.OK)
             {
-              blastCommand.BlasterPort = useForAllBlasterPort;
+              if (blastCommand.UseForAll)
+              {
+                useForAllBlastCommands = true;
+                useForAllBlasterPort = blastCommand.BlasterPort;
+              }
               listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
             }
             else
             {
-              if (blastCommand.ShowDialog(this) == DialogResult.OK)
-              {
-                if (blastCommand.UseForAll)
-                {
-                  useForAllBlastCommands = true;
-                  useForAllBlasterPort = blastCommand.BlasterPort;
-                }
-                listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
-              }
-              else
-              {
-                blastCommand = new BlastCommand(
-                  new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
-                  Common.FolderSTB,
-                  TV3BlasterPlugin.TransceiverInformation.Ports,
-                  command.Substring(Common.CmdPrefixSTB.Length));
+              blastCommand = new BlastCommand(
+                new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+                Common.FolderSTB,
+                TV3BlasterPlugin.TransceiverInformation.Ports,
+                command.Substring(Common.CmdPrefixSTB.Length));
 
-                listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
-              }
-            }            
-          }
-          else
-          {
-            listViewExternalCommands.Items[i].SubItems[1].Text = command;
+              listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+            }
           }
         }
-
-        numericUpDownPauseTime.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "PauseTime", Decimal.ToInt32(numericUpDownPauseTime.Value)));
-        checkBoxUsePreChange.Checked = IrssUtils.XML.GetBool(nodeList, "UsePreChangeCommand", checkBoxUsePreChange.Checked);
-        checkBoxSendSelect.Checked = IrssUtils.XML.GetBool(nodeList, "SendSelect", checkBoxSendSelect.Checked);
-        checkBoxDoubleSelect.Checked = IrssUtils.XML.GetBool(nodeList, "DoubleChannelSelect", checkBoxDoubleSelect.Checked);
-        numericUpDownRepeat.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatChannelCommands", Decimal.ToInt32(numericUpDownRepeat.Value)));
-        numericUpDownRepeatDelay.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatDelay", Decimal.ToInt32(numericUpDownRepeatDelay.Value)));
-
-        int digitsWas = comboBoxChDigits.SelectedIndex;
-        if (digitsWas > 0)
-          digitsWas--;
-        int digits = IrssUtils.XML.GetInt(nodeList, "ChannelDigits", digitsWas);
-        if (digits > 0)
-          digits++;
-        comboBoxChDigits.SelectedIndex = digits;
+        else
+        {
+          listViewExternalCommands.Items[i].SubItems[1].Text = command;
+        }
       }
-      catch (Exception ex)
-      {
-        Log.Error("TV3BlasterPlugin: {0}", ex.Message);
-      }
+
+      numericUpDownPauseTime.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "PauseTime", Decimal.ToInt32(numericUpDownPauseTime.Value)));
+      checkBoxUsePreChange.Checked = IrssUtils.XML.GetBool(nodeList, "UsePreChangeCommand", checkBoxUsePreChange.Checked);
+      checkBoxSendSelect.Checked = IrssUtils.XML.GetBool(nodeList, "SendSelect", checkBoxSendSelect.Checked);
+      checkBoxDoubleSelect.Checked = IrssUtils.XML.GetBool(nodeList, "DoubleChannelSelect", checkBoxDoubleSelect.Checked);
+      numericUpDownRepeat.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatChannelCommands", Decimal.ToInt32(numericUpDownRepeat.Value)));
+      numericUpDownRepeatDelay.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatDelay", Decimal.ToInt32(numericUpDownRepeatDelay.Value)));
+
+      int digitsWas = comboBoxChDigits.SelectedIndex;
+      if (digitsWas > 0)
+        digitsWas--;
+      int digits = IrssUtils.XML.GetInt(nodeList, "ChannelDigits", digitsWas);
+      if (digits > 0)
+        digits++;
+      comboBoxChDigits.SelectedIndex = digits;
     }
 
     public void Save()
@@ -350,9 +349,10 @@ namespace TvEngine
       {
         string selected = listViewExternalCommands.SelectedItems[0].SubItems[1].Text;
 
-        if (selected.StartsWith(Common.CmdPrefixBlast))
+        if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+
           BlastCommand blastCommand = new BlastCommand(
             new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
             Common.FolderIRCommands,
@@ -362,9 +362,10 @@ namespace TvEngine
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixSTB))
+        else if (selected.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixSTB.Length));
+
           BlastCommand blastCommand = new BlastCommand(
             new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
             Common.FolderSTB,
@@ -374,28 +375,28 @@ namespace TvEngine
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixRun))
+        else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
           ExternalProgram executeProgram = new ExternalProgram(commands, parameterInfo);
           if (executeProgram.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixRun + executeProgram.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixSerial))
+        else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
           SerialCommand serialCommand = new SerialCommand(commands, parameterInfo);
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixWindowMsg))
+        else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
           MessageCommand messageCommand = new MessageCommand(commands);
           if (messageCommand.ShowDialog(this) == DialogResult.OK)
             listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixKeys))
+        else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
           if (keysCommand.ShowDialog(this) == DialogResult.OK)
@@ -450,7 +451,7 @@ namespace TvEngine
         else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV3BlasterPlugin.BlastIR), 
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
             Common.FolderIRCommands,
             TV3BlasterPlugin.TransceiverInformation.Ports,
             selected.Substring(Common.CmdPrefixBlast.Length));

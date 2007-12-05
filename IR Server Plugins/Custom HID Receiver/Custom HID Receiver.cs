@@ -225,7 +225,7 @@ namespace CustomHIDReceiver
     {
       try
       {
-        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8);
+        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
         writer.IndentChar = (char)9;

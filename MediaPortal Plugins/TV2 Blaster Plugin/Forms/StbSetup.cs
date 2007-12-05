@@ -22,12 +22,16 @@ namespace MediaPortal.Plugins
   partial class StbSetup : UserControl
   {
 
-    #region Variables
+    #region Constants
 
     const string parameterInfo =
 @"%1 = Current channel number digit (-1 for Select/Pre-Change)
 %2 = Full channel number string
 %3 = Blaster port (0 = Both, 1 = Port 1, 2 = Port 2)";
+
+    #endregion Constants
+
+    #region Variables
 
     int _cardId;
 
@@ -211,104 +215,97 @@ namespace MediaPortal.Plugins
 
       string fileName = Common.FolderSTB + xmlFile + ".xml";
 
-      try
+      XmlDocument doc = new XmlDocument();
+      doc.Load(fileName);
+
+      XmlNodeList nodeList = doc.DocumentElement.ChildNodes;
+
+      string command;
+      BlastCommand blastCommand;
+
+      bool useForAllBlastCommands = false;
+      string useForAllBlasterPort = String.Empty;
+
+      int blastCommandCount = 0;
+      for (int i = 0; i < 12; i++)
       {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(fileName);
+        if (i == 10)
+          command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
+        else if (i == 11)
+          command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
+        else
+          command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
-        XmlNodeList nodeList = doc.DocumentElement.ChildNodes;
+        if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
+          blastCommandCount++;
+      }
 
-        string command;
-        BlastCommand blastCommand;
+      for (int i = 0; i < 12; i++)
+      {
+        if (i == 10)
+          command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
+        else if (i == 11)
+          command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
+        else
+          command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
-        bool useForAllBlastCommands = false;
-        string useForAllBlasterPort = String.Empty;
-
-        int blastCommandCount = 0;
-        for (int i = 0; i < 12; i++)
+        if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
-          if (i == 10)
-            command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
-          else if (i == 11)
-            command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
-          else
-            command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
+          blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            Common.FolderSTB,
+            TV2BlasterPlugin.TransceiverInformation.Ports,
+            command.Substring(Common.CmdPrefixSTB.Length),
+            blastCommandCount--);
 
-          if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
-            blastCommandCount++;
-        }
-
-        for (int i = 0; i < 12; i++)
-        {
-          if (i == 10)
-            command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
-          else if (i == 11)
-            command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
-          else
-            command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
-
-          if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
+          if (useForAllBlastCommands)
           {
-            blastCommand = new BlastCommand(
-              new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
-              Common.FolderSTB,
-              TV2BlasterPlugin.TransceiverInformation.Ports,
-              command.Substring(Common.CmdPrefixSTB.Length),
-              blastCommandCount--);
-
-            if (useForAllBlastCommands)
+            blastCommand.BlasterPort = useForAllBlasterPort;
+            listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+          }
+          else
+          {
+            if (blastCommand.ShowDialog(this) == DialogResult.OK)
             {
-              blastCommand.BlasterPort = useForAllBlasterPort;
+              if (blastCommand.UseForAll)
+              {
+                useForAllBlastCommands = true;
+                useForAllBlasterPort = blastCommand.BlasterPort;
+              }
               listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
             }
             else
             {
-              if (blastCommand.ShowDialog(this) == DialogResult.OK)
-              {
-                if (blastCommand.UseForAll)
-                {
-                  useForAllBlastCommands = true;
-                  useForAllBlasterPort = blastCommand.BlasterPort;
-                }
-                listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
-              }
-              else
-              {
-                blastCommand = new BlastCommand(
-                  new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
-                  Common.FolderSTB,
-                  TV2BlasterPlugin.TransceiverInformation.Ports,
-                  command.Substring(Common.CmdPrefixSTB.Length));
+              blastCommand = new BlastCommand(
+                new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+                Common.FolderSTB,
+                TV2BlasterPlugin.TransceiverInformation.Ports,
+                command.Substring(Common.CmdPrefixSTB.Length));
 
-                listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
-              }
+              listViewExternalCommands.Items[i].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
             }
           }
-          else
-          {
-            listViewExternalCommands.Items[i].SubItems[1].Text = command;
-          }
         }
-
-        numericUpDownPauseTime.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "PauseTime", Decimal.ToInt32(numericUpDownPauseTime.Value)));
-        checkBoxUsePreChange.Checked = IrssUtils.XML.GetBool(nodeList, "UsePreChangeCommand", checkBoxUsePreChange.Checked);
-        checkBoxSendSelect.Checked = IrssUtils.XML.GetBool(nodeList, "SendSelect", checkBoxSendSelect.Checked);
-        checkBoxDoubleSelect.Checked = IrssUtils.XML.GetBool(nodeList, "DoubleChannelSelect", checkBoxDoubleSelect.Checked);
-        numericUpDownRepeat.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatChannelCommands", Decimal.ToInt32(numericUpDownRepeat.Value)));
-        numericUpDownRepeatDelay.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatDelay", Decimal.ToInt32(numericUpDownRepeatDelay.Value)));
-
-        int digitsWas = comboBoxChDigits.SelectedIndex;
-        if (digitsWas > 0)
-          digitsWas--;
-        int digits = IrssUtils.XML.GetInt(nodeList, "ChannelDigits", digitsWas);
-        if (digits > 0)
-          digits++;
-        comboBoxChDigits.SelectedIndex = digits;
+        else
+        {
+          listViewExternalCommands.Items[i].SubItems[1].Text = command;
+        }
       }
-      catch (Exception ex)
-      {
-        Log.Error("TV2BlasterPlugin: {0}", ex.Message);
-      }
+
+      numericUpDownPauseTime.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "PauseTime", Decimal.ToInt32(numericUpDownPauseTime.Value)));
+      checkBoxUsePreChange.Checked = IrssUtils.XML.GetBool(nodeList, "UsePreChangeCommand", checkBoxUsePreChange.Checked);
+      checkBoxSendSelect.Checked = IrssUtils.XML.GetBool(nodeList, "SendSelect", checkBoxSendSelect.Checked);
+      checkBoxDoubleSelect.Checked = IrssUtils.XML.GetBool(nodeList, "DoubleChannelSelect", checkBoxDoubleSelect.Checked);
+      numericUpDownRepeat.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatChannelCommands", Decimal.ToInt32(numericUpDownRepeat.Value)));
+      numericUpDownRepeatDelay.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatDelay", Decimal.ToInt32(numericUpDownRepeatDelay.Value)));
+
+      int digitsWas = comboBoxChDigits.SelectedIndex;
+      if (digitsWas > 0)
+        digitsWas--;
+      int digits = IrssUtils.XML.GetInt(nodeList, "ChannelDigits", digitsWas);
+      if (digits > 0)
+        digits++;
+      comboBoxChDigits.SelectedIndex = digits;
     }
 
     public void Save()

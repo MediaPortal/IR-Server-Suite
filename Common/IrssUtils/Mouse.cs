@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace IrssUtils
 {
@@ -107,7 +108,22 @@ namespace IrssUtils
     /// <param name="absolute">If true, dx and dy are taken as absolute position.  If false, dx and dy are taken as relative to the current position.</param>
     public static void Move(int dx, int dy, bool absolute)
     {
-      mouse_event((int)(absolute ? MouseEvents.Move | MouseEvents.Absolute : MouseEvents.Move), dx, dy, 0, IntPtr.Zero);
+      //if (absolute)
+        //Cursor.Position = new Point(dx, dy);
+      //else
+        //Cursor.Position = new Point(Curson.Position.X + dx, Cursor.Position.Y + dy);
+
+      if (absolute)
+      {
+        int x = dx * 65536 / Screen.PrimaryScreen.Bounds.Width;
+        int y = dy * 65536 / Screen.PrimaryScreen.Bounds.Height;
+
+        mouse_event((int)(MouseEvents.Move | MouseEvents.Absolute), x, y, 0, IntPtr.Zero);
+      }
+      else
+      {
+        mouse_event((int)(MouseEvents.Move), dx, dy, 0, IntPtr.Zero);
+      }
     }
 
     /// <summary>

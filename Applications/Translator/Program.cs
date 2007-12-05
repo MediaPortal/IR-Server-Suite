@@ -790,7 +790,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.Message);
+        IrssLog.Error(ex.ToString());
       }
 
       IrssLog.Debug("Active program not found in Translator program list");

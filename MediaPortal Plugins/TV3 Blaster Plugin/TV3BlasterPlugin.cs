@@ -200,7 +200,7 @@ namespace TvEngine
       Exception ex = obj as Exception;
       
       if (ex != null)
-        Log.Error("TV3BlasterPlugin: Communications failure: {0}", ex.Message);
+        Log.Error("TV3BlasterPlugin: Communications failure: {0}", ex.ToString());
       else
         Log.Error("TV3BlasterPlugin: Communications failure");
 
@@ -334,7 +334,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin - ReveivedMessage(): {0}", ex.Message);
+        Log.Error("TV3BlasterPlugin - ReveivedMessage(): {0}", ex.ToString());
       }
     }
 
@@ -345,18 +345,25 @@ namespace TvEngine
     /// <param name="eventArgs">Event arguments.</param>
     void events_OnTvServerEvent(object sender, EventArgs eventArgs)
     {
-      TvServerEventArgs tvEvent = (TvServerEventArgs)eventArgs;
-      AnalogChannel analogChannel = tvEvent.channel as AnalogChannel;
-
-      if (analogChannel == null)
-        return;
-
-      if (tvEvent.EventType == TvServerEventType.StartZapChannel)
+      try
       {
-        if (LogVerbose)
-          Log.Info("TV3BlasterPlugin: Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
+        TvServerEventArgs tvEvent = (TvServerEventArgs)eventArgs;
+        AnalogChannel analogChannel = tvEvent.channel as AnalogChannel;
 
-        ProcessExternalChannel(analogChannel.ChannelNumber.ToString(), tvEvent.Card.Id);
+        if (analogChannel == null)
+          return;
+
+        if (tvEvent.EventType == TvServerEventType.StartZapChannel)
+        {
+          if (LogVerbose)
+            Log.Info("TV3BlasterPlugin: Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
+
+          ProcessExternalChannel(analogChannel.ChannelNumber.ToString(), tvEvent.Card.Id);
+        }
+      }
+      catch (Exception ex)
+      {
+        Log.Error("TV3BlasterPlugin - events_OnTvServerEvent(): {0}", ex.ToString());
       }
     }
 
@@ -442,9 +449,9 @@ namespace TvEngine
           command = config.PreChangeCommand;
           if (!String.IsNullOrEmpty(command))
           {
-            if (command.StartsWith(Common.CmdPrefixRun))
+            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
               ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
-            else if (command.StartsWith(Common.CmdPrefixSerial))
+            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
             else
               ProcessCommand(command, false);
@@ -461,9 +468,9 @@ namespace TvEngine
           command = config.Digits[charVal];
           if (!String.IsNullOrEmpty(command))
           {
-            if (command.StartsWith(Common.CmdPrefixRun))
+            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
               ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), charVal, channel.ToString());
-            else if (command.StartsWith(Common.CmdPrefixSerial))
+            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), charVal, channel.ToString());
             else
               ProcessCommand(command, false);
@@ -478,7 +485,7 @@ namespace TvEngine
           command = config.SelectCommand;
           if (!String.IsNullOrEmpty(command))
           {
-            if (command.StartsWith(Common.CmdPrefixRun))
+            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
             {
               ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
 
@@ -490,7 +497,7 @@ namespace TvEngine
                 ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
               }
             }
-            else if (command.StartsWith(Common.CmdPrefixSerial))
+            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
             {
               ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
 
@@ -586,7 +593,7 @@ namespace TvEngine
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("TV3BlasterPlugin - LearnIR(): {0}", ex.Message);
+        Log.Error("TV3BlasterPlugin - LearnIR(): {0}", ex.ToString());
         return false;
       }
 
@@ -639,7 +646,7 @@ namespace TvEngine
         }
         catch (Exception ex)
         {
-          IrssLog.Error(ex.ToString());
+          Log.Error("TV3BlasterPlugin - ProcessCommand(): {0}", ex.ToString());
         }
       }
       else

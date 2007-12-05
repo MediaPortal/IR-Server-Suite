@@ -14,6 +14,9 @@ using IRServerPluginInterface;
 namespace MicrosoftMceTransceiver
 {
 
+  /// <summary>
+  /// Driver class for Windows XP eHome driver.
+  /// </summary>
   class DriverXP : Driver
   {
 
@@ -155,6 +158,8 @@ namespace MicrosoftMceTransceiver
 
     DeviceType _deviceType = DeviceType.Microsoft;
 
+    bool _deviceAvailable;
+
     #endregion Variables
 
     #region Constructor
@@ -185,12 +190,10 @@ namespace MicrosoftMceTransceiver
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
 
-      _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
-      int lastError = Marshal.GetLastWin32Error();
-      if (_eHomeHandle.IsInvalid)
-        throw new Win32Exception(lastError);
-
+      OpenDevice();
       StartReadThread();
+
+      _deviceAvailable = true;
 
       // Initialize device ...
       WriteSync(StartPacket);
@@ -200,9 +203,10 @@ namespace MicrosoftMceTransceiver
       SetInputPort(InputPort.Receive);
 
       _notifyWindow.Create();
+      _notifyWindow.RegisterDeviceArrival();
+      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
       _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
-      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
     }
 
     /// <summary>
@@ -217,6 +221,7 @@ namespace MicrosoftMceTransceiver
       _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
 
+      /*
       try
       {
         WriteSync(StopPacket);
@@ -232,14 +237,15 @@ namespace MicrosoftMceTransceiver
       {
       }
 #endif
+      */
 
+      _deviceAvailable = false;
+      
       StopReadThread();
+      CloseDevice();
 
-      _notifyWindow.UnregisterDeviceRemoval();
       _notifyWindow.Dispose();
       _notifyWindow = null;
-
-      CloseDevice();
 
 #if DEBUG
       DebugClose();
@@ -257,6 +263,11 @@ namespace MicrosoftMceTransceiver
 
       WriteSync(StopPacket);
       Thread.Sleep(PacketTimeout);
+
+      _deviceAvailable = false;
+
+      StopReadThread();
+      CloseDevice();
     }
 
     /// <summary>
@@ -268,8 +279,24 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Resume()");
 #endif
 
-      WriteSync(StartPacket);
-      Thread.Sleep(PacketTimeout);
+      try
+      {
+        OpenDevice();
+        StartReadThread();
+
+        _deviceAvailable = true;
+      }
+      catch
+      {
+#if DEBUG
+        DebugWriteLine("Resume(): Failed to start device");
+#endif
+      }
+
+      //WriteSync(StartPacket);
+      //Thread.Sleep(PacketTimeout);
+
+      //Start();
     }
 
     /// <summary>
@@ -355,8 +382,8 @@ namespace MicrosoftMceTransceiver
       }
 
       // Reset device (hopefully this will stop the blaster from stalling)
-      WriteSync(ResetPacket);
-      Thread.Sleep(PacketTimeout);
+      //WriteSync(ResetPacket);
+      //Thread.Sleep(PacketTimeout);
 
       // Set port
       WriteSync(portPacket);
@@ -505,6 +532,9 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StartReadThread()");
 #endif
 
+      if (_readThread != null && _readThread.IsAlive)
+        return;
+
       _stopReadThread = new ManualResetEvent(false);
       _readThreadMode = ReadThreadMode.Receiving;
 
@@ -522,18 +552,39 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StopReadThread()");
 #endif
 
-      if (_readThread != null && _readThread.ThreadState == ThreadState.Running)
+      if (_readThread == null || !_readThread.IsAlive)
+        return;
+
+      _readThreadMode = ReadThreadMode.Stop;
+      _stopReadThread.Set();
+
+      if (!_readThread.Join(PacketTimeout * 2))
+        _readThread.Abort();
+
+      _stopReadThread.Close();
+      _stopReadThread = null;
+
+      _readThread = null;
+    }
+
+    /// <summary>
+    /// Opens the device.
+    /// </summary>
+    void OpenDevice()
+    {
+#if DEBUG
+      DebugWriteLine("OpenDevice()");
+#endif
+
+      if (_eHomeHandle != null)
+        return;
+
+      _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      int lastError = Marshal.GetLastWin32Error();
+      if (_eHomeHandle.IsInvalid)
       {
-        _readThreadMode = ReadThreadMode.Stop;
-        _stopReadThread.Set();
-
-        if (!_readThread.Join(PacketTimeout * 2))
-          _readThread.Abort();
-
-        _stopReadThread.Close();
-        _stopReadThread = null;
-
-        _readThread = null;
+        _eHomeHandle = null;
+        throw new Win32Exception(lastError);
       }
     }
 
@@ -546,29 +597,36 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("CloseDevice()");
 #endif
 
-      if (_eHomeHandle != null)
-      {
-        CloseHandle(_eHomeHandle);
+      if (_eHomeHandle == null)
+        return;
 
-        _eHomeHandle.Dispose();
-        _eHomeHandle = null;
-      }
+      CloseHandle(_eHomeHandle);
+
+      _eHomeHandle.Dispose();
+      _eHomeHandle = null;
     }
 
     void OnDeviceArrival()
     {
-      _notifyWindow.UnregisterDeviceArrival();
+#if DEBUG
+      DebugWriteLine("OnDeviceArrival()");
+#endif
 
+      OpenDevice();
       StartReadThread();
 
-      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
+      _deviceAvailable = true;
     }
     void OnDeviceRemoval()
     {
-      _notifyWindow.UnregisterDeviceRemoval();
-      _notifyWindow.RegisterDeviceArrival();
+#if DEBUG
+      DebugWriteLine("OnDeviceRemoval()");
+#endif
+
+      _deviceAvailable = false;
 
       StopReadThread();
+      CloseDevice();
     }
 
     /// <summary>
@@ -754,6 +812,9 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("WriteSync()");
       DebugDump(data);
 #endif
+
+      if (!_deviceAvailable)
+        throw new ApplicationException("Device not available");
 
       int lastError;
 

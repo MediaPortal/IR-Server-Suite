@@ -14,6 +14,9 @@ using IRServerPluginInterface;
 namespace MicrosoftMceTransceiver
 {
 
+  /// <summary>
+  /// Driver class for replacement driver.
+  /// </summary>
   class DriverReplacement : Driver
   {
 
@@ -361,8 +364,8 @@ namespace MicrosoftMceTransceiver
       }
 
       // Reset device (hopefully this will stop the blaster from stalling)
-      WriteSync(ResetPacket);
-      Thread.Sleep(PacketTimeout);
+      //WriteSync(ResetPacket);
+      //Thread.Sleep(PacketTimeout);
 
       // Set port
       WriteSync(portPacket);
@@ -528,7 +531,7 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StopReadThread()");
 #endif
 
-      if (_readThread != null && _readThread.ThreadState == ThreadState.Running)
+      if (_readThread != null && _readThread.IsAlive)
       {
         _readThreadMode = ReadThreadMode.Stop;
         _stopReadThread.Set();

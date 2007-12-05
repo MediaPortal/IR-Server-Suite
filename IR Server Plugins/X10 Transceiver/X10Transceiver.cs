@@ -55,7 +55,7 @@ namespace X10Transceiver
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81"; } }
+    public override string Author       { get { return "and-81, with original MediaPortal code by CoolHammer, mPod, diehard2"; } }
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>

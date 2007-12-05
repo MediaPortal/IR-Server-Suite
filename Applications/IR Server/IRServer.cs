@@ -71,7 +71,7 @@ namespace IRServer
     bool _registered; // Used for relay and repeater modes.
 
     string[] _pluginNameReceive;
-    IRServerPluginBase[] _pluginReceive;
+    List<IRServerPluginBase> _pluginReceive;
 
     string _pluginNameTransmit;
     IRServerPluginBase _pluginTransmit;
@@ -172,7 +172,7 @@ namespace IRServer
           }
           else
           {
-            List<IRServerPluginBase> plugins = new List<IRServerPluginBase>(_pluginNameReceive.Length);
+            _pluginReceive = new List<IRServerPluginBase>(_pluginNameReceive.Length);
 
             for (int index = 0; index < _pluginNameReceive.Length; index++)
             {
@@ -186,14 +186,15 @@ namespace IRServer
               }
               else
               {
-                plugins.Add(plugin);
+                _pluginReceive.Add(plugin);
 
                 if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
                   _pluginTransmit = plugin;
               }
             }
 
-            _pluginReceive = plugins.ToArray();
+            if (_pluginReceive.Count == 0)
+              _pluginReceive = null;
           }
 
           if (String.IsNullOrEmpty(_pluginNameTransmit))
@@ -235,6 +236,8 @@ namespace IRServer
 
         if (_pluginReceive != null)
         {
+          List<IRServerPluginBase> removePlugins = new List<IRServerPluginBase>();
+
           foreach (IRServerPluginBase plugin in _pluginReceive)
           {
             try
@@ -272,10 +275,18 @@ namespace IRServer
             {
               IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
               IrssLog.Error(ex.ToString());
+
+              removePlugins.Add(plugin);
             }
           }
+
+          foreach (IRServerPluginBase plugin in removePlugins)
+            _pluginReceive.Remove(plugin);
+
+          if (_pluginReceive.Count == 0)
+            _pluginReceive = null;
         }
-        
+
         if (_pluginTransmit != null && !startedTransmit)
         {
           try
@@ -289,6 +300,8 @@ namespace IRServer
           {
             IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
             IrssLog.Error(ex.ToString());
+
+            _pluginTransmit = null;
           }
         }
 
@@ -370,12 +383,14 @@ namespace IRServer
       {
         if (_pluginTransmit != null && !stoppedTransmit)
           _pluginTransmit.Stop();
-
-        _pluginTransmit = null;
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
+      }
+      finally
+      {
+        _pluginTransmit = null;
       }
 
       // Stop Server
@@ -430,6 +445,8 @@ namespace IRServer
             _pluginNameTransmit = config.PluginTransmit;
 
             SaveSettings();
+
+            Thread.Sleep(1000);
 
             Start();  // Restart communications
           }
@@ -733,10 +750,10 @@ namespace IRServer
               {
                 try
                 {
-                  plugin.Resume();
-
                   if (plugin == _pluginTransmit)
                     resumedTransmit = true;
+
+                  plugin.Resume();
                 }
                 catch (Exception ex)
                 {
@@ -1471,23 +1488,20 @@ namespace IRServer
       {
         doc.Load(ConfigurationFile);
       }
+      catch (DirectoryNotFoundException)
+      {
+        IrssLog.Error("No configuration file found ({0}), folder not found! Creating default configuration file", ConfigurationFile);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(ConfigurationFile));
+
+        CreateDefaultSettings();
+        return;
+      }
       catch (FileNotFoundException)
       {
         IrssLog.Warn("No configuration file found ({0}), creating default configuration file", ConfigurationFile);
 
-        string[] blasters = Program.DetectBlasters();
-        if (blasters == null)
-          _pluginNameTransmit = String.Empty;
-        else
-          _pluginNameTransmit = blasters[0];
-
-        string[] receivers = Program.DetectReceivers();
-        if (receivers == null)
-          _pluginNameReceive = null;
-        else
-          _pluginNameReceive = receivers;
-        
-        SaveSettings();
+        CreateDefaultSettings();
         return;
       }
       catch (Exception ex)
@@ -1520,7 +1534,7 @@ namespace IRServer
     {
       try
       {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
@@ -1552,6 +1566,29 @@ namespace IRServer
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
         }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex.ToString());
+      }
+    }
+    void CreateDefaultSettings()
+    {
+      try
+      {
+        string[] blasters = Program.DetectBlasters();
+        if (blasters == null)
+          _pluginNameTransmit = String.Empty;
+        else
+          _pluginNameTransmit = blasters[0];
+
+        string[] receivers = Program.DetectReceivers();
+        if (receivers == null)
+          _pluginNameReceive = null;
+        else
+          _pluginNameReceive = receivers;
+
+        SaveSettings();
       }
       catch (Exception ex)
       {

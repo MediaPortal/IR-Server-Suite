@@ -123,7 +123,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.Message);
+        IrssLog.Error(ex.ToString());
       }
     }
 

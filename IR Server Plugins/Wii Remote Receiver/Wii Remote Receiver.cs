@@ -67,7 +67,7 @@ namespace WiiRemoteReceiver
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81"; } }
+    public override string Author       { get { return "and-81, using the WiimoteLib by Brian Peek"; } }
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
@@ -93,15 +93,23 @@ namespace WiiRemoteReceiver
     {
       LoadSettings();
 
-      _wiimote = new Wiimote();
+      try
+      {
+        _wiimote = new Wiimote();
 
-      _wiimote.WiimoteChanged += new WiimoteChangedEventHandler(WiimoteChanged);
-      _wiimote.WiimoteExtensionChanged += new WiimoteExtensionChangedEventHandler(WiimoteExtensionChanged);
+        _wiimote.WiimoteChanged += new WiimoteChangedEventHandler(WiimoteChanged);
+        _wiimote.WiimoteExtensionChanged += new WiimoteExtensionChangedEventHandler(WiimoteExtensionChanged);
 
-      _wiimote.Connect();
-      _wiimote.SetReportType(Wiimote.InputReport.IRAccel, true);
-      _wiimote.SetLEDs(_led1, _led2, _led3, _led4);
-      _wiimote.SetRumble(false);
+        _wiimote.Connect();
+        _wiimote.SetReportType(Wiimote.InputReport.IRAccel, true);
+        _wiimote.SetLEDs(_led1, _led2, _led3, _led4);
+        _wiimote.SetRumble(false);
+      }
+      catch
+      {
+        _wiimote = null;
+        throw;
+      }
 
       return true;
     }
@@ -149,7 +157,6 @@ namespace WiiRemoteReceiver
       setup.LED2 = _led2;
       setup.LED3 = _led3;
       setup.LED4 = _led4;
-
 
       if (setup.ShowDialog(owner) == DialogResult.OK)
       {
@@ -246,10 +253,7 @@ namespace WiiRemoteReceiver
       }
 #endif
     }
-
-
-
-
+    
     void WiimoteChanged(object sender, WiimoteChangedEventArgs args)
     {
       WiimoteState ws = args.WiimoteState;
@@ -332,7 +336,7 @@ namespace WiiRemoteReceiver
 
           if (_handleMouseLocally)
           {
-            Cursor.Position = new Point(x, y);
+            Mouse.Move(x, y, true);
           }
           else
           {

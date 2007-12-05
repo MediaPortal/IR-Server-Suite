@@ -14,6 +14,9 @@ using IRServerPluginInterface;
 namespace MicrosoftMceTransceiver
 {
 
+  /// <summary>
+  /// Driver class for Windows Vista eHome driver.
+  /// </summary>
   class DriverVista : Driver
   {
 
@@ -760,7 +763,7 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StopReadThread()");
 #endif
 
-      if (_readThread != null)
+      if (_readThread != null && _readThread.IsAlive)
       {
         _readThreadMode = ReadThreadMode.Stop;
 

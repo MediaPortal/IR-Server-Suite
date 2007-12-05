@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace MicrosoftMceTransceiver
 {
@@ -25,16 +26,46 @@ namespace MicrosoftMceTransceiver
     [Flags]
     public enum MouseEvents
     {
-      None        = 0x0000,
-      Move        = 0x0001,
-      LeftDown    = 0x0002,
-      LeftUp      = 0x0004,
-      RightDown   = 0x0008,
-      RightUp     = 0x0010,
-      MiddleDown  = 0x0020,
-      MiddleUp    = 0x0040,
-      Scroll      = 0x0800,
-      Absolute    = 0x8000,
+      /// <summary>
+      /// No Event.
+      /// </summary>
+      None = 0x0000,
+      /// <summary>
+      /// Move.
+      /// </summary>
+      Move = 0x0001,
+      /// <summary>
+      /// Left Button Down.
+      /// </summary>
+      LeftDown = 0x0002,
+      /// <summary>
+      /// Left Button Up.
+      /// </summary>
+      LeftUp = 0x0004,
+      /// <summary>
+      /// Right Button Down.
+      /// </summary>
+      RightDown = 0x0008,
+      /// <summary>
+      /// Right Button Up.
+      /// </summary>
+      RightUp = 0x0010,
+      /// <summary>
+      /// Middle Button Down.
+      /// </summary>
+      MiddleDown = 0x0020,
+      /// <summary>
+      /// Middle Button Up.
+      /// </summary>
+      MiddleUp = 0x0040,
+      /// <summary>
+      /// Scroll.
+      /// </summary>
+      Scroll = 0x0800,
+      /// <summary>
+      /// Position Absolute.
+      /// </summary>
+      Absolute = 0x8000
     }
 
     /// <summary>
@@ -42,9 +73,18 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     public enum ScrollDir
     {
-      None  =    0,
-      Up    =  120,
-      Down  = -120,
+      /// <summary>
+      /// No Scroll.
+      /// </summary>
+      None = 0,
+      /// <summary>
+      /// Scroll Up.
+      /// </summary>
+      Up = 120,
+      /// <summary>
+      /// Scroll Down.
+      /// </summary>
+      Down = -120
     }
 
     #endregion Enumerations
@@ -68,7 +108,22 @@ namespace MicrosoftMceTransceiver
     /// <param name="absolute">If true, dx and dy are taken as absolute position.  If false, dx and dy are taken as relative to the current position.</param>
     public static void Move(int dx, int dy, bool absolute)
     {
-      mouse_event((int)(absolute ? MouseEvents.Move | MouseEvents.Absolute : MouseEvents.Move), dx, dy, 0, IntPtr.Zero);
+      //if (absolute)
+      //Cursor.Position = new Point(dx, dy);
+      //else
+      //Cursor.Position = new Point(Curson.Position.X + dx, Cursor.Position.Y + dy);
+
+      if (absolute)
+      {
+        int x = dx * 65536 / Screen.PrimaryScreen.Bounds.Width;
+        int y = dy * 65536 / Screen.PrimaryScreen.Bounds.Height;
+
+        mouse_event((int)(MouseEvents.Move | MouseEvents.Absolute), x, y, 0, IntPtr.Zero);
+      }
+      else
+      {
+        mouse_event((int)(MouseEvents.Move), dx, dy, 0, IntPtr.Zero);
+      }
     }
 
     /// <summary>

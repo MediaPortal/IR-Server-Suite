@@ -102,11 +102,18 @@ namespace MediaPortal.Plugins
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      foreach (StbSetup setup in _tvCardStbSetups)
-        setup.Save();
+      try
+      {
+        foreach (StbSetup setup in _tvCardStbSetups)
+          setup.Save();
 
-      for (int index = 0; index < TV2BlasterPlugin.TvCardCount; index++)
-        TV2BlasterPlugin.GetExternalChannelConfig(index).Save();
+        for (int index = 0; index < TV2BlasterPlugin.TvCardCount; index++)
+          TV2BlasterPlugin.GetExternalChannelConfig(index).Save();
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.ToString(), "Failed to save external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
 
       this.DialogResult = DialogResult.OK;
       this.Close();
@@ -114,31 +121,31 @@ namespace MediaPortal.Plugins
 
     private void buttonTest_Click(object sender, EventArgs e)
     {
-      StbSetup setup = _tvCardStbSetups[tabControlTVCards.SelectedIndex];
-
-      int channelTest = Decimal.ToInt32(numericUpDownTest.Value);
-      string channel;
-      switch (setup.ChannelDigits)
-      {
-        case 2:
-          channel = channelTest.ToString("00");
-          break;
-
-        case 3:
-          channel = channelTest.ToString("000");
-          break;
-
-        case 4:
-          channel = channelTest.ToString("0000");
-          break;
-
-        default:
-          channel = channelTest.ToString();
-          break;
-      }
-
       try
       {
+        StbSetup setup = _tvCardStbSetups[tabControlTVCards.SelectedIndex];
+
+        int channelTest = Decimal.ToInt32(numericUpDownTest.Value);
+        string channel;
+        switch (setup.ChannelDigits)
+        {
+          case 2:
+            channel = channelTest.ToString("00");
+            break;
+
+          case 3:
+            channel = channelTest.ToString("000");
+            break;
+
+          case 4:
+            channel = channelTest.ToString("0000");
+            break;
+
+          default:
+            channel = channelTest.ToString();
+            break;
+        }
+
         int charVal;
         string command;
 
@@ -157,7 +164,7 @@ namespace MediaPortal.Plugins
               TV2BlasterPlugin.ProcessCommand(setup.PreChangeCommand, false);
 
             if (setup.PauseTime > 0)
-                Thread.Sleep(setup.PauseTime);
+              Thread.Sleep(setup.PauseTime);
           }
           
           foreach (char digit in channel)
@@ -175,7 +182,7 @@ namespace MediaPortal.Plugins
                 TV2BlasterPlugin.ProcessCommand(command, false);
 
               if (setup.PauseTime > 0)
-              Thread.Sleep(setup.PauseTime);
+                Thread.Sleep(setup.PauseTime);
             }
           }
 
@@ -222,7 +229,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.Message, "Failed to test external channel", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to test external channel", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -233,12 +240,26 @@ namespace MediaPortal.Plugins
       if (String.IsNullOrEmpty(quickSetup))
         return;
 
-      _tvCardStbSetups[tabControlTVCards.SelectedIndex].SetToXml(quickSetup);
+      try
+      {
+        _tvCardStbSetups[tabControlTVCards.SelectedIndex].SetToXml(quickSetup);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.ToString(), "Failed to quick-set external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     private void buttonCopyFrom_Click(object sender, EventArgs e)
     {
-      _tvCardStbSetups[tabControlTVCards.SelectedIndex].SetToCard(comboBoxCopyFrom.SelectedIndex);
+      try
+      {
+        _tvCardStbSetups[tabControlTVCards.SelectedIndex].SetToCard(comboBoxCopyFrom.SelectedIndex);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.ToString(), "Failed to copy external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)

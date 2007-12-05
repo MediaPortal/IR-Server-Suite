@@ -138,7 +138,7 @@ namespace WinLircTransceiver
 
         // Convert received bytes to string
         char[] chars = new char[receivedBytesCount + 1];
-        System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder();
+        System.Text.Decoder decoder = Encoding.UTF8.GetDecoder();
         decoder.GetChars(info._dataBuffer, 0, receivedBytesCount, chars, 0);
         System.String data = new System.String(chars);
 

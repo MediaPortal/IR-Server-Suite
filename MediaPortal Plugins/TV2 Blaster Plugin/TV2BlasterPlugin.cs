@@ -273,7 +273,7 @@ namespace MediaPortal.Plugins
       Exception ex = obj as Exception;
       
       if (ex != null)
-        Log.Error("TV2BlasterPlugin: Communications failure: {0}", ex.Message);
+        Log.Error("TV2BlasterPlugin: Communications failure: {0}", ex.ToString());
       else
         Log.Error("TV2BlasterPlugin: Communications failure");
 
@@ -407,7 +407,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin - ReveivedMessage(): {0}", ex.Message);
+        Log.Error("TV2BlasterPlugin - ReveivedMessage(): {0}", ex.ToString());
       }
     }
 
@@ -422,7 +422,14 @@ namespace MediaPortal.Plugins
         if (LogVerbose)
           Log.Info("TV2BlasterPlugin: Tune External Channel: {0}, Tuner card: {1}", msg.Label, msg.Label2);
 
-        ProcessExternalChannel(msg.Label, msg.Label2);
+        try
+        {
+          ProcessExternalChannel(msg.Label, msg.Label2);
+        }
+        catch (Exception ex)
+        {
+          Log.Error("TV2BlasterPlugin - OnMessage(): {0}", ex.ToString());
+        }
       }
     }
 
@@ -656,7 +663,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("TV2BlasterPlugin - LearnIR(): {0}", ex.Message);
+        Log.Error("TV2BlasterPlugin - LearnIR(): {0}", ex.ToString());
         return false;
       }
 
@@ -709,7 +716,7 @@ namespace MediaPortal.Plugins
         }
         catch (Exception ex)
         {
-          IrssLog.Error(ex.ToString());
+          Log.Error("TV2BlasterPlugin - ProcessCommand(): {0}", ex.ToString());
         }
       }
       else
@@ -735,37 +742,37 @@ namespace MediaPortal.Plugins
         if (String.IsNullOrEmpty(command))
           throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
 
-        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
+        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
           string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
           ProcMacro(fileName);
         }
-        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
+        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
           BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
         }
-        else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))  // STB IR Code
+        else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
           BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
         }
-        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
+        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
           Common.ProcessRunCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
+        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
           Common.ProcessSerialCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
+        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
           Common.ProcessWindowMessageCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
+        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
           if (InConfiguration)
@@ -773,7 +780,7 @@ namespace MediaPortal.Plugins
           else
             Common.ProcessKeyCommand(keyCommand);
         }
-        else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase)) // Go To Screen
+        else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
         {
           MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), _mpBasicHome);
         }
@@ -1044,7 +1051,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin: LoadSettings() {0}", ex.Message);
+        Log.Error("TV2BlasterPlugin - LoadSettings(): {0}", ex.ToString());
       }
     }
     /// <summary>
@@ -1062,7 +1069,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin: SaveSettings() {0}", ex.Message);
+        Log.Error("TV2BlasterPlugin - SaveSettings(): {0}", ex.ToString());
       }
     }
 

@@ -97,6 +97,10 @@ namespace Translator
       }
     }
 
+    void InsertKeystroke(char key)
+    {
+      textBoxKeys.Paste(key.ToString());
+    }
     void InsertKeystroke(string keystroke)
     {
       textBoxKeys.Paste(keystroke);
@@ -485,7 +489,7 @@ namespace Translator
         }
         catch (Exception ex)
         {
-          MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          MessageBox.Show(this, ex.ToString(), "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
     }
@@ -652,9 +656,10 @@ namespace Translator
         case "multiplyToolStripMenuItem":   InsertKeystroke("{MULTIPLY}"); break;
         case "divideToolStripMenuItem":     InsertKeystroke("{DIVIDE}"); break;
 
-        case "altToolStripMenuItem":        InsertKeystroke("%"); break;
-        case "controlToolStripMenuItem":    InsertKeystroke("^"); break;
-        case "shiftToolStripMenuItem":      InsertKeystroke("+"); break;
+        case "altToolStripMenuItem":        InsertKeystroke(Keyboard.ModifierAlt); break;
+        case "controlToolStripMenuItem":    InsertKeystroke(Keyboard.ModifierControl); break;
+        case "shiftToolStripMenuItem":      InsertKeystroke(Keyboard.ModifierShift); break;
+        case "windowsToolStripMenuItem":    InsertKeystroke(Keyboard.ModifierWinKey); break;
 
         case "backspaceToolStripMenuItem":  InsertKeystroke("{BACKSPACE}"); break;
         case "breakToolStripMenuItem":      InsertKeystroke("{BREAK}"); break;
@@ -672,6 +677,7 @@ namespace Translator
         case "pageUpToolStripMenuItem":     InsertKeystroke("{PGUP}"); break;
         case "scrollLockToolStripMenuItem": InsertKeystroke("{SCROLLLOCK}"); break;
         case "tabToolStripMenuItem":        InsertKeystroke("{TAB}"); break;
+        case "windowsKeyToolStripMenuItem": InsertKeystroke("{WIN}"); break;
       }
     }
 

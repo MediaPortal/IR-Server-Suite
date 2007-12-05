@@ -373,7 +373,7 @@ namespace IRTransTransceiver
     {
       try
       {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;

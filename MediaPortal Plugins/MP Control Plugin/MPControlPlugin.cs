@@ -699,7 +699,7 @@ namespace MediaPortal.Plugins
       Exception ex = obj as Exception;
       
       if (ex != null)
-        Log.Error("MPControlPlugin: Communications failure: {0}", ex.Message);
+        Log.Error("MPControlPlugin: Communications failure: {0}", ex.ToString());
       else
         Log.Error("MPControlPlugin: Communications failure");
 
@@ -838,7 +838,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin - ReveivedMessage(): {0}", ex.Message);
+        Log.Error("MPControlPlugin - ReveivedMessage(): {0}", ex.ToString());
       }
     }
 
@@ -940,7 +940,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin: LoadRemoteMap() - {0}", ex.Message);
+        Log.Error("MPControlPlugin - LoadRemoteMap(): {0}", ex.ToString());
       }
 
       return remoteMap.ToArray();
@@ -965,7 +965,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin: LoadEventMappings() {0}", ex.Message);
+        Log.Error("MPControlPlugin - LoadEventMappings(): {0}", ex.ToString());
       }
     }
 
@@ -1166,7 +1166,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("MPControlPlugin - LearnIR(): {0}", ex.Message);
+        Log.Error("MPControlPlugin - LearnIR(): {0}", ex.ToString());
         return false;
       }
 
@@ -1219,7 +1219,7 @@ namespace MediaPortal.Plugins
         }
         catch (Exception ex)
         {
-          IrssLog.Error(ex.ToString());
+          Log.Error("MPControlPlugin - ProcessCommand(): {0}", ex.ToString());
         }
       }
       else
@@ -1561,7 +1561,9 @@ namespace MediaPortal.Plugins
 
             case Common.XmlTagExit:
               {
-                if (!InConfiguration)
+                if (InConfiguration)
+                  MessageBox.Show("Cannot exit MediaPortal while in configuration", Common.UITextExit, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
                   GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_EXIT, 0, 0));
                 break;
               }
@@ -1767,7 +1769,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin: LoadSettings() {0}", ex.Message);
+        Log.Error("MPControlPlugin - LoadSettings(): {0}", ex.ToString());
       }
     }
     /// <summary>
@@ -1794,7 +1796,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin: SaveSettings() {0}", ex.Message);
+        Log.Error("MPControlPlugin - SaveSettings(): {0}", ex.ToString());
       }
     }
 

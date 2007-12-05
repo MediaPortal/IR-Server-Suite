@@ -35,15 +35,15 @@ namespace InputService
     /// <summary>
     /// Acts as a standard Server (Default).
     /// </summary>
-    ServerMode = 0,
+    ServerMode    = 0,
     /// <summary>
     /// Relays button presses to another Input Service.
     /// </summary>
-    RelayMode = 1,
+    RelayMode     = 1,
     /// <summary>
     /// Acts as a repeater for another Input Service's blasting.
     /// </summary>
-    RepeaterMode = 2,
+    RepeaterMode  = 2,
   }
 
   #endregion Enumerations
@@ -74,7 +74,7 @@ namespace InputService
     bool _registered; // Used for relay and repeater modes.
 
     string[] _pluginNameReceive;
-    IRServerPluginBase[] _pluginReceive;
+    List<IRServerPluginBase> _pluginReceive;
 
     string _pluginNameTransmit;
     IRServerPluginBase _pluginTransmit;
@@ -89,7 +89,7 @@ namespace InputService
     public InputService()
     {
       this.ServiceName = Program.ServiceName;
-      
+
       //this.EventLog.Log = "Application";
       //this.AutoLog = true;
 
@@ -168,7 +168,7 @@ namespace InputService
           }
           else
           {
-            List<IRServerPluginBase> plugins = new List<IRServerPluginBase>(_pluginNameReceive.Length);
+            _pluginReceive = new List<IRServerPluginBase>(_pluginNameReceive.Length);
 
             for (int index = 0; index < _pluginNameReceive.Length; index++)
             {
@@ -182,14 +182,15 @@ namespace InputService
               }
               else
               {
-                plugins.Add(plugin);
+                _pluginReceive.Add(plugin);
 
-                if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit))
+                if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
                   _pluginTransmit = plugin;
               }
             }
 
-            _pluginReceive = plugins.ToArray();
+            if (_pluginReceive.Count == 0)
+              _pluginReceive = null;
           }
 
           if (String.IsNullOrEmpty(_pluginNameTransmit))
@@ -231,6 +232,8 @@ namespace InputService
 
         if (_pluginReceive != null)
         {
+          List<IRServerPluginBase> removePlugins = new List<IRServerPluginBase>();
+
           foreach (IRServerPluginBase plugin in _pluginReceive)
           {
             try
@@ -249,7 +252,7 @@ namespace InputService
                 if (mouseReceiver != null)
                   mouseReceiver.MouseCallback += new MouseHandler(MouseHandlerCallback);
 
-                if (plugin.Name.Equals(_pluginTransmit.Name))
+                if (plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
                 {
                   startedTransmit = true;
                   IrssLog.Info("Transmit and Receive plugin started: \"{0}\"", plugin.Name);
@@ -268,10 +271,18 @@ namespace InputService
             {
               IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
               IrssLog.Error(ex.ToString());
+
+              removePlugins.Add(plugin);
             }
           }
+
+          foreach (IRServerPluginBase plugin in removePlugins)
+            _pluginReceive.Remove(plugin);
+
+          if (_pluginReceive.Count == 0)
+            _pluginReceive = null;
         }
-        
+
         if (_pluginTransmit != null && !startedTransmit)
         {
           try
@@ -285,6 +296,8 @@ namespace InputService
           {
             IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
             IrssLog.Error(ex.ToString());
+
+            _pluginTransmit = null;
           }
         }
 
@@ -356,12 +369,14 @@ namespace InputService
       {
         if (_pluginTransmit != null && !stoppedTransmit)
           _pluginTransmit.Stop();
-
-        _pluginTransmit = null;
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex.ToString());
+      }
+      finally
+      {
+        _pluginTransmit = null;
       }
 
       // Stop Service
@@ -616,7 +631,7 @@ namespace InputService
         _client = null;
       }
     }
-    
+
     bool StartRelay()
     {
       try
@@ -1466,7 +1481,7 @@ namespace InputService
     {
       try
       {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;

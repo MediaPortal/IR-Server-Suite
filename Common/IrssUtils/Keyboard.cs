@@ -656,6 +656,14 @@ namespace IrssUtils
       /// </summary>
       VK_PAUSE = 0x13,
       /// <summary>
+      /// Page Down (VK_NEXT)
+      /// </summary>
+      VK_PGDN = VK_NEXT,
+      /// <summary>
+      /// Page Up (VK_PRIOR)
+      /// </summary>
+      VK_PGUP = VK_PRIOR,
+      /// <summary>
       /// Play
       /// </summary>
       VK_PLAY = 0xFA,

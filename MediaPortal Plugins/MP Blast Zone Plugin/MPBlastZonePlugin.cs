@@ -433,7 +433,7 @@ namespace MediaPortal.Plugins
       Exception ex = obj as Exception;
       
       if (ex != null)
-        Log.Error("MPBlastZonePlugin: Communications failure: {0}", ex.Message);
+        Log.Error("MPBlastZonePlugin: Communications failure: {0}", ex.ToString());
       else
         Log.Error("MPBlastZonePlugin: Communications failure");
 
@@ -567,7 +567,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin - ReveivedMessage(): {0}", ex.Message);
+        Log.Error("MPBlastZonePlugin - ReveivedMessage(): {0}", ex.ToString());
       }
     }
 
@@ -606,7 +606,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("MPBlastZonePlugin - LearnIRCommand(): {0}", ex.Message);
+        Log.Error("MPBlastZonePlugin - LearnIRCommand(): {0}", ex.ToString());
         return false;
       }
 
@@ -659,7 +659,7 @@ namespace MediaPortal.Plugins
         }
         catch (Exception ex)
         {
-          IrssLog.Error(ex.ToString());
+          Log.Error("MPBlastZonePlugin - ProcessCommand(): {0}", ex.ToString());
         }
       }
       else
@@ -775,7 +775,7 @@ namespace MediaPortal.Plugins
     }
 
     /// <summary>
-    /// Process the supplied Macro file.
+    /// Called by ProcCommand to process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
     static void ProcMacro(string fileName)
@@ -861,6 +861,12 @@ namespace MediaPortal.Plugins
                 break;
               }
 
+            case Common.XmlTagTcpMsg:
+              {
+                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
+                Common.ProcessTcpMessageCommand(commands);
+                break;
+              }
             /*
             case Common.XmlTagWindowState:
               {
@@ -951,7 +957,7 @@ namespace MediaPortal.Plugins
         MacroStackRemove(Thread.CurrentThread.ManagedThreadId, fileName);
       }
     }
-    
+
     /// <summary>
     /// Retreives the required Macro Stack from the Hashtable.
     /// </summary>
@@ -1095,7 +1101,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: LoadSettings() {0}", ex.Message);
+        Log.Error("MPBlastZonePlugin - LoadSettings(): {0}", ex.ToString());
       }
     }
     /// <summary>
@@ -1114,7 +1120,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: SaveSettings() {0}", ex.Message);
+        Log.Error("MPBlastZonePlugin - SaveSettings(): {0}", ex.ToString());
       }
     }
 

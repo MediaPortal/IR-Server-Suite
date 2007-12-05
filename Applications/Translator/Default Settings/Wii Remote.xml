@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ServerHost>localhost</ServerHost>
+  <SystemWideMappings>
+    <ButtonMapping KeyCode="Wiimote_Button:B" Description="" Command="Keys: {ENTER}" />
+    <ButtonMapping KeyCode="Wiimote_Button:A" Description="" Command="Keys: {SPACE}" />
+    <ButtonMapping KeyCode="Wiimote_Pad:Down" Description="" Command="Keys: {DOWN}" />
+    <ButtonMapping KeyCode="Wiimote_Pad:Up" Description="" Command="Keys: {UP}" />
+    <ButtonMapping KeyCode="Wiimote_Pad:Left" Description="" Command="Keys: {LEFT}" />
+    <ButtonMapping KeyCode="Wiimote_Pad:Right" Description="" Command="Keys: {RIGHT}" />
+    <ButtonMapping KeyCode="Wiimote_Button:One" Description="" Command="Keys: {PGUP}" />
+    <ButtonMapping KeyCode="Wiimote_Button:Two" Description="" Command="Keys: {PGDN}" />
+    <ButtonMapping KeyCode="Wiimote_Button:Home" Description="" Command="Keys: {WIN}" />
+  </SystemWideMappings>
+  <Programs>
+    <ProgramSettings Name="MediaPortal" FileName="C:\Program Files\Team MediaPortal\MediaPortal\MediaPortal.exe" Folder="C:\Program Files\Team MediaPortal\MediaPortal" Arguments="" UseShellExecute="false" ForceWindowFocus="false" IgnoreSystemWide="true" WindowState="Normal">
+      <ButtonMappings>
+        <ButtonMapping KeyCode="31710" Description="Right" Command="Macro: Mouse Macro1" />
+      </ButtonMappings>
+    </ProgramSettings>
+  </Programs>
+  <Events />
+</Configuration>

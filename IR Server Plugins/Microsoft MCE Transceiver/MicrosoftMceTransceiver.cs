@@ -127,7 +127,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
-    public override string Author       { get { return "and-81"; } }
+    public override string Author       { get { return "and-81, inspired by Bruno Fleurette"; } }
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
@@ -287,7 +287,7 @@ namespace MicrosoftMceTransceiver
 
         _enableMouseInput       = config.EnableMouse;
         _handleMouseLocally     = config.HandleMouseLocal;
-        _mouseSensitivity       = config.MouseSensitivity;        
+        _mouseSensitivity       = config.MouseSensitivity;
 
         SaveSettings();
       }
@@ -406,7 +406,7 @@ namespace MicrosoftMceTransceiver
     {
       try
       {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+#if TRACE
+using System.Diagnostics;
+#endif
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -363,8 +366,14 @@ namespace MicrosoftMceTransceiver
         _debugFile = new StreamWriter(fileName, false);
         _debugFile.AutoFlush = true;
       }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+#else
       catch
       {
+#endif
         _debugFile = null;
       }
     }
@@ -376,6 +385,7 @@ namespace MicrosoftMceTransceiver
     {
       if (_debugFile != null)
       {
+        _debugFile.Close();
         _debugFile.Dispose();
         _debugFile = null;
       }
@@ -389,7 +399,15 @@ namespace MicrosoftMceTransceiver
     protected static void DebugWriteLine(string line, params object[] args)
     {
       if (_debugFile != null)
+      {
         _debugFile.WriteLine(line, args);
+      }
+#if TRACE
+      else
+      {
+        Trace.WriteLine(String.Format(line, args));
+      }
+#endif
     }
 
     /// <summary>
@@ -400,7 +418,15 @@ namespace MicrosoftMceTransceiver
     protected static void DebugWrite(string text, params object[] args)
     {
       if (_debugFile != null)
+      {
         _debugFile.Write(text, args);
+      }
+#if TRACE
+      else
+      {
+        Trace.Write(String.Format(text, args));
+      }
+#endif
     }
 
     /// <summary>
@@ -418,8 +444,10 @@ namespace MicrosoftMceTransceiver
     /// <param name="array">The array.</param>
     protected static void DebugDump(Array array)
     {
+#if !TRACE
       if (_debugFile == null)
         return;
+#endif
 
       foreach (object item in array)
       {

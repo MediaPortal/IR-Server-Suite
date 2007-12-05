@@ -247,12 +247,14 @@ namespace IrssComms
     void ClientDisconnect(object obj)
     {
       ClientManager clientManager = obj as ClientManager;
-
       if (clientManager == null || _clientManagers == null)
         return;
 
       lock (_clientManagers)
       {
+        if (_clientManagers == null)
+          return;
+
         if (_clientManagers.Contains(clientManager))
           _clientManagers.Remove(clientManager);
       }
@@ -273,13 +275,18 @@ namespace IrssComms
         {
           Socket socket = _serverSocket.Accept();
 
-          ClientManager manager = new ClientManager(socket, clientManagerMessageSink);
-          manager.DisconnectCallback = new WaitCallback(ClientDisconnect);
-
           lock (_clientManagers)
+          {
+            if (_clientManagers == null)
+              continue;
+
+            ClientManager manager = new ClientManager(socket, clientManagerMessageSink);
+            manager.DisconnectCallback = new WaitCallback(ClientDisconnect);
+
             _clientManagers.Add(manager);
 
-          manager.Start();          
+            manager.Start();
+          }
         }
       }
 #if TRACE

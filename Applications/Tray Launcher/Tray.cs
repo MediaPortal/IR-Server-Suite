@@ -216,7 +216,7 @@ namespace TrayLauncher
 
       try
       {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
@@ -343,7 +343,7 @@ namespace TrayLauncher
       }
       catch (Exception ex)
       {
-        IrssLog.Error("ReceivedMessage - {0}", ex.Message);
+        IrssLog.Error("ReceivedMessage(): {0}", ex.ToString());
       }
     }
 

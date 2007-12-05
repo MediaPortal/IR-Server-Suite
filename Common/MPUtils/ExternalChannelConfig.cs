@@ -199,7 +199,7 @@ namespace MPUtils
     /// </summary>
     public void Save()
     {
-      using (XmlTextWriter writer = new XmlTextWriter(_fileName, System.Text.Encoding.UTF8))
+      using (XmlTextWriter writer = new XmlTextWriter(_fileName, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;

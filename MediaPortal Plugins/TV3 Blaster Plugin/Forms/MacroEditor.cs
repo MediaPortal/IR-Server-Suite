@@ -85,7 +85,7 @@ namespace TvEngine
     {
       try
       {
-        using (XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8))
+        using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;

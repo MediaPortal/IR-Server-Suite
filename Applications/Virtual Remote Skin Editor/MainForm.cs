@@ -390,7 +390,7 @@ namespace SkinEditor
     {
       IrssLog.Info("Saving Skin: {0}", fileName);
 
-      using (XmlTextWriter writer = new XmlTextWriter(fileName, System.Text.Encoding.UTF8))
+      using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
@@ -494,7 +494,7 @@ namespace SkinEditor
     {
       try
       {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
