@@ -145,6 +145,7 @@ namespace Translator
       // Setup Misc tab
       comboBoxMiscCommand.Items.Clear();
       comboBoxMiscCommand.Items.Add(Common.UITextTranslator);
+      comboBoxMiscCommand.Items.Add(Common.UITextVirtualKB);
       comboBoxMiscCommand.Items.Add(Common.UITextEject);
       comboBoxMiscCommand.Items.Add(Common.UITextStandby);
       comboBoxMiscCommand.Items.Add(Common.UITextHibernate);
@@ -287,6 +288,10 @@ namespace Translator
 
                 case Common.CmdPrefixTranslator:
                   comboBoxMiscCommand.SelectedItem = Common.UITextTranslator;
+                  break;
+
+                case Common.CmdPrefixVirtualKB:
+                  comboBoxMiscCommand.SelectedItem = Common.UITextVirtualKB;
                   break;
 
                 default:
@@ -457,16 +462,20 @@ namespace Translator
                 textBoxCommand.Text = _command = Common.CmdPrefixReboot;
                 break;
 
-              case Common.CmdPrefixShutdown:
+              case Common.UITextShutdown:
                 textBoxCommand.Text = _command = Common.CmdPrefixShutdown;
                 break;
 
-              case Common.CmdPrefixStandby:
+              case Common.UITextStandby:
                 textBoxCommand.Text = _command = Common.CmdPrefixStandby;
                 break;
 
-              case Common.CmdPrefixTranslator:
+              case Common.UITextTranslator:
                 textBoxCommand.Text = _command = Common.CmdPrefixTranslator;
+                break;
+
+              case Common.UITextVirtualKB:
+                textBoxCommand.Text = _command = Common.CmdPrefixVirtualKB;
                 break;
             }
 

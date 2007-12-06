@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,68 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Background" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\Background.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="panelTopLeft.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAGGoAAB
+        hqABJxZkogAAADxJREFUOE9jYBgFIy0EFBQU/qNjosIAm0aYGEED0DU3NDT8R8ZEG4CuEcbHawCy7RQZ
+        gEszSJwoFwxuAwBKCJWYy6xHKAAAAABJRU5ErkJggg==
+</value>
   </data>
-  <data name="Bottom" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\Bottom.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="panelTopRight.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAGGoAAB
+        hqABJxZkogAAAD1JREFUOE9jYBgFwyEEFBQU/qNjkvyFzQCYGFEGNTQ0/EfGJLsG3QAYn2hXEDIAZBBe
+        r+AyACROlCuGvgEAseGVmCLfnHsAAAAASUVORK5CYII=
+</value>
   </data>
-  <data name="BottomLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\BottomLeft.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="panelBottomRight.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAGGoAAB
+        hqABJxZkogAAAE9JREFUOE9jbGho+M+AAyxYsAAs8+DBA0ZcahhABuDCCgoK/0EYp2aQxOA1AOZ8sr1A
+        lP+xhQGyzQRtBxmAroFop8OiBpsBeKNtVHI4hgAAFoGIYl+udS0AAAAASUVORK5CYII=
+</value>
   </data>
-  <data name="BottomRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\BottomRight.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ClickLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\clickleft.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ClickMiddle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\clickmiddle.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ClickRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\clickright.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DoubleClickLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\doubleclickleft.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DoubleClickMiddle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\doubleclickmiddle.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DoubleClickRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\doubleclickright.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Left" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\Left.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="MoveDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\movedown.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="MoveLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\moveleft.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="MoveRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\moveright.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="MoveUp" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\moveup.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Right" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\Right.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ScrollDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\scrolldown.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ScrollUp" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\graphics\scrollup.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Top" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\Top.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="TopLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\TopLeft.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="TopRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Graphics\TopRight.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="panelBottomLeft.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAGGoAAB
+        hqABJxZkogAAAEpJREFUOE9jZMADFBQU/oOkExIS8CnDLQcyAIQbGhpwYrwmDx4D8HmDYOAQ8gbRBuAy
+        iKABIAUwzdhoogyAKaLYAJJsG1VMxxAAACPwg+GiZL60AAAAAElFTkSuQmCC
+</value>
   </data>
 </root>

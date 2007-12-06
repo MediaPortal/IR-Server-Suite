@@ -1099,6 +1099,19 @@ namespace Translator
         {
           ShowOSD();
         }
+        else if (command.StartsWith(Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
+        {
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot show Virtual Keyboard in configuration", "Virtual Keyboard", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            IrssUtils.Forms.VirtualKeyboard vk = new IrssUtils.Forms.VirtualKeyboard();
+            if (vk.ShowDialog() == DialogResult.OK)
+              Keyboard.ProcessCommand(vk.TextOutput);
+          }
+        }
         else
         {
           throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");

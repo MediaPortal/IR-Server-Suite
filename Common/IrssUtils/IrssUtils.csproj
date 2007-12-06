@@ -149,6 +149,12 @@
     <Compile Include="Forms\ServerAddress.Designer.cs">
       <DependentUpon>ServerAddress.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\VirtualKeyboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\VirtualKeyboard.Designer.cs">
+      <DependentUpon>VirtualKeyboard.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\WindowList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -224,6 +230,10 @@
       <DependentUpon>ServerAddress.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VirtualKeyboard.resx">
+      <DependentUpon>VirtualKeyboard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\WindowList.resx">
       <DependentUpon>WindowList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -235,18 +245,27 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Graphics\Background.png" />
+    <Content Include="Graphics\Bottom.png" />
+    <Content Include="Graphics\BottomLeft.png" />
+    <Content Include="Graphics\BottomRight.png" />
     <Content Include="Graphics\ClickLeft.png" />
     <Content Include="Graphics\ClickMiddle.png" />
     <Content Include="Graphics\ClickRight.png" />
     <Content Include="Graphics\DoubleClickLeft.png" />
     <Content Include="Graphics\DoubleClickMiddle.png" />
     <Content Include="Graphics\DoubleClickRight.png" />
+    <Content Include="Graphics\Left.png" />
     <Content Include="Graphics\MoveDown.png" />
     <Content Include="Graphics\MoveLeft.png" />
     <Content Include="Graphics\MoveRight.png" />
     <Content Include="Graphics\MoveUp.png" />
+    <Content Include="Graphics\Right.png" />
     <Content Include="Graphics\ScrollDown.png" />
     <Content Include="Graphics\ScrollUp.png" />
+    <Content Include="Graphics\Top.png" />
+    <Content Include="Graphics\TopLeft.png" />
+    <Content Include="Graphics\TopRight.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

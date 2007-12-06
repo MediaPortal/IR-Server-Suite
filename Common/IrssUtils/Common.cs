@@ -100,7 +100,7 @@ namespace IrssUtils
     public const string CmdPrefixPopup        = "Popup: ";
     public const string CmdPrefixMouseMode    = "Mouse Mode: ";
 //  public const string CmdPrefixWindowState  = "Toggle Window State";
-    
+
     public const string CmdPrefixStandby      = "Standby";
     public const string CmdPrefixHibernate    = "Hibernate";
     public const string CmdPrefixReboot       = "Reboot";
@@ -114,6 +114,7 @@ namespace IrssUtils
     public const string CmdPrefixDisplay      = "Display: ";
 
     public const string CmdPrefixTranslator   = "Show Translator OSD";
+    public const string CmdPrefixVirtualKB    = "Show Virtual Keyboard";
 
     // For MediaPortal ...
     public const string CmdPrefixMultiMap     = "Multi-Mapping: ";
@@ -155,6 +156,7 @@ namespace IrssUtils
     public const string XmlTagDisplay         = "DISPLAY";
 
     public const string XmlTagTranslator      = "TRANSLATOR";
+    public const string XmlTagVirtualKB       = "VIRTUAL_KEYBOARD";
 
     #endregion XML Tags
 
@@ -188,6 +190,7 @@ namespace IrssUtils
     public const string UITextDisplay         = "Display";
 
     public const string UITextTranslator      = "Show Translator OSD";
+    public const string UITextVirtualKB       = "Show Virtual Keyboard";
 
     #endregion User Interface Text
 
@@ -241,15 +244,15 @@ namespace IrssUtils
     /// <summary>
     /// Number of Segments in a Blast Command.
     /// </summary>
-    public const int SegmentsBlastCommand = 2;
+    public const int SegmentsBlastCommand         = 2;
     /// <summary>
     /// Number of Segments in a Run Command.
     /// </summary>
-    public const int SegmentsRunCommand = 8;
+    public const int SegmentsRunCommand           = 8;
     /// <summary>
     /// Number of Segments in a Serial Command.
     /// </summary>
-    public const int SegmentsSerialCommand = 7;
+    public const int SegmentsSerialCommand        = 7;
     /// <summary>
     /// Number of Segments in a Windows Message Command.
     /// </summary>
@@ -257,23 +260,23 @@ namespace IrssUtils
     /// <summary>
     /// Number of Segments in a Popup Command.
     /// </summary>
-    public const int SegmentsPopupCommand = 3;
+    public const int SegmentsPopupCommand         = 3;
     /// <summary>
     /// Number of Segments in a TCP Message Command.
     /// </summary>
-    public const int SegmentsTcpMessageCommand = 3;
+    public const int SegmentsTcpMessageCommand    = 3;
     /// <summary>
     /// Number of Segments in a HTTP Message Command.
     /// </summary>
-    public const int SegmentsHttpMessageCommand = 4;
+    public const int SegmentsHttpMessageCommand   = 4;
     /// <summary>
     /// Number of Segments in a Beep Command.
     /// </summary>
-    public const int SegmentsBeepCommand = 2;
+    public const int SegmentsBeepCommand          = 2;
     /// <summary>
     /// Number of Segments in a Display Mode Command.
     /// </summary>
-    public const int SegmentsDisplayModeCommand = 4;
+    public const int SegmentsDisplayModeCommand   = 4;
 
     #endregion Command Segments
 

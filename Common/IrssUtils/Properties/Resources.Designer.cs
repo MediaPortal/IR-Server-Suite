@@ -60,6 +60,34 @@ namespace IrssUtils.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Background {
+            get {
+                object obj = ResourceManager.GetObject("Background", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Bottom {
+            get {
+                object obj = ResourceManager.GetObject("Bottom", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap BottomLeft {
+            get {
+                object obj = ResourceManager.GetObject("BottomLeft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap BottomRight {
+            get {
+                object obj = ResourceManager.GetObject("BottomRight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap ClickLeft {
             get {
                 object obj = ResourceManager.GetObject("ClickLeft", resourceCulture);
@@ -102,6 +130,13 @@ namespace IrssUtils.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Left {
+            get {
+                object obj = ResourceManager.GetObject("Left", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap MoveDown {
             get {
                 object obj = ResourceManager.GetObject("MoveDown", resourceCulture);
@@ -130,6 +165,13 @@ namespace IrssUtils.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Right {
+            get {
+                object obj = ResourceManager.GetObject("Right", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap ScrollDown {
             get {
                 object obj = ResourceManager.GetObject("ScrollDown", resourceCulture);
@@ -140,6 +182,27 @@ namespace IrssUtils.Properties {
         internal static System.Drawing.Bitmap ScrollUp {
             get {
                 object obj = ResourceManager.GetObject("ScrollUp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Top {
+            get {
+                object obj = ResourceManager.GetObject("Top", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap TopLeft {
+            get {
+                object obj = ResourceManager.GetObject("TopLeft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap TopRight {
+            get {
+                object obj = ResourceManager.GetObject("TopRight", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
