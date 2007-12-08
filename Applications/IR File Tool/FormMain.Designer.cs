@@ -168,7 +168,6 @@ namespace IrFileTool
       this.buttonAttemptDecode.Text = "Attempt decode";
       this.toolTips.SetToolTip(this.buttonAttemptDecode, "Try to decode the IR signal into a recognised format");
       this.buttonAttemptDecode.UseVisualStyleBackColor = true;
-      this.buttonAttemptDecode.Visible = false;
       this.buttonAttemptDecode.Click += new System.EventHandler(this.buttonAttemptDecode_Click);
       // 
       // textBoxCarrier

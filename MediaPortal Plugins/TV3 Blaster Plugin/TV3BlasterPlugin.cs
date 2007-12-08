@@ -607,6 +607,9 @@ namespace TvEngine
     /// <param name="port">Port to blast to.</param>
     internal static void BlastIR(string fileName, string port)
     {
+      if (LogVerbose)
+        Log.Debug("TV3BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
+
       if (!_registered)
         throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
 

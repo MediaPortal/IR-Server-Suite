@@ -93,10 +93,10 @@ namespace WiiRemoteReceiver
     {
       LoadSettings();
 
+      _wiimote = new Wiimote();
+
       try
       {
-        _wiimote = new Wiimote();
-
         _wiimote.WiimoteChanged += new WiimoteChangedEventHandler(WiimoteChanged);
         _wiimote.WiimoteExtensionChanged += new WiimoteExtensionChangedEventHandler(WiimoteExtensionChanged);
 
@@ -107,6 +107,7 @@ namespace WiiRemoteReceiver
       }
       catch
       {
+        _wiimote.Dispose();
         _wiimote = null;
         throw;
       }
@@ -118,14 +119,12 @@ namespace WiiRemoteReceiver
     /// </summary>
     public override void Suspend()
     {
-      Stop();
     }
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
     public override void Resume()
     {
-      Start();
     }
     /// <summary>
     /// Stop the IR Server plugin.

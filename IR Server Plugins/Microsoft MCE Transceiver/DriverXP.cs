@@ -98,19 +98,19 @@ namespace MicrosoftMceTransceiver
 
     // Microsoft Port Packets
     static readonly byte[][] MicrosoftPorts = new byte[][]
-			{
-				new byte[] { 0x9F, 0x08, 0x06 },        // Both
-				new byte[] { 0x9F, 0x08, 0x04 },	      // 1
-				new byte[] { 0x9F, 0x08, 0x02 },	      // 2
-			};
+    {
+      new byte[] { 0x9F, 0x08, 0x06 },        // Both
+      new byte[] { 0x9F, 0x08, 0x04 },        // 1
+      new byte[] { 0x9F, 0x08, 0x02 },        // 2
+    };
 
     // SMK / Topseed Port Packets
     static readonly byte[][] SmkTopseedPorts = new byte[][]
-			{
-				new byte[] { 0x9F, 0x08, 0x00 },	      // Both
-				new byte[] { 0x9F, 0x08, 0x01 },	      // 1
-				new byte[] { 0x9F, 0x08, 0x02 },        // 2
-			};
+    {
+      new byte[] { 0x9F, 0x08, 0x00 },        // Both
+      new byte[] { 0x9F, 0x08, 0x01 },        // 1
+      new byte[] { 0x9F, 0x08, 0x02 },        // 2
+    };
 
     // Start, Stop and Reset Packets
     static readonly byte[] StartPacket            = { 0x00, 0xFF, 0xAA };
@@ -240,7 +240,7 @@ namespace MicrosoftMceTransceiver
       */
 
       _deviceAvailable = false;
-      
+
       StopReadThread();
       CloseDevice();
 
@@ -435,15 +435,15 @@ namespace MicrosoftMceTransceiver
     /// <returns>Raw device data.</returns>
     static byte[] DataPacket(IrCode code)
     {
+#if DEBUG
+      DebugWriteLine("DataPacket()");
+#endif
+
       if (code.TimingData.Length == 0)
         return null;
 
       // Construct data bytes into "packet" ...
       List<byte> packet = new List<byte>();
-
-#if DEBUG
-      DebugWriteLine("DataPacket()");
-#endif
 
       for (int index = 0; index < code.TimingData.Length; index++)
       {
@@ -798,7 +798,7 @@ namespace MicrosoftMceTransceiver
       }
 
 #if DEBUG
-        DebugWriteLine("Read Thread Ended");
+      DebugWriteLine("Read Thread Ended");
 #endif
     }
 

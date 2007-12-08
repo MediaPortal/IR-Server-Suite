@@ -11,6 +11,8 @@ using Microsoft.Win32.SafeHandles;
 
 using IRServerPluginInterface;
 
+// TODO: Lock ehome handle on access to driver
+
 namespace MicrosoftMceTransceiver
 {
 
@@ -312,6 +314,8 @@ namespace MicrosoftMceTransceiver
 
     IrCode _learningCode;
 
+    bool _deviceAvailable;
+
     #endregion Variables
 
     #region Constructor
@@ -498,6 +502,9 @@ namespace MicrosoftMceTransceiver
 
     void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
     {
+      if (!_deviceAvailable)
+        throw new ApplicationException("Device not available");
+
       try
       {
         int lastError;
@@ -552,12 +559,7 @@ namespace MicrosoftMceTransceiver
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
 
-      int lastError;
-
-      _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
-      lastError = Marshal.GetLastWin32Error();
-      if (_eHomeHandle.IsInvalid)
-        throw new Win32Exception(lastError);
+      OpenDevice();
 
       // Initialize device ...
       GetDeviceCapabilities();
@@ -569,10 +571,13 @@ namespace MicrosoftMceTransceiver
 
       StartReadThread();
 
+      _deviceAvailable = true;
+
       _notifyWindow.Create();
+      _notifyWindow.RegisterDeviceArrival();
+      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
       _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
-      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
     }
 
     /// <summary>
@@ -587,13 +592,13 @@ namespace MicrosoftMceTransceiver
       _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
 
-      StopReadThread();
+      _deviceAvailable = false;
 
-      _notifyWindow.UnregisterDeviceRemoval();
+      StopReadThread();
+      CloseDevice();
+
       _notifyWindow.Dispose();
       _notifyWindow = null;
-
-      CloseDevice();
 
 #if DEBUG
       DebugClose();
@@ -609,7 +614,10 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Suspend()");
 #endif
 
-      Stop();
+      _deviceAvailable = false;
+
+      StopReadThread();
+      CloseDevice();
     }
 
     /// <summary>
@@ -621,7 +629,21 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Resume()");
 #endif
 
-      Start();
+      try
+      {
+        OpenDevice();
+        StartReadThread();
+
+        _deviceAvailable = true;
+      }
+      catch
+      {
+#if DEBUG
+        DebugWriteLine("Resume(): Failed to start device");
+#endif
+      }
+
+      //Start();
     }
 
     /// <summary>
@@ -724,8 +746,17 @@ namespace MicrosoftMceTransceiver
 
     #region Implementation
 
+    /// <summary>
+    /// Converts an IrCode into raw data for the device.
+    /// </summary>
+    /// <param name="code">IrCode to convert.</param>
+    /// <returns>Raw device data.</returns>
     static byte[] DataPacket(IrCode code)
     {
+#if DEBUG
+      DebugWriteLine("DataPacket()");
+#endif
+
       if (code.TimingData.Length == 0)
         return null;
 
@@ -746,54 +777,91 @@ namespace MicrosoftMceTransceiver
       return data;
     }
 
+    /// <summary>
+    /// Start the device read thread.
+    /// </summary>
     void StartReadThread()
     {
 #if DEBUG
       DebugWriteLine("StartReadThread()");
 #endif
 
+      if (_readThread != null && _readThread.IsAlive)
+        return;
+
       _readThread = new Thread(new ThreadStart(ReadThread));
       _readThread.Name = "MicrosoftMceTransceiver.DriverVista.ReadThread";
       _readThread.IsBackground = true;
       _readThread.Start();
     }
+    /// <summary>
+    /// Stop the device read thread.
+    /// </summary>
     void StopReadThread()
     {
 #if DEBUG
       DebugWriteLine("StopReadThread()");
 #endif
 
-      if (_readThread != null && _readThread.IsAlive)
+      if (_readThread == null || !_readThread.IsAlive)
+        return;
+
+      _readThreadMode = ReadThreadMode.Stop;
+
+      _readThread.Abort();
+
+      if (Thread.CurrentThread != _readThread)
+        _readThread.Join();
+
+      _readThread = null;
+    }
+
+    /// <summary>
+    /// Opens the device.
+    /// </summary>
+    void OpenDevice()
+    {
+#if DEBUG
+      DebugWriteLine("OpenDevice()");
+#endif
+
+      if (_eHomeHandle != null)
+        return;
+
+      _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      int lastError = Marshal.GetLastWin32Error();
+      if (_eHomeHandle.IsInvalid)
       {
-        _readThreadMode = ReadThreadMode.Stop;
-
-        _readThread.Abort();
-
-        if (Thread.CurrentThread != _readThread)
-          _readThread.Join();
-
-        _readThread = null;
+        _eHomeHandle = null;
+        throw new Win32Exception(lastError);
       }
     }
 
+    /// <summary>
+    /// Close all handles to the device.
+    /// </summary>
     void CloseDevice()
     {
 #if DEBUG
       DebugWriteLine("CloseDevice()");
 #endif
 
-      if (_eHomeHandle != null)
-      {
-        CloseHandle(_eHomeHandle);
+      if (_eHomeHandle == null)
+        return;
 
-        _eHomeHandle.Dispose();
-        _eHomeHandle = null;
-      }
+      CloseHandle(_eHomeHandle);
+
+      _eHomeHandle.Dispose();
+      _eHomeHandle = null;
     }
-    
+
     void OnDeviceArrival()
     {
-      _notifyWindow.UnregisterDeviceArrival();
+#if DEBUG
+      DebugWriteLine("OnDeviceArrival()");
+#endif
+
+      OpenDevice();
 
       StartReceive(_receivePort, PacketTimeout);
 
@@ -801,16 +869,23 @@ namespace MicrosoftMceTransceiver
 
       StartReadThread();
 
-      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
+      _deviceAvailable = true;
     }
     void OnDeviceRemoval()
     {
-      _notifyWindow.UnregisterDeviceRemoval();
-      _notifyWindow.RegisterDeviceArrival();
+#if DEBUG
+      DebugWriteLine("OnDeviceRemoval()");
+#endif
+
+      _deviceAvailable = false;
 
       StopReadThread();
+      CloseDevice();
     }
-    
+
+    /// <summary>
+    /// Device read thread method.
+    /// </summary>
     void ReadThread()
     {
       int bytesRead;
@@ -896,7 +971,7 @@ namespace MicrosoftMceTransceiver
       }
 
 #if DEBUG
-        DebugWriteLine("Read Thread Ended");
+      DebugWriteLine("Read Thread Ended");
 #endif
     }
 

@@ -25,6 +25,11 @@ namespace IrFileTool
 
     void RefreshForm()
     {
+      if (String.IsNullOrEmpty(_fileName))
+        this.Text = "IR File Tool";
+      else
+        this.Text = "IR File Tool - " + _fileName;
+
       textBoxPronto.Text = Encoding.ASCII.GetString(_code.ToByteArray(true));
 
       switch (_code.Carrier)
@@ -59,11 +64,12 @@ namespace IrFileTool
         }
       }
     }
-    
+
 
     private void newToolStripMenuItem_Click(object sender, EventArgs e)
     {
       _code = new IrCode();
+      _fileName = "New File.IR";
 
       RefreshForm();
     }
@@ -87,6 +93,8 @@ namespace IrFileTool
 
         _code = IrCode.FromByteArray(fileData);
       }
+
+      _fileName = openFileDialog.FileName;
 
       RefreshForm();      
     }
@@ -162,10 +170,27 @@ namespace IrFileTool
 
       return output;
     }
-    
+
     void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
     {
       MessageBox.Show(this, String.Format("Remote: {0}, {1}", Enum.GetName(typeof(IrProtocol), codeType), keyCode), "Decode IR", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+      if (textBoxCarrier.Text.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
+      {
+        switch (codeType)
+        {
+          case IrProtocol.RC5:  textBoxCarrier.Text = "36000";  break;
+          case IrProtocol.RC5X: textBoxCarrier.Text = "36000";  break;
+          case IrProtocol.NEC:  textBoxCarrier.Text = "38000";  break;
+          
+          default:
+            return;
+        }
+
+        _code.Carrier = int.Parse(textBoxCarrier.Text);
+
+        RefreshForm();
+      }
     }
     void KeyboardEvent(uint keyCode, uint modifiers)
     {
@@ -188,7 +213,7 @@ namespace IrFileTool
 
       RefreshForm();
     }
-    
+
   }
 
 }

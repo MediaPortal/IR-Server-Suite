@@ -98,19 +98,19 @@ namespace MicrosoftMceTransceiver
 
     // Microsoft Port Packets
     static readonly byte[][] MicrosoftPorts = new byte[][]
-			{
-				new byte[] { 0x9F, 0x08, 0x06 },        // Both
-				new byte[] { 0x9F, 0x08, 0x04 },	      // 1
-				new byte[] { 0x9F, 0x08, 0x02 },	      // 2
-			};
+    {
+      new byte[] { 0x9F, 0x08, 0x06 },        // Both
+      new byte[] { 0x9F, 0x08, 0x04 },        // 1
+      new byte[] { 0x9F, 0x08, 0x02 },        // 2
+    };
 
     // SMK / Topseed Port Packets
     static readonly byte[][] SmkTopseedPorts = new byte[][]
-			{
-				new byte[] { 0x9F, 0x08, 0x00 },	      // Both
-				new byte[] { 0x9F, 0x08, 0x01 },	      // 1
-				new byte[] { 0x9F, 0x08, 0x02 },        // 2
-			};
+    {
+      new byte[] { 0x9F, 0x08, 0x00 },        // Both
+      new byte[] { 0x9F, 0x08, 0x01 },        // 1
+      new byte[] { 0x9F, 0x08, 0x02 },        // 2
+    };
 
     // Start, Stop and Reset Packets
     static readonly byte[] StartPacket            = { 0x00, 0xFF, 0xAA };
@@ -159,6 +159,8 @@ namespace MicrosoftMceTransceiver
 
     DeviceType _deviceType = DeviceType.Microsoft;
 
+    bool _deviceAvailable;
+
     #endregion Variables
 
     #region Constructor
@@ -189,19 +191,10 @@ namespace MicrosoftMceTransceiver
       _notifyWindow = new NotifyWindow();
       _notifyWindow.Class = _deviceGuid;
 
-      int lastError;
-
-      _readHandle = CreateFile(_devicePath + "\\Pipe01", CreateFileAccessTypes.GenericRead, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
-      lastError = Marshal.GetLastWin32Error();
-      if (_readHandle.IsInvalid)
-        throw new Win32Exception(lastError);
-
-      _writeHandle = CreateFile(_devicePath + "\\Pipe00", CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
-      lastError = Marshal.GetLastWin32Error();
-      if (_writeHandle.IsInvalid)
-        throw new Win32Exception(lastError);
-
+      OpenDevice();
       StartReadThread();
+
+      _deviceAvailable = true;
 
       // Initialize device ...
       WriteSync(StartPacket);
@@ -211,9 +204,10 @@ namespace MicrosoftMceTransceiver
       SetInputPort(InputPort.Receive);
 
       _notifyWindow.Create();
+      _notifyWindow.RegisterDeviceArrival();
+      _notifyWindow.RegisterDeviceRemoval(_readHandle.DangerousGetHandle());
       _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
-      _notifyWindow.RegisterDeviceRemoval(_readHandle.DangerousGetHandle());
     }
 
     /// <summary>
@@ -228,6 +222,7 @@ namespace MicrosoftMceTransceiver
       _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
 
+      /*
       try
       {
         WriteSync(StopPacket);
@@ -243,14 +238,15 @@ namespace MicrosoftMceTransceiver
       {
       }
 #endif
+      */
+
+      _deviceAvailable = false;
 
       StopReadThread();
+      CloseDevice();
 
-      _notifyWindow.UnregisterDeviceRemoval();
       _notifyWindow.Dispose();
       _notifyWindow = null;
-
-      CloseDevice();
 
 #if DEBUG
       DebugClose();
@@ -266,7 +262,15 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Suspend()");
 #endif
 
-      Stop(); // Unlike the default driver, the replacement driver requires this.
+      WriteSync(StopPacket);
+      Thread.Sleep(PacketTimeout);
+
+      _deviceAvailable = false;
+
+      StopReadThread();
+      CloseDevice();
+
+      //Stop(); // Unlike the default driver, the replacement driver requires this.
     }
 
     /// <summary>
@@ -278,7 +282,24 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Resume()");
 #endif
 
-      Start(); // Unlike the default driver, the replacement driver requires this.
+      try
+      {
+        OpenDevice();
+        StartReadThread();
+
+        _deviceAvailable = true;
+      }
+      catch
+      {
+#if DEBUG
+        DebugWriteLine("Resume(): Failed to start device");
+#endif
+      }
+
+      //WriteSync(StartPacket);
+      //Thread.Sleep(PacketTimeout);
+
+      //Start(); // Unlike the default driver, the replacement driver requires this.
     }
 
     /// <summary>
@@ -417,15 +438,15 @@ namespace MicrosoftMceTransceiver
     /// <returns>Raw device data.</returns>
     static byte[] DataPacket(IrCode code)
     {
+#if DEBUG
+      DebugWriteLine("DataPacket()");
+#endif
+
       if (code.TimingData.Length == 0)
         return null;
 
       // Construct data bytes into "packet" ...
       List<byte> packet = new List<byte>();
-
-#if DEBUG
-      DebugWriteLine("DataPacket()");
-#endif
 
       for (int index = 0; index < code.TimingData.Length; index++)
       {
@@ -514,6 +535,9 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StartReadThread()");
 #endif
 
+      if (_readThread != null && _readThread.IsAlive)
+        return;
+
       _stopReadThread = new ManualResetEvent(false);
       _readThreadMode = ReadThreadMode.Receiving;
 
@@ -531,18 +555,51 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StopReadThread()");
 #endif
 
-      if (_readThread != null && _readThread.IsAlive)
+      if (_readThread == null || !_readThread.IsAlive)
+        return;
+
+      _readThreadMode = ReadThreadMode.Stop;
+      _stopReadThread.Set();
+
+      if (!_readThread.Join(PacketTimeout * 2))
+        _readThread.Abort();
+
+      _stopReadThread.Close();
+      _stopReadThread = null;
+
+      _readThread = null;
+    }
+
+    /// <summary>
+    /// Opens the device.
+    /// </summary>
+    void OpenDevice()
+    {
+#if DEBUG
+      DebugWriteLine("OpenDevice()");
+#endif
+
+      if (_readHandle != null)
+        return;
+
+      int lastError;
+
+      _readHandle = CreateFile(_devicePath + "\\Pipe01", CreateFileAccessTypes.GenericRead, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      lastError = Marshal.GetLastWin32Error();
+      if (_readHandle.IsInvalid)
       {
-        _readThreadMode = ReadThreadMode.Stop;
-        _stopReadThread.Set();
+        _readHandle = null;
+        throw new Win32Exception(lastError);
+      }
 
-        if (!_readThread.Join(PacketTimeout * 2))
-          _readThread.Abort();
-
-        _stopReadThread.Close();
-        _stopReadThread = null;
-
-        _readThread = null;
+      _writeHandle = CreateFile(_devicePath + "\\Pipe00", CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      lastError = Marshal.GetLastWin32Error();
+      if (_writeHandle.IsInvalid)
+      {
+        _writeHandle = null;
+        CloseHandle(_readHandle);
+        _readHandle.Dispose();
+        throw new Win32Exception(lastError);
       }
     }
 
@@ -574,18 +631,25 @@ namespace MicrosoftMceTransceiver
 
     void OnDeviceArrival()
     {
-      _notifyWindow.UnregisterDeviceArrival();
+#if DEBUG
+      DebugWriteLine("OnDeviceArrival()");
+#endif
 
+      OpenDevice();
       StartReadThread();
 
-      _notifyWindow.RegisterDeviceRemoval(_readHandle.DangerousGetHandle());
+      _deviceAvailable = true;
     }
     void OnDeviceRemoval()
     {
-      _notifyWindow.UnregisterDeviceRemoval();
-      _notifyWindow.RegisterDeviceArrival();
+#if DEBUG
+      DebugWriteLine("OnDeviceRemoval()");
+#endif
+
+      _deviceAvailable = false;
 
       StopReadThread();
+      CloseDevice();
     }
 
     /// <summary>
@@ -771,6 +835,9 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("WriteSync()");
       DebugDump(data);
 #endif
+
+      if (!_deviceAvailable)
+        throw new ApplicationException("Device not available");
 
       int lastError;
 

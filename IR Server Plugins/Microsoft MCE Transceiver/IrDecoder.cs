@@ -21,7 +21,7 @@ namespace MicrosoftMceTransceiver
     None,
 
     /// <summary>
-    /// Daewoo protocol.
+    /// Daewoo protocol. 38kHz carrier.
     /// </summary>
     Daewoo,
     /// <summary>
@@ -29,75 +29,75 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     ITT,
     /// <summary>
-    /// JVC protocol.
+    /// JVC protocol. 38kHz carrier.
     /// </summary>
     JVC,
     /// <summary>
-    /// Matsushita protocol.
+    /// Matsushita protocol. 56.8kHz carrier.
     /// </summary>
     Matsushita,
     /// <summary>
-    /// Mitsubishi protocol.
+    /// Mitsubishi protocol. 40kHz carrier.
     /// </summary>
     Mitsubishi,
     /// <summary>
-    /// NEC protocol.
+    /// NEC protocol. 38kHz carrier.
     /// </summary>
     NEC,
     /// <summary>
-    /// Nokia NRC17 protocol.
+    /// Nokia NRC17 protocol. 38kHz carrier.
     /// </summary>
     NRC17,
     /// <summary>
-    /// Panasonic protocol.
+    /// Panasonic protocol. 38kHz carrier.
     /// </summary>
     Panasonic,
     /// <summary>
-    /// Philips RC5 protocol.
+    /// Philips RC5 protocol. 36kHz carrier.
     /// </summary>
     RC5,
     /// <summary>
-    /// Philips RC5X protocol.
+    /// Philips RC5X protocol. 36kHz carrier.
     /// </summary>
     RC5X,
     /// <summary>
-    /// Philips RC6 protocol (Mode 0).
+    /// Philips RC6 protocol (Mode 0). 36kHz carrier.
     /// </summary>
     RC6,
     /// <summary>
-    /// Philips RC6 protocol (Mode 6A).
+    /// Philips RC6 protocol (Mode 6A). 36kHz carrier.
     /// </summary>
     RC6A,
     /// <summary>
-    /// Microsoft's protocol variation of Philips RC6.
+    /// Microsoft's protocol variation of Philips RC6. 36kHz carrier.
     /// </summary>
     RC6_MCE,
     /// <summary>
-    /// RCA protocol.
+    /// RCA protocol. 56kHz carrier.
     /// </summary>
     RCA,
     /// <summary>
-    /// Philips RC-MM protocol.  This protocol cannot be reliably (if at all) decoded by the MCE device.
+    /// Philips RC-MM protocol.  This protocol cannot be reliably (if at all) decoded by the MCE device. 36kHz carrier.
     /// </summary>
     RCMM,
     /// <summary>
-    /// RECS-80 protocol.
+    /// RECS-80 protocol. 38kHz carrier.
     /// </summary>
     RECS80,
     /// <summary>
-    /// Sharp protocol (unsupported).
+    /// Sharp protocol (unsupported). 38kHz carrier
     /// </summary>
     Sharp,
     /// <summary>
-    /// Sony SIRC protocol.
+    /// Sony SIRC protocol. 40kHz carrier.
     /// </summary>
     SIRC,
     /// <summary>
-    /// Toshiba protocol.
+    /// Toshiba protocol. 38kHz carrier.
     /// </summary>
     Toshiba,
     /// <summary>
-    /// X-Sat protocol (unsupported).
+    /// X-Sat protocol (unsupported). 38kHz carrier.
     /// </summary>
     XSAT,
 
