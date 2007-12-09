@@ -418,9 +418,13 @@ namespace TrayLauncher
               IrssLog.Info("Program already running, attempting to give focus.");
 
               Win32.SetForegroundWindow(process.MainWindowHandle, true);
-
               return;
             }
+          }
+          catch (Win32Exception ex)
+          {
+            if (ex.ErrorCode != -2147467259) // Ignore "Unable to enumerate the process modules" errors.
+              IrssLog.Error(ex.ToString());
           }
           catch (Exception ex)
           {

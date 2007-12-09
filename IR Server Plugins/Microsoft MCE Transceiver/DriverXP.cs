@@ -193,8 +193,6 @@ namespace MicrosoftMceTransceiver
       OpenDevice();
       StartReadThread();
 
-      _deviceAvailable = true;
-
       // Initialize device ...
       WriteSync(StartPacket);
       Thread.Sleep(PacketTimeout);
@@ -239,8 +237,6 @@ namespace MicrosoftMceTransceiver
 #endif
       */
 
-      _deviceAvailable = false;
-
       StopReadThread();
       CloseDevice();
 
@@ -264,8 +260,6 @@ namespace MicrosoftMceTransceiver
       WriteSync(StopPacket);
       Thread.Sleep(PacketTimeout);
 
-      _deviceAvailable = false;
-
       StopReadThread();
       CloseDevice();
     }
@@ -283,8 +277,6 @@ namespace MicrosoftMceTransceiver
       {
         OpenDevice();
         StartReadThread();
-
-        _deviceAvailable = true;
       }
       catch
       {
@@ -393,6 +385,9 @@ namespace MicrosoftMceTransceiver
 
       // Send packet
       WriteSync(DataPacket(code));
+
+      // Force a delay between blasts (hopefully solves back-to-back blast errors) ...
+      Thread.Sleep(PacketTimeout);
     }
 
     #endregion Driver overrides
@@ -532,7 +527,7 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StartReadThread()");
 #endif
 
-      if (_readThread != null && _readThread.IsAlive)
+      if (_readThread != null)
         return;
 
       _stopReadThread = new ManualResetEvent(false);
@@ -552,7 +547,7 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StopReadThread()");
 #endif
 
-      if (_readThread == null || !_readThread.IsAlive)
+      if (_readThread == null)
         return;
 
       _readThreadMode = ReadThreadMode.Stop;
@@ -586,6 +581,8 @@ namespace MicrosoftMceTransceiver
         _eHomeHandle = null;
         throw new Win32Exception(lastError);
       }
+
+      _deviceAvailable = true;
     }
 
     /// <summary>
@@ -596,6 +593,8 @@ namespace MicrosoftMceTransceiver
 #if DEBUG
       DebugWriteLine("CloseDevice()");
 #endif
+
+      _deviceAvailable = false;
 
       if (_eHomeHandle == null)
         return;
@@ -614,16 +613,12 @@ namespace MicrosoftMceTransceiver
 
       OpenDevice();
       StartReadThread();
-
-      _deviceAvailable = true;
     }
     void OnDeviceRemoval()
     {
 #if DEBUG
       DebugWriteLine("OnDeviceRemoval()");
 #endif
-
-      _deviceAvailable = false;
 
       StopReadThread();
       CloseDevice();

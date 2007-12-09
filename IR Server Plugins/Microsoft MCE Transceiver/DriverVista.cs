@@ -11,8 +11,6 @@ using Microsoft.Win32.SafeHandles;
 
 using IRServerPluginInterface;
 
-// TODO: Lock ehome handle on access to driver
-
 namespace MicrosoftMceTransceiver
 {
 
@@ -329,11 +327,14 @@ namespace MicrosoftMceTransceiver
 
     void StartReceive(int receivePort, int timeout)
     {
+      if (!_deviceAvailable)
+        throw new ApplicationException("Device not available");
+
       int bytesReturned;
 
       StartReceiveParams structure;
-      structure.Receiver  = new IntPtr(receivePort);
-      structure.Timeout   = new IntPtr(timeout);
+      structure.Receiver = new IntPtr(receivePort);
+      structure.Timeout = new IntPtr(timeout);
 
       IntPtr structPtr = IntPtr.Zero;
 
@@ -354,12 +355,18 @@ namespace MicrosoftMceTransceiver
 
     void StopReceive()
     {
+      if (!_deviceAvailable)
+        throw new ApplicationException("Device not available");
+
       int bytesReturned;
       IoControl(IoCtrl.StopReceive, IntPtr.Zero, 0, IntPtr.Zero, 0, out bytesReturned);
     }
 
     void GetDeviceCapabilities()
     {
+      if (!_deviceAvailable)
+        throw new ApplicationException("Device not available");
+
       int bytesReturned;
 
       DeviceCapabilities structure = new DeviceCapabilities();
@@ -413,6 +420,9 @@ namespace MicrosoftMceTransceiver
 
     void GetBlasters()
     {
+      if (!_deviceAvailable)
+        throw new ApplicationException("Device not available");
+
       if (_numTxPorts <= 0)
         return;
 
@@ -447,9 +457,12 @@ namespace MicrosoftMceTransceiver
 
     void TransmitIR(byte[] irData, int carrier, int transmitPortMask)
     {
+      if (!_deviceAvailable)
+        throw new ApplicationException("Device not available");
+
       int bytesReturned;
 
-      TransmitParams transmitParams   = new TransmitParams();
+      TransmitParams transmitParams = new TransmitParams();
       transmitParams.TransmitPortMask = new IntPtr(transmitPortMask);
 
       if (carrier == IrCode.CarrierFrequencyUnknown)
@@ -463,10 +476,10 @@ namespace MicrosoftMceTransceiver
 
       transmitParams.Flags = new IntPtr((int)mode);
 
-      TransmitChunk transmitChunk     = new TransmitChunk();
+      TransmitChunk transmitChunk = new TransmitChunk();
       transmitChunk.OffsetToNextChunk = new IntPtr(0);
-      transmitChunk.RepeatCount       = new IntPtr(1);
-      transmitChunk.ByteCount         = new IntPtr(irData.Length);
+      transmitChunk.RepeatCount = new IntPtr(1);
+      transmitChunk.ByteCount = new IntPtr(irData.Length);
 
       int bufferSize = irData.Length + Marshal.SizeOf(typeof(TransmitChunk)) + 8;
       byte[] buffer = new byte[bufferSize];
@@ -477,12 +490,12 @@ namespace MicrosoftMceTransceiver
       Array.Copy(irData, 0, buffer, rawTransmitChunk.Length, irData.Length);
 
       IntPtr structurePtr = IntPtr.Zero;
-      IntPtr bufferPtr    = IntPtr.Zero;
+      IntPtr bufferPtr = IntPtr.Zero;
 
       try
       {
-        structurePtr  = Marshal.AllocHGlobal(Marshal.SizeOf(transmitParams));
-        bufferPtr     = Marshal.AllocHGlobal(buffer.Length);
+        structurePtr = Marshal.AllocHGlobal(Marshal.SizeOf(transmitParams));
+        bufferPtr = Marshal.AllocHGlobal(buffer.Length);
 
         Marshal.StructureToPtr(transmitParams, structurePtr, true);
 
@@ -494,10 +507,13 @@ namespace MicrosoftMceTransceiver
       {
         if (structurePtr != IntPtr.Zero)
           Marshal.FreeHGlobal(structurePtr);
-        
+
         if (bufferPtr != IntPtr.Zero)
           Marshal.FreeHGlobal(bufferPtr);
       }
+
+      // Force a delay between blasts (hopefully solves back-to-back blast errors) ...
+      Thread.Sleep(PacketTimeout);
     }
 
     void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
@@ -531,7 +547,6 @@ namespace MicrosoftMceTransceiver
               throw new Win32Exception(lastError);
           }
         }
-
       }
       catch
       {
@@ -571,8 +586,6 @@ namespace MicrosoftMceTransceiver
 
       StartReadThread();
 
-      _deviceAvailable = true;
-
       _notifyWindow.Create();
       _notifyWindow.RegisterDeviceArrival();
       _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
@@ -591,8 +604,6 @@ namespace MicrosoftMceTransceiver
 
       _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
-
-      _deviceAvailable = false;
 
       StopReadThread();
       CloseDevice();
@@ -614,8 +625,6 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Suspend()");
 #endif
 
-      _deviceAvailable = false;
-
       StopReadThread();
       CloseDevice();
     }
@@ -633,8 +642,6 @@ namespace MicrosoftMceTransceiver
       {
         OpenDevice();
         StartReadThread();
-
-        _deviceAvailable = true;
       }
       catch
       {
@@ -786,7 +793,7 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StartReadThread()");
 #endif
 
-      if (_readThread != null && _readThread.IsAlive)
+      if (_readThread != null)
         return;
 
       _readThread = new Thread(new ThreadStart(ReadThread));
@@ -803,7 +810,7 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("StopReadThread()");
 #endif
 
-      if (_readThread == null || !_readThread.IsAlive)
+      if (_readThread == null)
         return;
 
       _readThreadMode = ReadThreadMode.Stop;
@@ -835,6 +842,8 @@ namespace MicrosoftMceTransceiver
         _eHomeHandle = null;
         throw new Win32Exception(lastError);
       }
+
+      _deviceAvailable = true;
     }
 
     /// <summary>
@@ -845,6 +854,8 @@ namespace MicrosoftMceTransceiver
 #if DEBUG
       DebugWriteLine("CloseDevice()");
 #endif
+
+      _deviceAvailable = false;
 
       if (_eHomeHandle == null)
         return;
@@ -868,16 +879,12 @@ namespace MicrosoftMceTransceiver
       _readThreadMode = ReadThreadMode.Receiving;
 
       StartReadThread();
-
-      _deviceAvailable = true;
     }
     void OnDeviceRemoval()
     {
 #if DEBUG
       DebugWriteLine("OnDeviceRemoval()");
 #endif
-
-      _deviceAvailable = false;
 
       StopReadThread();
       CloseDevice();
@@ -944,7 +951,6 @@ namespace MicrosoftMceTransceiver
               _readThreadMode = ReadThreadMode.LearningDone;
             }
           }
-
         }
       }
 #if DEBUG

@@ -1,5 +1,6 @@
 namespace IrssUtils.Forms
 {
+
   partial class VirtualKeyboard
   {
     /// <summary>
@@ -1184,4 +1185,5 @@ namespace IrssUtils.Forms
     private System.Windows.Forms.Button buttonCancel;
 
   }
+
 }

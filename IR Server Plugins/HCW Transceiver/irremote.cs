@@ -92,13 +92,29 @@ namespace HcwTransceiver
     #endregion
 
 
+    /// <summary>
+    /// Current Version.
+    /// </summary>
     public static string CurrentVersion = "2.49.23332";
 
+    /// <summary>
+    /// Close the device.
+    /// </summary>
+    /// <param name="WindowHandle">The window handle.</param>
+    /// <param name="Msg">The MSG.</param>
+    /// <returns><c>true</c> if successful; otherwise <c>false</c>.</returns>
     public static bool IRClose(IntPtr WindowHandle, uint Msg)
     {
       return IR_Close((int)WindowHandle, Msg);
     }
 
+    /// <summary>
+    /// Get system key code.
+    /// </summary>
+    /// <param name="RepeatCount">The repeat count.</param>
+    /// <param name="RemoteCode">The remote code.</param>
+    /// <param name="KeyCode">The key code.</param>
+    /// <returns><c>true</c> if successful; otherwise <c>false</c>.</returns>
     public static bool IRGetSystemKeyCode(out int RepeatCount, out int RemoteCode, out int KeyCode)
     {
       RepeatCount = 0;
@@ -119,11 +135,24 @@ namespace HcwTransceiver
       return result;
     }
 
+    /// <summary>
+    /// Opens the device.
+    /// </summary>
+    /// <param name="WindowHandle">The window handle.</param>
+    /// <param name="Msg">The MSG.</param>
+    /// <param name="Verbose">if set to <c>true</c> [verbose].</param>
+    /// <param name="IRPort">The IR port.</param>
+    /// <returns><c>true</c> if successful; otherwise <c>false</c>.</returns>
     public static bool IROpen(IntPtr WindowHandle, uint Msg, bool Verbose, ushort IRPort)
     {
       return IR_Open((int)WindowHandle, Msg, Verbose, IRPort);
     }
 
+    /// <summary>
+    /// Set DLL directory.
+    /// </summary>
+    /// <param name="PathName">Name of the path.</param>
+    /// <returns><c>true</c> if successful; otherwise <c>false</c>.</returns>
     public static bool IRSetDllDirectory(string PathName)
     {
       return SetDllDirectory(PathName);

@@ -2,7 +2,7 @@
 
 /* 
  *	Copyright (C) 2005-2007 Team MediaPortal
- *  http://www.team-mediaportal.com
+ *	http://www.team-mediaportal.com
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,12 +29,12 @@ using System.Windows.Forms;
 using System.Collections;
 using System.Xml;
 using System.IO;
-
 using MediaPortal.GUI.Library;
 using MediaPortal.Util;
 using MediaPortal.Player;
 using MediaPortal.TV.Recording;
 using MediaPortal.Configuration;
+using System.Threading;
 
 namespace MediaPortal.Plugins
 {
@@ -132,11 +132,11 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Constructor: Initializes mappings from XML file
     /// </summary>
-    /// <param name="deviceXmlName">Input device name.</param>
+    /// <param name="deviceXmlName">Input device name</param>
     public InputHandler(string deviceXmlName)
     {
 
-      using (Profile.Settings xmlreader = new Profile.Settings(MPUtils.MPCommon.MPConfigFile))
+      using (Profile.Settings xmlreader = new Profile.Settings(Config.GetFile(Config.Dir.Config, "MediaPortal.xml")))
         _basicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
 
       string xmlPath = GetXmlPath(deviceXmlName);
@@ -147,7 +147,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Get version of XML mapping file 
     /// </summary>
-    /// <param name="xmlPath">Path to XML file.</param>
+    /// <param name="xmlPath">Path to XML file</param>
     /// Possible exceptions: System.Xml.XmlException
     public int GetXmlVersion(string xmlPath)
     {
@@ -160,7 +160,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Check if XML file exists and version is current
     /// </summary>
-    /// <param name="xmlPath">Path to XML file.</param>
+    /// <param name="xmlPath">Path to XML file</param>
     /// Possible exceptions: System.IO.FileNotFoundException
     ///                      System.Xml.XmlException
     ///                      ApplicationException("XML version mismatch")
@@ -175,14 +175,14 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Get path to XML mmapping file for given device name
     /// </summary>
-    /// <param name="deviceXmlName">Input device name.</param>
-    /// <returns>Path to XML file.</returns>
+    /// <param name="deviceXmlName">Input device name</param>
+    /// <returns>Path to XML file</returns>
     /// Possible exceptions: System.IO.FileNotFoundException
     ///                      System.Xml.XmlException
     ///                      ApplicationException("XML version mismatch")
     public string GetXmlPath(string deviceXmlName)
     {
-      string path = String.Empty;
+      string path = string.Empty;
       string pathCustom = MPUtils.MPCommon.CustomInputDevice + deviceXmlName + ".xml";
       string pathDefault = MPUtils.MPCommon.CustomInputDefault + deviceXmlName + ".xml";
 
@@ -203,10 +203,10 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Load mapping from XML file
     /// </summary>
-    /// <param name="xmlPath">Path to XML file.</param>
+    /// <param name="xmlPath">Path to XML file</param>
     public void LoadMapping(string xmlPath)
     {
-      if (xmlPath != String.Empty)
+      if (xmlPath != string.Empty)
       {
         _remote = new ArrayList();
         XmlDocument doc = new XmlDocument();
@@ -232,7 +232,7 @@ namespace MediaPortal.Plugins
               cmdKeyChar = Convert.ToInt32(nodeAction.Attributes["cmdkeychar"].Value);
               cmdKeyCode = Convert.ToInt32(nodeAction.Attributes["cmdkeycode"].Value);
             }
-            string sound = String.Empty;
+            string sound = string.Empty;
             XmlAttribute soundAttribute = nodeAction.Attributes["sound"];
             if (soundAttribute != null)
               sound = soundAttribute.Value;
@@ -255,7 +255,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file).</param>
+    /// <param name="btnCode">Button code (ref: XML file)</param>
     public bool MapAction(int btnCode)
     {
       return DoMapAction(btnCode.ToString(), -1);
@@ -264,7 +264,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file).</param>
+    /// <param name="btnCode">Button code (ref: XML file)</param>
     public bool MapAction(string btnCode)
     {
       return DoMapAction(btnCode, -1);
@@ -274,8 +274,8 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action with an optional paramter
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file).</param>
-    /// <param name="processID">Process-ID for close/kill commands.</param>
+    /// <param name="btnCode">Button code (ref: XML file)</param>
+    /// <param name="processID">Process-ID for close/kill commands</param>
     public bool MapAction(int btnCode, int processID)
     {
       return DoMapAction(btnCode.ToString(), processID);
@@ -285,19 +285,30 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action with an optional paramter
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file).</param>
-    /// <param name="processID">Process-ID for close/kill commands.</param>
+    /// <param name="btnCode">Button code (ref: XML file)</param>
+    /// <param name="processID">Process-ID for close/kill commands</param>
     public bool MapAction(string btnCode, int processID)
     {
       return DoMapAction(btnCode, processID);
     }
 
+    int StopPlayback(int p1, int p2, object d)
+    {
+      //Log.Debug("gibman StopPlayback {0}", GUIWindowManager.ActiveWindow);
+      // we have to save the fullscreen status of the tv3 plugin for later use for the lastactivemodulefullscreen feature.
+      //bool currentmodulefullscreen = (GUIWindowManager.ActiveWindow == (int)GUIWindow.Window.WINDOW_TVFULLSCREEN || GUIWindowManager.ActiveWindow == (int)GUIWindow.Window.WINDOW_FULLSCREEN_MUSIC || GUIWindowManager.ActiveWindow == (int)GUIWindow.Window.WINDOW_FULLSCREEN_VIDEO || GUIWindowManager.ActiveWindow == (int)GUIWindow.Window.WINDOW_FULLSCREEN_TELETEXT);
+      //GUIPropertyManager.SetProperty("#currentmodulefullscreenstate", Convert.ToString(currentmodulefullscreen));
+      g_Player.Stop();
+      return 0;
+    }
+
+
 
     /// <summary>
     /// Evaluates the button number, gets its mapping and executes the action
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file).</param>
-    /// <param name="processID">Process-ID for close/kill commands.</param>
+    /// <param name="btnCode">Button code (ref: XML file)</param>
+    /// <param name="processID">Process-ID for close/kill commands</param>
     bool DoMapAction(string btnCode, int processID)
     {
       if (!_isLoaded)   // No mapping loaded
@@ -313,7 +324,7 @@ namespace MediaPortal.Plugins
       Log.Info("{0} / {1} / {2} / {3}", map.Condition, map.ConProperty, map.Command, map.CmdProperty);
 #endif
       Action action;
-      if (map.Sound != String.Empty)
+      if (map.Sound != string.Empty)
         MediaPortal.Util.Utils.PlaySound(map.Sound, false, true);
       if (map.Focus && !GUIGraphicsContext.HasFocus)
       {
@@ -358,19 +369,28 @@ namespace MediaPortal.Plugins
             _currentLayer = 1;
           break;
         case "POWER": // power down commands
+          
           if ((map.CmdProperty == "STANDBY") || (map.CmdProperty == "HIBERNATE"))
-          {
+          {             
             GUIGraphicsContext.ResetLastActivity();
-            // Stop all media before suspending or hibernating
-            g_Player.Stop();
 
+            //Stop all media before suspending or hibernating
+            if (g_Player.Playing)
+            {
+              GUIWindowManager.SendThreadCallbackAndWait(StopPlayback, 0, 0, null);
+            }
+
+            // this is all handled in mediaportal.cs - OnSuspend          
+            /*
             if (_basicHome)
               msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
             else
               msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
-
-            GUIWindowManager.SendThreadMessage(msg);
+            
+            GUIWindowManager.SendThreadMessage(msg);             
+            */
           }
+          
           switch (map.CmdProperty)
           {
             case "EXIT":
@@ -386,12 +406,18 @@ namespace MediaPortal.Plugins
               GUIGraphicsContext.OnAction(action);
               break;
             case "STANDBY":
+              // we need a slow standby (force=false), in order to have the onsuspend method being called on mediportal.cs
+              // this is needed in order to have "ShowLastActiveModule" working correctly.
+              // also using force=true results in a silent non critical D3DERR_DEVICELOST exception when resuming from powerstate.
               MPControlPlugin.OnSuspend();
-              WindowsController.ExitWindows(RestartOptions.Suspend, true);
+              WindowsController.ExitWindows(RestartOptions.Suspend, false);
               break;
             case "HIBERNATE":
+              // we need a slow hibernation (force=false), in order to have the onsuspend method being called on mediportal.cs
+              // this is needed in order to have "ShowLastActiveModule" working correctly.
+              // also using force=true results in a silent non critical D3DERR_DEVICELOST exception when resuming from powerstate.
               MPControlPlugin.OnSuspend();
-              WindowsController.ExitWindows(RestartOptions.Hibernate, true);
+              WindowsController.ExitWindows(RestartOptions.Hibernate, false);
               break;
           }
           break;
@@ -427,8 +453,8 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Get mappings for a given button code based on the current conditions
     /// </summary>
-    /// <param name="btnCode">Button code (ref: XML file).</param>
-    /// <returns>Mapping.</returns>
+    /// <param name="btnCode">Button code (ref: XML file)</param>
+    /// <returns>Mapping</returns>
     public Mapping GetMapping(string btnCode)
     {
       RemoteMap button = null;
