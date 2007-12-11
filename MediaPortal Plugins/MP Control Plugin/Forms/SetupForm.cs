@@ -191,7 +191,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin: LoadRemotes() - {0}", ex.Message);
+        Log.Error("MPControlPlugin: {0}", ex.Message);
       }
     }
     void SaveRemotes(string file)
@@ -487,7 +487,7 @@ namespace MediaPortal.Plugins
       string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete",  MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
@@ -578,63 +578,49 @@ namespace MediaPortal.Plugins
         return;
 
       string selected = comboBoxCommands.SelectedItem as string;
-      string command = String.Empty;
+      string newCommand = null;
 
       if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
         ExternalProgram externalProgram = new ExternalProgram();
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixRun + externalProgram.CommandString;
+        if (externalProgram.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
       }
       else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
       {
         SerialCommand serialCommand = new SerialCommand();
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixSerial + serialCommand.CommandString;
+        if (serialCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
       else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         MessageCommand messageCommand = new MessageCommand();
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        if (messageCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
       else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
-        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
       }
       else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand();
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixKeys + keysCommand.CommandString;
+        if (keysCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
       }
       else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
       {
         EjectCommand ejectCommand = new EjectCommand();
-        if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-        
-        command = Common.CmdPrefixEject + ejectCommand.CommandString;
+        if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
       }
       else if (selected.Equals(Common.UITextGoto, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen();
-        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixGoto + goToScreen.Screen;
+        if (goToScreen.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixGoto + goToScreen.CommandString;
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
@@ -644,18 +630,16 @@ namespace MediaPortal.Plugins
           MPControlPlugin.TransceiverInformation.Ports,
           selected.Substring(Common.CmdPrefixBlast.Length));
 
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixBlast + blastCommand.CommandString;
+        if (blastCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
       }
       else
       {
-        command = selected;
+        newCommand = selected;
       }
 
       foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
-        listViewItem.SubItems[1].Text = command;
+        listViewItem.SubItems[1].Text = newCommand;
     }
 
     private void buttonNew_Click(object sender, EventArgs e)
@@ -903,49 +887,40 @@ namespace MediaPortal.Plugins
         return;
 
       string command = listViewEventMap.SelectedItems[0].SubItems[1].Text;
+      string newCommand = null;
 
       if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
         ExternalProgram externalProgram = new ExternalProgram(commands);
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixRun + externalProgram.CommandString;
+        if (externalProgram.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
       }
       else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen(command.Substring(Common.CmdPrefixGoto.Length));
-        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixGoto + goToScreen.Screen;
+        if (goToScreen.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixGoto + goToScreen.CommandString;
       }
       else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         SerialCommand serialCommand = new SerialCommand(commands);
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixSerial + serialCommand.CommandString;
+        if (serialCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
       else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         MessageCommand messageCommand = new MessageCommand(commands);
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        if (messageCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
       else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
         KeysCommand keysCommand = new KeysCommand(command.Substring(Common.CmdPrefixKeys.Length));
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixKeys + keysCommand.CommandString;
+        if (keysCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
       }
       else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
@@ -957,17 +932,12 @@ namespace MediaPortal.Plugins
           MPControlPlugin.TransceiverInformation.Ports,
           commands);
 
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixBlast + blastCommand.CommandString;
-      }
-      else
-      {
-        return;
+        if (blastCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
       }
 
-      listViewEventMap.SelectedItems[0].SubItems[1].Text = command;
+      if (!String.IsNullOrEmpty(newCommand))
+        listViewEventMap.SelectedItems[0].SubItems[1].Text = newCommand;
     }
 
     private void listBoxMappings_DoubleClick(object sender, EventArgs e)

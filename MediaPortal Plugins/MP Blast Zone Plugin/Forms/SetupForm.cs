@@ -156,26 +156,35 @@ namespace MediaPortal.Plugins
       if (listViewIR.SelectedItems.Count != 1)
         return;
 
-      string command = listViewIR.SelectedItems[0].Text;
-      string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
-
-      if (File.Exists(fileName))
+      try
       {
-        _learnIR = new LearnIR(
-          new LearnIrDelegate(MPBlastZonePlugin.LearnIR),
-          new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
-          MPBlastZonePlugin.TransceiverInformation.Ports,
-          command);
+        string command = listViewIR.SelectedItems[0].Text;
+        string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
 
-        _learnIR.ShowDialog(this);
+        if (File.Exists(fileName))
+        {
+          _learnIR = new LearnIR(
+            new LearnIrDelegate(MPBlastZonePlugin.LearnIR),
+            new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
+            MPBlastZonePlugin.TransceiverInformation.Ports,
+            command);
 
-        _learnIR = null;
+          _learnIR.ShowDialog(this);
+
+          _learnIR = null;
+        }
+        else
+        {
+          RefreshIRList();
+          RefreshCommandsCombo();
+
+          throw new FileNotFoundException("IR file missing", fileName);
+        }
       }
-      else
+      catch (Exception ex)
       {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        RefreshIRList();
-        RefreshCommandsCombo();
+        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     void EditMacro()
@@ -183,19 +192,28 @@ namespace MediaPortal.Plugins
       if (listViewMacro.SelectedItems.Count != 1)
         return;
 
-      string command = listViewMacro.SelectedItems[0].Text;
-      string fileName = MPBlastZonePlugin.FolderMacros + command + Common.FileExtensionMacro;
+      try
+      {
+        string command = listViewMacro.SelectedItems[0].Text;
+        string fileName = MPBlastZonePlugin.FolderMacros + command + Common.FileExtensionMacro;
 
-      if (File.Exists(fileName))
-      {
-        MacroEditor macroEditor = new MacroEditor(command);
-        macroEditor.ShowDialog(this);
+        if (File.Exists(fileName))
+        {
+          MacroEditor macroEditor = new MacroEditor(command);
+          macroEditor.ShowDialog(this);
+        }
+        else
+        {
+          RefreshMacroList();
+          RefreshCommandsCombo();
+
+          throw new FileNotFoundException("Macro file missing", fileName);
+        }
       }
-      else
+      catch (Exception ex)
       {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        RefreshMacroList();
-        RefreshCommandsCombo();
+        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to edit macro", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -271,89 +289,17 @@ namespace MediaPortal.Plugins
       parent.Nodes.Add(newNode);
       newNode.EnsureVisible();
     }
-    private void buttonSetCommand_Click(object sender, EventArgs e)
+
+    private void buttonHelp_Click(object sender, EventArgs e)
     {
-      if (treeViewMenu.SelectedNode == null)
-        return;
-
-      TreeNode parent = treeViewMenu.SelectedNode;
-      switch (treeViewMenu.SelectedNode.Level)
+      try
       {
-        case 0:
-          return;
-
-        case 1:
-          parent = treeViewMenu.SelectedNode;
-          break;
-
-        case 2:
-          parent = treeViewMenu.SelectedNode.Parent;
-          break;
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Plugins\\MP Blast Zone Plugin\\index.html");
       }
-
-      if (comboBoxCommands.SelectedIndex == -1)
-        return;
-
-      string selected = comboBoxCommands.SelectedItem as string;
-      string command = String.Empty;
-
-      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
+      catch (Exception ex)
       {
-        ExternalProgram externalProgram = new ExternalProgram();
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixRun + externalProgram.CommandString;
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
-      else if (selected.Equals(Common.UITextGoto, StringComparison.OrdinalIgnoreCase))
-      {
-        GoToScreen goToScreen = new GoToScreen();
-        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixGoto + goToScreen.Screen;
-      }
-      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        SerialCommand serialCommand = new SerialCommand();
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixSerial + serialCommand.CommandString;
-      }
-      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        MessageCommand messageCommand = new MessageCommand();
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        BlastCommand blastCommand = new BlastCommand(
-          new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
-          Common.FolderIRCommands,
-          MPBlastZonePlugin.TransceiverInformation.Ports,
-          selected.Substring(Common.CmdPrefixBlast.Length));
-
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixBlast + blastCommand.CommandString;
-      }
-      else
-      {
-        command = selected;
-      }
-
-      parent.Nodes.Clear();
-
-      TreeNode newNode = new TreeNode(command);
-      newNode.ForeColor = Color.Blue;
-
-      parent.Nodes.Add(newNode);
-      newNode.EnsureVisible();
     }
 
     private void buttonNewIR_Click(object sender, EventArgs e)
@@ -442,63 +388,91 @@ namespace MediaPortal.Plugins
       }
     }
 
-    private void buttonOK_Click(object sender, EventArgs e)
+    private void buttonSetCommand_Click(object sender, EventArgs e)
     {
-      MPBlastZonePlugin.LogVerbose = checkBoxLogVerbose.Checked;
+      if (treeViewMenu.SelectedNode == null)
+        return;
 
-      // Save menu ...
-      MPBlastZonePlugin.Menu.Clear();
-      foreach (TreeNode collectionNode in treeViewMenu.Nodes)
+      TreeNode parent = treeViewMenu.SelectedNode;
+      switch (treeViewMenu.SelectedNode.Level)
       {
-        MenuFolder collection = new MenuFolder(collectionNode.Text);
-        MPBlastZonePlugin.Menu.Add(collection);
+        case 0:
+          return;
 
-        foreach (TreeNode commandNode in collectionNode.Nodes)
-        {
-          string commandValue = String.Empty;
-          if (commandNode.Nodes.Count == 1)
-            commandValue = commandNode.Nodes[0].Text;
-          
-          MenuCommand command = new MenuCommand(commandNode.Text, commandValue);
-          collection.Add(command);
-        }
+        case 1:
+          parent = treeViewMenu.SelectedNode;
+          break;
+
+        case 2:
+          parent = treeViewMenu.SelectedNode.Parent;
+          break;
       }
-      MPBlastZonePlugin.Menu.Save(MPBlastZonePlugin.MenuFile);
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
-    }
-    private void buttonCancel_Click(object sender, EventArgs e)
-    {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
-    }
+      if (comboBoxCommands.SelectedIndex == -1)
+        return;
 
-    private void buttonChangeServer_Click(object sender, EventArgs e)
-    {
-      MPBlastZonePlugin.StopClient();
+      string selected = comboBoxCommands.SelectedItem as string;
+      string newCommand = null;
 
-      ServerAddress serverAddress = new ServerAddress(MPBlastZonePlugin.ServerHost);
-      serverAddress.ShowDialog(this);
-
-      MPBlastZonePlugin.ServerHost = serverAddress.ServerHost;
-
-      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
-
-      MPBlastZonePlugin.StartClient(endPoint);
-    }
-
-    private void buttonHelp_Click(object sender, EventArgs e)
-    {
-      try
+      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Plugins\\MP Blast Zone Plugin\\index.html");
+        ExternalProgram externalProgram = new ExternalProgram();
+        if (externalProgram.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      catch (Exception ex)
+      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
       {
-        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        SerialCommand serialCommand = new SerialCommand();
+        if (serialCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
+      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
+      {
+        MessageCommand messageCommand = new MessageCommand();
+        if (messageCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+      }
+      else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
+      {
+        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+      }
+      else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
+      {
+        EjectCommand ejectCommand = new EjectCommand();
+        if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
+      }
+      else if (selected.Equals(Common.UITextGoto, StringComparison.OrdinalIgnoreCase))
+      {
+        GoToScreen goToScreen = new GoToScreen();
+        if (goToScreen.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixGoto + goToScreen.CommandString;
+      }
+      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+      {
+        BlastCommand blastCommand = new BlastCommand(
+          new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
+          Common.FolderIRCommands,
+          MPBlastZonePlugin.TransceiverInformation.Ports,
+          selected.Substring(Common.CmdPrefixBlast.Length));
+
+        if (blastCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
+      }
+      else
+      {
+        newCommand = selected;
+      }
+
+      parent.Nodes.Clear();
+
+      TreeNode newNode = new TreeNode(newCommand);
+      newNode.ForeColor = Color.Blue;
+
+      parent.Nodes.Add(newNode);
+      newNode.EnsureVisible();
     }
 
     private void buttonTop_Click(object sender, EventArgs e)
@@ -622,6 +596,53 @@ namespace MediaPortal.Plugins
       }
 
       selected.EnsureVisible();
+    }
+
+    private void buttonOK_Click(object sender, EventArgs e)
+    {
+      MPBlastZonePlugin.LogVerbose = checkBoxLogVerbose.Checked;
+
+      // Save menu ...
+      MPBlastZonePlugin.Menu.Clear();
+      foreach (TreeNode collectionNode in treeViewMenu.Nodes)
+      {
+        MenuFolder collection = new MenuFolder(collectionNode.Text);
+        MPBlastZonePlugin.Menu.Add(collection);
+
+        foreach (TreeNode commandNode in collectionNode.Nodes)
+        {
+          string commandValue = String.Empty;
+          if (commandNode.Nodes.Count == 1)
+            commandValue = commandNode.Nodes[0].Text;
+          
+          MenuCommand command = new MenuCommand(commandNode.Text, commandValue);
+          collection.Add(command);
+        }
+      }
+      MPBlastZonePlugin.Menu.Save(MPBlastZonePlugin.MenuFile);
+
+      this.DialogResult = DialogResult.OK;
+      this.Close();
+    }
+    private void buttonCancel_Click(object sender, EventArgs e)
+    {
+      this.DialogResult = DialogResult.Cancel;
+      this.Close();
+    }
+
+    private void buttonChangeServer_Click(object sender, EventArgs e)
+    {
+      MPBlastZonePlugin.StopClient();
+
+      ServerAddress serverAddress = new ServerAddress(MPBlastZonePlugin.ServerHost);
+      serverAddress.ShowDialog(this);
+
+      MPBlastZonePlugin.ServerHost = serverAddress.ServerHost;
+
+      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      MPBlastZonePlugin.StartClient(endPoint);
     }
 
     private void buttonEditTree_Click(object sender, EventArgs e)
@@ -756,61 +777,46 @@ namespace MediaPortal.Plugins
       if (treeViewMenu.SelectedNode.Level != 2)
         return;
 
-      if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
-      {
-        PauseTime pauseTime = new PauseTime(int.Parse(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixPause.Length)));
-        if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
-          return;
+      string command = treeViewMenu.SelectedNode.Text;
+      string newCommand = null;
 
-        treeViewMenu.SelectedNode.Text = Common.CmdPrefixPause + pauseTime.Time.ToString();
-      }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+      if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitRunCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixRun.Length));
-        ExternalProgram executeProgram = new ExternalProgram(commands);
-        if (executeProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        treeViewMenu.SelectedNode.Text = Common.CmdPrefixRun + executeProgram.CommandString;
+        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
+        ExternalProgram externalProgram = new ExternalProgram(commands);
+        if (externalProgram.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitSerialCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixSerial.Length));
+        GoToScreen goToScreen = new GoToScreen(command.Substring(Common.CmdPrefixGoto.Length));
+        if (goToScreen.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixGoto + goToScreen.CommandString;
+      }
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+      {
+        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
         SerialCommand serialCommand = new SerialCommand(commands);
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        treeViewMenu.SelectedNode.Text = Common.CmdPrefixSerial + serialCommand.CommandString;
+        if (serialCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitWindowMessageCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixWindowMsg.Length));
+        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
         MessageCommand messageCommand = new MessageCommand(commands);
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        treeViewMenu.SelectedNode.Text = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        if (messageCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
-        GoToScreen goToScreen = new GoToScreen(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixGoto.Length));
-        if (goToScreen.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        treeViewMenu.SelectedNode.Text = Common.CmdPrefixGoto + goToScreen.Screen;
+        string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
+        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
+        if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
       }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitPopupCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixPopup.Length));
-        PopupMessage popupMessage = new PopupMessage(commands);
-        if (popupMessage.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        treeViewMenu.SelectedNode.Text = Common.CmdPrefixPopup + popupMessage.CommandString;
-      }
-      else if (treeViewMenu.SelectedNode.Text.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitBlastCommand(treeViewMenu.SelectedNode.Text.Substring(Common.CmdPrefixBlast.Length));
+        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
 
         BlastCommand blastCommand = new BlastCommand(
           new BlastIrDelegate(MPBlastZonePlugin.BlastIR),
@@ -818,12 +824,12 @@ namespace MediaPortal.Plugins
           MPBlastZonePlugin.TransceiverInformation.Ports,
           commands);
 
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        treeViewMenu.SelectedNode.Text = Common.CmdPrefixBlast + blastCommand.CommandString;
+        if (blastCommand.ShowDialog(this) == DialogResult.OK)
+          newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
       }
 
+      if (!String.IsNullOrEmpty(newCommand))
+        treeViewMenu.SelectedNode.Text = newCommand;
     }
 
     #endregion Other Controls

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<UsePreChangeCommand>False</UsePreChangeCommand>
+	<SendSelect>False</SendSelect>
+	<Digit0>STB: ADB SCV-3800C\0</Digit0>
+	<Digit1>STB: ADB SCV-3800C\1</Digit1>
+	<Digit2>STB: ADB SCV-3800C\2</Digit2>
+	<Digit3>STB: ADB SCV-3800C\3</Digit3>
+	<Digit4>STB: ADB SCV-3800C\4</Digit4>
+	<Digit5>STB: ADB SCV-3800C\5</Digit5>
+	<Digit6>STB: ADB SCV-3800C\6</Digit6>
+	<Digit7>STB: ADB SCV-3800C\7</Digit7>
+	<Digit8>STB: ADB SCV-3800C\8</Digit8>
+	<Digit9>STB: ADB SCV-3800C\9</Digit9>
+</config>

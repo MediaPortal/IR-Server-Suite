@@ -150,25 +150,34 @@ namespace SetupTv.Sections
       if (listViewIR.SelectedItems.Count != 1)
         return;
 
-      string command = listViewIR.SelectedItems[0].Text;
-      string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
-        
-      if (File.Exists(fileName))
+      try
       {
-        _learnIR = new LearnIR(
-          new LearnIrDelegate(TV3BlasterPlugin.LearnIR),
-          new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
-          TV3BlasterPlugin.TransceiverInformation.Ports,
-          command);
+        string command = listViewIR.SelectedItems[0].Text;
+        string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
 
-        _learnIR.ShowDialog(this);
+        if (File.Exists(fileName))
+        {
+          _learnIR = new LearnIR(
+            new LearnIrDelegate(TV3BlasterPlugin.LearnIR),
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            TV3BlasterPlugin.TransceiverInformation.Ports,
+            command);
 
-        _learnIR = null;
+          _learnIR.ShowDialog(this);
+
+          _learnIR = null;
+        }
+        else
+        {
+          RefreshIRList();
+
+          throw new FileNotFoundException("IR file missing", fileName);
+        }
       }
-      else
+      catch (Exception ex)
       {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        RefreshIRList();
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     void EditMacro()
@@ -176,24 +185,45 @@ namespace SetupTv.Sections
       if (listViewMacro.SelectedItems.Count != 1)
         return;
 
-      string command = listViewMacro.SelectedItems[0].Text;
-      string fileName = TV3BlasterPlugin.FolderMacros + command + Common.FileExtensionMacro;
+      try
+      {
+        string command = listViewMacro.SelectedItems[0].Text;
+        string fileName = TV3BlasterPlugin.FolderMacros + command + Common.FileExtensionMacro;
 
-      if (File.Exists(fileName))
-      {
-        MacroEditor macroEditor = new MacroEditor(command);
-        macroEditor.ShowDialog(this);
+        if (File.Exists(fileName))
+        {
+          MacroEditor macroEditor = new MacroEditor(command);
+          macroEditor.ShowDialog(this);
+        }
+        else
+        {
+          RefreshMacroList();
+
+          throw new FileNotFoundException("Macro file missing", fileName);
+        }
       }
-      else
+      catch (Exception ex)
       {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        RefreshMacroList();
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to edit macro", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
     #endregion Implementation
 
     #region Buttons
+
+    private void buttonHelp_Click(object sender, EventArgs e)
+    {
+      try
+      {
+        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Plugins\\TV3 Blaster Plugin\\index.html");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
 
     private void buttonSTB_Click(object sender, EventArgs e)
     {
@@ -303,18 +333,6 @@ namespace SetupTv.Sections
       IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
 
       TV3BlasterPlugin.StartClient(endPoint);
-    }
-
-    private void buttonHelp_Click(object sender, EventArgs e)
-    {
-      try
-      {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Plugins\\TV3 Blaster Plugin\\index.html");
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
     }
 
     #endregion Buttons

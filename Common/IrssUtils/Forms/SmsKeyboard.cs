@@ -15,12 +15,28 @@ namespace IrssUtils.Forms
   public partial class SmsKeyboard : Form
   {
 
+    #region Constants
+
+    const string NumPad1Keys = "!@#$%^&*()_+-=`~[]{}\\|,.<>/?;:'\"/";
+    const string NumPad2Keys = "ABC";
+    const string NumPad3Keys = "DEF";
+    const string NumPad4Keys = "GHI";
+    const string NumPad5Keys = "JKL";
+    const string NumPad6Keys = "MNO";
+    const string NumPad7Keys = "PQRS";
+    const string NumPad8Keys = "TUV";
+    const string NumPad9Keys = "WXYZ";
+
+    #endregion Constants
+
     #region Variables
 
-    bool _capsLock;
     bool _shift;
 
     Timer _timer;
+
+    Keys _lastKey = Keys.None;
+    int _repeated;
 
     #endregion Variables
 
@@ -57,61 +73,232 @@ namespace IrssUtils.Forms
 
     void Timeout(object sender, EventArgs e)
     {
-      //textBoxKeys.SelectionLength = 0;
-      //textBoxKeys.SelectionStart++;
-
+      if (textBoxKeys.SelectionLength == 1)
+      {
+        textBoxKeys.SelectionLength = 0;
+        textBoxKeys.SelectionStart++;
+      }
 
       _timer.Stop();
+      _lastKey = Keys.None;
     }
 
-    void TextAdd(string str)
+    bool HandleKeyPress(Keys key)
     {
-      string toAdd = str.Clone() as string;
+      System.Diagnostics.Trace.WriteLine("Key: " + key.ToString());
 
-      if (_shift || _capsLock)
-        toAdd = toAdd.ToUpper();
+      if (_lastKey == key)
+      {
+        _repeated++;
+      }
       else
-        toAdd = toAdd.ToLower();
+      {
+        _repeated = 0;
+        _lastKey = key;
+      }
 
-      textBoxKeys.Paste(toAdd);
+      switch (key)
+      {
+        case Keys.NumPad1:
+        case Keys.D1:
+          GetChar(NumPad1Keys);
+          return true;
 
+        case Keys.NumPad2:
+        case Keys.D2:
+          GetChar(NumPad2Keys);
+          return true;
+
+        case Keys.NumPad3:
+        case Keys.D3:
+          GetChar(NumPad3Keys);
+          return true;
+
+        case Keys.NumPad4:
+        case Keys.D4:
+          GetChar(NumPad4Keys);
+          return true;
+
+        case Keys.NumPad5:
+        case Keys.D5:
+          GetChar(NumPad5Keys);
+          return true;
+
+        case Keys.NumPad6:
+        case Keys.D6:
+          GetChar(NumPad6Keys);
+          return true;
+
+        case Keys.NumPad7:
+        case Keys.D7:
+          GetChar(NumPad7Keys);
+          return true;
+
+        case Keys.NumPad8:
+        case Keys.D8:
+          GetChar(NumPad8Keys);
+          return true;
+
+        case Keys.NumPad9:
+        case Keys.D9:
+          GetChar(NumPad9Keys);
+          return true;
+
+        case Keys.NumPad0:
+        case Keys.D0:
+          PutChar(" ");
+          return true;
+
+        case Keys.Multiply:
+          _shift = !_shift;
+          return true;
+
+        case Keys.Enter:
+          if (String.IsNullOrEmpty(textBoxKeys.Text))
+            this.DialogResult = DialogResult.Cancel;
+          else
+            this.DialogResult = DialogResult.OK;
+
+          this.Close();
+          return true;
+
+        case Keys.Escape:
+          this.DialogResult = DialogResult.Cancel;
+          this.Close();
+          return true;
+
+        case Keys.Left:
+        case Keys.Right:
+        case Keys.Up:
+        case Keys.Down:
+          _timer.Stop();
+          break;
+      }
+
+      return false;
+    }
+
+    void GetChar(string keys)
+    {
+      _timer.Stop();
+
+      if (textBoxKeys.SelectionLength == 1 && _repeated == 0)
+      {
+        textBoxKeys.SelectionLength = 0;
+        textBoxKeys.SelectionStart++;
+      }
+      else if (textBoxKeys.SelectionLength != 1)
+      {
+        _repeated = 0;
+      }
+
+      int chrIdx = _repeated % keys.Length;
+
+      string chr = keys[chrIdx].ToString();
+
+      PutChar(chr);
+    }
+
+    void PutChar(string chr)
+    {
       if (_shift)
-        _shift = false;
+        chr = chr.ToUpper();
+      else
+        chr = chr.ToLower();
+
+      int curPos = textBoxKeys.SelectionStart;
+
+      textBoxKeys.Paste(chr);
+      textBoxKeys.SelectionStart = curPos;
+      textBoxKeys.SelectionLength = 1;
 
       _timer.Start();
     }
-    void TextBackspace()
-    {
-    }
-
-    void ToggleShift()
-    {
-      _shift = !_shift;
-      if (_capsLock)
-        _capsLock = false;
-    }
-    void ToggleCapsLock()
-    {
-      _capsLock = !_capsLock;
-      if (_shift)
-        _shift = false;
-    }
-
-    private void buttonDone_Click(object sender, EventArgs e)
-    {
-      if (String.IsNullOrEmpty(textBoxKeys.Text))
-        this.DialogResult = DialogResult.Cancel;
-
-      this.Close();
-    }
-    private void buttonCancel_Click(object sender, EventArgs e)
-    {
-      this.Close();
-    }
-
+    
     private void SmsKeyboard_FormClosed(object sender, FormClosedEventArgs e)
     {
       _timer.Stop();
+    }
+
+    private void textBoxKeys_KeyDown(object sender, KeyEventArgs e)
+    {
+      e.SuppressKeyPress = HandleKeyPress(e.KeyCode);
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad1);
+      textBoxKeys.Focus();
+    }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad2);
+      textBoxKeys.Focus();
+    }
+
+    private void button3_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad3);
+      textBoxKeys.Focus();
+    }
+
+    private void button4_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad4);
+      textBoxKeys.Focus();
+    }
+
+    private void button5_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad5);
+      textBoxKeys.Focus();
+    }
+
+    private void button6_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad6);
+      textBoxKeys.Focus();
+    }
+
+    private void button7_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad7);
+      textBoxKeys.Focus();
+    }
+
+    private void button8_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad8);
+      textBoxKeys.Focus();
+    }
+
+    private void button9_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad9);
+      textBoxKeys.Focus();
+    }
+
+    private void button0_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.NumPad0);
+      textBoxKeys.Focus();
+    }
+
+    private void buttonStar_Click(object sender, EventArgs e)
+    {
+      HandleKeyPress(Keys.Multiply);
+      textBoxKeys.Focus();
+    }
+
+    private void buttonHash_Click(object sender, EventArgs e)
+    {
+      if (String.IsNullOrEmpty(textBoxKeys.Text))
+        this.DialogResult = DialogResult.Cancel;
+      else
+        this.DialogResult = DialogResult.OK;
+
+      this.Close();
     }
 
   }

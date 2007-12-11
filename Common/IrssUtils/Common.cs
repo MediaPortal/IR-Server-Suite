@@ -111,10 +111,11 @@ namespace IrssUtils
     public const string CmdPrefixEject        = "Eject: ";
     public const string CmdPrefixSound        = "Sound: ";
     public const string CmdPrefixBeep         = "Beep: ";
-    public const string CmdPrefixDisplay      = "Display: ";
+    public const string CmdPrefixDisplay      = "Display Mode: ";
 
     public const string CmdPrefixTranslator   = "Show Translator OSD";
     public const string CmdPrefixVirtualKB    = "Show Virtual Keyboard";
+    public const string CmdPrefixSmsKB        = "Show SMS Keyboard";
 
     // For MediaPortal ...
     public const string CmdPrefixMultiMap     = "Multi-Mapping: ";
@@ -124,42 +125,6 @@ namespace IrssUtils
 
     #endregion Command Prefixes
 
-    #region XML Tags
-
-    public const string XmlTagMacro           = "MACRO";
-    public const string XmlTagBlast           = "BLAST";
-    public const string XmlTagPause           = "PAUSE";
-    public const string XmlTagRun             = "RUN";
-    public const string XmlTagSerial          = "SERIAL";
-    public const string XmlTagKeys            = "KEYS";
-    public const string XmlTagWindowMsg       = "WINDOW_MESSAGE";
-    public const string XmlTagTcpMsg          = "TCP_MESSAGE";
-    public const string XmlTagGoto            = "GOTO";
-    public const string XmlTagPopup           = "POPUP";
-    public const string XmlTagMultiMap        = "MULTI_MAPPING";
-    public const string XmlTagMouseMode       = "MOUSE_MODE";
-    public const string XmlTagInputLayer      = "INPUT_LAYER";
-//  public const string XmlTagWindowState     = "WINDOW_STATE";
-    public const string XmlTagFocus           = "GET_FOCUS";
-    public const string XmlTagExit            = "EXIT";
-    
-    public const string XmlTagStandby         = "STANDBY";
-    public const string XmlTagHibernate       = "HIBERNATE";
-    public const string XmlTagReboot          = "REBOOT";
-    public const string XmlTagShutdown        = "SHUTDOWN";
-    public const string XmlTagLogOff          = "LOG_OFF";
-
-    public const string XmlTagMouse           = "MOUSE";
-    public const string XmlTagEject           = "EJECT";
-    public const string XmlTagSound           = "SOUND";
-    public const string XmlTagBeep            = "BEEP";
-    public const string XmlTagDisplay         = "DISPLAY";
-
-    public const string XmlTagTranslator      = "TRANSLATOR";
-    public const string XmlTagVirtualKB       = "VIRTUAL_KEYBOARD";
-
-    #endregion XML Tags
-
     #region User Interface Text
 
     public const string UITextRun             = "Run Program";
@@ -168,6 +133,7 @@ namespace IrssUtils
     public const string UITextKeys            = "Keystrokes Command";
     public const string UITextWindowMsg       = "Window Message";
     public const string UITextTcpMsg          = "TCP Message";
+    public const string UITextHttpMsg         = "HTTP Message";
     public const string UITextGoto            = "Go To Screen";
     public const string UITextPopup           = "Popup Message";
     public const string UITextMultiMap        = "Set Multi-Mapping";
@@ -187,10 +153,11 @@ namespace IrssUtils
     public const string UITextEject           = "Eject CD";
     public const string UITextSound           = "Play Sound";
     public const string UITextBeep            = "Beep";
-    public const string UITextDisplay         = "Display";
+    public const string UITextDisplay         = "Display Mode";
 
     public const string UITextTranslator      = "Show Translator OSD";
     public const string UITextVirtualKB       = "Show Virtual Keyboard";
+    public const string UITextSmsKB           = "Show SMS Keyboard";
 
     #endregion User Interface Text
 
@@ -882,10 +849,23 @@ namespace IrssUtils
       {
         foreach (Match match in Regex.Matches(input, @"%\w+%"))
         {
-          string envVar = Environment.GetEnvironmentVariable(match.Value.Substring(1, match.Value.Length - 2));
+          string varName = match.Value.Substring(1, match.Value.Length - 2);
 
-          if (envVar != null)
-            output = output.Replace(match.Value, envVar);
+          string envVar = String.Empty;
+
+          switch (varName.ToUpperInvariant())
+          {
+            case "$CLIPBOARD_TEXT$":
+              if (Clipboard.ContainsText())
+                envVar = Clipboard.GetText();
+              break;
+
+            default:
+              envVar = Environment.GetEnvironmentVariable(varName);
+              break;
+          }
+
+          output = output.Replace(match.Value, envVar);
         }
       }
 

@@ -1072,28 +1072,63 @@ namespace Translator
         }
         else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {
-          if (!Common.Hibernate())
-            IrssLog.Warn("Hibernate request was rejected by another application.");
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            if (!Common.Hibernate())
+              IrssLog.Warn("Hibernate request was rejected by another application.");
+          }
         }
         else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.OrdinalIgnoreCase))
         {
-          if (!Common.LogOff())
-            IrssLog.Warn("LogOff request failed.");
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot Log off in configuration", Common.UITextLogOff, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            if (!Common.LogOff())
+              IrssLog.Warn("LogOff request failed.");
+          }
         }
         else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
         {
-          if (!Common.Reboot())
-            IrssLog.Warn("Reboot request failed.");
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            if (!Common.Reboot())
+              IrssLog.Warn("Reboot request failed.");
+          }
         }
         else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
         {
-          if (!Common.ShutDown())
-            IrssLog.Warn("ShutDown request failed.");
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot ShutDown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            if (!Common.ShutDown())
+              IrssLog.Warn("ShutDown request failed.");
+          }
         }
         else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
         {
-          if (!Common.Standby())
-            IrssLog.Warn("Standby request was rejected by another application.");
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            if (!Common.Standby())
+              IrssLog.Warn("Standby request was rejected by another application.");
+          }
         }
         else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.OrdinalIgnoreCase))
         {
@@ -1103,13 +1138,26 @@ namespace Translator
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot show Virtual Keyboard in configuration", "Virtual Keyboard", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB, MessageBoxButtons.OK, MessageBoxIcon.Information);
           }
           else
           {
             IrssUtils.Forms.VirtualKeyboard vk = new IrssUtils.Forms.VirtualKeyboard();
             if (vk.ShowDialog() == DialogResult.OK)
               Keyboard.ProcessCommand(vk.TextOutput);
+          }
+        }
+        else if (command.StartsWith(Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
+        {
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            IrssUtils.Forms.SmsKeyboard sms = new IrssUtils.Forms.SmsKeyboard();
+            if (sms.ShowDialog() == DialogResult.OK)
+              Keyboard.ProcessCommand(sms.TextOutput);
           }
         }
         else
@@ -1139,154 +1187,13 @@ namespace Translator
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
 
-        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+        if (doc.DocumentElement.InnerText.Contains(Common.CmdPrefixBlast) && !_registered)
           throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
 
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-        string commandProperty;
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
 
         foreach (XmlNode item in commandSequence)
-        {
-          commandProperty = item.Attributes["cmdproperty"].Value;
-
-          switch (item.Attributes["command"].Value)
-          {
-            case Common.XmlTagMacro:
-              {
-                ProcMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
-                break;
-              }
-
-            case Common.XmlTagBlast:
-              {
-                string[] commands = Common.SplitBlastCommand(commandProperty);
-                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-                break;
-              }
-
-            case Common.XmlTagPause:
-              {
-                int sleep = int.Parse(commandProperty);
-                Thread.Sleep(sleep);
-                break;
-              }
-
-            case Common.XmlTagRun:
-              {
-                string[] commands = Common.SplitRunCommand(commandProperty);
-                Common.ProcessRunCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagSerial:
-              {
-                string[] commands = Common.SplitSerialCommand(commandProperty);
-                Common.ProcessSerialCommand(commands);
-                break;
-              }
-              
-            case Common.XmlTagPopup:
-              {
-                string[] commands = Common.SplitPopupCommand(commandProperty);
-                MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
-                break;
-              }
-
-            case Common.XmlTagWindowMsg:
-              {
-                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-                Common.ProcessWindowMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagTcpMsg:
-              {
-                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
-                Common.ProcessTcpMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagKeys:
-              {
-                if (_inConfiguration)
-                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.ProcessKeyCommand(commandProperty);
-                break;
-              }
-
-            case Common.XmlTagMouse:
-              {
-                Common.ProcessMouseCommand(commandProperty);
-                break;
-              }
-
-            case Common.XmlTagEject:
-              {
-                Common.ProcessEjectCommand(commandProperty);
-                break;
-              }
-
-            case Common.XmlTagStandby:
-              {
-                if (_inConfiguration)
-                  MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.Standby();
-                break;
-              }
-
-            case Common.XmlTagHibernate:
-              {
-                if (_inConfiguration)
-                  MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.Hibernate();
-                break;
-              }
-
-            case Common.XmlTagShutdown:
-              {
-                if (_inConfiguration)
-                  MessageBox.Show("Cannot ShutDown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.ShutDown();
-                break;
-              }
-
-            case Common.XmlTagReboot:
-              {
-                if (_inConfiguration)
-                  MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.Reboot();
-                break;
-              }
-
-            case Common.XmlTagLogOff:
-              {
-                if (_inConfiguration)
-                  MessageBox.Show("Cannot Log off in configuration", Common.UITextLogOff, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.LogOff();
-                break;
-              }
-
-            case Common.XmlTagBeep:
-              {
-                string[] commands = Common.SplitBeepCommand(commandProperty);
-                Common.ProcessBeepCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagDisplay:
-              {
-                string[] commands = Common.SplitDisplayModeCommand(commandProperty);
-                Common.ProcessDisplayModeCommand(commands);
-                break;
-              }
-          }
-        }
+          ProcCommand(item.Attributes["command"].Value);
       }
       finally
       {

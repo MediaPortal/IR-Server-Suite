@@ -972,7 +972,7 @@ namespace Translator
 
       if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
-        ExternalProgram externalProgram = new ExternalProgram(true);
+        ExternalProgram externalProgram = new ExternalProgram();
 
         if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
           return;
@@ -1046,7 +1046,7 @@ namespace Translator
       if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-        ExternalProgram externalProgram = new ExternalProgram(commands, true);
+        ExternalProgram externalProgram = new ExternalProgram(commands);
         if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
           return;
 

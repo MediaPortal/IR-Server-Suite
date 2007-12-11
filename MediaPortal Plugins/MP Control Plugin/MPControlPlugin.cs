@@ -265,7 +265,7 @@ namespace MediaPortal.Plugins
     /// </summary>
     public void Start()
     {
-      InConfiguration = false;
+      _inConfiguration = false;
 
       Log.Info("MPControlPlugin: Starting ({0})", PluginVersion);
 
@@ -390,7 +390,7 @@ namespace MediaPortal.Plugins
         LoadDefaultMapping();
         LoadMultiMappings();
 
-        InConfiguration = true;
+        _inConfiguration = true;
 
         if (LogVerbose)
           Log.Info("MPControlPlugin: ShowPlugin()");
@@ -406,7 +406,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error(ex);
+        Log.Error("MPControlPlugin: {0}", ex.ToString());
       }
     }
 
@@ -767,7 +767,7 @@ namespace MediaPortal.Plugins
         switch (received.Type)
         {
           case MessageType.RemoteEvent:
-            if (!InConfiguration)
+            if (!_inConfiguration)
               RemoteHandler(received.GetDataAsString());
             break;
 
@@ -838,7 +838,8 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin - ReveivedMessage(): {0}", ex.ToString());
+        _learnIRFilename = null;
+        Log.Error("MPControlPlugin: {0}", ex.ToString());
       }
     }
 
@@ -965,7 +966,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin - LoadEventMappings(): {0}", ex.ToString());
+        Log.Error("MPControlPlugin: {0}", ex.ToString());
       }
     }
 
@@ -1023,7 +1024,7 @@ namespace MediaPortal.Plugins
           }
           catch (Exception ex)
           {
-            Log.Error(ex);
+            Log.Error("MPControlPlugin: Failed to execute Event Mapper command \"{0}\" - {1}", mappedEvent.EventType, ex.ToString());
           }
         }
       }
@@ -1051,7 +1052,7 @@ namespace MediaPortal.Plugins
           }
           catch (Exception ex)
           {
-            Log.Error(ex);
+            Log.Error("MPControlPlugin: Failed to execute Event Mapper command \"{0}\" - {1}", mappedEvent.EventType, ex.ToString());
           }
         }
       }
@@ -1118,7 +1119,7 @@ namespace MediaPortal.Plugins
     /// </summary>
     internal static void OnSuspend()
     {
-      if (!InConfiguration && EventMapperEnabled)
+      if (!_inConfiguration && EventMapperEnabled)
         MapEvent(MappedEvent.MappingEvent.PC_Suspend);
     }
 
@@ -1127,7 +1128,7 @@ namespace MediaPortal.Plugins
     /// </summary>
     internal static void OnResume()
     {
-      if (!InConfiguration && EventMapperEnabled)
+      if (!_inConfiguration && EventMapperEnabled)
         MapEvent(MappedEvent.MappingEvent.PC_Resume);
     }
 
@@ -1166,7 +1167,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("MPControlPlugin - LearnIR(): {0}", ex.ToString());
+        Log.Error("MPControlPlugin: {0}", ex.ToString());
         return false;
       }
 
@@ -1180,6 +1181,9 @@ namespace MediaPortal.Plugins
     /// <param name="port">Port to blast to.</param>
     internal static void BlastIR(string fileName, string port)
     {
+      if (LogVerbose)
+        Log.Debug("MPControlPlugin - BlastIR(): {0}, {1}", fileName, port);
+
       if (!_registered)
         throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
 
@@ -1219,7 +1223,7 @@ namespace MediaPortal.Plugins
         }
         catch (Exception ex)
         {
-          Log.Error("MPControlPlugin - ProcessCommand(): {0}", ex.ToString());
+          Log.Error("MPControlPlugin: {0}", ex.ToString());
         }
       }
       else
@@ -1273,7 +1277,7 @@ namespace MediaPortal.Plugins
         else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-          if (InConfiguration)
+          if (_inConfiguration)
             MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             Common.ProcessKeyCommand(keyCommand);
@@ -1288,37 +1292,63 @@ namespace MediaPortal.Plugins
           string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
           Common.ProcessEjectCommand(ejectCommand);
         }
+        else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
+        {
+          MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), _mpBasicHome);
+        }
         else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {
-          if (InConfiguration)
+          if (_inConfiguration)
             MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.Hibernate();
         }
         else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
         {
-          if (InConfiguration)
+          if (_inConfiguration)
             MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.Reboot();
         }
         else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
         {
-          if (InConfiguration)
+          if (_inConfiguration)
             MessageBox.Show("Cannot Shutdown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.ShutDown();
         }
         else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
         {
-          if (InConfiguration)
+          if (_inConfiguration)
             MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.Standby();
         }
-        else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
         {
-          MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), MP_BasicHome);
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            IrssUtils.Forms.VirtualKeyboard vk = new IrssUtils.Forms.VirtualKeyboard();
+            if (vk.ShowDialog() == DialogResult.OK)
+              Keyboard.ProcessCommand(vk.TextOutput);
+          }
+        }
+        else if (command.StartsWith(Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
+        {
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            IrssUtils.Forms.SmsKeyboard sms = new IrssUtils.Forms.SmsKeyboard();
+            if (sms.ShowDialog() == DialogResult.OK)
+              Keyboard.ProcessCommand(sms.TextOutput);
+          }
         }
         else
         {
@@ -1328,7 +1358,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          Log.Error(ex.ToString());
+          Log.Error("MPControlPlugin: {0}", ex.ToString());
         else
           throw ex;
       }
@@ -1347,270 +1377,13 @@ namespace MediaPortal.Plugins
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
 
-        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+        if (doc.DocumentElement.InnerText.Contains(Common.CmdPrefixBlast) && !_registered)
           throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
 
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-        string commandProperty;
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
 
         foreach (XmlNode item in commandSequence)
-        {
-          commandProperty = item.Attributes["cmdproperty"].Value;
-
-          switch (item.Attributes["command"].Value)
-          {
-            case Common.XmlTagMacro:
-              {
-                ProcMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
-                break;
-              }
-
-            case Common.XmlTagBlast:
-              {
-                string[] commands = Common.SplitBlastCommand(commandProperty);
-                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-                break;
-              }
-
-            case Common.XmlTagPause:
-              {
-                int sleep = int.Parse(commandProperty);
-                Thread.Sleep(sleep);
-                break;
-              }
-
-            case Common.XmlTagRun:
-              {
-                string[] commands = Common.SplitRunCommand(commandProperty);
-                Common.ProcessRunCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagSerial:
-              {
-                string[] commands = Common.SplitSerialCommand(commandProperty);
-                Common.ProcessSerialCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagGoto:
-              {
-                if (InConfiguration)
-                  MessageBox.Show(commandProperty, Common.UITextGoto, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  MPCommon.ProcessGoTo(commandProperty, MP_BasicHome);
-                break;
-              }
-
-            case Common.XmlTagPopup:
-              {
-                string[] commands = Common.SplitPopupCommand(commandProperty);
-
-                if (InConfiguration)
-                  MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
-
-                break;
-              }
-
-            case Common.XmlTagWindowMsg:
-              {
-                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-                Common.ProcessWindowMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagTcpMsg:
-              {
-                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
-                Common.ProcessTcpMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagKeys:
-              {
-                if (InConfiguration)
-                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.ProcessKeyCommand(commandProperty);
-                break;
-              }
-
-            case Common.XmlTagMultiMap:
-              {
-                if (InConfiguration)
-                  MessageBox.Show(commandProperty, Common.UITextMultiMap, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else if (MultiMappingEnabled)
-                  ChangeMultiMapping(commandProperty);
-
-                break;
-              }
-
-            case Common.XmlTagMouseMode:
-              {
-                if (InConfiguration)
-                {
-                  MessageBox.Show("Command to toggle the Mouse Mode cannot be processed in configuration.", Common.UITextMouseMode, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                  break;
-                }
-
-                if (!MouseModeEnabled)
-                  break;
-
-                switch (commandProperty)
-                {
-                  case "ON":
-                    MouseModeActive = true;
-                    break;
-
-                  case "OFF":
-                    MouseModeActive = false;
-                    break;
-
-                  case "TOGGLE":
-                    MouseModeActive = !MouseModeActive;
-                    break;
-                }
-
-                string notifyMessage;
-
-                if (MouseModeActive)
-                {
-                  notifyMessage = "Mouse Mode is now ON";
-                }
-                else
-                {
-                  notifyMessage = "Mouse Mode is now OFF";
-
-                  if (_mouseModeLeftHeld)
-                    Mouse.Button(Mouse.MouseEvents.LeftUp);
-
-                  if (_mouseModeRightHeld)
-                    Mouse.Button(Mouse.MouseEvents.RightUp);
-
-                  if (_mouseModeMiddleHeld)
-                    Mouse.Button(Mouse.MouseEvents.MiddleUp);
-
-                  _mouseModeLeftHeld = false;
-                  _mouseModeRightHeld = false;
-                  _mouseModeMiddleHeld = false;
-                }
-
-                MPCommon.ShowNotifyDialog("Mouse Mode", notifyMessage, 2);
-
-                if (LogVerbose)
-                  Log.Info("MPControlPlugin: {0}", notifyMessage);
-
-                break;
-              }
-
-            case Common.XmlTagInputLayer:
-              {
-                if (InConfiguration)
-                {
-                  MessageBox.Show("Command to toggle the input handler layer cannot be processed in configuration.", Common.UITextInputLayer, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                  break;
-                }
-
-                InputHandler inputHandler;
-
-                if (MultiMappingEnabled)
-                  inputHandler = _multiInputHandlers[_multiMappingSet];
-                else
-                  inputHandler = _defaultInputHandler;
-
-                if (inputHandler.CurrentLayer == 1)
-                  inputHandler.CurrentLayer = 2;
-                else
-                  inputHandler.CurrentLayer = 1;
-
-                break;
-              }
-            /*
-            case Common.XmlTagWindowState:
-              {
-                if (InConfiguration)
-                {
-                  MessageBox.Show("Command to toggle the window state cannot be processed in configuration.", Common.UITextWindowState, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                  break;
-                }
-
-                GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_SWITCH_FULL_WINDOWED, 0, 0, 0, 0, 0, null);
-
-                if (GUIGraphicsContext.DX9Device.PresentationParameters.Windowed)
-                  msg.Param1 = 1;
-
-                GUIWindowManager.SendMessage(msg);
-                break;
-              }
-            */
-            case Common.XmlTagFocus:
-              {
-                if (InConfiguration)
-                {
-                  MessageBox.Show("Command to get focus cannot be processed in configuration.", Common.UITextFocus, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                  break;
-                }
-
-                GUIGraphicsContext.ResetLastActivity();
-                GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GETFOCUS, 0, 0, 0, 0, 0, null);
-                GUIWindowManager.SendThreadMessage(msg);
-                break;
-              }
-
-            case Common.XmlTagExit:
-              {
-                if (InConfiguration)
-                  MessageBox.Show("Cannot exit MediaPortal while in configuration", Common.UITextExit, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_EXIT, 0, 0));
-                break;
-              }
-
-            case Common.XmlTagEject:
-              {
-                Common.ProcessEjectCommand(commandProperty);
-                break;
-              }
-
-            case Common.XmlTagStandby:
-              {
-                if (InConfiguration)
-                  MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  MPCommon.Standby();
-                break;
-              }
-
-            case Common.XmlTagHibernate:
-              {
-                if (InConfiguration)
-                  MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  MPCommon.Hibernate();
-                break;
-              }
-
-            case Common.XmlTagShutdown:
-              {
-                if (InConfiguration)
-                  MessageBox.Show("Cannot ShutDown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  MPCommon.ShutDown();
-                break;
-              }
-
-            case Common.XmlTagReboot:
-              {
-                if (InConfiguration)
-                  MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  MPCommon.Reboot();
-                break;
-              }
-          }
-        }
+          ProcCommand(item.Attributes["command"].Value);
       }
       finally
       {
@@ -1769,7 +1542,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin - LoadSettings(): {0}", ex.ToString());
+        Log.Error("MPControlPlugin: {0}", ex.ToString());
       }
     }
     /// <summary>
@@ -1796,7 +1569,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin - SaveSettings(): {0}", ex.ToString());
+        Log.Error("MPControlPlugin: {0}", ex.ToString());
       }
     }
 

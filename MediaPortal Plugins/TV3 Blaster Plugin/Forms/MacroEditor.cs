@@ -65,6 +65,7 @@ namespace TvEngine
       comboBoxCommands.Items.Add(Common.UITextSerial);
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
       comboBoxCommands.Items.Add(Common.UITextTcpMsg);
+      comboBoxCommands.Items.Add(Common.UITextHttpMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
       comboBoxCommands.Items.Add(Common.UITextEject);
       comboBoxCommands.Items.Add(Common.UITextStandby);
@@ -88,95 +89,23 @@ namespace TvEngine
         using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
-          writer.Indentation = 1;
-          writer.IndentChar = (char)9;
           writer.WriteStartDocument(true);
-          writer.WriteStartElement("macro"); // <macro>
+          writer.WriteStartElement("macro");
 
           foreach (string item in listBoxMacro.Items)
           {
-            writer.WriteStartElement("action");
-
-            if (item.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagMacro);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixMacro.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagBlast);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixBlast.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagPause);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixPause.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagRun);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixRun.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagSerial);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixSerial.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagWindowMsg);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixWindowMsg.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagTcpMsg);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixTcpMsg.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagKeys);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixKeys.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagEject);
-              writer.WriteAttributeString("cmdproperty", item.Substring(Common.CmdPrefixEject.Length));
-            }
-            else if (item.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagStandby);
-              writer.WriteAttributeString("cmdproperty", String.Empty);
-            }
-            else if (item.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagHibernate);
-              writer.WriteAttributeString("cmdproperty", String.Empty);
-            }
-            else if (item.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagReboot);
-              writer.WriteAttributeString("cmdproperty", String.Empty);
-            }
-            else if (item.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
-            {
-              writer.WriteAttributeString("command", Common.XmlTagShutdown);
-              writer.WriteAttributeString("cmdproperty", String.Empty);
-            }
-            else
-            {
-              Log.Error("TV3BlasterPlugin: Cannot write unknown macro item ({0}) to file ({1}).", item, fileName);
-            }
-
+            writer.WriteStartElement("item");
+            writer.WriteAttributeString("command", item);
             writer.WriteEndElement();
           }
 
-          writer.WriteEndElement(); // </macro>
+          writer.WriteEndElement();
           writer.WriteEndDocument();
         }
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.Message);
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
       }
     }
 
@@ -191,74 +120,16 @@ namespace TvEngine
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
 
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
+
         listBoxMacro.Items.Clear();
 
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-
-        string commandProperty;
         foreach (XmlNode item in commandSequence)
-        {
-          commandProperty = item.Attributes["cmdproperty"].Value;
-
-          switch (item.Attributes["command"].Value)
-          {
-            case Common.XmlTagMacro:
-              listBoxMacro.Items.Add(Common.CmdPrefixMacro + commandProperty);
-              break;
-
-            case Common.XmlTagBlast:
-              listBoxMacro.Items.Add(Common.CmdPrefixBlast + commandProperty);
-              break;
-
-            case Common.XmlTagPause:
-              listBoxMacro.Items.Add(Common.CmdPrefixPause + commandProperty);
-              break;
-
-            case Common.XmlTagRun:
-              listBoxMacro.Items.Add(Common.CmdPrefixRun + commandProperty);
-              break;
-
-            case Common.XmlTagSerial:
-              listBoxMacro.Items.Add(Common.CmdPrefixSerial + commandProperty);
-              break;
-
-            case Common.XmlTagWindowMsg:
-              listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + commandProperty);
-              break;
-
-            case Common.XmlTagTcpMsg:
-              listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + commandProperty);
-              break;
-
-            case Common.XmlTagKeys:
-              listBoxMacro.Items.Add(Common.CmdPrefixKeys + commandProperty);
-              break;
-
-            case Common.XmlTagEject:
-              listBoxMacro.Items.Add(Common.CmdPrefixEject + commandProperty);
-              break;
-
-            case Common.XmlTagStandby:
-              listBoxMacro.Items.Add(Common.CmdPrefixStandby);
-              break;
-
-            case Common.XmlTagHibernate:
-              listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
-              break;
-
-            case Common.XmlTagReboot:
-              listBoxMacro.Items.Add(Common.CmdPrefixReboot);
-              break;
-
-            case Common.XmlTagShutdown:
-              listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
-              break;
-          }
-        }
+          listBoxMacro.Items.Add(item.Attributes["command"].Value);
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.Message);
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
       }
     }
 
@@ -272,84 +143,104 @@ namespace TvEngine
       if (comboBoxCommands.SelectedIndex == -1)
         return;
 
-      string selected = comboBoxCommands.SelectedItem as string;
+      try
+      {
+        string selected = comboBoxCommands.SelectedItem as string;
+        string newCommand = null;
 
-      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
-      {
-        ExternalProgram externalProgram = new ExternalProgram();
-        if (externalProgram.ShowDialog(this) == DialogResult.OK)
-          listBoxMacro.Items.Add(Common.CmdPrefixRun + externalProgram.CommandString);
-      }
-      else if (selected.Equals(Common.UITextPause, StringComparison.OrdinalIgnoreCase))
-      {
-        PauseTime pauseTime = new PauseTime();
-        if (pauseTime.ShowDialog(this) == DialogResult.OK)
-          listBoxMacro.Items.Add(Common.CmdPrefixPause + pauseTime.Time.ToString());
-      }
-      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        SerialCommand serialCommand = new SerialCommand();
-        if (serialCommand.ShowDialog(this) == DialogResult.OK)
-          listBoxMacro.Items.Add(Common.CmdPrefixSerial + serialCommand.CommandString);
-      }
-      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        MessageCommand messageCommand = new MessageCommand();
-        if (messageCommand.ShowDialog(this) == DialogResult.OK)
-          listBoxMacro.Items.Add(Common.CmdPrefixWindowMsg + messageCommand.CommandString);
-      }
-      else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
-        if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-          listBoxMacro.Items.Add(Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
-      }
-      else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        KeysCommand keysCommand = new KeysCommand();
-        if (keysCommand.ShowDialog(this) == DialogResult.OK)
-          listBoxMacro.Items.Add(Common.CmdPrefixKeys + keysCommand.CommandString);
-      }
-      else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
-      {
-        EjectCommand ejectCommand = new EjectCommand();
-        if (ejectCommand.ShowDialog(this) == DialogResult.OK)
-          listBoxMacro.Items.Add(Common.CmdPrefixEject + ejectCommand.CommandString);
-      }
-      else if (selected.Equals(Common.UITextStandby, StringComparison.OrdinalIgnoreCase))
-      {
-        listBoxMacro.Items.Add(Common.CmdPrefixStandby);
-      }
-      else if (selected.Equals(Common.UITextHibernate, StringComparison.OrdinalIgnoreCase))
-      {
-        listBoxMacro.Items.Add(Common.CmdPrefixHibernate);
-      }
-      else if (selected.Equals(Common.UITextReboot, StringComparison.OrdinalIgnoreCase))
-      {
-        listBoxMacro.Items.Add(Common.CmdPrefixReboot);
-      }
-      else if (selected.Equals(Common.UITextShutdown, StringComparison.OrdinalIgnoreCase))
-      {
-        listBoxMacro.Items.Add(Common.CmdPrefixShutdown);
-      }
-      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        BlastCommand blastCommand = new BlastCommand(
-          new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
-          Common.FolderIRCommands,
-          TV3BlasterPlugin.TransceiverInformation.Ports,
-          selected.Substring(Common.CmdPrefixBlast.Length));
+        if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
+        {
+          ExternalProgram externalProgram = new ExternalProgram();
+          if (externalProgram.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
+        }
+        else if (selected.Equals(Common.UITextPause, StringComparison.OrdinalIgnoreCase))
+        {
+          PauseTime pauseTime = new PauseTime();
+          if (pauseTime.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+        }
+        else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
+        {
+          SerialCommand serialCommand = new SerialCommand();
+          if (serialCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          MessageCommand messageCommand = new MessageCommand();
+          if (messageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
+          if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextHttpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          /*
+          HttpMessageCommand httpMessageCommand = new HttpMessageCommand();
+          if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
+          */
+        }
+        else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
+        {
+          KeysCommand keysCommand = new KeysCommand();
+          if (keysCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
+        {
+          EjectCommand ejectCommand = new EjectCommand();
+          if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextStandby, StringComparison.OrdinalIgnoreCase))
+        {
+          newCommand = Common.CmdPrefixStandby;
+        }
+        else if (selected.Equals(Common.UITextHibernate, StringComparison.OrdinalIgnoreCase))
+        {
+          newCommand = Common.CmdPrefixHibernate;
+        }
+        else if (selected.Equals(Common.UITextReboot, StringComparison.OrdinalIgnoreCase))
+        {
+          newCommand = Common.CmdPrefixReboot;
+        }
+        else if (selected.Equals(Common.UITextShutdown, StringComparison.OrdinalIgnoreCase))
+        {
+          newCommand = Common.CmdPrefixShutdown;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        {
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            Common.FolderIRCommands,
+            TV3BlasterPlugin.TransceiverInformation.Ports,
+            selected.Substring(Common.CmdPrefixBlast.Length));
 
-        if (blastCommand.ShowDialog(this) == DialogResult.OK)
-          listBoxMacro.Items.Add(Common.CmdPrefixBlast + blastCommand.CommandString);
+          if (blastCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+        {
+          newCommand = selected;
+        }
+        else
+        {
+          throw new ApplicationException(String.Format("Unknown command in macro command list \"{0}\"", selected));
+        }
+
+        if (!String.IsNullOrEmpty(newCommand))
+          listBoxMacro.Items.Add(newCommand);
       }
-      else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+      catch (Exception ex)
       {
-        listBoxMacro.Items.Add(selected);
-      }
-      else
-      {
-        throw new ApplicationException(String.Format("Unknown command in macro command list \"{0}\"", selected));
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to add macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -400,16 +291,15 @@ namespace TvEngine
         return;
       }
 
-      string fileName = TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
-
-      WriteToFile(fileName);
-
       try
       {
+        WriteToFile(TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro);
+
         TV3BlasterPlugin.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
       catch (Exception ex)
       {
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -438,9 +328,15 @@ namespace TvEngine
         return;
       }
 
-      string fileName = TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
-
-      WriteToFile(fileName);
+      try
+      {
+        WriteToFile(TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro);
+      }
+      catch (Exception ex)
+      {
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
 
       this.DialogResult = DialogResult.OK;
       this.Close();
@@ -451,109 +347,103 @@ namespace TvEngine
       if (listBoxMacro.SelectedIndex == -1)
         return;
 
-      string selected = listBoxMacro.SelectedItem as string;
-
-      if (selected.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
+      try
       {
-        PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
-        if (pauseTime.ShowDialog(this) == DialogResult.Cancel)
-          return;
+        string selected = listBoxMacro.SelectedItem as string;
+        string newCommand = null;
 
-        int index = listBoxMacro.SelectedIndex;
-        listBoxMacro.Items.RemoveAt(index);
-        listBoxMacro.Items.Insert(index, Common.CmdPrefixPause + pauseTime.Time.ToString());
-        listBoxMacro.SelectedIndex = index;
+        if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
+
+          ExternalProgram executeProgram = new ExternalProgram(commands);
+          if (executeProgram.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
+        {
+          PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
+          if (pauseTime.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+        }
+        else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
+
+          SerialCommand serialCommand = new SerialCommand(commands);
+          if (serialCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
+
+          MessageCommand messageCommand = new MessageCommand(commands);
+          if (messageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
+
+          TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
+          if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          /*
+          string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
+        
+          HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
+          if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
+          */
+        }
+        else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+        {
+          KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
+          if (keysCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
+        {
+          MouseCommand mouseCommand = new MouseCommand(selected.Substring(Common.CmdPrefixMouse.Length));
+          if (mouseCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixMouse + mouseCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
+        {
+          EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
+          if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+
+          BlastCommand blastCommand = new BlastCommand(
+            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            Common.FolderIRCommands,
+            TV3BlasterPlugin.TransceiverInformation.Ports,
+            commands);
+
+          if (blastCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
+        }
+
+        if (!String.IsNullOrEmpty(newCommand))
+        {
+          int index = listBoxMacro.SelectedIndex;
+          listBoxMacro.Items.RemoveAt(index);
+          listBoxMacro.Items.Insert(index, newCommand);
+          listBoxMacro.SelectedIndex = index;
+        }
       }
-      else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+      catch (Exception ex)
       {
-        string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
-
-        ExternalProgram executeProgram = new ExternalProgram(commands);
-        if (executeProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        int index = listBoxMacro.SelectedIndex;
-        listBoxMacro.Items.RemoveAt(index);
-        listBoxMacro.Items.Insert(index, Common.CmdPrefixRun + executeProgram.CommandString);
-        listBoxMacro.SelectedIndex = index;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
-
-        SerialCommand serialCommand = new SerialCommand(commands);
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        int index = listBoxMacro.SelectedIndex;
-        listBoxMacro.Items.RemoveAt(index);
-        listBoxMacro.Items.Insert(index, Common.CmdPrefixSerial + serialCommand.CommandString);
-        listBoxMacro.SelectedIndex = index;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
-
-        MessageCommand messageCommand = new MessageCommand(commands);
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        int index = listBoxMacro.SelectedIndex;
-        listBoxMacro.Items.RemoveAt(index);
-        listBoxMacro.Items.Insert(index, Common.CmdPrefixWindowMsg + messageCommand.CommandString);
-        listBoxMacro.SelectedIndex = index;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
-        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
-        if (tcpMessageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        int index = listBoxMacro.SelectedIndex;
-        listBoxMacro.Items.RemoveAt(index);
-        listBoxMacro.Items.Insert(index, Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString);
-        listBoxMacro.SelectedIndex = index;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        int index = listBoxMacro.SelectedIndex;
-        listBoxMacro.Items.RemoveAt(index);
-        listBoxMacro.Items.Insert(index, Common.CmdPrefixKeys + keysCommand.CommandString);
-        listBoxMacro.SelectedIndex = index;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-      {
-        EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
-        if (ejectCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        int index = listBoxMacro.SelectedIndex;
-        listBoxMacro.Items.RemoveAt(index);
-        listBoxMacro.Items.Insert(index, Common.CmdPrefixEject + ejectCommand.CommandString);
-        listBoxMacro.SelectedIndex = index;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
-
-        BlastCommand blastCommand = new BlastCommand(
-          new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
-          Common.FolderIRCommands,
-          TV3BlasterPlugin.TransceiverInformation.Ports,
-          commands);
-
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        int index = listBoxMacro.SelectedIndex;
-        listBoxMacro.Items.RemoveAt(index);
-        listBoxMacro.Items.Insert(index, Common.CmdPrefixBlast + blastCommand.CommandString);
-        listBoxMacro.SelectedIndex = index;
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to edit macro item", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

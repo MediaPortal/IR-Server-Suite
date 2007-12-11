@@ -20,7 +20,7 @@ namespace MPUtils.Forms
     /// <summary>
     /// MediaPortal screen identifier.
     /// </summary>
-    public string Screen
+    public string CommandString
     {
       get { return comboBoxScreen.Text; }
     }

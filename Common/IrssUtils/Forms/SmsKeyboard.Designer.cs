@@ -51,7 +51,7 @@ namespace IrssUtils.Forms
       this.button9 = new System.Windows.Forms.Button();
       this.button0 = new System.Windows.Forms.Button();
       this.buttonStar = new System.Windows.Forms.Button();
-      this.buttonHash = new System.Windows.Forms.Button();
+      this.buttonOK = new System.Windows.Forms.Button();
       this.textBoxKeys = new System.Windows.Forms.TextBox();
       this.panelMain.SuspendLayout();
       this.tableLayoutPanelKeys.SuspendLayout();
@@ -172,7 +172,7 @@ namespace IrssUtils.Forms
       this.tableLayoutPanelKeys.Controls.Add(this.button9, 2, 2);
       this.tableLayoutPanelKeys.Controls.Add(this.button0, 1, 3);
       this.tableLayoutPanelKeys.Controls.Add(this.buttonStar, 0, 3);
-      this.tableLayoutPanelKeys.Controls.Add(this.buttonHash, 2, 3);
+      this.tableLayoutPanelKeys.Controls.Add(this.buttonOK, 2, 3);
       this.tableLayoutPanelKeys.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tableLayoutPanelKeys.Location = new System.Drawing.Point(0, 30);
       this.tableLayoutPanelKeys.Name = "tableLayoutPanelKeys";
@@ -199,6 +199,7 @@ namespace IrssUtils.Forms
       this.button2.Text = "2";
       this.button2.UseMnemonic = false;
       this.button2.UseVisualStyleBackColor = true;
+      this.button2.Click += new System.EventHandler(this.button2_Click);
       // 
       // button1
       // 
@@ -214,6 +215,7 @@ namespace IrssUtils.Forms
       this.button1.Text = "1";
       this.button1.UseMnemonic = false;
       this.button1.UseVisualStyleBackColor = true;
+      this.button1.Click += new System.EventHandler(this.button1_Click);
       // 
       // button3
       // 
@@ -229,6 +231,7 @@ namespace IrssUtils.Forms
       this.button3.Text = "3";
       this.button3.UseMnemonic = false;
       this.button3.UseVisualStyleBackColor = true;
+      this.button3.Click += new System.EventHandler(this.button3_Click);
       // 
       // button4
       // 
@@ -244,6 +247,7 @@ namespace IrssUtils.Forms
       this.button4.Text = "4";
       this.button4.UseMnemonic = false;
       this.button4.UseVisualStyleBackColor = true;
+      this.button4.Click += new System.EventHandler(this.button4_Click);
       // 
       // button5
       // 
@@ -259,6 +263,7 @@ namespace IrssUtils.Forms
       this.button5.Text = "5";
       this.button5.UseMnemonic = false;
       this.button5.UseVisualStyleBackColor = true;
+      this.button5.Click += new System.EventHandler(this.button5_Click);
       // 
       // button6
       // 
@@ -274,6 +279,7 @@ namespace IrssUtils.Forms
       this.button6.Text = "6";
       this.button6.UseMnemonic = false;
       this.button6.UseVisualStyleBackColor = true;
+      this.button6.Click += new System.EventHandler(this.button6_Click);
       // 
       // button7
       // 
@@ -289,6 +295,7 @@ namespace IrssUtils.Forms
       this.button7.Text = "7";
       this.button7.UseMnemonic = false;
       this.button7.UseVisualStyleBackColor = true;
+      this.button7.Click += new System.EventHandler(this.button7_Click);
       // 
       // button8
       // 
@@ -304,6 +311,7 @@ namespace IrssUtils.Forms
       this.button8.Text = "8";
       this.button8.UseMnemonic = false;
       this.button8.UseVisualStyleBackColor = true;
+      this.button8.Click += new System.EventHandler(this.button8_Click);
       // 
       // button9
       // 
@@ -319,6 +327,7 @@ namespace IrssUtils.Forms
       this.button9.Text = "9";
       this.button9.UseMnemonic = false;
       this.button9.UseVisualStyleBackColor = true;
+      this.button9.Click += new System.EventHandler(this.button9_Click);
       // 
       // button0
       // 
@@ -334,6 +343,7 @@ namespace IrssUtils.Forms
       this.button0.Text = "0";
       this.button0.UseMnemonic = false;
       this.button0.UseVisualStyleBackColor = true;
+      this.button0.Click += new System.EventHandler(this.button0_Click);
       // 
       // buttonStar
       // 
@@ -346,27 +356,30 @@ namespace IrssUtils.Forms
       this.buttonStar.Size = new System.Drawing.Size(50, 36);
       this.buttonStar.TabIndex = 9;
       this.buttonStar.TabStop = false;
-      this.buttonStar.Text = "*";
+      this.buttonStar.Text = "Caps";
       this.buttonStar.UseMnemonic = false;
       this.buttonStar.UseVisualStyleBackColor = true;
+      this.buttonStar.Click += new System.EventHandler(this.buttonStar_Click);
       // 
-      // buttonHash
+      // buttonOK
       // 
-      this.buttonHash.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.buttonHash.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.buttonHash.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.buttonHash.Location = new System.Drawing.Point(115, 129);
-      this.buttonHash.MinimumSize = new System.Drawing.Size(32, 24);
-      this.buttonHash.Name = "buttonHash";
-      this.buttonHash.Size = new System.Drawing.Size(50, 36);
-      this.buttonHash.TabIndex = 11;
-      this.buttonHash.TabStop = false;
-      this.buttonHash.Text = "#";
-      this.buttonHash.UseMnemonic = false;
-      this.buttonHash.UseVisualStyleBackColor = true;
+      this.buttonOK.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.buttonOK.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.buttonOK.Location = new System.Drawing.Point(115, 129);
+      this.buttonOK.MinimumSize = new System.Drawing.Size(32, 24);
+      this.buttonOK.Name = "buttonOK";
+      this.buttonOK.Size = new System.Drawing.Size(50, 36);
+      this.buttonOK.TabIndex = 11;
+      this.buttonOK.TabStop = false;
+      this.buttonOK.Text = "OK";
+      this.buttonOK.UseMnemonic = false;
+      this.buttonOK.UseVisualStyleBackColor = true;
+      this.buttonOK.Click += new System.EventHandler(this.buttonHash_Click);
       // 
       // textBoxKeys
       // 
+      this.textBoxKeys.BackColor = System.Drawing.Color.Gainsboro;
       this.textBoxKeys.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.textBoxKeys.Dock = System.Windows.Forms.DockStyle.Top;
       this.textBoxKeys.Font = new System.Drawing.Font("Courier New", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -375,6 +388,7 @@ namespace IrssUtils.Forms
       this.textBoxKeys.Size = new System.Drawing.Size(168, 30);
       this.textBoxKeys.TabIndex = 0;
       this.textBoxKeys.WordWrap = false;
+      this.textBoxKeys.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxKeys_KeyDown);
       // 
       // SmsKeyboard
       // 
@@ -437,7 +451,7 @@ namespace IrssUtils.Forms
     private System.Windows.Forms.Button button9;
     private System.Windows.Forms.Button button0;
     private System.Windows.Forms.Button buttonStar;
-    private System.Windows.Forms.Button buttonHash;
+    private System.Windows.Forms.Button buttonOK;
 
   }
 

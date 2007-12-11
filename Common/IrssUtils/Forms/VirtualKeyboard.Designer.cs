@@ -1070,6 +1070,7 @@ namespace IrssUtils.Forms
       // 
       // textBoxKeys
       // 
+      this.textBoxKeys.BackColor = System.Drawing.Color.Gainsboro;
       this.textBoxKeys.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.textBoxKeys.Dock = System.Windows.Forms.DockStyle.Top;
       this.textBoxKeys.Enabled = false;

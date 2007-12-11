@@ -230,7 +230,7 @@ namespace MediaPortal.Plugins
         LoadSettings();
         LoadExternalConfigs();
 
-        InConfiguration = true;
+        _inConfiguration = true;
 
         if (LogVerbose)
           Log.Info("TV2BlasterPlugin: ShowPlugin()");
@@ -246,7 +246,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error(ex);
+        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
       }
     }
 
@@ -407,7 +407,8 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin - ReveivedMessage(): {0}", ex.ToString());
+        _learnIRFilename = null;
+        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
       }
     }
 
@@ -428,7 +429,7 @@ namespace MediaPortal.Plugins
         }
         catch (Exception ex)
         {
-          Log.Error("TV2BlasterPlugin - OnMessage(): {0}", ex.ToString());
+          Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
         }
       }
     }
@@ -453,7 +454,7 @@ namespace MediaPortal.Plugins
         catch (Exception ex)
         {
           _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
-          Log.Error(ex);
+          Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
         }
 
         _externalChannelConfigs[index].CardId = index;
@@ -663,7 +664,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("TV2BlasterPlugin - LearnIR(): {0}", ex.ToString());
+        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
         return false;
       }
 
@@ -719,7 +720,7 @@ namespace MediaPortal.Plugins
         }
         catch (Exception ex)
         {
-          Log.Error("TV2BlasterPlugin - ProcessCommand(): {0}", ex.ToString());
+          Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
         }
       }
       else
@@ -778,7 +779,7 @@ namespace MediaPortal.Plugins
         else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-          if (InConfiguration)
+          if (_inConfiguration)
             MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             Common.ProcessKeyCommand(keyCommand);
@@ -795,7 +796,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          Log.Error(ex.ToString());
+          Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
         else
           throw ex;
       }
@@ -814,97 +815,13 @@ namespace MediaPortal.Plugins
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
 
-        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+        if (doc.DocumentElement.InnerText.Contains(Common.CmdPrefixBlast) && !_registered)
           throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
 
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-        string commandProperty;
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
 
         foreach (XmlNode item in commandSequence)
-        {
-          commandProperty = item.Attributes["cmdproperty"].Value;
-
-          switch (item.Attributes["command"].Value)
-          {
-            case Common.XmlTagMacro:
-              {
-                ProcMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
-                break;
-              }
-
-            case Common.XmlTagBlast:
-              {
-                string[] commands = Common.SplitBlastCommand(commandProperty);
-                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-                break;
-              }
-
-            case Common.XmlTagPause:
-              {
-                int sleep = int.Parse(commandProperty);
-                Thread.Sleep(sleep);
-                break;
-              }
-
-            case Common.XmlTagRun:
-              {
-                string[] commands = Common.SplitRunCommand(commandProperty);
-                Common.ProcessRunCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagSerial:
-              {
-                string[] commands = Common.SplitSerialCommand(commandProperty);
-                Common.ProcessSerialCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagGoto:
-              {
-                if (InConfiguration)
-                  MessageBox.Show(commandProperty, Common.UITextGoto, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  MPCommon.ProcessGoTo(commandProperty, _mpBasicHome);
-                break;
-              }
-
-            case Common.XmlTagPopup:
-              {
-                string[] commands = Common.SplitPopupCommand(commandProperty);
-
-                if (InConfiguration)
-                  MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
-
-                break;
-              }
-
-            case Common.XmlTagWindowMsg:
-              {
-                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-                Common.ProcessWindowMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagTcpMsg:
-              {
-                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
-                Common.ProcessTcpMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagKeys:
-              {
-                if (InConfiguration)
-                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.ProcessKeyCommand(commandProperty);
-                break;
-              }
-          }
-        }
+          ProcCommand(item.Attributes["command"].Value);
       }
       finally
       {

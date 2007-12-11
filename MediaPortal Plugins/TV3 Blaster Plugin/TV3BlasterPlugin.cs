@@ -334,7 +334,8 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin - ReveivedMessage(): {0}", ex.ToString());
+        _learnIRFilename = null;
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
       }
     }
 
@@ -363,7 +364,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin - events_OnTvServerEvent(): {0}", ex.ToString());
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
       }
     }
 
@@ -391,7 +392,7 @@ namespace TvEngine
         catch (Exception ex)
         {
           _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
-          Log.Error(ex.ToString());
+          Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
         }
 
         _externalChannelConfigs[index].CardId = card.IdCard;
@@ -593,7 +594,7 @@ namespace TvEngine
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("TV3BlasterPlugin - LearnIR(): {0}", ex.ToString());
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
         return false;
       }
 
@@ -649,7 +650,7 @@ namespace TvEngine
         }
         catch (Exception ex)
         {
-          Log.Error("TV3BlasterPlugin - ProcessCommand(): {0}", ex.ToString());
+          Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
         }
       }
       else
@@ -675,40 +676,40 @@ namespace TvEngine
         if (String.IsNullOrEmpty(command))
           throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
 
-        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase)) // Macro
+        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
           string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
           ProcMacro(fileName);
         }
-        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))  // IR Code
+        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
           BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
         }
-        else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))  // STB IR Code
+        else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
           BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
         }
-        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase)) // External Program
+        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
           Common.ProcessRunCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase)) // Serial Port Command
+        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
           Common.ProcessSerialCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))  // Message Command
+        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
           Common.ProcessWindowMessageCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))  // Keystroke Command
+        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-          if (InConfiguration)
+          if (_inConfiguration)
             MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             Common.ProcessKeyCommand(keyCommand);
@@ -721,7 +722,7 @@ namespace TvEngine
       catch (Exception ex)
       {
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          Log.Error(ex.ToString());
+          Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
         else
           throw ex;
       }
@@ -740,76 +741,13 @@ namespace TvEngine
         XmlDocument doc = new XmlDocument();
         doc.Load(fileName);
 
-        if (doc.DocumentElement.InnerText.Contains(Common.XmlTagBlast) && !_registered)
+        if (doc.DocumentElement.InnerText.Contains(Common.CmdPrefixBlast) && !_registered)
           throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
 
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("action");
-        string commandProperty;
+        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
 
         foreach (XmlNode item in commandSequence)
-        {
-          commandProperty = item.Attributes["cmdproperty"].Value;
-
-          switch (item.Attributes["command"].Value)
-          {
-            case Common.XmlTagMacro:
-              {
-                ProcMacro(FolderMacros + commandProperty + Common.FileExtensionMacro);
-                break;
-              }
-
-            case Common.XmlTagBlast:
-              {
-                string[] commands = Common.SplitBlastCommand(commandProperty);
-                BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
-                break;
-              }
-
-            case Common.XmlTagPause:
-              {
-                int sleep = int.Parse(commandProperty);
-                Thread.Sleep(sleep);
-                break;
-              }
-
-            case Common.XmlTagRun:
-              {
-                string[] commands = Common.SplitRunCommand(commandProperty);
-                Common.ProcessRunCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagSerial:
-              {
-                string[] commands = Common.SplitSerialCommand(commandProperty);
-                Common.ProcessSerialCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagWindowMsg:
-              {
-                string[] commands = Common.SplitWindowMessageCommand(commandProperty);
-                Common.ProcessWindowMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagTcpMsg:
-              {
-                string[] commands = Common.SplitTcpMessageCommand(commandProperty);
-                Common.ProcessTcpMessageCommand(commands);
-                break;
-              }
-
-            case Common.XmlTagKeys:
-              {
-                if (InConfiguration)
-                  MessageBox.Show(commandProperty, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                  Common.ProcessKeyCommand(commandProperty);
-                break;
-              }
-          }
-        }
+          ProcCommand(item.Attributes["command"].Value);
       }
       finally
       {
