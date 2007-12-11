@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<config>
+  <UsePreChangeCommand>False</UsePreChangeCommand>
+  <Digit0>STB: Echostar 1000\0</Digit0>
+  <Digit1>STB: Echostar 1000\1</Digit1>
+  <Digit2>STB: Echostar 1000\2</Digit2>
+  <Digit3>STB: Echostar 1000\3</Digit3>
+  <Digit4>STB: Echostar 1000\4</Digit4>
+  <Digit5>STB: Echostar 1000\5</Digit5>
+  <Digit6>STB: Echostar 1000\6</Digit6>
+  <Digit7>STB: Echostar 1000\7</Digit7>
+  <Digit8>STB: Echostar 1000\8</Digit8>
+  <Digit9>STB: Echostar 1000\9</Digit9>
+  <SelectCommand>STB: Echostar 1000\ENTER</SelectCommand>
+</config>

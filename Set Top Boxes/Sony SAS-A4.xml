@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<config>
+  <UsePreChangeCommand>False</UsePreChangeCommand>
+  <Digit0>STB: Sony SAS-A4\0</Digit0>
+  <Digit1>STB: Sony SAS-A4\1</Digit1>
+  <Digit2>STB: Sony SAS-A4\2</Digit2>
+  <Digit3>STB: Sony SAS-A4\3</Digit3>
+  <Digit4>STB: Sony SAS-A4\4</Digit4>
+  <Digit5>STB: Sony SAS-A4\5</Digit5>
+  <Digit6>STB: Sony SAS-A4\6</Digit6>
+  <Digit7>STB: Sony SAS-A4\7</Digit7>
+  <Digit8>STB: Sony SAS-A4\8</Digit8>
+  <Digit9>STB: Sony SAS-A4\9</Digit9>
+  <SelectCommand>STB: Sony SAS-A4\ENTER</SelectCommand>
+</config>

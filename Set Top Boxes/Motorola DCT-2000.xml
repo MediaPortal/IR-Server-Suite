@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<config>
+  <UsePreChangeCommand>False</UsePreChangeCommand>
+  <Digit0>STB: Motorola DCT-2000\0</Digit0>
+  <Digit1>STB: Motorola DCT-2000\1</Digit1>
+  <Digit2>STB: Motorola DCT-2000\2</Digit2>
+  <Digit3>STB: Motorola DCT-2000\3</Digit3>
+  <Digit4>STB: Motorola DCT-2000\4</Digit4>
+  <Digit5>STB: Motorola DCT-2000\5</Digit5>
+  <Digit6>STB: Motorola DCT-2000\6</Digit6>
+  <Digit7>STB: Motorola DCT-2000\7</Digit7>
+  <Digit8>STB: Motorola DCT-2000\8</Digit8>
+  <Digit9>STB: Motorola DCT-2000\9</Digit9>
+  <SelectCommand>STB: Motorola DCT-2000\ENTER</SelectCommand>
+</config>
