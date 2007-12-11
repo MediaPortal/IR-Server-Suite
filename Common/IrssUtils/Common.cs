@@ -667,7 +667,9 @@ namespace IrssUtils
 
       WebRequest request  = WebRequest.Create(uri);
       request.Timeout     = int.Parse(commands[1]);
-      request.Credentials = new NetworkCredential(commands[2], commands[3]);
+
+      if (!String.IsNullOrEmpty(commands[2]))
+        request.Credentials = new NetworkCredential(commands[2], commands[3]);
 
       using (WebResponse response = request.GetResponse())
         using (Stream responseStream = response.GetResponseStream())

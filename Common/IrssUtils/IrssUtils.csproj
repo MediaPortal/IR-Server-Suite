@@ -83,6 +83,12 @@
     <Compile Include="Forms\BeepCommand.Designer.cs">
       <DependentUpon>BeepCommand.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\HttpMessageCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HttpMessageCommand.Designer.cs">
+      <DependentUpon>HttpMessageCommand.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SmsKeyboard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -196,6 +202,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\BeepCommand.resx">
       <DependentUpon>BeepCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HttpMessageCommand.resx">
+      <DependentUpon>HttpMessageCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SmsKeyboard.resx">

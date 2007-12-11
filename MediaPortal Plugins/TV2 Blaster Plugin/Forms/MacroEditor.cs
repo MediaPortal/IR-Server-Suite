@@ -190,11 +190,9 @@ namespace MediaPortal.Plugins
         }
         else if (selected.Equals(Common.UITextHttpMsg, StringComparison.OrdinalIgnoreCase))
         {
-          /*
           HttpMessageCommand httpMessageCommand = new HttpMessageCommand();
           if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
-          */
         }
         else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
         {
@@ -438,13 +436,11 @@ namespace MediaPortal.Plugins
         }
         else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
         {
-          /*
           string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
         
           HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
           if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
-          */
         }
         else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {

@@ -73,6 +73,10 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     RC6_MCE,
     /// <summary>
+    /// Foxtel's protocol variation of Philips RC6. 36kHz carrier.
+    /// </summary>
+    RC6_Foxtel,
+    /// <summary>
     /// RCA protocol. 56kHz carrier.
     /// </summary>
     RCA,
@@ -139,6 +143,7 @@ namespace MicrosoftMceTransceiver
 
     const uint PrefixRC6        = 0x000FC950;
     const uint PrefixRC6A       = 0x000FCA90;
+    const uint PrefixRC6Foxtel  = 0x000FCA93; 
 
     const uint MceMouse         = 1;
     const uint MceKeyboard      = 4;
@@ -614,7 +619,7 @@ namespace MicrosoftMceTransceiver
         bool pulse = (timingData[i] > 0);
         bool ignored = true;
 
-        //Trace.WriteLine("NEC - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), NEC_Data.State), timingData[i]);
+        //Trace.WriteLine(String.Format("NEC - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), NEC_Data.State), timingData[i]));
 
         switch (NEC_Data.State)
         {
@@ -1142,6 +1147,8 @@ namespace MicrosoftMceTransceiver
         bool pulse = (timingData[i] > 0);
         bool ignored = true;
 
+        //Trace.WriteLine(String.Format("RC6 - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), RC6_Data.State), timingData[i]));
+
         switch (RC6_Data.State)
         {
 
@@ -1239,6 +1246,10 @@ namespace MicrosoftMceTransceiver
               if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6)
               {
                 RC6_Data.Bit = 16;
+              }
+              else if (RC6_Data.Header == PrefixRC6Foxtel)
+              {
+                RC6_Data.Bit = 20;
               }
               else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
               {
@@ -1338,8 +1349,7 @@ namespace MicrosoftMceTransceiver
         {
           bool first = false;
 
-          bool mceVariation;
-          bool aVariation;
+          IrProtocol protocolVariation = IrProtocol.RC6;
 
           if ((~RC6_Data.Code >> 16) == CustomerMce) // MCE RC6 variation
           {
@@ -1353,10 +1363,9 @@ namespace MicrosoftMceTransceiver
 
             RC6_Data.Code &= ToggleMaskMce;
 
-            mceVariation = true;
-            aVariation = false;
+            protocolVariation = IrProtocol.RC6_MCE;
           }
-          else // Standard RC6 (Non-MCE)
+          else // Standard RC6 or Non-MCE variations
           {
             bool toggleOn = (RC6_Data.Toggle & 1) == 1;
 
@@ -1369,20 +1378,13 @@ namespace MicrosoftMceTransceiver
             else
               RC6_Data.Toggle = 4;
 
-            mceVariation = false;
-
-            if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
-              aVariation = true;
-            else
-              aVariation = false;
+            if (RC6_Data.Header == PrefixRC6Foxtel)
+              protocolVariation = IrProtocol.RC6_Foxtel;
+            else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
+              protocolVariation = IrProtocol.RC6A;
           }
 
-          if (mceVariation)
-            remoteCallback(IrProtocol.RC6_MCE, RC6_Data.Code, first);
-          else if (aVariation)
-            remoteCallback(IrProtocol.RC6A, RC6_Data.Code, first);
-          else
-            remoteCallback(IrProtocol.RC6, RC6_Data.Code, first);
+          remoteCallback(protocolVariation, RC6_Data.Code, first);
 
           RC6_Data.State = RemoteDetectionState.HeaderPulse;
         }

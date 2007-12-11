@@ -21,7 +21,7 @@ namespace IgorPlugReceiver
     None,
 
     /// <summary>
-    /// Daewoo protocol.
+    /// Daewoo protocol. 38kHz carrier.
     /// </summary>
     Daewoo,
     /// <summary>
@@ -29,75 +29,79 @@ namespace IgorPlugReceiver
     /// </summary>
     ITT,
     /// <summary>
-    /// JVC protocol.
+    /// JVC protocol. 38kHz carrier.
     /// </summary>
     JVC,
     /// <summary>
-    /// Matsushita protocol.
+    /// Matsushita protocol. 56.8kHz carrier.
     /// </summary>
     Matsushita,
     /// <summary>
-    /// Mitsubishi protocol.
+    /// Mitsubishi protocol. 40kHz carrier.
     /// </summary>
     Mitsubishi,
     /// <summary>
-    /// NEC protocol.
+    /// NEC protocol. 38kHz carrier.
     /// </summary>
     NEC,
     /// <summary>
-    /// Nokia NRC17 protocol.
+    /// Nokia NRC17 protocol. 38kHz carrier.
     /// </summary>
     NRC17,
     /// <summary>
-    /// Panasonic protocol.
+    /// Panasonic protocol. 38kHz carrier.
     /// </summary>
     Panasonic,
     /// <summary>
-    /// Philips RC5 protocol.
+    /// Philips RC5 protocol. 36kHz carrier.
     /// </summary>
     RC5,
     /// <summary>
-    /// Philips RC5X protocol.
+    /// Philips RC5X protocol. 36kHz carrier.
     /// </summary>
     RC5X,
     /// <summary>
-    /// Philips RC6 protocol (Mode 0).
+    /// Philips RC6 protocol (Mode 0). 36kHz carrier.
     /// </summary>
     RC6,
     /// <summary>
-    /// Philips RC6 protocol (Mode 6A).
+    /// Philips RC6 protocol (Mode 6A). 36kHz carrier.
     /// </summary>
     RC6A,
     /// <summary>
-    /// Microsoft's protocol variation of Philips RC6.
+    /// Microsoft's protocol variation of Philips RC6. 36kHz carrier.
     /// </summary>
     RC6_MCE,
     /// <summary>
-    /// RCA protocol.
+    /// Foxtel's protocol variation of Philips RC6. 36kHz carrier.
+    /// </summary>
+    RC6_Foxtel,
+    /// <summary>
+    /// RCA protocol. 56kHz carrier.
     /// </summary>
     RCA,
     /// <summary>
-    /// Philips RC-MM protocol.  This protocol cannot be reliably (if at all) decoded by the MCE device.
+    /// Philips RC-MM protocol.  This protocol cannot be reliably (if at all) decoded by the MCE device. 36kHz carrier.
     /// </summary>
     RCMM,
     /// <summary>
-    /// RECS-80 protocol.
+    /// RECS-80 protocol. 38kHz carrier.
     /// </summary>
     RECS80,
     /// <summary>
-    /// Sharp protocol (unsupported).
+    /// Sharp protocol (unsupported). 38kHz carrier
     /// </summary>
     Sharp,
     /// <summary>
-    /// Sony SIRC protocol.
+    /// Sony SIRC protocol. 40kHz carrier.
     /// </summary>
     SIRC,
     /// <summary>
-    /// Toshiba protocol.
+    /// Toshiba protocol. 38kHz carrier.
     /// </summary>
     Toshiba,
     /// <summary>
-    /// X-Sat protocol (unsupported).
+    /// X-Sat protocol (unsupported). 38kHz carrier.
     /// </summary>
     XSAT,
 
@@ -139,6 +143,7 @@ namespace IgorPlugReceiver
 
     const uint PrefixRC6        = 0x000FC950;
     const uint PrefixRC6A       = 0x000FCA90;
+    const uint PrefixRC6Foxtel  = 0x000FCA93; 
 
     const uint MceMouse         = 1;
     const uint MceKeyboard      = 4;
@@ -614,7 +619,7 @@ namespace IgorPlugReceiver
         bool pulse = (timingData[i] > 0);
         bool ignored = true;
 
-        //Trace.WriteLine("NEC - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), NEC_Data.State), timingData[i]);
+        //Trace.WriteLine(String.Format("NEC - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), NEC_Data.State), timingData[i]));
 
         switch (NEC_Data.State)
         {
@@ -1142,6 +1147,8 @@ namespace IgorPlugReceiver
         bool pulse = (timingData[i] > 0);
         bool ignored = true;
 
+        //Trace.WriteLine(String.Format("RC6 - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), RC6_Data.State), timingData[i]));
+
         switch (RC6_Data.State)
         {
 
@@ -1239,6 +1246,10 @@ namespace IgorPlugReceiver
               if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6)
               {
                 RC6_Data.Bit = 16;
+              }
+              else if (RC6_Data.Header == PrefixRC6Foxtel)
+              {
+                RC6_Data.Bit = 20;
               }
               else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
               {
@@ -1338,8 +1349,7 @@ namespace IgorPlugReceiver
         {
           bool first = false;
 
-          bool mceVariation;
-          bool aVariation;
+          IrProtocol protocolVariation = IrProtocol.RC6;
 
           if ((~RC6_Data.Code >> 16) == CustomerMce) // MCE RC6 variation
           {
@@ -1353,10 +1363,9 @@ namespace IgorPlugReceiver
 
             RC6_Data.Code &= ToggleMaskMce;
 
-            mceVariation = true;
-            aVariation = false;
+            protocolVariation = IrProtocol.RC6_MCE;
           }
-          else // Standard RC6 (Non-MCE)
+          else // Standard RC6 or Non-MCE variations
           {
             bool toggleOn = (RC6_Data.Toggle & 1) == 1;
 
@@ -1369,20 +1378,13 @@ namespace IgorPlugReceiver
             else
               RC6_Data.Toggle = 4;
 
-            mceVariation = false;
-
-            if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
-              aVariation = true;
-            else
-              aVariation = false;
+            if (RC6_Data.Header == PrefixRC6Foxtel)
+              protocolVariation = IrProtocol.RC6_Foxtel;
+            else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
+              protocolVariation = IrProtocol.RC6A;
           }
 
-          if (mceVariation)
-            remoteCallback(IrProtocol.RC6_MCE, RC6_Data.Code, first);
-          else if (aVariation)
-            remoteCallback(IrProtocol.RC6A, RC6_Data.Code, first);
-          else
-            remoteCallback(IrProtocol.RC6, RC6_Data.Code, first);
+          remoteCallback(protocolVariation, RC6_Data.Code, first);
 
           RC6_Data.State = RemoteDetectionState.HeaderPulse;
         }
