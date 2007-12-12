@@ -66,6 +66,8 @@ namespace HcwTransceiver
 
     //ulong _learnCarrierFreq;
 
+
+
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
 
@@ -102,6 +104,8 @@ namespace HcwTransceiver
     {
       LoadSettings();
       
+      
+
       return true;
     }
     /// <summary>
