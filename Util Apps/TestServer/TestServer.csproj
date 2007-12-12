@@ -54,7 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\IrssComms\IrssComms.csproj">
+    <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">
       <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
       <Name>IrssComms</Name>
     </ProjectReference>
