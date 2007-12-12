@@ -482,10 +482,10 @@ namespace InputService
             {
               try
               {
-                plugin.Resume();
-
                 if (plugin == _pluginTransmit)
                   resumedTransmit = true;
+
+                plugin.Resume();
               }
               catch (Exception ex)
               {

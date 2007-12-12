@@ -8,7 +8,7 @@ using System.Security.Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("IR Server")]
-[assembly: AssemblyDescription("Provides multiple connections for local and network access to a remote control transceiver")]
+[assembly: AssemblyDescription("Provides multiple connections for local and network access to attached remote control transceivers")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("IR Server")]

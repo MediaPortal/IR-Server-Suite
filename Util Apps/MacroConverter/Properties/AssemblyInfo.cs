@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Input Service Configuration")]
-[assembly: AssemblyDescription("Configure the Input Service")]
+[assembly: AssemblyTitle("MacroConverter")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("Input Service Configuration")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("MacroConverter")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5c1731a0-ef55-4e0b-ab86-5d4be6a3033f")]
+[assembly: Guid("f4aa7712-7298-4a5d-b114-087ad0fc4057")]
 
 // Version information for an assembly consists of the following four values:
 //

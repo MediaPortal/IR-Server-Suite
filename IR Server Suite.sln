@@ -265,10 +265,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiimoteLib", "IR Server Plu
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacroConverter", "Applications\MacroConverter\MacroConverter.csproj", "{6BF20ECD-A459-42B6-AFFE-6CA8CD308AC6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Util Apps", "Util Apps", "{D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		Util Apps\MacroConverter\MacroConverter.csproj = Util Apps\MacroConverter\MacroConverter.csproj
+		Util Apps\TestClient\TestClient.csproj = Util Apps\TestClient\TestClient.csproj
+		Util Apps\TestServer\TestServer.csproj = Util Apps\TestServer\TestServer.csproj
 	EndProjectSection
 EndProject
 Global
@@ -387,7 +392,8 @@ Global
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|Any CPU.ActiveCfg = Release|x86
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -432,10 +438,6 @@ Global
 		{37A555DF-7012-4B99-8A47-1C922A361E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37A555DF-7012-4B99-8A47-1C922A361E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37A555DF-7012-4B99-8A47-1C922A361E52}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6BF20ECD-A459-42B6-AFFE-6CA8CD308AC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BF20ECD-A459-42B6-AFFE-6CA8CD308AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6BF20ECD-A459-42B6-AFFE-6CA8CD308AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6BF20ECD-A459-42B6-AFFE-6CA8CD308AC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -452,7 +454,6 @@ Global
 		{905131F8-F8AC-4A65-A722-37783902D7B8} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{CCDBA239-8E8E-4F5F-A098-7132EED5F160} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
-		{6BF20ECD-A459-42B6-AFFE-6CA8CD308AC6} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{7C686499-7517-4338-8837-7E8617549D9A} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}

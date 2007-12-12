@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Input Service Configuration")]
-[assembly: AssemblyDescription("Configure the Input Service")]
+[assembly: AssemblyTitle("TestServer")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("Input Service Configuration")]
-[assembly: AssemblyCopyright("Aaron Dinnage")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("TestServer")]
+[assembly: AssemblyCopyright("Copyright ©  2007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5c1731a0-ef55-4e0b-ab86-5d4be6a3033f")]
+[assembly: Guid("4ba77968-0dab-4ced-8eeb-6e0458426243")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.3.5")]
-[assembly: AssemblyFileVersion("1.0.3.5")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

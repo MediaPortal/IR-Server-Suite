@@ -460,6 +460,104 @@ namespace IRServer
       _inConfiguration = false;
     }
 
+    void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    {
+      switch (e.Mode)
+      {
+
+        #region Suspend
+        case PowerModes.Suspend:
+          IrssLog.Info("Enter standby ...");
+
+          bool suspendedTransmit = false;
+
+          if (_pluginReceive != null)
+          {
+            foreach (IRServerPluginBase plugin in _pluginReceive)
+            {
+              try
+              {
+                plugin.Suspend();
+
+                if (plugin == _pluginTransmit)
+                  suspendedTransmit = true;
+              }
+              catch (Exception ex)
+              {
+                IrssLog.Error(ex.ToString());
+              }
+            }
+          }
+
+          if (_pluginTransmit != null && !suspendedTransmit)
+          {
+            try
+            {
+              _pluginTransmit.Suspend();
+            }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex.ToString());
+            }
+          }
+
+          // Inform clients ...
+          if (_mode == IRServerMode.ServerMode)
+          {
+            IrssMessage message = new IrssMessage(MessageType.ServerSuspend, MessageFlags.Notify);
+            SendToAll(message);
+          }
+          break;
+        #endregion Suspend
+
+        #region Resume
+        case PowerModes.Resume:
+          IrssLog.Info("Resume from standby ...");
+
+          bool resumedTransmit = false;
+
+          if (_pluginReceive != null)
+          {
+            foreach (IRServerPluginBase plugin in _pluginReceive)
+            {
+              try
+              {
+                if (plugin == _pluginTransmit)
+                  resumedTransmit = true;
+
+                plugin.Resume();
+              }
+              catch (Exception ex)
+              {
+                IrssLog.Error(ex.ToString());
+              }
+            }
+          }
+
+          if (_pluginTransmit != null && !resumedTransmit)
+          {
+            try
+            {
+              _pluginTransmit.Resume();
+            }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex.ToString());
+            }
+          }
+
+          // Inform clients ...
+          if (_mode == IRServerMode.ServerMode)
+          {
+            IrssMessage message = new IrssMessage(MessageType.ServerResume, MessageFlags.Notify);
+            SendToAll(message);
+          }
+          break;
+        #endregion Resume
+
+      }
+    }
+
     void StartServer()
     {
       if (_server != null)
@@ -729,102 +827,6 @@ namespace IRServer
         case IRServerMode.RepeaterMode:
           {
             IrssLog.Debug("Mouse event ignored, IR Server is in Repeater Mode.");
-            break;
-          }
-      }
-    }
-
-    void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-    {
-      switch (e.Mode)
-      {
-        case PowerModes.Resume:
-          {
-            IrssLog.Info("Resume from standby ...");
-
-            bool resumedTransmit = false;
-
-            if (_pluginReceive != null)
-            {
-              foreach (IRServerPluginBase plugin in _pluginReceive)
-              {
-                try
-                {
-                  if (plugin == _pluginTransmit)
-                    resumedTransmit = true;
-
-                  plugin.Resume();
-                }
-                catch (Exception ex)
-                {
-                  IrssLog.Error(ex.ToString());
-                }
-              }
-            }
-
-            if (_pluginTransmit != null && !resumedTransmit)
-            {
-              try
-              {
-                _pluginTransmit.Resume();
-              }
-              catch (Exception ex)
-              {
-                IrssLog.Error(ex.ToString());
-              }
-            }
-
-            // Inform clients ...
-            if (_mode == IRServerMode.ServerMode)
-            {
-              IrssMessage message = new IrssMessage(MessageType.ServerResume, MessageFlags.Notify);
-              SendToAll(message);
-            }
-            break;
-          }
-
-        case PowerModes.Suspend:
-          {
-            IrssLog.Info("Enter standby ...");
-
-            bool suspendedTransmit = false;
-
-            if (_pluginReceive != null)
-            {
-              foreach (IRServerPluginBase plugin in _pluginReceive)
-              {
-                try
-                {
-                  plugin.Suspend();
-
-                  if (plugin == _pluginTransmit)
-                    suspendedTransmit = true;
-                }
-                catch (Exception ex)
-                {
-                  IrssLog.Error(ex.ToString());
-                }
-              }
-            }
-
-            if (_pluginTransmit != null && !suspendedTransmit)
-            {
-              try
-              {
-                _pluginTransmit.Suspend();
-              }
-              catch (Exception ex)
-              {
-                IrssLog.Error(ex.ToString());
-              }
-            }
-
-            // Inform clients ...
-            if (_mode == IRServerMode.ServerMode)
-            {
-              IrssMessage message = new IrssMessage(MessageType.ServerSuspend, MessageFlags.Notify);
-              SendToAll(message);
-            }
             break;
           }
       }

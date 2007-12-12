@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MediaPortal Input Service")]
-[assembly: AssemblyDescription("Provides access to input devices")]
+[assembly: AssemblyTitle("Input Service")]
+[assembly: AssemblyDescription("Provides multiple connections for local and network access to attached input devices")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("MediaPortal Input Service")]
+[assembly: AssemblyProduct("Input Service")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
