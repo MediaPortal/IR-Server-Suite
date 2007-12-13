@@ -1292,6 +1292,8 @@ namespace IrFileTool
               if (pulse)
                 break;
 
+              Trace.WriteLine("LongPulse at Bit " + RC6_Data.Bit);
+
               if (IsBetween(duration, 750, 1000))
               {
                 RC6_Data.Bit--;
@@ -1312,6 +1314,8 @@ namespace IrFileTool
 
               if (!pulse)
                 break;
+
+              Trace.WriteLine("LongSpace at Bit " + RC6_Data.Bit);
 
               if (RC6_Data.Bit == 32)
                 RC6_Data.Bit = 24;

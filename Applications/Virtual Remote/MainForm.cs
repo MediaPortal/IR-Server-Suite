@@ -72,7 +72,7 @@ namespace VirtualRemote
       }
     }
 
-    void LoadSkinXml(string xmlFile)
+    static void LoadSkinXml(string xmlFile)
     {
       XmlDocument doc = new XmlDocument();
       doc.Load(xmlFile);

@@ -21,20 +21,20 @@ namespace Configuration
   /// <summary>
   /// Describes the operation mode of the Input Service.
   /// </summary>
-  public enum InputServiceMode
+  enum InputServiceMode
   {
     /// <summary>
     /// Acts as a standard Server (Default).
     /// </summary>
-    ServerMode = 0,
+    ServerMode    = 0,
     /// <summary>
     /// Relays button presses to another Input Service.
     /// </summary>
-    RelayMode = 1,
+    RelayMode     = 1,
     /// <summary>
     /// Acts as a repeater for another Input Service's blasting.
     /// </summary>
-    RepeaterMode = 2,
+    RepeaterMode  = 2,
   }
 
   #endregion Enumerations

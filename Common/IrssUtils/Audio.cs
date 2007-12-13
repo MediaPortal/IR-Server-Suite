@@ -28,13 +28,13 @@ namespace IrssUtils
 
     [DllImport("winmm.dll")]
     static extern uint waveOutGetVolume(
-      IntPtr hwo,
-      uint dwVolume);
+      IntPtr DeviceID,
+      out uint Volume);
 
     [DllImport("winmm.dll")]
     static extern int waveOutSetVolume(
       IntPtr DeviceID,
-      IntPtr Volume);
+      uint Volume);
 
     [DllImport("winmm.dll")]
     static extern Int32 mixerClose(
@@ -132,7 +132,19 @@ namespace IrssUtils
     {
       return Beep((uint)frequency, (uint)duration);
     }
+    /*
+    public static bool SetMainVolume(ushort volume)
+    {
+      return SetMainVolume(volume, volume);
+    }
 
+    public static bool SetMainVolume(ushort left, ushort right)
+    {
+      uint volume = (uint)((right << 16) & left);
+
+      waveOutSetVolume(IntPtr.Zero, volume);
+    }
+    */
     #endregion Implementation
 
   }

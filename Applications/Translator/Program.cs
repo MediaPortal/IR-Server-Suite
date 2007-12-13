@@ -1162,7 +1162,7 @@ namespace Translator
         }
         else
         {
-          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "commandObj");
         }
       }
       catch (Exception ex)
@@ -1170,7 +1170,7 @@ namespace Translator
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
           IrssLog.Error(ex.ToString());
         else
-          throw ex;
+          throw;
       }
     }
 

@@ -61,7 +61,7 @@ namespace IrssUtils.Forms
       TextUpdate();
 
       _timer = new Timer();
-      _timer.Interval = 750;
+      _timer.Interval = 1000;
       _timer.Tick += new EventHandler(Flash);
       _timer.Enabled = true;
       _timer.Start();
