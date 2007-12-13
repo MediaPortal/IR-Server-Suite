@@ -1147,7 +1147,7 @@ namespace IrFileTool
         bool pulse = (timingData[i] > 0);
         bool ignored = true;
 
-        //Trace.WriteLine(String.Format("RC6 - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), RC6_Data.State), timingData[i]));
+        Trace.WriteLine(String.Format("RC6 - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), RC6_Data.State), timingData[i]));
 
         switch (RC6_Data.State)
         {
@@ -1158,7 +1158,7 @@ namespace IrFileTool
             {
               RC6_Data.State = RemoteDetectionState.HeaderSpace;
               RC6_Data.Header = 0x000FC000;
-              RC6_Data.Bit = 14;
+              RC6_Data.Bit = 12;
               RC6_Data.HalfBit = 0;
               RC6_Data.Code = 0;
               RC6_Data.LongPulse = false;
@@ -1174,7 +1174,6 @@ namespace IrFileTool
             if (!pulse && IsBetween(duration, 750, 1000))
             {
               RC6_Data.State = RemoteDetectionState.PreData;
-              RC6_Data.Bit -= 2;
               ignored = false;
             }
             break;
@@ -1233,7 +1232,6 @@ namespace IrFileTool
                 else
                 {
                   RC6_Data.HalfBit = 1;
-                  //RC6_Data.LongPulse = true;
                   RC6_Data.LongSpace = true;
                   RC6_Data.Bit = 0;
                   RC6_Data.Toggle |= 1;
@@ -1247,10 +1245,10 @@ namespace IrFileTool
               {
                 RC6_Data.Bit = 16;
               }
-              else if (RC6_Data.Header == PrefixRC6Foxtel)
-              {
-                RC6_Data.Bit = 20;
-              }
+              //else if (RC6_Data.Header == PrefixRC6Foxtel)
+              //{
+                //RC6_Data.Bit = 20;
+              //}
               else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
               {
                 RC6_Data.Bit = 32;
@@ -1378,9 +1376,10 @@ namespace IrFileTool
             else
               RC6_Data.Toggle = 4;
 
-            if (RC6_Data.Header == PrefixRC6Foxtel)
-              protocolVariation = IrProtocol.RC6_Foxtel;
-            else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
+            //if (RC6_Data.Header == PrefixRC6Foxtel)
+              //protocolVariation = IrProtocol.RC6_Foxtel;
+            //else
+            if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
               protocolVariation = IrProtocol.RC6A;
           }
 

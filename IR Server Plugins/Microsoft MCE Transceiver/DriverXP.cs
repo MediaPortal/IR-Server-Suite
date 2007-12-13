@@ -871,51 +871,67 @@ namespace MicrosoftMceTransceiver
     /// <returns>Timing data.</returns>
     static int[] GetTimingDataFromPacket(byte[] packet)
     {
-      List<int> timingData = new List<int>();
-
-      int len = 0;
-
-      for (int index = 0; index < packet.Length; )
+      // TODO: Remove this try/catch block once the IndexOutOfRangeException is corrected...
+#if DEBUG
+      try
+#endif
       {
-        byte curByte = packet[index];
+        List<int> timingData = new List<int>();
 
-        if (curByte == 0x9F)
-          break;
+        int len = 0;
 
-        if (curByte < 0x81 || curByte > 0x8F)
-          return null;
-        
-        int bytes = curByte & 0x7F;
-        int j;
-        
-        for (j = index + 1; j < index + bytes + 1; j++)
+        for (int index = 0; index < packet.Length; )
         {
-          curByte = packet[j];
+          byte curByte = packet[index];
 
-          if ((curByte & 0x80) != 0)
-            len += (int)(curByte & 0x7F);
-          else
-            len -= (int)curByte;
+          if (curByte == 0x9F)
+            break;
 
-          if ((curByte & 0x7F) != 0x7F)
+          if (curByte < 0x81 || curByte > 0x8F)
+            return null;
+
+          int bytes = curByte & 0x7F;
+          int j;
+
+          for (j = index + 1; j < index + bytes + 1; j++)
           {
-            timingData.Add(len * 50);
-            len = 0;
+            curByte = packet[j];
+
+            if ((curByte & 0x80) != 0)
+              len += (int)(curByte & 0x7F);
+            else
+              len -= (int)curByte;
+
+            if ((curByte & 0x7F) != 0x7F)
+            {
+              timingData.Add(len * 50);
+              len = 0;
+            }
           }
+
+          index = j;
         }
 
-        index = j;
-      }
-
-      if (len != 0)
-        timingData.Add(len * 50);
+        if (len != 0)
+          timingData.Add(len * 50);
 
 #if DEBUG
-      DebugWriteLine("Received:");
-      DebugDump(timingData.ToArray());
+        DebugWriteLine("Received:");
+        DebugDump(timingData.ToArray());
 #endif
 
-      return timingData.ToArray();
+        return timingData.ToArray();
+      }
+#if DEBUG
+      catch (IndexOutOfRangeException ex)
+      {
+        DebugWriteLine(ex.ToString());
+        DebugWriteLine("Method Input:");
+        DebugDump(packet);
+
+        throw;
+      }
+#endif
     }
 
     /// <summary>
