@@ -203,7 +203,6 @@ namespace IRTransTransceiver
     static RemoteHandler _remoteButtonHandler;
 
     static Socket _socket;
-    static IAsyncResult _asynResult;
     static AsyncCallback _pfnCallBack;
     static string _irTransRemoteModel;
     static string _irTransServerAddress;
@@ -445,7 +444,7 @@ namespace IRTransTransceiver
         CSocketPacket socketPkt = new CSocketPacket();
         socketPkt.ThisSocket = _socket;
 
-        _asynResult = _socket.BeginReceive(socketPkt.ReceiveBuffer, 0, socketPkt.ReceiveBuffer.Length, SocketFlags.None, _pfnCallBack, socketPkt);
+        _socket.BeginReceive(socketPkt.ReceiveBuffer, 0, socketPkt.ReceiveBuffer.Length, SocketFlags.None, _pfnCallBack, socketPkt);
       }
 #if TRACE
       catch (SocketException ex)
@@ -532,42 +531,6 @@ namespace IRTransTransceiver
       {
       }
 #endif
-    }
-
-    /// <summary>
-    /// Converts structs to byte arrays.
-    /// </summary>
-    /// <param name="structure">The structure.</param>
-    /// <param name="size">The size.</param>
-    /// <returns>Converted structure.</returns>
-    static byte[] StructToByteArray(object structure, int size)
-    {
-      if (structure == null || size <= 0)
-        return null;
-
-      try
-      {
-        byte[] byteArray = new byte[size];
-
-        IntPtr pointer = Marshal.AllocHGlobal(size);
-        Marshal.StructureToPtr(structure, pointer, false);
-        Marshal.Copy(pointer, byteArray, 0, size);
-        Marshal.FreeHGlobal(pointer);
-
-        return byteArray;
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
-
-      return null;
     }
 
     #endregion Implementation

@@ -30,7 +30,7 @@ namespace InputService
   /// <summary>
   /// Describes the operation mode of the Input Service.
   /// </summary>
-  public enum InputServiceMode
+  enum InputServiceMode
   {
     /// <summary>
     /// Acts as a standard Server (Default).
@@ -49,9 +49,9 @@ namespace InputService
   #endregion Enumerations
 
   /// <summary>
-  /// MediaPortal Input Service.
+  /// Input Service.
   /// </summary>
-  public class InputService : ServiceBase
+  class InputService : ServiceBase
   {
 
     #region Constants

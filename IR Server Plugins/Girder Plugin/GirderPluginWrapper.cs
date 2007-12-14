@@ -9,6 +9,19 @@ using System.Threading;
 namespace GirderPlugin
 {
 
+  #region Delegates
+
+  /// <summary>
+  /// Callback for when the plugin sends an event.
+  /// </summary>
+  /// <param name="eventstring">Plugin event string.</param>
+  /// <param name="payload">Additional data.</param>
+  /// <param name="len">Length of additional data.</param>
+  /// <param name="device">Device ID, to uniquely identify this plugin.</param>
+  public delegate void PluginEventCallback(string eventstring, IntPtr payload, int len, int device);
+
+  #endregion Delegates
+
   /// <summary>
   /// Wrapper class to work with Girder 3.x plugins.
   /// </summary>
@@ -41,11 +54,11 @@ namespace GirderPlugin
 
     #region Interop
 
-    [DllImport("kernel32")]
+    [DllImport("kernel32", CharSet = CharSet.Auto)]
     extern static IntPtr LoadLibrary(
       string dllFileName);
 
-    [DllImport("kernel32")]
+    [DllImport("kernel32", CharSet = CharSet.Auto)]
     static extern IntPtr GetProcAddress(
       IntPtr module,
       string functionName);
@@ -335,15 +348,6 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     IntPtr _apiFunctionsPtr;
 
     #endregion Variables
-
-    /// <summary>
-    /// Callback for when the plugin sends an event.
-    /// </summary>
-    /// <param name="eventstring">Plugin event string.</param>
-    /// <param name="payload">Additional data.</param>
-    /// <param name="len">Length of additional data.</param>
-    /// <param name="device">Device ID, to uniquely identify this plugin.</param>
-    public delegate void PluginEventCallback(string eventstring, IntPtr payload, int len, int device);
 
     #region Girder Plugin Properties
 
@@ -841,7 +845,7 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
 
     #region Implementation
 
-    bool WriteString(IntPtr stringPtr, int maxSize, string value)
+    static bool WriteString(IntPtr stringPtr, int maxSize, string value)
     {
       try
       {

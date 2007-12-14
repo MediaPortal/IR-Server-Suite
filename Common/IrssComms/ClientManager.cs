@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 #if TRACE
 using System.Diagnostics;
 #endif
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 namespace IrssComms
@@ -19,7 +17,7 @@ namespace IrssComms
 
     #region Variables
 
-    bool _processReceiveThread = false;
+    bool _processReceiveThread;
     Thread _receiveThread;
     
     ServerMessageSink _messageSink;

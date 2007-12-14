@@ -25,6 +25,8 @@ namespace WiiRemoteReceiver
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\Wii Remote Receiver.xml";
 
+    readonly int ScreenWidth = Screen.PrimaryScreen.WorkingArea.Width;
+    readonly int ScreenHeight = Screen.PrimaryScreen.WorkingArea.Height;
 
     #endregion Constants
 
@@ -45,9 +47,6 @@ namespace WiiRemoteReceiver
     Wiimote _wiimote;
 
     WiimoteState _previousState;
-
-    int _screenWidth = Screen.PrimaryScreen.WorkingArea.Width;
-    int _screenHeight = Screen.PrimaryScreen.WorkingArea.Height;
 
     #endregion Variables
 
@@ -330,8 +329,8 @@ namespace WiiRemoteReceiver
 
         if (ws.IRState.Found1 && ws.IRState.Found2)
         {
-          int x = (int)(_screenWidth - (ws.IRState.X1 + ws.IRState.X2) / 2 * _screenWidth);
-          int y = (int)((ws.IRState.Y1 + ws.IRState.Y2) / 2 * _screenHeight);
+          int x = (int)(ScreenWidth - (ws.IRState.X1 + ws.IRState.X2) / 2 * ScreenWidth);
+          int y = (int)((ws.IRState.Y1 + ws.IRState.Y2) / 2 * ScreenHeight);
 
           if (_handleMouseLocally)
           {
@@ -339,8 +338,8 @@ namespace WiiRemoteReceiver
           }
           else
           {
-            int prevX = (int)(_screenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * _screenWidth);
-            int prevY = (int)((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * _screenHeight);
+            int prevX = (int)(ScreenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * ScreenWidth);
+            int prevY = (int)((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * ScreenHeight);
 
             int deltaX = x - prevX;
             int deltaY = y - prevY;

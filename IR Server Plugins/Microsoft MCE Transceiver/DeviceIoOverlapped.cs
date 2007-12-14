@@ -13,13 +13,13 @@ namespace MicrosoftMceTransceiver
 
     #region Variables
 
-    IntPtr _ptrOverlapped         = IntPtr.Zero;
+    IntPtr _ptrOverlapped = IntPtr.Zero;
 
-    int _fieldOffsetInternalLow   = 0;
-    int _fieldOffsetInternalHigh  = 0;
-    int _fieldOffsetOffsetLow     = 0;
-    int _fieldOffsetOffsetHigh    = 0;
-    int _fieldOffsetEventHandle   = 0;
+    int _fieldOffsetInternalLow;
+    int _fieldOffsetInternalHigh;
+    int _fieldOffsetOffsetLow;
+    int _fieldOffsetOffsetHigh;
+    int _fieldOffsetEventHandle;
 
     #endregion Variables
 

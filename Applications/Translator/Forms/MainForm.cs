@@ -100,7 +100,7 @@ namespace Translator
     ToolStripMenuItem _editProgramToolStripMenuItem;
     ToolStripMenuItem _removeProgramToolStripMenuItem;
 
-    int _selectedProgram = 0;
+    int _selectedProgram;
 
     #endregion Variables
 

@@ -36,7 +36,7 @@ namespace GirderPlugin
 
     string _pluginFile;
 
-    RemoteHandler _remoteButtonHandler = null;
+    RemoteHandler _remoteButtonHandler;
 
     GirderPluginWrapper _pluginWrapper;
 
@@ -86,7 +86,7 @@ namespace GirderPlugin
 
       _pluginWrapper = new GirderPluginWrapper(_pluginFile);
 
-      _pluginWrapper.EventCallback += new GirderPluginWrapper.PluginEventCallback(PluginCallback);
+      _pluginWrapper.EventCallback += new PluginEventCallback(PluginCallback);
 
       bool open = _pluginWrapper.GirOpen();
       if (open)

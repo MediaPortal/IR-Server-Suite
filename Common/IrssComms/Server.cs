@@ -5,7 +5,6 @@ using System.Diagnostics;
 #endif
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 namespace IrssComms
@@ -48,7 +47,7 @@ namespace IrssComms
 
     Socket _serverSocket;
 
-    bool _processConnectionThread = false;
+    bool _processConnectionThread;
     Thread _connectionThread;
 
     List<ClientManager> _clientManagers;

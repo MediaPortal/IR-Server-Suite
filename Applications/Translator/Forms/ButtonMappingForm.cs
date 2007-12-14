@@ -158,7 +158,7 @@ namespace Translator
         string prefix = _command;
         string suffix = String.Empty;
 
-        int find = _command.IndexOf(": ");
+        int find = _command.IndexOf(": ", StringComparison.OrdinalIgnoreCase);
 
         if (find != -1)
         {

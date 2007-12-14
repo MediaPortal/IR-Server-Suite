@@ -167,7 +167,7 @@ namespace Configuration
         nameCell.AddController(nameCellController);
 
         nameCell.AddController(new SourceGrid.Cells.Controllers.ToolTipText());
-        nameCell.ToolTipText = string.Format("{0}\nVersion: {1}\nAuthor: {2}\n{3}", transceiver.Name, transceiver.Version, transceiver.Author, transceiver.Description);
+        nameCell.ToolTipText = String.Format("{0}\nVersion: {1}\nAuthor: {2}\n{3}", transceiver.Name, transceiver.Version, transceiver.Author, transceiver.Description);
 
         gridPlugins[row, 0] = nameCell;
 

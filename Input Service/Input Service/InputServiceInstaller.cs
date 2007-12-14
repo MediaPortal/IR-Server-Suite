@@ -15,7 +15,7 @@ namespace InputService
   /// Installer for the Input Service.
   /// </summary>
   [RunInstaller(true)]
-  public class InputServiceInstaller : Installer
+  class InputServiceInstaller : Installer
   {
 
     /// <summary>

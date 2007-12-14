@@ -22,7 +22,7 @@ namespace WindowsMessageReceiver
 
     #region Variables
 
-    ProcessMessage _processMessage = null;
+    ProcessMessage _processMessage;
 
     #endregion Variables
 
@@ -52,7 +52,7 @@ namespace WindowsMessageReceiver
       createParams.ExStyle = 0x80;
       createParams.Style = unchecked((int)0x80000000);
       
-      CreateHandle(createParams);
+      base.CreateHandle(createParams);
     }
 
     #endregion Constructor

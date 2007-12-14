@@ -15,7 +15,7 @@ namespace WebRemote
   /// <summary>
   /// Setup Form.
   /// </summary>
-  public partial class Setup : Form
+  partial class Setup : Form
   {
 
     #region Properties
@@ -54,6 +54,9 @@ namespace WebRemote
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Setup"/> class.
+    /// </summary>
     public Setup()
     {
       InitializeComponent();

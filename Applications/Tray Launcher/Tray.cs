@@ -17,6 +17,9 @@ using IrssUtils;
 namespace TrayLauncher
 {
 
+  /// <summary>
+  /// Tray launcher main class.
+  /// </summary>
   class Tray
   {
 

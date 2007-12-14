@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 
@@ -202,9 +203,9 @@ namespace IrssUtils.Forms
     void PutChar(string chr)
     {
       if (_shift)
-        chr = chr.ToUpper();
+        chr = chr.ToUpper(CultureInfo.CurrentCulture);
       else
-        chr = chr.ToLower();
+        chr = chr.ToLower(CultureInfo.CurrentCulture);
 
       int curPos = textBoxKeys.SelectionStart;
 

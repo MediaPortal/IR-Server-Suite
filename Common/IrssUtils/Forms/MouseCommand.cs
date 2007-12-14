@@ -91,13 +91,17 @@ namespace IrssUtils.Forms
         case Common.MouseScrollUp:          checkBoxMouseScrollUp.Checked     = true;   break;
 
         default:
-          if (command.StartsWith(Common.MouseMoveDown))       checkBoxMouseMoveDown.Checked   = true;
-          else if (command.StartsWith(Common.MouseMoveLeft))  checkBoxMouseMoveLeft.Checked   = true;
-          else if (command.StartsWith(Common.MouseMoveRight)) checkBoxMouseMoveRight.Checked  = true;
-          else if (command.StartsWith(Common.MouseMoveUp))    checkBoxMouseMoveUp.Checked     = true;
-          else if (command.StartsWith(Common.MouseMoveToPos))
+          if (command.StartsWith(Common.MouseMoveDown, StringComparison.OrdinalIgnoreCase))
+            checkBoxMouseMoveDown.Checked   = true;
+          else if (command.StartsWith(Common.MouseMoveLeft, StringComparison.OrdinalIgnoreCase))
+            checkBoxMouseMoveLeft.Checked   = true;
+          else if (command.StartsWith(Common.MouseMoveRight, StringComparison.OrdinalIgnoreCase))
+            checkBoxMouseMoveRight.Checked  = true;
+          else if (command.StartsWith(Common.MouseMoveUp, StringComparison.OrdinalIgnoreCase))
+            checkBoxMouseMoveUp.Checked     = true;
+          else if (command.StartsWith(Common.MouseMoveToPos, StringComparison.OrdinalIgnoreCase))
           {
-            checkBoxMouseMoveToPos.Checked = true;
+            checkBoxMouseMoveToPos.Checked  = true;
 
             string subString = command.Substring(Common.MouseMoveToPos.Length);
 

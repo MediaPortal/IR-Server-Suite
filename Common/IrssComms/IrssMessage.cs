@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace IrssComms
@@ -212,7 +211,6 @@ namespace IrssComms
     {
       _type   = MessageType.Unknown;
       _flags  = MessageFlags.None;
-      _data   = null;
     }
 
     /// <summary>
@@ -221,7 +219,6 @@ namespace IrssComms
     /// <param name="type">The message type.</param>
     /// <param name="flags">The message flags.</param>
     public IrssMessage(MessageType type, MessageFlags flags)
-      : this()
     {
       _type   = type;
       _flags  = flags;

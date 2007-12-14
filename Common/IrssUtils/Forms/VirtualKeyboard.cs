@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 
@@ -289,74 +290,74 @@ namespace IrssUtils.Forms
 
       if (_capsLock || _shift)
       {
-        TextAdd(origin.Text.ToUpperInvariant());
+        TextAdd(origin.Text.ToUpper(CultureInfo.CurrentCulture));
 
         if (_shift)
           ToggleShift();
       }
       else
       {
-        TextAdd(origin.Text.ToLowerInvariant());
+        TextAdd(origin.Text.ToLower(CultureInfo.CurrentCulture));
       }
     }
 
     void ButtonsCaseUpper()
     {
-      buttonA.Text = buttonA.Text.ToUpper();
-      buttonB.Text = buttonB.Text.ToUpper();
-      buttonC.Text = buttonC.Text.ToUpper();
-      buttonD.Text = buttonD.Text.ToUpper();
-      buttonE.Text = buttonE.Text.ToUpper();
-      buttonF.Text = buttonF.Text.ToUpper();
-      buttonG.Text = buttonG.Text.ToUpper();
-      buttonH.Text = buttonH.Text.ToUpper();
-      buttonI.Text = buttonI.Text.ToUpper();
-      buttonJ.Text = buttonJ.Text.ToUpper();
-      buttonK.Text = buttonK.Text.ToUpper();
-      buttonL.Text = buttonL.Text.ToUpper();
-      buttonM.Text = buttonM.Text.ToUpper();
-      buttonN.Text = buttonN.Text.ToUpper();
-      buttonO.Text = buttonO.Text.ToUpper();
-      buttonP.Text = buttonP.Text.ToUpper();
-      buttonQ.Text = buttonQ.Text.ToUpper();
-      buttonR.Text = buttonR.Text.ToUpper();
-      buttonS.Text = buttonS.Text.ToUpper();
-      buttonT.Text = buttonT.Text.ToUpper();
-      buttonU.Text = buttonU.Text.ToUpper();
-      buttonV.Text = buttonV.Text.ToUpper();
-      buttonW.Text = buttonW.Text.ToUpper();
-      buttonX.Text = buttonX.Text.ToUpper();
-      buttonY.Text = buttonY.Text.ToUpper();
-      buttonZ.Text = buttonZ.Text.ToUpper();
+      buttonA.Text = buttonA.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonB.Text = buttonB.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonC.Text = buttonC.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonD.Text = buttonD.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonE.Text = buttonE.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonF.Text = buttonF.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonG.Text = buttonG.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonH.Text = buttonH.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonI.Text = buttonI.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonJ.Text = buttonJ.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonK.Text = buttonK.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonL.Text = buttonL.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonM.Text = buttonM.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonN.Text = buttonN.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonO.Text = buttonO.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonP.Text = buttonP.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonQ.Text = buttonQ.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonR.Text = buttonR.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonS.Text = buttonS.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonT.Text = buttonT.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonU.Text = buttonU.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonV.Text = buttonV.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonW.Text = buttonW.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonX.Text = buttonX.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonY.Text = buttonY.Text.ToUpper(CultureInfo.CurrentCulture);
+      buttonZ.Text = buttonZ.Text.ToUpper(CultureInfo.CurrentCulture);
     }
     void ButtonsCaseLower()
     {
-      buttonA.Text = buttonA.Text.ToLower();
-      buttonB.Text = buttonB.Text.ToLower();
-      buttonC.Text = buttonC.Text.ToLower();
-      buttonD.Text = buttonD.Text.ToLower();
-      buttonE.Text = buttonE.Text.ToLower();
-      buttonF.Text = buttonF.Text.ToLower();
-      buttonG.Text = buttonG.Text.ToLower();
-      buttonH.Text = buttonH.Text.ToLower();
-      buttonI.Text = buttonI.Text.ToLower();
-      buttonJ.Text = buttonJ.Text.ToLower();
-      buttonK.Text = buttonK.Text.ToLower();
-      buttonL.Text = buttonL.Text.ToLower();
-      buttonM.Text = buttonM.Text.ToLower();
-      buttonN.Text = buttonN.Text.ToLower();
-      buttonO.Text = buttonO.Text.ToLower();
-      buttonP.Text = buttonP.Text.ToLower();
-      buttonQ.Text = buttonQ.Text.ToLower();
-      buttonR.Text = buttonR.Text.ToLower();
-      buttonS.Text = buttonS.Text.ToLower();
-      buttonT.Text = buttonT.Text.ToLower();
-      buttonU.Text = buttonU.Text.ToLower();
-      buttonV.Text = buttonV.Text.ToLower();
-      buttonW.Text = buttonW.Text.ToLower();
-      buttonX.Text = buttonX.Text.ToLower();
-      buttonY.Text = buttonY.Text.ToLower();
-      buttonZ.Text = buttonZ.Text.ToLower();
+      buttonA.Text = buttonA.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonB.Text = buttonB.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonC.Text = buttonC.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonD.Text = buttonD.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonE.Text = buttonE.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonF.Text = buttonF.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonG.Text = buttonG.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonH.Text = buttonH.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonI.Text = buttonI.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonJ.Text = buttonJ.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonK.Text = buttonK.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonL.Text = buttonL.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonM.Text = buttonM.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonN.Text = buttonN.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonO.Text = buttonO.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonP.Text = buttonP.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonQ.Text = buttonQ.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonR.Text = buttonR.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonS.Text = buttonS.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonT.Text = buttonT.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonU.Text = buttonU.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonV.Text = buttonV.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonW.Text = buttonW.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonX.Text = buttonX.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonY.Text = buttonY.Text.ToLower(CultureInfo.CurrentCulture);
+      buttonZ.Text = buttonZ.Text.ToLower(CultureInfo.CurrentCulture);
     }
 
     void ToggleShift()

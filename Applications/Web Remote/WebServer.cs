@@ -18,7 +18,7 @@ namespace WebRemote
   /// <summary>
   /// Provides a Web front-end to the Virtual Remote.
   /// </summary>
-  public class WebServer
+  class WebServer
   {
 
     #region Constants
@@ -102,7 +102,8 @@ namespace WebRemote
 
         while (true)
         {
-          Socket socket = AcceptConnection();
+          AcceptConnection();
+
           string command = HttpUtility.UrlDecode(GetCommand());
 
           if (command.StartsWith("GET", StringComparison.OrdinalIgnoreCase))
@@ -130,7 +131,7 @@ namespace WebRemote
     {
       string url = GetUrl(argument);
 
-      if (url.StartsWith("/"))
+      if (url.StartsWith("/", StringComparison.OrdinalIgnoreCase))
         url = url.Substring(1);
 
       if (url.Length == 0)
@@ -174,33 +175,14 @@ namespace WebRemote
       }
     }
 
-    string GetUrl(string argument)
-    {
-      StringBuilder outputString = new StringBuilder();
-
-      for (int index = 0; index < argument.Length; index++)
-      {
-        char curChar = argument[index];
-
-        if (Char.IsWhiteSpace(curChar))
-          break;
-
-        outputString.Append(curChar);
-      }
-
-      return outputString.ToString();
-    }
-    
-    Socket AcceptConnection()
+    void AcceptConnection()
     {
       _serverSocket.Listen(1);
+      
       Socket socket = _serverSocket.Accept();
 
       _networkStream = new NetworkStream(socket, FileAccess.ReadWrite, true);
       _networkReader = new StreamReader(_networkStream);
-      IPEndPoint ep = (IPEndPoint)socket.RemoteEndPoint;
-
-      return socket;
     }
 
     string GetCommand()
@@ -220,13 +202,7 @@ namespace WebRemote
 
       return command;
     }
-    
-    string GetCommandElement(string command)
-    {
-      string[] commandElements = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-      return commandElements[1];
-    }
-        
+
     void SendFile(string path)
     {
       byte[] buffer = new byte[2048];
@@ -267,12 +243,37 @@ namespace WebRemote
       SendString("Content-Type: {0}\r\n\r\n", contentType);
     }
 
+    /*
     void SendRedirect(string newLocation)
     {
       SendString("HTTP/1.1 301 Moved Permanently\r\n");
       SendString("Date:{0}\r\n", DateTime.Now);
       SendString("Server:{0}\r\n", ServerName);
       SendString("Location: {0}\r\n\r\n", newLocation);
+    }
+    */
+
+    static string GetUrl(string argument)
+    {
+      StringBuilder outputString = new StringBuilder();
+
+      for (int index = 0; index < argument.Length; index++)
+      {
+        char curChar = argument[index];
+
+        if (Char.IsWhiteSpace(curChar))
+          break;
+
+        outputString.Append(curChar);
+      }
+
+      return outputString.ToString();
+    }
+
+    static string GetCommandElement(string command)
+    {
+      string[] commandElements = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+      return commandElements[1];
     }
 
     #endregion Implementation

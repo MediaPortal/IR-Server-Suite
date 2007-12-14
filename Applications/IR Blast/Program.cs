@@ -25,12 +25,12 @@ namespace IRBlast
 
     static bool _registered;
 
-    static string _serverHost = null;
+    static string _serverHost;
 
     static string _blastPort = "Default";
 
-    static bool _treatAsChannelNumber = false;
-    static int _padChannelNumber = 0;
+    static bool _treatAsChannelNumber;
+    static int _padChannelNumber;
 
     #endregion Variables
 
@@ -73,7 +73,7 @@ namespace IRBlast
                 continue;
 
               case "-PAD":
-                int.TryParse(args[++index], out _padChannelNumber);
+                _padChannelNumber = int.Parse(args[++index]);
                 continue;
 
               default:
@@ -141,7 +141,7 @@ namespace IRBlast
                       }
                     }
                   }
-                  else if (command.StartsWith("~"))
+                  else if (command.StartsWith("~", StringComparison.OrdinalIgnoreCase))
                   {
                     Thread.Sleep(command.Length * 500);
                   }
@@ -347,15 +347,13 @@ namespace IRBlast
 
     static void Info(string format, params object[] args)
     {
-      string message = String.Format(format, args);
-      Console.WriteLine(message);
-      IrssLog.Info(message);
+      Console.WriteLine(format, args);
+      IrssLog.Info(format, args);
     }
     static void Warn(string format, params object[] args)
     {
-      string message = String.Format(format, args);
-      Console.WriteLine(message);
-      IrssLog.Warn(message);
+      Console.WriteLine(format, args);
+      IrssLog.Warn(format, args);
     }
     static void Error(Exception ex)
     {

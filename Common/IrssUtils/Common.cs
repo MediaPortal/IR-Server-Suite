@@ -600,15 +600,15 @@ namespace IrssUtils
           break;
 
         default:
-          if (command.StartsWith(MouseMoveDown))
+          if (command.StartsWith(MouseMoveDown, StringComparison.OrdinalIgnoreCase))
             Mouse.Move(0, int.Parse(command.Substring(MouseMoveDown.Length)), false);
-          else if (command.StartsWith(MouseMoveLeft))
+          else if (command.StartsWith(MouseMoveLeft, StringComparison.OrdinalIgnoreCase))
             Mouse.Move(-int.Parse(command.Substring(MouseMoveLeft.Length)), 0, false);
-          else if (command.StartsWith(MouseMoveRight))
+          else if (command.StartsWith(MouseMoveRight, StringComparison.OrdinalIgnoreCase))
             Mouse.Move(int.Parse(command.Substring(MouseMoveRight.Length)), 0, false);
-          else if (command.StartsWith(MouseMoveUp))
+          else if (command.StartsWith(MouseMoveUp, StringComparison.OrdinalIgnoreCase))
             Mouse.Move(0, -int.Parse(command.Substring(MouseMoveUp.Length)), false);
-          else if (command.StartsWith(MouseMoveToPos))
+          else if (command.StartsWith(MouseMoveToPos, StringComparison.OrdinalIgnoreCase))
           {
             string subString = command.Substring(MouseMoveToPos.Length);
 

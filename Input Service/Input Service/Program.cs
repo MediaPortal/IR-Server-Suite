@@ -23,29 +23,33 @@ namespace InputService
 
     #region Constants
 
-    public const string ServiceName         = "MPInputService";
-    public const string ServiceDisplayName  = "MediaPortal Input Service";
+    public const string ServiceName         = "InputService";
+    public const string ServiceDisplayName  = "Input Service";
     public const string ServiceDescription  = "Provides access to input devices";
 
     #endregion Constants
 
+    /// <summary>
+    /// The main entry point for the service.
+    /// </summary>
+    /// <param name="args">Command line parameters.</param>
     static void Main(string[] args)
     {
-      if (args.Length >= 1)
+      if (args.Length == 1)
       {
         TransactedInstaller transactedInstaller = new TransactedInstaller();
         InputServiceInstaller inputServiceInstaller = new InputServiceInstaller();
         transactedInstaller.Installers.Add(inputServiceInstaller);
 
-        String path = String.Format("/assemblypath={0}", Assembly.GetExecutingAssembly().Location);
-        String[] cmdline = { path };
+        string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
+        string[] cmdline = { path };
 
         InstallContext installContext = new InstallContext(String.Empty, cmdline);
         transactedInstaller.Context = installContext;
 
-        if (args[0].Equals("/install", System.StringComparison.OrdinalIgnoreCase))
+        if (args[0].Equals("/install", StringComparison.OrdinalIgnoreCase))
           transactedInstaller.Install(new Hashtable());
-        else if (args[0].Equals("/uninstall", System.StringComparison.OrdinalIgnoreCase))
+        else if (args[0].Equals("/uninstall", StringComparison.OrdinalIgnoreCase))
           transactedInstaller.Uninstall(null);
 
         return;

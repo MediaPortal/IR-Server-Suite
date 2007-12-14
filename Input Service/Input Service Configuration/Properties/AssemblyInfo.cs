@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Input Service Configuration")]
-[assembly: AssemblyDescription("Configure the Input Service")]
+[assembly: AssemblyDescription("Configure the local Input Service")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("Input Service Configuration")]
