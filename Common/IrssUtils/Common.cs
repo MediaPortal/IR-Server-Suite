@@ -468,7 +468,7 @@ namespace IrssUtils
           break;
 
         case WMTargetApplication:
-          foreach (System.Diagnostics.Process proc in System.Diagnostics.Process.GetProcesses())
+          foreach (Process proc in Process.GetProcesses())
           {
             try
             {

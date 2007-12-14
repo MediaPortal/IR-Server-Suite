@@ -535,7 +535,7 @@ namespace MicrosoftMceTransceiver
 
           if (!deviceIoControl)
           {
-            if (lastError != Win32ErrorCodes.ERROR_IO_PENDING)
+            if (lastError != ErrorIoPending)
               throw new Win32Exception(lastError);
 
             waitHandle.WaitOne();

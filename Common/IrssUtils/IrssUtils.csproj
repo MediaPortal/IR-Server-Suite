@@ -191,7 +191,6 @@
     <Compile Include="SystemRegistry.cs" />
     <Compile Include="IRServerInfo.cs" />
     <Compile Include="Win32.cs" />
-    <Compile Include="Win32ErrorCodes.cs" />
     <Compile Include="XML.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

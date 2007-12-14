@@ -660,14 +660,14 @@ namespace MicrosoftMceTransceiver
 
           if (!readDevice)
           {
-            if (lastError != Win32ErrorCodes.ERROR_SUCCESS && lastError != Win32ErrorCodes.ERROR_IO_PENDING)
+            if (lastError != ErrorSuccess && lastError != ErrorIoPending)
               throw new Win32Exception(lastError);
 
             while (true)
             {
               int handle = WaitHandle.WaitAny(waitHandles, PacketTimeout + 50, false);
 
-              if (handle == Win32ErrorCodes.WAIT_TIMEOUT)
+              if (handle == ErrorWaitTimeout)
                 continue;
               else if (handle == 0)
                 break;
@@ -680,7 +680,7 @@ namespace MicrosoftMceTransceiver
             bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesRead, true);
             lastError = Marshal.GetLastWin32Error();
 
-            if (!getOverlapped && lastError != Win32ErrorCodes.ERROR_SUCCESS)
+            if (!getOverlapped && lastError != ErrorSuccess)
               throw new Win32Exception(lastError);
           }
 
@@ -834,12 +834,12 @@ namespace MicrosoftMceTransceiver
         if (writeDevice)
           return;
 
-        if (lastError != Win32ErrorCodes.ERROR_SUCCESS && lastError != Win32ErrorCodes.ERROR_IO_PENDING)
+        if (lastError != ErrorSuccess && lastError != ErrorIoPending)
           throw new Win32Exception(lastError);
 
         int handle = WaitHandle.WaitAny(waitHandles, WriteSyncTimeout, false);
 
-        if (handle == Win32ErrorCodes.WAIT_TIMEOUT)
+        if (handle == ErrorWaitTimeout)
           throw new ApplicationException("Timeout trying to write data to device");
         else if (handle != 0)
           throw new ApplicationException("Invalid wait handle return");
@@ -847,7 +847,7 @@ namespace MicrosoftMceTransceiver
         bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesWritten, true);
         lastError = Marshal.GetLastWin32Error();
 
-        if (!getOverlapped && lastError != Win32ErrorCodes.ERROR_SUCCESS)
+        if (!getOverlapped && lastError != ErrorSuccess)
           throw new Win32Exception(lastError);
       }
       catch

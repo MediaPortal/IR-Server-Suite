@@ -22,6 +22,35 @@ namespace MicrosoftMceTransceiver
   abstract class Driver
   {
 
+    #region Constants
+
+    /// <Summary>
+    /// The Operation Completed Successfully.
+    /// </Summary>
+    public const int ErrorSuccess = 0;
+
+    /// <Summary>
+    /// The Specified Module Could Not Be Found.
+    /// </Summary>
+    public const int ErrorModNotFound = 126;
+
+    /// <Summary>
+    /// The Wait Operation Timed Out.
+    /// </Summary>
+    public const int ErrorWaitTimeout = 258;
+
+    /// <Summary>
+    /// No More Data Is Available.
+    /// </Summary>
+    public const int ErrorNoMoreItems = 259;
+
+    /// <Summary>
+    /// Overlapped I/O Operation Is In Progress.
+    /// </Summary>
+    public const int ErrorIoPending = 997;
+
+    #endregion Constants
+
     #region Enumerations
 
     [Flags]
@@ -297,7 +326,7 @@ namespace MicrosoftMceTransceiver
           int lastError = Marshal.GetLastWin32Error();
 
           // out of devices or do we have an error?
-          if (lastError != Win32ErrorCodes.ERROR_NO_MORE_ITEMS && lastError != Win32ErrorCodes.ERROR_MOD_NOT_FOUND)
+          if (lastError != ErrorNoMoreItems && lastError != ErrorModNotFound)
           {
             SetupDiDestroyDeviceInfoList(handle);
             throw new Win32Exception(lastError);
