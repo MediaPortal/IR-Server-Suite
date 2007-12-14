@@ -69,7 +69,7 @@ Section "-Core"
 
   ; Kill running Programs
   DetailPrint "Terminating processes ..."
-  ExecWait '"taskkill" /F /IM IRServer.exe'
+  ExecWait '"taskkill" /F /IM "Input Service.exe"'
   ExecWait '"taskkill" /F /IM Translator.exe'
   ExecWait '"taskkill" /F /IM TrayLauncher.exe'
   ExecWait '"taskkill" /F /IM WebRemote.exe'
@@ -117,24 +117,35 @@ SectionEnd
 
 ;--------------------------------
 
-Section "IR Server"
+Section "Input Service"
 
-  DetailPrint "Installing IR Server ..."
+  DetailPrint "Installing Input Service ..."
 
   ; Use the all users context
   SetShellVarContext all
 
-  ; Installing IR Server
-  CreateDirectory "$INSTDIR\IR Server"
-  SetOutPath "$INSTDIR\IR Server"
+  ; Uninstall current Input Service ...
+  Exec '"$INSTDIR\Input Service\Input Service.exe" /uninstall'
+  Sleep 100
+
+  ; Installing Input Service
+  CreateDirectory "$INSTDIR\Input Service"
+  SetOutPath "$INSTDIR\Input Service"
   SetOverwrite ifnewer
-  File "Applications\IR Server\bin\Debug\*.*"
+  File "Input Service\Input Service\bin\Debug\*.*"
+
+  ; Installing Input Service Configuration
+  CreateDirectory "$INSTDIR\Input Service Configuration"
+  SetOutPath "$INSTDIR\Input Service Configuration"
+  SetOverwrite ifnewer
+  File "Input Service\Input Service Configuration\bin\Debug\*.*"
 
   ; Install IR Server Plugins ...
   DetailPrint "Installing IR Server Plugins ..."
   CreateDirectory "$INSTDIR\IR Server Plugins"
   SetOutPath "$INSTDIR\IR Server Plugins"
   SetOverwrite ifnewer
+  
   File "IR Server Plugins\Custom HID Receiver\bin\Debug\*.*"
   File "IR Server Plugins\FusionRemote Receiver\bin\Debug\*.*"
   File "IR Server Plugins\Girder Plugin\bin\Debug\*.*"
@@ -143,6 +154,7 @@ Section "IR Server"
   File "IR Server Plugins\IRMan Receiver\bin\Debug\*.*"
   File "IR Server Plugins\IRTrans Transceiver\bin\Debug\*.*"
   File "IR Server Plugins\Microsoft MCE Transceiver\bin\Debug\*.*"
+  File "IR Server Plugins\RedEye Blaster\bin\Debug\*.*"
   File "IR Server Plugins\Serial IR Blaster\bin\Debug\*.*"
   File "IR Server Plugins\USB-UIRT Transceiver\bin\Debug\*.*"
   File "IR Server Plugins\Wii Remote Receiver\bin\Debug\*.*"
@@ -153,13 +165,13 @@ Section "IR Server"
   File "IR Server Plugins\XBCDRC Receiver\bin\Debug\*.*"
 
   ; Create App Data Folder for IR Server configuration files.
-  CreateDirectory "$APPDATA\IR Server Suite\IR Server"
+  CreateDirectory "$APPDATA\IR Server Suite\Input Service"
 
   ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\IR Server Suite\IR Server.lnk" "$INSTDIR\IR Server\IRServer.exe" "" "$INSTDIR\IR Server\IRServer.exe" 0
+  CreateShortCut "$SMPROGRAMS\IR Server Suite\Input Service Configuration.lnk" "$INSTDIR\Input Service Configuration\Input Service Configuration.exe" "" "$INSTDIR\Input Service Configuration\Input Service Configuration.exe" 0
 
-  ; Launch IR Server
-  Exec '"$INSTDIR\IR Server\IRServer.exe"'
+  ; Launch Input Service
+  Exec '"$INSTDIR\Input Service\Input Service.exe" /install'
 
 SectionEnd
 
@@ -410,11 +422,16 @@ Section "Uninstall"
   ; Use the all users context
   SetShellVarContext all
 
+  ; Uninstall current Input Service ...
+  Exec '"$INSTDIR\Input Service\Input Service.exe" /uninstall'
+  Sleep 100
+
   ; Kill running Programs
   DetailPrint "Terminating processes ..."
-  ExecWait '"taskkill" /F /IM IRServer.exe'
+  ExecWait '"taskkill" /F /IM "Input Service.exe"'
   ExecWait '"taskkill" /F /IM Translator.exe'
   ExecWait '"taskkill" /F /IM TrayLauncher.exe'
+  ExecWait '"taskkill" /F /IM WebRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
@@ -460,7 +477,6 @@ Section "Uninstall"
   
   ; Remove auto-runs
   DetailPrint "Removing application auto-runs ..."
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "IR Server"
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Tray Launcher"
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
 
