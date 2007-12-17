@@ -36,7 +36,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.3.5 for IR Server";
+    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.4.0 for IR Server";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "TV2 Blaster Plugin\\Macro\\";
 
@@ -654,12 +654,7 @@ namespace MediaPortal.Plugins
         commands[1] = commands[1].Replace("%2", channelFull);
 
         if (_inConfiguration)
-        {
-          IrssUtils.Forms.ShowPopupMessage xx = new IrssUtils.Forms.ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
-          xx.Show();
-
-          //MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+          MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
         else
           MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
       }

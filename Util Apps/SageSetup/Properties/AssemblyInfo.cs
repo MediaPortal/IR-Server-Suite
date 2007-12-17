@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("IR Server - Sage Setup")]
-[assembly: AssemblyDescription("Setup the Sage EXE Tuner plugins for use with IR Server")]
+[assembly: AssemblyDescription("Setup the Sage EXE Tuner plugins for use with IR Server Suite")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("SageSetup")]
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.3.5")]
-[assembly: AssemblyFileVersion("1.0.3.5")]
+[assembly: AssemblyVersion("1.0.4.0")]
+[assembly: AssemblyFileVersion("1.0.4.0")]

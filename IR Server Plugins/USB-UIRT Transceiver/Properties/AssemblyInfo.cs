@@ -30,8 +30,8 @@ using System.Security.Permissions;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.3.5")]
-[assembly: AssemblyFileVersion("1.0.3.5")]
+[assembly: AssemblyVersion("1.0.4.0")]
+[assembly: AssemblyFileVersion("1.0.4.0")]
 
 [assembly: CLSCompliant(true)]
 [assembly: GuidAttribute("f06073d3-d682-4962-83ea-56f1d4cffc95")]

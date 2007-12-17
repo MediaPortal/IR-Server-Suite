@@ -146,12 +146,17 @@ namespace Translator
       comboBoxMiscCommand.Items.Clear();
       comboBoxMiscCommand.Items.Add(Common.UITextTranslator);
       comboBoxMiscCommand.Items.Add(Common.UITextVirtualKB);
+      comboBoxMiscCommand.Items.Add(Common.UITextSmsKB);
+      comboBoxMiscCommand.Items.Add(Common.UITextTcpMsg);
+      comboBoxMiscCommand.Items.Add(Common.UITextHttpMsg);
       comboBoxMiscCommand.Items.Add(Common.UITextEject);
+      comboBoxMiscCommand.Items.Add(Common.UITextPopup);
       comboBoxMiscCommand.Items.Add(Common.UITextStandby);
       comboBoxMiscCommand.Items.Add(Common.UITextHibernate);
       comboBoxMiscCommand.Items.Add(Common.UITextReboot);
       comboBoxMiscCommand.Items.Add(Common.UITextShutdown);
-
+      comboBoxMiscCommand.Items.Add(Common.UITextBeep);
+      comboBoxMiscCommand.Items.Add(Common.UITextSound);
 
       if (!String.IsNullOrEmpty(_command))
       {
@@ -292,6 +297,10 @@ namespace Translator
 
                 case Common.CmdPrefixVirtualKB:
                   comboBoxMiscCommand.SelectedItem = Common.UITextVirtualKB;
+                  break;
+
+                case Common.CmdPrefixSmsKB:
+                  comboBoxMiscCommand.SelectedItem = Common.UITextSmsKB;
                   break;
 
                 default:
@@ -446,12 +455,31 @@ namespace Translator
 
         case "tabPageMisc":
           {
-            string newCommand = comboBoxMiscCommand.SelectedItem as string;
-
-            switch (newCommand)
+            switch (comboBoxMiscCommand.SelectedItem as string)
             {
+              case Common.UITextTranslator:
+                textBoxCommand.Text = _command = Common.CmdPrefixTranslator;
+                break;
+
+              case Common.UITextVirtualKB:
+                textBoxCommand.Text = _command = Common.CmdPrefixVirtualKB;
+                break;
+
+              case Common.UITextSmsKB:
+                textBoxCommand.Text = _command = Common.CmdPrefixSmsKB;
+                break;
+
+                //comboBoxMiscCommand.Items.Add(Common.UITextTcpMsg);
+                //comboBoxMiscCommand.Items.Add(Common.UITextHttpMsg);
+
               case Common.UITextEject:
                 textBoxCommand.Text = _command = Common.CmdPrefixEject;
+                break;
+
+                //comboBoxMiscCommand.Items.Add(Common.UITextPopup);
+
+              case Common.UITextStandby:
+                textBoxCommand.Text = _command = Common.CmdPrefixStandby;
                 break;
 
               case Common.UITextHibernate:
@@ -466,17 +494,8 @@ namespace Translator
                 textBoxCommand.Text = _command = Common.CmdPrefixShutdown;
                 break;
 
-              case Common.UITextStandby:
-                textBoxCommand.Text = _command = Common.CmdPrefixStandby;
-                break;
-
-              case Common.UITextTranslator:
-                textBoxCommand.Text = _command = Common.CmdPrefixTranslator;
-                break;
-
-              case Common.UITextVirtualKB:
-                textBoxCommand.Text = _command = Common.CmdPrefixVirtualKB;
-                break;
+                //comboBoxMiscCommand.Items.Add(Common.UITextBeep);
+                //comboBoxMiscCommand.Items.Add(Common.UITextSound);
             }
 
             break;

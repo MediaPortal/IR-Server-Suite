@@ -139,6 +139,7 @@ namespace IrssUtils
     public const string UITextPopup           = "Popup Message";
     public const string UITextMultiMap        = "Set Multi-Mapping";
     public const string UITextMouseMode       = "Set Mouse Mode";
+    public const string UITextCloseProgram    = "Close a Running Program";
     public const string UITextInputLayer      = "Toggle Input Handler Layer";
     //public const string UITextWindowState     = "Toggle Window State";
     public const string UITextFocus           = "Get Focus";

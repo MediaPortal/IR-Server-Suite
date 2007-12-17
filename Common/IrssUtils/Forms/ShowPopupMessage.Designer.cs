@@ -31,15 +31,17 @@ namespace IrssUtils.Forms
       this.components = new System.ComponentModel.Container();
       this.buttonOK = new System.Windows.Forms.Button();
       this.timerOK = new System.Windows.Forms.Timer(this.components);
-      this.labelMessage = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.textBoxMessage = new System.Windows.Forms.TextBox();
+      this.labelDiv = new System.Windows.Forms.Label();
       this.panel1.SuspendLayout();
       this.SuspendLayout();
       // 
       // buttonOK
       // 
-      this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(178, 0);
+      this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonOK.Location = new System.Drawing.Point(88, 8);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(72, 24);
       this.buttonOK.TabIndex = 0;
@@ -52,31 +54,45 @@ namespace IrssUtils.Forms
       this.timerOK.Interval = 1000;
       this.timerOK.Tick += new System.EventHandler(this.timerOK_Tick);
       // 
-      // labelMessage
-      // 
-      this.labelMessage.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.labelMessage.Location = new System.Drawing.Point(0, 0);
-      this.labelMessage.Name = "labelMessage";
-      this.labelMessage.Size = new System.Drawing.Size(250, 51);
-      this.labelMessage.TabIndex = 1;
-      this.labelMessage.Text = "Message";
-      this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      // 
       // panel1
       // 
       this.panel1.Controls.Add(this.buttonOK);
       this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.panel1.Location = new System.Drawing.Point(0, 51);
+      this.panel1.Location = new System.Drawing.Point(0, 35);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(250, 24);
+      this.panel1.Size = new System.Drawing.Size(250, 40);
       this.panel1.TabIndex = 2;
+      // 
+      // textBoxMessage
+      // 
+      this.textBoxMessage.BackColor = System.Drawing.SystemColors.Control;
+      this.textBoxMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
+      this.textBoxMessage.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.textBoxMessage.Location = new System.Drawing.Point(0, 16);
+      this.textBoxMessage.Multiline = true;
+      this.textBoxMessage.Name = "textBoxMessage";
+      this.textBoxMessage.Size = new System.Drawing.Size(250, 19);
+      this.textBoxMessage.TabIndex = 3;
+      this.textBoxMessage.Text = "Message";
+      this.textBoxMessage.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      // 
+      // labelDiv
+      // 
+      this.labelDiv.Dock = System.Windows.Forms.DockStyle.Top;
+      this.labelDiv.Location = new System.Drawing.Point(0, 0);
+      this.labelDiv.Name = "labelDiv";
+      this.labelDiv.Size = new System.Drawing.Size(250, 16);
+      this.labelDiv.TabIndex = 4;
+      this.labelDiv.Text = " ";
+      this.labelDiv.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       // 
       // ShowPopupMessage
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(250, 75);
-      this.Controls.Add(this.labelMessage);
+      this.Controls.Add(this.textBoxMessage);
+      this.Controls.Add(this.labelDiv);
       this.Controls.Add(this.panel1);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
@@ -90,6 +106,7 @@ namespace IrssUtils.Forms
       this.Load += new System.EventHandler(this.ShowPopupMessage_Load);
       this.panel1.ResumeLayout(false);
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
@@ -97,7 +114,8 @@ namespace IrssUtils.Forms
 
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.Timer timerOK;
-    private System.Windows.Forms.Label labelMessage;
     private System.Windows.Forms.Panel panel1;
+    private System.Windows.Forms.TextBox textBoxMessage;
+    private System.Windows.Forms.Label labelDiv;
   }
 }

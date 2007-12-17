@@ -20,7 +20,9 @@ namespace IrssUtils.Forms
     int _timeout;
 
     #endregion Variables
-    
+
+    #region Constructor
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ShowPopupMessage"/> class.
     /// </summary>
@@ -28,18 +30,24 @@ namespace IrssUtils.Forms
     {
       InitializeComponent();
 
-      this.Text         = header;
-      labelMessage.Text = text;
-      _timeout          = timeout;
+      this.Text           = header;
+      textBoxMessage.Text = text;
+      _timeout            = timeout;
+
+      buttonOK.Text = String.Format("OK ({0})", _timeout);
     }
 
+    #endregion Constructor
 
     private void timerOK_Tick(object sender, EventArgs e)
     {
       _timeout--;
 
       if (_timeout <= 0)
+      {
+        this.DialogResult = DialogResult.Cancel;
         this.Close();
+      }
 
       buttonOK.Text = String.Format("OK ({0})", _timeout);
     }
@@ -56,6 +64,7 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
+      this.DialogResult = DialogResult.OK;
       this.Close();
     }
 

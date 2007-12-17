@@ -53,7 +53,7 @@ namespace WinLircTransceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.3.5"; } }
+    public override string Version      { get { return "1.0.4.0"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>

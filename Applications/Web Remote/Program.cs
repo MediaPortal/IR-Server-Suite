@@ -56,6 +56,7 @@ namespace WebRemote
 
     static WebServer _webServer;
     static int _webPort;
+    //static string _passwordHash;
 
     static string _imageFile;
     static string _imageMap;
@@ -205,6 +206,8 @@ namespace WebRemote
         _serverHost = setup.ServerHost;
         _remoteSkin = setup.RemoteSkin;
         _webPort    = setup.WebPort;
+
+        //_passwordHash = setup.PasswordHash;
 
         SaveSettings();
 
@@ -393,6 +396,7 @@ namespace WebRemote
         _serverHost = "localhost";
         _remoteSkin = DefaultSkin;
         _webPort = DefaultWebPort;
+        //_passwordHash = null;
 
         return;
       }
@@ -400,6 +404,7 @@ namespace WebRemote
       try { _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value; } catch { _serverHost = "localhost"; }
       try { _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value; } catch { _remoteSkin = DefaultSkin; }
       try { _webPort = int.Parse(doc.DocumentElement.Attributes["WebPort"].Value); } catch { _webPort = DefaultWebPort; }
+      //try { _passwordHash = doc.DocumentElement.Attributes["PasswordHash"].Value; } catch { _passwordHash = null; }
     }
     static void SaveSettings()
     {
@@ -416,6 +421,7 @@ namespace WebRemote
           writer.WriteAttributeString("ServerHost", _serverHost);
           writer.WriteAttributeString("RemoteSkin", _remoteSkin);
           writer.WriteAttributeString("WebPort", _webPort.ToString());
+          //writer.WriteAttributeString("PasswordHash", _passwordHash);
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();

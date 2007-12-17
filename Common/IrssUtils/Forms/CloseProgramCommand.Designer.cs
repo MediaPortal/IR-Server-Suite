@@ -53,7 +53,7 @@ namespace IrssUtils.Forms
       this.buttonFindTarget.Text = "...";
       this.toolTips.SetToolTip(this.buttonFindTarget, "Locate a target to close");
       this.buttonFindTarget.UseVisualStyleBackColor = true;
-      this.buttonFindTarget.Click += new System.EventHandler(this.buttonFindMsgApp_Click);
+      this.buttonFindTarget.Click += new System.EventHandler(this.buttonFindApp_Click);
       // 
       // textBoxTarget
       // 

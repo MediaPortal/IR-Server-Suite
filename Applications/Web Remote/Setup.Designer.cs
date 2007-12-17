@@ -38,6 +38,8 @@ namespace WebRemote
       this.labelPort = new System.Windows.Forms.Label();
       this.labelSkin = new System.Windows.Forms.Label();
       this.comboBoxSkin = new System.Windows.Forms.ComboBox();
+      this.labelPassword = new System.Windows.Forms.Label();
+      this.textBoxPassword = new System.Windows.Forms.TextBox();
       this.groupBoxServerHost.SuspendLayout();
       this.groupBoxWebServer.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWebPort)).BeginInit();
@@ -46,7 +48,7 @@ namespace WebRemote
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(152, 168);
+      this.buttonOK.Location = new System.Drawing.Point(152, 200);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
       this.buttonOK.TabIndex = 2;
@@ -58,7 +60,7 @@ namespace WebRemote
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(216, 168);
+      this.buttonCancel.Location = new System.Drawing.Point(216, 200);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
       this.buttonCancel.TabIndex = 3;
@@ -94,13 +96,15 @@ namespace WebRemote
       // 
       this.groupBoxWebServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxWebServer.Controls.Add(this.textBoxPassword);
+      this.groupBoxWebServer.Controls.Add(this.labelPassword);
       this.groupBoxWebServer.Controls.Add(this.numericUpDownWebPort);
       this.groupBoxWebServer.Controls.Add(this.labelPort);
       this.groupBoxWebServer.Controls.Add(this.labelSkin);
       this.groupBoxWebServer.Controls.Add(this.comboBoxSkin);
       this.groupBoxWebServer.Location = new System.Drawing.Point(8, 72);
       this.groupBoxWebServer.Name = "groupBoxWebServer";
-      this.groupBoxWebServer.Size = new System.Drawing.Size(264, 88);
+      this.groupBoxWebServer.Size = new System.Drawing.Size(264, 120);
       this.groupBoxWebServer.TabIndex = 1;
       this.groupBoxWebServer.TabStop = false;
       this.groupBoxWebServer.Text = "Web Server";
@@ -148,13 +152,32 @@ namespace WebRemote
       this.comboBoxSkin.Size = new System.Drawing.Size(168, 21);
       this.comboBoxSkin.TabIndex = 3;
       // 
+      // labelPassword
+      // 
+      this.labelPassword.Location = new System.Drawing.Point(8, 88);
+      this.labelPassword.Name = "labelPassword";
+      this.labelPassword.Size = new System.Drawing.Size(80, 20);
+      this.labelPassword.TabIndex = 4;
+      this.labelPassword.Text = "Password:";
+      this.labelPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.labelPassword.Visible = false;
+      // 
+      // textBoxPassword
+      // 
+      this.textBoxPassword.Location = new System.Drawing.Point(88, 88);
+      this.textBoxPassword.Name = "textBoxPassword";
+      this.textBoxPassword.Size = new System.Drawing.Size(168, 20);
+      this.textBoxPassword.TabIndex = 5;
+      this.textBoxPassword.UseSystemPasswordChar = true;
+      this.textBoxPassword.Visible = false;
+      // 
       // Setup
       // 
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(280, 207);
+      this.ClientSize = new System.Drawing.Size(280, 233);
       this.Controls.Add(this.groupBoxWebServer);
       this.Controls.Add(this.groupBoxServerHost);
       this.Controls.Add(this.buttonCancel);
@@ -168,6 +191,7 @@ namespace WebRemote
       this.Text = "Web Remote Setup";
       this.groupBoxServerHost.ResumeLayout(false);
       this.groupBoxWebServer.ResumeLayout(false);
+      this.groupBoxWebServer.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWebPort)).EndInit();
       this.ResumeLayout(false);
 
@@ -184,5 +208,7 @@ namespace WebRemote
     private System.Windows.Forms.Label labelPort;
     private System.Windows.Forms.Label labelSkin;
     private System.Windows.Forms.ComboBox comboBoxSkin;
+    private System.Windows.Forms.Label labelPassword;
+    private System.Windows.Forms.TextBox textBoxPassword;
   }
 }

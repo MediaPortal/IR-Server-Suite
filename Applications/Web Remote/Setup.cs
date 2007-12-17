@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 
@@ -50,6 +51,23 @@ namespace WebRemote
       set { numericUpDownWebPort.Value = new Decimal(value); }
     }
     
+    /// <summary>
+    /// Gets the password hash.
+    /// </summary>
+    /// <value>The password hash.</value>
+    public string PasswordHash
+    {
+      get
+      {
+        string text = textBoxPassword.Text;
+
+        MD5 md5 = new MD5CryptoServiceProvider();
+        byte[] hash = md5.ComputeHash(Encoding.ASCII.GetBytes(text));
+
+        return BitConverter.ToString(hash);
+      }
+    }
+
     #endregion Properties
 
     #region Constructor

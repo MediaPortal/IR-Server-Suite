@@ -41,6 +41,10 @@ namespace Translator
     /// The user is logging off.
     /// </summary>
     PC_Logoff,
+
+    //ScreenSaver_Start,
+    //ScreenSaver_Stop,
+
     //Scheduled_Event,
   }
 

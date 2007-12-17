@@ -89,7 +89,7 @@ namespace IrssUtils.Forms
 
     #region Controls
 
-    private void buttonFindMsgApp_Click(object sender, EventArgs e)
+    private void buttonFindApp_Click(object sender, EventArgs e)
     {
       if (radioButtonApplication.Checked)
       {
