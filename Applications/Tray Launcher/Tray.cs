@@ -436,22 +436,24 @@ namespace TrayLauncher
         }
 
         // Launch program
-        Process launch = new Process();
-        launch.StartInfo.FileName        = _programFile;
-        launch.StartInfo.WindowStyle     = ProcessWindowStyle.Normal;
-        launch.StartInfo.UseShellExecute = true;
-        launch.Start();
-
-        int attempt = 0;
-        while (!launch.HasExited && attempt++ < 50)
+        using (Process launch = new Process())
         {
-          if (launch.MainWindowHandle != IntPtr.Zero)
-          {
-            Win32.SetForegroundWindow(launch.MainWindowHandle, true);
-            break;
-          }
+          launch.StartInfo.FileName         = _programFile;
+          launch.StartInfo.WindowStyle      = ProcessWindowStyle.Normal;
+          launch.StartInfo.UseShellExecute  = true;
+          launch.Start();
 
-          Thread.Sleep(500);
+          int attempt = 0;
+          while (!launch.HasExited && attempt++ < 50)
+          {
+            if (launch.MainWindowHandle != IntPtr.Zero)
+            {
+              Win32.SetForegroundWindow(launch.MainWindowHandle, true);
+              break;
+            }
+
+            Thread.Sleep(500);
+          }
         }
       }
       catch (Exception ex)

@@ -66,12 +66,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Advanced.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Advanced.Designer.cs">
-      <DependentUpon>Advanced.cs</DependentUpon>
-    </Compile>
     <Compile Include="Configure.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,10 +89,6 @@
     <Compile Include="RemoteDetectionData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Advanced.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>Advanced.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Configure.resx">
       <DependentUpon>Configure.cs</DependentUpon>
       <SubType>Designer</SubType>

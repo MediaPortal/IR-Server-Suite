@@ -44,7 +44,6 @@ namespace MicrosoftMceTransceiver
       this.checkBoxHandleMouseLocal = new System.Windows.Forms.CheckBox();
       this.numericUpDownMouseSensitivity = new System.Windows.Forms.NumericUpDown();
       this.checkBoxDisableMCEServices = new System.Windows.Forms.CheckBox();
-      this.buttonAdvanced = new System.Windows.Forms.Button();
       this.labelLearnIRTimeout = new System.Windows.Forms.Label();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageBasic = new System.Windows.Forms.TabPage();
@@ -147,7 +146,7 @@ namespace MicrosoftMceTransceiver
       this.buttonOK.Location = new System.Drawing.Point(128, 208);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
-      this.buttonOK.TabIndex = 2;
+      this.buttonOK.TabIndex = 1;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -158,7 +157,7 @@ namespace MicrosoftMceTransceiver
       this.buttonCancel.Location = new System.Drawing.Point(200, 208);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
-      this.buttonCancel.TabIndex = 3;
+      this.buttonCancel.TabIndex = 2;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -326,17 +325,6 @@ namespace MicrosoftMceTransceiver
               "erver");
       this.checkBoxDisableMCEServices.UseVisualStyleBackColor = true;
       // 
-      // buttonAdvanced
-      // 
-      this.buttonAdvanced.Location = new System.Drawing.Point(8, 208);
-      this.buttonAdvanced.Name = "buttonAdvanced";
-      this.buttonAdvanced.Size = new System.Drawing.Size(72, 24);
-      this.buttonAdvanced.TabIndex = 1;
-      this.buttonAdvanced.Text = "Advanced";
-      this.toolTips.SetToolTip(this.buttonAdvanced, "Click here for advanced driver settings");
-      this.buttonAdvanced.UseVisualStyleBackColor = true;
-      this.buttonAdvanced.Click += new System.EventHandler(this.buttonAdvanced_Click);
-      // 
       // labelLearnIRTimeout
       // 
       this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 64);
@@ -492,14 +480,13 @@ namespace MicrosoftMceTransceiver
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(272, 258);
+      this.ClientSize = new System.Drawing.Size(272, 241);
       this.ControlBox = false;
-      this.Controls.Add(this.buttonAdvanced);
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-      this.MinimumSize = new System.Drawing.Size(278, 264);
+      this.MinimumSize = new System.Drawing.Size(278, 266);
       this.Name = "Configure";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Microsoft MCE Configuration";
@@ -554,6 +541,5 @@ namespace MicrosoftMceTransceiver
     private System.Windows.Forms.CheckBox checkBoxHandleMouseLocal;
     private System.Windows.Forms.CheckBox checkBoxEnableMouse;
     private System.Windows.Forms.CheckBox checkBoxDisableMCEServices;
-    private System.Windows.Forms.Button buttonAdvanced;
   }
 }

@@ -99,6 +99,7 @@ namespace IrssUtils
     public const string CmdPrefixGoto         = "Goto: ";
     public const string CmdPrefixPopup        = "Popup: ";
     public const string CmdPrefixMouseMode    = "Mouse Mode: ";
+    public const string CmdPrefixCloseProgram = "Close Program: ";
 //  public const string CmdPrefixWindowState  = "Toggle Window State";
 
     public const string CmdPrefixStandby      = "Standby";
@@ -139,7 +140,7 @@ namespace IrssUtils
     public const string UITextMultiMap        = "Set Multi-Mapping";
     public const string UITextMouseMode       = "Set Mouse Mode";
     public const string UITextInputLayer      = "Toggle Input Handler Layer";
-//  public const string UITextWindowState     = "Change Window State";
+    //public const string UITextWindowState     = "Toggle Window State";
     public const string UITextFocus           = "Get Focus";
     public const string UITextExit            = "Exit MediaPortal";
     
@@ -183,26 +184,26 @@ namespace IrssUtils
 
     #endregion Mouse Commands
 
-    #region Windows Message Target
+    #region Command Targets
 
     /// <summary>
-    /// Windows Message target the active window.
+    /// Target the active window.
     /// </summary>
-    public const string WMTargetActive      = "ACTIVE";
+    public const string TargetActive      = "ACTIVE";
     /// <summary>
-    /// Windows Message target an application.
+    /// Target an application.
     /// </summary>
-    public const string WMTargetApplication = "APPLICATION";
+    public const string TargetApplication = "APPLICATION";
     /// <summary>
-    /// Windows Message target a class.
+    /// Target a class.
     /// </summary>
-    public const string WMTargetClass       = "CLASS";
+    public const string TargetClass       = "CLASS";
     /// <summary>
-    /// Windows Message target a window title.
+    /// Target a window title.
     /// </summary>
-    public const string WMTargetWindow      = "WINDOW";
+    public const string TargetWindow      = "WINDOW";
 
-    #endregion Windows Message Target
+    #endregion Commad Targets
 
     #endregion Strings
 
@@ -244,6 +245,10 @@ namespace IrssUtils
     /// Number of Segments in a Display Mode Command.
     /// </summary>
     public const int SegmentsDisplayModeCommand   = 4;
+    /// <summary>
+    /// Number of Segments in a Close Program Command.
+    /// </summary>
+    public const int SegmentsCloseProgramCommand = 2;
 
     #endregion Command Segments
 
@@ -343,6 +348,16 @@ namespace IrssUtils
       return SplitCommand(command, SegmentsDisplayModeCommand);
     }
 
+    /// <summary>
+    /// Splits a Close Program Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
+    public static string[] SplitCloseProgramCommand(string command)
+    {
+      return SplitCommand(command, SegmentsCloseProgramCommand);
+    }
+
     static string[] SplitCommand(string command, int elements)
     {
       if (String.IsNullOrEmpty(command))
@@ -369,39 +384,39 @@ namespace IrssUtils
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      Process process = new Process();
-      process.StartInfo.FileName          = commands[0];
-      process.StartInfo.WorkingDirectory  = commands[1];
-      process.StartInfo.Arguments         = commands[2];
-      process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true);
-      process.StartInfo.CreateNoWindow    = bool.Parse(commands[4]);
-      process.StartInfo.UseShellExecute   = bool.Parse(commands[5]);
-
-      bool waitForExit                    = bool.Parse(commands[6]);
-      bool forceFocus                     = bool.Parse(commands[7]);
-
-      process.Start();
-
-      // Give new process focus ...
-      if (!process.StartInfo.CreateNoWindow &&
-        process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
-        forceFocus)
+      using (Process process = new Process())
       {
-        int attempt = 0;
-        while (!process.HasExited && attempt++ < 50)
+        process.StartInfo.FileName          = commands[0];
+        process.StartInfo.WorkingDirectory  = commands[1];
+        process.StartInfo.Arguments         = commands[2];
+        process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true);
+        process.StartInfo.CreateNoWindow    = bool.Parse(commands[4]);
+        process.StartInfo.UseShellExecute   = bool.Parse(commands[5]);
+
+        bool waitForExit  = bool.Parse(commands[6]);
+        bool forceFocus   = bool.Parse(commands[7]);
+
+        process.Start();
+
+        // Give new process focus ...
+        if (!process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden && forceFocus)
         {
-          if (process.MainWindowHandle != IntPtr.Zero)
+          int attempt = 0;
+          while (!process.HasExited && attempt++ < 50)
           {
-            Win32.SetForegroundWindow(process.MainWindowHandle, true);
-            break;
+            if (process.MainWindowHandle != IntPtr.Zero)
+            {
+              Win32.SetForegroundWindow(process.MainWindowHandle, true);
+              break;
+            }
+
+            Thread.Sleep(500);
           }
-
-          Thread.Sleep(500);
         }
-      }
 
-      if (waitForExit)
-        process.WaitForExit();
+        if (waitForExit)
+          process.WaitForExit();
+      }
     }
 
     /// <summary>
@@ -413,7 +428,7 @@ namespace IrssUtils
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      string command        = Common.ReplaceEscapeCodes(commands[0]);
+      string command        = ReplaceEscapeCodes(commands[0]);
       
       string comPort        = commands[1];
       int baudRate          = int.Parse(commands[2]);
@@ -463,11 +478,11 @@ namespace IrssUtils
       string matchType = commands[0].ToUpperInvariant();
       switch (matchType)
       {
-        case WMTargetActive:
+        case TargetActive:
           windowHandle = Win32.ForegroundWindow();
           break;
 
-        case WMTargetApplication:
+        case TargetApplication:
           foreach (Process proc in Process.GetProcesses())
           {
             try
@@ -484,11 +499,11 @@ namespace IrssUtils
           }
           break;
 
-        case WMTargetClass:
+        case TargetClass:
           windowHandle = Win32.FindWindowByClass(commands[1]);
           break;
 
-        case WMTargetWindow:
+        case TargetWindow:
           windowHandle = Win32.FindWindowByTitle(commands[1]);
           break;
 
@@ -709,6 +724,48 @@ namespace IrssUtils
       Display.ChangeDisplayMode(width, height, bpp, refresh);
     }
 
+    /// <summary>
+    /// Given a split Close Program Command this method will attempt to close a program by command structure supplied.
+    /// </summary>
+    /// <param name="commands">An array of arguments for the method (the output of SplitCloseProgramCommand).</param>
+    public static void ProcessCloseProgramCommand(string[] commands)
+    {
+      if (commands == null)
+        throw new ArgumentNullException("commands");
+
+      Process process;
+
+      string matchType = commands[0].ToUpperInvariant();
+      switch (matchType)
+      {
+        case TargetActive:
+          process = GetProcessByWindowHandle(Win32.ForegroundWindow());
+          break;
+
+        case TargetApplication:
+          process = GetProcessByFilePath(commands[1]);
+          break;
+
+        case TargetClass:
+          process = GetProcessByWindowHandle(Win32.FindWindowByClass(commands[1]));
+          break;
+
+        case TargetWindow:
+          process = GetProcessByWindowTitle(commands[1]);
+          break;
+
+        default:
+          throw new ArgumentOutOfRangeException("commands", commands[0], "Invalid close program target");
+      }
+
+      if (process == null)
+        throw new ApplicationException(String.Format("Close Program target ({0}) not found", commands[0]));
+
+      EndProcess(process, 5000);
+
+      process.Close();
+    }
+
     #endregion Command Execution
 
     #region Misc
@@ -918,6 +975,77 @@ namespace IrssUtils
     {
       return Win32.WindowsExit(Win32.ExitWindows.ShutDown, Win32.ShutdownReasons.FlagUserDefined);
     }
+
+
+    static Process GetProcessByWindowHandle(IntPtr windowHandle)
+    {
+      foreach (Process process in Process.GetProcesses())
+      {
+        IntPtr procWindowHandle;
+        try { procWindowHandle = process.MainWindowHandle; }
+        catch { continue; }
+
+        if (procWindowHandle == windowHandle)
+          return process;
+      }
+
+      return null;
+    }
+
+    static Process GetProcessByWindowTitle(string windowTitle)
+    {
+      foreach (Process process in Process.GetProcesses())
+      {
+        string procWindowTitle;
+        try { procWindowTitle = process.MainWindowTitle; }
+        catch { continue; }
+
+        if (procWindowTitle.Equals(windowTitle, StringComparison.OrdinalIgnoreCase))
+          return process;
+      }
+
+      return null;
+    }
+
+    static Process GetProcessByFilePath(string filePath)
+    {
+      foreach (Process process in Process.GetProcesses())
+      {
+        string procFilePath;
+        try { procFilePath = process.MainModule.FileName; }
+        catch { continue; }
+
+        if (procFilePath.Equals(filePath, StringComparison.OrdinalIgnoreCase))
+          return process;
+      }
+
+      return null;
+    }
+
+    static Process GetProcessByFileName(string fileName)
+    {
+      foreach (Process process in Process.GetProcesses())
+      {
+        string procFileName;
+        try { procFileName = process.MainModule.ModuleName; }
+        catch { continue; }
+
+        if (procFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase))
+          return process;
+      }
+
+      return null;
+    }
+
+    static void EndProcess(Process process, int timeout)
+    {
+      if (process.CloseMainWindow())
+        process.WaitForExit(timeout);
+
+      if (!process.HasExited)
+        process.Kill();
+    }
+
 
     #endregion Misc
 

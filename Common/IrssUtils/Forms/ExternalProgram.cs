@@ -190,31 +190,33 @@ namespace IrssUtils.Forms
 
       try
       {
-        Process process = new Process();
-        process.StartInfo.FileName          = textBoxProgram.Text;
-        process.StartInfo.WorkingDirectory  = textBoxStartup.Text;
-        process.StartInfo.Arguments         = textBoxParameters.Text;
-        process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true);
-        process.StartInfo.CreateNoWindow    = checkBoxNoWindow.Checked;
-        process.StartInfo.UseShellExecute   = checkBoxShellExecute.Checked;
-
-        process.Start();
-
-        // Give new process focus ...
-        if (!process.StartInfo.CreateNoWindow &&
-          process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
-          checkBoxForceFocus.Checked)
+        using (Process process = new Process())
         {
-          int attempt = 0;
-          while (!process.HasExited && attempt++ < 50)
-          {
-            if (process.MainWindowHandle != IntPtr.Zero)
-            {
-              Win32.SetForegroundWindow(process.MainWindowHandle, true);
-              break;
-            }
+          process.StartInfo.FileName          = textBoxProgram.Text;
+          process.StartInfo.WorkingDirectory  = textBoxStartup.Text;
+          process.StartInfo.Arguments         = textBoxParameters.Text;
+          process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true);
+          process.StartInfo.CreateNoWindow    = checkBoxNoWindow.Checked;
+          process.StartInfo.UseShellExecute   = checkBoxShellExecute.Checked;
 
-            Thread.Sleep(500);
+          process.Start();
+
+          // Give new process focus ...
+          if (!process.StartInfo.CreateNoWindow &&
+            process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
+            checkBoxForceFocus.Checked)
+          {
+            int attempt = 0;
+            while (!process.HasExited && attempt++ < 50)
+            {
+              if (process.MainWindowHandle != IntPtr.Zero)
+              {
+                Win32.SetForegroundWindow(process.MainWindowHandle, true);
+                break;
+              }
+
+              Thread.Sleep(500);
+            }
           }
         }
       }

@@ -38,14 +38,14 @@ namespace IrssUtils.Forms
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TcpMessageCommand"/> class.
+    /// Initializes a new instance of the <see cref="HttpMessageCommand"/> class.
     /// </summary>
     public HttpMessageCommand()
     {
       InitializeComponent();
     }
     /// <summary>
-    /// Initializes a new instance of the <see cref="TcpMessageCommand"/> class.
+    /// Initializes a new instance of the <see cref="HttpMessageCommand"/> class.
     /// </summary>
     /// <param name="commands">The command elements.</param>
     public HttpMessageCommand(string[] commands)
@@ -58,6 +58,8 @@ namespace IrssUtils.Forms
       numericUpDownTimeout.Value  = Convert.ToDecimal(commands[1]);
       textBoxUsername.Text        = commands[2];
       textBoxPassword.Text        = commands[3];
+
+      checkBoxUsernameAndPassword.Checked = !String.IsNullOrEmpty(commands[2]);
     }
 
     #endregion Constructors

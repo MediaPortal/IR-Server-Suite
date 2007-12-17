@@ -1052,6 +1052,16 @@ namespace Translator
           string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
           Common.ProcessWindowMessageCommand(commands);
         }
+        else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
+          Common.ProcessTcpMessageCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
+          Common.ProcessHttpCommand(commands);
+        }
         else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
@@ -1069,6 +1079,11 @@ namespace Translator
         {
           string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
           Common.ProcessEjectCommand(ejectCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
+          MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {

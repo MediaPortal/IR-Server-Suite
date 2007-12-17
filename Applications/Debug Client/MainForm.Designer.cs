@@ -48,7 +48,6 @@ namespace DebugClient
       this.groupBoxCommands = new System.Windows.Forms.GroupBox();
       this.comboBoxPort = new System.Windows.Forms.ComboBox();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-      this.buttonIRBlastAutoTest = new System.Windows.Forms.Button();
       this.buttonHelp = new System.Windows.Forms.Button();
       this.groupBoxStatus.SuspendLayout();
       this.groupBoxRemoteButton.SuspendLayout();
@@ -270,18 +269,6 @@ namespace DebugClient
       this.comboBoxPort.TabIndex = 2;
       this.toolTips.SetToolTip(this.comboBoxPort, "Port for blasting IR");
       // 
-      // buttonIRBlastAutoTest
-      // 
-      this.buttonIRBlastAutoTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonIRBlastAutoTest.Location = new System.Drawing.Point(336, 416);
-      this.buttonIRBlastAutoTest.Name = "buttonIRBlastAutoTest";
-      this.buttonIRBlastAutoTest.Size = new System.Drawing.Size(112, 24);
-      this.buttonIRBlastAutoTest.TabIndex = 5;
-      this.buttonIRBlastAutoTest.Text = "IRBlast Auto-Test";
-      this.toolTips.SetToolTip(this.buttonIRBlastAutoTest, "Runs a random number blasting test");
-      this.buttonIRBlastAutoTest.UseVisualStyleBackColor = true;
-      this.buttonIRBlastAutoTest.Click += new System.EventHandler(this.buttonAutoTest_Click);
-      // 
       // buttonHelp
       // 
       this.buttonHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -297,8 +284,7 @@ namespace DebugClient
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(456, 446);
-      this.Controls.Add(this.buttonIRBlastAutoTest);
+      this.ClientSize = new System.Drawing.Size(464, 455);
       this.Controls.Add(this.buttonHelp);
       this.Controls.Add(this.groupBoxCommands);
       this.Controls.Add(this.groupBoxSetup);
@@ -341,7 +327,6 @@ namespace DebugClient
     private System.Windows.Forms.ComboBox comboBoxPort;
     private System.Windows.Forms.ComboBox comboBoxComputer;
     private System.Windows.Forms.Button buttonHelp;
-    private System.Windows.Forms.Button buttonIRBlastAutoTest;
   }
 }
 

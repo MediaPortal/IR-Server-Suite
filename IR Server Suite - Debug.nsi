@@ -58,6 +58,17 @@ Function .onInit
 
 FunctionEnd
 
+Function .onInstSuccess
+
+  IfFileExists "$INSTDIR\Input Service\Input Service.exe" StartInputService SkipStartInputService
+
+StartInputService:
+  Exec '"$INSTDIR\Input Service\Input Service.exe" /start'
+
+SkipStartInputService:
+
+FunctionEnd
+
 ;--------------------------------
 
 Section "-Core"
@@ -69,13 +80,19 @@ Section "-Core"
 
   ; Kill running Programs
   DetailPrint "Terminating processes ..."
-  ExecWait '"taskkill" /F /IM "Input Service.exe"'
   ExecWait '"taskkill" /F /IM Translator.exe'
   ExecWait '"taskkill" /F /IM TrayLauncher.exe'
   ExecWait '"taskkill" /F /IM WebRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
+
+  IfFileExists "$INSTDIR\Input Service\Input Service.exe" StopInputService SkipStopInputService
+
+StopInputService:
+  ExecWait '"$INSTDIR\Input Service\Input Service.exe" /stop'
+
+SkipStopInputService:
   Sleep 100
 
   CreateDirectory "$APPDATA\IR Server Suite"
@@ -125,7 +142,7 @@ Section "Input Service"
   SetShellVarContext all
 
   ; Uninstall current Input Service ...
-  Exec '"$INSTDIR\Input Service\Input Service.exe" /uninstall'
+  ExecWait '"$INSTDIR\Input Service\Input Service.exe" /uninstall'
   Sleep 100
 
   ; Installing Input Service
@@ -171,7 +188,8 @@ Section "Input Service"
   CreateShortCut "$SMPROGRAMS\IR Server Suite\Input Service Configuration.lnk" "$INSTDIR\Input Service Configuration\Input Service Configuration.exe" "" "$INSTDIR\Input Service Configuration\Input Service Configuration.exe" 0
 
   ; Launch Input Service
-  Exec '"$INSTDIR\Input Service\Input Service.exe" /install'
+  DetailPrint "Starting Input Service ..."
+  ExecWait '"$INSTDIR\Input Service\Input Service.exe" /install'
 
 SectionEnd
 
@@ -422,19 +440,18 @@ Section "Uninstall"
   ; Use the all users context
   SetShellVarContext all
 
-  ; Uninstall current Input Service ...
-  Exec '"$INSTDIR\Input Service\Input Service.exe" /uninstall'
-  Sleep 100
-
   ; Kill running Programs
   DetailPrint "Terminating processes ..."
-  ExecWait '"taskkill" /F /IM "Input Service.exe"'
   ExecWait '"taskkill" /F /IM Translator.exe'
   ExecWait '"taskkill" /F /IM TrayLauncher.exe'
   ExecWait '"taskkill" /F /IM WebRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
+  Sleep 100
+
+  ; Uninstall current Input Service ...
+  ExecWait '"$INSTDIR\Input Service\Input Service.exe" /uninstall'
   Sleep 100
 
   ; Remove files and uninstaller

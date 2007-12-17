@@ -203,6 +203,7 @@ namespace MediaPortal.Plugins
       this.MinimumSize = new System.Drawing.Size(536, 466);
       this.Name = "ExternalChannels";
       this.ShowIcon = false;
+      this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "External Channel Changing";
       this.Load += new System.EventHandler(this.ExternalChannels_Load);

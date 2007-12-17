@@ -83,11 +83,23 @@
     <Compile Include="Forms\BeepCommand.Designer.cs">
       <DependentUpon>BeepCommand.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CloseProgramCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CloseProgramCommand.Designer.cs">
+      <DependentUpon>CloseProgramCommand.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\HttpMessageCommand.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\HttpMessageCommand.Designer.cs">
       <DependentUpon>HttpMessageCommand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ShowPopupMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ShowPopupMessage.Designer.cs">
+      <DependentUpon>ShowPopupMessage.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SmsKeyboard.cs">
       <SubType>Form</SubType>
@@ -203,9 +215,17 @@
       <DependentUpon>BeepCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CloseProgramCommand.resx">
+      <DependentUpon>CloseProgramCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HttpMessageCommand.resx">
       <DependentUpon>HttpMessageCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ShowPopupMessage.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ShowPopupMessage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SmsKeyboard.resx">
       <DependentUpon>SmsKeyboard.cs</DependentUpon>

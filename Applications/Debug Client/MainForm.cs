@@ -527,41 +527,6 @@ namespace DebugClient
 
     #endregion Controls
 
-    Thread AutoTest;
-
-    private void buttonAutoTest_Click(object sender, EventArgs e)
-    {
-      AutoTest = new Thread(new ThreadStart(AutoTestThread));
-      AutoTest.Name = "DebugClient.AutoTest";
-      AutoTest.IsBackground = true;
-      AutoTest.Start();
-    }
-
-    void AutoTestThread()
-    {
-      Random rand = new Random();
-
-      int randomNumber;
-
-      Process process = new Process();
-      process.StartInfo.FileName = "IRBlast-NoWindow.exe";
-      process.StartInfo.WorkingDirectory = "C:\\Program Files\\IR Server Suite\\IR Blast\\";
-
-      while (true)
-      {
-        randomNumber = rand.Next(100000);
-
-        this.Invoke(_addStatusLine, new Object[] { String.Format("AutoTest: {0}", randomNumber) });
-
-        process.StartInfo.Arguments = "-host localhost -pad 4 -channel " + randomNumber.ToString();
-
-        process.Start();
-        process.WaitForExit();
-
-        Thread.Sleep(10000);
-      }
-    }
-
   }
 
 }

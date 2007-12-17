@@ -90,12 +90,6 @@ namespace MicrosoftMceTransceiver
 
     #region Buttons
 
-    private void buttonAdvanced_Click(object sender, EventArgs e)
-    {
-      Advanced advanced = new Advanced();
-      advanced.ShowDialog(this);
-    }
-
     private void buttonOK_Click(object sender, EventArgs e)
     {
       this.DialogResult = DialogResult.OK;

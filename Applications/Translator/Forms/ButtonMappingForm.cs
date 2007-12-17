@@ -222,10 +222,10 @@ namespace Translator
               tabControl.SelectTab(tabPageMessage);
               switch (commands[0].ToUpperInvariant())
               {
-                case Common.WMTargetActive:       radioButtonActiveWindow.Checked = true;   break;
-                case Common.WMTargetApplication:  radioButtonApplication.Checked = true;    break;
-                case Common.WMTargetClass:        radioButtonClass.Checked = true;          break;
-                case Common.WMTargetWindow:       radioButtonWindowTitle.Checked = true;    break;
+                case Common.TargetActive:       radioButtonActiveWindow.Checked = true;   break;
+                case Common.TargetApplication:  radioButtonApplication.Checked = true;    break;
+                case Common.TargetClass:        radioButtonClass.Checked = true;          break;
+                case Common.TargetWindow:       radioButtonWindowTitle.Checked = true;    break;
               }
 
               textBoxMsgTarget.Text     = commands[1];
@@ -386,20 +386,20 @@ namespace Translator
 
             if (radioButtonActiveWindow.Checked)
             {
-              target = Common.WMTargetActive;
+              target = Common.TargetActive;
               textBoxMsgTarget.Text = "*";
             }
             else if (radioButtonApplication.Checked)
             {
-              target = Common.WMTargetApplication;
+              target = Common.TargetApplication;
             }
             else if (radioButtonClass.Checked)
             {
-              target = Common.WMTargetClass;
+              target = Common.TargetClass;
             }
             else if (radioButtonWindowTitle.Checked)
             {
-              target = Common.WMTargetWindow;
+              target = Common.TargetWindow;
             }
 
             textBoxCommand.Text = _command =

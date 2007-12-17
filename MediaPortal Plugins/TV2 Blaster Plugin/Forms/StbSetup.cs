@@ -107,7 +107,10 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextRun);
       comboBoxCommands.Items.Add(Common.UITextSerial);
       comboBoxCommands.Items.Add(Common.UITextWindowMsg);
+      comboBoxCommands.Items.Add(Common.UITextTcpMsg);
+      comboBoxCommands.Items.Add(Common.UITextHttpMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
+      comboBoxCommands.Items.Add(Common.UITextPopup);
 
       string[] fileList = TV2BlasterPlugin.GetFileList(true);
       if (fileList != null)
@@ -152,26 +155,26 @@ namespace MediaPortal.Plugins
 
       // Setup command list.
       for (int i = 0; i < 10; i++)
-        listViewExternalCommands.Items[i].SubItems[1].Text = config.Digits[i];
+        listViewExternalCommands.Items[i].SubItems[1].Text  = config.Digits[i];
 
-      listViewExternalCommands.Items[10].SubItems[1].Text = config.SelectCommand;
-      listViewExternalCommands.Items[11].SubItems[1].Text = config.PreChangeCommand;
+      listViewExternalCommands.Items[10].SubItems[1].Text   = config.SelectCommand;
+      listViewExternalCommands.Items[11].SubItems[1].Text   = config.PreChangeCommand;
 
       // Setup options.
-      numericUpDownPauseTime.Value = config.PauseTime;
-      checkBoxSendSelect.Checked = config.SendSelect;
-      checkBoxDoubleSelect.Checked = config.DoubleChannelSelect;
-      numericUpDownRepeat.Value = config.RepeatChannelCommands;
+      numericUpDownPauseTime.Value  = config.PauseTime;
+      checkBoxSendSelect.Checked    = config.SendSelect;
+      checkBoxDoubleSelect.Checked  = config.DoubleChannelSelect;
+      numericUpDownRepeat.Value     = config.RepeatChannelCommands;
 
-      checkBoxDoubleSelect.Enabled = checkBoxSendSelect.Checked;
+      checkBoxDoubleSelect.Enabled  = checkBoxSendSelect.Checked;
 
       int channelDigitsSelect = config.ChannelDigits;
       if (channelDigitsSelect > 0)
         channelDigitsSelect--;
-      comboBoxChDigits.SelectedIndex = channelDigitsSelect;
+      comboBoxChDigits.SelectedIndex  = channelDigitsSelect;
 
-      checkBoxUsePreChange.Checked = config.UsePreChangeCommand;
-      numericUpDownRepeatDelay.Value = new Decimal(config.RepeatPauseTime);
+      checkBoxUsePreChange.Checked    = config.UsePreChangeCommand;
+      numericUpDownRepeatDelay.Value  = new Decimal(config.RepeatPauseTime);
     }
 
     public void SetToConfig(int cardId)
@@ -331,9 +334,13 @@ namespace MediaPortal.Plugins
 
     private void listViewExternalCommands_DoubleClick(object sender, EventArgs e)
     {
-      if (listViewExternalCommands.SelectedIndices.Count == 1)
+      if (listViewExternalCommands.SelectedIndices.Count != 1)
+        return;
+
+      try
       {
         string selected = listViewExternalCommands.SelectedItems[0].SubItems[1].Text;
+        string newCommand = null;
 
         if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
@@ -346,7 +353,7 @@ namespace MediaPortal.Plugins
             commands);
 
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
-            listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixBlast + blastCommand.CommandString;
+            newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
@@ -359,80 +366,125 @@ namespace MediaPortal.Plugins
             commands);
 
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
-            listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSTB + blastCommand.CommandString;
+            newCommand = Common.CmdPrefixSTB + blastCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
+          
           ExternalProgram executeProgram = new ExternalProgram(commands, parameterInfo);
           if (executeProgram.ShowDialog(this) == DialogResult.OK)
-            listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixRun + executeProgram.CommandString;
+            newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
+          
           SerialCommand serialCommand = new SerialCommand(commands, parameterInfo);
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
-            listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixSerial + serialCommand.CommandString;
+            newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
+          
           MessageCommand messageCommand = new MessageCommand(commands);
           if (messageCommand.ShowDialog(this) == DialogResult.OK)
-            listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+            newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
+
+          TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
+          if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
+
+          HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
+          if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
+          
           if (keysCommand.ShowDialog(this) == DialogResult.OK)
-            listViewExternalCommands.SelectedItems[0].SubItems[1].Text = Common.CmdPrefixKeys + keysCommand.CommandString;
+            newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
         }
+        else if (selected.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
+
+          PopupMessage popupMessage = new PopupMessage(commands);
+          if (popupMessage.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
+        }
+
+        if (!String.IsNullOrEmpty(newCommand))
+          listViewExternalCommands.SelectedItems[0].SubItems[1].Text = newCommand;
+      }
+      catch (Exception ex)
+      {
+        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to edit command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
     private void buttonSet_Click(object sender, EventArgs e)
     {
-      if (listViewExternalCommands.SelectedIndices.Count != 0 && comboBoxCommands.SelectedIndex != -1)
+      if (listViewExternalCommands.SelectedIndices.Count == 0 || comboBoxCommands.SelectedIndex == -1)
+        return;
+
+      try
       {
         string selected = comboBoxCommands.SelectedItem as string;
-        string commandString;
+        string newCommand = null;
 
         if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
         {
           ExternalProgram externalProgram = new ExternalProgram(parameterInfo);
-
-          if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-            return;
-
-          commandString = Common.CmdPrefixRun + externalProgram.CommandString;
+          if (externalProgram.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
         }
         else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
         {
           SerialCommand serialCommand = new SerialCommand(parameterInfo);
-
-          if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
-
-          commandString = Common.CmdPrefixSerial + serialCommand.CommandString;
+          if (serialCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
         else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           MessageCommand messageCommand = new MessageCommand();
-
-          if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
-
-          commandString = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+          if (messageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
+          if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextHttpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          HttpMessageCommand httpMessageCommand = new HttpMessageCommand();
+          if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
         }
         else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
         {
           KeysCommand keysCommand = new KeysCommand();
-
-          if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
-
-          commandString = Common.CmdPrefixKeys + keysCommand.CommandString;
+          if (keysCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextPopup, StringComparison.OrdinalIgnoreCase))
+        {
+          PopupMessage popupMessage = new PopupMessage();
+          if (popupMessage.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
@@ -442,23 +494,26 @@ namespace MediaPortal.Plugins
             TV2BlasterPlugin.TransceiverInformation.Ports,
             selected.Substring(Common.CmdPrefixBlast.Length));
 
-          if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-            return;
-
-          commandString = Common.CmdPrefixBlast + blastCommand.CommandString;
+          if (blastCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
-          commandString = selected;
+          newCommand = selected;
         }
         else
         {
-          Log.Error("TV2BlasterPlugin: Invalid command in STB Setup: {0}", selected);
-          return;
+          throw new ApplicationException(String.Format("Invalid command in STB Setup: {0}", selected));
         }
 
-        foreach (ListViewItem item in listViewExternalCommands.SelectedItems)
-          item.SubItems[1].Text = commandString;
+        if (!String.IsNullOrEmpty(newCommand))
+          foreach (ListViewItem item in listViewExternalCommands.SelectedItems)
+            item.SubItems[1].Text = newCommand;
+      }
+      catch (Exception ex)
+      {
+        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        MessageBox.Show(this, ex.Message, "Failed to set command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

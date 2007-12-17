@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace IrssUtils
@@ -69,10 +68,6 @@ namespace IrssUtils
     /// </summary>
     public IRServerInfo()
     {
-      _canLearn     = false;
-      _canReceive   = false;
-      _canTransmit  = false;
-
       _ports = new string[] { "None" };
     }
 

@@ -349,18 +349,20 @@ namespace TvEngine
       try
       {
         TvServerEventArgs tvEvent = (TvServerEventArgs)eventArgs;
-        AnalogChannel analogChannel = tvEvent.channel as AnalogChannel;
+        if (tvEvent.EventType != TvServerEventType.StartZapChannel)
+          return;
 
+        AnalogChannel analogChannel = tvEvent.channel as AnalogChannel;
         if (analogChannel == null)
           return;
 
-        if (tvEvent.EventType == TvServerEventType.StartZapChannel)
-        {
-          if (LogVerbose)
-            Log.Info("TV3BlasterPlugin: Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
+        if (LogVerbose)
+          Log.Info("TV3BlasterPlugin: Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
 
-          ProcessExternalChannel(analogChannel.ChannelNumber.ToString(), tvEvent.Card.Id);
-        }
+        Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
+        newThread.Name = "ProcessExternalChannel";
+        newThread.Priority = ThreadPriority.BelowNormal;
+        newThread.Start(new int[] { analogChannel.ChannelNumber, tvEvent.Card.Id });
       }
       catch (Exception ex)
       {
@@ -420,143 +422,148 @@ namespace TvEngine
     /// <summary>
     /// Processes the external channel.
     /// </summary>
-    /// <param name="externalChannel">The external channel.</param>
-    /// <param name="cardId">The tuner card ID.</param>
-    static void ProcessExternalChannel(string externalChannel, int cardId)
+    /// <param name="args">String array of parameters.</param>
+    static void ProcessExternalChannel(object args)
     {
-      ExternalChannelConfig config = GetExternalChannelConfig(cardId);
-
-      // Clean up the "externalChannel" string into "channel".
-      StringBuilder channel = new StringBuilder();
-      foreach (char digit in externalChannel)
-        if (char.IsDigit(digit))
-          channel.Append(digit);
-
-      // Pad the channel number with leading 0's to meet ChannelDigits length.
-      while (channel.Length < config.ChannelDigits)
-        channel.Insert(0, '0');
-
-      // Process the channel and blast the relevant IR Commands.
-      string command;
-      int charVal;
-
-      for (int repeatCount = 0; repeatCount <= config.RepeatChannelCommands; repeatCount++)
+      try
       {
-        if (repeatCount > 0 && config.RepeatPauseTime > 0)
-          Thread.Sleep(config.RepeatPauseTime);
+        int[] data = args as int[];
 
-        if (config.UsePreChangeCommand)
+        ExternalChannelConfig config = GetExternalChannelConfig(data[1]);
+
+        // Clean up the "data[0]" string into "channel".
+        StringBuilder channel = new StringBuilder();
+        foreach (char digit in data[0].ToString())
+          if (char.IsDigit(digit))
+            channel.Append(digit);
+
+        // Pad the channel number with leading 0's to meet ChannelDigits length.
+        while (channel.Length < config.ChannelDigits)
+          channel.Insert(0, '0');
+
+        // Process the channel and blast the relevant IR Commands.
+        string channelString = channel.ToString();
+        string command;
+        int charVal;
+
+        for (int repeatCount = 0; repeatCount <= config.RepeatChannelCommands; repeatCount++)
         {
-          command = config.PreChangeCommand;
-          if (!String.IsNullOrEmpty(command))
+          if (repeatCount > 0 && config.RepeatPauseTime > 0)
+            Thread.Sleep(config.RepeatPauseTime);
+
+          if (config.UsePreChangeCommand)
           {
-            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-              ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
-            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-              ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
-            else
-              ProcessCommand(command, false);
-
-            if (config.PauseTime > 0)
-              Thread.Sleep(config.PauseTime);
-          }
-        }
-
-        foreach (char digit in channel.ToString())
-        {
-          charVal = digit - 48;
-
-          command = config.Digits[charVal];
-          if (!String.IsNullOrEmpty(command))
-          {
-            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-              ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), charVal, channel.ToString());
-            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-              ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), charVal, channel.ToString());
-            else
-              ProcessCommand(command, false);
-
-            if (config.PauseTime > 0)
-              Thread.Sleep(config.PauseTime);
-          }
-        }
-
-        if (config.SendSelect)
-        {
-          command = config.SelectCommand;
-          if (!String.IsNullOrEmpty(command))
-          {
-            if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+            command = config.PreChangeCommand;
+            if (!String.IsNullOrEmpty(command))
             {
-              ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
+              ProcessExternalCommand(command, -1, channelString);
 
-              if (config.DoubleChannelSelect)
-              {
-                if (config.PauseTime > 0)
-                  Thread.Sleep(config.PauseTime);
-
-                ProcessExternalChannelProgram(command.Substring(Common.CmdPrefixRun.Length), -1, channel.ToString());
-              }
+              if (config.PauseTime > 0)
+                Thread.Sleep(config.PauseTime);
             }
-            else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+          }
+
+          foreach (char digit in channelString)
+          {
+            charVal = digit - 48;
+
+            command = config.Digits[charVal];
+            if (!String.IsNullOrEmpty(command))
             {
-              ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
+              ProcessExternalCommand(command, charVal, channelString);
 
-              if (config.DoubleChannelSelect)
-              {
-                if (config.PauseTime > 0)
-                  Thread.Sleep(config.PauseTime);
-
-                ProcessExternalSerialCommand(command.Substring(Common.CmdPrefixSerial.Length), -1, channel.ToString());
-              }
+              if (config.PauseTime > 0)
+                Thread.Sleep(config.PauseTime);
             }
-            else
+          }
+
+          if (config.SendSelect)
+          {
+            command = config.SelectCommand;
+            if (!String.IsNullOrEmpty(command))
             {
-              ProcessCommand(command, false);
+              ProcessExternalCommand(command, -1, channelString);
 
               if (config.DoubleChannelSelect)
               {
                 if (config.PauseTime > 0)
                   Thread.Sleep(config.PauseTime);
 
-                ProcessCommand(command, false);
+                ProcessExternalCommand(command, -1, channelString);
               }
             }
           }
         }
       }
+      catch (Exception ex)
+      {
+        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+      }
     }
 
     /// <summary>
-    /// Processes the external channel program.
+    /// Processes the external channel change command.
     /// </summary>
-    /// <param name="runCommand">The run command.</param>
-    /// <param name="currentChannelDigit">The current channel digit.</param>
-    /// <param name="fullChannelString">The full channel string.</param>
-    static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit, string fullChannelString)
+    /// <param name="command">The command.</param>
+    /// <param name="channelDigit">The current channel digit.</param>
+    /// <param name="channelFull">The channel full ID.</param>
+    internal static void ProcessExternalCommand(string command, int channelDigit, string channelFull)
     {
-      string[] commands = Common.SplitRunCommand(runCommand);
+      if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+      {
+        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
 
-      commands[2] = commands[2].Replace("%1", currentChannelDigit.ToString());
-      commands[2] = commands[2].Replace("%2", fullChannelString);
+        commands[2] = commands[2].Replace("%1", channelDigit.ToString());
+        commands[2] = commands[2].Replace("%2", channelFull);
 
-      Common.ProcessRunCommand(commands);
-    }
+        Common.ProcessRunCommand(commands);
+      }
+      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+      {
+        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
 
-    /// <summary>
-    /// Processes the external serial command.
-    /// </summary>
-    /// <param name="serialCommand">The serial command.</param>
-    /// <param name="currentChannelDigit">The current channel digit.</param>
-    /// <param name="fullChannelString">The full channel string.</param>
-    static void ProcessExternalSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
-    {
-      string[] commands = Common.SplitSerialCommand(serialCommand);
+        commands[0] = commands[0].Replace("%1", channelDigit.ToString());
+        commands[0] = commands[0].Replace("%2", channelFull);
 
-      commands[0] = commands[0].Replace("%1", currentChannelDigit.ToString());
-      commands[0] = commands[0].Replace("%2", fullChannelString);
+        Common.ProcessSerialCommand(commands);
+      }
+      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+      {
+        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
 
-      Common.ProcessSerialCommand(commands);
+        commands[3] = commands[3].Replace("%1", channelDigit.ToString());
+        commands[3] = commands[3].Replace("%2", channelFull);
+
+        commands[4] = commands[4].Replace("%1", channelDigit.ToString());
+        commands[4] = commands[4].Replace("%2", channelFull);
+
+        Common.ProcessWindowMessageCommand(commands);
+      }
+      else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+      {
+        string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
+
+        commands[0] = commands[0].Replace("%1", channelDigit.ToString());
+        commands[0] = commands[0].Replace("%2", channelFull);
+
+        commands[2] = commands[2].Replace("%1", channelDigit.ToString());
+        commands[2] = commands[2].Replace("%2", channelFull);
+
+        Common.ProcessTcpMessageCommand(commands);
+      }
+      else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+      {
+        string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
+
+        commands[0] = commands[0].Replace("%1", channelDigit.ToString());
+        commands[0] = commands[0].Replace("%2", channelFull);
+
+        Common.ProcessHttpCommand(commands);
+      }
+      else
+      {
+        ProcessCommand(command, false);
+      }
     }
 
     /// <summary>
@@ -706,13 +713,20 @@ namespace TvEngine
           string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
           Common.ProcessWindowMessageCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
         {
-          string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-          if (_inConfiguration)
-            MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            Common.ProcessKeyCommand(keyCommand);
+          string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
+          Common.ProcessTcpMessageCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
+          Common.ProcessHttpCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
+        {
+          string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
+          Common.ProcessEjectCommand(ejectCommand);
         }
         else
         {
@@ -724,7 +738,7 @@ namespace TvEngine
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
           Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
         else
-          throw ex;
+          throw;
       }
     }
 

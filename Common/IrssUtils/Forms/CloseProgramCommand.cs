@@ -11,9 +11,9 @@ namespace IrssUtils.Forms
 {
 
   /// <summary>
-  /// Message Command form.
+  /// Close Program Command form.
   /// </summary>
-  public partial class MessageCommand : Form
+  public partial class CloseProgramCommand : Form
   {
 
     #region Properties
@@ -31,7 +31,7 @@ namespace IrssUtils.Forms
         if (radioButtonActiveWindow.Checked)
         {
           target = Common.TargetActive;
-          textBoxMsgTarget.Text = "*";
+          textBoxTarget.Text = "*";
         }
         else if (radioButtonApplication.Checked)
         {
@@ -46,12 +46,9 @@ namespace IrssUtils.Forms
           target = Common.TargetWindow;
         }
 
-        return String.Format("{0}|{1}|{2}|{3}|{4}",
+        return String.Format("{0}|{1}",
           target,
-          textBoxMsgTarget.Text,
-          numericUpDownMsg.Value.ToString(),
-          numericUpDownWParam.Value.ToString(),
-          numericUpDownLParam.Value.ToString());
+          textBoxTarget.Text);
       }
     }
 
@@ -60,14 +57,14 @@ namespace IrssUtils.Forms
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MessageCommand"/> class.
+    /// Initializes a new instance of the <see cref="CloseProgramCommand"/> class.
     /// </summary>
-    public MessageCommand() : this(new string[] { Common.TargetActive, String.Empty, ((int)Win32.WindowsMessage.WM_USER).ToString(), "0", "0" }) { }
+    public CloseProgramCommand() : this(new string[] { Common.TargetActive, String.Empty }) { }
     /// <summary>
-    /// Initializes a new instance of the <see cref="MessageCommand"/> class.
+    /// Initializes a new instance of the <see cref="CloseProgramCommand"/> class.
     /// </summary>
     /// <param name="commands">The command elements.</param>
-    public MessageCommand(string[] commands)
+    public CloseProgramCommand(string[] commands)
     {
       InitializeComponent();
 
@@ -84,10 +81,7 @@ namespace IrssUtils.Forms
             throw new ArgumentOutOfRangeException("commands", commands[0], "Invalid message target");
         }
 
-        textBoxMsgTarget.Text     = commands[1];
-        numericUpDownMsg.Value    = decimal.Parse(commands[2]);
-        numericUpDownWParam.Value = decimal.Parse(commands[3]);
-        numericUpDownLParam.Value = decimal.Parse(commands[4]);
+        textBoxTarget.Text = commands[1];
       }
     }
 
@@ -102,10 +96,10 @@ namespace IrssUtils.Forms
         OpenFileDialog find = new OpenFileDialog();
         find.Filter = "All files|*.*";
         find.Multiselect = false;
-        find.Title = "Application to send message to";
+        find.Title = "Application to close";
 
         if (find.ShowDialog(this) == DialogResult.OK)
-            textBoxMsgTarget.Text = find.FileName;
+            textBoxTarget.Text = find.FileName;
       }
       else if (radioButtonClass.Checked)
       {
@@ -115,7 +109,7 @@ namespace IrssUtils.Forms
       {
         WindowList windowList = new WindowList();
         if (windowList.ShowDialog(this) == DialogResult.OK)
-          textBoxMsgTarget.Text = windowList.SelectedWindowTitle;
+          textBoxTarget.Text = windowList.SelectedWindowTitle;
       }
     }
 
@@ -131,34 +125,25 @@ namespace IrssUtils.Forms
       this.Close();
     }
 
-    private void wMAPPToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      numericUpDownMsg.Value = new decimal((int)Win32.WindowsMessage.WM_APP);
-    }
-    private void wMUSERToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      numericUpDownMsg.Value = new decimal((int)Win32.WindowsMessage.WM_USER);
-    }
-
     private void radioButtonActiveWindow_CheckedChanged(object sender, EventArgs e)
     {
-      buttonFindMsgTarget.Enabled = false;
-      textBoxMsgTarget.Enabled = false;
+      buttonFindTarget.Enabled = false;
+      textBoxTarget.Enabled = false;
     }
     private void radioButtonApplication_CheckedChanged(object sender, EventArgs e)
     {
-      buttonFindMsgTarget.Enabled = true;
-      textBoxMsgTarget.Enabled = true;
+      buttonFindTarget.Enabled = true;
+      textBoxTarget.Enabled = true;
     }
     private void radioButtonClass_CheckedChanged(object sender, EventArgs e)
     {
-      buttonFindMsgTarget.Enabled = false;
-      textBoxMsgTarget.Enabled = true;
+      buttonFindTarget.Enabled = false;
+      textBoxTarget.Enabled = true;
     }
     private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)
     {
-      buttonFindMsgTarget.Enabled = true;
-      textBoxMsgTarget.Enabled = true;
+      buttonFindTarget.Enabled = true;
+      textBoxTarget.Enabled = true;
     }
 
     #endregion Controls

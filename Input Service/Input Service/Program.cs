@@ -48,9 +48,38 @@ namespace InputService
         transactedInstaller.Context = installContext;
 
         if (args[0].Equals("/install", StringComparison.OrdinalIgnoreCase))
+        {
           transactedInstaller.Install(new Hashtable());
+        }
         else if (args[0].Equals("/uninstall", StringComparison.OrdinalIgnoreCase))
+        {
           transactedInstaller.Uninstall(null);
+        }
+        else if (args[0].Equals("/start", StringComparison.OrdinalIgnoreCase))
+        {
+          using (ServiceController serviceController = new ServiceController(ServiceName))
+            if (serviceController.Status == ServiceControllerStatus.Stopped)
+              serviceController.Start();
+        }
+        else if (args[0].Equals("/stop", StringComparison.OrdinalIgnoreCase))
+        {
+          using (ServiceController serviceController = new ServiceController(ServiceName))
+            if (serviceController.Status == ServiceControllerStatus.Running)
+              serviceController.Stop();
+        }
+        else if (args[0].Equals("/restart", StringComparison.OrdinalIgnoreCase))
+        {
+          using (ServiceController serviceController = new ServiceController(ServiceName))
+          {
+            if (serviceController.Status == ServiceControllerStatus.Running)
+              serviceController.Stop();
+
+            serviceController.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
+
+            if (serviceController.Status == ServiceControllerStatus.Stopped)
+              serviceController.Start();
+          }
+        }
 
         return;
       }

@@ -1274,6 +1274,16 @@ namespace MediaPortal.Plugins
           string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
           Common.ProcessWindowMessageCommand(commands);
         }
+        else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
+          Common.ProcessTcpMessageCommand(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
+          Common.ProcessHttpCommand(commands);
+        }
         else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
@@ -1292,9 +1302,22 @@ namespace MediaPortal.Plugins
           string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
           Common.ProcessEjectCommand(ejectCommand);
         }
+        else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
+          if (_inConfiguration)
+            MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
+        }
         else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
         {
-          MPCommon.ProcessGoTo(command.Substring(Common.CmdPrefixGoto.Length), _mpBasicHome);
+          string screenID = command.Substring(Common.CmdPrefixGoto.Length);
+
+          if (_inConfiguration)
+            MessageBox.Show(screenID, Common.UITextGoto, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.ProcessGoTo(screenID, _mpBasicHome);
         }
         else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {
@@ -1360,7 +1383,7 @@ namespace MediaPortal.Plugins
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
           Log.Error("MPControlPlugin: {0}", ex.ToString());
         else
-          throw ex;
+          throw;
       }
     }
 
