@@ -20,22 +20,6 @@ namespace HcwTransceiver
   public class HcwTransceiver : IRServerPluginBase, IRemoteReceiver // IConfigure, ITransmitIR, ILearnIR,
   {
 
-    #region Interop
-
-
-    const int WM_ACTIVATE = 0x0006;
-    const int WM_POWERBROADCAST = 0x0218;
-    const int WA_INACTIVE = 0;
-    const int WA_ACTIVE = 1;
-    const int WA_CLICKACTIVE = 2;
-
-    const int PBT_APMRESUMEAUTOMATIC = 0x0012;
-    const int PBT_APMRESUMECRITICAL = 0x0006;
-
-
-
-    #endregion
-
     #region Delegates
 
     //Sets up callback so that other forms can catch a key press
@@ -65,8 +49,6 @@ namespace HcwTransceiver
     int _learnTimeout;
 
     //ulong _learnCarrierFreq;
-
-
 
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
@@ -104,8 +86,6 @@ namespace HcwTransceiver
     {
       LoadSettings();
       
-      
-
       return true;
     }
     /// <summary>
@@ -129,7 +109,7 @@ namespace HcwTransceiver
     {
 
     }
-
+    
 
     /// <summary>
     /// Configure the IR Server plugin.
@@ -154,7 +134,7 @@ namespace HcwTransceiver
         SaveSettings();
       }
     }
-
+    
 
     /// <summary>
     /// Callback for remote button presses.
@@ -171,6 +151,8 @@ namespace HcwTransceiver
     /// </summary>
     /// <value>The available ports.</value>
     public string[] AvailablePorts { get { return Ports; }   }
+
+
 
     void LoadSettings()
     {

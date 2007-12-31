@@ -38,12 +38,12 @@ namespace WinLircTransceiver
       this.textBoxServerPath = new System.Windows.Forms.TextBox();
       this.buttonLocate = new System.Windows.Forms.Button();
       this.numericUpDownButtonReleaseTime = new System.Windows.Forms.NumericUpDown();
+      this.buttonCreateIRFiles = new System.Windows.Forms.Button();
       this.labelServerAddress = new System.Windows.Forms.Label();
       this.labelServerPort = new System.Windows.Forms.Label();
       this.groupBoxServerDetails = new System.Windows.Forms.GroupBox();
       this.labelButtonReleaseTime = new System.Windows.Forms.Label();
       this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-      this.buttonCreateIRFiles = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownServerPort)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonReleaseTime)).BeginInit();
       this.groupBoxServerDetails.SuspendLayout();
@@ -139,6 +139,17 @@ namespace WinLircTransceiver
       this.numericUpDownButtonReleaseTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.toolTips.SetToolTip(this.numericUpDownButtonReleaseTime, "Button release time");
       // 
+      // buttonCreateIRFiles
+      // 
+      this.buttonCreateIRFiles.Location = new System.Drawing.Point(8, 208);
+      this.buttonCreateIRFiles.Name = "buttonCreateIRFiles";
+      this.buttonCreateIRFiles.Size = new System.Drawing.Size(104, 24);
+      this.buttonCreateIRFiles.TabIndex = 3;
+      this.buttonCreateIRFiles.Text = "Create IR files";
+      this.toolTips.SetToolTip(this.buttonCreateIRFiles, "Click here to make IR Command files for use with this plugin");
+      this.buttonCreateIRFiles.UseVisualStyleBackColor = true;
+      this.buttonCreateIRFiles.Click += new System.EventHandler(this.buttonCreateIRFiles_Click);
+      // 
       // labelServerAddress
       // 
       this.labelServerAddress.Location = new System.Drawing.Point(8, 24);
@@ -188,24 +199,13 @@ namespace WinLircTransceiver
       this.openFileDialog.Filter = "All Files|*.*";
       this.openFileDialog.Title = "Locate WinLirc server application";
       // 
-      // buttonCreateIRFiles
-      // 
-      this.buttonCreateIRFiles.Location = new System.Drawing.Point(8, 208);
-      this.buttonCreateIRFiles.Name = "buttonCreateIRFiles";
-      this.buttonCreateIRFiles.Size = new System.Drawing.Size(104, 24);
-      this.buttonCreateIRFiles.TabIndex = 3;
-      this.buttonCreateIRFiles.Text = "Create IR files";
-      this.toolTips.SetToolTip(this.buttonCreateIRFiles, "Click here to make IR Command files for use with this plugin");
-      this.buttonCreateIRFiles.UseVisualStyleBackColor = true;
-      this.buttonCreateIRFiles.Click += new System.EventHandler(this.buttonCreateIRFiles_Click);
-      // 
       // Configure
       // 
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(248, 272);
+      this.ClientSize = new System.Drawing.Size(248, 273);
       this.Controls.Add(this.buttonCreateIRFiles);
       this.Controls.Add(this.numericUpDownButtonReleaseTime);
       this.Controls.Add(this.labelButtonReleaseTime);
@@ -214,7 +214,7 @@ namespace WinLircTransceiver
       this.Controls.Add(this.buttonOK);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(256, 275);
+      this.MinimumSize = new System.Drawing.Size(256, 300);
       this.Name = "Configure";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;

@@ -63,6 +63,24 @@ namespace Configuration
     [STAThread]
     static void Main()
     {
+      // Check for multiple instances ...
+      try
+      {
+        if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
+        {
+          MessageBox.Show("Input Service Configuration is already running!", "Cannot start", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+          return;
+        }
+      }
+      catch (Exception ex)
+      {
+#if TRACE
+        Trace.WriteLine(ex.ToString());
+#endif
+        MessageBox.Show(ex.ToString(), "Error detecting duplicate processes", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+      }
+
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
@@ -103,7 +121,10 @@ namespace Configuration
             // Restart Input Service ...
             RestartService("MPInputService");
           }
-
+          else
+          {
+            IrssLog.Info("Canceled settings changes");
+          }
         }
       }
 

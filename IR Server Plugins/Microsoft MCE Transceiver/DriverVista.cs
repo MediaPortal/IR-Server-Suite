@@ -843,6 +843,8 @@ namespace MicrosoftMceTransceiver
         throw new Win32Exception(lastError);
       }
 
+      Thread.Sleep(PacketTimeout); // Hopefully improves compatibility with Zalman remote which times out retrieving device capabilities. (2008-01-01)
+
       _deviceAvailable = true;
     }
 

@@ -35,6 +35,9 @@ namespace GirderPlugin
 
     private void buttonConfigureGirderPlugin_Click(object sender, EventArgs e)
     {
+      if (String.IsNullOrEmpty(textBoxPluginFile.Text))
+        return;
+
       GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(textBoxPluginFile.Text);
 
       pluginWrapper.GirOpen();

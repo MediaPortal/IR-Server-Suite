@@ -44,7 +44,7 @@ namespace Configuration
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(352, 272);
+      this.buttonOK.Location = new System.Drawing.Point(360, 272);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 4;
@@ -56,7 +56,7 @@ namespace Configuration
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(424, 272);
+      this.buttonCancel.Location = new System.Drawing.Point(432, 272);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 5;
@@ -79,9 +79,9 @@ namespace Configuration
       // buttonDetect
       // 
       this.buttonDetect.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.buttonDetect.Location = new System.Drawing.Point(216, 272);
+      this.buttonDetect.Location = new System.Drawing.Point(208, 272);
       this.buttonDetect.Name = "buttonDetect";
-      this.buttonDetect.Size = new System.Drawing.Size(80, 24);
+      this.buttonDetect.Size = new System.Drawing.Size(88, 24);
       this.buttonDetect.TabIndex = 3;
       this.buttonDetect.Text = "Auto-Detect";
       this.toolTips.SetToolTip(this.buttonDetect, "Click here to automatically detect attached devices");
@@ -90,12 +90,13 @@ namespace Configuration
       // 
       // groupBoxTransceiver
       // 
-      this.groupBoxTransceiver.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+      this.groupBoxTransceiver.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxTransceiver.Controls.Add(this.gridPlugins);
       this.groupBoxTransceiver.Location = new System.Drawing.Point(8, 8);
       this.groupBoxTransceiver.Name = "groupBoxTransceiver";
-      this.groupBoxTransceiver.Size = new System.Drawing.Size(480, 256);
+      this.groupBoxTransceiver.Size = new System.Drawing.Size(488, 256);
       this.groupBoxTransceiver.TabIndex = 0;
       this.groupBoxTransceiver.TabStop = false;
       this.groupBoxTransceiver.Text = "Device plugins";
@@ -107,11 +108,11 @@ namespace Configuration
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.gridPlugins.BackColor = System.Drawing.SystemColors.Window;
       this.gridPlugins.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.gridPlugins.Location = new System.Drawing.Point(16, 24);
+      this.gridPlugins.Location = new System.Drawing.Point(8, 16);
       this.gridPlugins.Name = "gridPlugins";
       this.gridPlugins.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
       this.gridPlugins.SelectionMode = SourceGrid.GridSelectionMode.Row;
-      this.gridPlugins.Size = new System.Drawing.Size(448, 216);
+      this.gridPlugins.Size = new System.Drawing.Size(472, 232);
       this.gridPlugins.TabIndex = 0;
       this.gridPlugins.TabStop = true;
       this.gridPlugins.ToolTipText = "";
@@ -131,7 +132,7 @@ namespace Configuration
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(496, 306);
+      this.ClientSize = new System.Drawing.Size(504, 305);
       this.Controls.Add(this.buttonDetect);
       this.Controls.Add(this.buttonAdvanced);
       this.Controls.Add(this.buttonHelp);
@@ -139,7 +140,7 @@ namespace Configuration
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-      this.MinimumSize = new System.Drawing.Size(512, 342);
+      this.MinimumSize = new System.Drawing.Size(512, 332);
       this.Name = "Config";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Input Service Configuration";

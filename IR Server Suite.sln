@@ -299,6 +299,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{
 		IR Server Suite - Release.nsi = IR Server Suite - Release.nsi
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVR150 Tuner", "Util Apps\PVR150 Tuner\PVR150 Tuner.csproj", "{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -639,6 +645,12 @@ Global
 		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Release|x86.ActiveCfg = Release|x86
 		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1}.Release|x86.Build.0 = Release|x86
+		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -685,5 +697,6 @@ Global
 		{905131F8-F8AC-4A65-A722-37783902D7B8} = {D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}
 		{DDB52A4D-A670-411A-8273-8B1707C67028} = {D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}
 		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1} = {D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}
+		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF} = {D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}
 	EndGlobalSection
 EndGlobal

@@ -441,6 +441,9 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     /// <param name="fileName">Name of the plugin dll file.</param>
     public GirderPluginWrapper(string fileName)
     {
+      if (String.IsNullOrEmpty(fileName))
+        throw new ArgumentException("Empty or null file name", "fileName");
+
       if (!LoadGirderPlugin(fileName))
         throw new ApplicationException(String.Format("Failed to load girder plugin ({0})", fileName));
 

@@ -24,16 +24,17 @@ namespace IRServer
       try
       {
         if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
+        {
+          MessageBox.Show("IR Server is already running!", "Cannot start", MessageBoxButtons.OK, MessageBoxIcon.Stop);
           return;
+        }
       }
-#if TRACE
       catch (Exception ex)
       {
+#if TRACE
         Trace.WriteLine(ex.ToString());
-#else
-      catch
-      {
 #endif
+        MessageBox.Show(ex.ToString(), "Error detecting duplicate processes", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
 

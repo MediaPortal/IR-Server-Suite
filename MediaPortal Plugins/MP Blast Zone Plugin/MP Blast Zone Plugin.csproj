@@ -91,12 +91,12 @@
   <ItemGroup>
     <Reference Include="Core, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal 0.2.3.0\Core.DLL</HintPath>
+      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\Core.DLL</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Dialogs, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal 0.2.3.0\Dialogs.DLL</HintPath>
+      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\plugins\windows\Dialogs.DLL</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -106,7 +106,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Utils, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal 0.2.3.0\Utils.DLL</HintPath>
+      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\Utils.DLL</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

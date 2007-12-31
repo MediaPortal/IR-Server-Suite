@@ -160,6 +160,8 @@ namespace MicrosoftMceTransceiver
 
     bool _deviceAvailable;
 
+    int _decodeCarry;
+
     #endregion Variables
 
     #region Constructor
@@ -287,8 +289,6 @@ namespace MicrosoftMceTransceiver
 
       //WriteSync(StartPacket);
       //Thread.Sleep(PacketTimeout);
-
-      //Start();
     }
 
     /// <summary>
@@ -496,7 +496,7 @@ namespace MicrosoftMceTransceiver
       byte[] timeoutPacket = new byte[SetTimeoutPacket.Length];
       SetTimeoutPacket.CopyTo(timeoutPacket, 0);
 
-      int timeoutSamples = 20 * timeout;
+      int timeoutSamples = 20 * timeout; // 20 * timeout in milliseconds = timeout as multiple of 50 microseconds
 
       timeoutPacket[2] = (byte)(timeoutSamples >> 8);
       timeoutPacket[3] = (byte)(timeoutSamples & 0xFF);
@@ -648,7 +648,7 @@ namespace MicrosoftMceTransceiver
 
         DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
         overlapped.ClearAndSetEvent(safeWaitHandle.DangerousGetHandle());
-        
+
         deviceBufferPtr = Marshal.AllocHGlobal(DeviceBufferSize);
 
         while (_readThreadMode != ReadThreadMode.Stop)
@@ -672,7 +672,7 @@ namespace MicrosoftMceTransceiver
               else if (handle == 0)
                 break;
               else if (handle == 1)
-                throw new ApplicationException("Stop Read Thread");
+                throw new ThreadInterruptedException("Read thread stopping by request");
               else
                 throw new ApplicationException("Invalid wait handle return");
             }
@@ -690,26 +690,21 @@ namespace MicrosoftMceTransceiver
           packetBytes = new byte[bytesRead];
           Marshal.Copy(deviceBufferPtr, packetBytes, 0, bytesRead);
 
-          int[] timingData;
+          int[] timingData = null;
+
+          if (_decodeCarry != 0 || packetBytes[0] >= 0x81 && packetBytes[0] <= 0x8F)
+            timingData = GetTimingDataFromPacket(packetBytes);
 
           switch (_readThreadMode)
           {
             case ReadThreadMode.Receiving:
               {
-                if (packetBytes[0] >= 0x81 && packetBytes[0] <= 0x8F)
-                {
-                  timingData = GetTimingDataFromPacket(packetBytes);
-                  if (timingData == null)
-                    break;
-
-                  IrDecoder.DecodeIR(timingData, _remoteCallback, _keyboardCallback, _mouseCallback);
-                }
+                IrDecoder.DecodeIR(timingData, _remoteCallback, _keyboardCallback, _mouseCallback);
                 break;
               }
 
             case ReadThreadMode.Learning:
               {
-                timingData = GetTimingDataFromPacket(packetBytes);
                 if (timingData == null)
                 {
                   if (_learningCode.TimingData.Length > 0)
@@ -722,11 +717,11 @@ namespace MicrosoftMceTransceiver
 
                 _learningCode.AddTimingData(timingData);
 
-                // 9F 01 02 9F 15 00 BE 80
+                // Example: 9F 01 02 9F 15 00 BE 80
                 int indexOf9F = Array.IndexOf(packetBytes, (byte)0x9F);
                 while (indexOf9F != -1)
                 {
-                  if (packetBytes.Length > indexOf9F + 3 && packetBytes[indexOf9F + 1] == 0x15)
+                  if (packetBytes.Length > indexOf9F + 3 && packetBytes[indexOf9F + 1] == 0x15) // 9F 15 XX XX
                   {
                     byte b1 = packetBytes[indexOf9F + 2];
                     byte b2 = packetBytes[indexOf9F + 3];
@@ -869,13 +864,23 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     /// <param name="packet">The raw device packet.</param>
     /// <returns>Timing data.</returns>
-    static int[] GetTimingDataFromPacket(byte[] packet)
+    int[] GetTimingDataFromPacket(byte[] packet)
     {
-      // TODO: Remove this try/catch block once the IndexOutOfRangeException is corrected...
 #if DEBUG
+      DebugWriteLine("GetTimingDataFromPacket()");
+
+      // TODO: Remove this try/catch block once the IndexOutOfRangeException is corrected...
       try
 #endif
       {
+#if DEBUG
+        if (_decodeCarry != 0)
+        {
+          DebugWriteLine("Decode Carry EXISTS: {0}", _decodeCarry);
+          DebugDump(packet);
+        }
+#endif
+
         List<int> timingData = new List<int>();
 
         int len = 0;
@@ -884,15 +889,33 @@ namespace MicrosoftMceTransceiver
         {
           byte curByte = packet[index];
 
-          if (curByte == 0x9F)
-            break;
+          if (_decodeCarry == 0)
+          {
+            if (curByte == 0x9F)
+              break;
 
-          if (curByte < 0x81 || curByte > 0x8F)
-            return null;
+            if (curByte < 0x81 || curByte > 0x8F)
+              return null;
+          }
 
-          int bytes = curByte & 0x7F;
+          int bytes = _decodeCarry;
+          if (_decodeCarry == 0)
+            bytes = curByte & 0x7F;
+          else
+            _decodeCarry = 0;
+
+          if (index + bytes + 1 > packet.Length)
+          {
+            _decodeCarry = (index + bytes + 1) - packet.Length;
+            bytes -= _decodeCarry;
+
+#if DEBUG
+            DebugWriteLine("Decode Carry SET: {0}", _decodeCarry);
+            DebugDump(packet);
+#endif
+          }
+
           int j;
-
           for (j = index + 1; j < index + bytes + 1; j++)
           {
             curByte = packet[j];
@@ -923,13 +946,13 @@ namespace MicrosoftMceTransceiver
         return timingData.ToArray();
       }
 #if DEBUG
-      catch (IndexOutOfRangeException ex)
+      catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
         DebugWriteLine("Method Input:");
         DebugDump(packet);
 
-        throw;
+        return null;
       }
 #endif
     }
