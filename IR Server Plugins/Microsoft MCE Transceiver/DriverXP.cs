@@ -202,6 +202,16 @@ namespace MicrosoftMceTransceiver
       SetTimeout(PacketTimeout);
       SetInputPort(InputPort.Receive);
 
+
+      // Testing some commands (what do these get back?) that MCE sends, but I don't know what they mean
+      WriteSync(new byte[] { 0xFF, 0x0B });
+      Thread.Sleep(PacketTimeout);
+      WriteSync(new byte[] { 0x9F, 0x05 });
+      Thread.Sleep(PacketTimeout);
+      WriteSync(new byte[] { 0x9F, 0x0D });
+      Thread.Sleep(PacketTimeout);
+
+
       _notifyWindow.Create();
       _notifyWindow.RegisterDeviceArrival();
       _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
@@ -694,6 +704,13 @@ namespace MicrosoftMceTransceiver
 
           if (_decodeCarry != 0 || packetBytes[0] >= 0x81 && packetBytes[0] <= 0x8F)
             timingData = GetTimingDataFromPacket(packetBytes);
+#if DEBUG
+          else
+          {
+            DebugWriteLine("Received data:");
+            DebugDump(packetBytes);
+          }
+#endif
 
           switch (_readThreadMode)
           {

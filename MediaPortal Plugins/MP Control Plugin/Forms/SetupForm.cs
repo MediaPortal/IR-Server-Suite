@@ -191,7 +191,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin: {0}", ex.Message);
+        Log.Error(ex);
       }
     }
     void SaveRemotes(string file)
@@ -345,7 +345,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin: {0}", ex.ToString());
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -374,7 +374,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPControlPlugin: {0}", ex.ToString());
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to edit macro", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -456,6 +456,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -542,6 +543,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -824,8 +826,8 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
@@ -870,8 +872,8 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

@@ -25,7 +25,7 @@ namespace IRManReceiver
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\IRMan Receiver.xml";
+      "\\IR Server Suite\\Input Service\\IRMan Receiver.xml";
 
     const int DeviceBufferSize = 6;
 
@@ -59,7 +59,7 @@ namespace IRManReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -85,7 +85,7 @@ namespace IRManReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       LoadSettings();

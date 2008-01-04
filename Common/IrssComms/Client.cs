@@ -134,7 +134,7 @@ namespace IrssComms
     /// <summary>
     /// Start the client communications.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Start()
     {
       if (_processConnectionThread)
@@ -194,7 +194,7 @@ namespace IrssComms
     /// Send a message to the server.
     /// </summary>
     /// <param name="message">Message to send.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Send(IrssMessage message)
     {
       if (message == null)

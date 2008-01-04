@@ -39,7 +39,7 @@ namespace TvEngine
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.4.0 for IR Server";
+    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.4.1 for IR Server";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "TV3 Blaster Plugin\\Macro\\";
 
@@ -81,7 +81,7 @@ namespace TvEngine
     /// <summary>
     /// Returns the version of the plugin.
     /// </summary>
-    public string Version { get { return "1.0.4.0"; } }
+    public string Version { get { return "1.0.4.1"; } }
     /// <summary>
     /// Returns the author of the plugin.
     /// </summary>
@@ -138,7 +138,7 @@ namespace TvEngine
     [CLSCompliant(false)]
     public void Start(IController controller)
     {
-      InConfiguration = false;
+      _inConfiguration = false;
 
       Log.Info("TV3BlasterPlugin: Starting ({0})", PluginVersion);
 
@@ -335,7 +335,7 @@ namespace TvEngine
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
       }
     }
 
@@ -349,6 +349,11 @@ namespace TvEngine
       try
       {
         TvServerEventArgs tvEvent = (TvServerEventArgs)eventArgs;
+
+#if DEBUG
+        Log.Debug("TV3BlasterPlugin: Received TV Server Event \"{0}\"", Enum.GetName(typeof(TvServerEventArgs), tvEvent.EventType));
+#endif
+
         if (tvEvent.EventType != TvServerEventType.StartZapChannel)
           return;
 
@@ -356,17 +361,23 @@ namespace TvEngine
         if (analogChannel == null)
           return;
 
-        if (LogVerbose)
-          Log.Info("TV3BlasterPlugin: Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
+#if DEBUG
+        Log.Debug("TV3BlasterPlugin: Analog channel input source \"{0}\"", Enum.GetName(typeof(AnalogChannel.VideoInputType), analogChannel.VideoSource));
+#endif
+
+        //if (analogChannel.VideoSource == AnalogChannel.VideoInputType.Tuner)
+          //return;
+
+        Log.Info("TV3BlasterPlugin: Tune request - Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
 
         Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
         newThread.Name = "ProcessExternalChannel";
-        newThread.Priority = ThreadPriority.BelowNormal;
+        newThread.IsBackground = true;
         newThread.Start(new int[] { analogChannel.ChannelNumber, tvEvent.Card.Id });
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
       }
     }
 
@@ -383,10 +394,9 @@ namespace TvEngine
       _externalChannelConfigs = new ExternalChannelConfig[cards.Count];
 
       int index = 0;
-      string fileName;
       foreach (TvDatabase.Card card in cards)
       {
-        fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, card.IdCard);
+        string fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, card.IdCard);
         try
         {
           _externalChannelConfigs[index] = ExternalChannelConfig.Load(fileName);
@@ -394,7 +404,7 @@ namespace TvEngine
         catch (Exception ex)
         {
           _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
-          Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+          Log.Error(ex.ToString());
         }
 
         _externalChannelConfigs[index].CardId = card.IdCard;
@@ -428,8 +438,12 @@ namespace TvEngine
       try
       {
         int[] data = args as int[];
+        if (data == null)
+          throw new ArgumentException("Parameter is not of type int[]", "args");
 
         ExternalChannelConfig config = GetExternalChannelConfig(data[1]);
+        if (config == null)
+          throw new ApplicationException(String.Format("Failed to load external channel config for card \"{0}\"", data[1]));
 
         // Clean up the "data[0]" string into "channel".
         StringBuilder channel = new StringBuilder();
@@ -497,7 +511,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
       }
     }
 
@@ -509,6 +523,10 @@ namespace TvEngine
     /// <param name="channelFull">The channel full ID.</param>
     internal static void ProcessExternalCommand(string command, int channelDigit, string channelFull)
     {
+#if DEBUG
+      Log.Debug("TV3BlasterPlugin: ProcessExternalCommand(\"{0}\", {1}, {2})", command, channelDigit, channelFull);
+#endif
+
       if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
@@ -570,7 +588,7 @@ namespace TvEngine
     /// Learn an IR command.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     internal static bool LearnIR(string fileName)
     {
       try
@@ -601,7 +619,7 @@ namespace TvEngine
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         return false;
       }
 
@@ -652,12 +670,12 @@ namespace TvEngine
         {
           Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
           newThread.Name = ProcessCommandThreadName;
-          newThread.Priority = ThreadPriority.BelowNormal;
+          newThread.IsBackground = true;
           newThread.Start(command);
         }
         catch (Exception ex)
         {
-          Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+          Log.Error(ex.ToString());
         }
       }
       else
@@ -736,7 +754,7 @@ namespace TvEngine
       catch (Exception ex)
       {
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+          Log.Error(ex.ToString());
         else
           throw;
       }

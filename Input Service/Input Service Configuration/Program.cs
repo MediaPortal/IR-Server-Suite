@@ -111,15 +111,15 @@ namespace Configuration
           if (MessageBox.Show("Input Service will now be restarted for configuration changes to take effect", "Restarting Input Service", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
           {
             // Change settings ...
-            _mode = config.Mode;
-            _hostComputer = config.HostComputer;
-            _pluginNameReceive = config.PluginReceive;
+            _mode               = config.Mode;
+            _hostComputer       = config.HostComputer;
+            _pluginNameReceive  = config.PluginReceive;
             _pluginNameTransmit = config.PluginTransmit;
 
             SaveSettings();
 
             // Restart Input Service ...
-            RestartService("MPInputService");
+            RestartService("InputService");
           }
           else
           {
@@ -167,7 +167,7 @@ namespace Configuration
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return;
       }
 
@@ -232,7 +232,7 @@ namespace Configuration
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -247,20 +247,24 @@ namespace Configuration
         {
           if (service.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase))
           {
-            service.Stop();
-            service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
+            if (service.Status != ServiceControllerStatus.Stopped)
+            {
+              service.Stop();
+              service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
+            }
+
             service.Start();
           }
         }
       }
       catch (System.ComponentModel.Win32Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(ex.Message, "Error restarting service", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
       catch (System.ServiceProcess.TimeoutException ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(ex.Message, "Error stopping service", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

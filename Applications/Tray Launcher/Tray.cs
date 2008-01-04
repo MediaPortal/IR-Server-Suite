@@ -124,7 +124,7 @@ namespace TrayLauncher
         }
         catch (Exception ex)
         {
-          IrssLog.Error(ex.ToString());
+          IrssLog.Error(ex);
           MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Tray Launcher - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
           clientStarted = false;
         }
@@ -145,7 +145,7 @@ namespace TrayLauncher
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       return false;
@@ -178,7 +178,7 @@ namespace TrayLauncher
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
 
         _autoRun = false;
       }
@@ -195,7 +195,7 @@ namespace TrayLauncher
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
 
         _serverHost     = "localhost";
         _programFile    = String.Empty;
@@ -214,7 +214,7 @@ namespace TrayLauncher
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       try
@@ -238,7 +238,7 @@ namespace TrayLauncher
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -427,11 +427,11 @@ namespace TrayLauncher
           catch (Win32Exception ex)
           {
             if (ex.ErrorCode != -2147467259) // Ignore "Unable to enumerate the process modules" errors.
-              IrssLog.Error(ex.ToString());
+              IrssLog.Error(ex);
           }
           catch (Exception ex)
           {
-            IrssLog.Error(ex.ToString());
+            IrssLog.Error(ex);
           }
         }
 
@@ -458,7 +458,7 @@ namespace TrayLauncher
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(ex.Message, "Tray Launcher", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

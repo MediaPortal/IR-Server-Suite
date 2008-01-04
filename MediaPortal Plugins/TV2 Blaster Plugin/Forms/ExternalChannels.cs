@@ -40,32 +40,34 @@ namespace MediaPortal.Plugins
 
     private void ExternalChannels_Load(object sender, EventArgs e)
     {
-      int cards = TV2BlasterPlugin.TvCardCount;
+      ArrayList cards = new ArrayList();
+      MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
 
-      string cardName;
-      string cardNumber;
+      if (cards.Count == 0)
+        throw new ApplicationException("Cannot load external channel configurations, there are no TV cards registered");
 
-      _tvCardTabs = new TabPage[cards];
-      _tvCardStbSetups = new StbSetup[cards];
+      _tvCardTabs = new TabPage[cards.Count];
+      _tvCardStbSetups = new StbSetup[cards.Count];
 
       comboBoxCopyFrom.Items.Clear();
 
-      for (int index = 0; index < cards; index++)
+      int index = 0;
+      foreach (int cardId in cards)
       {
-        cardNumber = (index + 1).ToString();
-        cardName = "TV Card " + cardNumber;
+        string cardName = String.Format("TV Card {0}", cardId);
 
         comboBoxCopyFrom.Items.Add(cardName);
 
-        _tvCardStbSetups[index] = new StbSetup(index);
-        _tvCardStbSetups[index].Name = "StbSetup" + cardNumber;
+        _tvCardStbSetups[index] = new StbSetup(cardId);
+        _tvCardStbSetups[index].Name = "StbSetup" + index;
         _tvCardStbSetups[index].Dock = DockStyle.Fill;
-        _tvCardStbSetups[index].TabIndex = 0;
 
         _tvCardTabs[index] = new TabPage(cardName);
         _tvCardTabs[index].Controls.Add(_tvCardStbSetups[index]);
 
         this.tabControlTVCards.TabPages.Add(_tvCardTabs[index]);
+        
+        index++;
       }
 
       comboBoxCopyFrom.SelectedIndex = 0;
@@ -107,8 +109,14 @@ namespace MediaPortal.Plugins
         foreach (StbSetup setup in _tvCardStbSetups)
           setup.Save();
 
-        for (int index = 0; index < TV2BlasterPlugin.TvCardCount; index++)
-          TV2BlasterPlugin.GetExternalChannelConfig(index).Save();
+        ArrayList cards = new ArrayList();
+        MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
+
+        if (cards.Count == 0)
+          throw new ApplicationException("Cannot save external channel configurations, there are no TV cards registered");
+
+        foreach (int cardId in cards)
+          TV2BlasterPlugin.GetExternalChannelConfig(cardId).Save();
       }
       catch (Exception ex)
       {

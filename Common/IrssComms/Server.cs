@@ -125,7 +125,7 @@ namespace IrssComms
     /// <summary>
     /// Start the server.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Start()
     {
       if (_processConnectionThread)
@@ -215,7 +215,7 @@ namespace IrssComms
     /// </summary>
     /// <param name="sendTo">Client to send to.</param>
     /// <param name="message">Message to send.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Send(ClientManager sendTo, IrssMessage message)
     {
       if (!_clientManagers.Contains(sendTo))

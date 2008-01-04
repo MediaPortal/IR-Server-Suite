@@ -114,7 +114,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -138,7 +138,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -287,7 +287,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to add macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -347,7 +347,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -382,7 +382,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
@@ -522,7 +522,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to edit macro item", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

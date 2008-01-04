@@ -176,7 +176,7 @@ namespace SetupTv.Sections
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -204,7 +204,7 @@ namespace SetupTv.Sections
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Failed to edit macro", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -221,6 +221,7 @@ namespace SetupTv.Sections
       }
       catch (Exception ex)
       {
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -316,6 +317,7 @@ namespace SetupTv.Sections
       }
       catch (Exception ex)
       {
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -390,8 +392,8 @@ namespace SetupTv.Sections
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
@@ -436,8 +438,8 @@ namespace SetupTv.Sections
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

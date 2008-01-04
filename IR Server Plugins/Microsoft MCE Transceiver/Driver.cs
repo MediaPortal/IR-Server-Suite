@@ -429,6 +429,7 @@ namespace MicrosoftMceTransceiver
     {
       if (_debugFile != null)
       {
+        _debugFile.Write("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
         _debugFile.WriteLine(line, args);
       }
 #if TRACE

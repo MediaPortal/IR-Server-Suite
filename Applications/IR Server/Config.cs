@@ -133,7 +133,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
 
         checkBoxRunAtBoot.Checked = false;
       }
@@ -245,7 +245,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       this.DialogResult = DialogResult.OK;

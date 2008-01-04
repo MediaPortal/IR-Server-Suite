@@ -119,7 +119,7 @@ namespace WebRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
       finally
       {

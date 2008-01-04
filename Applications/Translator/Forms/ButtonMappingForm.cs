@@ -621,6 +621,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

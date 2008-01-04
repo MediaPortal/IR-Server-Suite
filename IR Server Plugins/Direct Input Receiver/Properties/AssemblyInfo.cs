@@ -1,16 +1,15 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RedEye Blaster")]
-[assembly: AssemblyDescription("IR Server plugin to support the RedEye serial IR Blaster")]
+[assembly: AssemblyTitle("Direct Input Receiver")]
+[assembly: AssemblyDescription("IR Server plugin to support game controllers through Direct Input")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("RedEyeBlaster")]
+[assembly: AssemblyProduct("DirectInputReceiver")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,6 +18,9 @@ using System.Runtime.InteropServices;
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("f6a96d49-3cb0-4b00-b864-3463e41b8e01")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,6 +33,3 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("1.0.4.1")]
 [assembly: AssemblyFileVersion("1.0.4.1")]
-
-[assembly: CLSCompliant(true)]
-[assembly: GuidAttribute("6F2CB034-AA67-4563-B962-B6C2DAC3E91C")]

@@ -25,7 +25,7 @@ namespace WinLircTransceiver
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\WinLirc Receiver.xml";
+      "\\IR Server Suite\\Input Service\\WinLirc Receiver.xml";
 
     #endregion Constants
 
@@ -53,7 +53,7 @@ namespace WinLircTransceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -86,7 +86,7 @@ namespace WinLircTransceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -176,7 +176,7 @@ namespace WinLircTransceiver
     /// </summary>
     /// <param name="port">Port to transmit on.</param>
     /// <param name="data">Data to transmit.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Transmit(string port, byte[] data)
     {
       string password, remoteName, buttonName, repeats;

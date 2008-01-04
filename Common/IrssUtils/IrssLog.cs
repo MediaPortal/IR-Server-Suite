@@ -208,13 +208,31 @@ namespace IrssUtils
     /// <summary>
     /// Log an Error.
     /// </summary>
+    /// <param name="ex">Exception to log.</param>
+    public static void Error(Exception ex)
+    {
+      if (_streamWriter != null && _logLevel >= Level.Error)
+      {
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Error:\t{1}", DateTime.Now, ex.ToString());
+
+        _streamWriter.WriteLine(message);
+#if TRACE
+        Trace.WriteLine(message);
+#endif
+      }
+    }
+
+    /// <summary>
+    /// Log an Error.
+    /// </summary>
     /// <param name="format">String format.</param>
     /// <param name="args">String format arguments.</param>
     public static void Error(string format, params object[] args)
     {
       if (_streamWriter != null && _logLevel >= Level.Error)
       {
-        string message = DateTime.Now.ToString() + " - Error:\t" + String.Format(format, args);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Error:\t", DateTime.Now) + String.Format(format, args);
+
         _streamWriter.WriteLine(message);
 #if TRACE
         Trace.WriteLine(message);
@@ -231,7 +249,8 @@ namespace IrssUtils
     {
       if (_streamWriter != null && _logLevel >= Level.Warn)
       {
-        string message = DateTime.Now.ToString() + " - Warn: \t" + String.Format(format, args);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Warn:\t", DateTime.Now) + String.Format(format, args);
+
         _streamWriter.WriteLine(message);
 #if TRACE
         //Trace.WriteLine(message);
@@ -248,7 +267,8 @@ namespace IrssUtils
     {
       if (_streamWriter != null && _logLevel >= Level.Info)
       {
-        string message = DateTime.Now.ToString() + " - Info: \t" + String.Format(format, args);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Info:\t", DateTime.Now) + String.Format(format, args);
+
         _streamWriter.WriteLine(message);
 #if TRACE
         //Trace.WriteLine(message);
@@ -265,7 +285,8 @@ namespace IrssUtils
     {
       if (_streamWriter != null && _logLevel >= Level.Debug)
       {
-        string message = DateTime.Now.ToString() + " - Debug:\t" + String.Format(format, args);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Debug:\t", DateTime.Now) + String.Format(format, args);
+
         _streamWriter.WriteLine(message);
 #if TRACE
         //Trace.WriteLine(message);

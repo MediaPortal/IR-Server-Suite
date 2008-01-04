@@ -35,7 +35,7 @@ namespace WindowsMessageReceiver
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\Windows Messages.xml";
+      "\\IR Server Suite\\Input Service\\Windows Messages.xml";
 
     const int WM_APP            = 0x8000;
     const int DefaultMessageID  = 0x0018;
@@ -66,7 +66,7 @@ namespace WindowsMessageReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -92,7 +92,7 @@ namespace WindowsMessageReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       LoadSettings();

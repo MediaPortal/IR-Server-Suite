@@ -169,7 +169,7 @@ namespace IRBlast
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       StopClient();
@@ -284,7 +284,7 @@ Refer to IR Blast help for more information.",
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 

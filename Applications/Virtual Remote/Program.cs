@@ -184,7 +184,7 @@ namespace VirtualRemote
         }
         catch (Exception ex)
         {
-          IrssLog.Error(ex.ToString());
+          IrssLog.Error(ex);
           clientStarted = false;
         }
 
@@ -223,7 +223,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
 
         _installFolder = ".";
       }
@@ -236,7 +236,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
 
         _serverHost = "localhost";
         _remoteSkin = DefaultSkin;
@@ -268,7 +268,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -403,7 +403,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 

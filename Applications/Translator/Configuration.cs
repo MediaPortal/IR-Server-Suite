@@ -91,7 +91,7 @@ namespace Translator
     /// </summary>
     /// <param name="config">Configuration to save.</param>
     /// <param name="fileName">File to save to.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     internal static bool Save(Configuration config, string fileName)
     {
       try
@@ -104,7 +104,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
     }
@@ -128,7 +128,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       return null;

@@ -270,7 +270,7 @@ namespace InputService
             catch (Exception ex)
             {
               IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
-              IrssLog.Error(ex.ToString());
+              IrssLog.Error(ex);
 
               removePlugins.Add(plugin);
             }
@@ -295,7 +295,7 @@ namespace InputService
           catch (Exception ex)
           {
             IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
-            IrssLog.Error(ex.ToString());
+            IrssLog.Error(ex);
 
             _pluginTransmit = null;
           }
@@ -306,7 +306,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -358,7 +358,7 @@ namespace InputService
           }
           catch (Exception ex)
           {
-            IrssLog.Error(ex.ToString());
+            IrssLog.Error(ex);
           }
         }
 
@@ -372,7 +372,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
       finally
       {
@@ -399,7 +399,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
       
       IrssLog.Close();
@@ -442,7 +442,7 @@ namespace InputService
               }
               catch (Exception ex)
               {
-                IrssLog.Error(ex.ToString());
+                IrssLog.Error(ex);
               }
             }
           }
@@ -455,7 +455,7 @@ namespace InputService
             }
             catch (Exception ex)
             {
-              IrssLog.Error(ex.ToString());
+              IrssLog.Error(ex);
             }
           }
 
@@ -489,7 +489,7 @@ namespace InputService
               }
               catch (Exception ex)
               {
-                IrssLog.Error(ex.ToString());
+                IrssLog.Error(ex);
               }
             }
           }
@@ -502,7 +502,7 @@ namespace InputService
             }
             catch (Exception ex)
             {
-              IrssLog.Error(ex.ToString());
+              IrssLog.Error(ex);
             }
           }
 
@@ -647,7 +647,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
     }
@@ -676,7 +676,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
     }
@@ -970,7 +970,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
     }
@@ -1015,7 +1015,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       return status;
@@ -1376,7 +1376,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         IrssMessage response = new IrssMessage(MessageType.Error, MessageFlags.Notify, ex.Message);
         SendTo(combo.Manager, response);
       }
@@ -1416,7 +1416,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         IrssMessage response = new IrssMessage(MessageType.Error, MessageFlags.Notify, ex.Message);
         _client.Send(response);
       }
@@ -1453,7 +1453,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return;
       }
 
@@ -1516,7 +1516,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
     void CreateDefaultSettings()
@@ -1539,7 +1539,7 @@ namespace InputService
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 

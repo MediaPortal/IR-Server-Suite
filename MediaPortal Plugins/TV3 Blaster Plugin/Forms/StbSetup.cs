@@ -22,10 +22,9 @@ namespace TvEngine
 
     #region Constants
 
-    const string parameterInfo =
+    const string ParameterInfo =
 @"%1 = Current channel number digit (-1 for Select/Pre-Change)
-%2 = Full channel number string
-%3 = Blaster port (0 = Both, 1 = Port 1, 2 = Port 2)";
+%2 = Full channel number string";
 
     #endregion Constants
 
@@ -384,7 +383,7 @@ namespace TvEngine
         {
           string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
           
-          ExternalProgram executeProgram = new ExternalProgram(commands, parameterInfo);
+          ExternalProgram executeProgram = new ExternalProgram(commands, ParameterInfo);
           if (executeProgram.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
         }
@@ -392,7 +391,7 @@ namespace TvEngine
         {
           string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
           
-          SerialCommand serialCommand = new SerialCommand(commands, parameterInfo);
+          SerialCommand serialCommand = new SerialCommand(commands, ParameterInfo);
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
@@ -423,7 +422,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Failed to edit command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -440,13 +439,13 @@ namespace TvEngine
 
         if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
         {
-          ExternalProgram externalProgram = new ExternalProgram(parameterInfo);
+          ExternalProgram externalProgram = new ExternalProgram(ParameterInfo);
           if (externalProgram.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
         }
         else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
         {
-          SerialCommand serialCommand = new SerialCommand(parameterInfo);
+          SerialCommand serialCommand = new SerialCommand(ParameterInfo);
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
@@ -494,7 +493,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Failed to set command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

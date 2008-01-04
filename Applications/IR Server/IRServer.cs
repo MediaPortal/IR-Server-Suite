@@ -147,7 +147,7 @@ namespace IRServer
     /// <summary>
     /// Start the server.
     /// </summary>
-    /// <returns>success.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     internal bool Start()
     {
       try
@@ -274,7 +274,7 @@ namespace IRServer
             catch (Exception ex)
             {
               IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
-              IrssLog.Error(ex.ToString());
+              IrssLog.Error(ex);
 
               removePlugins.Add(plugin);
             }
@@ -299,7 +299,7 @@ namespace IRServer
           catch (Exception ex)
           {
             IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
-            IrssLog.Error(ex.ToString());
+            IrssLog.Error(ex);
 
             _pluginTransmit = null;
           }
@@ -315,7 +315,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
     }
@@ -372,7 +372,7 @@ namespace IRServer
           }
           catch (Exception ex)
           {
-            IrssLog.Error(ex.ToString());
+            IrssLog.Error(ex);
           }
         }
 
@@ -386,7 +386,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
       finally
       {
@@ -413,7 +413,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -454,7 +454,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       _inConfiguration = false;
@@ -484,7 +484,7 @@ namespace IRServer
               }
               catch (Exception ex)
               {
-                IrssLog.Error(ex.ToString());
+                IrssLog.Error(ex);
               }
             }
           }
@@ -497,7 +497,7 @@ namespace IRServer
             }
             catch (Exception ex)
             {
-              IrssLog.Error(ex.ToString());
+              IrssLog.Error(ex);
             }
           }
 
@@ -529,7 +529,7 @@ namespace IRServer
               }
               catch (Exception ex)
               {
-                IrssLog.Error(ex.ToString());
+                IrssLog.Error(ex);
               }
             }
           }
@@ -542,7 +542,7 @@ namespace IRServer
             }
             catch (Exception ex)
             {
-              IrssLog.Error(ex.ToString());
+              IrssLog.Error(ex);
             }
           }
 
@@ -681,7 +681,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
     }
@@ -710,7 +710,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
     }
@@ -1004,7 +1004,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
     }
@@ -1049,7 +1049,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       return status;
@@ -1411,7 +1411,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         IrssMessage response = new IrssMessage(MessageType.Error, MessageFlags.Notify, ex.Message);
         SendTo(combo.Manager, response);
       }
@@ -1451,7 +1451,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         IrssMessage response = new IrssMessage(MessageType.Error, MessageFlags.Notify, ex.Message);
         _client.Send(response);
       }
@@ -1508,7 +1508,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return;
       }
 
@@ -1571,7 +1571,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
     void CreateDefaultSettings()
@@ -1594,7 +1594,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 

@@ -20,7 +20,7 @@ namespace IRServerPluginInterface
     /// </summary>
     /// <param name="port">Port to transmit on.</param>
     /// <param name="data">Data to transmit.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     bool Transmit(string port, byte[] data);
 
   }

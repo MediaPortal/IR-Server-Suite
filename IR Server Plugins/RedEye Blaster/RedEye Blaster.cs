@@ -48,7 +48,7 @@ namespace RedEyeBlaster
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\RedEye Blaster.xml";
+      "\\IR Server Suite\\Input Service\\RedEye Blaster.xml";
 
     static readonly string[] Ports = new string[] { "Default" };
 
@@ -80,7 +80,7 @@ namespace RedEyeBlaster
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -106,7 +106,7 @@ namespace RedEyeBlaster
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -208,7 +208,7 @@ namespace RedEyeBlaster
     /// </summary>
     /// <param name="port">Port to transmit on (ignored).</param>
     /// <param name="data">Data to transmit.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Transmit(string port, byte[] data)
     {
       if (_serialPort == null)

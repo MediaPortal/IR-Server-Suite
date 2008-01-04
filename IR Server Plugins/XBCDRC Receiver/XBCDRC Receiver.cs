@@ -223,7 +223,7 @@ namespace XBCDRCReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -261,7 +261,7 @@ namespace XBCDRCReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       Guid guid = new Guid();

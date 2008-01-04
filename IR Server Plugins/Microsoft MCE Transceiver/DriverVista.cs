@@ -581,10 +581,7 @@ namespace MicrosoftMceTransceiver
       GetBlasters();
 
       StartReceive(_receivePort, PacketTimeout);
-
-      _readThreadMode = ReadThreadMode.Receiving;
-
-      StartReadThread();
+      StartReadThread(ReadThreadMode.Receiving);
 
       _notifyWindow.Create();
       _notifyWindow.RegisterDeviceArrival();
@@ -641,7 +638,9 @@ namespace MicrosoftMceTransceiver
       try
       {
         OpenDevice();
-        StartReadThread();
+
+        StartReceive(_receivePort, PacketTimeout);
+        StartReadThread(ReadThreadMode.Receiving);
       }
       catch
       {
@@ -671,10 +670,7 @@ namespace MicrosoftMceTransceiver
       _learningCode = new IrCode();
 
       StartReceive(_learnPort, PacketTimeout);
-
-      _readThreadMode = ReadThreadMode.Learning;
-
-      StartReadThread();
+      StartReadThread(ReadThreadMode.Learning);
 
       int learnStartTick = Environment.TickCount;
 
@@ -691,10 +687,7 @@ namespace MicrosoftMceTransceiver
       StopReadThread();
 
       StartReceive(_receivePort, PacketTimeout);
-
-      _readThreadMode = ReadThreadMode.Receiving;
-
-      StartReadThread();
+      StartReadThread(ReadThreadMode.Receiving);
 
       LearnStatus status = LearnStatus.Failure;
 
@@ -787,14 +780,16 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Start the device read thread.
     /// </summary>
-    void StartReadThread()
+    void StartReadThread(ReadThreadMode mode)
     {
 #if DEBUG
-      DebugWriteLine("StartReadThread()");
+      DebugWriteLine("StartReadThread({0})", Enum.GetName(typeof(ReadThreadMode), mode));
 #endif
 
       if (_readThread != null)
-        return;
+        throw new ApplicationException("Read thread is already running");
+
+      _readThreadMode = mode;
 
       _readThread = new Thread(new ThreadStart(ReadThread));
       _readThread.Name = "MicrosoftMceTransceiver.DriverVista.ReadThread";
@@ -877,10 +872,7 @@ namespace MicrosoftMceTransceiver
       OpenDevice();
 
       StartReceive(_receivePort, PacketTimeout);
-
-      _readThreadMode = ReadThreadMode.Receiving;
-
-      StartReadThread();
+      StartReadThread(ReadThreadMode.Receiving);
     }
     void OnDeviceRemoval()
     {

@@ -358,7 +358,7 @@ namespace IRBlast
     static void Error(Exception ex)
     {
       Console.WriteLine(ex.Message);
-      IrssLog.Error(ex.ToString());
+      IrssLog.Error(ex);
     }
 
     #endregion Log Commands

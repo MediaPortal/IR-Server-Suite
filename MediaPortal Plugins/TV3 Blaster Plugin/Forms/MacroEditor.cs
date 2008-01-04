@@ -105,7 +105,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
       }
     }
 
@@ -129,7 +129,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
       }
     }
 
@@ -237,7 +237,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Failed to add macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -297,7 +297,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -332,7 +332,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
@@ -438,7 +438,7 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        Log.Error("TV3BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex.ToString());
         MessageBox.Show(this, ex.Message, "Failed to edit macro item", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

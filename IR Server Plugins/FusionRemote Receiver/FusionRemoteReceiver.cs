@@ -29,7 +29,7 @@ namespace FusionRemoteReceiver
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\FusionRemote Receiver.xml";
+      "\\IR Server Suite\\Input Service\\FusionRemote Receiver.xml";
 
     const string DeviceID = "VID_0FE9&PID_9010";
 
@@ -211,7 +211,7 @@ namespace FusionRemoteReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -249,7 +249,7 @@ namespace FusionRemoteReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       try

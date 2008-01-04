@@ -56,7 +56,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.4.0 for IR Server";
+    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.4.1 for IR Server";
 
     internal static readonly string MenuFile = Common.FolderAppData + "MP Blast Zone Plugin\\Menu.xml";
 
@@ -568,7 +568,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
     }
 
@@ -576,7 +576,7 @@ namespace MediaPortal.Plugins
     /// Learn an IR command.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     internal static bool LearnIR(string fileName)
     {
       try
@@ -607,7 +607,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
         return false;
       }
 
@@ -658,12 +658,12 @@ namespace MediaPortal.Plugins
         {
           Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
           newThread.Name = ProcessCommandThreadName;
-          newThread.Priority = ThreadPriority.BelowNormal;
+          newThread.IsBackground = true;
           newThread.Start(command);
         }
         catch (Exception ex)
         {
-          Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+          Log.Error(ex);
         }
       }
       else
@@ -821,7 +821,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+          Log.Error(ex);
         else
           throw;
       }
@@ -997,7 +997,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
     }
     /// <summary>
@@ -1016,7 +1016,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
     }
 

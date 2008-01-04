@@ -123,7 +123,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -159,6 +159,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Virtual Remote - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -208,6 +209,7 @@ namespace VirtualRemote
       }
       catch (Exception ex)
       {
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

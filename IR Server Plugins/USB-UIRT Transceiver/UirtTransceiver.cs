@@ -28,7 +28,7 @@ namespace UirtTransceiver
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\USB-UIRT Transceiver.xml";
+      "\\IR Server Suite\\Input Service\\USB-UIRT Transceiver.xml";
 
     const int UUIRTDRV_IRFMT_UUIRT             = 0x0000;
     const int UUIRTDRV_IRFMT_PRONTO            = 0x0010;
@@ -132,7 +132,7 @@ namespace UirtTransceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -172,7 +172,7 @@ namespace UirtTransceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -272,7 +272,7 @@ namespace UirtTransceiver
     /// </summary>
     /// <param name="port">Port to transmit on.</param>
     /// <param name="data">Data to transmit.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Transmit(string port, byte[] data)
     {
       if (String.IsNullOrEmpty(port))

@@ -1753,7 +1753,7 @@ namespace IrssUtils
     /// </summary>
     /// <param name="hWnd">Window Handle.</param>
     /// <param name="lParam">lParam.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
     #endregion Delegates
@@ -1969,7 +1969,7 @@ namespace IrssUtils
     /// <param name="index">The index to the icon inside the file.</param>
     /// <param name="large">The large icon.</param>
     /// <param name="small">The small icon.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool ExtractIcons(string fileName, int index, out Icon large, out Icon small)
     {
       IntPtr[] hLarge = new IntPtr[1] { IntPtr.Zero };
@@ -2062,7 +2062,7 @@ namespace IrssUtils
     /// </summary>
     /// <param name="flags">The type of exit to perform.</param>
     /// <param name="reasons">The reason for the exit.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool WindowsExit(ExitWindows flags, ShutdownReasons reasons)
     {
       return ExitWindowsEx(flags, reasons);
@@ -2117,7 +2117,7 @@ namespace IrssUtils
     /// </summary>
     /// <param name="hWnd">Handle to window.</param>
     /// <param name="force">Force from a minimized or hidden state.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool SetForegroundWindow(IntPtr hWnd, bool force)
     {
       IntPtr fgWindow = GetForegroundWindow();

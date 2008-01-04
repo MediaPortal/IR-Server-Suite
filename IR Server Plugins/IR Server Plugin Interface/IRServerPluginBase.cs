@@ -46,7 +46,7 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public abstract bool Start();
 
     /// <summary>

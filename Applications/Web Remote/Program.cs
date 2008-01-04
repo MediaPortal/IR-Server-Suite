@@ -136,7 +136,7 @@ namespace WebRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         clientStarted = false;
       }
 
@@ -161,7 +161,7 @@ namespace WebRemote
         }
         catch (Exception ex)
         {
-          IrssLog.Error(ex.ToString());
+          IrssLog.Error(ex);
         }
 
         _notifyIcon.Visible = true;
@@ -239,8 +239,8 @@ namespace WebRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Web Remote - Setup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Web Remote - Setup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
       _inConfiguration = false;
@@ -378,7 +378,7 @@ namespace WebRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
 
         _installFolder = ".";
       }
@@ -391,7 +391,7 @@ namespace WebRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
 
         _serverHost = "localhost";
         _remoteSkin = DefaultSkin;
@@ -429,7 +429,7 @@ namespace WebRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -535,7 +535,7 @@ namespace WebRemote
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 

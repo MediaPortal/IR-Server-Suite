@@ -127,7 +127,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
 
         checkBoxAutoRun.Checked = false;
       }
@@ -839,6 +839,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -894,8 +895,8 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
@@ -940,8 +941,8 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
-        MessageBox.Show(ex.ToString(), "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -1204,12 +1205,13 @@ namespace Translator
       }
       catch (Exception ex)
       {
+        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      MessageBox.Show(this, "Translator\nVersion 1.0.4.0 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(this, "Translator\nVersion 1.0.4.1 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void addProgramToolStripMenuItem_Click(object sender, EventArgs e)

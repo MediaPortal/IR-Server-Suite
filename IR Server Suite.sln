@@ -290,13 +290,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "Util Apps\Tes
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{CD6A99CB-16B1-4242-9DBE-C6DC55B0A8DD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(SolutionItems) = preProject
 		IR Server Suite - Debug.nsi = IR Server Suite - Debug.nsi
 		IR Server Suite - Release.nsi = IR Server Suite - Release.nsi
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVR150 Tuner", "Util Apps\PVR150 Tuner\PVR150 Tuner.csproj", "{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}"
@@ -304,6 +304,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVR150 Tuner", "Util Apps\P
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Direct Input Receiver", "IR Server Plugins\Direct Input Receiver\Direct Input Receiver.csproj", "{732CDF64-D047-4D3C-91DA-E2FF27D84179}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log File Multi-Viewer", "Util Apps\Log File Multi-Viewer\Log File Multi-Viewer.csproj", "{36804FCB-2D2D-4188-9F0E-695FE35AD6E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -651,6 +659,18 @@ Global
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|x86.ActiveCfg = Release|Any CPU
+		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Release|x86.ActiveCfg = Release|Any CPU
+		{36804FCB-2D2D-4188-9F0E-695FE35AD6E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36804FCB-2D2D-4188-9F0E-695FE35AD6E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36804FCB-2D2D-4188-9F0E-695FE35AD6E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{36804FCB-2D2D-4188-9F0E-695FE35AD6E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36804FCB-2D2D-4188-9F0E-695FE35AD6E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36804FCB-2D2D-4188-9F0E-695FE35AD6E3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -683,6 +703,7 @@ Global
 		{5A9954F8-344C-489C-B8DA-8E8927271A02} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{A50080F4-53D1-41CC-9C5F-500AFDDE9E8B} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{37A555DF-7012-4B99-8A47-1C922A361E52} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
+		{732CDF64-D047-4D3C-91DA-E2FF27D84179} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{E8BEBBCC-1EE0-488D-8806-98ADCB7F0479} = {6C18D808-E5ED-4CFB-A7CD-E2BDBB1D9BDA}
 		{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90} = {6C18D808-E5ED-4CFB-A7CD-E2BDBB1D9BDA}
 		{CD395FC2-70E2-42C4-8A20-5469A0C5EB50} = {6C18D808-E5ED-4CFB-A7CD-E2BDBB1D9BDA}
@@ -698,5 +719,6 @@ Global
 		{DDB52A4D-A670-411A-8273-8B1707C67028} = {D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}
 		{327F54E5-D1DC-4297-BF2F-4283EB30FFB1} = {D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF} = {D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}
+		{36804FCB-2D2D-4188-9F0E-695FE35AD6E3} = {D4CDABD0-B82E-4DEE-A2A8-A2A52774FC2F}
 	EndGlobalSection
 EndGlobal

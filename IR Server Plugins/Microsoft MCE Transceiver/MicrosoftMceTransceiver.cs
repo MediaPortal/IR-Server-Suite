@@ -58,7 +58,7 @@ namespace MicrosoftMceTransceiver
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\Microsoft MCE Transceiver.xml";
+      "\\IR Server Suite\\Input Service\\Microsoft MCE Transceiver.xml";
     
     readonly Guid MicrosoftGuid   = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
     readonly Guid ReplacementGuid = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f, 0xb1, 0x72, 0x8b);
@@ -123,7 +123,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -157,7 +157,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
 #if TRACE
@@ -328,7 +328,7 @@ namespace MicrosoftMceTransceiver
     /// </summary>
     /// <param name="port">Port to transmit on.</param>
     /// <param name="data">Data to transmit.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Transmit(string port, byte[] data)
     {
       BlasterPort blasterPort = BlasterPort.Both;

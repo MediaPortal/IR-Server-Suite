@@ -158,7 +158,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         clientStarted = false;
       }
 
@@ -315,6 +315,7 @@ namespace Translator
       {
         Thread thread = new Thread(new ThreadStart(MenuThread));
         thread.Name = "Translator OSD";
+        thread.IsBackground = true;
         thread.Start();
       }
     }
@@ -326,7 +327,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -466,7 +467,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(ex.Message, "Macro failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -534,7 +535,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         MessageBox.Show(ex.Message, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -763,7 +764,7 @@ namespace Translator
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
     }
 
@@ -790,7 +791,7 @@ namespace Translator
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
       }
 
       IrssLog.Debug("Active program not found in Translator program list");
@@ -815,7 +816,7 @@ namespace Translator
             {
               ProcessCommand(buttonMap.Command, true);
             }
-            catch (Exception ex) { IrssLog.Error(ex.ToString()); }
+            catch (Exception ex) { IrssLog.Error(ex); }
             return;
           }
         }
@@ -832,7 +833,7 @@ namespace Translator
             {
               ProcessCommand(buttonMap.Command, true);
             }
-            catch (Exception ex) { IrssLog.Error(ex.ToString()); }
+            catch (Exception ex) { IrssLog.Error(ex); }
             return;
           }
         }
@@ -849,7 +850,7 @@ namespace Translator
               {
                 ProcessCommand(buttonMap.Command, true);
               }
-              catch (Exception ex) { IrssLog.Error(ex.ToString()); }
+              catch (Exception ex) { IrssLog.Error(ex); }
               return;
             }
           }
@@ -906,7 +907,7 @@ namespace Translator
             }
             catch (Exception ex)
             {
-              IrssLog.Error(ex.ToString());
+              IrssLog.Error(ex);
             }
           }
         }
@@ -917,7 +918,7 @@ namespace Translator
     /// Learn an IR command.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     internal static bool LearnIR(string fileName)
     {
       try
@@ -948,7 +949,7 @@ namespace Translator
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        IrssLog.Error(ex.ToString());
+        IrssLog.Error(ex);
         return false;
       }
 
@@ -996,12 +997,12 @@ namespace Translator
         {
           Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
           newThread.Name = ProcessCommandThreadName;
-          newThread.Priority = ThreadPriority.BelowNormal;
+          newThread.IsBackground = true;
           newThread.Start(command);
         }
         catch (Exception ex)
         {
-          IrssLog.Error(ex.ToString());
+          IrssLog.Error(ex);
         }
       }
       else
@@ -1183,7 +1184,7 @@ namespace Translator
       catch (Exception ex)
       {
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          IrssLog.Error(ex.ToString());
+          IrssLog.Error(ex);
         else
           throw;
       }

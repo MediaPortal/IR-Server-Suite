@@ -26,7 +26,7 @@ namespace CustomHIDReceiver
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\Custom HID Receiver.xml";
+      "\\IR Server Suite\\Input Service\\Custom HID Receiver.xml";
 
     static readonly string[] Ports  = new string[] { "None" };
 
@@ -82,7 +82,7 @@ namespace CustomHIDReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -108,7 +108,7 @@ namespace CustomHIDReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       _receiverWindow.ProcMsg += new ProcessMessage(ProcMessage);

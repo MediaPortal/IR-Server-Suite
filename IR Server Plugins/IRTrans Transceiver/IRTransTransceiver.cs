@@ -187,7 +187,7 @@ namespace IRTransTransceiver
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\IRTrans Transceiver.xml";
+      "\\IR Server Suite\\Input Service\\IRTrans Transceiver.xml";
 
     const string  DefaultRemoteModel    = "mediacenter";
     const string  DefaultServerAddress  = "localhost";
@@ -221,7 +221,7 @@ namespace IRTransTransceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.1"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -247,7 +247,7 @@ namespace IRTransTransceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override bool Start()
     {
       LoadSettings();
@@ -405,7 +405,7 @@ namespace IRTransTransceiver
     /// </summary>
     /// <param name="address">The address.</param>
     /// <param name="port">The port.</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     static bool Connect(string address, int port)
     {
       // TODO: put this on a thread, retry every 30 seconds ...

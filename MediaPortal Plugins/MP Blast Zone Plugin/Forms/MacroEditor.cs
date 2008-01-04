@@ -120,7 +120,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
     }
 
@@ -144,7 +144,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
     }
 
@@ -317,7 +317,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to add macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -377,7 +377,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -412,7 +412,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
@@ -558,7 +558,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("MPBlastZonePlugin: {0}", ex.ToString());
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to edit macro item", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

@@ -24,10 +24,9 @@ namespace MediaPortal.Plugins
 
     #region Constants
 
-    const string parameterInfo =
+    const string ParameterInfo =
 @"%1 = Current channel number digit (-1 for Select/Pre-Change)
-%2 = Full channel number string
-%3 = Blaster port (0 = Both, 1 = Port 1, 2 = Port 2)";
+%2 = Full channel number string";
 
     #endregion Constants
 
@@ -150,9 +149,6 @@ namespace MediaPortal.Plugins
     {
       ExternalChannelConfig config = TV2BlasterPlugin.GetExternalChannelConfig(cardId);
 
-      if (config == null)
-        return;
-
       // Setup command list.
       for (int i = 0; i < 10; i++)
         listViewExternalCommands.Items[i].SubItems[1].Text  = config.Digits[i];
@@ -180,11 +176,6 @@ namespace MediaPortal.Plugins
     public void SetToConfig(int cardId)
     {
       ExternalChannelConfig config = TV2BlasterPlugin.GetExternalChannelConfig(cardId);
-
-      if (config == null)
-        return;
-
-      config.CardId = cardId;
 
       config.PauseTime = Decimal.ToInt32(numericUpDownPauseTime.Value);
       config.SendSelect = checkBoxSendSelect.Checked;
@@ -372,7 +363,7 @@ namespace MediaPortal.Plugins
         {
           string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
           
-          ExternalProgram executeProgram = new ExternalProgram(commands, parameterInfo);
+          ExternalProgram executeProgram = new ExternalProgram(commands, ParameterInfo);
           if (executeProgram.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
         }
@@ -380,7 +371,7 @@ namespace MediaPortal.Plugins
         {
           string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
           
-          SerialCommand serialCommand = new SerialCommand(commands, parameterInfo);
+          SerialCommand serialCommand = new SerialCommand(commands, ParameterInfo);
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
@@ -429,7 +420,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to edit command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -446,13 +437,13 @@ namespace MediaPortal.Plugins
 
         if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
         {
-          ExternalProgram externalProgram = new ExternalProgram(parameterInfo);
+          ExternalProgram externalProgram = new ExternalProgram(ParameterInfo);
           if (externalProgram.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
         }
         else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
         {
-          SerialCommand serialCommand = new SerialCommand(parameterInfo);
+          SerialCommand serialCommand = new SerialCommand(ParameterInfo);
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
         }
@@ -512,7 +503,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed to set command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }

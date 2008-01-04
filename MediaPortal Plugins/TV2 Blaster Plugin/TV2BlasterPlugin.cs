@@ -36,7 +36,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.4.0 for IR Server";
+    internal const string PluginVersion = "TV2 Blaster Plugin 1.0.4.1 for IR Server";
 
     internal static readonly string FolderMacros = Common.FolderAppData + "TV2 Blaster Plugin\\Macro\\";
 
@@ -110,24 +110,6 @@ namespace MediaPortal.Plugins
       get { return _irServerInfo; }
     }
 
-    /// <summary>
-    /// Count of available TV Cards.
-    /// </summary>
-    internal static int TvCardCount
-    {
-      get
-      {
-        ArrayList cards = new ArrayList();
-        MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
-
-        int cardCount = cards.Count;
-        if (cardCount == 0)
-          cardCount = 1;
-
-        return cardCount;
-      }
-    }
-
     #endregion Properties
 
     #region IPlugin methods
@@ -137,7 +119,7 @@ namespace MediaPortal.Plugins
     /// </summary>
     public void Start()
     {
-      InConfiguration = false;
+      _inConfiguration = false;
 
       Log.Info("TV2BlasterPlugin: Starting ({0})", PluginVersion);
 
@@ -240,14 +222,14 @@ namespace MediaPortal.Plugins
           SaveSettings();
 
         StopClient();
-
-        if (LogVerbose)
-          Log.Info("TV2BlasterPlugin: ShowPlugin() - End");
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
+
+      if (LogVerbose)
+        Log.Info("TV2BlasterPlugin: ShowPlugin() - End");
     }
 
     /// <summary>
@@ -408,7 +390,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
     }
 
@@ -421,19 +403,18 @@ namespace MediaPortal.Plugins
       if (msg.Message != GUIMessage.MessageType.GUI_MSG_TUNE_EXTERNAL_CHANNEL)
         return;
 
-      if (LogVerbose)
-        Log.Info("TV2BlasterPlugin: Tune External Channel: {0}, Tuner card: {1}", msg.Label, msg.Label2);
+      Log.Info("TV2BlasterPlugin: Tune request - Card: {0}, Channel: {1}", msg.Label2, msg.Label);
 
       try
       {
         Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
         newThread.Name = "ProcessExternalChannel";
-        newThread.Priority = ThreadPriority.BelowNormal;
+        newThread.IsBackground = true;
         newThread.Start(new string[] { msg.Label, msg.Label2 });
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
     }
 
@@ -442,25 +423,32 @@ namespace MediaPortal.Plugins
     /// </summary>
     static void LoadExternalConfigs()
     {
-      int cardCount = TvCardCount;
+      ArrayList cards = new ArrayList();
+      MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
 
-      _externalChannelConfigs = new ExternalChannelConfig[cardCount];
+      if (cards.Count == 0)
+        throw new ApplicationException("Cannot load external channel configurations, there are no TV cards registered");
 
-      string fileName;
-      for (int index = 0; index < cardCount; index++)
+      _externalChannelConfigs = new ExternalChannelConfig[cards.Count];
+
+      int index = 0;
+      foreach (int cardId in cards)
       {
-        fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, Convert.ToString(index + 1));
+        string fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, cardId);
+
         try
         {
           _externalChannelConfigs[index] = ExternalChannelConfig.Load(fileName);
         }
         catch (Exception ex)
         {
+          Log.Error(ex);
+
           _externalChannelConfigs[index] = new ExternalChannelConfig(fileName);
-          Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
         }
 
-        _externalChannelConfigs[index].CardId = index;
+        _externalChannelConfigs[index].CardId = cardId;
+        index++;
       }
     }
 
@@ -490,6 +478,8 @@ namespace MediaPortal.Plugins
       try
       {
         string[] data = args as string[];
+        if (data == null)
+          throw new ArgumentException("Parameter is not of type string[]", "args");
 
         int card = int.Parse(data[1]);
 
@@ -497,10 +487,7 @@ namespace MediaPortal.Plugins
         if (card < 0)
           card = 0;
 
-        if (card >= _externalChannelConfigs.Length)
-          throw new ArgumentException("Card number is higher than last card in list, reconfigure plugin TV cards.", "args");
-
-        ExternalChannelConfig config = _externalChannelConfigs[card];
+        ExternalChannelConfig config = GetExternalChannelConfig(card);
 
         // Clean up the "data[0]" string into "channel".
         StringBuilder channel = new StringBuilder();
@@ -568,7 +555,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex);
       }
     }
 
@@ -580,6 +567,10 @@ namespace MediaPortal.Plugins
     /// <param name="channelFull">The channel full ID.</param>
     internal static void ProcessExternalCommand(string command, int channelDigit, string channelFull)
     {
+#if DEBUG
+      Log.Debug("TV2BlasterPlugin: ProcessExternalCommand(\"{0}\", {1}, {2})", command, channelDigit, channelFull);
+#endif
+
       if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
         string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
@@ -668,7 +659,7 @@ namespace MediaPortal.Plugins
     /// Learn an IR command.
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     internal static bool LearnIR(string fileName)
     {
       try
@@ -699,7 +690,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         _learnIRFilename = null;
-        Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+        Log.Error(ex);
         return false;
       }
 
@@ -750,12 +741,12 @@ namespace MediaPortal.Plugins
         {
           Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
           newThread.Name = ProcessCommandThreadName;
-          newThread.Priority = ThreadPriority.BelowNormal;
+          newThread.IsBackground = true;
           newThread.Start(command);
         }
         catch (Exception ex)
         {
-          Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+          Log.Error(ex);
         }
       }
       else
@@ -859,7 +850,7 @@ namespace MediaPortal.Plugins
       catch (Exception ex)
       {
         if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          Log.Error("TV2BlasterPlugin: {0}", ex.ToString());
+          Log.Error(ex);
         else
           throw;
       }
