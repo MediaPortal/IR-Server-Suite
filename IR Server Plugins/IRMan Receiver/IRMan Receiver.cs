@@ -75,7 +75,7 @@ namespace IRManReceiver
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
     /// </summary>
     /// <returns>
-    /// true if the device is present, otherwise false.
+    /// <c>true</c> if the device is present, otherwise <c>false</c>.
     /// </returns>
     public override bool Detect()
     {

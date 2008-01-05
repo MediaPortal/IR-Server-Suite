@@ -44,7 +44,7 @@ namespace MediaPortal.Plugins
       MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
 
       if (cards.Count == 0)
-        throw new ApplicationException("Cannot load external channel configurations, there are no TV cards registered");
+        cards.Add(0);
 
       _tvCardTabs = new TabPage[cards.Count];
       _tvCardStbSetups = new StbSetup[cards.Count];
@@ -107,16 +107,10 @@ namespace MediaPortal.Plugins
       try
       {
         foreach (StbSetup setup in _tvCardStbSetups)
+        {
           setup.Save();
-
-        ArrayList cards = new ArrayList();
-        MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
-
-        if (cards.Count == 0)
-          throw new ApplicationException("Cannot save external channel configurations, there are no TV cards registered");
-
-        foreach (int cardId in cards)
-          TV2BlasterPlugin.GetExternalChannelConfig(cardId).Save();
+          TV2BlasterPlugin.GetExternalChannelConfig(setup.CardId).Save();
+        }
       }
       catch (Exception ex)
       {

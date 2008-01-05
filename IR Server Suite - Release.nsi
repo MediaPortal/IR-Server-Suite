@@ -163,7 +163,9 @@ Section "Input Service"
   SetOutPath "$INSTDIR\IR Server Plugins"
   SetOverwrite ifnewer
   
+  File "IR Server Plugins\Ads Tech PTV-335 Receiver\bin\Release\*.*"
   File "IR Server Plugins\Custom HID Receiver\bin\Release\*.*"
+  ;File "IR Server Plugins\Direct Input Receiver\bin\Release\*.*"
   File "IR Server Plugins\FusionRemote Receiver\bin\Release\*.*"
   File "IR Server Plugins\Girder Plugin\bin\Release\*.*"
   ;File "IR Server Plugins\HCW Transceiver\bin\Release\*.*"

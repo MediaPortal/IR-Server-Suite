@@ -40,6 +40,12 @@ namespace TvEngine
     {
       IList cards = TvDatabase.Card.ListAll();
 
+      if (cards.Count == 0)
+      {
+        TvDatabase.Card dummyCard = new TvDatabase.Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0, false, 0, "timeshifting folder", 0, 0);
+        cards.Add(dummyCard);
+      }
+
       _tvCardStbSetups = new StbSetup[cards.Count];
 
       comboBoxCopyFrom.Items.Clear();

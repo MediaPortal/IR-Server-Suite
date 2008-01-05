@@ -1,0 +1,30 @@
+<HTML>
+<HEAD><TITLE>Input Service Configuration</TITLE></HEAD>
+<BODY>
+
+<H2>Input Service Configuration<BR><HR COLOR="RED"></H2>
+
+<IMG SRC="configuration.png"><BR>
+This is the Input Service configuration window.<BR>
+
+<P><B>Device plugin:</B><BR>
+Choose the device(s) you want to use for receiving and the device you want to use for transmitting (blasting) by placing a mark in the box under the appropriate column.  By double-clicking the device name in the device plugin list you can select both receiving and transmitting cabilities for that device at the same time.  Note that you do not need to have a device selected in either column, that is, you can run the Input Service without a transmit, receive or either type of device enabled.<BR>
+<BR>
+Click "Configure" to set any device specific options.</P>
+
+<BR>
+
+<IMG SRC="advanced.png"><BR>
+This is the Input Service advanced configuration window.<BR>
+
+<P><B>Mode:</B><BR>
+This option sets the mode that the Input Service will operate in.<BR>
+<UL>
+<LI><B>Server mode</B> - This is the default option where the program operates as a central server hosting the locally connected IR device's capabilities to other plugins and applications in the suite.</LI>
+<LI><B>Button relay mode</B> - When in this mode the server will relay button presses recieved from the IR device to another IR Server.</LI>
+<LI><B>Repeater mode</B> - This mode has the server running as a repeater for another Input Service on another machine.  When the host Input Service transmits an IR command the repeater mode server will also transmit the same IR command.</LI>
+</UL>
+</P>
+
+</BODY>
+</HTML>

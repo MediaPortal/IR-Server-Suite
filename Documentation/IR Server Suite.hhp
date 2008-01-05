@@ -14,7 +14,7 @@ Title=IR Server Suite
 [FILES]
 introduction.html
 new.html
-IR Server\index.html
+Input Service\index.html
 Plugins\index.html
 Plugins\MP Blast Zone Plugin\index.html
 Plugins\MP Control Plugin\index.html

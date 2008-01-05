@@ -38,6 +38,11 @@ namespace MediaPortal.Plugins
 
     #region Properties
 
+    public int CardId
+    {
+      get { return _cardId; }
+    }
+
     public int PauseTime
     {
       get { return Decimal.ToInt32(numericUpDownPauseTime.Value); }
@@ -176,6 +181,8 @@ namespace MediaPortal.Plugins
     public void SetToConfig(int cardId)
     {
       ExternalChannelConfig config = TV2BlasterPlugin.GetExternalChannelConfig(cardId);
+
+      config.CardId = cardId;
 
       config.PauseTime = Decimal.ToInt32(numericUpDownPauseTime.Value);
       config.SendSelect = checkBoxSendSelect.Checked;

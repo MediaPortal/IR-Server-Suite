@@ -4,6 +4,19 @@
 
 <H2>What's new?<BR><HR COLOR="RED"></H2>
 
+<P>Version 1.0.4.1
+<UL>
+<LI>Minor bug fixes.</LI>
+<LI>Made MCE Remote XP/Replacement driver support more forgiving of malformed/unusual data from device.</LI>
+<LI>Raised thread priorities from Below Normal to Normal (Hopefully to improve responsiveness, if there are any ill side effects I'll revert this change) and made all threads "Background" (to prevent them from living on after the thread spawner has closed).</LI>
+<LI>Made error logging more uniform (makes code comparisons between similar libraries easier too, this should make it less likely that a change in, for example, TV2 Blaster plugin would not get made in TV3 Blaster plugin).</LI>
+<LI>Moved Input Server Plugins from "\IR Server Suite\IR Server" to "\IR Server Suite\Input Service" to bring them in-line with the move from IR Server to Input Service.  Existing users will need to move their configuration files (*.xml) across or reconfigure their transceiver.</LI>
+<LI>Changed timestamps in log files to same format as MediaPortal's in preperation for new log file analysing tool I'm writing.</LI>
+<LI>Added support for the Ads Tech PTV-335's IR Receiver.  You must copy the ADS_335_RCPLIB.dll from (usually) "\Program Files\Ulead Systems\Ulead InstaMedia 2.1" to the IR Server Plugins folder in your IR Server Suite install location.</LI>
+<LI>Fixed Vista MCE Suspend/Resume handling.</LI>
+</UL></P>
+<BR>
+
 <P>Version 1.0.4.0
 <UL>
 <LI>Replaced "IR Server" application with "Input Service".</LI>

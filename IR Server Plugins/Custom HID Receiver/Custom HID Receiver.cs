@@ -28,8 +28,6 @@ namespace CustomHIDReceiver
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\Input Service\\Custom HID Receiver.xml";
 
-    static readonly string[] Ports  = new string[] { "None" };
-
     const int DeviceBufferSize = 255;
 
     #endregion Constants
@@ -77,7 +75,7 @@ namespace CustomHIDReceiver
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "Custom HID Receiver"; } }
+    public override string Name         { get { return "Custom HID"; } }
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
@@ -98,7 +96,7 @@ namespace CustomHIDReceiver
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
     /// </summary>
     /// <returns>
-    /// true if the device is present, otherwise false.
+    /// <c>true</c> if the device is present, otherwise <c>false</c>.
     /// </returns>
     public override bool Detect()
     {

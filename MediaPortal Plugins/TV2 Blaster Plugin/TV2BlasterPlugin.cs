@@ -427,7 +427,11 @@ namespace MediaPortal.Plugins
       MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
 
       if (cards.Count == 0)
-        throw new ApplicationException("Cannot load external channel configurations, there are no TV cards registered");
+      {
+        Log.Warn("Cannot load external channel configurations, there are no TV cards registered");
+
+        cards.Add(0);
+      }
 
       _externalChannelConfigs = new ExternalChannelConfig[cards.Count];
 

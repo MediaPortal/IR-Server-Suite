@@ -14,8 +14,8 @@
 		<param name="Local" value="introduction.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="IR Server">
-		<param name="Local" value="IR Server\index.html">
+		<param name="Name" value="Input Service">
+		<param name="Local" value="Input Service\index.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Tray Launcher">

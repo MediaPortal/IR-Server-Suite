@@ -389,7 +389,12 @@ namespace TvEngine
       IList cards = TvDatabase.Card.ListAll();
 
       if (cards.Count == 0)
-        return;
+      {
+        Log.Info("Cannot load external channel configurations, there are no TV cards registered");
+
+        TvDatabase.Card dummyCard = new TvDatabase.Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0, false, 0, "timeshifting folder", 0, 0);
+        cards.Add(dummyCard);
+      }
 
       _externalChannelConfigs = new ExternalChannelConfig[cards.Count];
 

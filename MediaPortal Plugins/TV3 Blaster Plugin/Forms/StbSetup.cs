@@ -161,9 +161,6 @@ namespace TvEngine
     {
       ExternalChannelConfig config = TV3BlasterPlugin.GetExternalChannelConfig(cardId);
 
-      if (config == null)
-        return;
-
       // Setup command list.
       for (int i = 0; i < 10; i++)
         listViewExternalCommands.Items[i].SubItems[1].Text  = config.Digits[i];
@@ -191,9 +188,6 @@ namespace TvEngine
     public void SetToConfig(int cardId)
     {
       ExternalChannelConfig config = TV3BlasterPlugin.GetExternalChannelConfig(cardId);
-
-      if (config == null)
-        return;
 
       config.CardId = cardId;
 
@@ -419,6 +413,9 @@ namespace TvEngine
           if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
         }
+
+        if (!String.IsNullOrEmpty(newCommand))
+          listViewExternalCommands.SelectedItems[0].SubItems[1].Text = newCommand;
       }
       catch (Exception ex)
       {
