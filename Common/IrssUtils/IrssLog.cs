@@ -13,6 +13,15 @@ namespace IrssUtils
   public static class IrssLog
   {
 
+    #region Constants
+
+    /// <summary>
+    /// File extension for log file backups.
+    /// </summary>
+    public const string ExtensionBackupFile = ".bak";
+
+    #endregion Constants
+
     #region Enumerations
 
     /// <summary>
@@ -81,7 +90,7 @@ namespace IrssUtils
         {
           try
           {
-            string backup = Path.ChangeExtension(fileName, ".bak");
+            string backup = Path.ChangeExtension(fileName, ExtensionBackupFile);
 
             if (File.Exists(backup))
               File.Delete(backup);
@@ -105,8 +114,11 @@ namespace IrssUtils
           _streamWriter = new StreamWriter(fileName, false);
           _streamWriter.AutoFlush = true;
 
-          string message = DateTime.Now.ToString() + ":\tLog Opened";
+          string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Opened", DateTime.Now);
           _streamWriter.WriteLine(message);
+#if TRACE
+          Trace.WriteLine(message);
+#endif
         }
 #if TRACE
         catch (Exception ex)
@@ -133,7 +145,7 @@ namespace IrssUtils
         {
           if (File.Exists(fileName) && File.GetCreationTime(fileName).Ticks < DateTime.Now.Subtract(TimeSpan.FromDays(7)).Ticks)
           {
-            string backup = Path.ChangeExtension(fileName, ".bak");
+            string backup = Path.ChangeExtension(fileName, ExtensionBackupFile);
 
             if (File.Exists(backup))
               File.Delete(backup);
@@ -157,8 +169,11 @@ namespace IrssUtils
           _streamWriter = new StreamWriter(fileName, true);
           _streamWriter.AutoFlush = true;
 
-          string message = DateTime.Now.ToString() + ":\tLog Opened";
+          string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Opened", DateTime.Now);
           _streamWriter.WriteLine(message);
+#if TRACE
+          Trace.WriteLine(message);
+#endif
         }
 #if TRACE
         catch (Exception ex)
@@ -183,9 +198,12 @@ namespace IrssUtils
 
       try
       {
-        string message = DateTime.Now.ToString() + ":\tLog Closed";
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Closed", DateTime.Now);
         _streamWriter.WriteLine(message);
         _streamWriter.WriteLine();
+#if TRACE
+        Trace.WriteLine(message);
+#endif
       }
 #if TRACE
       catch (Exception ex)

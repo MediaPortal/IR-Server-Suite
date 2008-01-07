@@ -18,7 +18,7 @@ namespace AdsTechPTV335Receiver
 
     // int __cdecl ADS335RCP_GetKey(unsigned char &)
     [DllImport("ADS_335_RCPLIB.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?ADS335RCP_GetKey@@YAHAAE@Z")]
-    static extern int GetKey(ref byte key);
+    static extern int GetKey(out byte key);
 
     //int __cdecl ADS335RCP_Init(void)
     [DllImport("ADS_335_RCPLIB.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?ADS335RCP_Init@@YAHXZ")]
@@ -32,7 +32,7 @@ namespace AdsTechPTV335Receiver
 
     #region Consatnts
 
-    const int PacketTimeout = 100;
+    const int PacketTimeout = 200;
 
     #endregion Constants
 
@@ -168,12 +168,12 @@ namespace AdsTechPTV335Receiver
 
     void ReadThread()
     {
-      byte key = 0;
+      byte key;
       int retVal;
 
       while (_processReadThread)
       {
-        retVal = GetKey(ref key);
+        retVal = GetKey(out key);
 
         if (retVal == 0)
           Thread.Sleep(PacketTimeout);

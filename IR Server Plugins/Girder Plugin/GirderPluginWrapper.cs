@@ -875,7 +875,7 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     {
       _pluginDll = LoadLibrary(girderPluginFile);
       if (_pluginDll == IntPtr.Zero)
-        throw new ApplicationException(String.Format("Failed to load girder plugin ({0})", girderPluginFile));
+        throw new ApplicationException(String.Format("Failed to load girder plugin dll ({0})", girderPluginFile));
 
       try
       {

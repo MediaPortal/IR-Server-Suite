@@ -865,7 +865,7 @@ namespace MediaPortal.Plugins
       string setName = MultiMaps[_multiMappingSet];
 
       if (LogVerbose)
-        Log.Debug("MPControlPlugin: Multi-Mapping has changed to \"{0}\"", setName);
+        Log.Info("MPControlPlugin: Multi-Mapping has cycled to \"{0}\"", setName);
 
       MPCommon.ShowNotifyDialog("Multi-Mapping", setName, 2);
     }
@@ -885,7 +885,7 @@ namespace MediaPortal.Plugins
 
       for (int index = 0; index < MultiMaps.Length; index++)
       {
-        if (MultiMaps[index].Equals(multiMapping, StringComparison.OrdinalIgnoreCase))
+        if (MultiMaps[index].Equals(multiMapping, StringComparison.CurrentCultureIgnoreCase))
         {
           _multiMappingSet = index;
 
@@ -896,10 +896,11 @@ namespace MediaPortal.Plugins
             Log.Info("MPControlPlugin: Multi-Mapping has changed to \"{0}\"", setName);
 
           MPCommon.ShowNotifyDialog("Multi-Mapping", setName, 2);
-
           return;
         }
       }
+
+      Log.Warn("MPControlPlugin: Could not find Multi-Mapping \"{0}\"", multiMapping);
     }
 
     /// <summary>
@@ -1301,6 +1302,14 @@ namespace MediaPortal.Plugins
         {
           string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
           Common.ProcessEjectCommand(ejectCommand);
+        }
+        else if (command.StartsWith(Common.CmdPrefixMultiMap, StringComparison.OrdinalIgnoreCase))
+        {
+          string multiMapping = command.Substring(Common.CmdPrefixMultiMap.Length);
+          if (_inConfiguration)
+            MessageBox.Show(multiMapping, "Change multi-mapping", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            ChangeMultiMapping(multiMapping);
         }
         else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
         {

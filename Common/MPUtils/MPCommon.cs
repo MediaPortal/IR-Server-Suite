@@ -55,7 +55,7 @@ namespace MPUtils
       dlgNotify.SetHeading(heading);
       dlgNotify.SetText(text);
       dlgNotify.TimeOut = timeout;
-      dlgNotify.DoModal(GUIWindowManager.ActiveWindow);
+      dlgNotify.DoModal(GUIWindowManager.ActiveWindow); // TODO: Put this on a separate thread to allow caller to continue?
     }
 
     /// <summary>

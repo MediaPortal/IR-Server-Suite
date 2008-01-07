@@ -38,24 +38,31 @@ namespace GirderPlugin
       if (String.IsNullOrEmpty(textBoxPluginFile.Text))
         return;
 
-      GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(textBoxPluginFile.Text);
-
-      pluginWrapper.GirOpen();
-
-      if (!pluginWrapper.CanConfigure)
+      try
       {
-        MessageBox.Show(this, "No configuration available", "Girder Plugin Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(textBoxPluginFile.Text);
+
+        pluginWrapper.GirOpen();
+
+        if (!pluginWrapper.CanConfigure)
+        {
+          MessageBox.Show(this, "No configuration available", "Girder Plugin Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        else
+        {
+          pluginWrapper.GirCommandGui();
+
+          MessageBox.Show(this, "Press OK after the Girder plugin configuration is complete", "Girder Plugin Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        pluginWrapper.GirClose();
+
+        pluginWrapper.Dispose();
       }
-      else
+      catch (Exception ex)
       {
-        pluginWrapper.GirCommandGui();
-
-        MessageBox.Show(this, "Press OK after the Girder plugin configuration is complete", "Girder Plugin Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
-
-      pluginWrapper.GirClose();
-
-      pluginWrapper.Dispose();
     }
 
     private void buttonFind_Click(object sender, EventArgs e)
@@ -64,18 +71,25 @@ namespace GirderPlugin
 
       if (openFileDialog.ShowDialog(this) == DialogResult.OK)
       {
-        GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(openFileDialog.FileName);
+        try
+        {
+          GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(openFileDialog.FileName);
 
-        pluginWrapper.GirOpen();
+          pluginWrapper.GirOpen();
 
-        string message = String.Format("{0}\n{1}\n\nUse this plugin?", pluginWrapper.GirName, pluginWrapper.GirDescription);
+          string message = String.Format("{0}\n{1}\n\nUse this plugin?", pluginWrapper.GirName, pluginWrapper.GirDescription);
 
-        if (MessageBox.Show(this, message, openFileDialog.FileName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-          textBoxPluginFile.Text = openFileDialog.FileName;
+          if (MessageBox.Show(this, message, openFileDialog.FileName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            textBoxPluginFile.Text = openFileDialog.FileName;
 
-        pluginWrapper.GirClose();
+          pluginWrapper.GirClose();
 
-        pluginWrapper.Dispose();
+          pluginWrapper.Dispose();
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
       }
     }
 
