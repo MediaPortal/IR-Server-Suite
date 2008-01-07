@@ -87,7 +87,7 @@ namespace MicrosoftMceTransceiver
 
     const int TimingResolution = 50; // In microseconds.
 
-    const double ClockFrequency = 2412460.0;
+    //const double ClockFrequency = 2412460.0;
 
     // Vendor ID's for SMK and Topseed devices.
     const string VidSMK       = "vid_1784";
@@ -526,8 +526,22 @@ namespace MicrosoftMceTransceiver
 
       if (carrier != IrCode.CarrierFrequencyDCMode)
       {
+        /*
         carrierPacket[2] = 0x80;
         carrierPacket[3] = (byte)Math.Round(ClockFrequency / carrier);
+        */
+
+        for (int scaler = 1; scaler <= 4; scaler++)
+        {
+          int divisor = (10000000 >> (2 * scaler)) / carrier;
+
+          if (divisor <= 0xFF)
+          {
+            carrierPacket[2] = (byte)scaler;
+            carrierPacket[3] = (byte)divisor;
+            break;
+          }
+        }
       }
 
       WriteSync(carrierPacket);
