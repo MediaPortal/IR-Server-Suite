@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<remotes>
+	<remote name="Direct Input">
+		<button name="axisX Up">
+			<code value="axisX Up" />
+		</button>
+		<button name="axisX Down">
+			<code value="axisX Down" />
+		</button>
+		<button name="axisY Up">
+			<code value="axisY Up" />
+		</button>
+		<button name="axisY Down">
+			<code value="axisY Down" />
+		</button>
+		<button name="axisZ Up">
+			<code value="axisZ Up" />
+		</button>
+		<button name="axisZ Down">
+			<code value="axisZ Down" />
+		</button>
+		<button name="rotationX Up">
+			<code value="rotationX Up" />
+		</button>
+		<button name="rotationX Down">
+			<code value="rotationX Down" />
+		</button>
+		<button name="rotationY Up">
+			<code value="rotationY Up" />
+		</button>
+		<button name="rotationY Down">
+			<code value="rotationY Down" />
+		</button>
+		<button name="rotationZ Up">
+			<code value="rotationZ Up" />
+		</button>
+		<button name="rotationZ Down">
+			<code value="rotationZ Down" />
+		</button>		
+		<button name="pov N">
+			<code value="pov N" />
+		</button>
+		<button name="pov NE">
+			<code value="pov NE" />
+		</button>
+		<button name="pov E">
+			<code value="pov E" />
+		</button>
+		<button name="pov SE">
+			<code value="pov SE" />
+		</button>
+		<button name="pov S">
+			<code value="pov S" />
+		</button>
+		<button name="pov SW">
+			<code value="pov SW" />
+		</button>
+		<button name="pov W">
+			<code value="pov W" />
+		</button>
+		<button name="pov NW">
+			<code value="pov NW" />
+		</button>		
+		<button name="Button 1">
+			<code value="Button 1" />
+		</button>
+		<button name="Button 2">
+			<code value="Button 2" />
+		</button>
+		<button name="Button 3">
+			<code value="Button 3" />
+		</button>
+		<button name="Button 4">
+			<code value="Button 4" />
+		</button>
+		<button name="Button 5">
+			<code value="Button 5" />
+		</button>
+		<button name="Button 6">
+			<code value="Button 6" />
+		</button>
+		<button name="Button 7">
+			<code value="Button 7" />
+		</button>
+		<button name="Button 8">
+			<code value="Button 8" />
+		</button>
+		<button name="Button 9">
+			<code value="Button 9" />
+		</button>
+		<button name="Button 10">
+			<code value="Button 10" />
+		</button>
+		<button name="Button 11">
+			<code value="Button 11" />
+		</button>
+		<button name="Button 12">
+			<code value="Button 12" />
+		</button>
+		<button name="Button 13">
+			<code value="Button 13" />
+		</button>
+		<button name="Button 14">
+			<code value="Button 14" />
+		</button>
+		<button name="Button 15">
+			<code value="Button 15" />
+		</button>
+		<button name="Button 16">
+			<code value="Button 16" />
+		</button>
+		<button name="Button 17">
+			<code value="Button 17" />
+		</button>
+		<button name="Button 18">
+			<code value="Button 18" />
+		</button>
+		<button name="Button 19">
+			<code value="Button 19" />
+		</button>
+		<button name="Button 20">
+			<code value="Button 20" />
+		</button>
+	</remote>
+</remotes>

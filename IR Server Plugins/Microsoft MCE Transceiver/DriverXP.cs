@@ -731,53 +731,12 @@ namespace MicrosoftMceTransceiver
             DebugWriteLine("Received data:");
             DebugDump(packetBytes);
 
-            int indexOf9F = Array.IndexOf(packetBytes, (byte)0x9F);
-            while (indexOf9F != -1)
-            {
-
-              if (packetBytes.Length > indexOf9F + 3 && packetBytes[indexOf9F + 1] == 0x04) // 9F 04 XX XX - IR Sample Period
-              {
-                byte b1 = packetBytes[indexOf9F + 2];
-                byte b2 = packetBytes[indexOf9F + 3];
-
-                int irPeriod = ((b1 * 256) + b2);
-                DebugWriteLine("IR Sample Period: {0}", irPeriod);
-              }
-
-              if (packetBytes.Length > indexOf9F + 3 && packetBytes[indexOf9F + 1] == 0x0C) // 9F 0C XX XX - Timeout
-              {
-                byte b1 = packetBytes[indexOf9F + 2];
-                byte b2 = packetBytes[indexOf9F + 3];
-
-                int timeout = ((b1 * 256) + b2);
-                DebugWriteLine("IR Timeout Period: {0}", TimingResolution * timeout / 1000);
-              }
-
-              if (packetBytes.Length > indexOf9F + 2 && packetBytes[indexOf9F + 1] == 0x14) // 9F 14 XX - Port
-              {
-                byte b1 = packetBytes[indexOf9F + 2];
-
-                DebugWriteLine("IR Input Port: {0}", b1);
-              }
-
-
-              if (packetBytes.Length > indexOf9F + 1)
-              {
-                indexOf9F = Array.IndexOf(packetBytes, (byte)0x9F, indexOf9F + 1);
-              }
-              else
-              {
-                break;
-              }
-            }
-
             double firmware = 0.0;
 
             int indexOfFF = Array.IndexOf(packetBytes, (byte)0xFF);
             while (indexOfFF != -1)
             {
-
-              if (packetBytes.Length > indexOfFF + 2 && packetBytes[indexOfFF + 1] == 0x0B) // 9F 0B XX - Firmware x.x00
+              if (packetBytes.Length > indexOfFF + 2 && packetBytes[indexOfFF + 1] == 0x0B) // FF 0B XY - Firmware X.Y00
               {
                 byte b1 = packetBytes[indexOfFF + 2];
 
@@ -785,7 +744,7 @@ namespace MicrosoftMceTransceiver
                 DebugWriteLine("Firmware: {0}", firmware);
               }
 
-              if (packetBytes.Length > indexOfFF + 2 && packetBytes[indexOfFF + 1] == 0x1B) // 9F 1B XX - Firmware 0.0xx
+              if (packetBytes.Length > indexOfFF + 2 && packetBytes[indexOfFF + 1] == 0x1B) // FF 1B XY - Firmware 0.0XY
               {
                 byte b1 = packetBytes[indexOfFF + 2];
 
@@ -793,18 +752,11 @@ namespace MicrosoftMceTransceiver
                 DebugWriteLine("Firmware: {0}", firmware);
               }
 
-
               if (packetBytes.Length > indexOfFF + 1)
-              {
                 indexOfFF = Array.IndexOf(packetBytes, (byte)0xFF, indexOfFF + 1);
-              }
               else
-              {
                 break;
-              }
             }
-
-
           }
 #endif
 

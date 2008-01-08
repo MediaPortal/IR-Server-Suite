@@ -699,6 +699,11 @@ namespace MediaPortal.Plugins
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
           BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
         }
+        else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
+        {
+          int pauseTime = int.Parse(command.Substring(Common.CmdPrefixPause.Length));
+          Thread.Sleep(pauseTime);
+        }
         else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
@@ -820,7 +825,7 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        if (Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) && Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
           Log.Error(ex);
         else
           throw;

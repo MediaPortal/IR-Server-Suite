@@ -232,11 +232,30 @@ namespace MediaPortal.Plugins
       }
     }
 
+    string KeyNodeExists(string keyCode)
+    {
+      foreach (TreeNode remote in treeViewRemotes.Nodes)
+        foreach (TreeNode button in remote.Nodes)
+          foreach (TreeNode code in button.Nodes)
+            if (code.Text.Equals(keyCode, StringComparison.Ordinal))
+              return button.Text;
+
+      return null;
+    }
+
     delegate void DelegateAddNode(string keyCode);
     DelegateAddNode _addNode;
 
     void AddNode(string keyCode)
     {
+      string exists = KeyNodeExists(keyCode);
+      if (!String.IsNullOrEmpty(exists))
+      {
+        labelStatus.Text = String.Format("KeyCode {0} exists in node {1}", keyCode, exists);
+        labelStatus.ForeColor = Color.Purple;
+        return;
+      }
+      
       TreeNode selected = treeViewRemotes.SelectedNode;
 
       if (selected != null && selected.Level > 0)

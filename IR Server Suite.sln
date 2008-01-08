@@ -290,10 +290,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "Util Apps\Tes
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{CD6A99CB-16B1-4242-9DBE-C6DC55B0A8DD}"
-	ProjectSection(SolutionItems) = preProject
-		IR Server Suite - Debug.nsi = IR Server Suite - Debug.nsi
-		IR Server Suite - Release.nsi = IR Server Suite - Release.nsi
-	EndProjectSection
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -312,8 +308,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Direct Input Receiver", "IR
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log File Multi-Viewer", "Util Apps\Log File Multi-Viewer\Log File Multi-Viewer.csproj", "{36804FCB-2D2D-4188-9F0E-695FE35AD6E3}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ads Tech PTV-335 Receiver", "IR Server Plugins\Ads Tech PTV-335 Receiver\Ads Tech PTV-335 Receiver.csproj", "{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
