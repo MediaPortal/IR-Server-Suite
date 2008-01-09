@@ -26,24 +26,6 @@ namespace HcwTransceiver
       get { return Decimal.ToInt32(numericUpDownButtonRepeatDelay.Value); }
       set { numericUpDownButtonRepeatDelay.Value = new Decimal(value); }
     }
-    /// <summary>
-    /// Gets or sets the blast repeats.
-    /// </summary>
-    /// <value>The blast repeats.</value>
-    public int BlastRepeats
-    {
-      get { return Decimal.ToInt32(numericUpDownRepeatCount.Value); }
-      set { numericUpDownRepeatCount.Value = new Decimal(value); }
-    }
-    /// <summary>
-    /// Gets or sets the learn timeout.
-    /// </summary>
-    /// <value>The learn timeout.</value>
-    public int LearnTimeout
-    {
-      get { return Decimal.ToInt32(numericUpDownLearnTimeout.Value); }
-      set { numericUpDownLearnTimeout.Value = new Decimal(value); }
-    }
 
     #endregion Properties
 

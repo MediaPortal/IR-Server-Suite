@@ -83,7 +83,7 @@ namespace IrFileTool
     /// <summary>
     /// Locates the gap between button presses and reduces the data down to just the first press.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool FinalizeData()
     {
       if (_timingData.Length == 0)
@@ -219,7 +219,11 @@ namespace IrFileTool
       if (len != 0)
         timingData.Add(len * 50);
 
-      return new IrCode(timingData.ToArray());
+      // Seems some old files have excessively long delays in them .. this might fix that problem ...
+      IrCode newCode = new IrCode(timingData.ToArray());
+      newCode.FinalizeData();
+
+      return newCode;
     }
 
     /// <summary>

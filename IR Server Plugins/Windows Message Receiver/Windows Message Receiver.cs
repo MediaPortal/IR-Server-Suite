@@ -66,7 +66,7 @@ namespace WindowsMessageReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -79,28 +79,14 @@ namespace WindowsMessageReceiver
     public override string Description  { get { return "Supports receiving simulated button presses through Windows Messages"; } }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
-    /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
-    {
-      return false;
-    }
-
-    /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
 
       _receiverWindow = new ReceiverWindow(WindowTitle);
       _receiverWindow.ProcMsg += new ProcessMessage(ProcMsg);
-
-      return true;
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

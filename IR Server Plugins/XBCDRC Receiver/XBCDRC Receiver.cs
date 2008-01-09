@@ -223,7 +223,7 @@ namespace XBCDRCReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -261,30 +261,28 @@ namespace XBCDRCReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       Guid guid = new Guid();
       HidD_GetHidGuid(ref guid);
 
       string devicePath = FindDevice(guid);
       if (String.IsNullOrEmpty(devicePath))
-        return false;
+        throw new ApplicationException("Device not found");
 
       SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
 
       if (deviceHandle.IsInvalid)
-        throw new Win32Exception(lastError, "Failed to open remote");
+        throw new Win32Exception(lastError, "Failed to open device");
 
+      // TODO: Add device removal notification.
       //_deviceWatcher.RegisterDeviceRemoval(deviceHandle);
 
       _deviceBuffer = new byte[DeviceBufferSize];
       
       _deviceStream = new FileStream(deviceHandle, FileAccess.Read, _deviceBuffer.Length, true);
       _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
-
-      return true;
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

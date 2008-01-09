@@ -294,6 +294,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		IR Server Suite - Debug.nsi = IR Server Suite - Debug.nsi
+		IR Server Suite - Release.nsi = IR Server Suite - Release.nsi
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVR150 Tuner", "Util Apps\PVR150 Tuner\PVR150 Tuner.csproj", "{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}"
 	ProjectSection(WebsiteProperties) = preProject

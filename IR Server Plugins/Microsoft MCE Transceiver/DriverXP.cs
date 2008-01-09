@@ -87,8 +87,6 @@ namespace MicrosoftMceTransceiver
 
     const int TimingResolution = 50; // In microseconds.
 
-    //const double ClockFrequency = 2412460.0;
-
     // Vendor ID's for SMK and Topseed devices.
     const string VidSMK       = "vid_1784";
     const string VidTopseed   = "vid_0609";
@@ -192,26 +190,14 @@ namespace MicrosoftMceTransceiver
 #endif
 
       _notifyWindow = new NotifyWindow();
+      _notifyWindow.Create();
       _notifyWindow.Class = _deviceGuid;
+      _notifyWindow.RegisterDeviceArrival();
 
       OpenDevice();
       StartReadThread();
+      InitializeDevice();
 
-      // Initialize device ...
-      WriteSync(StartPacket);
-
-      // Testing some commands that MCE sends, but I don't know what they mean (what do these get back?)
-      WriteSync(new byte[] { 0xFF, 0x0B });
-      WriteSync(new byte[] { 0x9F, 0x05 });
-      WriteSync(new byte[] { 0x9F, 0x0D });
-      Thread.Sleep(4 * PacketTimeout);
-      
-      SetTimeout(PacketTimeout);
-      SetInputPort(InputPort.Receive);
-
-      _notifyWindow.Create();
-      _notifyWindow.RegisterDeviceArrival();
-      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
       _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
     }
@@ -225,36 +211,34 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Stop()");
 #endif
 
-      _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
-      _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
-
-      /*
       try
       {
+        _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
+        _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
+
         WriteSync(StopPacket);
-        Thread.Sleep(PacketTimeout);
+        StopReadThread();
+        CloseDevice();
       }
 #if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
-      }
 #else
       catch
       {
-      }
 #endif
-      */
-
-      StopReadThread();
-      CloseDevice();
-
-      _notifyWindow.Dispose();
-      _notifyWindow = null;
+        throw;
+      }
+      finally
+      {
+        _notifyWindow.Dispose();
+        _notifyWindow = null;
 
 #if DEBUG
-      DebugClose();
+        DebugClose();
 #endif
+      }
     }
 
     /// <summary>
@@ -283,18 +267,29 @@ namespace MicrosoftMceTransceiver
 
       try
       {
+        if (String.IsNullOrEmpty(Driver.Find(_deviceGuid)))
+        {
+#if DEBUG
+          DebugWriteLine("Device not available");
+#endif
+          return;
+        }
+
         OpenDevice();
         StartReadThread();
+        InitializeDevice();
       }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+      }
+#else
       catch
       {
-#if DEBUG
-        DebugWriteLine("Resume(): Failed to start device");
-#endif
+        throw;
       }
-
-      //WriteSync(StartPacket);
-      //Thread.Sleep(PacketTimeout);
+#endif
     }
 
     /// <summary>
@@ -372,21 +367,34 @@ namespace MicrosoftMceTransceiver
 
       // Reset device (hopefully this will stop the blaster from stalling)
       //WriteSync(ResetPacket);
-      //Thread.Sleep(PacketTimeout);
 
       SetOutputPort(port);
       SetCarrierFrequency(code.Carrier);
 
       // Send packet
       WriteSync(DataPacket(code));
-
-      // Force a delay between blasts (hopefully solves back-to-back blast errors) ...
-      //Thread.Sleep(PacketTimeout);
     }
 
     #endregion Driver overrides
 
     #region Implementation
+
+    /// <summary>
+    /// Initializes the device.
+    /// </summary>
+    void InitializeDevice()
+    {
+      WriteSync(StartPacket);
+
+      // Testing some commands that MCE sends, but I don't know what they mean (what do these get back?)
+      WriteSync(new byte[] { 0xFF, 0x0B }); // Looks like a request for Firmware version
+      WriteSync(new byte[] { 0x9F, 0x05 });
+      WriteSync(new byte[] { 0x9F, 0x0D });
+      Thread.Sleep(4 * PacketTimeout);
+
+      SetTimeout(PacketTimeout);
+      SetInputPort(InputPort.Receive);
+    }
 
     /// <summary>
     /// Converts an IrCode into raw data for the device.
@@ -526,11 +534,6 @@ namespace MicrosoftMceTransceiver
 
       if (carrier != IrCode.CarrierFrequencyDCMode)
       {
-        /*
-        carrierPacket[2] = 0x80;
-        carrierPacket[3] = (byte)Math.Round(ClockFrequency / carrier);
-        */
-
         for (int scaler = 1; scaler <= 4; scaler++)
         {
           int divisor = (10000000 >> (2 * scaler)) / carrier;
@@ -557,7 +560,12 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_readThread != null)
+      {
+#if DEBUG
+        DebugWriteLine("Read thread already started");
+#endif
         return;
+      }
 
       _stopReadThread = new ManualResetEvent(false);
       _readThreadMode = ReadThreadMode.Receiving;
@@ -577,18 +585,38 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_readThread == null)
+      {
+#if DEBUG
+        DebugWriteLine("Read thread already stopped");
+#endif
         return;
+      }
 
-      _readThreadMode = ReadThreadMode.Stop;
-      _stopReadThread.Set();
+      try
+      {
+        _readThreadMode = ReadThreadMode.Stop;
 
-      if (!_readThread.Join(PacketTimeout * 2))
-        _readThread.Abort();
+        if (!_stopReadThread.Set() || !_readThread.Join(PacketTimeout * 2))
+          _readThread.Abort();
+      }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+        // Ignore exceptions while terminating read thread
+      }
+#endif
+      finally
+      {
+        _stopReadThread.Close();
+        _stopReadThread = null;
 
-      _stopReadThread.Close();
-      _stopReadThread = null;
-
-      _readThread = null;
+        _readThread = null;
+      }
     }
 
     /// <summary>
@@ -601,7 +629,12 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_eHomeHandle != null)
+      {
+#if DEBUG
+        DebugWriteLine("Device already open");
+#endif
         return;
+      }
 
       _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
@@ -610,6 +643,8 @@ namespace MicrosoftMceTransceiver
         _eHomeHandle = null;
         throw new Win32Exception(lastError);
       }
+
+      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
 
       _deviceAvailable = true;
     }
@@ -626,7 +661,14 @@ namespace MicrosoftMceTransceiver
       _deviceAvailable = false;
 
       if (_eHomeHandle == null)
+      {
+#if DEBUG
+        DebugWriteLine("Device already closed");
+#endif
         return;
+      }
+
+      _notifyWindow.UnregisterDeviceRemoval();
 
       CloseHandle(_eHomeHandle);
 
@@ -642,6 +684,7 @@ namespace MicrosoftMceTransceiver
 
       OpenDevice();
       StartReadThread();
+      InitializeDevice();
     }
     void OnDeviceRemoval()
     {

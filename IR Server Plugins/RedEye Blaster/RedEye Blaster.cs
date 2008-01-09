@@ -80,7 +80,7 @@ namespace RedEyeBlaster
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -93,21 +93,9 @@ namespace RedEyeBlaster
     public override string Description  { get { return "Support for the RedEye serial IR Blaster device"; } }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
-    /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
-    {
-      return false;
-    }
-
-    /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
 
@@ -129,8 +117,6 @@ namespace RedEyeBlaster
       }
 
       Thread.Sleep(500);
-
-      return true;
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
@@ -182,13 +168,13 @@ namespace RedEyeBlaster
       LoadSettings();
 
       Configure config = new Configure();
-      config.CommPort = _serialPortName;
-      config.BlasterMode = _blastMode;
+      config.CommPort     = _serialPortName;
+      config.BlasterMode  = _blastMode;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
-        _serialPortName = config.CommPort;
-        _blastMode = config.BlasterMode;
+        _serialPortName   = config.CommPort;
+        _blastMode        = config.BlasterMode;
 
         SaveSettings();
       }

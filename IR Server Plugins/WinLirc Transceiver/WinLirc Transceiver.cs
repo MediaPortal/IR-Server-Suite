@@ -53,7 +53,7 @@ namespace WinLircTransceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -86,21 +86,18 @@ namespace WinLircTransceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
 
       if (_startServer)
       {
         if (!WinLircServer.StartServer(_serverPath))
-          return false;
+          throw new ApplicationException("Failed to start server");
       }
 
       _server = new WinLircServer(_serverIP, _serverPort, TimeSpan.FromMilliseconds(_buttonReleaseTime));
       _server.CommandEvent += new WinLircServer.CommandEventHandler(CommandHandler);
-
-      return true;
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

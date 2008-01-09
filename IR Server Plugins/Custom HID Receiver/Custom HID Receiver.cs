@@ -80,7 +80,7 @@ namespace CustomHIDReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -100,21 +100,22 @@ namespace CustomHIDReceiver
     /// </returns>
     public override bool Detect()
     {
+      // TODO: Add detection code.
       return false;
     }
 
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       _receiverWindow.ProcMsg += new ProcessMessage(ProcMessage);
 
       _device.dwFlags = RawInput.RawInputDeviceFlags.InputSink;      
       _device.hwndTarget = _receiverWindow.Handle;
-      
-      return RegisterForRawInput(_device);
+
+      if (!RegisterForRawInput(_device))
+        throw new ApplicationException("Failed to register for HID Raw input");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

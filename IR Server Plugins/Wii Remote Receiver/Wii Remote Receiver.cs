@@ -61,7 +61,7 @@ namespace WiiRemoteReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -87,8 +87,7 @@ namespace WiiRemoteReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
 
@@ -106,12 +105,13 @@ namespace WiiRemoteReceiver
       }
       catch
       {
-        _wiimote.Dispose();
-        _wiimote = null;
         throw;
       }
-
-      return true;
+      finally
+      {
+        _wiimote.Dispose();
+        _wiimote = null;
+      }
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

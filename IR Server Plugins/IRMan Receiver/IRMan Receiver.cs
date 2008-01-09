@@ -59,7 +59,7 @@ namespace IRManReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -85,8 +85,7 @@ namespace IRManReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
 
@@ -114,11 +113,11 @@ namespace IRManReceiver
       {
         _serialPort.ReceivedBytesThreshold = DeviceBufferSize;
         _serialPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
-
-        return true;
       }
-
-      return false;
+      else
+      {
+        throw new ApplicationException("Failed to initialize device");
+      }
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

@@ -25,7 +25,7 @@ namespace InputService
 
     public const string ServiceName         = "InputService";
     public const string ServiceDisplayName  = "Input Service";
-    public const string ServiceDescription  = "Provides access to input devices";
+    public const string ServiceDescription  = "The main component of IR Server Suite, the Input Service provides access to your input devices";
 
     #endregion Constants
 

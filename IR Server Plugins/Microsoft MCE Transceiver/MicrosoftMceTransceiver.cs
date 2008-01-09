@@ -123,7 +123,7 @@ namespace MicrosoftMceTransceiver
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -158,7 +158,7 @@ namespace MicrosoftMceTransceiver
     /// Start the IR Server plugin.
     /// </summary>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
 #if TRACE
       Trace.WriteLine("Start MicrosoftMceTransceiver");
@@ -197,14 +197,12 @@ namespace MicrosoftMceTransceiver
       }
       else
       {
-        return false;
+        throw new ApplicationException("Device not found");
       }
 
       newDriver.Start();
 
       _driver = newDriver;
-
-      return true;
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

@@ -1147,7 +1147,7 @@ namespace IrFileTool
         bool pulse = (timingData[i] > 0);
         bool ignored = true;
 
-        Trace.WriteLine(String.Format("RC6 - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), RC6_Data.State), timingData[i]));
+        //Trace.WriteLine(String.Format("RC6 - {0}: {1}", Enum.GetName(typeof(RemoteDetectionState), RC6_Data.State), timingData[i]));
 
         switch (RC6_Data.State)
         {
@@ -1292,8 +1292,6 @@ namespace IrFileTool
               if (pulse)
                 break;
 
-              Trace.WriteLine("LongPulse at Bit " + RC6_Data.Bit);
-
               if (IsBetween(duration, 750, 1000))
               {
                 RC6_Data.Bit--;
@@ -1314,8 +1312,6 @@ namespace IrFileTool
 
               if (!pulse)
                 break;
-
-              Trace.WriteLine("LongSpace at Bit " + RC6_Data.Bit);
 
               if (RC6_Data.Bit == 32)
                 RC6_Data.Bit = 24;

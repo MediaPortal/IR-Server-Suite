@@ -53,7 +53,7 @@ namespace GirderPlugin
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -66,21 +66,9 @@ namespace GirderPlugin
     public override string Description  { get { return "Supports using Girder 3.x plugins with IR Server"; } }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
-    /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
-    {
-      return false;
-    }
-
-    /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
 
@@ -88,11 +76,23 @@ namespace GirderPlugin
 
       _pluginWrapper.EventCallback += new PluginEventCallback(PluginCallback);
 
-      bool open = _pluginWrapper.GirOpen();
-      if (open)
-        _pluginWrapper.GirStart();
+      if (!_pluginWrapper.GirOpen())
+      {
+        _pluginWrapper.Dispose();
+        _pluginWrapper = null;
 
-      return open;
+        throw new ApplicationException("Failed to initiate girder plugin");
+      }
+
+      if (!_pluginWrapper.GirStart())
+      {
+        _pluginWrapper.GirClose();
+        _pluginWrapper.Dispose();
+        _pluginWrapper = null;
+
+        throw new ApplicationException("Failed to start girder plugin");
+      }
+
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

@@ -50,7 +50,7 @@ namespace X10Transceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -92,37 +92,18 @@ namespace X10Transceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
-      try
-      {
-        if (X10Inter == null)
-        {
-          X10Inter = new X10Interface();
-          if (X10Inter == null)
-            throw new ApplicationException("Failed to start X10 interface");
+      X10Inter = new X10Interface();
+      if (X10Inter == null)
+        throw new ApplicationException("Failed to start X10 interface");
 
-          // Bind the interface using a connection point
-          icpc = (IConnectionPointContainer)X10Inter;
-          Guid IID_InterfaceEvents = typeof(_DIX10InterfaceEvents).GUID;
-          icpc.FindConnectionPoint(ref IID_InterfaceEvents, out icp);
-          icp.Advise(this, out cookie);
-        }
-
-        return true;
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-#else
-      catch
-      {
-#endif
-        return false;
-      }
-    }
+      // Bind the interface using a connection point
+      icpc = (IConnectionPointContainer)X10Inter;
+      Guid IID_InterfaceEvents = typeof(_DIX10InterfaceEvents).GUID;
+      icpc.FindConnectionPoint(ref IID_InterfaceEvents, out icp);
+      icp.Advise(this, out cookie);
+  }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>

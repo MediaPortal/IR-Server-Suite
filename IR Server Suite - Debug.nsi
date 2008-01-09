@@ -8,9 +8,9 @@
 !include "MUI.nsh"
 
 !define PRODUCT_NAME "IR Server Suite"
-!define PRODUCT_VERSION "1.0.4.1"
+!define PRODUCT_VERSION "1.0.4.2"
 !define PRODUCT_PUBLISHER "and-81"
-!define PRODUCT_WEB_SITE "http://forum.team-mediaportal.com/showthread.php?t=33512"
+!define PRODUCT_WEB_SITE "http://forum.team-mediaportal.com/mce_replacement_plugin-f165.html"
 
 Name "${PRODUCT_NAME}"
 OutFile "${PRODUCT_NAME} - ${PRODUCT_VERSION}.exe"
@@ -27,8 +27,8 @@ var DIR_MEDIAPORTAL
 var DIR_TVSERVER
 
 !define MUI_ABORTWARNING
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\win-install.ico"
+!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "Documentation\LICENSE.GPL"

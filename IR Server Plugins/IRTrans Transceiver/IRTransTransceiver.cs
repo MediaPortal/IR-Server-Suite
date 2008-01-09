@@ -221,7 +221,7 @@ namespace IRTransTransceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -241,24 +241,30 @@ namespace IRTransTransceiver
     /// </returns>
     public override bool Detect()
     {
-      return false;
+      LoadSettings();
+
+      if (Connect(_irTransServerAddress, _irTransServerPort))
+      {
+        _socket.Close();
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
 
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
 
       if (Connect(_irTransServerAddress, _irTransServerPort))
-      {
         BeginReceive();
-        return true;
-      }
-
-      return false;
+      else
+        throw new ApplicationException("Failed to connect");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

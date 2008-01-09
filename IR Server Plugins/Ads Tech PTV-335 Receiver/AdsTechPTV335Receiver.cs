@@ -55,7 +55,7 @@ namespace AdsTechPTV335Receiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -77,7 +77,7 @@ namespace AdsTechPTV335Receiver
     {
       try
       {
-        return (Init() == 1);
+        return (Init() != 0);
       }
       catch
       {
@@ -89,22 +89,13 @@ namespace AdsTechPTV335Receiver
     /// Start the IR Server plugin.
     /// </summary>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
-      try
-      {
-        int retVal = Init();
-        if (retVal == 0)
-          return false;
+      int retVal = Init();
+      if (retVal == 0)
+        throw new ApplicationException("Failed to initialize device access");
 
-        StartReadThread();
-
-        return true;
-      }
-      catch
-      {
-        return false;
-      }
+      StartReadThread();
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

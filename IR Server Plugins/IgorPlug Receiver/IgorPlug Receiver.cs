@@ -159,7 +159,7 @@ namespace IgorPlugReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -175,14 +175,12 @@ namespace IgorPlugReceiver
     /// Start the IR Server plugin.
     /// </summary>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
       ThreadStart readThreadStart = new ThreadStart(ReadThread);
       _readThread = new Thread(readThreadStart);
       _readThread.IsBackground = true;
       _readThread.Start();
-
-      return true;
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

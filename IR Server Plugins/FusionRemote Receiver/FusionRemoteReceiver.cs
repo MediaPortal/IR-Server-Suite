@@ -211,7 +211,7 @@ namespace FusionRemoteReceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -249,29 +249,13 @@ namespace FusionRemoteReceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override bool Start()
+    public override void Start()
     {
-      try
-      {
-        OpenDevice();
+      OpenDevice();
 
-        _deviceBuffer = new byte[128];
+      _deviceBuffer = new byte[128];
 
-        _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
-
-        return true;
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine("FusionRemoteReceiver: " + ex.ToString());
-#else
-      catch
-      {
-#endif
-        return false;
-      }
+      _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

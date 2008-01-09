@@ -133,7 +133,7 @@ namespace DirectInputReceiver
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
-    public override string Version      { get { return "1.0.4.1"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -151,6 +151,7 @@ namespace DirectInputReceiver
     /// </returns>
     public override bool Detect()
     {
+      // TODO: Add detection code.
       return false;
     }
 
@@ -158,7 +159,7 @@ namespace DirectInputReceiver
     /// Start the IR Server plugin.
     /// </summary>
     /// <returns>true if successful, otherwise false.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
 
@@ -168,19 +169,22 @@ namespace DirectInputReceiver
       _diListener.Delay = 150;
       _diListener.OnStateChange += new DirectInputListener.diStateChange(diListener_OnStateChange);
 
-      return AcquireDevice();
+      if (!AcquireDevice())
+        throw new ApplicationException("Failed to acquire device");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
     public override void Suspend()
     {
+      Stop();
     }
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
     public override void Resume()
     {
+      Start();
     }
     /// <summary>
     /// Stop the IR Server plugin.

@@ -46,18 +46,17 @@ namespace IRServerPluginInterface
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public abstract bool Start();
+    public abstract void Start();
 
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
-    public virtual void Suspend() { }
+    public abstract void Suspend();
 
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
-    public virtual void Resume() { }
+    public abstract void Resume();
 
     /// <summary>
     /// Stop the IR Server plugin.

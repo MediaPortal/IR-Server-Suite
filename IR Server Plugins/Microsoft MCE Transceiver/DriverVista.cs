@@ -572,20 +572,16 @@ namespace MicrosoftMceTransceiver
 #endif
 
       _notifyWindow = new NotifyWindow();
+      _notifyWindow.Create();
       _notifyWindow.Class = _deviceGuid;
+      _notifyWindow.RegisterDeviceArrival();
 
       OpenDevice();
-
-      // Initialize device ...
-      GetDeviceCapabilities();
-      GetBlasters();
+      InitializeDevice();
 
       StartReceive(_receivePort, PacketTimeout);
       StartReadThread(ReadThreadMode.Receiving);
 
-      _notifyWindow.Create();
-      _notifyWindow.RegisterDeviceArrival();
-      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
       _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
     }
@@ -599,18 +595,33 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Stop()");
 #endif
 
-      _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
-      _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
+      try
+      {
+        _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
+        _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
 
-      StopReadThread();
-      CloseDevice();
-
-      _notifyWindow.Dispose();
-      _notifyWindow = null;
+        StopReadThread();
+        CloseDevice();
+      }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
+        throw;
+      }
+      finally
+      {
+        _notifyWindow.Dispose();
+        _notifyWindow = null;
 
 #if DEBUG
-      DebugClose();
+        DebugClose();
 #endif
+      }
     }
 
     /// <summary>
@@ -637,19 +648,31 @@ namespace MicrosoftMceTransceiver
 
       try
       {
+        if (String.IsNullOrEmpty(Driver.Find(_deviceGuid)))
+        {
+#if DEBUG
+          DebugWriteLine("Device not available");
+#endif
+          return;
+        }
+
         OpenDevice();
+        InitializeDevice();
 
         StartReceive(_receivePort, PacketTimeout);
         StartReadThread(ReadThreadMode.Receiving);
       }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+      }
+#else
       catch
       {
-#if DEBUG
-        DebugWriteLine("Resume(): Failed to start device");
-#endif
+        throw;
       }
-
-      //Start();
+#endif
     }
 
     /// <summary>
@@ -747,6 +770,15 @@ namespace MicrosoftMceTransceiver
     #region Implementation
 
     /// <summary>
+    /// Initializes the device.  Called immediately after opening the device.
+    /// </summary>
+    void InitializeDevice()
+    {
+      GetDeviceCapabilities();
+      GetBlasters();
+    }
+
+    /// <summary>
     /// Converts an IrCode into raw data for the device.
     /// </summary>
     /// <param name="code">IrCode to convert.</param>
@@ -787,7 +819,12 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_readThread != null)
-        throw new ApplicationException("Read thread is already running");
+      {
+#if DEBUG
+        DebugWriteLine("Read thread already started");
+#endif
+        return;
+      }
 
       _readThreadMode = mode;
 
@@ -806,7 +843,12 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_readThread == null)
+      {
+#if DEBUG
+        DebugWriteLine("Read thread already stopped");
+#endif
         return;
+      }
 
       _readThreadMode = ReadThreadMode.Stop;
 
@@ -828,7 +870,12 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_eHomeHandle != null)
+      {
+#if DEBUG
+        DebugWriteLine("Device already open");
+#endif
         return;
+      }
 
       _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
@@ -837,6 +884,8 @@ namespace MicrosoftMceTransceiver
         _eHomeHandle = null;
         throw new Win32Exception(lastError);
       }
+
+      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
 
       Thread.Sleep(PacketTimeout); // Hopefully improves compatibility with Zalman remote which times out retrieving device capabilities. (2008-01-01)
 
@@ -855,7 +904,12 @@ namespace MicrosoftMceTransceiver
       _deviceAvailable = false;
 
       if (_eHomeHandle == null)
+      {
+#if DEBUG
+        DebugWriteLine("Device already closed");
+#endif
         return;
+      }
 
       CloseHandle(_eHomeHandle);
 
@@ -870,6 +924,7 @@ namespace MicrosoftMceTransceiver
 #endif
 
       OpenDevice();
+      InitializeDevice();
 
       StartReceive(_receivePort, PacketTimeout);
       StartReadThread(ReadThreadMode.Receiving);

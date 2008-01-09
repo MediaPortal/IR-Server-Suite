@@ -15,7 +15,7 @@ namespace MicrosoftMceTransceiver
 {
 
   /// <summary>
-  /// Driver class for replacement driver.
+  /// Driver class for the replacement driver.
   /// </summary>
   class DriverReplacement : Driver
   {
@@ -85,7 +85,9 @@ namespace MicrosoftMceTransceiver
 
     #region Constants
 
-    const double ClockFrequency = 2412460.0;
+    const int TimingResolution = 50; // In microseconds.
+
+    //const double ClockFrequency = 2412460.0;
 
     // Vendor ID's for SMK and Topseed devices.
     const string VidSMK       = "vid_1784";
@@ -191,21 +193,14 @@ namespace MicrosoftMceTransceiver
 #endif
 
       _notifyWindow = new NotifyWindow();
+      _notifyWindow.Create();
       _notifyWindow.Class = _deviceGuid;
+      _notifyWindow.RegisterDeviceArrival();
 
       OpenDevice();
       StartReadThread();
+      InitializeDevice();
 
-      // Initialize device ...
-      WriteSync(StartPacket);
-      Thread.Sleep(PacketTimeout);
-
-      SetTimeout(PacketTimeout);
-      SetInputPort(InputPort.Receive);
-
-      _notifyWindow.Create();
-      _notifyWindow.RegisterDeviceArrival();
-      _notifyWindow.RegisterDeviceRemoval(_readHandle.DangerousGetHandle());
       _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
     }
@@ -219,36 +214,34 @@ namespace MicrosoftMceTransceiver
       DebugWriteLine("Stop()");
 #endif
 
-      _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
-      _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
-
-      /*
       try
       {
+        _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
+        _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
+
         WriteSync(StopPacket);
-        Thread.Sleep(PacketTimeout);
+        StopReadThread();
+        CloseDevice();
       }
 #if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
-      }
 #else
       catch
       {
-      }
 #endif
-      */
-
-      StopReadThread();
-      CloseDevice();
-
-      _notifyWindow.Dispose();
-      _notifyWindow = null;
+        throw;
+      }
+      finally
+      {
+        _notifyWindow.Dispose();
+        _notifyWindow = null;
 
 #if DEBUG
-      DebugClose();
+        DebugClose();
 #endif
+      }
     }
 
     /// <summary>
@@ -261,7 +254,6 @@ namespace MicrosoftMceTransceiver
 #endif
 
       WriteSync(StopPacket);
-      Thread.Sleep(PacketTimeout);
 
       StopReadThread();
       CloseDevice();
@@ -278,18 +270,29 @@ namespace MicrosoftMceTransceiver
 
       try
       {
+        if (String.IsNullOrEmpty(Driver.Find(_deviceGuid)))
+        {
+#if DEBUG
+          DebugWriteLine("Device not available");
+#endif
+          return;
+        }
+
         OpenDevice();
         StartReadThread();
+        InitializeDevice();
       }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+      }
+#else
       catch
       {
-#if DEBUG
-        DebugWriteLine("Resume(): Failed to start device");
-#endif
+        throw;
       }
-
-      //WriteSync(StartPacket);
-      //Thread.Sleep(PacketTimeout);
+#endif
     }
 
     /// <summary>
@@ -365,30 +368,14 @@ namespace MicrosoftMceTransceiver
       DebugDump(code.TimingData);
 #endif
 
-      byte[] portPacket;
-      switch (_deviceType)
-      {
-        case DeviceType.Microsoft:  portPacket = MicrosoftPorts[port];  break;
-        case DeviceType.SmkTopseed: portPacket = SmkTopseedPorts[port]; break;
-        default:
-          throw new ApplicationException("Invalid device type");
-      }
-
       // Reset device (hopefully this will stop the blaster from stalling)
       //WriteSync(ResetPacket);
-      //Thread.Sleep(PacketTimeout);
 
-      // Set port
-      WriteSync(portPacket);
-
-      // Set carrier frequency
-      WriteSync(CarrierPacket(code));
+      SetOutputPort(port);
+      SetCarrierFrequency(code.Carrier);
 
       // Send packet
       WriteSync(DataPacket(code));
-
-      // Force a delay between blasts (hopefully solves back-to-back blast errors) ...
-      Thread.Sleep(PacketTimeout);
     }
 
     #endregion Driver overrides
@@ -396,32 +383,20 @@ namespace MicrosoftMceTransceiver
     #region Implementation
 
     /// <summary>
-    /// Create a device data packet to set the Carrier frequency.
+    /// Initializes the device.
     /// </summary>
-    /// <param name="code">IrCode to get carrier frequency from.</param>
-    /// <returns>Raw device data.</returns>
-    static byte[] CarrierPacket(IrCode code)
+    void InitializeDevice()
     {
-      byte[] carrierPacket = new byte[SetCarrierFreqPacket.Length];
-      SetCarrierFreqPacket.CopyTo(carrierPacket, 0);
+      WriteSync(StartPacket);
 
-      if (code.Carrier == IrCode.CarrierFrequencyDCMode)
-        return carrierPacket;
+      // Testing some commands that MCE sends, but I don't know what they mean (what do these get back?)
+      WriteSync(new byte[] { 0xFF, 0x0B }); // Looks like a request for Firmware version
+      WriteSync(new byte[] { 0x9F, 0x05 });
+      WriteSync(new byte[] { 0x9F, 0x0D });
+      Thread.Sleep(4 * PacketTimeout);
 
-      int carrier = code.Carrier;
-
-      if (code.Carrier == IrCode.CarrierFrequencyUnknown)
-      {
-        carrier = IrCode.CarrierFrequencyDefault;
-#if DEBUG
-        DebugWriteLine("CarrierPacket(): No carrier frequency specificied, using default ({0})", carrier);
-#endif
-      }
-
-      carrierPacket[2] = 0x80;
-      carrierPacket[3] = (byte)Math.Round(ClockFrequency / carrier);
-
-      return carrierPacket;
+      SetTimeout(PacketTimeout);
+      SetInputPort(InputPort.Receive);
     }
 
     /// <summary>
@@ -444,12 +419,12 @@ namespace MicrosoftMceTransceiver
       for (int index = 0; index < code.TimingData.Length; index++)
       {
         double time = (double)code.TimingData[index];
-        
-        byte duration = (byte)Math.Abs(Math.Round(time / 50));
+
+        byte duration = (byte)Math.Abs(Math.Round(time / TimingResolution));
         bool pulse = (time > 0);
 
 #if DEBUG
-        DebugWrite("{0}{1}, ", pulse ? '+' : '-', duration * 50);
+        DebugWrite("{0}{1}, ", pulse ? '+' : '-', duration * TimingResolution);
 #endif
 
         while (duration > 0x7F)
@@ -497,7 +472,7 @@ namespace MicrosoftMceTransceiver
       byte[] timeoutPacket = new byte[SetTimeoutPacket.Length];
       SetTimeoutPacket.CopyTo(timeoutPacket, 0);
 
-      int timeoutSamples = 20 * timeout; // 20 * timeout in milliseconds = timeout as multiple of 50 microseconds
+      int timeoutSamples = 1000 * timeout / TimingResolution;   // Timeout as a multiple of the timing resolution
 
       timeoutPacket[2] = (byte)(timeoutSamples >> 8);
       timeoutPacket[3] = (byte)(timeoutSamples & 0xFF);
@@ -506,7 +481,7 @@ namespace MicrosoftMceTransceiver
     }
 
     /// <summary>
-    /// Set the IR receiver input port.
+    /// Sets the IR receiver input port.
     /// </summary>
     /// <param name="port">The input port.</param>
     void SetInputPort(InputPort port)
@@ -520,6 +495,65 @@ namespace MicrosoftMceTransceiver
     }
 
     /// <summary>
+    /// Sets the IR blaster port.
+    /// </summary>
+    /// <param name="port">The output port.</param>
+    void SetOutputPort(int port)
+    {
+      byte[] portPacket;
+      switch (_deviceType)
+      {
+        case DeviceType.Microsoft:  portPacket = MicrosoftPorts[port];  break;
+        case DeviceType.SmkTopseed: portPacket = SmkTopseedPorts[port]; break;
+        default:
+          throw new ApplicationException("Invalid device type");
+      }
+
+      WriteSync(portPacket);
+    }
+
+    /// <summary>
+    /// Sets the IR output carrier frequency.
+    /// </summary>
+    /// <param name="carrier">The IR carrier frequency.</param>
+    void SetCarrierFrequency(int carrier)
+    {
+      if (carrier == IrCode.CarrierFrequencyUnknown)
+      {
+        carrier = IrCode.CarrierFrequencyDefault;
+#if DEBUG
+        DebugWriteLine("SetCarrierFrequency(): No carrier frequency specificied, using default ({0})", carrier);
+#endif
+      }
+#if DEBUG
+      else
+      {
+        DebugWriteLine("SetCarrierFrequency({0})", carrier);
+      }
+#endif
+
+      byte[] carrierPacket = new byte[SetCarrierFreqPacket.Length];
+      SetCarrierFreqPacket.CopyTo(carrierPacket, 0);
+
+      if (carrier != IrCode.CarrierFrequencyDCMode)
+      {
+        for (int scaler = 1; scaler <= 4; scaler++)
+        {
+          int divisor = (10000000 >> (2 * scaler)) / carrier;
+
+          if (divisor <= 0xFF)
+          {
+            carrierPacket[2] = (byte)scaler;
+            carrierPacket[3] = (byte)divisor;
+            break;
+          }
+        }
+      }
+
+      WriteSync(carrierPacket);
+    }
+
+    /// <summary>
     /// Start the device read thread.
     /// </summary>
     void StartReadThread()
@@ -529,7 +563,12 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_readThread != null)
+      {
+#if DEBUG
+        DebugWriteLine("Read thread already started");
+#endif
         return;
+      }
 
       _stopReadThread = new ManualResetEvent(false);
       _readThreadMode = ReadThreadMode.Receiving;
@@ -549,18 +588,38 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_readThread == null)
+      {
+#if DEBUG
+        DebugWriteLine("Read thread already stopped");
+#endif
         return;
+      }
 
-      _readThreadMode = ReadThreadMode.Stop;
-      _stopReadThread.Set();
+      try
+      {
+        _readThreadMode = ReadThreadMode.Stop;
 
-      if (!_readThread.Join(PacketTimeout * 2))
-        _readThread.Abort();
+        if (!_stopReadThread.Set() || !_readThread.Join(PacketTimeout * 2))
+          _readThread.Abort();
+      }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+        // Ignore exceptions while terminating read thread
+      }
+#endif
+      finally
+      {
+        _stopReadThread.Close();
+        _stopReadThread = null;
 
-      _stopReadThread.Close();
-      _stopReadThread = null;
-
-      _readThread = null;
+        _readThread = null;
+      }
     }
 
     /// <summary>
@@ -573,7 +632,12 @@ namespace MicrosoftMceTransceiver
 #endif
 
       if (_readHandle != null)
+      {
+#if DEBUG
+        DebugWriteLine("Device already open");
+#endif
         return;
+      }
 
       int lastError;
 
@@ -595,6 +659,8 @@ namespace MicrosoftMceTransceiver
         throw new Win32Exception(lastError);
       }
 
+      _notifyWindow.RegisterDeviceRemoval(_readHandle.DangerousGetHandle());
+
       _deviceAvailable = true;
     }
 
@@ -609,8 +675,18 @@ namespace MicrosoftMceTransceiver
 
       _deviceAvailable = false;
 
+      if (_readHandle == null && _writeHandle == null)
+      {
+#if DEBUG
+        DebugWriteLine("Device already closed");
+#endif
+        return;
+      }
+
       if (_readHandle != null)
       {
+        _notifyWindow.UnregisterDeviceRemoval();
+
         CloseHandle(_readHandle);
 
         _readHandle.Dispose();
@@ -634,6 +710,7 @@ namespace MicrosoftMceTransceiver
 
       OpenDevice();
       StartReadThread();
+      InitializeDevice();
     }
     void OnDeviceRemoval()
     {
@@ -686,7 +763,7 @@ namespace MicrosoftMceTransceiver
 
             while (true)
             {
-              int handle = WaitHandle.WaitAny(waitHandles, PacketTimeout + 50, false);
+              int handle = WaitHandle.WaitAny(waitHandles, 2 * PacketTimeout, false);
 
               if (handle == ErrorWaitTimeout)
                 continue;
@@ -714,7 +791,43 @@ namespace MicrosoftMceTransceiver
           int[] timingData = null;
 
           if (_decodeCarry != 0 || packetBytes[0] >= 0x81 && packetBytes[0] <= 0x8F)
+          {
             timingData = GetTimingDataFromPacket(packetBytes);
+          }
+#if DEBUG
+          else
+          {
+            DebugWriteLine("Received data:");
+            DebugDump(packetBytes);
+
+            double firmware = 0.0;
+
+            int indexOfFF = Array.IndexOf(packetBytes, (byte)0xFF);
+            while (indexOfFF != -1)
+            {
+              if (packetBytes.Length > indexOfFF + 2 && packetBytes[indexOfFF + 1] == 0x0B) // FF 0B XY - Firmware X.Y00
+              {
+                byte b1 = packetBytes[indexOfFF + 2];
+
+                firmware += (b1 >> 4) + (0.1 * (b1 & 0x0F));
+                DebugWriteLine("Firmware: {0}", firmware);
+              }
+
+              if (packetBytes.Length > indexOfFF + 2 && packetBytes[indexOfFF + 1] == 0x1B) // FF 1B XY - Firmware 0.0XY
+              {
+                byte b1 = packetBytes[indexOfFF + 2];
+
+                firmware += (0.01 * (b1 >> 4)) + (0.001 * (b1 & 0x0F));
+                DebugWriteLine("Firmware: {0}", firmware);
+              }
+
+              if (packetBytes.Length > indexOfFF + 1)
+                indexOfFF = Array.IndexOf(packetBytes, (byte)0xFF, indexOfFF + 1);
+              else
+                break;
+            }
+          }
+#endif
 
           switch (_readThreadMode)
           {
@@ -865,6 +978,8 @@ namespace MicrosoftMceTransceiver
 
         if (!getOverlapped && lastError != ErrorSuccess)
           throw new Win32Exception(lastError);
+
+        Thread.Sleep(PacketTimeout);
       }
       catch
       {
@@ -887,65 +1002,95 @@ namespace MicrosoftMceTransceiver
     /// <returns>Timing data.</returns>
     int[] GetTimingDataFromPacket(byte[] packet)
     {
-      List<int> timingData = new List<int>();
-
-      int len = 0;
-
-      for (int index = 0; index < packet.Length; )
-      {
-        byte curByte = packet[index];
-
-
-        if (_decodeCarry == 0)
-        {
-          if (curByte == 0x9F)
-            break;
-
-          if (curByte < 0x81 || curByte > 0x8F)
-            return null;
-        }
-
-        int bytes = _decodeCarry;
-        if (_decodeCarry == 0)
-          bytes = curByte & 0x7F;
-        else
-          _decodeCarry = 0;
-
-        if (index + bytes + 1 > packet.Length)
-        {
-          _decodeCarry = (index + bytes + 1) - packet.Length;
-          bytes -= _decodeCarry;
-        }
-
-        int j;
-        for (j = index + 1; j < index + bytes + 1; j++)
-        {
-          curByte = packet[j];
-
-          if ((curByte & 0x80) != 0)
-            len += (int)(curByte & 0x7F);
-          else
-            len -= (int)curByte;
-
-          if ((curByte & 0x7F) != 0x7F)
-          {
-            timingData.Add(len * 50);
-            len = 0;
-          }
-        }
-
-        index = j;
-      }
-
-      if (len != 0)
-        timingData.Add(len * 50);
-
 #if DEBUG
-      DebugWriteLine("Received:");
-      DebugDump(timingData.ToArray());
+      DebugWriteLine("GetTimingDataFromPacket()");
+
+      // TODO: Remove this try/catch block once the IndexOutOfRangeException is corrected...
+      try
+#endif
+      {
+#if DEBUG
+        if (_decodeCarry != 0)
+        {
+          DebugWriteLine("Decode Carry EXISTS: {0}", _decodeCarry);
+          DebugDump(packet);
+        }
 #endif
 
-      return timingData.ToArray();
+        List<int> timingData = new List<int>();
+
+        int len = 0;
+
+        for (int index = 0; index < packet.Length; )
+        {
+          byte curByte = packet[index];
+
+          if (_decodeCarry == 0)
+          {
+            if (curByte == 0x9F)
+              break;
+
+            if (curByte < 0x81 || curByte > 0x8F)
+              return null;
+          }
+
+          int bytes = _decodeCarry;
+          if (_decodeCarry == 0)
+            bytes = curByte & 0x7F;
+          else
+            _decodeCarry = 0;
+
+          if (index + bytes + 1 > packet.Length)
+          {
+            _decodeCarry = (index + bytes + 1) - packet.Length;
+            bytes -= _decodeCarry;
+
+#if DEBUG
+            DebugWriteLine("Decode Carry SET: {0}", _decodeCarry);
+            DebugDump(packet);
+#endif
+          }
+
+          int j;
+          for (j = index + 1; j < index + bytes + 1; j++)
+          {
+            curByte = packet[j];
+
+            if ((curByte & 0x80) != 0)
+              len += (int)(curByte & 0x7F);
+            else
+              len -= (int)curByte;
+
+            if ((curByte & 0x7F) != 0x7F)
+            {
+              timingData.Add(len * TimingResolution);
+              len = 0;
+            }
+          }
+
+          index = j;
+        }
+
+        if (len != 0)
+          timingData.Add(len * TimingResolution);
+
+#if DEBUG
+        DebugWriteLine("Received:");
+        DebugDump(timingData.ToArray());
+#endif
+
+        return timingData.ToArray();
+      }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+        DebugWriteLine("Method Input:");
+        DebugDump(packet);
+
+        return null;
+      }
+#endif
     }
 
     /// <summary>

@@ -238,33 +238,28 @@ namespace InputService
           {
             try
             {
-              if (plugin.Start())
+              plugin.Start();
+
+              IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
+              if (remoteReceiver != null)
+                remoteReceiver.RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
+
+              IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
+              if (keyboardReceiver != null)
+                keyboardReceiver.KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
+
+              IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
+              if (mouseReceiver != null)
+                mouseReceiver.MouseCallback += new MouseHandler(MouseHandlerCallback);
+
+              if (plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
               {
-                IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
-                if (remoteReceiver != null)
-                  remoteReceiver.RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
-
-                IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
-                if (keyboardReceiver != null)
-                  keyboardReceiver.KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
-
-                IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
-                if (mouseReceiver != null)
-                  mouseReceiver.MouseCallback += new MouseHandler(MouseHandlerCallback);
-
-                if (plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
-                {
-                  startedTransmit = true;
-                  IrssLog.Info("Transmit and Receive plugin started: \"{0}\"", plugin.Name);
-                }
-                else
-                {
-                  IrssLog.Info("Receiver plugin started: \"{0}\"", plugin.Name);
-                }
+                startedTransmit = true;
+                IrssLog.Info("Transmit and Receive plugin started: \"{0}\"", plugin.Name);
               }
               else
               {
-                IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
+                IrssLog.Info("Receiver plugin started: \"{0}\"", plugin.Name);
               }
             }
             catch (Exception ex)
@@ -287,10 +282,9 @@ namespace InputService
         {
           try
           {
-            if (_pluginTransmit.Start())
-              IrssLog.Info("Transmit plugin started: \"{0}\"", _pluginNameTransmit);
-            else
-              IrssLog.Error("Failed to start transmit plugin: \"{0}\"", _pluginNameTransmit);
+            _pluginTransmit.Start();
+
+            IrssLog.Info("Transmit plugin started: \"{0}\"", _pluginNameTransmit);
           }
           catch (Exception ex)
           {

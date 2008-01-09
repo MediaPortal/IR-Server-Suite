@@ -17,7 +17,7 @@ namespace HcwTransceiver
   /// IR Server plugin supporting Hauppauge devices.
   /// </summary>
   [CLSCompliant(false)]
-  public class HcwTransceiver : IRServerPluginBase, IRemoteReceiver // IConfigure, ITransmitIR, ILearnIR,
+  public class HcwTransceiver : IRServerPluginBase, IRemoteReceiver, IConfigure
   {
 
     #region Delegates
@@ -34,21 +34,14 @@ namespace HcwTransceiver
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\IR Server\\HCW Transceiver.xml";
 
-    static readonly string[] Ports  = new string[] { "Default", "Port 1", "Port 2" };
-
     #endregion Constants
 
     #region Variables
 
     RemoteHandler _remoteButtonHandler = null;
 
-    string _blastPort = Ports[0];
 
     int _repeatDelay;
-    int _blastRepeats;
-    int _learnTimeout;
-
-    //ulong _learnCarrierFreq;
 
     string _lastCode        = String.Empty;
     DateTime _lastCodeTime  = DateTime.Now;
@@ -66,7 +59,7 @@ namespace HcwTransceiver
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.0.4.0"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
@@ -81,12 +74,11 @@ namespace HcwTransceiver
     /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
-    public override bool Start()
+    public override void Start()
     {
       LoadSettings();
-      
-      return true;
+
+
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
@@ -122,14 +114,10 @@ namespace HcwTransceiver
       Configure config = new Configure();
 
       config.RepeatDelay  = _repeatDelay;
-      config.BlastRepeats = _blastRepeats;
-      config.LearnTimeout = _learnTimeout;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
         _repeatDelay  = config.RepeatDelay;
-        _blastRepeats = config.BlastRepeats;
-        _learnTimeout = config.LearnTimeout;
 
         SaveSettings();
       }
@@ -146,13 +134,6 @@ namespace HcwTransceiver
       set { _remoteButtonHandler = value; }
     }
 
-    /// <summary>
-    /// Gets the available ports.
-    /// </summary>
-    /// <value>The available ports.</value>
-    public string[] AvailablePorts { get { return Ports; }   }
-
-
 
     void LoadSettings()
     {
@@ -162,8 +143,6 @@ namespace HcwTransceiver
         doc.Load(ConfigurationFile);
 
         _repeatDelay  = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
-        _blastRepeats = int.Parse(doc.DocumentElement.Attributes["BlastRepeats"].Value);
-        _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value);
       }
 #if TRACE
       catch (Exception ex)
@@ -174,8 +153,6 @@ namespace HcwTransceiver
       {
 #endif
         _repeatDelay  = 500;
-        _blastRepeats = 4;
-        _learnTimeout = 10000;
       }
     }
     void SaveSettings()
@@ -190,8 +167,6 @@ namespace HcwTransceiver
         writer.WriteStartElement("settings"); // <settings>
 
         writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
-        writer.WriteAttributeString("BlastRepeats", _blastRepeats.ToString());
-        writer.WriteAttributeString("LearnTimeout", _learnTimeout.ToString());
 
         writer.WriteEndElement(); // </settings>
         writer.WriteEndDocument();
