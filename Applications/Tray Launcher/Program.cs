@@ -50,7 +50,7 @@ namespace TrayLauncher
     /// <param name="e">Event args.</param>
     public static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
-      IrssLog.Error(e.Exception.ToString());
+      IrssLog.Error(e.Exception);
     }
 
   }

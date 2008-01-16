@@ -91,7 +91,9 @@ namespace IrssUtils.Forms
     public void LearnStatus(string status, bool success)
     {
       if (labelLearned.InvokeRequired)
+      {
         this.Invoke(new LearnStatusDelegate(LearnStatus), new object[] { status, success });
+      }
       else
       {
         labelLearned.Text = status;

@@ -465,7 +465,15 @@ namespace MicrosoftMceTransceiver
     protected static void DebugWriteNewLine()
     {
       if (_debugFile != null)
+      {
         _debugFile.WriteLine();
+      }
+#if TRACE
+      else
+      {
+        Trace.WriteLine(String.Empty);
+      }
+#endif
     }
 
     /// <summary>
@@ -474,22 +482,17 @@ namespace MicrosoftMceTransceiver
     /// <param name="array">The array.</param>
     protected static void DebugDump(Array array)
     {
-#if !TRACE
-      if (_debugFile == null)
-        return;
-#endif
-
       foreach (object item in array)
       {
-        if (item is byte)         _debugFile.Write("{0:X2}", (byte)   item);
-        else if (item is ushort)  _debugFile.Write("{0:X4}", (ushort) item);
-        else if (item is int)     _debugFile.Write("{1}{0}", (int)    item, (int)item > 0 ? "+" : "");
-        else                      _debugFile.Write("{0}",             item);
-        
-        _debugFile.Write(", ");
+        if (item is byte)         DebugWrite("{0:X2}", (byte)   item);
+        else if (item is ushort)  DebugWrite("{0:X4}", (ushort) item);
+        else if (item is int)     DebugWrite("{1}{0}", (int)    item, (int)item > 0 ? "+" : String.Empty);
+        else                      DebugWrite("{0}",             item);
+
+        DebugWrite(", ");
       }
 
-      _debugFile.WriteLine();
+      DebugWriteNewLine();
     }
 
 #endif

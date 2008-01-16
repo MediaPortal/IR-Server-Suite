@@ -190,7 +190,7 @@ namespace WebRemote
     /// <param name="e">Event args.</param>
     static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
-      IrssLog.Error(e.Exception.ToString());
+      IrssLog.Error(e.Exception);
     }
 
     static bool Configure()
@@ -514,17 +514,17 @@ namespace WebRemote
               //_irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
               _registered = true;
 
-              IrssLog.Info("Registered to IR Server");
+              IrssLog.Info("Registered to Input Service");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              IrssLog.Warn("IR Server refused to register");
+              IrssLog.Warn("Input Service refused to register");
             }
             break;
 
           case MessageType.ServerShutdown:
-            IrssLog.Warn("IR Server Shutdown - Web Remote disabled until IR Server returns");
+            IrssLog.Warn("Input Service Shutdown - Web Remote disabled until Input Service returns");
             _registered = false;
             break;
 

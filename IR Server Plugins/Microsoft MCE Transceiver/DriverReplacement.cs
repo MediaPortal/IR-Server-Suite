@@ -87,8 +87,6 @@ namespace MicrosoftMceTransceiver
 
     const int TimingResolution = 50; // In microseconds.
 
-    //const double ClockFrequency = 2412460.0;
-
     // Vendor ID's for SMK and Topseed devices.
     const string VidSMK       = "vid_1784";
     const string VidTopseed   = "vid_0609";
@@ -772,7 +770,7 @@ namespace MicrosoftMceTransceiver
               else if (handle == 1)
                 throw new ThreadInterruptedException("Read thread stopping by request");
               else
-                throw new ApplicationException("Invalid wait handle return");
+                throw new ApplicationException(String.Format("Invalid wait handle return: {0}", handle));
             }
 
             bool getOverlapped = GetOverlappedResult(_readHandle, overlapped.Overlapped, out bytesRead, true);
@@ -901,17 +899,27 @@ namespace MicrosoftMceTransceiver
         }
       }
 #if DEBUG
-      catch (Exception ex)
+      catch (ThreadInterruptedException ex)
       {
-        DebugWriteLine(ex.ToString());
-#else
-      catch (Exception)
-      {
-#endif
+        DebugWriteLine(ex.Message);
 
         if (_readHandle != null)
           CancelIo(_readHandle);
       }
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+
+        if (_readHandle != null)
+          CancelIo(_readHandle);
+      }
+#else
+      catch (Exception)
+      {
+        if (_readHandle != null)
+          CancelIo(_readHandle);
+      }
+#endif
       finally
       {
         if (deviceBufferPtr != IntPtr.Zero)
@@ -969,9 +977,9 @@ namespace MicrosoftMceTransceiver
         int handle = WaitHandle.WaitAny(waitHandles, WriteSyncTimeout, false);
 
         if (handle == ErrorWaitTimeout)
-          throw new ApplicationException("Timeout trying to write data to device");
+          throw new System.TimeoutException("Timeout trying to write data to device");
         else if (handle != 0)
-          throw new ApplicationException("Invalid wait handle return");
+          throw new ApplicationException(String.Format("Invalid wait handle return: {0}", handle));
 
         bool getOverlapped = GetOverlappedResult(_writeHandle, overlapped.Overlapped, out bytesWritten, true);
         lastError = Marshal.GetLastWin32Error();

@@ -297,20 +297,20 @@ namespace IRBlast
           case MessageType.RegisterClient:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              Info("Registered to IR Server");
+              Info("Registered to Input Service");
               _registered = true;
               //_irServerInfo = TransceiverInfo.FromString(received.Data);
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              Warn("IR Server refused to register");
+              Warn("Input Service refused to register");
             }
             break;
 
           case MessageType.ServerShutdown:
             _registered = false;
-            Warn("IR Server Shutdown - Blasting disabled until IR Server returns");
+            Warn("Input Service Shutdown - Blasting disabled until Input Service returns");
             break;
 
           case MessageType.Error:

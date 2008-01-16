@@ -279,7 +279,7 @@ namespace Translator
 
       SetToListStyle();
 
-      string[] macros = Program.GetMacroList(false);
+      string[] macros = IrssMacro.GetMacroList(Program.FolderMacros, false);
       if (macros.Length == 0)
         return;
 
@@ -684,7 +684,7 @@ namespace Translator
         }
       }
     }
-    void Macro(string macroName)
+    void RunMacro(string macroName)
     {
       this.Close();
 
@@ -785,7 +785,7 @@ namespace Translator
         if (tag.StartsWith(TagLaunch, StringComparison.OrdinalIgnoreCase))
           Launch(tag.Substring(TagLaunch.Length));
         else if (tag.StartsWith(TagMacro, StringComparison.OrdinalIgnoreCase))
-          Macro(tag.Substring(TagMacro.Length));
+          RunMacro(tag.Substring(TagMacro.Length));
         else if (tag.StartsWith(TagCommand, StringComparison.OrdinalIgnoreCase))
           Command(tag.Substring(TagCommand.Length));
         else if (tag.StartsWith(TagEject, StringComparison.OrdinalIgnoreCase))

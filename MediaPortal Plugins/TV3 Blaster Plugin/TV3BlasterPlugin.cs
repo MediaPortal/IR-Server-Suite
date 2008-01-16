@@ -68,8 +68,6 @@ namespace TvEngine
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
-    static Hashtable _macroStacks;
-
     #endregion Variables
 
     #region Properties
@@ -142,9 +140,6 @@ namespace TvEngine
 
       Log.Info("TV3BlasterPlugin: Starting ({0})", PluginVersion);
 
-      // Hashtable for storing active macro stacks in.
-      _macroStacks = new Hashtable();
-
       // Load basic settings
       LoadSettings();
 
@@ -171,8 +166,6 @@ namespace TvEngine
       events.OnTvServerEvent -= new TvServerEventHandler(events_OnTvServerEvent);
 
       StopClient();
-
-      _macroStacks = null;
 
       if (LogVerbose)
         Log.Info("TV3BlasterPlugin: Stopped");
@@ -291,7 +284,7 @@ namespace TvEngine
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              Log.Error("TV3BlasterPlugin: IR Server refused to register");
+              Log.Error("TV3BlasterPlugin: Input Service refused to register");
             }
             break;
 
@@ -319,7 +312,7 @@ namespace TvEngine
             break;
 
           case MessageType.ServerShutdown:
-            Log.Info("TV3BlasterPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
+            Log.Info("TV3BlasterPlugin: Input Service Shutdown - Plugin disabled until Input Service returns");
             _registered = false;
             break;
 
@@ -351,7 +344,7 @@ namespace TvEngine
         TvServerEventArgs tvEvent = (TvServerEventArgs)eventArgs;
 
 #if DEBUG
-        Log.Debug("TV3BlasterPlugin: Received TV Server Event \"{0}\"", Enum.GetName(typeof(TvServerEventArgs), tvEvent.EventType));
+        Log.Debug("TV3BlasterPlugin: Received TV Server Event \"{0}\"", Enum.GetName(typeof(TvServerEventType), tvEvent.EventType));
 #endif
 
         if (tvEvent.EventType != TvServerEventType.StartZapChannel)
@@ -437,7 +430,7 @@ namespace TvEngine
     /// <summary>
     /// Processes the external channel.
     /// </summary>
-    /// <param name="args">String array of parameters.</param>
+    /// <param name="args">Integer array of parameters.</param>
     static void ProcessExternalChannel(object args)
     {
       try
@@ -448,7 +441,7 @@ namespace TvEngine
 
         ExternalChannelConfig config = GetExternalChannelConfig(data[1]);
         if (config == null)
-          throw new ApplicationException(String.Format("Failed to load external channel config for card \"{0}\"", data[1]));
+          throw new ApplicationException(String.Format("External channel config for card \"{0}\" not found", data[1]));
 
         // Clean up the "data[0]" string into "channel".
         StringBuilder channel = new StringBuilder();
@@ -606,7 +599,7 @@ namespace TvEngine
 
         if (!_registered)
         {
-          Log.Error("TV3BlasterPlugin: Not registered to an active IR Server");
+          Log.Error("TV3BlasterPlugin: Not registered to an active Input Service");
           return false;
         }
 
@@ -642,7 +635,7 @@ namespace TvEngine
         Log.Debug("TV3BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
-        throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
+        throw new ApplicationException("Cannot Blast, not registered to an active Input Service");
 
       using (FileStream file = File.OpenRead(fileName))
       {
@@ -776,96 +769,13 @@ namespace TvEngine
     /// <param name="fileName">Macro file to process (absolute path).</param>
     static void ProcMacro(string fileName)
     {
-      MacroStackAdd(Thread.CurrentThread.ManagedThreadId, fileName);
+      XmlDocument doc = new XmlDocument();
+      doc.Load(fileName);
 
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(fileName);
+      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
 
-        if (doc.DocumentElement.InnerText.Contains(Common.CmdPrefixBlast) && !_registered)
-          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
-
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
-
-        foreach (XmlNode item in commandSequence)
-          ProcCommand(item.Attributes["command"].Value);
-      }
-      finally
-      {
-        MacroStackRemove(Thread.CurrentThread.ManagedThreadId, fileName);
-      }
-    }
-
-    /// <summary>
-    /// Retreives the required Macro Stack from the Hashtable.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <returns>Macro Stack.</returns>
-    static List<string> GetMacroStack(int hash)
-    {
-      if (_macroStacks.ContainsKey(hash))
-      {
-        return (List<string>)_macroStacks[hash];
-      }
-      else
-      {
-        List<string> newStack = new List<string>();
-        _macroStacks.Add(hash, newStack);
-        return newStack;
-      }
-    }
-
-    /// <summary>
-    /// Adds to the Macro Stack.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackAdd(int hash, string fileName)
-    {
-      List<string> stack = GetMacroStack(hash);
-
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (stack.Contains(upperCasedFileName))
-      {
-        StringBuilder macroStackTrace = new StringBuilder();
-        macroStackTrace.AppendLine("Macro infinite loop detected!");
-        macroStackTrace.AppendLine();
-        macroStackTrace.AppendLine("Stack trace:");
-
-        foreach (string macro in stack)
-        {
-          if (macro.Equals(upperCasedFileName))
-            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
-          else
-            macroStackTrace.AppendLine(macro);
-        }
-
-        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
-
-        throw new ApplicationException(macroStackTrace.ToString());
-      }
-
-      stack.Add(upperCasedFileName);
-    }
-
-    /// <summary>
-    /// Removes from the Macro Stack.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackRemove(int hash, string fileName)
-    {
-      List<string> stack = GetMacroStack(hash);
-
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (stack.Contains(upperCasedFileName))
-        stack.Remove(upperCasedFileName);
-
-      if (stack.Count == 0)
-        _macroStacks.Remove(hash);
+      foreach (XmlNode item in commandSequence)
+        ProcCommand(item.Attributes["command"].Value);
     }
 
     /// <summary>

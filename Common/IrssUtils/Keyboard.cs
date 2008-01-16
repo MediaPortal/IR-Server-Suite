@@ -942,200 +942,204 @@ namespace IrssUtils
       // TODO: Keep track of opening and closing brackets ...
 
       //List<char> bracketModStack = new List<char>();
-
       
       bool Shift      = false;
       bool Alt        = false;
       bool Ctrl       = false;
       bool WinKey     = false;
 
-      for (int index = 0; index < keystrokes.Length; index++)
+      try
       {
-        char ch = keystrokes[index];
-
-        switch (ch)
+        for (int index = 0; index < keystrokes.Length; index++)
         {
-          case BraceOpen:
-            {
-              int endBrace = keystrokes.IndexOf(BraceClose, index);
+          char ch = keystrokes[index];
 
-              if (endBrace == -1)
-                throw new ArgumentException("Missing closing brace \"}\" after position " + index.ToString(), "keystrokes");
-
-              index++;
-
-              int length = endBrace - index;
-              if (length < 1)
-                throw new ArgumentException("Invalid braced command \"{}\"", "keystrokes");
-
-              string special = keystrokes.Substring(index, length);
-
-              if (special.Equals(ModifierAlt.ToString(), StringComparison.Ordinal))               KeyPress(ModifierAlt);
-              else if (special.Equals(ModifierControl.ToString(), StringComparison.Ordinal))      KeyPress(ModifierControl);
-              else if (special.Equals(ModifierShift.ToString(), StringComparison.Ordinal))        KeyPress(ModifierShift);
-              else if (special.Equals(ModifierWinKey.ToString(), StringComparison.Ordinal))       KeyPress(ModifierWinKey);
-              else if (special.Equals(BracketOpen.ToString(), StringComparison.Ordinal))          KeyPress(BracketOpen);
-              else if (special.Equals(BracketClose.ToString(), StringComparison.Ordinal))         KeyPress(BracketClose);
-              else if (special.Equals(EnterShortcut.ToString(), StringComparison.Ordinal))        KeyPress(EnterShortcut);
-              else if (special.Equals(CommandBraceOpen, StringComparison.OrdinalIgnoreCase))      KeyPress(BraceOpen);
-              else if (special.Equals(CommandBraceClose, StringComparison.OrdinalIgnoreCase))     KeyPress(BraceClose);
-              else if (special.StartsWith(CommandPause, StringComparison.OrdinalIgnoreCase))
+          switch (ch)
+          {
+            case BraceOpen:
               {
-                string pauseString = special.Substring(CommandPause.Length);
-                if (String.IsNullOrEmpty(pauseString))
-                  throw new ArgumentException("Invalid pause command: " + special, "keystrokes");
+                int endBrace = keystrokes.IndexOf(BraceClose, index);
 
-                int time = int.Parse(pauseString);
+                if (endBrace == -1)
+                  throw new Exceptions.CommandStructureException(String.Format("Missing closing brace \"}\" after position {0}", index));
 
-                Thread.Sleep(time);
+                index++;
+
+                int length = endBrace - index;
+                if (length < 1)
+                  throw new Exceptions.CommandStructureException("Invalid braced command \"{}\"");
+
+                string special = keystrokes.Substring(index, length);
+
+                if (special.Equals(ModifierAlt.ToString(), StringComparison.Ordinal)) KeyPress(ModifierAlt);
+                else if (special.Equals(ModifierControl.ToString(), StringComparison.Ordinal)) KeyPress(ModifierControl);
+                else if (special.Equals(ModifierShift.ToString(), StringComparison.Ordinal)) KeyPress(ModifierShift);
+                else if (special.Equals(ModifierWinKey.ToString(), StringComparison.Ordinal)) KeyPress(ModifierWinKey);
+                else if (special.Equals(BracketOpen.ToString(), StringComparison.Ordinal)) KeyPress(BracketOpen);
+                else if (special.Equals(BracketClose.ToString(), StringComparison.Ordinal)) KeyPress(BracketClose);
+                else if (special.Equals(EnterShortcut.ToString(), StringComparison.Ordinal)) KeyPress(EnterShortcut);
+                else if (special.Equals(CommandBraceOpen, StringComparison.OrdinalIgnoreCase)) KeyPress(BraceOpen);
+                else if (special.Equals(CommandBraceClose, StringComparison.OrdinalIgnoreCase)) KeyPress(BraceClose);
+                else if (special.StartsWith(CommandPause, StringComparison.OrdinalIgnoreCase))
+                {
+                  string pauseString = special.Substring(CommandPause.Length);
+                  if (String.IsNullOrEmpty(pauseString))
+                    throw new Exceptions.CommandStructureException(String.Format("Invalid pause command: {0}", special));
+
+                  int time = int.Parse(pauseString);
+
+                  Thread.Sleep(time);
+                }
+                else if (special.StartsWith(CommandBeep, StringComparison.OrdinalIgnoreCase))
+                {
+                  string beepString = special.Substring(CommandPause.Length);
+                  if (String.IsNullOrEmpty(beepString))
+                    throw new Exceptions.CommandStructureException(String.Format("Invalid beep command: {0}", special));
+
+                  string[] parameters = Common.SplitBeepCommand(beepString);
+
+                  Common.ProcessBeepCommand(parameters);
+                }
+                else
+                {
+                  int count = 1;
+
+                  int space = special.IndexOf(' ');
+                  if (space != -1)
+                  {
+                    string countString = special.Substring(space);
+                    if (!String.IsNullOrEmpty(countString))
+                      count = int.Parse(countString);
+                  }
+
+                  VKey vKey = VKey.None;
+                  try
+                  {
+                    if (special.StartsWith(PrefixVK, StringComparison.OrdinalIgnoreCase))
+                      vKey = (VKey)Enum.Parse(typeof(VKey), special, true);
+                    else
+                      vKey = (VKey)Enum.Parse(typeof(VKey), PrefixVK + special, true);
+                  }
+                  catch (Exception ex)
+                  {
+                    throw new Exceptions.CommandStructureException(String.Format("Invalid virtual key code \"{0}\"", special), ex);
+                  }
+
+                  for (int repeat = 0; repeat < count; repeat++)
+                    KeyPress(vKey);
+
+                  if (!inBrackets)
+                  {
+                    UndoModifiers(Alt, Ctrl, Shift, WinKey);
+                    Alt = false;
+                    Ctrl = false;
+                    Shift = false;
+                    WinKey = false;
+                  }
+                }
+
+                index = endBrace;
+                break;
               }
-              else if (special.StartsWith(CommandBeep, StringComparison.OrdinalIgnoreCase))
+
+            case BracketOpen:
               {
-                string beepString = special.Substring(CommandPause.Length);
-                if (String.IsNullOrEmpty(beepString))
-                  throw new ArgumentException("Invalid beep command: " + special, "keystrokes");
-
-                string[] parameters = Common.SplitBeepCommand(beepString);
-
-                Common.ProcessBeepCommand(parameters);
+                inBrackets = true;
+                break;
               }
-              else
+
+            case BracketClose:
               {
-                int count = 1;
-
-                int space = special.IndexOf(' ');
-                if (space != -1)
-                {
-                  string countString = special.Substring(space);
-                  if (!String.IsNullOrEmpty(countString))
-                    count = int.Parse(countString);
-                }
-
-                VKey vKey = VKey.None;
-                try
-                {
-                  if (special.StartsWith(PrefixVK, StringComparison.OrdinalIgnoreCase))
-                    vKey = (VKey)Enum.Parse(typeof(VKey), special, true);
-                  else
-                    vKey = (VKey)Enum.Parse(typeof(VKey), PrefixVK + special, true);
-                }
-                catch (Exception ex)
-                {
-                  throw new ArgumentException("Invalid virtual key code \"" + special + "\"", "keystrokes", ex);
-                }
-
-                for (int repeat = 0; repeat < count; repeat++)
-                  KeyPress(vKey);
+                inBrackets = false;
 
                 if (!inBrackets)
                 {
                   UndoModifiers(Alt, Ctrl, Shift, WinKey);
-                  Alt     = false;
-                  Ctrl    = false;
-                  Shift   = false;
-                  WinKey  = false;
+                  Alt = false;
+                  Ctrl = false;
+                  Shift = false;
+                  WinKey = false;
                 }
+                break;
               }
 
-              index = endBrace;
-              break;
-            }
-
-          case BracketOpen:
-            {
-              inBrackets = true;
-              break;
-            }
-
-          case BracketClose:
-            {
-              inBrackets = false;
-
-              if (!inBrackets)
+            case ModifierShift:
               {
-                UndoModifiers(Alt, Ctrl, Shift, WinKey);
-                Alt     = false;
-                Ctrl    = false;
-                Shift   = false;
-                WinKey  = false;
+                if (!Shift)
+                {
+                  KeyDown(VKey.VK_SHIFT);
+                  Shift = true;
+                }
+                break;
               }
-              break;
-            }
 
-          case ModifierShift:
-            {
-              if (!Shift)
+            case ModifierControl:
               {
-                KeyDown(VKey.VK_SHIFT);
-                Shift = true;
+                if (!Ctrl)
+                {
+                  KeyDown(VKey.VK_CONTROL);
+                  Ctrl = true;
+                }
+                break;
               }
-              break;
-            }
 
-          case ModifierControl:
-            {
-              if (!Ctrl)
+            case ModifierAlt:
               {
-                KeyDown(VKey.VK_CONTROL);
-                Ctrl = true;
+                if (!Alt)
+                {
+                  KeyDown(VKey.VK_MENU);
+                  Alt = true;
+                }
+                break;
               }
-              break;
-            }
 
-          case ModifierAlt:
-            {
-              if (!Alt)
+            case ModifierWinKey:
               {
-                KeyDown(VKey.VK_MENU);
-                Alt = true;
+                if (!WinKey)
+                {
+                  KeyDown(VKey.VK_LWIN);
+                  WinKey = true;
+                }
+                break;
               }
-              break;
-            }
 
-          case ModifierWinKey:
-            {
-              if (!WinKey)
+            case EnterShortcut:
               {
-                KeyDown(VKey.VK_LWIN);
-                WinKey = true;
+                KeyPress(VKey.VK_ENTER);
+
+                if (!inBrackets)
+                {
+                  UndoModifiers(Alt, Ctrl, Shift, WinKey);
+                  Alt = false;
+                  Ctrl = false;
+                  Shift = false;
+                  WinKey = false;
+                }
+                break;
               }
-              break;
-            }
 
-          case EnterShortcut:
-            {
-              KeyPress(VKey.VK_ENTER);
-
-              if (!inBrackets)
+            default:
               {
-                UndoModifiers(Alt, Ctrl, Shift, WinKey);
-                Alt     = false;
-                Ctrl    = false;
-                Shift   = false;
-                WinKey  = false;
-              }
-              break;
-            }
+                KeyPress(ch);
 
-          default:
-            {
-              KeyPress(ch);
-
-              if (!inBrackets)
-              {
-                UndoModifiers(Alt, Ctrl, Shift, WinKey);
-                Alt     = false;
-                Ctrl    = false;
-                Shift   = false;
-                WinKey  = false;
+                if (!inBrackets)
+                {
+                  UndoModifiers(Alt, Ctrl, Shift, WinKey);
+                  Alt = false;
+                  Ctrl = false;
+                  Shift = false;
+                  WinKey = false;
+                }
+                break;
               }
-              break;
-            }
+          }
+
         }
-
       }
-
-      UndoModifiers(Alt, Ctrl, Shift, WinKey);
+      finally
+      {
+        UndoModifiers(Alt, Ctrl, Shift, WinKey);
+      }
     }
 
     /// <summary>

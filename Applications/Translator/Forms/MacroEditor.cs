@@ -38,22 +38,28 @@ namespace Translator
     /// </summary>
     /// <param name="name">The name of an existing macro.</param>
     public MacroEditor(string name)
-      : this()
     {
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
+
+      InitializeComponent();
 
       textBoxName.Text    = name;
       textBoxName.Enabled = false;
 
       string fileName = Program.FolderMacros + name + Common.FileExtensionMacro;
-      ReadFromFile(fileName);
+      string[] commands = IrssMacro.ReadFromFile(fileName);
+
+      listBoxMacro.Items.AddRange(commands);
     }
 
     #endregion Constructor
 
     #region Implementation
 
+    /// <summary>
+    /// Refreshes the macro command list.
+    /// </summary>
     void RefreshCommandList()
     {
       comboBoxCommands.Items.Clear();
@@ -77,69 +83,21 @@ namespace Translator
       comboBoxCommands.Items.Add(Common.UITextHibernate);
       comboBoxCommands.Items.Add(Common.UITextReboot);
       comboBoxCommands.Items.Add(Common.UITextShutdown);
+      comboBoxCommands.Items.Add(Common.UITextLabel);
+      comboBoxCommands.Items.Add(Common.UITextGotoLabel);
+      comboBoxCommands.Items.Add(Common.UITextIf);
+      comboBoxCommands.Items.Add(Common.UITextSetVar);
+      comboBoxCommands.Items.Add(Common.UITextClearVars);
+      comboBoxCommands.Items.Add(Common.UITextLoadVars);
+      comboBoxCommands.Items.Add(Common.UITextSaveVars);
 
-      string[] macroList = Program.GetMacroList(true);
+      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, true);
       if (macroList != null && macroList.Length > 0)
         comboBoxCommands.Items.AddRange(macroList);
 
       string[] irList = Common.GetIRList(true);
       if (irList != null && irList.Length > 0)
         comboBoxCommands.Items.AddRange(irList);
-    }
-
-    /// <summary>
-    /// Write the macro in the listBox to a macro name provided.
-    /// </summary>
-    /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
-    void WriteToFile(string fileName)
-    {
-      try
-      {
-        using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8))
-        {
-          writer.Formatting = Formatting.Indented;
-          writer.WriteStartDocument(true);
-          writer.WriteStartElement("macro");
-
-          foreach (string item in listBoxMacro.Items)
-          {
-            writer.WriteStartElement("item");
-            writer.WriteAttributeString("command", item);
-            writer.WriteEndElement();
-          }
-
-          writer.WriteEndElement();
-          writer.WriteEndDocument();
-        }
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-      }
-    }
-
-    /// <summary>
-    /// Read a macro into the listBox from the macro name provided.
-    /// </summary>
-    /// <param name="fileName">Name of Macro to read (macro name, not file path).</param>
-    void ReadFromFile(string fileName)
-    {
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(fileName);
-
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
-
-        listBoxMacro.Items.Clear();
-
-        foreach (XmlNode item in commandSequence)
-          listBoxMacro.Items.Add(item.Attributes["command"].Value);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-      }
     }
 
     private void MacroEditor_Load(object sender, EventArgs e)
@@ -157,7 +115,47 @@ namespace Translator
         string selected = comboBoxCommands.SelectedItem as string;
         string newCommand = null;
 
-        if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
+        if (selected.Equals(Common.UITextIf, StringComparison.OrdinalIgnoreCase))
+        {
+          IfCommand ifCommand = new IfCommand();
+          if (ifCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixIf + ifCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextLabel, StringComparison.OrdinalIgnoreCase))
+        {
+          LabelNameDialog labelDialog = new LabelNameDialog();
+          if (labelDialog.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixLabel + labelDialog.LabelName;
+        }
+        else if (selected.Equals(Common.UITextGotoLabel, StringComparison.OrdinalIgnoreCase))
+        {
+          LabelNameDialog labelDialog = new LabelNameDialog();
+          if (labelDialog.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixGotoLabel + labelDialog.LabelName;
+        }
+        else if (selected.Equals(Common.UITextSetVar, StringComparison.OrdinalIgnoreCase))
+        {
+          SetVariableCommand setVariableCommand = new SetVariableCommand();
+          if (setVariableCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSetVar + setVariableCommand.CommandString;
+        }
+        else if (selected.Equals(Common.UITextClearVars, StringComparison.OrdinalIgnoreCase))
+        {
+          newCommand = Common.CmdPrefixClearVars;
+        }
+        else if (selected.Equals(Common.UITextLoadVars, StringComparison.OrdinalIgnoreCase))
+        {
+          VariablesFileDialog varsFileDialog = new VariablesFileDialog();
+          if (varsFileDialog.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixLoadVars + varsFileDialog.FileName;
+        }
+        else if (selected.Equals(Common.UITextSaveVars, StringComparison.OrdinalIgnoreCase))
+        {
+          VariablesFileDialog varsFileDialog = new VariablesFileDialog();
+          if (varsFileDialog.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSaveVars + varsFileDialog.FileName;
+        }
+        else if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
         {
           ExternalProgram externalProgram = new ExternalProgram();
           if (externalProgram.ShowDialog(this) == DialogResult.OK)
@@ -234,7 +232,7 @@ namespace Translator
         else if (selected.Equals(Common.UITextSound, StringComparison.OrdinalIgnoreCase))
         {
           OpenFileDialog openFileDialog = new OpenFileDialog();
-          openFileDialog.Filter = "Wave Files|*.WAV";
+          openFileDialog.Filter = "Wave Files|*.wav";
           openFileDialog.Multiselect = false;
 
           if (openFileDialog.ShowDialog(this) == DialogResult.OK)
@@ -279,7 +277,7 @@ namespace Translator
         }
         else
         {
-          throw new ApplicationException(String.Format("Unknown command in macro command list \"{0}\"", selected));
+          throw new ApplicationException(String.Format("Unknown macro command ({0})", selected));
         }
 
         if (!String.IsNullOrEmpty(newCommand))
@@ -341,7 +339,12 @@ namespace Translator
 
       try
       {
-        WriteToFile(Program.FolderMacros + name + Common.FileExtensionMacro);
+        string[] commands = new string[listBoxMacro.Items.Count];
+        int index = 0;
+        foreach (string item in listBoxMacro.Items)
+          commands[index++] = item;
+
+        IrssMacro.WriteToFile(Program.FolderMacros + name + Common.FileExtensionMacro, commands);
 
         Program.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
@@ -378,7 +381,12 @@ namespace Translator
 
       try
       {
-        WriteToFile(Program.FolderMacros + name + Common.FileExtensionMacro);
+        string[] commands = new string[listBoxMacro.Items.Count];
+        int index = 0;
+        foreach (string item in listBoxMacro.Items)
+          commands[index++] = item;
+
+        IrssMacro.WriteToFile(Program.FolderMacros + name + Common.FileExtensionMacro, commands);
       }
       catch (Exception ex)
       {
@@ -400,7 +408,48 @@ namespace Translator
         string selected = listBoxMacro.SelectedItem as string;
         string newCommand = null;
 
-        if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+
+        if (selected.StartsWith(Common.CmdPrefixIf, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitIfCommand(selected.Substring(Common.CmdPrefixIf.Length));
+
+          IfCommand ifCommand = new IfCommand(commands);
+          if (ifCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixIf + ifCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixLabel, StringComparison.OrdinalIgnoreCase))
+        {
+          LabelNameDialog labelDialog = new LabelNameDialog(selected.Substring(Common.CmdPrefixLabel.Length));
+          if (labelDialog.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixLabel + labelDialog.LabelName;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixGotoLabel, StringComparison.OrdinalIgnoreCase))
+        {
+          LabelNameDialog labelDialog = new LabelNameDialog(selected.Substring(Common.CmdPrefixGotoLabel.Length));
+          if (labelDialog.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixGotoLabel + labelDialog.LabelName;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixSetVar, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSetVarCommand(selected.Substring(Common.CmdPrefixSetVar.Length));
+
+          SetVariableCommand setVariableCommand = new SetVariableCommand(commands);
+          if (setVariableCommand.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSetVar + setVariableCommand.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixLoadVars, StringComparison.OrdinalIgnoreCase))
+        {
+          VariablesFileDialog varsFileDialog = new VariablesFileDialog(selected.Substring(Common.CmdPrefixLoadVars.Length));
+          if (varsFileDialog.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixLoadVars + varsFileDialog.FileName;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixSaveVars, StringComparison.OrdinalIgnoreCase))
+        {
+          VariablesFileDialog varsFileDialog = new VariablesFileDialog(selected.Substring(Common.CmdPrefixSaveVars.Length));
+          if (varsFileDialog.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSaveVars + varsFileDialog.FileName;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
 
@@ -483,7 +532,7 @@ namespace Translator
         else if (selected.StartsWith(Common.CmdPrefixSound, StringComparison.OrdinalIgnoreCase))
         {
           OpenFileDialog openFileDialog = new OpenFileDialog();
-          openFileDialog.Filter = "Wave Files|*.WAV";
+          openFileDialog.Filter = "Wave Files|*.wav";
           openFileDialog.Multiselect = false;
           openFileDialog.FileName = selected.Substring(Common.CmdPrefixSound.Length);
 

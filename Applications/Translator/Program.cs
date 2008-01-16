@@ -48,7 +48,7 @@ namespace Translator
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
-    static Hashtable _macroStacks;
+    static VariableList _variables;
 
     #endregion Variables
 
@@ -122,13 +122,13 @@ namespace Translator
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
-      // Hashtable for storing active macro stacks in.
-      _macroStacks = new Hashtable();
+      // Initialize Variable List.
+      _variables = new VariableList();
 
       _config = Configuration.Load(ConfigFile);
       if (_config == null)
       {
-        MessageBox.Show("Failed to load configuration, creating new configuration", "Translator - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        IrssLog.Warn(String.Format("Failed to load configuration file ({0}), creating new configuration", ConfigFile));
         _config = new Configuration();
       }
 
@@ -220,7 +220,7 @@ namespace Translator
     /// <param name="e">Event args.</param>
     static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
-      IrssLog.Error(e.Exception.ToString());
+      IrssLog.Error(e.Exception);
     }
 
     static void ProcessCommandLine(string[] args)
@@ -389,7 +389,7 @@ namespace Translator
       }
       */
 
-      string[] macroList = GetMacroList(false);
+      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
       if (macroList.Length > 0)
       {
         ToolStripMenuItem macros = new ToolStripMenuItem("&Macros");
@@ -712,12 +712,12 @@ namespace Translator
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
-              IrssLog.Info("Registered to IR Server");
+              IrssLog.Info("Registered to Input Service");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              IrssLog.Warn("IR Server refused to register");
+              IrssLog.Warn("Input Service refused to register");
             }
             break;
 
@@ -744,7 +744,7 @@ namespace Translator
             break;
 
           case MessageType.ServerShutdown:
-            IrssLog.Warn("IR Server Shutdown - Translator disabled until IR Server returns");
+            IrssLog.Warn("Input Service Shutdown - Translator disabled until Input Service returns");
             _registered = false;
 
             _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
@@ -931,7 +931,7 @@ namespace Translator
 
         if (!_registered)
         {
-          IrssLog.Warn("Not registered to an active IR Server");
+          IrssLog.Warn("Not registered to an active Input Service");
           return false;
         }
 
@@ -964,7 +964,7 @@ namespace Translator
     internal static void BlastIR(string fileName, string port)
     {
       if (!_registered)
-        throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
+        throw new ApplicationException("Cannot Blast, not registered to an active Input Service");
 
       using (FileStream file = File.OpenRead(fileName))
       {
@@ -1031,7 +1031,7 @@ namespace Translator
         if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
           string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
-          ProcMacro(fileName);
+          IrssMacro.ExecuteMacro(fileName, _variables, new ProcessCommandCallback(ProcCommand));
         }
         else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
@@ -1089,7 +1089,9 @@ namespace Translator
         else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
-          MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+          IrssUtils.Forms.ShowPopupMessage showPopupMessage = new IrssUtils.Forms.ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
+          showPopupMessage.ShowDialog();
         }
         else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {
@@ -1193,126 +1195,6 @@ namespace Translator
         else
           throw;
       }
-    }
-
-    /// <summary>
-    /// Called by ProcCommand to process the supplied Macro file.
-    /// </summary>
-    /// <param name="fileName">Macro file to process (absolute path).</param>
-    static void ProcMacro(string fileName)
-    {
-      MacroStackAdd(Thread.CurrentThread.ManagedThreadId, fileName);
-
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(fileName);
-
-        if (doc.DocumentElement.InnerText.Contains(Common.CmdPrefixBlast) && !_registered)
-          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
-
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
-
-        foreach (XmlNode item in commandSequence)
-          ProcCommand(item.Attributes["command"].Value);
-      }
-      finally
-      {
-        MacroStackRemove(Thread.CurrentThread.ManagedThreadId, fileName);
-      }
-    }
-
-    /// <summary>
-    /// Retreives the required Macro Stack from the Hashtable.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <returns>Macro Stack.</returns>
-    static List<string> GetMacroStack(int hash)
-    {
-      if (_macroStacks.ContainsKey(hash))
-      {
-        return (List<string>)_macroStacks[hash];
-      }
-      else
-      {
-        List<string> newStack = new List<string>();
-        _macroStacks.Add(hash, newStack);
-        return newStack;
-      }
-    }
-
-    /// <summary>
-    /// Adds to the Macro Stack.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackAdd(int hash, string fileName)
-    {
-      List<string> stack = GetMacroStack(hash);
-
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (stack.Contains(upperCasedFileName))
-      {
-        StringBuilder macroStackTrace = new StringBuilder();
-        macroStackTrace.AppendLine("Macro infinite loop detected!");
-        macroStackTrace.AppendLine();
-        macroStackTrace.AppendLine("Stack trace:");
-
-        foreach (string macro in stack)
-        {
-          if (macro.Equals(upperCasedFileName))
-            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
-          else
-            macroStackTrace.AppendLine(macro);
-        }
-
-        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
-
-        throw new ApplicationException(macroStackTrace.ToString());
-      }
-
-      stack.Add(upperCasedFileName);
-    }
-
-    /// <summary>
-    /// Removes from the Macro Stack.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackRemove(int hash, string fileName)
-    {
-      List<string> stack = GetMacroStack(hash);
-
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (stack.Contains(upperCasedFileName))
-        stack.Remove(upperCasedFileName);
-
-      if (stack.Count == 0)
-        _macroStacks.Remove(hash);
-    }
-
-    /// <summary>
-    /// Returns a list of Macros.
-    /// </summary>
-    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
-    /// <returns>string[] of Macros.</returns>
-    internal static string[] GetMacroList(bool commandPrefix)
-    {
-      string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
-      string[] list = new string[files.Length];
-
-      int i = 0;
-      foreach (string file in files)
-      {
-        if (commandPrefix)
-          list[i++] = Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
-
-      return list;
     }
 
     #endregion Implementation

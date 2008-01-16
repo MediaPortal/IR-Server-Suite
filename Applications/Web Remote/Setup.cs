@@ -62,7 +62,7 @@ namespace WebRemote
         string text = textBoxPassword.Text;
 
         MD5 md5 = new MD5CryptoServiceProvider();
-        byte[] hash = md5.ComputeHash(Encoding.ASCII.GetBytes(text));
+        byte[] hash = md5.ComputeHash(Encoding.Default.GetBytes(text));
 
         return BitConverter.ToString(hash);
       }

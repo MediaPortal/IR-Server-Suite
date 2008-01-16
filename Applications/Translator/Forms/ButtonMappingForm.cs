@@ -89,7 +89,7 @@ namespace Translator
     {
       comboBoxMacro.Items.Clear();
 
-      string[] macroList = Program.GetMacroList(false);
+      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
       if (macroList != null && macroList.Length > 0)
       {
         comboBoxMacro.Items.AddRange(macroList);

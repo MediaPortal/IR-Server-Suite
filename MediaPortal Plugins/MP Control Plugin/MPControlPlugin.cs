@@ -102,8 +102,6 @@ namespace MediaPortal.Plugins
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
-    static Hashtable _macroStacks;
-
     #endregion Variables
 
     #region Properties
@@ -268,9 +266,6 @@ namespace MediaPortal.Plugins
       _inConfiguration = false;
 
       Log.Info("MPControlPlugin: Starting ({0})", PluginVersion);
-
-      // Hashtable for storing active macro stacks in.
-      _macroStacks = new Hashtable();
 
       // Load basic settings
       LoadSettings();
@@ -795,7 +790,7 @@ namespace MediaPortal.Plugins
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              Log.Warn("MPControlPlugin: IR Server refused to register");
+              Log.Warn("MPControlPlugin: Input Service refused to register");
             }
             break;
 
@@ -823,7 +818,7 @@ namespace MediaPortal.Plugins
             break;
 
           case MessageType.ServerShutdown:
-            Log.Warn("MPControlPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
+            Log.Warn("MPControlPlugin: Input Service Shutdown - Plugin disabled until Input Service returns");
             _registered = false;
             break;
 
@@ -1150,7 +1145,7 @@ namespace MediaPortal.Plugins
 
         if (!_registered)
         {
-          Log.Warn("MPControlPlugin: Not registered to an active IR Server");
+          Log.Warn("MPControlPlugin: Not registered to an active Input Service");
           return false;
         }
 
@@ -1186,7 +1181,7 @@ namespace MediaPortal.Plugins
         Log.Debug("MPControlPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
-        throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
+        throw new ApplicationException("Cannot Blast, not registered to an active Input Service");
 
       using (FileStream file = File.OpenRead(fileName))
       {
@@ -1312,7 +1307,7 @@ namespace MediaPortal.Plugins
         {
           string multiMapping = command.Substring(Common.CmdPrefixMultiMap.Length);
           if (_inConfiguration)
-            MessageBox.Show(multiMapping, "Change multi-mapping", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(multiMapping, Common.UITextMultiMap, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             ChangeMultiMapping(multiMapping);
         }
@@ -1324,14 +1319,21 @@ namespace MediaPortal.Plugins
           else
             MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
         }
-        else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
         {
-          string screenID = command.Substring(Common.CmdPrefixGoto.Length);
+          string screenID = command.Substring(Common.CmdPrefixGotoScreen.Length);
 
           if (_inConfiguration)
-            MessageBox.Show(screenID, Common.UITextGoto, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(screenID, Common.UITextGotoScreen, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.ProcessGoTo(screenID, _mpBasicHome);
+        }
+        else if (command.StartsWith(Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
+        {
+          if (_inConfiguration)
+            MessageBox.Show("Cannot exit MediaPortal in configuration", Common.UITextExit, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.ExitMP();
         }
         else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {
@@ -1407,96 +1409,13 @@ namespace MediaPortal.Plugins
     /// <param name="fileName">Macro file to process (absolute path).</param>
     static void ProcMacro(string fileName)
     {
-      MacroStackAdd(Thread.CurrentThread.ManagedThreadId, fileName);
+      XmlDocument doc = new XmlDocument();
+      doc.Load(fileName);
 
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(fileName);
+      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
 
-        if (doc.DocumentElement.InnerText.Contains(Common.CmdPrefixBlast) && !_registered)
-          throw new ApplicationException("Cannot process Macro with Blast commands when not registered to an active IR Server");
-
-        XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
-
-        foreach (XmlNode item in commandSequence)
-          ProcCommand(item.Attributes["command"].Value);
-      }
-      finally
-      {
-        MacroStackRemove(Thread.CurrentThread.ManagedThreadId, fileName);
-      }
-    }
-
-    /// <summary>
-    /// Retreives the required Macro Stack from the Hashtable.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <returns>Macro Stack.</returns>
-    static List<string> GetMacroStack(int hash)
-    {
-      if (_macroStacks.ContainsKey(hash))
-      {
-        return (List<string>)_macroStacks[hash];
-      }
-      else
-      {
-        List<string> newStack = new List<string>();
-        _macroStacks.Add(hash, newStack);
-        return newStack;
-      }
-    }
-
-    /// <summary>
-    /// Adds to the Macro Stack.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackAdd(int hash, string fileName)
-    {
-      List<string> stack = GetMacroStack(hash);
-
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (stack.Contains(upperCasedFileName))
-      {
-        StringBuilder macroStackTrace = new StringBuilder();
-        macroStackTrace.AppendLine("Macro infinite loop detected!");
-        macroStackTrace.AppendLine();
-        macroStackTrace.AppendLine("Stack trace:");
-
-        foreach (string macro in stack)
-        {
-          if (macro.Equals(upperCasedFileName))
-            macroStackTrace.AppendLine(String.Format("--> {0}", macro));
-          else
-            macroStackTrace.AppendLine(macro);
-        }
-
-        macroStackTrace.AppendLine(String.Format("--> {0}", upperCasedFileName));
-
-        throw new ApplicationException(macroStackTrace.ToString());
-      }
-
-      stack.Add(upperCasedFileName);
-    }
-
-    /// <summary>
-    /// Removes from the Macro Stack.
-    /// </summary>
-    /// <param name="hash">Hash table lookup value.</param>
-    /// <param name="fileName">Name of the macro file.</param>
-    static void MacroStackRemove(int hash, string fileName)
-    {
-      List<string> stack = GetMacroStack(hash);
-
-      string upperCasedFileName = fileName.ToUpperInvariant();
-
-      if (stack.Contains(upperCasedFileName))
-        stack.Remove(upperCasedFileName);
-
-      if (stack.Count == 0)
-        _macroStacks.Remove(hash);
+      foreach (XmlNode item in commandSequence)
+        ProcCommand(item.Attributes["command"].Value);
     }
 
     /// <summary>

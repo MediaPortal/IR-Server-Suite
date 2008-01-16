@@ -71,6 +71,9 @@
     <Compile Include="CDRom.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Display.cs" />
+    <Compile Include="Exceptions\CommandStructureException.cs" />
+    <Compile Include="Exceptions\CommandExecutionException.cs" />
+    <Compile Include="Exceptions\MacroStructureException.cs" />
     <Compile Include="Forms\BlastCommand.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,6 +91,30 @@
     </Compile>
     <Compile Include="Forms\CloseProgramCommand.Designer.cs">
       <DependentUpon>CloseProgramCommand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\VariablesFileDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\VariablesFileDialog.Designer.cs">
+      <DependentUpon>VariablesFileDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\IfCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\IfCommand.Designer.cs">
+      <DependentUpon>IfCommand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LabelNameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LabelNameDialog.Designer.cs">
+      <DependentUpon>LabelNameDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SetVariableCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SetVariableCommand.Designer.cs">
+      <DependentUpon>SetVariableCommand.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\HttpMessageCommand.cs">
       <SubType>Form</SubType>
@@ -192,6 +219,7 @@
       <DependentUpon>WindowList.cs</DependentUpon>
     </Compile>
     <Compile Include="IrssLog.cs" />
+    <Compile Include="IrssMacro.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="Mouse.cs" />
     <Compile Include="Network.cs" />
@@ -202,6 +230,7 @@
     </Compile>
     <Compile Include="SystemRegistry.cs" />
     <Compile Include="IRServerInfo.cs" />
+    <Compile Include="VariableList.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="XML.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -217,6 +246,22 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CloseProgramCommand.resx">
       <DependentUpon>CloseProgramCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VariablesFileDialog.resx">
+      <DependentUpon>VariablesFileDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IfCommand.resx">
+      <DependentUpon>IfCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LabelNameDialog.resx">
+      <DependentUpon>LabelNameDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SetVariableCommand.resx">
+      <DependentUpon>SetVariableCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HttpMessageCommand.resx">

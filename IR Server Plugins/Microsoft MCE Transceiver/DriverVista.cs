@@ -770,7 +770,7 @@ namespace MicrosoftMceTransceiver
     #region Implementation
 
     /// <summary>
-    /// Initializes the device.  Called immediately after opening the device.
+    /// Initializes the device.
     /// </summary>
     void InitializeDevice()
     {
@@ -910,6 +910,8 @@ namespace MicrosoftMceTransceiver
 #endif
         return;
       }
+
+      _notifyWindow.UnregisterDeviceRemoval();
 
       CloseHandle(_eHomeHandle);
 

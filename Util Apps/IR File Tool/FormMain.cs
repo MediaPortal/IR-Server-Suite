@@ -179,10 +179,27 @@ namespace IrFileTool
       {
         switch (codeType)
         {
-          case IrProtocol.RC5:  textBoxCarrier.Text = "36000";  break;
-          case IrProtocol.RC5X: textBoxCarrier.Text = "36000";  break;
-          case IrProtocol.NEC:  textBoxCarrier.Text = "38000";  break;
-          
+          case IrProtocol.Daewoo: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.JVC: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.Matsushita: textBoxCarrier.Text = "56800"; break;
+          case IrProtocol.Mitsubishi: textBoxCarrier.Text = "40000"; break;
+          case IrProtocol.NEC: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.NRC17: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.Panasonic: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.RC5: textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC5X: textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC6: textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC6A: textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC6_MCE: textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC6_Foxtel: textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RCA: textBoxCarrier.Text = "56000"; break;
+          case IrProtocol.RCMM: textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RECS80: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.Sharp: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.SIRC: textBoxCarrier.Text = "40000"; break;
+          case IrProtocol.Toshiba: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.XSAT: textBoxCarrier.Text = "38000"; break;
+
           default:
             return;
         }

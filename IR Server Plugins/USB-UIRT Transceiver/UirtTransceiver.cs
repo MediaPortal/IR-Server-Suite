@@ -307,11 +307,8 @@ namespace UirtTransceiver
       if (_abortLearn != IntPtr.Zero)
         Marshal.WriteInt32(_abortLearn, AbortLearn);
 
-      if (_usbUirtHandle != new IntPtr(-1))
+      if (_usbUirtHandle != new IntPtr(-1) && _usbUirtHandle != IntPtr.Zero)
       {
-        if (_usbUirtHandle == IntPtr.Zero)
-          throw new ApplicationException("USBUIRT LOGIC ERROR 2, REPORT THIS TO and-81");
-
         UUIRTClose(_usbUirtHandle);
         _usbUirtHandle = new IntPtr(-1);
       }

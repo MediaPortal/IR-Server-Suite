@@ -157,7 +157,48 @@ namespace MPUtils
     {
       GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_SHUTDOWN, 0, 0));
     }
-    
+
+    /// <summary>
+    /// Exits MediaPortal.
+    /// </summary>
+    public static void ExitMP()
+    {
+      GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_EXIT, 0, 0));
+    }
+
+    /// <summary>
+    /// Send a MediaPortal action.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    public static void ProcessSendMediaPortalAction(string[] command)
+    {
+      Action.ActionType type = (Action.ActionType)Enum.Parse(typeof(Action.ActionType), command[0]);
+      float f1 = float.Parse(command[1]);
+      float f2 = float.Parse(command[2]);
+
+      Action action = new Action(type, f1, f2);
+      GUIGraphicsContext.OnAction(action);
+    }
+
+    /// <summary>
+    /// Send a MediaPortal message.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    public static void ProcessSendMediaPortalMessage(string[] command)
+    {
+      GUIMessage.MessageType type = (GUIMessage.MessageType)Enum.Parse(typeof(GUIMessage.MessageType), command[0]);
+      int windowId = int.Parse(command[1]);
+      int senderId = int.Parse(command[2]);
+      int controlId = int.Parse(command[3]);
+      int param1 = int.Parse(command[4]);
+      int param2 = int.Parse(command[5]);
+
+      GUIMessage message = new GUIMessage(type, windowId, senderId, controlId, param1, param2, null);
+
+      GUIGraphicsContext.ResetLastActivity();
+      GUIWindowManager.SendThreadMessage(message);
+    }
+
     #endregion Methods
 
   }

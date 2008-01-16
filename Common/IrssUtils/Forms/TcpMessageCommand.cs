@@ -25,10 +25,10 @@ namespace IrssUtils.Forms
     {
       get
       {
-        return
-          textBoxIP.Text + "|" +
-          numericUpDownPort.Value.ToString() + "|" +
-          textBoxText.Text;
+        return String.Format("{0}|{1}|{2}",
+          textBoxIP.Text,
+          numericUpDownPort.Value.ToString(),
+          textBoxText.Text);
       }
     }
 

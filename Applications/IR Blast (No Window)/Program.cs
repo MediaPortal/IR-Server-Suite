@@ -261,20 +261,20 @@ Refer to IR Blast help for more information.",
           case MessageType.RegisterClient:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              IrssLog.Info("Registered to IR Server");
+              IrssLog.Info("Registered to Input Service");
               _registered = true;
               //_irServerInfo = TransceiverInfo.FromString(received.Data);
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              IrssLog.Warn("IR Server refused to register");
+              IrssLog.Warn("Input Service refused to register");
             }
             break;
 
           case MessageType.ServerShutdown:
             _registered = false;
-            IrssLog.Warn("IR Server Shutdown - Blasting disabled until IR Server returns");
+            IrssLog.Warn("Input Service Shutdown - Blasting disabled until Input Service returns");
             break;
 
           case MessageType.Error:

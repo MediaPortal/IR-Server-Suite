@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 #endif
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -15,7 +16,7 @@ namespace GirderPlugin
   /// <summary>
   /// IR Server Plugin for using Girder 3.x plugins.
   /// </summary>
-  public class GirderPlugin : IRServerPluginBase, IRemoteReceiver, IConfigure
+  public class GirderPlugin : IRServerPluginBase, IRemoteReceiver, ITransmitIR, IConfigure
   {
 
     #region Constants
@@ -24,7 +25,7 @@ namespace GirderPlugin
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\Input Service\\Girder Plugin.xml";
 
-    static readonly string[] Ports  = new string[] { "None" };
+    static readonly string[] Ports  = new string[] { "Plugin" };
 
     const int GIRINFO_POWERBROADCAST = 2;
     const int PBT_APMSUSPEND = 4;
@@ -166,7 +167,11 @@ namespace GirderPlugin
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Transmit(string port, byte[] data)
     {
-      throw new Exception("The method or operation is not implemented.");
+      string xmlData = Encoding.ASCII.GetString(data);
+
+      GirCommand blastCommand = GirCommand.FromXml(xmlData);
+
+      return _pluginWrapper.GirEvent(blastCommand, String.Empty, IntPtr.Zero, 0, String.Empty, 0);
     }
 
     #endregion ITransmitIR Members
@@ -181,11 +186,11 @@ namespace GirderPlugin
       LoadSettings();
 
       Config config = new Config();
-      config.FileName = _pluginFile;
+      config.PluginFolder = _pluginFile;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
-        _pluginFile = config.FileName;
+        _pluginFile = config.PluginFolder;
 
         SaveSettings();
       }
@@ -215,7 +220,7 @@ namespace GirderPlugin
     {
       try
       {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, System.Text.Encoding.UTF8))
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;

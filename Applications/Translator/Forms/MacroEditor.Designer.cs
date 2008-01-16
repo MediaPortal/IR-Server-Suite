@@ -49,7 +49,7 @@ namespace Translator
       // 
       this.labelName.Location = new System.Drawing.Point(8, 8);
       this.labelName.Name = "labelName";
-      this.labelName.Size = new System.Drawing.Size(48, 20);
+      this.labelName.Size = new System.Drawing.Size(56, 20);
       this.labelName.TabIndex = 0;
       this.labelName.Text = "Name:";
       this.labelName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -164,9 +164,9 @@ namespace Translator
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(256, 296);
+      this.buttonCancel.Location = new System.Drawing.Point(248, 296);
       this.buttonCancel.Name = "buttonCancel";
-      this.buttonCancel.Size = new System.Drawing.Size(48, 24);
+      this.buttonCancel.Size = new System.Drawing.Size(56, 24);
       this.buttonCancel.TabIndex = 6;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
@@ -177,7 +177,7 @@ namespace Translator
       this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.buttonTest.Location = new System.Drawing.Point(8, 296);
       this.buttonTest.Name = "buttonTest";
-      this.buttonTest.Size = new System.Drawing.Size(48, 24);
+      this.buttonTest.Size = new System.Drawing.Size(56, 24);
       this.buttonTest.TabIndex = 4;
       this.buttonTest.Text = "Test";
       this.buttonTest.UseVisualStyleBackColor = true;
@@ -186,9 +186,9 @@ namespace Translator
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(200, 296);
+      this.buttonOK.Location = new System.Drawing.Point(184, 296);
       this.buttonOK.Name = "buttonOK";
-      this.buttonOK.Size = new System.Drawing.Size(48, 24);
+      this.buttonOK.Size = new System.Drawing.Size(56, 24);
       this.buttonOK.TabIndex = 5;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;

@@ -746,7 +746,7 @@ namespace MicrosoftMceTransceiver
               else if (handle == 1)
                 throw new ThreadInterruptedException("Read thread stopping by request");
               else
-                throw new ApplicationException("Invalid wait handle return");
+                throw new ApplicationException(String.Format("Invalid wait handle return: {0}", handle));
             }
 
             bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesRead, true);
@@ -875,17 +875,27 @@ namespace MicrosoftMceTransceiver
         }
       }
 #if DEBUG
-      catch (Exception ex)
+      catch (ThreadInterruptedException ex)
       {
-        DebugWriteLine(ex.ToString());
-#else
-      catch (Exception)
-      {
-#endif
+        DebugWriteLine(ex.Message);
 
         if (_eHomeHandle != null)
           CancelIo(_eHomeHandle);
       }
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+
+        if (_eHomeHandle != null)
+          CancelIo(_eHomeHandle);
+      }
+#else
+      catch (Exception)
+      {
+        if (_readHandle != null)
+          CancelIo(_readHandle);
+      }
+#endif
       finally
       {
         if (deviceBufferPtr != IntPtr.Zero)
@@ -943,9 +953,9 @@ namespace MicrosoftMceTransceiver
         int handle = WaitHandle.WaitAny(waitHandles, WriteSyncTimeout, false);
 
         if (handle == ErrorWaitTimeout)
-          throw new ApplicationException("Timeout trying to write data to device");
+          throw new System.TimeoutException("Timeout trying to write data to device");
         else if (handle != 0)
-          throw new ApplicationException("Invalid wait handle return");
+          throw new ApplicationException(String.Format("Invalid wait handle return: {0}", handle));
 
         bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesWritten, true);
         lastError = Marshal.GetLastWin32Error();

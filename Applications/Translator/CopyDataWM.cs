@@ -122,7 +122,7 @@ namespace Translator
           byte[] dataBytes = new byte[dataStructure.cbData];
           IntPtr lpData = new IntPtr(dataStructure.lpData);
           Marshal.Copy(lpData, dataBytes, 0, dataStructure.cbData);
-          string strData = Encoding.ASCII.GetString(dataBytes);
+          string strData = Encoding.Default.GetString(dataBytes);
 
           Program.ProcessCommand(strData, true);
         }
@@ -145,7 +145,7 @@ namespace Translator
     {
       Win32.COPYDATASTRUCT copyData;
 
-      byte[] dataBytes = Encoding.ASCII.GetBytes(data);
+      byte[] dataBytes = Encoding.Default.GetBytes(data);
 
       copyData.dwData = CopyDataID;
       copyData.lpData = Win32.VarPtr(dataBytes).ToInt32();

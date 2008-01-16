@@ -318,7 +318,7 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextTcpMsg);
       comboBoxCommands.Items.Add(Common.UITextKeys);
       comboBoxCommands.Items.Add(Common.UITextEject);
-      comboBoxCommands.Items.Add(Common.UITextGoto);
+      comboBoxCommands.Items.Add(Common.UITextGotoScreen);
       //comboBoxCommands.Items.Add(Common.UITextWindowState);
       comboBoxCommands.Items.Add(Common.UITextExit);
       comboBoxCommands.Items.Add(Common.UITextStandby);
@@ -637,11 +637,11 @@ namespace MediaPortal.Plugins
         if (ejectCommand.ShowDialog(this) == DialogResult.OK)
           newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
       }
-      else if (selected.Equals(Common.UITextGoto, StringComparison.OrdinalIgnoreCase))
+      else if (selected.Equals(Common.UITextGotoScreen, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen();
         if (goToScreen.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixGoto + goToScreen.CommandString;
+          newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
       }
       else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
@@ -917,11 +917,11 @@ namespace MediaPortal.Plugins
         if (externalProgram.ShowDialog(this) == DialogResult.OK)
           newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
       {
-        GoToScreen goToScreen = new GoToScreen(command.Substring(Common.CmdPrefixGoto.Length));
+        GoToScreen goToScreen = new GoToScreen(command.Substring(Common.CmdPrefixGotoScreen.Length));
         if (goToScreen.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixGoto + goToScreen.CommandString;
+          newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
       }
       else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {

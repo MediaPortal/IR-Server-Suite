@@ -73,16 +73,26 @@ namespace IrssUtils
     /// <summary>
     /// File extension for IR Commands.
     /// </summary>
-    public const string FileExtensionIR       = ".IR";
+    public const string FileExtensionIR           = ".IR";
 
     /// <summary>
     /// File extension for Macros.
     /// </summary>
-    public const string FileExtensionMacro    = ".Macro";
+    public const string FileExtensionMacro        = ".Macro";
+
+    /// <summary>
+    /// File extension for stored Variable Lists.
+    /// </summary>
+    public const string FileExtensionVariableList = ".VariableList";
 
     #endregion File Extensions
 
     #region Strings
+
+    /// <summary>
+    /// Variables must be prefixed with this string.
+    /// </summary>
+    public const string VariablePrefix = "var_";
 
     #region Command Prefixes
 
@@ -96,7 +106,6 @@ namespace IrssUtils
     public const string CmdPrefixWindowMsg    = "Window Message: ";
     public const string CmdPrefixTcpMsg       = "TCP Message: ";
     public const string CmdPrefixHttpMsg      = "HTTP Message: ";
-    public const string CmdPrefixGoto         = "Goto: ";
     public const string CmdPrefixPopup        = "Popup: ";
     public const string CmdPrefixMouseMode    = "Mouse Mode: ";
     public const string CmdPrefixCloseProgram = "Close Program: ";
@@ -118,11 +127,23 @@ namespace IrssUtils
     public const string CmdPrefixVirtualKB    = "Show Virtual Keyboard";
     public const string CmdPrefixSmsKB        = "Show SMS Keyboard";
 
+    // Macro Commands ...
+    public const string CmdPrefixGotoLabel    = "Goto Label: ";
+    public const string CmdPrefixLabel        = "Label: ";
+    public const string CmdPrefixIf           = "If: ";
+    public const string CmdPrefixSetVar       = "Set Variable: ";
+    public const string CmdPrefixClearVars    = "Clear Variables";
+    public const string CmdPrefixSaveVars     = "Save Variables: ";
+    public const string CmdPrefixLoadVars     = "Load Variables: ";
+
     // For MediaPortal ...
     public const string CmdPrefixMultiMap     = "Multi-Mapping: ";
     public const string CmdPrefixInputLayer   = "Toggle Input Layer";
     public const string CmdPrefixFocus        = "Get Focus";
+    public const string CmdPrefixGotoScreen   = "Goto: ";
     public const string CmdPrefixExit         = "Exit MediaPortal";
+    public const string CmdPrefixSendMPMsg    = "MediaPortal Message: ";
+    public const string CmdPrefixSendMPAction = "MediaPortal Action: ";
 
     #endregion Command Prefixes
 
@@ -135,16 +156,11 @@ namespace IrssUtils
     public const string UITextWindowMsg       = "Window Message";
     public const string UITextTcpMsg          = "TCP Message";
     public const string UITextHttpMsg         = "HTTP Message";
-    public const string UITextGoto            = "Go To Screen";
     public const string UITextPopup           = "Popup Message";
-    public const string UITextMultiMap        = "Set Multi-Mapping";
     public const string UITextMouseMode       = "Set Mouse Mode";
     public const string UITextCloseProgram    = "Close a Running Program";
-    public const string UITextInputLayer      = "Toggle Input Handler Layer";
     //public const string UITextWindowState     = "Toggle Window State";
-    public const string UITextFocus           = "Get Focus";
-    public const string UITextExit            = "Exit MediaPortal";
-    
+
     public const string UITextStandby         = "Standby";
     public const string UITextHibernate       = "Hibernate";
     public const string UITextReboot          = "Reboot";
@@ -160,6 +176,24 @@ namespace IrssUtils
     public const string UITextTranslator      = "Show Translator OSD";
     public const string UITextVirtualKB       = "Show Virtual Keyboard";
     public const string UITextSmsKB           = "Show SMS Keyboard";
+
+    // Macro Commands ...
+    public const string UITextGotoLabel       = "Goto Label";
+    public const string UITextLabel           = "Insert Label";
+    public const string UITextIf              = "If Statement";
+    public const string UITextSetVar          = "Set Variable";
+    public const string UITextClearVars       = "Clear Variables";
+    public const string UITextSaveVars        = "Save Variables";
+    public const string UITextLoadVars        = "Load Variables";
+
+    // For MediaPortal ...
+    public const string UITextMultiMap        = "Set Multi-Mapping";
+    public const string UITextInputLayer      = "Toggle Input Handler Layer";
+    public const string UITextFocus           = "Get Focus";
+    public const string UITextGotoScreen      = "Go To Screen";
+    public const string UITextExit            = "Exit MediaPortal";
+    public const string UITextSendMPMsg       = "Send MediaPortal Message";
+    public const string UITextSendMPAction    = "Send MediaPortal Action";
 
     #endregion User Interface Text
 
@@ -211,46 +245,54 @@ namespace IrssUtils
     #region Command Segments
 
     /// <summary>
+    /// Number of Segments in an If Command.
+    /// </summary>
+    const int SegmentsIfCommand             = 5;
+    /// <summary>
+    /// Number of Segments in a Set Variable Command.
+    /// </summary>
+    const int SegmentsSetVarCommand         = 2;
+    /// <summary>
     /// Number of Segments in a Blast Command.
     /// </summary>
-    public const int SegmentsBlastCommand         = 2;
+    const int SegmentsBlastCommand          = 2;
     /// <summary>
     /// Number of Segments in a Run Command.
     /// </summary>
-    public const int SegmentsRunCommand           = 8;
+    const int SegmentsRunCommand            = 8;
     /// <summary>
     /// Number of Segments in a Serial Command.
     /// </summary>
-    public const int SegmentsSerialCommand        = 7;
+    const int SegmentsSerialCommand         = 7;
     /// <summary>
     /// Number of Segments in a Windows Message Command.
     /// </summary>
-    public const int SegmentsWindowMessageCommand = 5;
+    const int SegmentsWindowMessageCommand  = 5;
     /// <summary>
     /// Number of Segments in a Popup Command.
     /// </summary>
-    public const int SegmentsPopupCommand         = 3;
+    const int SegmentsPopupCommand          = 3;
     /// <summary>
     /// Number of Segments in a TCP Message Command.
     /// </summary>
-    public const int SegmentsTcpMessageCommand    = 3;
+    const int SegmentsTcpMessageCommand     = 3;
     /// <summary>
     /// Number of Segments in a HTTP Message Command.
     /// </summary>
-    public const int SegmentsHttpMessageCommand   = 4;
+    const int SegmentsHttpMessageCommand    = 4;
     /// <summary>
     /// Number of Segments in a Beep Command.
     /// </summary>
-    public const int SegmentsBeepCommand          = 2;
+    const int SegmentsBeepCommand           = 2;
     /// <summary>
     /// Number of Segments in a Display Mode Command.
     /// </summary>
-    public const int SegmentsDisplayModeCommand   = 4;
+    const int SegmentsDisplayModeCommand    = 4;
     /// <summary>
     /// Number of Segments in a Close Program Command.
     /// </summary>
-    public const int SegmentsCloseProgramCommand = 2;
-
+    const int SegmentsCloseProgramCommand   = 2;
+    
     #endregion Command Segments
 
     #endregion Constants
@@ -258,6 +300,26 @@ namespace IrssUtils
     #region Methods
 
     #region Command Splitters
+
+    /// <summary>
+    /// Splits an If Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
+    public static string[] SplitIfCommand(string command)
+    {
+      return SplitCommand(command, SegmentsIfCommand);
+    }
+
+    /// <summary>
+    /// Splits a Set Variable Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
+    public static string[] SplitSetVarCommand(string command)
+    {
+      return SplitCommand(command, SegmentsSetVarCommand);
+    }
 
     /// <summary>
     /// Splits a Blast command into it's component parts.
@@ -359,6 +421,12 @@ namespace IrssUtils
       return SplitCommand(command, SegmentsCloseProgramCommand);
     }
 
+    /// <summary>
+    /// Splits the command (Gets called by all the specific command splitters).
+    /// </summary>
+    /// <param name="command">The command.</param>
+    /// <param name="elements">The number of element.</param>
+    /// <returns>Returns string[] of command elements.</returns>
     static string[] SplitCommand(string command, int elements)
     {
       if (String.IsNullOrEmpty(command))
@@ -367,7 +435,7 @@ namespace IrssUtils
       string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
 
       if (commands.Length != elements)
-        throw new ArgumentException(String.Format("Command structure is invalid: {0}", command), "command");
+        throw new Exceptions.CommandStructureException(String.Format("Command structure does not split as expected: {0}", command));
 
       return commands;
     }
@@ -375,7 +443,7 @@ namespace IrssUtils
     #endregion Command Splitters
 
     #region Command Execution
-
+    
     /// <summary>
     /// Given a split Run command this method will launch the process according to the details of the command structure.
     /// </summary>
@@ -429,7 +497,7 @@ namespace IrssUtils
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      string command        = ReplaceEscapeCodes(commands[0]);
+      string command        = ReplaceSpecial(commands[0]);
       
       string comPort        = commands[1];
       int baudRate          = int.Parse(commands[2]);
@@ -509,11 +577,11 @@ namespace IrssUtils
           break;
 
         default:
-          throw new ArgumentOutOfRangeException("commands", commands[0], "Invalid message target");
+          throw new Exceptions.CommandStructureException(String.Format("Invalid message target type: {0}", commands[0]));
       }
 
       if (windowHandle == IntPtr.Zero)
-        throw new ApplicationException(String.Format("Window Message target ({0}) not found", commands[0]));
+        throw new Exceptions.CommandExecutionException(String.Format("Window Message target ({0}) not found", commands[1]));
 
       int msg = int.Parse(commands[2]);
       IntPtr wordParam = new IntPtr(int.Parse(commands[3]));
@@ -531,7 +599,14 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      Keyboard.ProcessCommand(command);
+      try
+      {
+        Keyboard.ProcessCommand(command);
+      }
+      catch (Exception ex)
+      {
+        throw new Exceptions.CommandExecutionException("Error executing Keystrokes Command", ex);
+      }
     }
 
     /// <summary>
@@ -551,7 +626,9 @@ namespace IrssUtils
         {
           using (StreamWriter streamWriter = new StreamWriter(networkStream))
           {
-            streamWriter.Write(ReplaceEscapeCodes(commands[2]));
+            string toWrite = ReplaceSpecial(commands[2]);
+            
+            streamWriter.Write(toWrite);
             streamWriter.Flush();
 
             Thread.Sleep(1000);
@@ -636,7 +713,9 @@ namespace IrssUtils
             Mouse.Move(x, y, true);
           }
           else
-            throw new ApplicationException("Invalid Mouse Command");
+          {
+            throw new Exceptions.CommandStructureException(String.Format("Invalid Mouse Command: {0}", command));
+          }
           break;
       }
     }
@@ -653,7 +732,7 @@ namespace IrssUtils
       if (CDRom.IsCDRom(command))
         CDRom.Open(command);
       else
-        throw new ArgumentException(String.Format("Drive ({0}) is not a recognised optical drive", command), "command");
+        throw new Exceptions.CommandExecutionException(String.Format("Drive ({0}) is not a recognised optical drive", command));
     }
 
     /// <summary>
@@ -666,7 +745,7 @@ namespace IrssUtils
         throw new ArgumentNullException("command");
 
       if (!Audio.PlayFile(command, false))
-        throw new ApplicationException(String.Format("Sound Command ({0}) failed to play", command));
+        throw new Exceptions.CommandExecutionException(String.Format("Sound Command ({0}) failed to play", command));
     }
 
     /// <summary>
@@ -679,7 +758,7 @@ namespace IrssUtils
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      Uri uri = new Uri(ReplaceEscapeCodes(commands[0]));
+      Uri uri = new Uri(ReplaceSpecial(commands[0]));
 
       WebRequest request  = WebRequest.Create(uri);
       request.Timeout     = int.Parse(commands[1]);
@@ -756,11 +835,11 @@ namespace IrssUtils
           break;
 
         default:
-          throw new ArgumentOutOfRangeException("commands", commands[0], "Invalid close program target");
+          throw new Exceptions.CommandStructureException(String.Format("Invalid close program target type: {0}", commands[0]));
       }
 
       if (process == null)
-        throw new ApplicationException(String.Format("Close Program target ({0}) not found", commands[0]));
+        throw new Exceptions.CommandExecutionException(String.Format("Close Program target ({0}) not found", commands[1]));
 
       EndProcess(process, 5000);
 
@@ -793,15 +872,103 @@ namespace IrssUtils
     }
 
     /// <summary>
-    /// Replaces the escape codes in a supplied string with their character equivalents.
+    /// Determines the validity of a given filename.
     /// </summary>
-    /// <param name="input">String to process for escape codes.</param>
-    /// <returns>Modified string with escape codes processed.</returns>
-    public static string ReplaceEscapeCodes(string input)
+    /// <param name="fileName">File name to validate.</param>
+    /// <returns>true if the name is valid; otherwise, false.</returns>
+    public static bool IsValidFileName(string fileName)
+    {
+      if (String.IsNullOrEmpty(fileName))
+        return false;
+
+      Regex validate = new Regex("^(?!^(PRN|AUX|CLOCK\\$|NUL|CON|COM\\d|LPT\\d|\\..*)(\\..+)?$)[^\\x00-\\x1f\\\\?*:\\\";|/]+$", RegexOptions.IgnoreCase);
+      return validate.IsMatch(fileName);
+    }
+
+    /// <summary>
+    /// Replace all instances of environment variables, special values and escape codes.
+    /// </summary>
+    /// <param name="input">The input to process.</param>
+    /// <returns>Processed input string.</returns>
+    public static string ReplaceSpecial(string input)
     {
       if (String.IsNullOrEmpty(input))
-        throw new ArgumentNullException("input");
+        return input;
 
+      // Process Special Codes ...
+      if (input.Contains("%"))
+      {
+        foreach (Match match in Regex.Matches(input, @"%\w+%"))
+        {
+          string varName = match.Value.Substring(1, match.Value.Length - 2);
+
+          string envVar = String.Empty;
+
+          switch (varName.ToUpperInvariant())
+          {
+            case "$CLIPBOARD_TEXT$":
+              if (Clipboard.ContainsText())
+                envVar = Clipboard.GetText();
+              break;
+
+            case "$TIME$":
+              envVar = DateTime.Now.ToShortTimeString();
+              break;
+
+            case "$HOUR$":
+              envVar = DateTime.Now.Hour.ToString();
+              break;
+
+            case "$MINUTE$":
+              envVar = DateTime.Now.Minute.ToString();
+              break;
+
+            case "$SECOND$":
+              envVar = DateTime.Now.Second.ToString();
+              break;
+
+            case "$DATE$":
+              envVar = DateTime.Now.ToShortDateString();
+              break;
+
+            case "$YEAR$":
+              envVar = DateTime.Now.Year.ToString();
+              break;
+
+            case "$MONTH$":
+              envVar = DateTime.Now.Month.ToString();
+              break;
+
+            case "$DAY$":
+              envVar = DateTime.Now.Day.ToString();
+              break;
+
+            case "$DAYOFWEEK$":
+              envVar = DateTime.Now.DayOfWeek.ToString();
+              break;
+
+            case "$DAYOFYEAR$":
+              envVar = DateTime.Now.DayOfYear.ToString();
+              break;
+
+            case "$USERNAME$":
+              envVar = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+              break;
+
+            case "$MACHINENAME$":
+              envVar = Environment.MachineName;
+              break;
+
+            default:
+              envVar = Environment.GetEnvironmentVariable(varName);
+              break;
+          }
+
+          input = input.Replace(match.Value, envVar);
+        }
+      }
+
+      // Process Escape Codes ...
       bool inEscapeCode = false;
       bool inHexCode = false;
       byte hexParsed;
@@ -880,56 +1047,6 @@ namespace IrssUtils
       }
 
       return output.ToString();
-    }
-
-    /// <summary>
-    /// Determines the validity of a given filename.
-    /// </summary>
-    /// <param name="fileName">File name to validate.</param>
-    /// <returns>true if the name is valid; otherwise, false.</returns>
-    public static bool IsValidFileName(string fileName)
-    {
-      if (String.IsNullOrEmpty(fileName))
-        return false;
-
-      Regex validate = new Regex("^(?!^(PRN|AUX|CLOCK\\$|NUL|CON|COM\\d|LPT\\d|\\..*)(\\..+)?$)[^\\x00-\\x1f\\\\?*:\\\";|/]+$", RegexOptions.IgnoreCase);
-      return validate.IsMatch(fileName);
-    }
-
-    /// <summary>
-    /// Replace all instances of environment variables with their value.
-    /// </summary>
-    /// <param name="input">The input to process.</param>
-    /// <returns>Modified input string.</returns>
-    public static string ReplaceEnvironmentVariables(string input)
-    {
-      string output = input;
-
-      if (input.Contains("%"))
-      {
-        foreach (Match match in Regex.Matches(input, @"%\w+%"))
-        {
-          string varName = match.Value.Substring(1, match.Value.Length - 2);
-
-          string envVar = String.Empty;
-
-          switch (varName.ToUpperInvariant())
-          {
-            case "$CLIPBOARD_TEXT$":
-              if (Clipboard.ContainsText())
-                envVar = Clipboard.GetText();
-              break;
-
-            default:
-              envVar = Environment.GetEnvironmentVariable(varName);
-              break;
-          }
-
-          output = output.Replace(match.Value, envVar);
-        }
-      }
-
-      return output;
     }
 
     /// <summary>

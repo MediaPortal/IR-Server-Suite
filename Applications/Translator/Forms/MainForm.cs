@@ -264,7 +264,7 @@ namespace Translator
       if (list != null && list.Length > 0)
         comboBoxCommands.Items.AddRange(list);
 
-      list = Program.GetMacroList(true);
+      list = IrssMacro.GetMacroList(Program.FolderMacros, true);
       if (list != null && list.Length > 0)
         comboBoxCommands.Items.AddRange(list);
 
@@ -286,7 +286,7 @@ namespace Translator
     {
       listViewMacro.Items.Clear();
 
-      string[] macroList = Program.GetMacroList(false);
+      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
       if (macroList != null && macroList.Length > 0)
         foreach (string macroFile in macroList)
           listViewMacro.Items.Add(macroFile);

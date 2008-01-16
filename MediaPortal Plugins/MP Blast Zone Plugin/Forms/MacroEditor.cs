@@ -73,7 +73,7 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextMouse);
       comboBoxCommands.Items.Add(Common.UITextEject);
       comboBoxCommands.Items.Add(Common.UITextPopup);
-      comboBoxCommands.Items.Add(Common.UITextGoto);
+      comboBoxCommands.Items.Add(Common.UITextGotoScreen);
       comboBoxCommands.Items.Add(Common.UITextInputLayer);
       //comboBoxCommands.Items.Add(Common.UITextWindowState);
       comboBoxCommands.Items.Add(Common.UITextFocus);
@@ -223,11 +223,11 @@ namespace MediaPortal.Plugins
           if (popupMessage.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
         }
-        else if (selected.Equals(Common.UITextGoto, StringComparison.OrdinalIgnoreCase))
+        else if (selected.Equals(Common.UITextGotoScreen, StringComparison.OrdinalIgnoreCase))
         {
           GoToScreen goToScreen = new GoToScreen();
           if (goToScreen.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixGoto + goToScreen.CommandString;
+            newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
         }
         else if (selected.Equals(Common.UITextInputLayer, StringComparison.OrdinalIgnoreCase))
         {
@@ -264,7 +264,7 @@ namespace MediaPortal.Plugins
         else if (selected.Equals(Common.UITextSound, StringComparison.OrdinalIgnoreCase))
         {
           OpenFileDialog openFileDialog = new OpenFileDialog();
-          openFileDialog.Filter = "Wave Files|*.WAV";
+          openFileDialog.Filter = "Wave Files|*.wav";
           openFileDialog.Multiselect = false;
 
           if (openFileDialog.ShowDialog(this) == DialogResult.OK)
@@ -502,11 +502,11 @@ namespace MediaPortal.Plugins
           if (popupMessage.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixGoto, StringComparison.OrdinalIgnoreCase))
+        else if (selected.StartsWith(Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
         {
-          GoToScreen goToScreen = new GoToScreen(selected.Substring(Common.CmdPrefixGoto.Length));
+          GoToScreen goToScreen = new GoToScreen(selected.Substring(Common.CmdPrefixGotoScreen.Length));
           if (goToScreen.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixGoto + goToScreen.CommandString;
+            newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixBeep, StringComparison.OrdinalIgnoreCase))
         {
@@ -519,7 +519,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixSound, StringComparison.OrdinalIgnoreCase))
         {
           OpenFileDialog openFileDialog = new OpenFileDialog();
-          openFileDialog.Filter = "Wave Files|*.WAV";
+          openFileDialog.Filter = "Wave Files|*.wav";
           openFileDialog.Multiselect = false;
           openFileDialog.FileName = selected.Substring(Common.CmdPrefixSound.Length);
 

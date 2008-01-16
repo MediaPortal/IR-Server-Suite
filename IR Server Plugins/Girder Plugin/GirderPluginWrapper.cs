@@ -2,12 +2,188 @@ using System;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Xml;
 
 namespace GirderPlugin
 {
+
+  #region Structures
+
+  /// <summary>
+  /// Girder Command structure.
+  /// </summary>
+  [StructLayout(LayoutKind.Sequential)]
+  public struct GirCommand
+  {
+    
+    #region Variables
+
+    /// <summary>
+    /// Mutex to control access to this command.
+    /// </summary>
+    public Mutex critical_section;
+    /// <summary>
+    /// Command name.
+    /// </summary>
+    public string name;
+    /// <summary>
+    /// Command action type.
+    /// </summary>
+    public int actiontype;
+    /// <summary>
+    /// Command action sub-type.
+    /// </summary>
+    public int actionsubtype;
+    /// <summary>
+    /// String Value 1.
+    /// </summary>
+    public string svalue1;
+    /// <summary>
+    /// String Value 2.
+    /// </summary>
+    public string svalue2;
+    /// <summary>
+    /// String Value 3.
+    /// </summary>
+    public string svalue3;
+    /// <summary>
+    /// Bool Value 1.
+    /// </summary>
+    public bool bvalue1;
+    /// <summary>
+    /// Bool Value 2.
+    /// </summary>
+    public bool bvalue2;
+    /// <summary>
+    /// Bool Value 3.
+    /// </summary>
+    public bool bvalue3;
+    /// <summary>
+    /// Int Value 1.
+    /// </summary>
+    public int ivalue1;
+    /// <summary>
+    /// Int Value 2.
+    /// </summary>
+    public int ivalue2;
+    /// <summary>
+    /// Int Value 3.
+    /// </summary>
+    public int ivalue3;
+    /// <summary>
+    /// Long Value 1.
+    /// </summary>
+    public int lvalue1;
+    /// <summary>
+    /// Long Value 2.
+    /// </summary>
+    public int lvalue2;
+    /// <summary>
+    /// Long Value 3.
+    /// </summary>
+    public int lvalue3;
+    /// <summary>
+    /// Binary data.
+    /// </summary>
+    public IntPtr binary;
+    /// <summary>
+    /// Size of the binary allocated area.
+    /// </summary>
+    public int size;
+    
+    #endregion Variables
+
+    /// <summary>
+    /// Create a new GirCommand from the supplied XML data.
+    /// </summary>
+    /// <param name="xmlData">The xml data.</param>
+    /// <returns>A new GirCommand object.</returns>
+    public static GirCommand FromXml(string xmlData)
+    {
+      GirCommand newCommand = new GirCommand();
+      newCommand.critical_section = new Mutex();
+
+      XmlDocument doc = new XmlDocument();
+      using (StringReader stringReader = new StringReader(xmlData))
+      {
+        doc.Load(stringReader);
+
+        try { newCommand.name           = doc.DocumentElement["Command"].Attributes["Name"].Value; } catch { }
+        try { newCommand.actiontype     = int.Parse(doc.DocumentElement["Command"].Attributes["ActionType"].Value); } catch { }
+        try { newCommand.actionsubtype  = int.Parse(doc.DocumentElement["Command"].Attributes["ActionSubType"].Value); } catch { }
+
+        try { newCommand.svalue1 = doc.DocumentElement["Command"].Attributes["sValue1"].Value; } catch { }
+        try { newCommand.svalue2 = doc.DocumentElement["Command"].Attributes["sValue2"].Value; } catch { }
+        try { newCommand.svalue3 = doc.DocumentElement["Command"].Attributes["sValue3"].Value; } catch { }
+
+        try { newCommand.bvalue1 = bool.Parse(doc.DocumentElement["Command"].Attributes["bValue1"].Value); } catch { }
+        try { newCommand.bvalue2 = bool.Parse(doc.DocumentElement["Command"].Attributes["bValue2"].Value); } catch { }
+        try { newCommand.bvalue3 = bool.Parse(doc.DocumentElement["Command"].Attributes["bValue3"].Value); } catch { }
+
+        try { newCommand.ivalue1 = int.Parse(doc.DocumentElement["Command"].Attributes["iValue1"].Value); } catch { }
+        try { newCommand.ivalue2 = int.Parse(doc.DocumentElement["Command"].Attributes["iValue2"].Value); } catch { }
+        try { newCommand.ivalue3 = int.Parse(doc.DocumentElement["Command"].Attributes["iValue3"].Value); } catch { }
+
+        try { newCommand.lvalue1 = int.Parse(doc.DocumentElement["Command"].Attributes["lValue1"].Value); } catch { }
+        try { newCommand.lvalue2 = int.Parse(doc.DocumentElement["Command"].Attributes["lValue2"].Value); } catch { }
+        try { newCommand.lvalue3 = int.Parse(doc.DocumentElement["Command"].Attributes["lValue3"].Value); } catch { }
+
+      }
+
+      return newCommand;
+    }
+
+    /// <summary>
+    /// Convert this GirCommand the an XML string.
+    /// </summary>
+    /// <returns>An XML string representing this GirCommand.</returns>
+    public string ToXml()
+    {
+      StringBuilder xmlString = new StringBuilder();
+      using (StringWriter stringWriter = new StringWriter(xmlString))
+      {
+        using (XmlTextWriter xmlWriter = new XmlTextWriter(stringWriter))
+        {
+          xmlWriter.Formatting = Formatting.Indented;
+          xmlWriter.Indentation = 1;
+          xmlWriter.IndentChar = (char)9;
+          xmlWriter.WriteStartDocument(true);
+          xmlWriter.WriteStartElement("Command"); // <Command>
+
+          xmlWriter.WriteAttributeString("Name", name);
+          xmlWriter.WriteAttributeString("Identifier", "3");
+          xmlWriter.WriteAttributeString("Enabled", "TRUE");
+
+          xmlWriter.WriteStartElement("Comments");
+          xmlWriter.WriteString("IR Server Suite - Girder plugin command");
+          xmlWriter.WriteEndElement();
+
+          xmlWriter.WriteStartElement("ActionType");
+          xmlWriter.WriteString(actiontype.ToString());
+          xmlWriter.WriteEndElement();
+
+          xmlWriter.WriteStartElement("ActionSubType");
+          xmlWriter.WriteString(actionsubtype.ToString());
+          xmlWriter.WriteEndElement();
+
+
+
+
+          xmlWriter.WriteEndElement(); // </Command>
+          xmlWriter.WriteEndDocument();
+        }
+      }
+
+      return xmlString.ToString();
+    }
+
+  }
+
+  #endregion Structures
 
   #region Delegates
 
@@ -19,6 +195,12 @@ namespace GirderPlugin
   /// <param name="len">Length of additional data.</param>
   /// <param name="device">Device ID, to uniquely identify this plugin.</param>
   public delegate void PluginEventCallback(string eventstring, IntPtr payload, int len, int device);
+
+  /// <summary>
+  /// Callback for when the plugin sets the command it is editing.
+  /// </summary>
+  /// <param name="command">Command structure.</param>
+  public delegate void PluginCommandSetCallback(GirCommand command);
 
   #endregion Delegates
 
@@ -51,6 +233,31 @@ namespace GirderPlugin
     const int MaxStringLength = 256;
 
     #endregion Constants
+
+    #region Enumerations
+
+    enum OsdSettings
+    {
+      FGColor            = 1,
+      FGDColor           = 2,
+      BGColor            = 3,
+      Width              = 4,
+      Height             = 5,
+      Caption            = 6,
+      Border             = 7,
+      Transparent        = 8,
+      Fontsize           = 9,
+      FontWeight         = 10,
+      FontItalic         = 11,
+      FontUnderline      = 12,
+      FontStrikeout      = 13,
+      Left               = 14,
+      Top                = 15,
+      Center             = 16,
+      Monitor            = 17,
+    }
+
+    #endregion Enumerations
 
     #region Interop
 
@@ -176,6 +383,39 @@ namespace GirderPlugin
 
     #endregion Girder Funtions
 
+    [StructLayout(LayoutKind.Sequential)]
+    struct GirApiFunctions
+    {
+      public int size;
+      public t_parse_girder_reg parse_reg_string;
+      public t_get_link_name get_link_name;
+      public t_set_command set_command;
+      public t_target_enum target_enum;
+      public t_realloc_pchar realloc_pchar;
+      public t_show_osd show_osd;
+      public t_hide_osd hide_osd;
+      public t_start_osd_draw start_osd_draw;
+      public t_stop_osd_draw stop_osd_draw;
+      public t_treepicker_show treepicker_show;
+      public t_register_cb register_cb;
+      public t_i18n_translate i18n_translate;
+      public t_get_osd_settings get_osd_settings;
+      public t_get_osd_fontname get_osd_font_name;
+      public t_gir_malloc gir_malloc;
+      public t_gir_free gir_free;
+      public t_get_int_var get_int_var;
+      public t_get_double_var get_double_var;
+      public t_get_string_var get_string_var;
+      public t_set_int_var set_int_var;
+      public t_set_double_var set_double_var;
+      public t_set_string_var set_string_var;
+      public t_delete_var delete_var;
+      public t_run_parser run_parser;
+      public t_send_event send_event;
+      public t_trigger_command trigger_command;
+      public IntPtr parent_hwnd;
+    }
+
 /*
 typedef void   (WINAPI *t_target_callback)   (HWND hw, p_command command);
 typedef void   (WINAPI *t_set_command)       (p_command command); 
@@ -220,62 +460,6 @@ typedef int    (WINAPI *t_get_next_string_variable) (PCHAR name, int len, PCHAR 
 typedef int    (WINAPI *t_set_variable_window)      (HWND window, UINT msg, int add); // call this to be notified of variable changes.
 typedef void * (WINAPI *t_get_script_state)         (); // call this to get the lua/script state, CHECK IF RETURN VALUE IS NOT NULL!!
 */
-    [StructLayout(LayoutKind.Sequential)]
-    struct GirApiFunctions
-    {
-      public int size;
-      public t_parse_girder_reg parse_reg_string;
-      public t_get_link_name get_link_name;
-      public t_set_command set_command;
-      public t_target_enum target_enum;
-      public t_realloc_pchar realloc_pchar;
-      public t_show_osd show_osd;
-      public t_hide_osd hide_osd;
-      public t_start_osd_draw start_osd_draw;
-      public t_stop_osd_draw stop_osd_draw;
-      public t_treepicker_show treepicker_show;
-      public t_register_cb register_cb;
-      public t_i18n_translate i18n_translate;
-      public t_get_osd_settings get_osd_settings;
-      public t_get_osd_fontname get_osd_font_name;
-      public t_gir_malloc gir_malloc;
-      public t_gir_free gir_free;
-      public t_get_int_var get_int_var;
-      public t_get_double_var get_double_var;
-      public t_get_string_var get_string_var;
-      public t_set_int_var set_int_var;
-      public t_set_double_var set_double_var;
-      public t_set_string_var set_string_var;
-      public t_delete_var delete_var;
-      public t_run_parser run_parser;
-      public t_send_event send_event;
-      public t_trigger_command trigger_command;
-      public IntPtr parent_hwnd;
-
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct GirCommand
-    {
-      public Mutex critical_section;
-      public string name;
-      public int actiontype;
-      public int actionsubtype;
-      public string svalue1;
-      public string svalue2;
-      public string svalue3;
-      public int bvalue1;
-      public int bvalue2;
-      public int bvalue3;
-      public int ivalue1;
-      public int ivalue2;
-      public int ivalue3;
-      public int lvalue1;
-      public int lvalue2;
-      public int lvalue3;
-      public IntPtr binary;
-      public int size;
-    }
 
     #region Plugin functions
 
@@ -338,10 +522,13 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     gir_stop _girStop;
     gir_command_gui _girCommandGui;
     gir_info _girInfo;
+    gir_event _girEvent;
 
     IntPtr _pluginDll;
 
     PluginEventCallback _eventCallback;
+
+    PluginCommandSetCallback _commandSetCallback;
 
     GirApiFunctions _apiFunctions;
     GCHandle _apiFunctionsHandle;
@@ -429,6 +616,16 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     {
       get { return _eventCallback; }
       set { _eventCallback = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the command set callback.
+    /// </summary>
+    /// <value>The command set callback.</value>
+    public PluginCommandSetCallback CommandSetCallback
+    {
+      get { return _commandSetCallback; }
+      set { _commandSetCallback = value; }
     }
 
     #endregion Properties
@@ -599,6 +796,24 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     }
 
     /// <summary>
+    /// GirEvent function.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    /// <param name="eventstring">The event string.</param>
+    /// <param name="payload">The event payload.</param>
+    /// <param name="len">The event payload length.</param>
+    /// <param name="status">The event status.</param>
+    /// <param name="statuslen">The event status length.</param>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public bool GirEvent(GirCommand command, string eventstring, IntPtr payload, int len, string status, int statuslen)
+    {
+      if (_girEvent != null)
+        return _girEvent(command, eventstring, payload, len, status, statuslen);
+
+      return false;
+    }
+
+    /// <summary>
     /// Gets a value indicating whether this instance can be configured.
     /// </summary>
     /// <value><c>true</c> if this instance can configure; otherwise, <c>false</c>.</value>
@@ -643,6 +858,9 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
 #if TRACE
       Trace.WriteLine(String.Format("set_command()"));
 #endif
+
+      if (_commandSetCallback != null)
+        _commandSetCallback(command);
     }
 
     void target_enum(int id, t_target_callback callback)
@@ -728,7 +946,27 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
       Trace.WriteLine(String.Format("get_osd_settings({0})", setting));
 #endif
 
-      return 1;
+      switch ((OsdSettings) setting)
+      {
+        case OsdSettings.FGColor:         return System.Drawing.Color.Lime.ToArgb();
+        case OsdSettings.FGDColor:        return System.Drawing.Color.Green.ToArgb();
+        case OsdSettings.BGColor:         return System.Drawing.Color.Black.ToArgb();
+        case OsdSettings.Width:           return 380;
+        case OsdSettings.Height:          return 255;
+        case OsdSettings.Caption:         return 1;
+        case OsdSettings.Border:          return 1;
+        case OsdSettings.Transparent:     return 0;
+        case OsdSettings.Fontsize:        return 15;
+        case OsdSettings.FontWeight:      return 0;
+        case OsdSettings.FontItalic:      return 0;
+        case OsdSettings.FontUnderline:   return 0;
+        case OsdSettings.FontStrikeout:   return 0;
+        case OsdSettings.Left:            return 0;
+        case OsdSettings.Top:             return 0;
+        case OsdSettings.Center:          return 1;
+        case OsdSettings.Monitor:         return 0;
+        default:                          return 0;
+      }
     }
 
     bool get_osd_fontname(IntPtr szstore, int size)
@@ -737,7 +975,7 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
       Trace.WriteLine("get_osd_fontname");
 #endif
 
-      return WriteString(szstore, size, "Error");
+      return WriteString(szstore, size, "Times New Roman");
     }
 
     IntPtr gir_malloc(int size)
@@ -911,7 +1149,11 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
         function = GetProcAddress(_pluginDll, "gir_info");
         if (function != IntPtr.Zero) // Optional.
           _girInfo = (gir_info)Marshal.GetDelegateForFunctionPointer(function, typeof(gir_info));
-        
+
+        function = GetProcAddress(_pluginDll, "gir_event");
+        if (function != IntPtr.Zero) // Optional.
+          _girEvent = (gir_event)Marshal.GetDelegateForFunctionPointer(function, typeof(gir_event));
+
         function = GetProcAddress(_pluginDll, "gir_start");
         if (function != IntPtr.Zero) // Optional.
           _girStart = (gir_start)Marshal.GetDelegateForFunctionPointer(function, typeof(gir_start));

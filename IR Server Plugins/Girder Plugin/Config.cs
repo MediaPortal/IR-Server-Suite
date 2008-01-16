@@ -15,15 +15,21 @@ namespace GirderPlugin
   public partial class Config : Form
   {
 
+    //List<string> _selectedPlugins;
+    string _pluginFolder;
+
+
     /// <summary>
-    /// Gets or sets the name of the Girder plugin file in use.
+    /// Gets or sets the path of the Girder plugin folder.
     /// </summary>
-    /// <value>The name of the Girder plugin file.</value>
-    public string FileName
+    /// <value>The path of the Girder plugin folder.</value>
+    public string PluginFolder
     {
-      get { return textBoxPluginFile.Text; }
-      set { textBoxPluginFile.Text = value; }
+      get { return _pluginFolder; }
+      set { _pluginFolder = value; }
     }
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Config"/> class.
@@ -35,12 +41,14 @@ namespace GirderPlugin
 
     private void buttonConfigureGirderPlugin_Click(object sender, EventArgs e)
     {
-      if (String.IsNullOrEmpty(textBoxPluginFile.Text))
+      if (listViewPlugins.SelectedIndices.Count != 1)
         return;
+
+      string pluginFile = listViewPlugins.SelectedItems[0].Tag as string;
 
       try
       {
-        GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(textBoxPluginFile.Text);
+        GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(pluginFile);
 
         pluginWrapper.GirOpen();
 
@@ -67,29 +75,11 @@ namespace GirderPlugin
 
     private void buttonFind_Click(object sender, EventArgs e)
     {
-      openFileDialog.FileName = textBoxPluginFile.Text;
-
-      if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+      if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK)
       {
-        try
-        {
-          GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(openFileDialog.FileName);
+        _pluginFolder = folderBrowserDialog.SelectedPath;
 
-          pluginWrapper.GirOpen();
-
-          string message = String.Format("{0}\n{1}\n\nUse this plugin?", pluginWrapper.GirName, pluginWrapper.GirDescription);
-
-          if (MessageBox.Show(this, message, openFileDialog.FileName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            textBoxPluginFile.Text = openFileDialog.FileName;
-
-          pluginWrapper.GirClose();
-
-          pluginWrapper.Dispose();
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+        UpdatePluginList();
       }
     }
 
@@ -97,6 +87,11 @@ namespace GirderPlugin
     {
       this.DialogResult = DialogResult.OK;
       this.Close();
+    }
+
+    void UpdatePluginList()
+    {
+
     }
 
   }
