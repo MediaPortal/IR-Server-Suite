@@ -170,7 +170,7 @@ namespace MacroConverter
             break;
 
           case XmlTagGoto:
-            macroContents.Add(Common.CmdPrefixGoto + commandProperty);
+            macroContents.Add(Common.CmdPrefixGotoLabel + commandProperty);
             break;
 
           case XmlTagPopup:

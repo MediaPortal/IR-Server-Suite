@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -96,8 +97,10 @@ namespace IrssUtils
 
     #region Command Prefixes
 
-    public const string CmdPrefixSTB          = "STB: ";
+    public const string CmdPrefixCommand      = "Command: ";
+
     public const string CmdPrefixMacro        = "Macro: ";
+    public const string CmdPrefixSTB          = "STB: ";
     public const string CmdPrefixBlast        = "Blast: ";
     public const string CmdPrefixPause        = "Pause: ";
     public const string CmdPrefixRun          = "Run: ";
@@ -149,6 +152,7 @@ namespace IrssUtils
 
     #region User Interface Text
 
+    public const string UITextMacro           = "Macro";
     public const string UITextRun             = "Run Program";
     public const string UITextPause           = "Pause";
     public const string UITextSerial          = "Serial Command";
@@ -849,6 +853,61 @@ namespace IrssUtils
     #endregion Command Execution
 
     #region Misc
+
+    /// <summary>
+    /// Get a list of commands found in the Command Libraries.
+    /// </summary>
+    /// <returns>Available commands.</returns>
+    public static Type[] GetLibraryCommands()
+    {
+      try
+      {
+        List<Type> commands = new List<Type>();
+
+        string installFolder = SystemRegistry.GetInstallFolder();
+        if (String.IsNullOrEmpty(installFolder))
+          return null;
+
+        string[] files = Directory.GetFiles(installFolder + "\\Commands\\", "*.dll", SearchOption.TopDirectoryOnly);
+
+        foreach (string file in files)
+        {
+          try
+          {
+            Assembly assembly = Assembly.LoadFrom(file);
+            Type[] types = assembly.GetExportedTypes();
+
+            foreach (Type type in types)
+              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Commands.Command)))
+                commands.Add(type);
+          }
+          catch (BadImageFormatException)
+          {
+            // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
+          }
+          catch (TypeLoadException)
+          {
+            // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
+          }
+          catch (Exception ex)
+          {
+            MessageBox.Show(ex.ToString(), "IR Server Command Error");
+          }
+        }
+
+        return commands.ToArray();
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
+        return null;
+      }
+    }
 
     /// <summary>
     /// Returns a list of IR Commands.

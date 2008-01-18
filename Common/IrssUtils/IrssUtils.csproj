@@ -61,7 +61,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -360,6 +359,12 @@
     <Content Include="Graphics\Top.png" />
     <Content Include="Graphics\TopLeft.png" />
     <Content Include="Graphics\TopRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Commands\Command\Command.csproj">
+      <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
+      <Name>Command</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

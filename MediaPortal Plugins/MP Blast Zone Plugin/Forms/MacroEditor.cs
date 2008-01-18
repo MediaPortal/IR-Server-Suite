@@ -78,6 +78,8 @@ namespace MediaPortal.Plugins
       //comboBoxCommands.Items.Add(Common.UITextWindowState);
       comboBoxCommands.Items.Add(Common.UITextFocus);
       comboBoxCommands.Items.Add(Common.UITextExit);
+      comboBoxCommands.Items.Add(Common.UITextSendMPAction);
+      comboBoxCommands.Items.Add(Common.UITextSendMPMsg);
       comboBoxCommands.Items.Add(Common.UITextVirtualKB);
       comboBoxCommands.Items.Add(Common.UITextSmsKB);
       comboBoxCommands.Items.Add(Common.UITextBeep);

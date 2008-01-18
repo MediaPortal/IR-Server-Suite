@@ -54,6 +54,18 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Commands\Command\Command.csproj">
+      <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
+      <Name>Command</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Commands\Macro\Macro.csproj">
+      <Project>{49CF376E-811C-4EB4-817F-A39C9529B608}</Project>
+      <Name>Macro</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Commands\VariableList\VariableList.csproj">
+      <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
+      <Name>VariableList</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>

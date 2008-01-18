@@ -17,7 +17,7 @@ OutFile "${PRODUCT_NAME} - ${PRODUCT_VERSION}.exe"
 InstallDir ""
 ShowInstDetails show
 ShowUninstDetails show
-BrandingText " "
+BrandingText "${PRODUCT_NAME} by Aaron Dinnage"
 SetCompressor /SOLID /FINAL lzma
 CRCCheck On
 

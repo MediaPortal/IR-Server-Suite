@@ -22,7 +22,7 @@ namespace MacroScope
     #region Variables
 
     string _macroFile;
-    VariableList _variables;
+    Commands.VariableList _variables;
 
     bool _isDebugging;
     int _debugLine;
@@ -37,8 +37,7 @@ namespace MacroScope
 
       PopulateCommandList();
 
-      _variables = new VariableList();
-
+      _variables = new Commands.VariableList();
     }
 
     #endregion Constructor

@@ -46,6 +46,7 @@ namespace IrssUtils.Forms
       this.buttonCancel.TabIndex = 3;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
+      this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
       // 
       // buttonOK
       // 
@@ -56,6 +57,7 @@ namespace IrssUtils.Forms
       this.buttonOK.TabIndex = 2;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
+      this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
       // 
       // labelLabelName
       // 
