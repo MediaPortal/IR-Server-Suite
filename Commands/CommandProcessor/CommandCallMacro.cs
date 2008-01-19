@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -65,6 +66,24 @@ namespace Commands
     {
       Macro macro = new Macro(_parameters[0]);
       macro.Execute(commandProcessor);
+    }
+
+    /// <summary>
+    /// Edit this command.
+    /// </summary>
+    /// <param name="parent">The parent window.</param>
+    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
+    public override bool Edit(IWin32Window parent)
+    {
+      if (String.IsNullOrEmpty(_parameters[0]))
+      {
+        OpenFileDialog openFileDialog = new OpenFileDialog();
+        openFileDialog.Filter = "Macro Files|*" + Processor.FileExtensionMacro;
+        if (openFileDialog.ShowDialog(parent) == DialogResult.OK)
+          _parameters[0] = Path.Combine(Path.GetDirectoryName(openFileDialog.FileName), Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+      }
+
+      return true;
     }
 
     #endregion Implementation

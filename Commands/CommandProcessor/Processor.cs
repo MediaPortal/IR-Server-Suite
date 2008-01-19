@@ -192,10 +192,13 @@ namespace Commands
     /// <summary>
     /// Returns a list of Macros in the specified folder.
     /// </summary>
-    /// <param name="folder">The folder.</param>
+    /// <param name="folder">The folder to search.</param>
     /// <returns>List of Macros.</returns>
     public static string[] GetListMacro(string folder)
     {
+      if (String.IsNullOrEmpty(folder))
+        throw new ArgumentNullException("folder");
+
       string[] files = Directory.GetFiles(folder, '*' + FileExtensionMacro);
 
       for (int index = 0; index < files.Length; index++)

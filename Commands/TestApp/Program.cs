@@ -19,10 +19,22 @@ namespace Commands
 
       Processor commandProcessor = new Processor(new BlastIrDelegate(BlastIr), new string[] { "Default", "Port 1" });
 
-      //EditMacro edit = new EditMacro(commandProcessor, "C:\\", new string[] { "General Commands", "MediaPortal Commands" });
-      EditMacro edit = new EditMacro(commandProcessor, new string[] { "General Commands", "MediaPortal Commands" }, "C:\\New" );
+      string[] categories = new string[] { "General Commands", "MediaPortal Commands" };
 
-      edit.ShowDialog();
+      EditMacro edit1 = new EditMacro(
+        commandProcessor, 
+        @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\",
+        categories);
+
+      edit1.ShowDialog();
+
+      EditMacro edit2 = new EditMacro(
+        commandProcessor,
+        categories,
+        @"C:\New");
+        //@"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\Test");
+
+      edit2.ShowDialog();
     }
 
 

@@ -21,6 +21,13 @@ namespace Commands
   public partial class EditMacro : Form
   {
 
+    #region Special Categories
+
+    const string CategoryIRCommands = "IR Commands";
+    const string CategoryMacros     = "Macros";
+
+    #endregion Special Categories
+
     #region Variables
 
     Processor _commandProcessor;
@@ -53,13 +60,13 @@ namespace Commands
 
       InitializeComponent();
 
-      _commandProcessor = commandProcessor;
-      _macroFolder = macroFolder;
-
-      PopulateCommandList(categories);
+      _commandProcessor   = commandProcessor;
+      _macroFolder        = macroFolder;
 
       textBoxName.Text    = "New";
       textBoxName.Enabled = true;
+
+      PopulateCommandList(categories);
     }
 
     /// <summary>
@@ -83,14 +90,12 @@ namespace Commands
 
       _commandProcessor   = commandProcessor;
       _fileName           = fileName;
-      _macroFolder        = Path.GetDirectoryName(fileName);
 
-      PopulateCommandList(categories);
-
-      string macroName = fileName;
-
+      string macroName    = fileName;
       if (macroName.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
         macroName = fileName.Substring(Common.FolderAppData.Length);
+
+      _macroFolder = fileName.Substring(0, fileName.Length - macroName.Length);
 
       textBoxName.Text    = macroName;
       textBoxName.Enabled = false;
@@ -102,6 +107,8 @@ namespace Commands
         item.Tag = command.ToString();
         listViewMacro.Items.Add(item);
       }
+
+      PopulateCommandList(categories);
     }
 
     #endregion Constructor
@@ -114,22 +121,12 @@ namespace Commands
       treeViewCommandList.Nodes.Clear();
       Dictionary<string, TreeNode> treeNodes = new Dictionary<string,TreeNode>(categories.Length);
 
-      TreeNode macroCommands = new TreeNode(Processor.CategoryMacro);
-      Type[] specialCommands = Processor.GetSpecialCommands();
-      foreach (Type type in specialCommands)
-      {
-        Command command = (Command)Activator.CreateInstance(type);
-
-        if (!command.GetCategory().Equals(Processor.CategoryHidden, StringComparison.OrdinalIgnoreCase))
-          macroCommands.Nodes.Add(command.GetUserInterfaceText());
-        
-        _commands.Add(command.GetUserInterfaceText(), type);
-      }
-
-      treeNodes.Add(Processor.CategoryMacro, macroCommands);
-
       foreach (string category in categories)
-        treeNodes.Add(category, new TreeNode(category));
+      {
+        TreeNode categoryNode = new TreeNode(category);
+        //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
+        treeNodes.Add(category, categoryNode);
+      }
 
       Type[] allCommands = Common.GetLibraryCommands();
       if (allCommands != null)
@@ -149,10 +146,28 @@ namespace Commands
         }
       }
 
+      // Add built-in macro commands ...
+      TreeNode macroCommands = new TreeNode(Processor.CategoryMacro);
+      //macroCommands.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
+
+      Type[] specialCommands = Processor.GetSpecialCommands();
+      foreach (Type type in specialCommands)
+      {
+        Command command = (Command)Activator.CreateInstance(type);
+
+        //if (!command.GetCategory().Equals(Processor.CategoryHidden, StringComparison.OrdinalIgnoreCase))
+          macroCommands.Nodes.Add(command.GetUserInterfaceText());
+
+        _commands.Add(command.GetUserInterfaceText(), type);
+      }
+      treeNodes.Add(Processor.CategoryMacro, macroCommands);
+
+      // Add list of existing IR Commands ...
       string[] irFiles = Processor.GetListIR();
       if (irFiles != null)
       {
-        TreeNode irCommands = new TreeNode("IR Commands");
+        TreeNode irCommands = new TreeNode(CategoryIRCommands);
+        //irCommands.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
 
         foreach (string irFile in irFiles)
         {
@@ -164,11 +179,15 @@ namespace Commands
         treeNodes.Add(irCommands.Text, irCommands);
       }
 
-
-      string[] macros = Processor.GetListMacro(_macroFolder);
+      // Add list of existing Macros ...
+      string macroFolder = _macroFolder;
+      if (String.IsNullOrEmpty(_macroFolder))
+        macroFolder = Path.GetDirectoryName(_fileName);
+      string[] macros = Processor.GetListMacro(macroFolder);
       if (macros != null)
       {
-        TreeNode otherMacros = new TreeNode("Macros");
+        TreeNode otherMacros = new TreeNode(CategoryMacros);
+        //otherMacros.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
 
         foreach (string macro in macros)
           otherMacros.Nodes.Add(macro);
@@ -176,11 +195,13 @@ namespace Commands
         treeNodes.Add(otherMacros.Text, otherMacros);
       }
 
+      // Put all commands into tree view ...
       foreach (TreeNode treeNode in treeNodes.Values)
         if (treeNode.Nodes.Count > 0)
           treeViewCommandList.Nodes.Add(treeNode);
 
-      treeViewCommandList.ExpandAll();
+      treeViewCommandList.SelectedNode = treeViewCommandList.Nodes[0];
+      treeViewCommandList.SelectedNode.Expand();
     }
 
     private void treeViewCommandList_DoubleClick(object sender, EventArgs e)
@@ -195,7 +216,7 @@ namespace Commands
         ListViewItem newCommand = new ListViewItem();
         Command command;
 
-        if (treeViewCommandList.SelectedNode.Parent.Text.Equals("IR Commands", StringComparison.OrdinalIgnoreCase))
+        if (treeViewCommandList.SelectedNode.Parent.Text.Equals(CategoryIRCommands, StringComparison.OrdinalIgnoreCase))
         {
           string selectedTag = treeViewCommandList.SelectedNode.Tag as string;
 
@@ -208,7 +229,7 @@ namespace Commands
             listViewMacro.Items.Add(newCommand);
           }
         }
-        else if (treeViewCommandList.SelectedNode.Parent.Text.Equals("Macros", StringComparison.OrdinalIgnoreCase))
+        else if (treeViewCommandList.SelectedNode.Parent.Text.Equals(CategoryMacros, StringComparison.OrdinalIgnoreCase))
         {
           command = new CommandCallMacro(new string[] { selected });
 
@@ -285,7 +306,7 @@ namespace Commands
         return;
       }
 
-      if (!Common.IsValidFileName(name))
+      if (textBoxName.Enabled && !Common.IsValidFileName(name))
       {
         MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         textBoxName.Focus();
@@ -330,7 +351,7 @@ namespace Commands
         return;
       }
 
-      if (!Common.IsValidFileName(name))
+      if (textBoxName.Enabled && !Common.IsValidFileName(name))
       {
         MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         textBoxName.Focus();

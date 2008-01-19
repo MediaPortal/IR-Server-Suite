@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -94,6 +95,14 @@ namespace Commands
     {
       if (parameters == null)
         throw new ArgumentNullException("parameters");
+
+      if (String.IsNullOrEmpty(parameters[0]))
+      {
+        OpenFileDialog openFileDialog = new OpenFileDialog();
+        openFileDialog.Filter = "IR Command Files|*" + Processor.FileExtensionIR;
+        if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+          parameters[0] = Path.Combine(Path.GetDirectoryName(openFileDialog.FileName), Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+      }
 
       _fileName = parameters[0];
 

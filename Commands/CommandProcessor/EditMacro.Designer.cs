@@ -60,7 +60,7 @@ namespace Commands
       this.textBoxName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.textBoxName.Location = new System.Drawing.Point(8, 16);
       this.textBoxName.Name = "textBoxName";
-      this.textBoxName.Size = new System.Drawing.Size(300, 22);
+      this.textBoxName.Size = new System.Drawing.Size(324, 22);
       this.textBoxName.TabIndex = 0;
       this.toolTips.SetToolTip(this.textBoxName, "Provide a name for this macro (must be a valid windows file name)");
       // 
@@ -75,7 +75,7 @@ namespace Commands
       this.groupBoxCommandSequence.Controls.Add(this.buttonMoveUp);
       this.groupBoxCommandSequence.Location = new System.Drawing.Point(0, 56);
       this.groupBoxCommandSequence.Name = "groupBoxCommandSequence";
-      this.groupBoxCommandSequence.Size = new System.Drawing.Size(316, 304);
+      this.groupBoxCommandSequence.Size = new System.Drawing.Size(340, 304);
       this.groupBoxCommandSequence.TabIndex = 1;
       this.groupBoxCommandSequence.TabStop = false;
       this.groupBoxCommandSequence.Text = "Macro";
@@ -92,9 +92,10 @@ namespace Commands
       this.listViewMacro.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
       this.listViewMacro.HideSelection = false;
       this.listViewMacro.Location = new System.Drawing.Point(8, 16);
+      this.listViewMacro.MultiSelect = false;
       this.listViewMacro.Name = "listViewMacro";
       this.listViewMacro.ShowGroups = false;
-      this.listViewMacro.Size = new System.Drawing.Size(300, 248);
+      this.listViewMacro.Size = new System.Drawing.Size(324, 248);
       this.listViewMacro.TabIndex = 0;
       this.listViewMacro.UseCompatibleStateImageBehavior = false;
       this.listViewMacro.View = System.Windows.Forms.View.Details;
@@ -103,17 +104,17 @@ namespace Commands
       // columnHeader
       // 
       this.columnHeader.Text = "Commands";
-      this.columnHeader.Width = 276;
+      this.columnHeader.Width = 300;
       // 
       // buttonRemove
       // 
       this.buttonRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonRemove.Location = new System.Drawing.Point(252, 272);
+      this.buttonRemove.Location = new System.Drawing.Point(276, 272);
       this.buttonRemove.Name = "buttonRemove";
       this.buttonRemove.Size = new System.Drawing.Size(56, 24);
       this.buttonRemove.TabIndex = 3;
       this.buttonRemove.Text = "Remove";
-      this.toolTips.SetToolTip(this.buttonRemove, "Remove the selected command(s)");
+      this.toolTips.SetToolTip(this.buttonRemove, "Remove the selected command");
       this.buttonRemove.UseVisualStyleBackColor = true;
       this.buttonRemove.Click += new System.EventHandler(this.buttonRemove_Click);
       // 
@@ -125,7 +126,7 @@ namespace Commands
       this.buttonMoveDown.Size = new System.Drawing.Size(48, 24);
       this.buttonMoveDown.TabIndex = 2;
       this.buttonMoveDown.Text = "Down";
-      this.toolTips.SetToolTip(this.buttonMoveDown, "Move the selected command(s) down one position");
+      this.toolTips.SetToolTip(this.buttonMoveDown, "Move the selected command down one position");
       this.buttonMoveDown.UseVisualStyleBackColor = true;
       this.buttonMoveDown.Click += new System.EventHandler(this.buttonMoveDown_Click);
       // 
@@ -137,7 +138,7 @@ namespace Commands
       this.buttonMoveUp.Size = new System.Drawing.Size(48, 24);
       this.buttonMoveUp.TabIndex = 1;
       this.buttonMoveUp.Text = "Up";
-      this.toolTips.SetToolTip(this.buttonMoveUp, "Move the selected command(s) up one position");
+      this.toolTips.SetToolTip(this.buttonMoveUp, "Move the selected command up one position");
       this.buttonMoveUp.UseVisualStyleBackColor = true;
       this.buttonMoveUp.Click += new System.EventHandler(this.buttonMoveUp_Click);
       // 
@@ -147,7 +148,7 @@ namespace Commands
       this.groupBoxCommands.Dock = System.Windows.Forms.DockStyle.Fill;
       this.groupBoxCommands.Location = new System.Drawing.Point(0, 0);
       this.groupBoxCommands.Name = "groupBoxCommands";
-      this.groupBoxCommands.Size = new System.Drawing.Size(166, 360);
+      this.groupBoxCommands.Size = new System.Drawing.Size(190, 360);
       this.groupBoxCommands.TabIndex = 0;
       this.groupBoxCommands.TabStop = false;
       this.groupBoxCommands.Text = "Commands";
@@ -159,7 +160,7 @@ namespace Commands
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.treeViewCommandList.Location = new System.Drawing.Point(8, 16);
       this.treeViewCommandList.Name = "treeViewCommandList";
-      this.treeViewCommandList.Size = new System.Drawing.Size(150, 336);
+      this.treeViewCommandList.Size = new System.Drawing.Size(174, 336);
       this.treeViewCommandList.TabIndex = 0;
       this.treeViewCommandList.DoubleClick += new System.EventHandler(this.treeViewCommandList_DoubleClick);
       // 
@@ -167,7 +168,7 @@ namespace Commands
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(440, 376);
+      this.buttonCancel.Location = new System.Drawing.Point(488, 376);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
       this.buttonCancel.TabIndex = 3;
@@ -190,7 +191,7 @@ namespace Commands
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(376, 376);
+      this.buttonOK.Location = new System.Drawing.Point(424, 376);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
       this.buttonOK.TabIndex = 2;
@@ -204,7 +205,7 @@ namespace Commands
       this.groupBoxMacroName.Dock = System.Windows.Forms.DockStyle.Top;
       this.groupBoxMacroName.Location = new System.Drawing.Point(0, 0);
       this.groupBoxMacroName.Name = "groupBoxMacroName";
-      this.groupBoxMacroName.Size = new System.Drawing.Size(316, 48);
+      this.groupBoxMacroName.Size = new System.Drawing.Size(340, 48);
       this.groupBoxMacroName.TabIndex = 0;
       this.groupBoxMacroName.TabStop = false;
       this.groupBoxMacroName.Text = "Macro Name";
@@ -228,8 +229,8 @@ namespace Commands
       // 
       this.splitContainer.Panel2.Controls.Add(this.groupBoxCommands);
       this.splitContainer.Panel2MinSize = 128;
-      this.splitContainer.Size = new System.Drawing.Size(488, 360);
-      this.splitContainer.SplitterDistance = 316;
+      this.splitContainer.Size = new System.Drawing.Size(536, 360);
+      this.splitContainer.SplitterDistance = 340;
       this.splitContainer.SplitterWidth = 6;
       this.splitContainer.TabIndex = 0;
       // 
@@ -237,13 +238,13 @@ namespace Commands
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(504, 409);
+      this.ClientSize = new System.Drawing.Size(552, 409);
       this.Controls.Add(this.buttonTest);
       this.Controls.Add(this.splitContainer);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(512, 436);
+      this.MinimumSize = new System.Drawing.Size(560, 436);
       this.Name = "EditMacro";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
