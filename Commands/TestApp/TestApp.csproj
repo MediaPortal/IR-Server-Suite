@@ -45,13 +45,13 @@
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CommandProcessor\CommandProcessor.csproj">
+      <Project>{49CF376E-811C-4EB4-817F-A39C9529B608}</Project>
+      <Name>CommandProcessor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Command\Command.csproj">
       <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
       <Name>Command</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Macro\CommandProcessor.csproj">
-      <Project>{49CF376E-811C-4EB4-817F-A39C9529B608}</Project>
-      <Name>CommandProcessor</Name>
     </ProjectReference>
     <ProjectReference Include="..\VariableList\VariableList.csproj">
       <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
