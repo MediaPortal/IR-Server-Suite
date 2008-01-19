@@ -49,18 +49,22 @@ namespace Commands
     /// <returns>The user display text.</returns>
     public override string GetUserDisplayText()
     {
-      return String.Format("{0} ({1})", GetUserInterfaceText(), String.Join(", ", Parameters));
+      string fileName = _parameters[0];
+
+      if (_parameters[0].StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        fileName = _parameters[0].Substring(Common.FolderAppData.Length);
+
+      return String.Format("{0} ({1})", GetUserInterfaceText(), fileName);
     }
 
     /// <summary>
     /// Execute this command.
     /// </summary>
-    /// <param name="variables">The variable list of the calling code.</param>
-    /// <param name="blastIrDelegate">The blast ir delegate.</param>
-    public void Execute(VariableList variables, BlastIrDelegate blastIrDelegate)
+    /// <param name="commandProcessor">The command processor.</param>
+    public void Execute(Processor commandProcessor)
     {
       Macro macro = new Macro(_parameters[0]);
-      macro.Execute(variables, blastIrDelegate);
+      macro.Execute(commandProcessor);
     }
 
     #endregion Implementation

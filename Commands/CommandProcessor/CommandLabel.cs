@@ -33,22 +33,13 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Macro.Category; }
+    public override string GetCategory() { return Processor.CategoryMacro; }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
     public override string GetUserInterfaceText() { return "Label"; }
-
-    /// <summary>
-    /// Gets the user display text.
-    /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
-    {
-      return String.Format("{0} ({1})", GetUserInterfaceText(), String.Join(", ", Parameters));
-    }
 
     /// <summary>
     /// Edit this command.

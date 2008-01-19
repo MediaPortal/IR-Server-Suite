@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="CommandExecutionException.cs" />
+    <Compile Include="CommandStructureException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -33,22 +33,13 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Macro.Category; }
+    public override string GetCategory() { return Processor.CategoryMacro; }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
     public override string GetUserInterfaceText() { return "Set Variable"; }
-
-    /// <summary>
-    /// Gets the user display text.
-    /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
-    {
-      return String.Format("{0} ({1})", GetUserInterfaceText(), String.Join(", ", Parameters));
-    }
 
     /// <summary>
     /// Edit this command.
@@ -65,6 +56,17 @@ namespace Commands
       }
 
       return false;
+    }
+
+    /// <summary>
+    /// Execute this command.
+    /// </summary>
+    /// <param name="variables">The variable list of the calling code.</param>
+    public override void Execute(VariableList variables)
+    {
+      string value = Processor.ReplaceSpecial(_parameters[1]);
+
+      variables.SetVariable(_parameters[0], value);
     }
 
     #endregion Implementation

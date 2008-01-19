@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
@@ -52,6 +54,9 @@ namespace Commands
     /// Standard text for the Macro Category.
     /// </summary>
     public const string CategoryHidden      = "Hidden";
+
+
+    //const string ProcessCommandThreadName = "ProcessCommand";
 
     #endregion Constants
 
@@ -118,12 +123,36 @@ namespace Commands
     /// Executes the specified command.
     /// </summary>
     /// <param name="command">The command.</param>
-    public void Execute(Command command)
+    /// <param name="async">If set to <c>true</c> then process this command asynchornously.</param>
+    public void Execute(Command command, bool async)
     {
+      if (command == null)
+        throw new ArgumentNullException("command");
+
+      if (async)
+      {
+        Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+        //newThread.Name = ProcessCommandThreadName;
+        newThread.IsBackground = true;
+        newThread.Start(command);
+      }
+      else
+      {
+        ProcCommand(command);
+      }
+    }
+
+    void ProcCommand(object commandObj)
+    {
+      Command command = commandObj as Command;
+
+      if (command == null)
+        throw new ArgumentException("Argument is not a valid Command object", "commandObj");
+
       if (command is CommandBlastIR)
         (command as CommandBlastIR).Execute(_blastIrDelegate);
       else if (command is CommandCallMacro)
-        (command as CommandCallMacro).Execute(_variables, _blastIrDelegate);
+        (command as CommandCallMacro).Execute(this);
       else
         command.Execute(_variables);
     }
@@ -174,6 +203,174 @@ namespace Commands
 
       return files;
     }
+
+
+
+    /// <summary>
+    /// Replace all instances of environment variables, special values and escape codes.
+    /// </summary>
+    /// <param name="input">The input to process.</param>
+    /// <returns>Processed input string.</returns>
+    public static string ReplaceSpecial(string input)
+    {
+      if (String.IsNullOrEmpty(input))
+        return input;
+
+      // Process Special Codes ...
+      if (input.Contains("%"))
+      {
+        foreach (Match match in Regex.Matches(input, @"%\w+%"))
+        {
+          string varName = match.Value.Substring(1, match.Value.Length - 2);
+
+          string envVar = String.Empty;
+
+          switch (varName.ToUpperInvariant())
+          {
+            case "$CLIPBOARD_TEXT$":
+              if (Clipboard.ContainsText())
+                envVar = Clipboard.GetText();
+              break;
+
+            case "$TIME$":
+              envVar = DateTime.Now.ToShortTimeString();
+              break;
+
+            case "$HOUR$":
+              envVar = DateTime.Now.Hour.ToString();
+              break;
+
+            case "$MINUTE$":
+              envVar = DateTime.Now.Minute.ToString();
+              break;
+
+            case "$SECOND$":
+              envVar = DateTime.Now.Second.ToString();
+              break;
+
+            case "$DATE$":
+              envVar = DateTime.Now.ToShortDateString();
+              break;
+
+            case "$YEAR$":
+              envVar = DateTime.Now.Year.ToString();
+              break;
+
+            case "$MONTH$":
+              envVar = DateTime.Now.Month.ToString();
+              break;
+
+            case "$DAY$":
+              envVar = DateTime.Now.Day.ToString();
+              break;
+
+            case "$DAYOFWEEK$":
+              envVar = DateTime.Now.DayOfWeek.ToString();
+              break;
+
+            case "$DAYOFYEAR$":
+              envVar = DateTime.Now.DayOfYear.ToString();
+              break;
+
+            case "$USERNAME$":
+              envVar = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+              break;
+
+            case "$MACHINENAME$":
+              envVar = Environment.MachineName;
+              break;
+
+            default:
+              envVar = Environment.GetEnvironmentVariable(varName);
+              break;
+          }
+
+          input = input.Replace(match.Value, envVar);
+        }
+      }
+
+      // Process Escape Codes ...
+      bool inEscapeCode = false;
+      bool inHexCode = false;
+      byte hexParsed;
+      StringBuilder hexCode = new StringBuilder();
+      StringBuilder output = new StringBuilder();
+
+      foreach (char currentChar in input)
+      {
+        if (inEscapeCode)
+        {
+          switch (currentChar)
+          {
+            case 'a':
+              output.Append((char)7);
+              break;
+            case 'b':
+              output.Append((char)Keys.Back);
+              break;
+            case 'f':
+              output.Append((char)12);
+              break;
+            case 'n':
+              output.Append((char)Keys.LineFeed);
+              break;
+            case 'r':
+              output.Append((char)Keys.Return);
+              break;
+            case 't':
+              output.Append((char)Keys.Tab);
+              break;
+            case 'v':
+              output.Append((char)11);
+              break;
+            case 'x':
+              hexCode = new StringBuilder();
+              inHexCode = true;
+              inEscapeCode = false;
+              break;
+            case '0':   // I've got a bad feeling about this
+              output.Append((char)0);
+              break;
+
+            default:    // If it doesn't know it as an escape code, just use the char
+              output.Append(currentChar);
+              break;
+          }
+
+          inEscapeCode = false;
+        }
+        else if (inHexCode)
+        {
+          switch (currentChar)
+          {
+            case 'h':   // 'h' terminates the hex code
+              if (byte.TryParse(hexCode.ToString(), System.Globalization.NumberStyles.HexNumber, null, out hexParsed))
+                output.Append((char)hexParsed);
+              else
+                throw new ArgumentException(String.Format("Bad Hex Code \"{0}\"", hexCode.ToString()), "input");
+
+              inHexCode = false;
+              break;
+
+            default:
+              hexCode.Append(currentChar);
+              break;
+          }
+        }
+        else if (currentChar == '\\')
+        {
+          inEscapeCode = true;
+        }
+        else
+        {
+          output.Append(currentChar);
+        }
+      }
+
+      return output.ToString();
+    }
+
+
 
 
     /// <summary>
@@ -259,9 +456,12 @@ namespace Commands
       specialCommands.Add(typeof(CommandLabel));
       specialCommands.Add(typeof(CommandGotoLabel));
       specialCommands.Add(typeof(CommandSetVariable));
+      specialCommands.Add(typeof(CommandSwapVariables));
       specialCommands.Add(typeof(CommandClearVariables));
       specialCommands.Add(typeof(CommandSaveVariables));
       specialCommands.Add(typeof(CommandLoadVariables));
+      specialCommands.Add(typeof(CommandStringOperation));
+      specialCommands.Add(typeof(CommandMathsOperation));
 
       // Hidden commands ...
       specialCommands.Add(typeof(CommandBlastIR));
@@ -272,11 +472,6 @@ namespace Commands
 
     #endregion Static Methods
 
-
-
-
-
   }
-
 
 }

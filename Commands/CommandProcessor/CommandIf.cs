@@ -7,7 +7,7 @@ namespace Commands
 {
 
   /// <summary>
-  /// If macro command.
+  /// If Statement macro command.
   /// </summary>
   public class CommandIf : Command
   {
@@ -50,23 +50,14 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Macro.Category; }
+    public override string GetCategory() { return Processor.CategoryMacro; }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
     public override string GetUserInterfaceText() { return "If Statement"; }
-/*
-    /// <summary>
-    /// Gets the user display text.
-    /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
-    {
-      return String.Format("{0} ({1})", GetUserInterfaceText(), String.Join(", ", Parameters));
-    }
-*/
+
     /// <summary>
     /// Edit this command.
     /// </summary>
@@ -84,27 +75,34 @@ namespace Commands
       return false;
     }
 
+    #endregion Implementation
+
+    #region Static Methods
+
     /// <summary>
-    /// This method will determine if this If Command evaluates true.
+    /// This method will determine if an If Statement evaluates true.
     /// </summary>
-    /// <returns><c>true</c> if the command evaluates true, otherwise <c>false</c>.</returns>
-    public bool Evaluate()
+    /// <param name="value1">The first value for comparison.</param>
+    /// <param name="comparison">The comparison type.</param>
+    /// <param name="value2">The second value for comparison.</param>
+    /// <returns><c>true</c> if the parameters evaluates true, otherwise <c>false</c>.</returns>
+    public static bool Evaluate(string value1, string comparison, string value2)
     {
       int value1AsInt;
-      bool value1IsInt = int.TryParse(_parameters[0], out value1AsInt);
+      bool value1IsInt = int.TryParse(value1, out value1AsInt);
 
       int value2AsInt;
-      bool value2IsInt = int.TryParse(_parameters[2], out value2AsInt);
+      bool value2IsInt = int.TryParse(value2, out value2AsInt);
 
       bool comparisonResult = false;
-      switch (_parameters[1].ToUpperInvariant())
+      switch (comparison.ToUpperInvariant())
       {
         // Use string comparison ...
-        case IfEquals:      comparisonResult = _parameters[0].Equals(_parameters[2], StringComparison.OrdinalIgnoreCase);         break;
-        case IfNotEqual:    comparisonResult = !_parameters[0].Equals(_parameters[2], StringComparison.OrdinalIgnoreCase);        break;
-        case IfContains:    comparisonResult = _parameters[0].ToUpperInvariant().Contains(_parameters[2].ToUpperInvariant());     break;
-        case IfStartsWith:  comparisonResult = _parameters[0].ToUpperInvariant().StartsWith(_parameters[2].ToUpperInvariant());   break;
-        case IfEndsWith:    comparisonResult = _parameters[0].ToUpperInvariant().EndsWith(_parameters[2].ToUpperInvariant());     break;
+        case IfEquals:      comparisonResult = value1.Equals(value2, StringComparison.OrdinalIgnoreCase);         break;
+        case IfNotEqual:    comparisonResult = !value1.Equals(value2, StringComparison.OrdinalIgnoreCase);        break;
+        case IfContains:    comparisonResult = value1.ToUpperInvariant().Contains(value2.ToUpperInvariant());     break;
+        case IfStartsWith:  comparisonResult = value1.ToUpperInvariant().StartsWith(value2.ToUpperInvariant());   break;
+        case IfEndsWith:    comparisonResult = value1.ToUpperInvariant().EndsWith(value2.ToUpperInvariant());     break;
 
         // Use integer comparison ...
         case IfGreaterThan:
@@ -128,14 +126,14 @@ namespace Commands
           break;
 
         default:
-          throw new InvalidOperationException(String.Format("Invalid variable comparison method: {0}", _parameters[1]));
+          throw new CommandStructureException(String.Format("Invalid variable comparison method: {0}", comparison));
       }
 
       return comparisonResult;
     }
 
-    #endregion Implementation
-    
+    #endregion Static Methods
+
   }
 
 }

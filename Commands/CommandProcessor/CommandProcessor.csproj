@@ -38,6 +38,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandStringOperation.cs" />
+    <Compile Include="CommandSwapVariables.cs" />
+    <Compile Include="CommandMathsOperation.cs" />
+    <Compile Include="EditMathsOperation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditMathsOperation.Designer.cs">
+      <DependentUpon>EditMathsOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditSwapVariables.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditSwapVariables.Designer.cs">
+      <DependentUpon>EditSwapVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditStringOperation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditStringOperation.Designer.cs">
+      <DependentUpon>EditStringOperation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Processor.cs" />
     <Compile Include="EditBlastIR.cs">
       <SubType>Form</SubType>
@@ -89,6 +110,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="EditMathsOperation.resx">
+      <DependentUpon>EditMathsOperation.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditSwapVariables.resx">
+      <DependentUpon>EditSwapVariables.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditStringOperation.resx">
+      <DependentUpon>EditStringOperation.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="EditBlastIR.resx">
       <DependentUpon>EditBlastIR.cs</DependentUpon>
       <SubType>Designer</SubType>

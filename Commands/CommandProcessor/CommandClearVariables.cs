@@ -33,7 +33,7 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Macro.Category; }
+    public override string GetCategory() { return Processor.CategoryMacro; }
 
     /// <summary>
     /// Gets the user interface text.

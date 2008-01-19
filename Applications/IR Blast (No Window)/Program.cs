@@ -26,7 +26,7 @@ namespace IRBlast
 
     static bool _registered;
 
-    static string _serverHost;
+    static string _serverHost = "localhost";
 
     static string _blastPort = "Default";
 
@@ -81,7 +81,7 @@ namespace IRBlast
             }
           }
 
-          if (String.IsNullOrEmpty(_serverHost) || irCommands.Count == 0)
+          if (irCommands.Count == 0)
           {
             Console.WriteLine("Malformed command line parameters ...");
             Console.WriteLine();

@@ -32,24 +32,41 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Core, Version=0.2.3.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\MediaPortal\Core\bin\Release\Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Dialogs, Version=0.2.3.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\MediaPortal\WindowPlugins\bin\Release\Dialogs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Utils, Version=2.2.4.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\MediaPortal\Utils\bin\Release\Utils.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandGotoScreen.cs" />
+    <Compile Include="EditGotoScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditGotoScreen.Designer.cs">
+      <DependentUpon>EditGotoScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\MPUtils\MPUtils.csproj">
-      <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
-      <Name>MPUtils</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Command\Command.csproj">
@@ -63,6 +80,12 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EditGotoScreen.resx">
+      <DependentUpon>EditGotoScreen.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -71,4 +94,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetDir)*.*" "C:\Program Files\IR Server Suite\Commands\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

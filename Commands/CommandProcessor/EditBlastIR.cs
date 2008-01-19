@@ -13,7 +13,7 @@ namespace Commands
   /// <summary>
   /// Edit Blast IR Command form.
   /// </summary>
-  public partial class EditBlastIR : Form
+  partial class EditBlastIR : Form
   {
 
     #region Properties

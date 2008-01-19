@@ -58,7 +58,7 @@
       <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
       <Name>Command</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Commands\Macro\Macro.csproj">
+    <ProjectReference Include="..\..\Commands\CommandProcessor\CommandProcessor.csproj">
       <Project>{49CF376E-811C-4EB4-817F-A39C9529B608}</Project>
       <Name>Macro</Name>
     </ProjectReference>

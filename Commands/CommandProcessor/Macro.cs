@@ -17,20 +17,6 @@ namespace Commands
   public class Macro
   {
 
-    #region Constants
-
-    /// <summary>
-    /// Category for Macro Commands.
-    /// </summary>
-    public const string Category = "Macro Commands";
-
-    /// <summary>
-    /// User Interface Text.
-    /// </summary>
-    public const string UserInterfaceText = "Macro";
-
-    #endregion Constants
-
     #region Variables
 
     List<Command> _commands;
@@ -110,25 +96,28 @@ namespace Commands
     /// <summary>
     /// Exceutes this macro the specified variables and process command method.
     /// </summary>
-    /// <param name="variables">The variables to use.</param>
-    /// <param name="blastIrDelegate">The blast ir delegate.</param>
-    public void Execute(VariableList variables, BlastIrDelegate blastIrDelegate)
+    /// <param name="commandProcessor">The command processor.</param>
+    public void Execute(Processor commandProcessor)
     {
       for (int position = 0; position < _commands.Count; position++)
       {
         Command command = _commands[position];
-        
+
         if (command is CommandIf)
         {
-          if (command.Parameters[0].StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-            command.Parameters[0] = variables.GetVariable(command.Parameters[0].Substring(VariableList.VariablePrefix.Length));
-          command.Parameters[0] = Common.ReplaceSpecial(command.Parameters[0]);
+          string value1     = command.Parameters[0];
+          string comparison = command.Parameters[1];
+          string value2     = command.Parameters[2];
 
-          if (command.Parameters[2].StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-            command.Parameters[2] = variables.GetVariable(command.Parameters[2].Substring(VariableList.VariablePrefix.Length));
-          command.Parameters[2] = Common.ReplaceSpecial(command.Parameters[2]);
+          if (value1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+            value1 = commandProcessor.Variables.GetVariable(value1.Substring(VariableList.VariablePrefix.Length));
+          value1 = Common.ReplaceSpecial(value1);
 
-          if ((command as CommandIf).Evaluate())
+          if (value2.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+            value2 = commandProcessor.Variables.GetVariable(value2.Substring(VariableList.VariablePrefix.Length));
+          value2 = Common.ReplaceSpecial(value2);
+
+          if (CommandIf.Evaluate(value1, comparison, value2))
             position = FindLabel(command.Parameters[3]);
           else if (!String.IsNullOrEmpty(command.Parameters[4]))
             position = FindLabel(command.Parameters[4]);
@@ -137,17 +126,9 @@ namespace Commands
         {
           position = FindLabel(command.Parameters[0]);
         }
-        else if (command is CommandBlastIR)
-        {
-          (command as CommandBlastIR).Execute(blastIrDelegate);
-        }
-        else if (command is CommandCallMacro)
-        {
-          (command as CommandCallMacro).Execute(variables, blastIrDelegate);
-        }
         else
         {
-          command.Execute(variables);
+          commandProcessor.Execute(command, false);
         }
       }
     }
@@ -175,104 +156,6 @@ namespace Commands
     }
 
     #endregion Implementation
-
-    #region Static Methods
-    /*
-    /// <summary>
-    /// Creates a new <c>Command</c> from the supplied information.
-    /// </summary>
-    /// <param name="commandString">The command string representation.</param>
-    /// <returns>A new <c>Command</c>.</returns>
-    public static Command CreateCommand(string commandString)
-    {
-      if (String.IsNullOrEmpty(commandString))
-        throw new ArgumentNullException("commandString");
-
-      string splitAt = ", ";
-
-      int splitPoint = commandString.IndexOf(splitAt);
-      if (splitPoint == -1)
-        throw new ArgumentException("Invalid command string", "commandString");
-
-      string commandType = commandString.Substring(0, splitPoint);
-      string parametersXml = commandString.Substring(splitPoint + splitAt.Length);
-
-      return CreateCommand(commandType, parametersXml);
-    }
-
-    /// <summary>
-    /// Creates a new <c>Command</c> from the supplied information.
-    /// </summary>
-    /// <param name="commandType">Type of command to create (FullName).</param>
-    /// <param name="parametersXml">The parameters of this command in XML.</param>
-    /// <returns>A new <c>Command</c>.</returns>
-    public static Command CreateCommand(string commandType, string parametersXml)
-    {
-      if (String.IsNullOrEmpty(commandType))
-        throw new ArgumentNullException("commandType");
-      
-      if (String.IsNullOrEmpty(parametersXml))
-        throw new ArgumentNullException("parametersXml");
-
-      string[] parameters;
-      using (StringReader stringReader = new StringReader(parametersXml))
-      {
-        XmlSerializer xmlSerializer = new XmlSerializer(typeof(string[]));
-        parameters = (string[])xmlSerializer.Deserialize(stringReader);
-      }
-
-      return CreateCommand(commandType, parameters);
-    }
-
-    /// <summary>
-    /// Creates a new <c>Command</c> from the supplied information.
-    /// </summary>
-    /// <param name="commandType">Type of command to create (FullName).</param>
-    /// <param name="parameters">The command parameters.</param>
-    /// <returns>A new <c>Command</c>.</returns>
-    public static Command CreateCommand(string commandType, string[] parameters)
-    {
-      List<Type> allCommands = new List<Type>();
-
-      Type[] specialCommands = GetSpecialCommands();
-      if (specialCommands != null)
-        allCommands.AddRange(specialCommands);
-
-      Type[] libraryCommands = Common.GetLibraryCommands();
-      if (libraryCommands != null)
-        allCommands.AddRange(libraryCommands);
-
-      foreach (Type type in allCommands)
-        if (type.FullName.Equals(commandType))
-          return (Command)Activator.CreateInstance(type, new object[] { parameters });
-
-      throw new InvalidOperationException(String.Format("Could not find command type: {0}", commandType));
-    }
-
-    /// <summary>
-    /// Gets the special commands.
-    /// </summary>
-    /// <returns>List of special command types.</returns>
-    public static Type[] GetSpecialCommands()
-    {
-      List<Type> specialCommands = new List<Type>();
-
-      specialCommands.Add(typeof(CommandIf));
-      specialCommands.Add(typeof(CommandLabel));
-      specialCommands.Add(typeof(CommandGotoLabel));
-      specialCommands.Add(typeof(CommandSetVariable));
-      specialCommands.Add(typeof(CommandClearVariables));
-      specialCommands.Add(typeof(CommandSaveVariables));
-      specialCommands.Add(typeof(CommandLoadVariables));
-
-      // Hidden commands ...
-      specialCommands.Add(typeof(CommandBlastIR));
-      specialCommands.Add(typeof(CommandCallMacro));
-
-      return specialCommands.ToArray();
-    }
-    */
-    #endregion Static Methods
 
   }
 

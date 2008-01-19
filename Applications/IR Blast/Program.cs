@@ -25,7 +25,7 @@ namespace IRBlast
 
     static bool _registered;
 
-    static string _serverHost;
+    static string _serverHost = "localhost";
 
     static string _blastPort = "Default";
 
@@ -82,7 +82,7 @@ namespace IRBlast
             }
           }
 
-          if (String.IsNullOrEmpty(_serverHost) || irCommands.Count == 0)
+          if (irCommands.Count == 0)
           {
             Console.WriteLine("Malformed command line parameters ...");
             Console.WriteLine();
@@ -191,7 +191,7 @@ namespace IRBlast
     {
       IrssLog.Debug("Show Help");
 
-      Console.WriteLine("IRBlast -host <server> [-port x] [-speed x] [-pad x] [-channel] <commands>");
+      Console.WriteLine("IRBlast [-host x] [-port x] [-speed x] [-pad x] [-channel] <commands>");
       Console.WriteLine("");
       Console.WriteLine("Use -host to specify the computer that is hosting the IR Server.");
       Console.WriteLine("Use -port to blast to a particular blaster port (Optional).");
@@ -215,10 +215,10 @@ namespace IRBlast
       Console.WriteLine("This would blast the \"Turn on surround.IR\" command on the MEDIAPC computer");
       Console.WriteLine("to blaster port 2 at the default blaster speed.");
       Console.WriteLine("");
-      Console.WriteLine("IRBlast -host HTPC -pad 4 -channel 302");
+      Console.WriteLine("IRBlast -pad 4 -channel 302");
       Console.WriteLine("");
       Console.WriteLine("This would blast the 0.IR (for padding), 3.IR, 0.IR, and 2.IR commands on");
-      Console.WriteLine("the HTPC computer to the default blaster port at the default blaster speed.");
+      Console.WriteLine("the local computer to the default blaster port at the default blaster speed.");
       Console.WriteLine("");
       Console.WriteLine("");
     }

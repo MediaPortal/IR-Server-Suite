@@ -12,7 +12,7 @@ namespace Commands
   /// <summary>
   /// Variables file filename collection form.
   /// </summary>
-  public partial class EditVariablesFile : Form
+  partial class EditVariablesFile : Form
   {
 
     #region Properties

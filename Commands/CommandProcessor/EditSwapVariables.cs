@@ -9,9 +9,9 @@ namespace Commands
 {
 
   /// <summary>
-  /// Set Variable Command form.
+  /// Swap Variables Command form.
   /// </summary>
-  partial class EditSetVariable : Form
+  partial class EditSwapVariables : Form
   {
 
     #region Properties
@@ -25,8 +25,8 @@ namespace Commands
       get
       {
         return new string[] {
-          textBoxVariable.Text.Trim(),
-          textBoxValue.Text };
+          textBoxVariable1.Text.Trim(),
+          textBoxVariable2.Text };
       }
     }
 
@@ -35,31 +35,33 @@ namespace Commands
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EditSetVariable"/> class.
+    /// Initializes a new instance of the <see cref="EditSwapVariables"/> class.
     /// </summary>
-    public EditSetVariable()
+    public EditSwapVariables()
     {
       InitializeComponent();
-      labelVarPrefix.Text = VariableList.VariablePrefix;
+      labelVarPrefix1.Text = VariableList.VariablePrefix;
+      labelVarPrefix2.Text = VariableList.VariablePrefix;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EditSetVariable"/> class.
+    /// Initializes a new instance of the <see cref="EditSwapVariables"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public EditSetVariable(string[] parameters) : this()
+    public EditSwapVariables(string[] parameters)
+      : this()
     {
-      textBoxVariable.Text  = parameters[0];
-      textBoxValue.Text     = parameters[1];
+      textBoxVariable1.Text = parameters[0];
+      textBoxVariable2.Text = parameters[1];
     }
     
     #endregion Constructors
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      if (String.IsNullOrEmpty(textBoxVariable.Text.Trim()))
+      if (String.IsNullOrEmpty(textBoxVariable1.Text.Trim()) || String.IsNullOrEmpty(textBoxVariable2.Text.Trim()))
       {
-        MessageBox.Show(this, "You must include a variable name", "Missing variable name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must include variable names", "Missing variable name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
 

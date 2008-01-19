@@ -19,7 +19,8 @@ namespace Commands
 
       Processor commandProcessor = new Processor(new BlastIrDelegate(BlastIr), new string[] { "Default", "Port 1" });
 
-      EditMacro edit = new EditMacro(commandProcessor, "C:\\", new string[] { "General Commands", "MediaPortal Commands" });
+      //EditMacro edit = new EditMacro(commandProcessor, "C:\\", new string[] { "General Commands", "MediaPortal Commands" });
+      EditMacro edit = new EditMacro(commandProcessor, new string[] { "General Commands", "MediaPortal Commands" }, "C:\\New" );
 
       edit.ShowDialog();
     }

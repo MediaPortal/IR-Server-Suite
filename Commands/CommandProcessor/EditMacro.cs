@@ -83,6 +83,7 @@ namespace Commands
 
       _commandProcessor   = commandProcessor;
       _fileName           = fileName;
+      _macroFolder        = Path.GetDirectoryName(fileName);
 
       PopulateCommandList(categories);
 
@@ -113,7 +114,7 @@ namespace Commands
       treeViewCommandList.Nodes.Clear();
       Dictionary<string, TreeNode> treeNodes = new Dictionary<string,TreeNode>(categories.Length);
 
-      TreeNode macroCommands = new TreeNode(Macro.Category);
+      TreeNode macroCommands = new TreeNode(Processor.CategoryMacro);
       Type[] specialCommands = Processor.GetSpecialCommands();
       foreach (Type type in specialCommands)
       {
@@ -125,7 +126,7 @@ namespace Commands
         _commands.Add(command.GetUserInterfaceText(), type);
       }
 
-      treeNodes.Add(Macro.Category, macroCommands);
+      treeNodes.Add(Processor.CategoryMacro, macroCommands);
 
       foreach (string category in categories)
         treeNodes.Add(category, new TreeNode(category));
@@ -303,7 +304,7 @@ namespace Commands
           newMacro.Commands.Add(command);
         }
 
-        newMacro.Execute(_commandProcessor.Variables, _commandProcessor.BlastIr);
+        newMacro.Execute(_commandProcessor);
       }
       catch (Exception ex)
       {
