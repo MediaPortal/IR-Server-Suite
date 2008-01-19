@@ -341,7 +341,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Command", "Commands\Command
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Macro", "Commands\Macro\Macro.csproj", "{49CF376E-811C-4EB4-817F-A39C9529B608}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandProcessor", "Commands\Macro\CommandProcessor.csproj", "{49CF376E-811C-4EB4-817F-A39C9529B608}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -35,7 +36,7 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Macro.Category; }
+    public override string GetCategory() { return Processor.CategoryHidden; }
 
     /// <summary>
     /// Gets the user interface text.
@@ -49,12 +50,24 @@ namespace Commands
     /// <returns>The user display text.</returns>
     public override string GetUserDisplayText()
     {
-      return String.Format("{0} ({1})", GetUserInterfaceText(), String.Join(", ", Parameters));
+      string fileName = _parameters[0];
+
+      if (_parameters[0].StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        fileName = _parameters[0].Substring(Common.FolderAppData.Length);
+
+      return String.Format("{0} ({1}, {2})", GetUserInterfaceText(), fileName, _parameters[1]);
     }
-    /*
+
+    /// <summary>
+    /// Edit this command.
+    /// </summary>
+    /// <param name="parent">The parent window.</param>
+    /// <param name="blastIrDelegate">The blast ir delegate.</param>
+    /// <param name="blastPorts">The blast ports.</param>
+    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public bool Edit(IWin32Window parent, BlastIrDelegate blastIrDelegate, string[] blastPorts)
     {
-      EditBlastIR edit = new EditBlastIR(_parameters, blastIrDelegate, blastPorts);
+      EditBlastIR edit = new EditBlastIR(blastIrDelegate, blastPorts, _parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
         _parameters = edit.Parameters;
@@ -64,15 +77,20 @@ namespace Commands
       return false;
     }
 
+    /// <summary>
+    /// Execute this command.
+    /// </summary>
+    /// <param name="blastIrDelegate">The blast ir delegate.</param>
     public void Execute(BlastIrDelegate blastIrDelegate)
     {
-      string irFile = Common.FolderIRCommands + _parameters[0] + Common.FileExtensionIR;
+      string irFile = _parameters[0] + Common.FileExtensionIR;
       string port = _parameters[1];
 
       blastIrDelegate(irFile, port);
     }
-    */
+
     #endregion Implementation
+
 
   }
 

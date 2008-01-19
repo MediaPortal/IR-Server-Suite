@@ -16,7 +16,18 @@ namespace Commands
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-      Application.Run(new Form1());
+
+      Processor commandProcessor = new Processor(new BlastIrDelegate(BlastIr), new string[] { "Default", "Port 1" });
+
+      EditMacro edit = new EditMacro(commandProcessor, "C:\\", new string[] { "General Commands", "MediaPortal Commands" });
+
+      edit.ShowDialog();
+    }
+
+
+    static void BlastIr(string fileName, string port)
+    {
+      MessageBox.Show(String.Format("File - {0}, Port - {1}", fileName, port), "Blast Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
   }

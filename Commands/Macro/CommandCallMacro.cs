@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
+using IrssUtils;
+
 namespace Commands
 {
 
@@ -33,7 +35,7 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Macro.HiddenCategory; }
+    public override string GetCategory() { return Processor.CategoryHidden; }
 
     /// <summary>
     /// Gets the user interface text.
@@ -54,10 +56,11 @@ namespace Commands
     /// Execute this command.
     /// </summary>
     /// <param name="variables">The variable list of the calling code.</param>
-    public override void Execute(VariableList variables)
+    /// <param name="blastIrDelegate">The blast ir delegate.</param>
+    public void Execute(VariableList variables, BlastIrDelegate blastIrDelegate)
     {
       Macro macro = new Macro(_parameters[0]);
-      macro.Execute(variables);
+      macro.Execute(variables, blastIrDelegate);
     }
 
     #endregion Implementation

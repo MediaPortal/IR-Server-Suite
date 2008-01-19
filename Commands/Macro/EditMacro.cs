@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Xml;
 
 using IrssUtils;
-//using IrssUtils.Forms;
 
 namespace Commands
 {
@@ -24,10 +23,10 @@ namespace Commands
 
     #region Variables
 
+    Processor _commandProcessor;
+
     string _macroFolder;
-    VariableList _variableList;
-    IrssUtils.BlastIrDelegate _blastIrDelegate;
-    string[] _blastIrPorts;
+    string _fileName;
 
     Dictionary<string, Type> _commands;
 
@@ -38,34 +37,24 @@ namespace Commands
     /// <summary>
     /// Creates a Macro Editor windows form.
     /// </summary>
+    /// <param name="commandProcessor">The command processor.</param>
     /// <param name="macroFolder">The macro folder.</param>
-    /// <param name="variables">The variable list.</param>
-    /// <param name="blastIrDelegate">The blast ir delegate.</param>
-    /// <param name="blastIrPorts">The blast ir ports.</param>
     /// <param name="categories">The command categories to include.</param>
-    public EditMacro(string macroFolder, VariableList variables, IrssUtils.BlastIrDelegate blastIrDelegate, string[] blastIrPorts, string[] categories)
+    public EditMacro(Processor commandProcessor, string macroFolder, string[] categories)
     {
+      if (commandProcessor == null)
+        throw new ArgumentNullException("commandProcessor");
+
       if (String.IsNullOrEmpty(macroFolder))
         throw new ArgumentNullException("macroFolder");
-
-      if (variables == null)
-        throw new ArgumentNullException("variables");
-
-      if (blastIrDelegate == null)
-        throw new ArgumentNullException("blastIrDelegate");
-
-      if (blastIrPorts == null)
-        throw new ArgumentNullException("blastIrPorts");
 
       if (categories == null)
         throw new ArgumentNullException("categories");
 
       InitializeComponent();
 
-      _macroFolder        = macroFolder;
-      _variableList       = variables;
-      _blastIrDelegate    = blastIrDelegate;
-      _blastIrPorts       = blastIrPorts;
+      _commandProcessor = commandProcessor;
+      _macroFolder = macroFolder;
 
       PopulateCommandList(categories);
 
@@ -76,46 +65,36 @@ namespace Commands
     /// <summary>
     /// Creates a Macro Editor windows form.
     /// </summary>
-    /// <param name="macroFolder">The macro folder.</param>
-    /// <param name="variables">The variable list.</param>
-    /// <param name="blastIrDelegate">The blast ir delegate.</param>
-    /// <param name="blastIrPorts">The blast ir ports.</param>
+    /// <param name="commandProcessor">The command processor.</param>
     /// <param name="categories">The command categories to include.</param>
-    /// <param name="name">The existing macro name.</param>
-    public EditMacro(string macroFolder, VariableList variables, IrssUtils.BlastIrDelegate blastIrDelegate, string[] blastIrPorts, string[] categories, string name)
+    /// <param name="fileName">Name of the macro file.</param>
+    public EditMacro(Processor commandProcessor, string[] categories, string fileName)
     {
-      if (String.IsNullOrEmpty(macroFolder))
-        throw new ArgumentNullException("macroFolder");
-
-      if (variables == null)
-        throw new ArgumentNullException("variables");
-
-      if (blastIrDelegate == null)
-        throw new ArgumentNullException("blastIrDelegate");
-
-      if (blastIrPorts == null)
-        throw new ArgumentNullException("blastIrPorts");
+      if (commandProcessor == null)
+        throw new ArgumentNullException("commandProcessor");
 
       if (categories == null)
         throw new ArgumentNullException("categories");
 
-      if (String.IsNullOrEmpty(name))
-        throw new ArgumentNullException("name");
+      if (String.IsNullOrEmpty(fileName))
+        throw new ArgumentNullException("fileName");
 
       InitializeComponent();
 
-      _macroFolder        = macroFolder;
-      _variableList       = variables;
-      _blastIrDelegate    = blastIrDelegate;
-      _blastIrPorts       = blastIrPorts;
+      _commandProcessor   = commandProcessor;
+      _fileName           = fileName;
 
       PopulateCommandList(categories);
 
-      textBoxName.Text    = name;
+      string macroName = fileName;
+
+      if (macroName.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        macroName = fileName.Substring(Common.FolderAppData.Length);
+
+      textBoxName.Text    = macroName;
       textBoxName.Enabled = false;
 
-      string fileName = macroFolder + name + Macro.FileExtension;      
-      Macro macro = new Macro(fileName);
+      Macro macro = new Macro(fileName + Processor.FileExtensionMacro);
       foreach (Command command in macro.Commands)
       {
         ListViewItem item = new ListViewItem(command.GetUserDisplayText());
@@ -131,23 +110,18 @@ namespace Commands
     void PopulateCommandList(string[] categories)
     {
       _commands = new Dictionary<string, Type>();
-      
       treeViewCommandList.Nodes.Clear();
-
       Dictionary<string, TreeNode> treeNodes = new Dictionary<string,TreeNode>(categories.Length);
 
       TreeNode macroCommands = new TreeNode(Macro.Category);
-
-      Type[] specialCommands = Macro.GetSpecialCommands();
-
+      Type[] specialCommands = Processor.GetSpecialCommands();
       foreach (Type type in specialCommands)
       {
         Command command = (Command)Activator.CreateInstance(type);
 
-        if (command.GetCategory().Equals(Macro.HiddenCategory, StringComparison.OrdinalIgnoreCase))
-          continue;
-
-        macroCommands.Nodes.Add(command.GetUserInterfaceText());
+        if (!command.GetCategory().Equals(Processor.CategoryHidden, StringComparison.OrdinalIgnoreCase))
+          macroCommands.Nodes.Add(command.GetUserInterfaceText());
+        
         _commands.Add(command.GetUserInterfaceText(), type);
       }
 
@@ -174,7 +148,23 @@ namespace Commands
         }
       }
 
-      string[] macros = Macro.GetList(_macroFolder);
+      string[] irFiles = Processor.GetListIR();
+      if (irFiles != null)
+      {
+        TreeNode irCommands = new TreeNode("IR Commands");
+
+        foreach (string irFile in irFiles)
+        {
+          TreeNode newNode = new TreeNode(irFile);
+          newNode.Tag = Common.FolderIRCommands + irFile;
+          irCommands.Nodes.Add(newNode);
+        }
+
+        treeNodes.Add(irCommands.Text, irCommands);
+      }
+
+
+      string[] macros = Processor.GetListMacro(_macroFolder);
       if (macros != null)
       {
         TreeNode otherMacros = new TreeNode("Macros");
@@ -204,7 +194,20 @@ namespace Commands
         ListViewItem newCommand = new ListViewItem();
         Command command;
 
-        if (treeViewCommandList.SelectedNode.Parent.Text.Equals("Macros", StringComparison.OrdinalIgnoreCase))
+        if (treeViewCommandList.SelectedNode.Parent.Text.Equals("IR Commands", StringComparison.OrdinalIgnoreCase))
+        {
+          string selectedTag = treeViewCommandList.SelectedNode.Tag as string;
+
+          command = new CommandBlastIR(new string[] { selectedTag, _commandProcessor.BlastIrPorts[0] });
+
+          if (_commandProcessor.Edit(command, this))
+          {
+            newCommand.Text = command.GetUserDisplayText();
+            newCommand.Tag = command.ToString();
+            listViewMacro.Items.Add(newCommand);
+          }
+        }
+        else if (treeViewCommandList.SelectedNode.Parent.Text.Equals("Macros", StringComparison.OrdinalIgnoreCase))
         {
           command = new CommandCallMacro(new string[] { selected });
 
@@ -214,27 +217,13 @@ namespace Commands
         }
         else if (_commands.ContainsKey(selected))
         {
-
           command = (Command)Activator.CreateInstance(_commands[selected]);
 
-          /*if (command is CommandBlast)
+          if (_commandProcessor.Edit(command, this))
           {
-            if (command.Edit(this, _blastIrDelegate, _blastIrPorts))
-            {
-              newCommand.Text = command.GetUserDisplayText();
-              newCommand.Tag = command.ToXml();
-              listViewMacro.Items.Add(newCommand);
-            }
-
-          }
-          else*/
-          {
-            if (command.Edit(this))
-            {
-              newCommand.Text = command.GetUserDisplayText();
-              newCommand.Tag = command.ToString();
-              listViewMacro.Items.Add(newCommand);
-            }
+            newCommand.Text = command.GetUserDisplayText();
+            newCommand.Tag = command.ToString();
+            listViewMacro.Items.Add(newCommand);
           }
         }
         else
@@ -310,11 +299,11 @@ namespace Commands
         foreach (ListViewItem item in listViewMacro.Items)
         {
           string itemTag = item.Tag as string;
-          Command command = Macro.CreateCommand(itemTag);
+          Command command = Processor.CreateCommand(itemTag);
           newMacro.Commands.Add(command);
         }
 
-        newMacro.Execute(_variableList);
+        newMacro.Execute(_commandProcessor.Variables, _commandProcessor.BlastIr);
       }
       catch (Exception ex)
       {
@@ -355,11 +344,11 @@ namespace Commands
         foreach (ListViewItem item in listViewMacro.Items)
         {
           string itemTag = item.Tag as string;
-          Command command = Macro.CreateCommand(itemTag);
+          Command command = Processor.CreateCommand(itemTag);
           newMacro.Commands.Add(command);
         }
 
-        newMacro.Save(_macroFolder + name + Macro.FileExtension);
+        newMacro.Save(_macroFolder + name + Processor.FileExtensionMacro);
       }
       catch (Exception ex)
       {
@@ -380,18 +369,12 @@ namespace Commands
         ListViewItem selected = listViewMacro.SelectedItems[0];
 
         string selectedTag = selected.Tag as string;
-        Command command = Macro.CreateCommand(selectedTag);
+        Command command = Processor.CreateCommand(selectedTag);
 
-        //if (command is CommandBlast)
-        //{
-        //}
-        //else
+        if (_commandProcessor.Edit(command, this))
         {
-          if (command.Edit(this))
-          {
-            selected.Text = command.GetUserDisplayText();
-            selected.Tag = command.ToString();
-          }
+          selected.Text = command.GetUserDisplayText();
+          selected.Tag = command.ToString();
         }
       }
       catch (Exception ex)

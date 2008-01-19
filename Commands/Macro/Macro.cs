@@ -20,19 +20,9 @@ namespace Commands
     #region Constants
 
     /// <summary>
-    /// Macro file extension.
-    /// </summary>
-    public const string FileExtension = ".Macro";
-
-    /// <summary>
     /// Category for Macro Commands.
     /// </summary>
     public const string Category = "Macro Commands";
-
-    /// <summary>
-    /// Category for commands that should not be visible in command lists.
-    /// </summary>
-    public const string HiddenCategory = "Hidden";
 
     /// <summary>
     /// User Interface Text.
@@ -84,7 +74,7 @@ namespace Commands
       foreach (XmlNode item in commandSequence)
       {
         string xml = item.Attributes["xml"].Value;
-        Command command = Macro.CreateCommand(xml);
+        Command command = Processor.CreateCommand(xml);
         _commands.Add(command);
       }
     }
@@ -121,7 +111,8 @@ namespace Commands
     /// Exceutes this macro the specified variables and process command method.
     /// </summary>
     /// <param name="variables">The variables to use.</param>
-    public void Execute(VariableList variables)
+    /// <param name="blastIrDelegate">The blast ir delegate.</param>
+    public void Execute(VariableList variables, BlastIrDelegate blastIrDelegate)
     {
       for (int position = 0; position < _commands.Count; position++)
       {
@@ -137,7 +128,7 @@ namespace Commands
             command.Parameters[2] = variables.GetVariable(command.Parameters[2].Substring(VariableList.VariablePrefix.Length));
           command.Parameters[2] = Common.ReplaceSpecial(command.Parameters[2]);
 
-          if (((CommandIf)command).Evaluate())
+          if ((command as CommandIf).Evaluate())
             position = FindLabel(command.Parameters[3]);
           else if (!String.IsNullOrEmpty(command.Parameters[4]))
             position = FindLabel(command.Parameters[4]);
@@ -148,7 +139,11 @@ namespace Commands
         }
         else if (command is CommandBlastIR)
         {
-          //((CommandBlastIR)command).Execute(_blastIrDelegate);
+          (command as CommandBlastIR).Execute(blastIrDelegate);
+        }
+        else if (command is CommandCallMacro)
+        {
+          (command as CommandCallMacro).Execute(variables, blastIrDelegate);
         }
         else
         {
@@ -182,22 +177,7 @@ namespace Commands
     #endregion Implementation
 
     #region Static Methods
-
-    /// <summary>
-    /// Returns a list of Macros in the specified folder.
-    /// </summary>
-    /// <returns>List of Macros.</returns>
-    public static string[] GetList(string folder)
-    {
-      string[] files = Directory.GetFiles(folder, '*' + FileExtension);
-
-      for (int index = 0; index < files.Length; index++)
-          files[index] = Path.GetFileNameWithoutExtension(files[index]);
-
-      return files;
-    }
-
-
+    /*
     /// <summary>
     /// Creates a new <c>Command</c> from the supplied information.
     /// </summary>
@@ -277,8 +257,6 @@ namespace Commands
     {
       List<Type> specialCommands = new List<Type>();
 
-      specialCommands.Add(typeof(CommandBlastIR));
-
       specialCommands.Add(typeof(CommandIf));
       specialCommands.Add(typeof(CommandLabel));
       specialCommands.Add(typeof(CommandGotoLabel));
@@ -287,13 +265,13 @@ namespace Commands
       specialCommands.Add(typeof(CommandSaveVariables));
       specialCommands.Add(typeof(CommandLoadVariables));
 
-
       // Hidden commands ...
+      specialCommands.Add(typeof(CommandBlastIR));
       specialCommands.Add(typeof(CommandCallMacro));
 
       return specialCommands.ToArray();
     }
-
+    */
     #endregion Static Methods
 
   }
