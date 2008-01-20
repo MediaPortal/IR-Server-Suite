@@ -53,7 +53,7 @@ namespace Commands
 
       try
       {
-        window = (int)Enum.Parse(typeof(GUIWindow.Window), "WINDOW_" + _parameters[0], true);
+        window = (int)Enum.Parse(typeof(GUIWindow.Window), "WINDOW_" + Parameters[0], true);
       }
       catch (ArgumentException)
       {
@@ -61,10 +61,10 @@ namespace Commands
       }
 
       if (window == (int)GUIWindow.Window.WINDOW_INVALID)
-        int.TryParse(_parameters[0], out window);
+        int.TryParse(Parameters[0], out window);
 
       if (window == (int)GUIWindow.Window.WINDOW_INVALID)
-        throw new ArgumentException(String.Format("Failed to parse Goto command window id \"{0}\"", _parameters[0]), "screen");
+        throw new CommandStructureException(String.Format("Failed to parse Goto screen command window id \"{0}\"", Parameters[0]));
 
       GUIGraphicsContext.ResetLastActivity();
       GUIWindowManager.SendThreadMessage(new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, window, 0, null));
@@ -77,10 +77,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditGotoScreen edit = new EditGotoScreen(_parameters[0]);
+      EditGotoScreen edit = new EditGotoScreen(Parameters[0]);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters[0] = edit.ScreenID;
+        Parameters[0] = edit.ScreenID;
         return true;
       }
 

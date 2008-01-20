@@ -237,17 +237,13 @@ namespace MediaPortal.Plugins
       switch (treeViewMenu.SelectedNode.Level)
       {
         case 0:
-          if (MessageBox.Show(this, "Are you sure you want to remove this collection?", "Remove collection", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-            return;
-
-          treeViewMenu.Nodes.Remove(treeViewMenu.SelectedNode);
+          if (MessageBox.Show(this, "Are you sure you want to remove this collection?", "Remove collection", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            treeViewMenu.Nodes.Remove(treeViewMenu.SelectedNode);
           break;
 
         case 1:
-          if (MessageBox.Show(this, "Are you sure you want to remove this item?", "Remove item", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-            return;
-
-          treeViewMenu.SelectedNode.Parent.Nodes.Remove(treeViewMenu.SelectedNode);
+          if (MessageBox.Show(this, "Are you sure you want to remove this item?", "Remove item", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            treeViewMenu.SelectedNode.Parent.Nodes.Remove(treeViewMenu.SelectedNode);
           break;
 
         case 2:
@@ -257,10 +253,8 @@ namespace MediaPortal.Plugins
     }
     private void buttonDeleteAll_Click(object sender, EventArgs e)
     {
-      if (MessageBox.Show(this, "Are you sure you want to clear this entire setup?", "Clear setup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-        return;
-
-      treeViewMenu.Nodes.Clear();
+      if (MessageBox.Show(this, "Are you sure you want to clear this entire setup?", "Clear setup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        treeViewMenu.Nodes.Clear();
     }
     private void buttonNewCommand_Click(object sender, EventArgs e)
     {

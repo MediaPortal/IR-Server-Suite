@@ -50,12 +50,12 @@ namespace Commands
     /// <returns>The user display text.</returns>
     public override string GetUserDisplayText()
     {
-      string fileName = _parameters[0];
+      string fileName = Parameters[0];
 
-      if (_parameters[0].StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
-        fileName = _parameters[0].Substring(Common.FolderAppData.Length);
+      if (Parameters[0].StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        fileName = Parameters[0].Substring(Common.FolderAppData.Length);
 
-      return String.Format("{0} ({1}, {2})", GetUserInterfaceText(), fileName, _parameters[1]);
+      return String.Format("{0} ({1}, {2})", GetUserInterfaceText(), fileName, Parameters[1]);
     }
 
     /// <summary>
@@ -67,10 +67,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public bool Edit(IWin32Window parent, BlastIrDelegate blastIrDelegate, string[] blastPorts)
     {
-      EditBlastIR edit = new EditBlastIR(blastIrDelegate, blastPorts, _parameters);
+      EditBlastIR edit = new EditBlastIR(blastIrDelegate, blastPorts, Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters = edit.Parameters;
+        Parameters = edit.Parameters;
         return true;
       }
 
@@ -83,8 +83,8 @@ namespace Commands
     /// <param name="blastIrDelegate">The blast ir delegate.</param>
     public void Execute(BlastIrDelegate blastIrDelegate)
     {
-      string irFile = _parameters[0] + Common.FileExtensionIR;
-      string port = _parameters[1];
+      string irFile = Parameters[0] + Common.FileExtensionIR;
+      string port = Parameters[1];
 
       blastIrDelegate(irFile, port);
     }

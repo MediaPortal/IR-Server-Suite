@@ -41,6 +41,13 @@
     <Compile Include="CommandStringOperation.cs" />
     <Compile Include="CommandSwapVariables.cs" />
     <Compile Include="CommandMathsOperation.cs" />
+    <Compile Include="CommandSwitch.cs" />
+    <Compile Include="EditSwitch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditSwitch.Designer.cs">
+      <DependentUpon>EditSwitch.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditMathsOperation.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -108,8 +115,17 @@
     <Compile Include="EditVariablesFile.Designer.cs">
       <DependentUpon>EditVariablesFile.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="EditSwitch.resx">
+      <DependentUpon>EditSwitch.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="EditMathsOperation.resx">
       <DependentUpon>EditMathsOperation.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -146,6 +162,11 @@
       <DependentUpon>EditVariablesFile.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
@@ -163,6 +184,16 @@
       <Name>VariableList</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Graphics\Delete.png" />
+    <Content Include="Graphics\DeleteAll.png" />
+    <Content Include="Graphics\Edit.png" />
+    <Content Include="Graphics\MoveBottom.png" />
+    <Content Include="Graphics\MoveDown.png" />
+    <Content Include="Graphics\MoveTop.png" />
+    <Content Include="Graphics\MoveUp.png" />
+    <Content Include="Graphics\Plus.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -48,10 +48,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditLabel edit = new EditLabel(_parameters[0]);
+      EditLabel edit = new EditLabel(Parameters[0]);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters[0] = edit.LabelName;
+        Parameters[0] = edit.LabelName;
         return true;
       }
 

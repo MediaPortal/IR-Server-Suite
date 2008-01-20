@@ -30,9 +30,9 @@ namespace Commands
 
       EditMacro edit2 = new EditMacro(
         commandProcessor,
+        @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\",
         categories,
-        @"C:\New");
-        //@"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\Test");
+        "New Macro");
 
       edit2.ShowDialog();
     }

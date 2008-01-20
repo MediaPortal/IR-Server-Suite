@@ -72,10 +72,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditMathsOperation edit = new EditMathsOperation(_parameters);
+      EditMathsOperation edit = new EditMathsOperation(Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters = edit.Parameters;
+        Parameters = edit.Parameters;
         return true;
       }
 
@@ -88,17 +88,17 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string input1 = Processor.ReplaceSpecial(_parameters[1]);
+      string input1 = Processor.ReplaceSpecial(Parameters[1]);
       int input1Int = 0;
       int.TryParse(input1, out input1Int);
 
-      string input2 = Processor.ReplaceSpecial(_parameters[2]);
+      string input2 = Processor.ReplaceSpecial(Parameters[2]);
       int input2Int = 0;
       int.TryParse(input2, out input2Int);
 
       int output = 0;
 
-      switch (_parameters[0])
+      switch (Parameters[0])
       {
         case MathOpAdd:         output = input1Int + input2Int;                                 break;
         case MathOpDivide:      output = input1Int / input2Int;                                 break;
@@ -110,10 +110,10 @@ namespace Commands
         case MathOpRoot:        output = (int)Math.Sqrt((double) input1Int);                    break;
 
         default:
-          throw new CommandStructureException(String.Format("Invalid Maths Operation: {0}", _parameters[0]));
+          throw new CommandStructureException(String.Format("Invalid Maths Operation: {0}", Parameters[0]));
       }
 
-      variables.SetVariable(_parameters[3], output.ToString());
+      variables.SetVariable(Parameters[3], output.ToString());
     }
 
     #endregion Implementation

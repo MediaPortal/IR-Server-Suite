@@ -19,17 +19,21 @@ namespace Commands
     /// <summary>
     /// Command parameters.
     /// </summary>
-    protected string[] _parameters;
+    string[] _parameters;
 
     #endregion Variables
 
     #region Properties
 
     /// <summary>
-    /// Gets the command parameters.
+    /// Gets or sets the command parameters.
     /// </summary>
     /// <value>The command parameters.</value>
-    public virtual string[] Parameters { get { return _parameters; } }
+    public virtual string[] Parameters
+    {
+      get { return _parameters; }
+      set { _parameters = value; }
+    }
 
     #endregion Properties
 
@@ -38,13 +42,13 @@ namespace Commands
     /// <summary>
     /// Initializes a new instance of the <see cref="Command"/> class.
     /// </summary>
-    public Command() { }
+    protected Command() { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Command"/> class.
     /// </summary>
     /// <param name="parameters">The command parameters.</param>
-    public Command(string[] parameters) { _parameters = parameters; }
+    protected Command(string[] parameters) { _parameters = parameters; }
 
     #endregion Constructors
 

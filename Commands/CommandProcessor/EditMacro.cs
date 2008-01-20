@@ -33,6 +33,7 @@ namespace Commands
     Processor _commandProcessor;
 
     string _macroFolder;
+    
     string _fileName;
 
     Dictionary<string, Type> _commands;
@@ -62,8 +63,9 @@ namespace Commands
 
       _commandProcessor   = commandProcessor;
       _macroFolder        = macroFolder;
+      _fileName           = "New Macro";
 
-      textBoxName.Text    = "New";
+      textBoxName.Text    = _fileName;
       textBoxName.Enabled = true;
 
       PopulateCommandList(categories);
@@ -73,12 +75,16 @@ namespace Commands
     /// Creates a Macro Editor windows form.
     /// </summary>
     /// <param name="commandProcessor">The command processor.</param>
+    /// <param name="macroFolder">The macro folder.</param>
     /// <param name="categories">The command categories to include.</param>
     /// <param name="fileName">Name of the macro file.</param>
-    public EditMacro(Processor commandProcessor, string[] categories, string fileName)
+    public EditMacro(Processor commandProcessor, string macroFolder, string[] categories, string fileName)
     {
       if (commandProcessor == null)
         throw new ArgumentNullException("commandProcessor");
+
+      if (String.IsNullOrEmpty(macroFolder))
+        throw new ArgumentNullException("macroFolder");
 
       if (categories == null)
         throw new ArgumentNullException("categories");
@@ -89,13 +95,15 @@ namespace Commands
       InitializeComponent();
 
       _commandProcessor   = commandProcessor;
+      _macroFolder        = macroFolder;
       _fileName           = fileName;
 
-      string macroName    = fileName;
-      if (macroName.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
-        macroName = fileName.Substring(Common.FolderAppData.Length);
+      if (_fileName.StartsWith(_macroFolder, StringComparison.OrdinalIgnoreCase))
+        _fileName = _fileName.Substring(macroFolder.Length);
 
-      _macroFolder = fileName.Substring(0, fileName.Length - macroName.Length);
+      string macroName = _fileName;
+      if (macroName.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        macroName = macroName.Substring(Common.FolderAppData.Length);
 
       textBoxName.Text    = macroName;
       textBoxName.Enabled = false;
@@ -204,6 +212,99 @@ namespace Commands
       treeViewCommandList.SelectedNode.Expand();
     }
 
+    void EditMacroCommand()
+    {
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      try
+      {
+        ListViewItem selected = listViewMacro.SelectedItems[0];
+
+        string selectedTag = selected.Tag as string;
+        Command command = Processor.CreateCommand(selectedTag);
+
+        if (_commandProcessor.Edit(command, this))
+        {
+          selected.Text = command.GetUserDisplayText();
+          selected.Tag = command.ToString();
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        MessageBox.Show(this, ex.Message, "Failed to edit macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+    
+    void MoveToTop()
+    {
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      int selected = listViewMacro.SelectedIndices[0];
+      if (selected > 0)
+      {
+        ListViewItem item = listViewMacro.Items[selected];
+        listViewMacro.Items.RemoveAt(selected);
+        listViewMacro.Items.Insert(0, item);
+        item.Selected = true;
+      }
+    }
+    void MoveUp()
+    {
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      int selected = listViewMacro.SelectedIndices[0];
+      if (selected > 0)
+      {
+        ListViewItem item = listViewMacro.Items[selected];
+        listViewMacro.Items.RemoveAt(selected);
+        listViewMacro.Items.Insert(selected - 1, item);
+        item.Selected = true;
+      }
+    }
+    void MoveDown()
+    {
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      int selected = listViewMacro.SelectedIndices[0];
+      if (selected < listViewMacro.Items.Count - 1)
+      {
+        ListViewItem item = listViewMacro.Items[selected];
+        listViewMacro.Items.RemoveAt(selected);
+        listViewMacro.Items.Insert(selected + 1, item);
+        item.Selected = true;
+      }
+    }
+    void MoveBottom()
+    {
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      int selected = listViewMacro.SelectedIndices[0];
+      if (selected < listViewMacro.Items.Count - 1)
+      {
+        ListViewItem item = listViewMacro.Items[selected];
+        listViewMacro.Items.RemoveAt(selected);
+        listViewMacro.Items.Add(item);
+        item.Selected = true;
+      }
+    }
+
+    void DeleteItem()
+    {
+      if (listViewMacro.SelectedItems.Count == 1)
+        listViewMacro.Items.RemoveAt(listViewMacro.SelectedIndices[0]);
+    }
+    void DeleteAllItems()
+    {
+      if (MessageBox.Show(this, "Are you sure you want to clear this entire macro?", "Clear macro", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        listViewMacro.Clear();
+    }
+
     private void treeViewCommandList_DoubleClick(object sender, EventArgs e)
     {
       if (treeViewCommandList.SelectedNode == null || treeViewCommandList.SelectedNode.Level == 0)
@@ -250,7 +351,7 @@ namespace Commands
         }
         else
         {
-          throw new ApplicationException(String.Format("Unknown macro command ({0})", selected));
+          throw new MacroStructureException(String.Format("Unknown macro command ({0})", selected));
         }
       }
       catch (Exception ex)
@@ -259,40 +360,41 @@ namespace Commands
         MessageBox.Show(this, ex.Message, "Failed to add macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-
-    private void buttonMoveUp_Click(object sender, EventArgs e)
+    
+    private void listViewMacro_DoubleClick(object sender, EventArgs e)
     {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-      
-      int selected = listViewMacro.SelectedIndices[0];
-      if (selected > 0)
-      {
-        ListViewItem item = listViewMacro.Items[selected];
-        listViewMacro.Items.RemoveAt(selected);
-        listViewMacro.Items.Insert(selected - 1, item);
-        item.Selected = true;
-      }
+      EditMacroCommand();
     }
-    private void buttonMoveDown_Click(object sender, EventArgs e)
+    
+    private void toolStripButtonTop_Click(object sender, EventArgs e)
     {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      int selected = listViewMacro.SelectedIndices[0];
-      if (selected < listViewMacro.Items.Count - 1)
-      {
-        ListViewItem item = listViewMacro.Items[selected];
-        listViewMacro.Items.RemoveAt(selected);
-        listViewMacro.Items.Insert(selected + 1, item);
-        item.Selected = true;
-      }
+      MoveToTop();
+    }
+    private void toolStripButtonUp_Click(object sender, EventArgs e)
+    {
+      MoveUp();
+    }
+    private void toolStripButtonDown_Click(object sender, EventArgs e)
+    {
+      MoveDown();
+    }
+    private void toolStripButtonBottom_Click(object sender, EventArgs e)
+    {
+      MoveBottom();
     }
 
-    private void buttonRemove_Click(object sender, EventArgs e)
+    private void toolStripButtonEdit_Click(object sender, EventArgs e)
     {
-      if (listViewMacro.SelectedItems.Count == 1)
-        listViewMacro.Items.RemoveAt(listViewMacro.SelectedIndices[0]);
+      EditMacroCommand();
+    }
+
+    private void toolStripButtonDelete_Click(object sender, EventArgs e)
+    {
+      DeleteItem();
+    }
+    private void toolStripButtonDeleteAll_Click(object sender, EventArgs e)
+    {
+      DeleteAllItems();
     }
 
     private void buttonTest_Click(object sender, EventArgs e)
@@ -315,8 +417,6 @@ namespace Commands
 
       try
       {
-        string[] commands = new string[listViewMacro.Items.Count];
-        
         Macro newMacro = new Macro();
         foreach (ListViewItem item in listViewMacro.Items)
         {
@@ -360,8 +460,6 @@ namespace Commands
 
       try
       {
-        string[] commands = new string[listViewMacro.Items.Count];
-
         Macro newMacro = new Macro();
         foreach (ListViewItem item in listViewMacro.Items)
         {
@@ -383,28 +481,6 @@ namespace Commands
     }
 
     #endregion Implementation
-
-    private void listViewMacro_DoubleClick(object sender, EventArgs e)
-    {
-      try
-      {
-        ListViewItem selected = listViewMacro.SelectedItems[0];
-
-        string selectedTag = selected.Tag as string;
-        Command command = Processor.CreateCommand(selectedTag);
-
-        if (_commandProcessor.Edit(command, this))
-        {
-          selected.Text = command.GetUserDisplayText();
-          selected.Tag = command.ToString();
-        }
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to edit macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
 
   }
 

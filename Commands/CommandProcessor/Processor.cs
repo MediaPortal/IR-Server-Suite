@@ -388,7 +388,7 @@ namespace Commands
 
       string splitAt = ", ";
 
-      int splitPoint = commandString.IndexOf(splitAt);
+      int splitPoint = commandString.IndexOf(splitAt, StringComparison.OrdinalIgnoreCase);
       if (splitPoint == -1)
         throw new ArgumentException("Invalid command string", "commandString");
 
@@ -458,6 +458,7 @@ namespace Commands
       specialCommands.Add(typeof(CommandIf));
       specialCommands.Add(typeof(CommandLabel));
       specialCommands.Add(typeof(CommandGotoLabel));
+      specialCommands.Add(typeof(CommandSwitch));
       specialCommands.Add(typeof(CommandSetVariable));
       specialCommands.Add(typeof(CommandSwapVariables));
       specialCommands.Add(typeof(CommandClearVariables));

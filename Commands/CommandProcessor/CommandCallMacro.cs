@@ -50,10 +50,10 @@ namespace Commands
     /// <returns>The user display text.</returns>
     public override string GetUserDisplayText()
     {
-      string fileName = _parameters[0];
+      string fileName = Parameters[0];
 
-      if (_parameters[0].StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
-        fileName = _parameters[0].Substring(Common.FolderAppData.Length);
+      if (Parameters[0].StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        fileName = Parameters[0].Substring(Common.FolderAppData.Length);
 
       return String.Format("{0} ({1})", GetUserInterfaceText(), fileName);
     }
@@ -64,7 +64,7 @@ namespace Commands
     /// <param name="commandProcessor">The command processor.</param>
     public void Execute(Processor commandProcessor)
     {
-      Macro macro = new Macro(_parameters[0]);
+      Macro macro = new Macro(Parameters[0]);
       macro.Execute(commandProcessor);
     }
 
@@ -75,12 +75,12 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      if (String.IsNullOrEmpty(_parameters[0]))
+      if (String.IsNullOrEmpty(Parameters[0]))
       {
         OpenFileDialog openFileDialog = new OpenFileDialog();
         openFileDialog.Filter = "Macro Files|*" + Processor.FileExtensionMacro;
         if (openFileDialog.ShowDialog(parent) == DialogResult.OK)
-          _parameters[0] = Path.Combine(Path.GetDirectoryName(openFileDialog.FileName), Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+          Parameters[0] = Path.Combine(Path.GetDirectoryName(openFileDialog.FileName), Path.GetFileNameWithoutExtension(openFileDialog.FileName));
       }
 
       return true;

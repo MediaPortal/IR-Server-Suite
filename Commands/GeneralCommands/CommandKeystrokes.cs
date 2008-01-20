@@ -58,7 +58,7 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      Keyboard.ProcessCommand(_parameters[0]);
+      Keyboard.ProcessCommand(Parameters[0]);
     }
 
     /// <summary>
@@ -68,10 +68,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditKeystrokes edit = new EditKeystrokes(_parameters[0]);
+      EditKeystrokes edit = new EditKeystrokes(Parameters[0]);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters[0] = edit.CommandString;
+        Parameters[0] = edit.CommandString;
         return true;
       }
 

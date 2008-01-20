@@ -48,10 +48,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditVariablesFile edit = new EditVariablesFile(_parameters[0]);
+      EditVariablesFile edit = new EditVariablesFile(Parameters[0]);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters[0] = edit.FileName;
+        Parameters[0] = edit.FileName;
         return true;
       }
 
@@ -64,7 +64,7 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      variables.Save(_parameters[0]);
+      variables.Save(Parameters[0]);
     }
 
     #endregion Implementation

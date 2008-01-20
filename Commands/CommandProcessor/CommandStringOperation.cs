@@ -64,10 +64,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditStringOperation edit = new EditStringOperation(_parameters);
+      EditStringOperation edit = new EditStringOperation(Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters = edit.Parameters;
+        Parameters = edit.Parameters;
         return true;
       }
 
@@ -80,12 +80,12 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string input1 = Processor.ReplaceSpecial(_parameters[1]);
-      string input2 = Processor.ReplaceSpecial(_parameters[2]);
+      string input1 = Processor.ReplaceSpecial(Parameters[1]);
+      string input2 = Processor.ReplaceSpecial(Parameters[2]);
 
       string output = String.Empty;
 
-      switch (_parameters[0])
+      switch (Parameters[0])
       {
         case StrOpConcatenate:    output = input1 + input2;     break;
         case StrOpTrim:           output = input1.Trim();       break;
@@ -93,10 +93,10 @@ namespace Commands
         case StrOpLower:          output = input1.ToLower();    break;
 
         default:
-          throw new CommandStructureException(String.Format("Invalid String Operation: {0}", _parameters[0]));
+          throw new CommandStructureException(String.Format("Invalid String Operation: {0}", Parameters[0]));
       }
 
-      variables.SetVariable(_parameters[3], output);
+      variables.SetVariable(Parameters[3], output);
     }
 
     #endregion Implementation

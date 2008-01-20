@@ -65,10 +65,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditIf edit = new EditIf(_parameters);
+      EditIf edit = new EditIf(Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters = edit.Parameters;
+        Parameters = edit.Parameters;
         return true;
       }
 
@@ -101,8 +101,8 @@ namespace Commands
         case IfEquals:      comparisonResult = value1.Equals(value2, StringComparison.OrdinalIgnoreCase);         break;
         case IfNotEqual:    comparisonResult = !value1.Equals(value2, StringComparison.OrdinalIgnoreCase);        break;
         case IfContains:    comparisonResult = value1.ToUpperInvariant().Contains(value2.ToUpperInvariant());     break;
-        case IfStartsWith:  comparisonResult = value1.ToUpperInvariant().StartsWith(value2.ToUpperInvariant());   break;
-        case IfEndsWith:    comparisonResult = value1.ToUpperInvariant().EndsWith(value2.ToUpperInvariant());     break;
+        case IfStartsWith:  comparisonResult = value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase);     break;
+        case IfEndsWith:    comparisonResult = value1.EndsWith(value2, StringComparison.OrdinalIgnoreCase);       break;
 
         // Use integer comparison ...
         case IfGreaterThan:

@@ -8,7 +8,7 @@ namespace Commands
   /// The exception that is thrown when a structural error in a command is discovered.
   /// </summary>
   [Serializable]
-  public class CommandStructureException : ApplicationException
+  public class CommandStructureException : Exception
   {
 
     /// <summary>

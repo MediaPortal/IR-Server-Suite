@@ -48,10 +48,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditSetVariable edit = new EditSetVariable(_parameters);
+      EditSetVariable edit = new EditSetVariable(Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        _parameters = edit.Parameters;
+        Parameters = edit.Parameters;
         return true;
       }
 
@@ -64,9 +64,9 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string value = Processor.ReplaceSpecial(_parameters[1]);
+      string value = Processor.ReplaceSpecial(Parameters[1]);
 
-      variables.SetVariable(_parameters[0], value);
+      variables.SetVariable(Parameters[0], value);
     }
 
     #endregion Implementation

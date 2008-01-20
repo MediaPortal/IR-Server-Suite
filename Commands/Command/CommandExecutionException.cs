@@ -8,7 +8,7 @@ namespace Commands
   /// The exception that is thrown when an error executing a command occurs.
   /// </summary>
   [Serializable]
-  public class CommandExecutionException : ApplicationException
+  public class CommandExecutionException : Exception
   {
 
     /// <summary>
