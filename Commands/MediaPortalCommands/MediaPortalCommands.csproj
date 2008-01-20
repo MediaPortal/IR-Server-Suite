@@ -7,7 +7,7 @@
     <ProjectGuid>{966281F9-3898-4CB7-9940-99D49C21F170}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Commands</RootNamespace>
+    <RootNamespace>Commands.MediaPortal</RootNamespace>
     <AssemblyName>MediaPortalCommands</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
@@ -55,6 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandGotoScreen.cs" />
+    <Compile Include="CommandExit.cs" />
+    <Compile Include="CommandReboot.cs" />
     <Compile Include="EditGotoScreen.cs">
       <SubType>Form</SubType>
     </Compile>

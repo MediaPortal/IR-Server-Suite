@@ -36,8 +36,6 @@ namespace Commands
     
     string _fileName;
 
-    Dictionary<string, Type> _commands;
-
     #endregion Variables
 
     #region Constructor
@@ -63,9 +61,8 @@ namespace Commands
 
       _commandProcessor   = commandProcessor;
       _macroFolder        = macroFolder;
-      _fileName           = "New Macro";
 
-      textBoxName.Text    = _fileName;
+      textBoxName.Text    = "New Macro";
       textBoxName.Enabled = true;
 
       PopulateCommandList(categories);
@@ -77,7 +74,7 @@ namespace Commands
     /// <param name="commandProcessor">The command processor.</param>
     /// <param name="macroFolder">The macro folder.</param>
     /// <param name="categories">The command categories to include.</param>
-    /// <param name="fileName">Name of the macro file.</param>
+    /// <param name="fileName">Full path to the macro file.</param>
     public EditMacro(Processor commandProcessor, string macroFolder, string[] categories, string fileName)
     {
       if (commandProcessor == null)
@@ -98,17 +95,18 @@ namespace Commands
       _macroFolder        = macroFolder;
       _fileName           = fileName;
 
-      if (_fileName.StartsWith(_macroFolder, StringComparison.OrdinalIgnoreCase))
-        _fileName = _fileName.Substring(macroFolder.Length);
-
-      string macroName = _fileName;
+      string macroPath    = Path.GetDirectoryName(_fileName);
+      string macroFile    = Path.GetFileNameWithoutExtension(_fileName);
+      string macroName    = Path.Combine(macroPath, macroFile);
+      if (macroName.StartsWith(_macroFolder, StringComparison.OrdinalIgnoreCase))
+        macroName = macroName.Substring(_macroFolder.Length);      
       if (macroName.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
         macroName = macroName.Substring(Common.FolderAppData.Length);
 
       textBoxName.Text    = macroName;
       textBoxName.Enabled = false;
 
-      Macro macro = new Macro(fileName + Processor.FileExtensionMacro);
+      Macro macro = new Macro(_fileName);
       foreach (Command command in macro.Commands)
       {
         ListViewItem item = new ListViewItem(command.GetUserDisplayText());
@@ -125,31 +123,32 @@ namespace Commands
 
     void PopulateCommandList(string[] categories)
     {
-      _commands = new Dictionary<string, Type>();
       treeViewCommandList.Nodes.Clear();
-      Dictionary<string, TreeNode> treeNodes = new Dictionary<string,TreeNode>(categories.Length);
+      Dictionary<string, TreeNode> categoryNodes = new Dictionary<string,TreeNode>(categories.Length);
 
+      // Create requested categories ...
       foreach (string category in categories)
       {
         TreeNode categoryNode = new TreeNode(category);
         //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
-        treeNodes.Add(category, categoryNode);
+        categoryNodes.Add(category, categoryNode);
       }
-
-      Type[] allCommands = Common.GetLibraryCommands();
-      if (allCommands != null)
+      
+      Type[] libCommands = Common.GetLibraryCommands();
+      if (libCommands != null)
       {
-        foreach (Type type in allCommands)
+        foreach (Type type in libCommands)
         {
           Command command = (Command)Activator.CreateInstance(type);
 
           string commandCategory = command.GetCategory();
 
-          if (treeNodes.ContainsKey(commandCategory))
+          if (categoryNodes.ContainsKey(commandCategory))
           {
-            string uiText = command.GetUserInterfaceText();
-            treeNodes[commandCategory].Nodes.Add(uiText);
-            _commands.Add(uiText, type);
+            TreeNode newNode = new TreeNode(command.GetUserInterfaceText());
+            newNode.Tag = type;
+
+            categoryNodes[commandCategory].Nodes.Add(newNode);
           }
         }
       }
@@ -164,11 +163,14 @@ namespace Commands
         Command command = (Command)Activator.CreateInstance(type);
 
         //if (!command.GetCategory().Equals(Processor.CategoryHidden, StringComparison.OrdinalIgnoreCase))
-          macroCommands.Nodes.Add(command.GetUserInterfaceText());
+        {
+          TreeNode newNode = new TreeNode(command.GetUserInterfaceText());
+          newNode.Tag = type;
 
-        _commands.Add(command.GetUserInterfaceText(), type);
+          macroCommands.Nodes.Add(newNode);
+        }
       }
-      treeNodes.Add(Processor.CategoryMacro, macroCommands);
+      categoryNodes.Add(Processor.CategoryMacro, macroCommands);
 
       // Add list of existing IR Commands ...
       string[] irFiles = Processor.GetListIR();
@@ -179,12 +181,13 @@ namespace Commands
 
         foreach (string irFile in irFiles)
         {
-          TreeNode newNode = new TreeNode(irFile);
-          newNode.Tag = Common.FolderIRCommands + irFile;
+          TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(irFile));
+          newNode.Tag = irFile;
+
           irCommands.Nodes.Add(newNode);
         }
 
-        treeNodes.Add(irCommands.Text, irCommands);
+        categoryNodes.Add(irCommands.Text, irCommands);
       }
 
       // Add list of existing Macros ...
@@ -198,13 +201,18 @@ namespace Commands
         //otherMacros.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
 
         foreach (string macro in macros)
-          otherMacros.Nodes.Add(macro);
+        {
+          TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(macro));
+          newNode.Tag = macro;
 
-        treeNodes.Add(otherMacros.Text, otherMacros);
+          otherMacros.Nodes.Add(newNode);
+        }
+
+        categoryNodes.Add(otherMacros.Text, otherMacros);
       }
 
       // Put all commands into tree view ...
-      foreach (TreeNode treeNode in treeNodes.Values)
+      foreach (TreeNode treeNode in categoryNodes.Values)
         if (treeNode.Nodes.Count > 0)
           treeViewCommandList.Nodes.Add(treeNode);
 
@@ -319,9 +327,7 @@ namespace Commands
 
         if (treeViewCommandList.SelectedNode.Parent.Text.Equals(CategoryIRCommands, StringComparison.OrdinalIgnoreCase))
         {
-          string selectedTag = treeViewCommandList.SelectedNode.Tag as string;
-
-          command = new CommandBlastIR(new string[] { selectedTag, _commandProcessor.BlastIrPorts[0] });
+          command = new CommandBlastIR(new string[] { treeViewCommandList.SelectedNode.Tag as string, _commandProcessor.BlastIrPorts[0] });
 
           if (_commandProcessor.Edit(command, this))
           {
@@ -332,15 +338,16 @@ namespace Commands
         }
         else if (treeViewCommandList.SelectedNode.Parent.Text.Equals(CategoryMacros, StringComparison.OrdinalIgnoreCase))
         {
-          command = new CommandCallMacro(new string[] { selected });
+          command = new CommandCallMacro(new string[] { treeViewCommandList.SelectedNode.Tag as string });
 
           newCommand.Text = command.GetUserDisplayText();
           newCommand.Tag = command.ToString();
           listViewMacro.Items.Add(newCommand);
         }
-        else if (_commands.ContainsKey(selected))
+        else
         {
-          command = (Command)Activator.CreateInstance(_commands[selected]);
+          Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
+          command = (Command)Activator.CreateInstance(commandType);
 
           if (_commandProcessor.Edit(command, this))
           {
@@ -348,10 +355,6 @@ namespace Commands
             newCommand.Tag = command.ToString();
             listViewMacro.Items.Add(newCommand);
           }
-        }
-        else
-        {
-          throw new MacroStructureException(String.Format("Unknown macro command ({0})", selected));
         }
       }
       catch (Exception ex)
@@ -468,7 +471,10 @@ namespace Commands
           newMacro.Commands.Add(command);
         }
 
-        newMacro.Save(_macroFolder + name + Processor.FileExtensionMacro);
+        if (textBoxName.Enabled)
+          _fileName = _macroFolder + name + Processor.FileExtensionMacro;
+
+        newMacro.Save(_fileName);
       }
       catch (Exception ex)
       {

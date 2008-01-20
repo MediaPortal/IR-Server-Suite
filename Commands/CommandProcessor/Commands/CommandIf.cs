@@ -59,6 +59,18 @@ namespace Commands
     public override string GetUserInterfaceText() { return "If Statement"; }
 
     /// <summary>
+    /// Gets the user display text.
+    /// </summary>
+    /// <returns>The user display text.</returns>
+    public override string GetUserDisplayText()
+    {
+      if (String.IsNullOrEmpty(Parameters[4]))
+        return String.Format("If ({0} {1} {2}) then goto \"{3}\"", Parameters[0], Parameters[1], Parameters[2], Parameters[3]);
+      else
+        return String.Format("If ({0} {1} {2}) then goto \"{3}\" else goto \"{4}\"", Parameters[0], Parameters[1], Parameters[2], Parameters[3], Parameters[4]);
+    }
+
+    /// <summary>
     /// Edit this command.
     /// </summary>
     /// <param name="parent">The parent window.</param>

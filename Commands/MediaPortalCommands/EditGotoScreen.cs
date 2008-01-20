@@ -6,7 +6,9 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Commands
+using MediaPortal.GUI.Library;
+
+namespace Commands.MediaPortal
 {
 
   /// <summary>
@@ -55,7 +57,7 @@ namespace Commands
     void SetupComboBox()
     {
       comboBoxScreen.Items.Clear();
-      string[] items = Enum.GetNames(typeof(MediaPortal.GUI.Library.GUIWindow.Window));
+      string[] items = Enum.GetNames(typeof(GUIWindow.Window));
 
       int index;
       for (index = 0; index < items.Length; index++)

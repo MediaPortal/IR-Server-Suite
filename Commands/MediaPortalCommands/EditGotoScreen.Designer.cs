@@ -1,4 +1,4 @@
-namespace Commands
+namespace Commands.MediaPortal
 {
   partial class EditGotoScreen
   {

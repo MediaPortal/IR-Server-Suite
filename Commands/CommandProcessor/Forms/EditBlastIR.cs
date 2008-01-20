@@ -101,14 +101,19 @@ namespace Commands
         OpenFileDialog openFileDialog = new OpenFileDialog();
         openFileDialog.Filter = "IR Command Files|*" + Processor.FileExtensionIR;
         if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-          parameters[0] = Path.Combine(Path.GetDirectoryName(openFileDialog.FileName), Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+          parameters[0] = openFileDialog.FileName;
       }
 
       _fileName = parameters[0];
 
-      string displayName = _fileName;
-      if (_fileName.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
-        displayName = _fileName.Substring(Common.FolderAppData.Length);
+      string filePath = Path.GetDirectoryName(_fileName);
+      string fileName = Path.GetFileNameWithoutExtension(_fileName);
+
+      string displayName = Path.Combine(filePath, fileName);
+      if (displayName.StartsWith(Common.FolderIRCommands, StringComparison.OrdinalIgnoreCase))
+        displayName = displayName.Substring(Common.FolderIRCommands.Length);
+      else if (displayName.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        displayName = displayName.Substring(Common.FolderAppData.Length);
 
       labelIRCommandFile.Text = displayName;
 
@@ -153,10 +158,7 @@ namespace Commands
     {
       try
       {
-        string fileName = _fileName + Common.FileExtensionIR;
-        string port = comboBoxPort.SelectedItem as string;
-
-        _blastIrDelegate(fileName, port);
+        _blastIrDelegate(_fileName, comboBoxPort.SelectedItem as string);
       }
       catch (Exception ex)
       {

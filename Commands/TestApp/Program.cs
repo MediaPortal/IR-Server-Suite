@@ -32,7 +32,7 @@ namespace Commands
         commandProcessor,
         @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\",
         categories,
-        "New Macro");
+        @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\Toggle Example.Macro");
 
       edit2.ShowDialog();
     }

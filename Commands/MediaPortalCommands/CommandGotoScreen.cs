@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 using MediaPortal.GUI.Library;
 
-namespace Commands
+namespace Commands.MediaPortal
 {
 
   /// <summary>

@@ -27,6 +27,22 @@ namespace Commands
 
     #region Constants
 
+    /*
+    /// <summary>
+    /// "IR Commands" folder location (includes trailing '\')
+    /// </summary>
+    public static readonly string FolderIRCommands =
+      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
+      "\\IR Server Suite\\IR Commands\\";
+
+    /// <summary>
+    /// "Set Top Boxes" folder location (includes trailing '\')
+    /// </summary>
+    public static readonly string FolderSTB =
+      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
+      "\\IR Server Suite\\Set Top Boxes\\";
+    */
+
     /// <summary>
     /// Macro file extension.
     /// </summary>
@@ -181,10 +197,8 @@ namespace Commands
     /// <returns>List of IR Command files.</returns>
     public static string[] GetListIR()
     {
-      string[] files = Directory.GetFiles(IrssUtils.Common.FolderIRCommands, '*' + FileExtensionIR);
-
-      for (int index = 0; index < files.Length; index++)
-        files[index] = Path.GetFileNameWithoutExtension(files[index]);
+      string[] files = Directory.GetFiles(IrssUtils.Common.FolderIRCommands, '*' + FileExtensionIR, SearchOption.TopDirectoryOnly);
+      Array.Sort(files);
 
       return files;
     }
@@ -199,10 +213,8 @@ namespace Commands
       if (String.IsNullOrEmpty(folder))
         throw new ArgumentNullException("folder");
 
-      string[] files = Directory.GetFiles(folder, '*' + FileExtensionMacro);
-
-      for (int index = 0; index < files.Length; index++)
-        files[index] = Path.GetFileNameWithoutExtension(files[index]);
+      string[] files = Directory.GetFiles(folder, '*' + FileExtensionMacro, SearchOption.TopDirectoryOnly);
+      Array.Sort(files);
 
       return files;
     }

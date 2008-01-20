@@ -50,12 +50,18 @@ namespace Commands
     /// <returns>The user display text.</returns>
     public override string GetUserDisplayText()
     {
-      string fileName = Parameters[0];
+      string fileDir = Path.GetDirectoryName(Parameters[0]);
+      if (!fileDir.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+        fileDir += Path.DirectorySeparatorChar;
+      
+      string fileName = Path.GetFileNameWithoutExtension(Parameters[0]);
 
-      if (Parameters[0].StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
-        fileName = Parameters[0].Substring(Common.FolderAppData.Length);
+      if (fileDir.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        fileDir = fileDir.Substring(Common.FolderAppData.Length);
+      else if (fileDir.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        fileDir = fileDir.Substring(Common.FolderAppData.Length);
 
-      return String.Format("{0} ({1})", GetUserInterfaceText(), fileName);
+      return String.Format("{0} ({1})", GetUserInterfaceText(), Path.Combine(fileDir, fileName));
     }
 
     /// <summary>
@@ -80,7 +86,7 @@ namespace Commands
         OpenFileDialog openFileDialog = new OpenFileDialog();
         openFileDialog.Filter = "Macro Files|*" + Processor.FileExtensionMacro;
         if (openFileDialog.ShowDialog(parent) == DialogResult.OK)
-          Parameters[0] = Path.Combine(Path.GetDirectoryName(openFileDialog.FileName), Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+          Parameters[0] = openFileDialog.FileName;
       }
 
       return true;

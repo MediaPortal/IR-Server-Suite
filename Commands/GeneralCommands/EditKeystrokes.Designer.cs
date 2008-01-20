@@ -1,4 +1,4 @@
-namespace Commands
+namespace Commands.General
 {
 
   partial class EditKeystrokes

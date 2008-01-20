@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 using IrssUtils;
 
-namespace Commands
+namespace Commands.General
 {
 
   /// <summary>

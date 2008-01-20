@@ -34,6 +34,16 @@ namespace Commands
       this.groupBoxCommandSequence = new System.Windows.Forms.GroupBox();
       this.listViewMacro = new System.Windows.Forms.ListView();
       this.columnHeader = new System.Windows.Forms.ColumnHeader();
+      this.toolStripCommandSequence = new System.Windows.Forms.ToolStrip();
+      this.toolStripButtonTop = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonUp = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+      this.toolStripButtonEdit = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonDelete = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonDeleteAll = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.toolStripButtonDown = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonBottom = new System.Windows.Forms.ToolStripButton();
       this.groupBoxCommands = new System.Windows.Forms.GroupBox();
       this.treeViewCommandList = new System.Windows.Forms.TreeView();
       this.buttonCancel = new System.Windows.Forms.Button();
@@ -42,23 +52,13 @@ namespace Commands
       this.groupBoxMacroName = new System.Windows.Forms.GroupBox();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.splitContainer = new System.Windows.Forms.SplitContainer();
-      this.toolStripCommandSequence = new System.Windows.Forms.ToolStrip();
-      this.toolStripButtonTop = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonUp = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonEdit = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonDelete = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonDeleteAll = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonDown = new System.Windows.Forms.ToolStripButton();
-      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-      this.toolStripButtonBottom = new System.Windows.Forms.ToolStripButton();
       this.groupBoxCommandSequence.SuspendLayout();
+      this.toolStripCommandSequence.SuspendLayout();
       this.groupBoxCommands.SuspendLayout();
       this.groupBoxMacroName.SuspendLayout();
       this.splitContainer.Panel1.SuspendLayout();
       this.splitContainer.Panel2.SuspendLayout();
       this.splitContainer.SuspendLayout();
-      this.toolStripCommandSequence.SuspendLayout();
       this.SuspendLayout();
       // 
       // textBoxName
@@ -97,7 +97,7 @@ namespace Commands
       this.listViewMacro.MultiSelect = false;
       this.listViewMacro.Name = "listViewMacro";
       this.listViewMacro.ShowGroups = false;
-      this.listViewMacro.Size = new System.Drawing.Size(280, 213);
+      this.listViewMacro.Size = new System.Drawing.Size(288, 213);
       this.listViewMacro.TabIndex = 0;
       this.listViewMacro.UseCompatibleStateImageBehavior = false;
       this.listViewMacro.View = System.Windows.Forms.View.Details;
@@ -107,6 +107,106 @@ namespace Commands
       // 
       this.columnHeader.Text = "Command Sequence";
       this.columnHeader.Width = 268;
+      // 
+      // toolStripCommandSequence
+      // 
+      this.toolStripCommandSequence.Dock = System.Windows.Forms.DockStyle.Right;
+      this.toolStripCommandSequence.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+      this.toolStripCommandSequence.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButtonTop,
+            this.toolStripButtonUp,
+            this.toolStripSeparator1,
+            this.toolStripButtonEdit,
+            this.toolStripButtonDelete,
+            this.toolStripButtonDeleteAll,
+            this.toolStripSeparator2,
+            this.toolStripButtonDown,
+            this.toolStripButtonBottom});
+      this.toolStripCommandSequence.Location = new System.Drawing.Point(291, 16);
+      this.toolStripCommandSequence.Name = "toolStripCommandSequence";
+      this.toolStripCommandSequence.Size = new System.Drawing.Size(24, 213);
+      this.toolStripCommandSequence.TabIndex = 1;
+      this.toolStripCommandSequence.Text = "Command Sequence";
+      // 
+      // toolStripButtonTop
+      // 
+      this.toolStripButtonTop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButtonTop.Image = global::Commands.Properties.Resources.MoveTop;
+      this.toolStripButtonTop.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonTop.Name = "toolStripButtonTop";
+      this.toolStripButtonTop.Size = new System.Drawing.Size(21, 20);
+      this.toolStripButtonTop.Text = "Move to Top";
+      this.toolStripButtonTop.Click += new System.EventHandler(this.toolStripButtonTop_Click);
+      // 
+      // toolStripButtonUp
+      // 
+      this.toolStripButtonUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButtonUp.Image = global::Commands.Properties.Resources.MoveUp;
+      this.toolStripButtonUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonUp.Name = "toolStripButtonUp";
+      this.toolStripButtonUp.Size = new System.Drawing.Size(21, 20);
+      this.toolStripButtonUp.Text = "Move Up";
+      this.toolStripButtonUp.Click += new System.EventHandler(this.toolStripButtonUp_Click);
+      // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(21, 6);
+      // 
+      // toolStripButtonEdit
+      // 
+      this.toolStripButtonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButtonEdit.Image = global::Commands.Properties.Resources.Edit;
+      this.toolStripButtonEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonEdit.Name = "toolStripButtonEdit";
+      this.toolStripButtonEdit.Size = new System.Drawing.Size(21, 20);
+      this.toolStripButtonEdit.Text = "Edit";
+      this.toolStripButtonEdit.Click += new System.EventHandler(this.toolStripButtonEdit_Click);
+      // 
+      // toolStripButtonDelete
+      // 
+      this.toolStripButtonDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButtonDelete.Image = global::Commands.Properties.Resources.Delete;
+      this.toolStripButtonDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonDelete.Name = "toolStripButtonDelete";
+      this.toolStripButtonDelete.Size = new System.Drawing.Size(21, 20);
+      this.toolStripButtonDelete.Text = "Delete";
+      this.toolStripButtonDelete.Click += new System.EventHandler(this.toolStripButtonDelete_Click);
+      // 
+      // toolStripButtonDeleteAll
+      // 
+      this.toolStripButtonDeleteAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButtonDeleteAll.Image = global::Commands.Properties.Resources.DeleteAll;
+      this.toolStripButtonDeleteAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonDeleteAll.Name = "toolStripButtonDeleteAll";
+      this.toolStripButtonDeleteAll.Size = new System.Drawing.Size(21, 20);
+      this.toolStripButtonDeleteAll.Text = "Delete All";
+      this.toolStripButtonDeleteAll.Click += new System.EventHandler(this.toolStripButtonDeleteAll_Click);
+      // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(21, 6);
+      // 
+      // toolStripButtonDown
+      // 
+      this.toolStripButtonDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButtonDown.Image = global::Commands.Properties.Resources.MoveDown;
+      this.toolStripButtonDown.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonDown.Name = "toolStripButtonDown";
+      this.toolStripButtonDown.Size = new System.Drawing.Size(21, 20);
+      this.toolStripButtonDown.Text = "Move Down";
+      this.toolStripButtonDown.Click += new System.EventHandler(this.toolStripButtonDown_Click);
+      // 
+      // toolStripButtonBottom
+      // 
+      this.toolStripButtonBottom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButtonBottom.Image = global::Commands.Properties.Resources.MoveBottom;
+      this.toolStripButtonBottom.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonBottom.Name = "toolStripButtonBottom";
+      this.toolStripButtonBottom.Size = new System.Drawing.Size(21, 20);
+      this.toolStripButtonBottom.Text = "Move to Bottom";
+      this.toolStripButtonBottom.Click += new System.EventHandler(this.toolStripButtonBottom_Click);
       // 
       // groupBoxCommands
       // 
@@ -122,6 +222,7 @@ namespace Commands
       // treeViewCommandList
       // 
       this.treeViewCommandList.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.treeViewCommandList.FullRowSelect = true;
       this.treeViewCommandList.Location = new System.Drawing.Point(3, 16);
       this.treeViewCommandList.Name = "treeViewCommandList";
       this.treeViewCommandList.Size = new System.Drawing.Size(174, 213);
@@ -198,106 +299,6 @@ namespace Commands
       this.splitContainer.SplitterWidth = 6;
       this.splitContainer.TabIndex = 1;
       // 
-      // toolStripCommandSequence
-      // 
-      this.toolStripCommandSequence.Dock = System.Windows.Forms.DockStyle.Right;
-      this.toolStripCommandSequence.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-      this.toolStripCommandSequence.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButtonTop,
-            this.toolStripButtonUp,
-            this.toolStripSeparator1,
-            this.toolStripButtonEdit,
-            this.toolStripButtonDelete,
-            this.toolStripButtonDeleteAll,
-            this.toolStripSeparator2,
-            this.toolStripButtonDown,
-            this.toolStripButtonBottom});
-      this.toolStripCommandSequence.Location = new System.Drawing.Point(283, 16);
-      this.toolStripCommandSequence.Name = "toolStripCommandSequence";
-      this.toolStripCommandSequence.Size = new System.Drawing.Size(32, 213);
-      this.toolStripCommandSequence.TabIndex = 1;
-      this.toolStripCommandSequence.Text = "Command Sequence";
-      // 
-      // toolStripButtonTop
-      // 
-      this.toolStripButtonTop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonTop.Image = global::Commands.Properties.Resources.MoveTop;
-      this.toolStripButtonTop.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonTop.Name = "toolStripButtonTop";
-      this.toolStripButtonTop.Size = new System.Drawing.Size(29, 20);
-      this.toolStripButtonTop.Text = "Move to Top";
-      this.toolStripButtonTop.Click += new System.EventHandler(this.toolStripButtonTop_Click);
-      // 
-      // toolStripButtonUp
-      // 
-      this.toolStripButtonUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonUp.Image = global::Commands.Properties.Resources.MoveUp;
-      this.toolStripButtonUp.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonUp.Name = "toolStripButtonUp";
-      this.toolStripButtonUp.Size = new System.Drawing.Size(29, 20);
-      this.toolStripButtonUp.Text = "Move Up";
-      this.toolStripButtonUp.Click += new System.EventHandler(this.toolStripButtonUp_Click);
-      // 
-      // toolStripButtonEdit
-      // 
-      this.toolStripButtonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonEdit.Image = global::Commands.Properties.Resources.Edit;
-      this.toolStripButtonEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonEdit.Name = "toolStripButtonEdit";
-      this.toolStripButtonEdit.Size = new System.Drawing.Size(29, 20);
-      this.toolStripButtonEdit.Text = "Edit";
-      this.toolStripButtonEdit.Click += new System.EventHandler(this.toolStripButtonEdit_Click);
-      // 
-      // toolStripButtonDelete
-      // 
-      this.toolStripButtonDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDelete.Image = global::Commands.Properties.Resources.Delete;
-      this.toolStripButtonDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonDelete.Name = "toolStripButtonDelete";
-      this.toolStripButtonDelete.Size = new System.Drawing.Size(29, 20);
-      this.toolStripButtonDelete.Text = "Delete";
-      this.toolStripButtonDelete.Click += new System.EventHandler(this.toolStripButtonDelete_Click);
-      // 
-      // toolStripButtonDeleteAll
-      // 
-      this.toolStripButtonDeleteAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDeleteAll.Image = global::Commands.Properties.Resources.DeleteAll;
-      this.toolStripButtonDeleteAll.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonDeleteAll.Name = "toolStripButtonDeleteAll";
-      this.toolStripButtonDeleteAll.Size = new System.Drawing.Size(29, 20);
-      this.toolStripButtonDeleteAll.Text = "Delete All";
-      this.toolStripButtonDeleteAll.Click += new System.EventHandler(this.toolStripButtonDeleteAll_Click);
-      // 
-      // toolStripButtonDown
-      // 
-      this.toolStripButtonDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDown.Image = global::Commands.Properties.Resources.MoveDown;
-      this.toolStripButtonDown.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonDown.Name = "toolStripButtonDown";
-      this.toolStripButtonDown.Size = new System.Drawing.Size(29, 20);
-      this.toolStripButtonDown.Text = "Move Down";
-      this.toolStripButtonDown.Click += new System.EventHandler(this.toolStripButtonDown_Click);
-      // 
-      // toolStripSeparator1
-      // 
-      this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(29, 6);
-      // 
-      // toolStripSeparator2
-      // 
-      this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(29, 6);
-      // 
-      // toolStripButtonBottom
-      // 
-      this.toolStripButtonBottom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonBottom.Image = global::Commands.Properties.Resources.MoveBottom;
-      this.toolStripButtonBottom.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonBottom.Name = "toolStripButtonBottom";
-      this.toolStripButtonBottom.Size = new System.Drawing.Size(29, 20);
-      this.toolStripButtonBottom.Text = "Move to Bottom";
-      this.toolStripButtonBottom.Click += new System.EventHandler(this.toolStripButtonBottom_Click);
-      // 
       // EditMacro
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -317,14 +318,14 @@ namespace Commands
       this.Text = "Macro Editor";
       this.groupBoxCommandSequence.ResumeLayout(false);
       this.groupBoxCommandSequence.PerformLayout();
+      this.toolStripCommandSequence.ResumeLayout(false);
+      this.toolStripCommandSequence.PerformLayout();
       this.groupBoxCommands.ResumeLayout(false);
       this.groupBoxMacroName.ResumeLayout(false);
       this.groupBoxMacroName.PerformLayout();
       this.splitContainer.Panel1.ResumeLayout(false);
       this.splitContainer.Panel2.ResumeLayout(false);
       this.splitContainer.ResumeLayout(false);
-      this.toolStripCommandSequence.ResumeLayout(false);
-      this.toolStripCommandSequence.PerformLayout();
       this.ResumeLayout(false);
 
     }

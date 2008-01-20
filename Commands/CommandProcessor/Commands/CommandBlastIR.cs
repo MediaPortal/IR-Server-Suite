@@ -50,12 +50,18 @@ namespace Commands
     /// <returns>The user display text.</returns>
     public override string GetUserDisplayText()
     {
-      string fileName = Parameters[0];
+      string fileDir = Path.GetDirectoryName(Parameters[0]);
+      if (!fileDir.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+        fileDir += Path.DirectorySeparatorChar;
 
-      if (Parameters[0].StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
-        fileName = Parameters[0].Substring(Common.FolderAppData.Length);
+      string fileName = Path.GetFileNameWithoutExtension(Parameters[0]);
 
-      return String.Format("{0} ({1}, {2})", GetUserInterfaceText(), fileName, Parameters[1]);
+      if (fileDir.StartsWith(Common.FolderIRCommands, StringComparison.OrdinalIgnoreCase))
+        fileDir = fileDir.Substring(Common.FolderIRCommands.Length);
+      else if (fileDir.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+        fileDir = fileDir.Substring(Common.FolderAppData.Length);
+
+      return String.Format("{0} ({1}, {2})", GetUserInterfaceText(), Path.Combine(fileDir, fileName), Parameters[1]);
     }
 
     /// <summary>
@@ -90,7 +96,6 @@ namespace Commands
     }
 
     #endregion Implementation
-
 
   }
 

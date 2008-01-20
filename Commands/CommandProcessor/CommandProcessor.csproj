@@ -38,83 +38,83 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandStringOperation.cs" />
-    <Compile Include="CommandSwapVariables.cs" />
-    <Compile Include="CommandMathsOperation.cs" />
-    <Compile Include="CommandSwitch.cs" />
-    <Compile Include="EditSwitch.cs">
+    <Compile Include="Commands\CommandStringOperation.cs" />
+    <Compile Include="Commands\CommandSwapVariables.cs" />
+    <Compile Include="Commands\CommandMathsOperation.cs" />
+    <Compile Include="Commands\CommandSwitch.cs" />
+    <Compile Include="Forms\EditBlastIR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditSwitch.Designer.cs">
-      <DependentUpon>EditSwitch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditMathsOperation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditMathsOperation.Designer.cs">
-      <DependentUpon>EditMathsOperation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditSwapVariables.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditSwapVariables.Designer.cs">
-      <DependentUpon>EditSwapVariables.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditStringOperation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditStringOperation.Designer.cs">
-      <DependentUpon>EditStringOperation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Processor.cs" />
-    <Compile Include="EditBlastIR.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditBlastIR.Designer.cs">
+    <Compile Include="Forms\EditBlastIR.designer.cs">
       <DependentUpon>EditBlastIR.cs</DependentUpon>
     </Compile>
-    <Compile Include="CommandClearVariables.cs" />
-    <Compile Include="CommandIf.cs" />
-    <Compile Include="CommandLabel.cs" />
-    <Compile Include="CommandGotoLabel.cs" />
-    <Compile Include="CommandSetVariable.cs" />
-    <Compile Include="CommandSaveVariables.cs" />
-    <Compile Include="CommandLoadVariables.cs" />
-    <Compile Include="CommandCallMacro.cs" />
-    <Compile Include="CommandBlastIR.cs" />
-    <Compile Include="EditIf.cs">
+    <Compile Include="Forms\EditIf.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditIf.Designer.cs">
+    <Compile Include="Forms\EditIf.designer.cs">
       <DependentUpon>EditIf.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditLabel.cs">
+    <Compile Include="Forms\EditLabel.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditLabel.Designer.cs">
+    <Compile Include="Forms\EditLabel.designer.cs">
       <DependentUpon>EditLabel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Macro.cs" />
-    <Compile Include="EditMacro.cs">
+    <Compile Include="Forms\EditMacro.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditMacro.Designer.cs">
+    <Compile Include="Forms\EditMacro.designer.cs">
       <DependentUpon>EditMacro.cs</DependentUpon>
     </Compile>
-    <Compile Include="MacroStructureException.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EditSetVariable.cs">
+    <Compile Include="Forms\EditMathsOperation.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditSetVariable.Designer.cs">
+    <Compile Include="Forms\EditMathsOperation.designer.cs">
+      <DependentUpon>EditMathsOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EditSetVariable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditSetVariable.designer.cs">
       <DependentUpon>EditSetVariable.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditVariablesFile.cs">
+    <Compile Include="Forms\EditStringOperation.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditVariablesFile.Designer.cs">
+    <Compile Include="Forms\EditStringOperation.designer.cs">
+      <DependentUpon>EditStringOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EditSwapVariables.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditSwapVariables.designer.cs">
+      <DependentUpon>EditSwapVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EditSwitch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditSwitch.designer.cs">
+      <DependentUpon>EditSwitch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EditVariablesFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditVariablesFile.designer.cs">
       <DependentUpon>EditVariablesFile.cs</DependentUpon>
     </Compile>
+    <Compile Include="Processor.cs" />
+    <Compile Include="Commands\CommandClearVariables.cs" />
+    <Compile Include="Commands\CommandIf.cs" />
+    <Compile Include="Commands\CommandLabel.cs" />
+    <Compile Include="Commands\CommandGotoLabel.cs" />
+    <Compile Include="Commands\CommandSetVariable.cs" />
+    <Compile Include="Commands\CommandSaveVariables.cs" />
+    <Compile Include="Commands\CommandLoadVariables.cs" />
+    <Compile Include="Commands\CommandCallMacro.cs" />
+    <Compile Include="Commands\CommandBlastIR.cs" />
+    <Compile Include="Macro.cs" />
+    <Compile Include="MacroStructureException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -122,43 +122,43 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="EditSwitch.resx">
-      <DependentUpon>EditSwitch.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditMathsOperation.resx">
-      <DependentUpon>EditMathsOperation.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditSwapVariables.resx">
-      <DependentUpon>EditSwapVariables.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditStringOperation.resx">
-      <DependentUpon>EditStringOperation.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditBlastIR.resx">
+    <EmbeddedResource Include="Forms\EditBlastIR.resx">
       <DependentUpon>EditBlastIR.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditIf.resx">
+    <EmbeddedResource Include="Forms\EditIf.resx">
       <DependentUpon>EditIf.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditMacro.resx">
-      <DependentUpon>EditMacro.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditLabel.resx">
+    <EmbeddedResource Include="Forms\EditLabel.resx">
       <DependentUpon>EditLabel.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditSetVariable.resx">
+    <EmbeddedResource Include="Forms\EditMacro.resx">
+      <DependentUpon>EditMacro.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditMathsOperation.resx">
+      <DependentUpon>EditMathsOperation.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditSetVariable.resx">
       <DependentUpon>EditSetVariable.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditVariablesFile.resx">
+    <EmbeddedResource Include="Forms\EditStringOperation.resx">
+      <DependentUpon>EditStringOperation.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditSwapVariables.resx">
+      <DependentUpon>EditSwapVariables.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditSwitch.resx">
+      <DependentUpon>EditSwitch.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditVariablesFile.resx">
       <DependentUpon>EditVariablesFile.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

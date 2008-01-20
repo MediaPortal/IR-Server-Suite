@@ -45,6 +45,15 @@ namespace Commands
     public override string GetUserInterfaceText() { return "Switch Statement"; }
 
     /// <summary>
+    /// Gets the user display text.
+    /// </summary>
+    /// <returns>The user display text.</returns>
+    public override string GetUserDisplayText()
+    {
+      return String.Format("Switch ({0}) ...", Parameters[0]);
+    }
+
+    /// <summary>
     /// Edit this command.
     /// </summary>
     /// <param name="parent">The parent window.</param>
