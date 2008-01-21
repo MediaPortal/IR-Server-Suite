@@ -29,6 +29,8 @@ namespace IRBlast
 
     static string _blastPort = "Default";
 
+    static int _delay = 50;
+
     static bool _treatAsChannelNumber;
     static int _padChannelNumber;
 
@@ -66,6 +68,10 @@ namespace IRBlast
 
               case "-PORT":
                 _blastPort = args[++index];
+                continue;
+
+              case "-DELAY":
+                _delay = int.Parse(args[++index]);
                 continue;
 
               case "-CHANNEL":
@@ -139,6 +145,9 @@ namespace IRBlast
                         fileName = Common.FolderIRCommands + digit + Common.FileExtensionIR;
                         BlastIR(fileName, _blastPort);
                       }
+                      
+                      if (_delay > 0)
+                        Thread.Sleep(_delay);
                     }
                   }
                   else if (command.StartsWith("~", StringComparison.OrdinalIgnoreCase))
@@ -150,6 +159,9 @@ namespace IRBlast
                     fileName = Common.FolderIRCommands + command;
                     BlastIR(fileName, _blastPort);
                   }
+
+                  if (_delay > 0)
+                    Thread.Sleep(_delay);
                 }
 
                 Thread.Sleep(500);

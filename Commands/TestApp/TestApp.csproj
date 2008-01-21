@@ -30,8 +30,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -41,10 +39,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
-      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
-      <Name>IrssUtils</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CommandProcessor\CommandProcessor.csproj">
       <Project>{49CF376E-811C-4EB4-817F-A39C9529B608}</Project>
       <Name>CommandProcessor</Name>

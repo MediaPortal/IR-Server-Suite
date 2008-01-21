@@ -7,23 +7,23 @@ namespace Commands
 {
 
   /// <summary>
-  /// Load Variables macro command.
+  /// String Join macro command.
   /// </summary>
-  public class CommandLoadVariables : Command
+  public class CommandStringJoin : Command
   {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandLoadVariables"/> class.
+    /// Initializes a new instance of the <see cref="CommandStringJoin"/> class.
     /// </summary>
-    public CommandLoadVariables() { InitParameters(1); }
+    public CommandStringJoin() { InitParameters(3); }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandLoadVariables"/> class.
+    /// Initializes a new instance of the <see cref="CommandStringJoin"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandLoadVariables(string[] parameters) : base(parameters) { }
+    public CommandStringJoin(string[] parameters) : base(parameters) { }
 
     #endregion Constructors
 
@@ -33,13 +33,13 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMacro; }
+    public override string GetCategory() { return Processor.CategoryString; }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Load Variables"; }
+    public override string GetUserInterfaceText() { return "String Join"; }
 
     /// <summary>
     /// Edit this command.
@@ -48,10 +48,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditVariablesFile edit = new EditVariablesFile(Parameters[0]);
+      EditStringOperation edit = new EditStringOperation(Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        Parameters[0] = edit.FileName;
+        Parameters = edit.Parameters;
         return true;
       }
 
@@ -64,7 +64,17 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      variables.Load(Parameters[0]);
+      string input1 = Parameters[0];
+      if (input1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+        input1 = variables.VariableGet(input1);
+      
+      string input2 = Parameters[1];
+      if (input2.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+        input2 = variables.VariableGet(input2);
+
+      string output = String.Concat(input1, input2);
+
+      variables.VariableSet(Parameters[2], output);
     }
 
     #endregion Implementation

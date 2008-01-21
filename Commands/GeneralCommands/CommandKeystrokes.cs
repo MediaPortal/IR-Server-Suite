@@ -58,7 +58,13 @@ namespace Commands.General
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      Keyboard.ProcessCommand(Parameters[0]);
+      string value = Parameters[0];
+      if (value.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+        value = variables.VariableGet(value);
+
+      value = Common.ReplaceSpecial(value);
+
+      Keyboard.ProcessCommand(value);
     }
 
     /// <summary>

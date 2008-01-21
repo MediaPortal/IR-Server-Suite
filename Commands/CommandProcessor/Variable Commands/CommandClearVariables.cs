@@ -33,7 +33,7 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMacro; }
+    public override string GetCategory() { return Processor.CategoryVariable; }
 
     /// <summary>
     /// Gets the user interface text.
@@ -46,7 +46,7 @@ namespace Commands
     /// </summary>
     public override void Execute(VariableList variables)
     {
-      variables.Clear();
+      variables.VariableClear();
     }
 
     #endregion Implementation

@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-using IrssUtils;
+//using IrssUtils;
 
 namespace Commands
 {
@@ -36,7 +36,7 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryHidden; }
+    public override string GetCategory() { return Processor.CategorySpecial; }
 
     /// <summary>
     /// Gets the user interface text.

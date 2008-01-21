@@ -38,10 +38,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\CommandStringOperation.cs" />
-    <Compile Include="Commands\CommandSwapVariables.cs" />
-    <Compile Include="Commands\CommandMathsOperation.cs" />
-    <Compile Include="Commands\CommandSwitch.cs" />
+    <Compile Include="MacroExecutionException.cs" />
+    <Compile Include="Maths Operations\CommandMathsSubtract.cs" />
+    <Compile Include="Maths Operations\CommandMathsMultiply.cs" />
+    <Compile Include="Maths Operations\CommandMathsDivide.cs" />
+    <Compile Include="Maths Operations\CommandMathsModulo.cs" />
+    <Compile Include="Maths Operations\CommandMathsPower.cs" />
+    <Compile Include="Maths Operations\CommandMathsAbsolute.cs" />
+    <Compile Include="Maths Operations\CommandMathsSquareRoot.cs" />
+    <Compile Include="String Operations\CommandStringJoin.cs" />
+    <Compile Include="Forms\EditStackFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditStackFile.designer.cs">
+      <DependentUpon>EditStackFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Stack Commands\CommandClearStack.cs" />
+    <Compile Include="Stack Commands\CommandLoadStack.cs" />
+    <Compile Include="Stack Commands\CommandSaveStack.cs" />
+    <Compile Include="Stack Commands\CommandPushStack.cs" />
+    <Compile Include="Stack Commands\CommandPopStack.cs" />
+    <Compile Include="Stack Commands\CommandPeekStack.cs" />
+    <Compile Include="String Operations\CommandStringTrim.cs" />
+    <Compile Include="String Operations\CommandStringToUpper.cs" />
+    <Compile Include="String Operations\CommandStringToLower.cs" />
+    <Compile Include="Variable Commands\CommandSwapVariables.cs" />
+    <Compile Include="Maths Operations\CommandMathsAdd.cs" />
+    <Compile Include="Control Statements\CommandSwitch.cs" />
     <Compile Include="Forms\EditBlastIR.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,15 +126,15 @@
       <DependentUpon>EditVariablesFile.cs</DependentUpon>
     </Compile>
     <Compile Include="Processor.cs" />
-    <Compile Include="Commands\CommandClearVariables.cs" />
-    <Compile Include="Commands\CommandIf.cs" />
-    <Compile Include="Commands\CommandLabel.cs" />
-    <Compile Include="Commands\CommandGotoLabel.cs" />
-    <Compile Include="Commands\CommandSetVariable.cs" />
-    <Compile Include="Commands\CommandSaveVariables.cs" />
-    <Compile Include="Commands\CommandLoadVariables.cs" />
-    <Compile Include="Commands\CommandCallMacro.cs" />
-    <Compile Include="Commands\CommandBlastIR.cs" />
+    <Compile Include="Variable Commands\CommandClearVariables.cs" />
+    <Compile Include="Control Statements\CommandIf.cs" />
+    <Compile Include="Control Statements\CommandLabel.cs" />
+    <Compile Include="Control Statements\CommandGotoLabel.cs" />
+    <Compile Include="Variable Commands\CommandSetVariable.cs" />
+    <Compile Include="Variable Commands\CommandSaveVariables.cs" />
+    <Compile Include="Variable Commands\CommandLoadVariables.cs" />
+    <Compile Include="Special Commands\CommandCallMacro.cs" />
+    <Compile Include="Special Commands\CommandBlastIR.cs" />
     <Compile Include="Macro.cs" />
     <Compile Include="MacroStructureException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -122,6 +145,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\EditStackFile.resx">
+      <DependentUpon>EditStackFile.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditBlastIR.resx">
       <DependentUpon>EditBlastIR.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -169,11 +196,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
-      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
-      <Name>IrssUtils</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\Command\Command.csproj">
       <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
       <Name>Command</Name>

@@ -24,12 +24,10 @@ namespace Commands
     {
       get
       {
-        return new string[] {
-          comboBoxOperation.SelectedItem as string,
-          textBoxInput1.Text.Trim(),
-          textBoxInput2.Text.Trim(),
-          textBoxOutputVar.Text.Trim()
-          };
+        if (labelInput2.Visible)
+          return new string[] { textBoxInput1.Text.Trim(), textBoxInput2.Text.Trim(), textBoxOutputVar.Text.Trim() };
+        else
+          return new string[] { textBoxInput1.Text.Trim(), textBoxOutputVar.Text.Trim() };
       }
     }
 
@@ -45,18 +43,6 @@ namespace Commands
       InitializeComponent();
 
       labelVarPrefix.Text = VariableList.VariablePrefix;
-
-      comboBoxOperation.Items.Clear();
-      comboBoxOperation.Items.Add(CommandMathsOperation.MathOpAbsolute);
-      comboBoxOperation.Items.Add(CommandMathsOperation.MathOpAdd);
-      comboBoxOperation.Items.Add(CommandMathsOperation.MathOpDivide);
-      comboBoxOperation.Items.Add(CommandMathsOperation.MathOpModulo);
-      comboBoxOperation.Items.Add(CommandMathsOperation.MathOpMultiply);
-      comboBoxOperation.Items.Add(CommandMathsOperation.MathOpPower);
-      comboBoxOperation.Items.Add(CommandMathsOperation.MathOpRoot);
-      comboBoxOperation.Items.Add(CommandMathsOperation.MathOpSubtract);
-
-      comboBoxOperation.SelectedIndex = 0;
     }
 
     /// <summary>
@@ -66,10 +52,23 @@ namespace Commands
     public EditMathsOperation(string[] parameters)
       : this()
     {
-      comboBoxOperation.SelectedItem  = parameters[0];
-      textBoxInput1.Text              = parameters[1];
-      textBoxInput2.Text              = parameters[2];
-      textBoxOutputVar.Text           = parameters[3];
+      if (parameters.Length == 3)
+      {
+        textBoxInput1.Text      = parameters[0];
+        textBoxInput2.Text      = parameters[1];
+        textBoxOutputVar.Text   = parameters[2];
+      }
+      else if (parameters.Length == 2)
+      {
+        textBoxInput1.Text      = parameters[0];
+        labelInput2.Visible     = false;
+        textBoxInput2.Visible   = false;
+        textBoxOutputVar.Text   = parameters[1];
+      }
+      else
+      {
+        throw new ArgumentException("Parameter array size must be 2 or 3", "parameters");
+      }
     }
 
     #endregion Constructors

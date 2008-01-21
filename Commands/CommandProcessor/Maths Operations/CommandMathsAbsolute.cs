@@ -7,23 +7,23 @@ namespace Commands
 {
 
   /// <summary>
-  /// Save Variables macro command.
+  /// Maths Absolute macro command.
   /// </summary>
-  public class CommandSaveVariables : Command
+  public class CommandMathsAbsolute : Command
   {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandSaveVariables"/> class.
+    /// Initializes a new instance of the <see cref="CommandMathsAbsolute"/> class.
     /// </summary>
-    public CommandSaveVariables() { InitParameters(1); }
+    public CommandMathsAbsolute() { InitParameters(2); }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandSaveVariables"/> class.
+    /// Initializes a new instance of the <see cref="CommandMathsAbsolute"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSaveVariables(string[] parameters) : base(parameters) { }
+    public CommandMathsAbsolute(string[] parameters) : base(parameters) { }
 
     #endregion Constructors
 
@@ -33,13 +33,13 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMacro; }
+    public override string GetCategory() { return Processor.CategoryMaths; }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Save Variables"; }
+    public override string GetUserInterfaceText() { return "Maths Absolute"; }
 
     /// <summary>
     /// Edit this command.
@@ -48,10 +48,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditVariablesFile edit = new EditVariablesFile(Parameters[0]);
+      EditMathsOperation edit = new EditMathsOperation(Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        Parameters[0] = edit.FileName;
+        Parameters = edit.Parameters;
         return true;
       }
 
@@ -64,7 +64,16 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      variables.Save(Parameters[0]);
+      string input1 = Parameters[0];
+      if (input1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+        input1 = variables.VariableGet(input1);
+      
+      int input1Int = 0;
+      int.TryParse(input1, out input1Int);
+
+      int output = Math.Abs(input1Int);
+
+      variables.VariableSet(Parameters[1], output.ToString());
     }
 
     #endregion Implementation

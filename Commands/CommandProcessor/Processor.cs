@@ -47,17 +47,31 @@ namespace Commands
     /// Macro file extension.
     /// </summary>
     public const string FileExtensionMacro  = ".Macro";
-
     /// <summary>
     /// IR Command file extension.
     /// </summary>
     public const string FileExtensionIR     = ".IR";
 
-
     /// <summary>
     /// Standard text for the Macro Category.
     /// </summary>
-    public const string CategoryMacro       = "Macro Commands";
+    public const string CategoryControl     = "Control Statements";
+    /// <summary>
+    /// Standard text for the Variable Category.
+    /// </summary>
+    public const string CategoryVariable    = "Variable Commands";
+    /// <summary>
+    /// Standard text for the Stack Category.
+    /// </summary>
+    public const string CategoryStack       = "Stack Commands";
+    /// <summary>
+    /// Standard text for the String Operations Category.
+    /// </summary>
+    public const string CategoryString      = "String Operations";
+    /// <summary>
+    /// Standard text for the Maths Operations Category.
+    /// </summary>
+    public const string CategoryMaths       = "Maths Operations";
     /// <summary>
     /// Standard text for the Macro Category.
     /// </summary>
@@ -67,9 +81,17 @@ namespace Commands
     /// </summary>
     public const string CategoryMediaPortal = "MediaPortal Commands";
     /// <summary>
-    /// Standard text for the Macro Category.
+    /// Standard text for the IR Commands Category.
     /// </summary>
-    public const string CategoryHidden      = "Hidden";
+    public const string CategoryIRCommands  = "IR Commands";
+    /// <summary>
+    /// Standard text for the Macros Category.
+    /// </summary>
+    public const string CategoryMacros      = "Macros";
+    /// <summary>
+    /// Standard text for the Hidden Category.
+    /// </summary>
+    public const string CategorySpecial     = "Special Commands";
 
 
     //const string ProcessCommandThreadName = "ProcessCommand";
@@ -97,21 +119,23 @@ namespace Commands
     }
 
     /// <summary>
-    /// Gets the blast ir delegate.
+    /// Gets or Sets the blast ir delegate.
     /// </summary>
     /// <value>The blast ir delegate.</value>
     public BlastIrDelegate BlastIr
     {
       get { return _blastIrDelegate; }
+      set { _blastIrDelegate = value; }
     }
 
     /// <summary>
-    /// Gets the blast ir ports.
+    /// Gets or Sets the blast ir ports.
     /// </summary>
     /// <value>The blast ir ports.</value>
     public string[] BlastIrPorts
     {
       get { return _blastIrPorts; }
+      set { _blastIrPorts = value; }
     }
 
     #endregion Properties
@@ -219,8 +243,7 @@ namespace Commands
       return files;
     }
 
-
-
+    /*
     /// <summary>
     /// Replace all instances of environment variables, special values and escape codes.
     /// </summary>
@@ -384,9 +407,7 @@ namespace Commands
 
       return output.ToString();
     }
-
-
-
+    */
 
     /// <summary>
     /// Creates a new <c>Command</c> from the supplied information.
@@ -444,7 +465,7 @@ namespace Commands
     {
       List<Type> allCommands = new List<Type>();
 
-      Type[] specialCommands = GetSpecialCommands();
+      Type[] specialCommands = GetBuiltInCommands();
       if (specialCommands != null)
         allCommands.AddRange(specialCommands);
 
@@ -463,23 +484,48 @@ namespace Commands
     /// Gets the special commands.
     /// </summary>
     /// <returns>List of special command types.</returns>
-    public static Type[] GetSpecialCommands()
+    public static Type[] GetBuiltInCommands()
     {
       List<Type> specialCommands = new List<Type>();
 
+      // Control Statements ...
       specialCommands.Add(typeof(CommandIf));
       specialCommands.Add(typeof(CommandLabel));
       specialCommands.Add(typeof(CommandGotoLabel));
       specialCommands.Add(typeof(CommandSwitch));
+
+      // Variable Commands ...
       specialCommands.Add(typeof(CommandSetVariable));
       specialCommands.Add(typeof(CommandSwapVariables));
       specialCommands.Add(typeof(CommandClearVariables));
       specialCommands.Add(typeof(CommandSaveVariables));
       specialCommands.Add(typeof(CommandLoadVariables));
-      specialCommands.Add(typeof(CommandStringOperation));
-      specialCommands.Add(typeof(CommandMathsOperation));
 
-      // Hidden commands ...
+      // Stack Commands ...
+      specialCommands.Add(typeof(CommandPushStack));
+      specialCommands.Add(typeof(CommandPopStack));
+      specialCommands.Add(typeof(CommandPeekStack));
+      specialCommands.Add(typeof(CommandClearStack));
+      specialCommands.Add(typeof(CommandLoadStack));
+      specialCommands.Add(typeof(CommandSaveStack));
+
+      // Maths Operations ...
+      specialCommands.Add(typeof(CommandMathsAbsolute));
+      specialCommands.Add(typeof(CommandMathsAdd));
+      specialCommands.Add(typeof(CommandMathsDivide));
+      specialCommands.Add(typeof(CommandMathsModulo));
+      specialCommands.Add(typeof(CommandMathsMultiply));
+      specialCommands.Add(typeof(CommandMathsPower));
+      specialCommands.Add(typeof(CommandMathsSquareRoot));
+      specialCommands.Add(typeof(CommandMathsSubtract));
+
+      // String Operations ...
+      specialCommands.Add(typeof(CommandStringJoin));
+      specialCommands.Add(typeof(CommandStringToLower));
+      specialCommands.Add(typeof(CommandStringToUpper));
+      specialCommands.Add(typeof(CommandStringTrim));
+
+      // Special commands ...
       specialCommands.Add(typeof(CommandBlastIR));
       specialCommands.Add(typeof(CommandCallMacro));
 

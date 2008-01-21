@@ -7,23 +7,23 @@ namespace Commands
 {
 
   /// <summary>
-  /// Set Variable macro command.
+  /// Push Stack stack command.
   /// </summary>
-  public class CommandSetVariable : Command
+  public class CommandPushStack : Command
   {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandSetVariable"/> class.
+    /// Initializes a new instance of the <see cref="CommandPushStack"/> class.
     /// </summary>
-    public CommandSetVariable() { InitParameters(2); }
+    public CommandPushStack() { InitParameters(1); }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandSetVariable"/> class.
+    /// Initializes a new instance of the <see cref="CommandPushStack"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSetVariable(string[] parameters) : base(parameters) { }
+    public CommandPushStack(string[] parameters) : base(parameters) { }
 
     #endregion Constructors
 
@@ -33,13 +33,13 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMacro; }
+    public override string GetCategory() { return Processor.CategoryStack; }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Set Variable"; }
+    public override string GetUserInterfaceText() { return "Push Stack"; }
 
     /// <summary>
     /// Edit this command.
@@ -48,10 +48,10 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditSetVariable edit = new EditSetVariable(Parameters);
+      EditStackFile edit = new EditStackFile(Parameters[0]);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        Parameters = edit.Parameters;
+        Parameters[0] = edit.FileName;
         return true;
       }
 
@@ -61,12 +61,14 @@ namespace Commands
     /// <summary>
     /// Execute this command.
     /// </summary>
-    /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string value = Processor.ReplaceSpecial(Parameters[1]);
+      string value = Parameters[0];
 
-      variables.SetVariable(Parameters[0], value);
+      if (value.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+        value = variables.VariableGet(value.Substring(VariableList.VariablePrefix.Length));
+
+      variables.StackPush(value);
     }
 
     #endregion Implementation

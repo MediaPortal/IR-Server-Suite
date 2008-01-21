@@ -7,23 +7,23 @@ namespace Commands
 {
 
   /// <summary>
-  /// Swap Variables macro command.
+  /// Peek Stack stack command.
   /// </summary>
-  public class CommandSwapVariables : Command
+  public class CommandPeekStack : Command
   {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandSwapVariables"/> class.
+    /// Initializes a new instance of the <see cref="CommandPeekStack"/> class.
     /// </summary>
-    public CommandSwapVariables() { InitParameters(2); }
+    public CommandPeekStack() { InitParameters(1); }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandSwapVariables"/> class.
+    /// Initializes a new instance of the <see cref="CommandPeekStack"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSwapVariables(string[] parameters) : base(parameters) { }
+    public CommandPeekStack(string[] parameters) : base(parameters) { }
 
     #endregion Constructors
 
@@ -33,13 +33,13 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMacro; }
+    public override string GetCategory() { return Processor.CategoryStack; }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Swap Variables"; }
+    public override string GetUserInterfaceText() { return "Peek Stack"; }
 
     /// <summary>
     /// Edit this command.
@@ -48,27 +48,22 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditSwapVariables edit = new EditSwapVariables(Parameters);
+      EditStackFile edit = new EditStackFile(Parameters[0]);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        Parameters = edit.Parameters;
+        Parameters[0] = edit.FileName;
         return true;
       }
 
       return false;
     }
-    
+
     /// <summary>
     /// Execute this command.
     /// </summary>
-    /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string value0 = variables.GetVariable(Parameters[0]);
-      string value1 = variables.GetVariable(Parameters[1]);
-
-      variables.SetVariable(Parameters[0], value1);
-      variables.SetVariable(Parameters[1], value0);
+      variables.StackPeek(Parameters[0]);
     }
 
     #endregion Implementation

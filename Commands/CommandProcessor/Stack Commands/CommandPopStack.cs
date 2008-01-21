@@ -7,23 +7,23 @@ namespace Commands
 {
 
   /// <summary>
-  /// Label macro command.
+  /// Pop Stack stack command.
   /// </summary>
-  public class CommandLabel : Command
+  public class CommandPopStack : Command
   {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandLabel"/> class.
+    /// Initializes a new instance of the <see cref="CommandPopStack"/> class.
     /// </summary>
-    public CommandLabel() { InitParameters(1); }
+    public CommandPopStack() { InitParameters(1); }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandLabel"/> class.
+    /// Initializes a new instance of the <see cref="CommandPopStack"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandLabel(string[] parameters) : base(parameters) { }
+    public CommandPopStack(string[] parameters) : base(parameters) { }
 
     #endregion Constructors
 
@@ -33,22 +33,13 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMacro; }
+    public override string GetCategory() { return Processor.CategoryStack; }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Label"; }
-
-    /// <summary>
-    /// Gets the user display text.
-    /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
-    {
-      return String.Format("{0} \"{1}\"", GetUserInterfaceText(), Parameters[0]);
-    }
+    public override string GetUserInterfaceText() { return "Pop Stack"; }
 
     /// <summary>
     /// Edit this command.
@@ -57,14 +48,22 @@ namespace Commands
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditLabel edit = new EditLabel(Parameters[0]);
+      EditStackFile edit = new EditStackFile(Parameters[0]);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        Parameters[0] = edit.LabelName;
+        Parameters[0] = edit.FileName;
         return true;
       }
 
       return false;
+    }
+
+    /// <summary>
+    /// Execute this command.
+    /// </summary>
+    public override void Execute(VariableList variables)
+    {
+      variables.StackPop(Parameters[0]);
     }
 
     #endregion Implementation

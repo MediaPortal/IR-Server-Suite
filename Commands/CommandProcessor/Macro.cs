@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
-using IrssUtils;
+//using IrssUtils;
 
 namespace Commands
 {
@@ -99,37 +99,44 @@ namespace Commands
     /// <param name="commandProcessor">The command processor.</param>
     public void Execute(Processor commandProcessor)
     {
-      for (int position = 0; position < _commands.Count; position++)
+      try
       {
-        Command command = _commands[position];
-
-        if (command is CommandIf)
+        for (int position = 0; position < _commands.Count; position++)
         {
-          string value1     = command.Parameters[0];
-          string comparison = command.Parameters[1];
-          string value2     = command.Parameters[2];
+          Command command = _commands[position];
 
-          if (value1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-            value1 = commandProcessor.Variables.GetVariable(value1.Substring(VariableList.VariablePrefix.Length));
-          value1 = Common.ReplaceSpecial(value1);
+          if (command is CommandIf)
+          {
+            string value1 = command.Parameters[0];
+            string comparison = command.Parameters[1];
+            string value2 = command.Parameters[2];
 
-          if (value2.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-            value2 = commandProcessor.Variables.GetVariable(value2.Substring(VariableList.VariablePrefix.Length));
-          value2 = Common.ReplaceSpecial(value2);
+            if (value1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+              value1 = commandProcessor.Variables.VariableGet(value1.Substring(VariableList.VariablePrefix.Length));
+            value1 = Common.ReplaceSpecial(value1);
 
-          if (CommandIf.Evaluate(value1, comparison, value2))
-            position = FindLabel(command.Parameters[3]);
-          else if (!String.IsNullOrEmpty(command.Parameters[4]))
-            position = FindLabel(command.Parameters[4]);
+            if (value2.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+              value2 = commandProcessor.Variables.VariableGet(value2.Substring(VariableList.VariablePrefix.Length));
+            value2 = Common.ReplaceSpecial(value2);
+
+            if (CommandIf.Evaluate(value1, comparison, value2))
+              position = FindLabel(command.Parameters[3]);
+            else if (!String.IsNullOrEmpty(command.Parameters[4]))
+              position = FindLabel(command.Parameters[4]);
+          }
+          else if (command is CommandGotoLabel)
+          {
+            position = FindLabel(command.Parameters[0]);
+          }
+          else
+          {
+            commandProcessor.Execute(command, false);
+          }
         }
-        else if (command is CommandGotoLabel)
-        {
-          position = FindLabel(command.Parameters[0]);
-        }
-        else
-        {
-          commandProcessor.Execute(command, false);
-        }
+      }
+      catch (Exception ex)
+      {
+        throw new MacroExecutionException("Error executing macro", ex);
       }
     }
 

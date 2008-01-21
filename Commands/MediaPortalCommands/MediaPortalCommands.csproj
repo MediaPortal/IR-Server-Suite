@@ -57,6 +57,7 @@
     <Compile Include="CommandGotoScreen.cs" />
     <Compile Include="CommandExit.cs" />
     <Compile Include="CommandReboot.cs" />
+    <Compile Include="Copy of CommandReboot.cs" />
     <Compile Include="EditGotoScreen.cs">
       <SubType>Form</SubType>
     </Compile>

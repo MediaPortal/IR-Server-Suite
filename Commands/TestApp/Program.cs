@@ -19,7 +19,19 @@ namespace Commands
 
       Processor commandProcessor = new Processor(new BlastIrDelegate(BlastIr), new string[] { "Default", "Port 1" });
 
-      string[] categories = new string[] { "General Commands", "MediaPortal Commands" };
+      string[] categories = new string[]
+      { 
+        Processor.CategoryControl,
+        Processor.CategoryVariable,
+        Processor.CategoryStack,
+
+        Processor.CategoryGeneral,
+        Processor.CategoryMediaPortal,
+        Processor.CategoryIRCommands,
+        Processor.CategoryMacros,
+
+        Processor.CategorySpecial
+      };
 
       EditMacro edit1 = new EditMacro(
         commandProcessor, 

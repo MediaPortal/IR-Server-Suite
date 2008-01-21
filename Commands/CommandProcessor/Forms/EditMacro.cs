@@ -10,7 +10,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-using IrssUtils;
+//using IrssUtils;
 
 namespace Commands
 {
@@ -20,13 +20,6 @@ namespace Commands
   /// </summary>
   public partial class EditMacro : Form
   {
-
-    #region Special Categories
-
-    const string CategoryIRCommands = "IR Commands";
-    const string CategoryMacros     = "Macros";
-
-    #endregion Special Categories
 
     #region Variables
 
@@ -133,82 +126,64 @@ namespace Commands
         //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
         categoryNodes.Add(category, categoryNode);
       }
-      
+
+      List<Type> allCommands = new List<Type>();
+
+      Type[] specialCommands = Processor.GetBuiltInCommands();
+      allCommands.AddRange(specialCommands);
+
       Type[] libCommands = Common.GetLibraryCommands();
       if (libCommands != null)
-      {
-        foreach (Type type in libCommands)
-        {
-          Command command = (Command)Activator.CreateInstance(type);
+        allCommands.AddRange(libCommands);
 
-          string commandCategory = command.GetCategory();
-
-          if (categoryNodes.ContainsKey(commandCategory))
-          {
-            TreeNode newNode = new TreeNode(command.GetUserInterfaceText());
-            newNode.Tag = type;
-
-            categoryNodes[commandCategory].Nodes.Add(newNode);
-          }
-        }
-      }
-
-      // Add built-in macro commands ...
-      TreeNode macroCommands = new TreeNode(Processor.CategoryMacro);
-      //macroCommands.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
-
-      Type[] specialCommands = Processor.GetSpecialCommands();
-      foreach (Type type in specialCommands)
+      foreach (Type type in allCommands)
       {
         Command command = (Command)Activator.CreateInstance(type);
 
-        //if (!command.GetCategory().Equals(Processor.CategoryHidden, StringComparison.OrdinalIgnoreCase))
+        string commandCategory = command.GetCategory();
+
+        if (categoryNodes.ContainsKey(commandCategory))
         {
           TreeNode newNode = new TreeNode(command.GetUserInterfaceText());
           newNode.Tag = type;
 
-          macroCommands.Nodes.Add(newNode);
+          categoryNodes[commandCategory].Nodes.Add(newNode);
         }
       }
-      categoryNodes.Add(Processor.CategoryMacro, macroCommands);
 
       // Add list of existing IR Commands ...
-      string[] irFiles = Processor.GetListIR();
-      if (irFiles != null)
+      if (categoryNodes.ContainsKey(Processor.CategoryIRCommands))
       {
-        TreeNode irCommands = new TreeNode(CategoryIRCommands);
-        //irCommands.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
-
-        foreach (string irFile in irFiles)
+        string[] irFiles = Processor.GetListIR();
+        if (irFiles != null)
         {
-          TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(irFile));
-          newNode.Tag = irFile;
+          foreach (string irFile in irFiles)
+          {
+            TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(irFile));
+            newNode.Tag = irFile;
 
-          irCommands.Nodes.Add(newNode);
+            categoryNodes[Processor.CategoryIRCommands].Nodes.Add(newNode);
+          }
         }
-
-        categoryNodes.Add(irCommands.Text, irCommands);
       }
 
       // Add list of existing Macros ...
-      string macroFolder = _macroFolder;
-      if (String.IsNullOrEmpty(_macroFolder))
-        macroFolder = Path.GetDirectoryName(_fileName);
-      string[] macros = Processor.GetListMacro(macroFolder);
-      if (macros != null)
+      if (categoryNodes.ContainsKey(Processor.CategoryMacros))
       {
-        TreeNode otherMacros = new TreeNode(CategoryMacros);
-        //otherMacros.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
-
-        foreach (string macro in macros)
+        string macroFolder = _macroFolder;
+        if (String.IsNullOrEmpty(_macroFolder))
+          macroFolder = Path.GetDirectoryName(_fileName);
+        string[] macros = Processor.GetListMacro(macroFolder);
+        if (macros != null)
         {
-          TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(macro));
-          newNode.Tag = macro;
+          foreach (string macro in macros)
+          {
+            TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(macro));
+            newNode.Tag = macro;
 
-          otherMacros.Nodes.Add(newNode);
+            categoryNodes[Processor.CategoryMacros].Nodes.Add(newNode);
+          }
         }
-
-        categoryNodes.Add(otherMacros.Text, otherMacros);
       }
 
       // Put all commands into tree view ...
@@ -225,23 +200,15 @@ namespace Commands
       if (listViewMacro.SelectedItems.Count != 1)
         return;
 
-      try
-      {
-        ListViewItem selected = listViewMacro.SelectedItems[0];
+      ListViewItem selected = listViewMacro.SelectedItems[0];
 
-        string selectedTag = selected.Tag as string;
-        Command command = Processor.CreateCommand(selectedTag);
+      string selectedTag = selected.Tag as string;
+      Command command = Processor.CreateCommand(selectedTag);
 
-        if (_commandProcessor.Edit(command, this))
-        {
-          selected.Text = command.GetUserDisplayText();
-          selected.Tag = command.ToString();
-        }
-      }
-      catch (Exception ex)
+      if (_commandProcessor.Edit(command, this))
       {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to edit macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        selected.Text = command.GetUserDisplayText();
+        selected.Tag = command.ToString();
       }
     }
     
@@ -318,49 +285,41 @@ namespace Commands
       if (treeViewCommandList.SelectedNode == null || treeViewCommandList.SelectedNode.Level == 0)
         return;
 
-      try
+      string selected = treeViewCommandList.SelectedNode.Text as string;
+
+      ListViewItem newCommand = new ListViewItem();
+      Command command;
+
+      if (treeViewCommandList.SelectedNode.Parent.Text.Equals(Processor.CategoryIRCommands, StringComparison.OrdinalIgnoreCase))
       {
-        string selected = treeViewCommandList.SelectedNode.Text as string;
+        command = new CommandBlastIR(new string[] { treeViewCommandList.SelectedNode.Tag as string, _commandProcessor.BlastIrPorts[0] });
 
-        ListViewItem newCommand = new ListViewItem();
-        Command command;
-
-        if (treeViewCommandList.SelectedNode.Parent.Text.Equals(CategoryIRCommands, StringComparison.OrdinalIgnoreCase))
+        if (_commandProcessor.Edit(command, this))
         {
-          command = new CommandBlastIR(new string[] { treeViewCommandList.SelectedNode.Tag as string, _commandProcessor.BlastIrPorts[0] });
-
-          if (_commandProcessor.Edit(command, this))
-          {
-            newCommand.Text = command.GetUserDisplayText();
-            newCommand.Tag = command.ToString();
-            listViewMacro.Items.Add(newCommand);
-          }
-        }
-        else if (treeViewCommandList.SelectedNode.Parent.Text.Equals(CategoryMacros, StringComparison.OrdinalIgnoreCase))
-        {
-          command = new CommandCallMacro(new string[] { treeViewCommandList.SelectedNode.Tag as string });
-
           newCommand.Text = command.GetUserDisplayText();
           newCommand.Tag = command.ToString();
           listViewMacro.Items.Add(newCommand);
         }
-        else
-        {
-          Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
-          command = (Command)Activator.CreateInstance(commandType);
-
-          if (_commandProcessor.Edit(command, this))
-          {
-            newCommand.Text = command.GetUserDisplayText();
-            newCommand.Tag = command.ToString();
-            listViewMacro.Items.Add(newCommand);
-          }
-        }
       }
-      catch (Exception ex)
+      else if (treeViewCommandList.SelectedNode.Parent.Text.Equals(Processor.CategoryMacros, StringComparison.OrdinalIgnoreCase))
       {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to add macro command", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        command = new CommandCallMacro(new string[] { treeViewCommandList.SelectedNode.Tag as string });
+
+        newCommand.Text = command.GetUserDisplayText();
+        newCommand.Tag = command.ToString();
+        listViewMacro.Items.Add(newCommand);
+      }
+      else
+      {
+        Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
+        command = (Command)Activator.CreateInstance(commandType);
+
+        if (_commandProcessor.Edit(command, this))
+        {
+          newCommand.Text = command.GetUserDisplayText();
+          newCommand.Tag = command.ToString();
+          listViewMacro.Items.Add(newCommand);
+        }
       }
     }
     
@@ -432,7 +391,6 @@ namespace Commands
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
@@ -478,7 +436,6 @@ namespace Commands
       }
       catch (Exception ex)
       {
-        IrssLog.Error(ex);
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
