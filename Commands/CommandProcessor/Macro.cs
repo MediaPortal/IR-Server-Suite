@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
-//using IrssUtils;
+using IrssUtils;
 
 namespace Commands
 {
@@ -107,9 +107,9 @@ namespace Commands
 
           if (command is CommandIf)
           {
-            string value1 = command.Parameters[0];
+            string value1     = command.Parameters[0];
             string comparison = command.Parameters[1];
-            string value2 = command.Parameters[2];
+            string value2     = command.Parameters[2];
 
             if (value1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
               value1 = commandProcessor.Variables.VariableGet(value1.Substring(VariableList.VariablePrefix.Length));

@@ -9,23 +9,23 @@ namespace Commands.MediaPortal
 {
 
   /// <summary>
-  /// Reboot MediaPortal macro command.
+  /// Shutdown MediaPortal macro command.
   /// </summary>
-  public class CommandReboot : Command
+  public class CommandShutdown : Command
   {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandReboot"/> class.
+    /// Initializes a new instance of the <see cref="CommandShutdown"/> class.
     /// </summary>
-    public CommandReboot() { InitParameters(0); }
+    public CommandShutdown() { InitParameters(0); }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandReboot"/> class.
+    /// Initializes a new instance of the <see cref="CommandShutdown"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandReboot(string[] parameters) : base(parameters) { }
+    public CommandShutdown(string[] parameters) : base(parameters) { }
 
     #endregion Constructors
 
@@ -41,7 +41,7 @@ namespace Commands.MediaPortal
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Reboot"; }
+    public override string GetUserInterfaceText() { return "Shutdown"; }
 
     /// <summary>
     /// Execute this command.
@@ -49,7 +49,7 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_REBOOT, 0, 0));
+      GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_SHUTDOWN, 0, 0));
     }
 
     #endregion Implementation

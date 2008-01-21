@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-//using IrssUtils;
+using IrssUtils;
 
 namespace Commands
 {
@@ -89,10 +89,7 @@ namespace Commands
     /// <param name="blastIrDelegate">The blast ir delegate.</param>
     public void Execute(BlastIrDelegate blastIrDelegate)
     {
-      string irFile = Parameters[0] + Common.FileExtensionIR;
-      string port = Parameters[1];
-
-      blastIrDelegate(irFile, port);
+      blastIrDelegate(Parameters[0], Parameters[1]);
     }
 
     #endregion Implementation
