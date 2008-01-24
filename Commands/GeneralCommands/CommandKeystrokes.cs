@@ -60,8 +60,7 @@ namespace Commands.General
     {
       string value = Parameters[0];
       if (value.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        value = variables.VariableGet(value);
-
+        value = variables.VariableGet(value.Substring(VariableList.VariablePrefix.Length));
       value = Common.ReplaceSpecial(value);
 
       Keyboard.ProcessCommand(value);

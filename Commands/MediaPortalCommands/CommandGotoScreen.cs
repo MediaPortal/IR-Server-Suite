@@ -49,11 +49,16 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
+      string windowID = Parameters[0];
+      if (windowID.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+        windowID = variables.VariableGet(windowID.Substring(VariableList.VariablePrefix.Length));
+      windowID = IrssUtils.Common.ReplaceSpecial(windowID);
+
       int window = (int)GUIWindow.Window.WINDOW_INVALID;
 
       try
       {
-        window = (int)Enum.Parse(typeof(GUIWindow.Window), "WINDOW_" + Parameters[0], true);
+        window = (int)Enum.Parse(typeof(GUIWindow.Window), "WINDOW_" + windowID, true);
       }
       catch (ArgumentException)
       {
@@ -61,10 +66,10 @@ namespace Commands.MediaPortal
       }
 
       if (window == (int)GUIWindow.Window.WINDOW_INVALID)
-        int.TryParse(Parameters[0], out window);
+        int.TryParse(windowID, out window);
 
       if (window == (int)GUIWindow.Window.WINDOW_INVALID)
-        throw new CommandStructureException(String.Format("Failed to parse Goto screen command window id \"{0}\"", Parameters[0]));
+        throw new CommandStructureException(String.Format("Failed to parse Goto screen command window id \"{0}\"", windowID));
 
       GUIGraphicsContext.ResetLastActivity();
       GUIWindowManager.SendThreadMessage(new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, window, 0, null));

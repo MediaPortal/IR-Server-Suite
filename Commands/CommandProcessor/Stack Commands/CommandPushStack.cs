@@ -67,6 +67,7 @@ namespace Commands
 
       if (value.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
         value = variables.VariableGet(value.Substring(VariableList.VariablePrefix.Length));
+      value = IrssUtils.Common.ReplaceSpecial(value);
 
       variables.StackPush(value);
     }

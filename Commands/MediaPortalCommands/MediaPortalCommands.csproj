@@ -62,6 +62,15 @@
     <Compile Include="Common.cs" />
     <Compile Include="CommandStandBy.cs" />
     <Compile Include="CommandSendAction.cs" />
+    <Compile Include="CommandSendMessage.cs" />
+    <Compile Include="CommandPopup.cs" />
+    <Compile Include="CommandGetFocus.cs" />
+    <Compile Include="EditSendMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditSendMessage.Designer.cs">
+      <DependentUpon>EditSendMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditGotoScreen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,6 +82,12 @@
     </Compile>
     <Compile Include="EditSendAction.Designer.cs">
       <DependentUpon>EditSendAction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditPopup.Designer.cs">
+      <DependentUpon>EditPopup.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -94,12 +109,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="EditSendMessage.resx">
+      <DependentUpon>EditSendMessage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="EditGotoScreen.resx">
       <DependentUpon>EditGotoScreen.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="EditSendAction.resx">
       <DependentUpon>EditSendAction.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditPopup.resx">
+      <DependentUpon>EditPopup.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

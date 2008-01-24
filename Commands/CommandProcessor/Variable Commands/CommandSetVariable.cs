@@ -66,7 +66,8 @@ namespace Commands
     {
       string value = Parameters[1];
       if (value.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        value = variables.VariableGet(value);
+        value = variables.VariableGet(value.Substring(VariableList.VariablePrefix.Length));
+      value = IrssUtils.Common.ReplaceSpecial(value);
 
       variables.VariableSet(Parameters[0], value);
     }

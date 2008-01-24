@@ -9,23 +9,23 @@ namespace Commands.MediaPortal
 {
 
   /// <summary>
-  /// Send Action MediaPortal command.
+  /// Send Message MediaPortal command.
   /// </summary>
-  public class CommandSendAction : Command
+  public class CommandSendMessage : Command
   {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandSendAction"/> class.
+    /// Initializes a new instance of the <see cref="CommandSendMessage"/> class.
     /// </summary>
-    public CommandSendAction() { InitParameters(3); }
+    public CommandSendMessage() { InitParameters(6); }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandSendAction"/> class.
+    /// Initializes a new instance of the <see cref="CommandSendMessage"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSendAction(string[] parameters) : base(parameters) { }
+    public CommandSendMessage(string[] parameters) : base(parameters) { }
 
     #endregion Constructors
 
@@ -41,7 +41,7 @@ namespace Commands.MediaPortal
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Send Action"; }
+    public override string GetUserInterfaceText() { return "Send Message"; }
 
     /// <summary>
     /// Execute this command.
@@ -49,17 +49,22 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string actionType = Parameters[0];
-      if (actionType.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        actionType = variables.VariableGet(actionType.Substring(VariableList.VariablePrefix.Length));
-      actionType = IrssUtils.Common.ReplaceSpecial(actionType);
+      string messageType = Parameters[0];
+      if (messageType.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+        messageType = variables.VariableGet(messageType.Substring(VariableList.VariablePrefix.Length));
+      messageType = IrssUtils.Common.ReplaceSpecial(messageType);
 
-      Action.ActionType type = (Action.ActionType)Enum.Parse(typeof(Action.ActionType), actionType);
-      float f1 = float.Parse(Parameters[1]);
-      float f2 = float.Parse(Parameters[2]);
+      GUIMessage.MessageType type = (GUIMessage.MessageType)Enum.Parse(typeof(GUIMessage.MessageType), messageType);
+      int windowId  = int.Parse(Parameters[1]);
+      int senderId  = int.Parse(Parameters[2]);
+      int controlId = int.Parse(Parameters[3]);
+      int param1    = int.Parse(Parameters[4]);
+      int param2    = int.Parse(Parameters[5]);
 
-      Action action = new Action(type, f1, f2);
-      GUIGraphicsContext.OnAction(action);
+      GUIMessage message = new GUIMessage(type, windowId, senderId, controlId, param1, param2, null);
+
+      GUIGraphicsContext.ResetLastActivity();
+      GUIWindowManager.SendThreadMessage(message);
     }
 
     /// <summary>
@@ -69,7 +74,7 @@ namespace Commands.MediaPortal
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditSendAction edit = new EditSendAction(Parameters);
+      EditSendMessage edit = new EditSendMessage(Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
         Parameters = edit.Parameters;

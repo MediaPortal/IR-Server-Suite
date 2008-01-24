@@ -66,14 +66,16 @@ namespace Commands
     {
       string input1 = Parameters[0];
       if (input1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        input1 = variables.VariableGet(input1);
-      
+        input1 = variables.VariableGet(input1.Substring(VariableList.VariablePrefix.Length));
+      input1 = IrssUtils.Common.ReplaceSpecial(input1);
+
       int input1Int = 0;
       int.TryParse(input1, out input1Int);
 
       string input2 = Parameters[1];
       if (input2.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        input2 = variables.VariableGet(input2);
+        input2 = variables.VariableGet(input2.Substring(VariableList.VariablePrefix.Length));
+      input2 = IrssUtils.Common.ReplaceSpecial(input2);
 
       int input2Int = 0;
       int.TryParse(input2, out input2Int);

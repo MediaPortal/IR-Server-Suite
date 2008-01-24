@@ -296,9 +296,14 @@ namespace IrssUtils
     /// Number of Segments in a Close Program Command.
     /// </summary>
     const int SegmentsCloseProgramCommand   = 2;
-
-    const int SegmentsSendMPActionCommand = 3;
-    const int SegmentsSendMPMessageCommand = 5;
+    /// <summary>
+    /// Number of Segments in a Send MP Action Command.
+    /// </summary>
+    const int SegmentsSendMPActionCommand   = 3;
+    /// <summary>
+    /// Number of Segments in a Send MP Message Command.
+    /// </summary>
+    const int SegmentsSendMPMessageCommand  = 6;
 
     #endregion Command Segments
 

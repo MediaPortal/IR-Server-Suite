@@ -93,6 +93,10 @@
 			<param name="Name" value="MCE IR device driver improvement">
 			<param name="Local" value="ehome_driver.html">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Troubleshooting">
+			<param name="Local" value="troubleshooting.html">
+			</OBJECT>
 	</UL>
 </UL>
 </BODY></HTML>

@@ -66,7 +66,8 @@ namespace Commands
     {
       string input = Parameters[0];
       if (input.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        input = variables.VariableGet(input);
+        input = variables.VariableGet(input.Substring(VariableList.VariablePrefix.Length));
+      input = IrssUtils.Common.ReplaceSpecial(input);
 
       string output = input.ToUpper(System.Globalization.CultureInfo.CurrentCulture);
 

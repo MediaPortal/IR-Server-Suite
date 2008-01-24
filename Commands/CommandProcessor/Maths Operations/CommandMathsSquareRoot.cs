@@ -64,12 +64,13 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string input1 = Parameters[0];
-      if (input1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        input1 = variables.VariableGet(input1);
-      
+      string input = Parameters[0];
+      if (input.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
+        input = variables.VariableGet(input.Substring(VariableList.VariablePrefix.Length));
+      input = IrssUtils.Common.ReplaceSpecial(input);
+
       int input1Int = 0;
-      int.TryParse(input1, out input1Int);
+      int.TryParse(input, out input1Int);
 
       int output = (int)Math.Sqrt((double)input1Int);
 
