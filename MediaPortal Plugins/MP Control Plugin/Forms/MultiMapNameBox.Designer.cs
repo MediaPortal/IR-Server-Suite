@@ -95,7 +95,7 @@ namespace MediaPortal.Plugins
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-      this.Text = "New Multi-Mapping";
+      this.Text = "Multi-Mapping";
       this.ResumeLayout(false);
       this.PerformLayout();
 

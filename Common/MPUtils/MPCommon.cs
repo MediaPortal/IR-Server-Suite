@@ -187,11 +187,11 @@ namespace MPUtils
     public static void ProcessSendMediaPortalMessage(string[] command)
     {
       GUIMessage.MessageType type = (GUIMessage.MessageType)Enum.Parse(typeof(GUIMessage.MessageType), command[0]);
-      int windowId = int.Parse(command[1]);
-      int senderId = int.Parse(command[2]);
+      int windowId  = int.Parse(command[1]);
+      int senderId  = int.Parse(command[2]);
       int controlId = int.Parse(command[3]);
-      int param1 = int.Parse(command[4]);
-      int param2 = int.Parse(command[5]);
+      int param1    = int.Parse(command[4]);
+      int param2    = int.Parse(command[5]);
 
       GUIMessage message = new GUIMessage(type, windowId, senderId, controlId, param1, param2, null);
 

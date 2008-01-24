@@ -694,6 +694,11 @@ namespace MediaPortal.Plugins
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
           BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
         }
+        else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
+          BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
+        }
         else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
         {
           int pauseTime = int.Parse(command.Substring(Common.CmdPrefixPause.Length));
@@ -757,7 +762,23 @@ namespace MediaPortal.Plugins
           if (_inConfiguration)
             MessageBox.Show(screenID, Common.UITextGotoScreen, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
-            MPCommon.ProcessGoTo(screenID, MP_BasicHome);
+            MPCommon.ProcessGoTo(screenID, _mpBasicHome);
+        }
+        else if (command.StartsWith(Common.CmdPrefixSendMPAction, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSendMPActionCommand(command.Substring(Common.CmdPrefixSendMPAction.Length));
+          if (_inConfiguration)
+            MessageBox.Show(commands[0], Common.UITextSendMPAction, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.ProcessSendMediaPortalAction(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixSendMPMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSendMPMsgCommand(command.Substring(Common.CmdPrefixSendMPMsg.Length));
+          if (_inConfiguration)
+            MessageBox.Show(commands[0], Common.UITextSendMPMsg, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.ProcessSendMediaPortalMessage(commands);
         }
         else if (command.StartsWith(Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
         {

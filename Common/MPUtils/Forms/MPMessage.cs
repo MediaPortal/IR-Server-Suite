@@ -10,9 +10,9 @@ namespace MPUtils.Forms
 {
 
   /// <summary>
-  /// Send MediaPortal Action command form.
+  /// Send MediaPortal Message command form.
   /// </summary>
-  public partial class MPAction : Form
+  public partial class MPMessage : Form
   {
 
     #region Properties
@@ -25,10 +25,13 @@ namespace MPUtils.Forms
     {
       get
       {
-        return String.Format("{0}|{1}|{2}",
-          comboBoxActionType.Text,
-          textBoxFloat1.Text,
-          textBoxFloat2.Text);
+        return String.Format("{0}|{1}|{2}|{3}|{4}|{5}",
+          comboBoxMessageType.Text,
+          textBoxWindowId.Text.Trim(),
+          textBoxSenderId.Text.Trim(),
+          textBoxControlId.Text.Trim(),
+          textBoxParam1.Text.Trim(),
+          textBoxParam2.Text.Trim());
       }
     }
 
@@ -39,7 +42,7 @@ namespace MPUtils.Forms
     /// <summary>
     /// Default Constructor.
     /// </summary>
-    public MPAction()
+    public MPMessage()
     {
       InitializeComponent();
 
@@ -47,26 +50,30 @@ namespace MPUtils.Forms
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MPAction"/> class.
+    /// Initializes a new instance of the <see cref="MPMessage"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public MPAction(string[] parameters) : this()
+    public MPMessage(string[] parameters)
+      : this()
     {
-      comboBoxActionType.SelectedItem = parameters[0];
-      textBoxFloat1.Text  = parameters[1];
-      textBoxFloat2.Text  = parameters[2];
+      comboBoxMessageType.SelectedItem = parameters[0];
+      textBoxWindowId.Text  = parameters[1];
+      textBoxSenderId.Text  = parameters[2];
+      textBoxControlId.Text = parameters[3];
+      textBoxParam1.Text    = parameters[4];
+      textBoxParam2.Text    = parameters[5];
     }
 
     #endregion Constructors
 
     void SetupComboBox()
     {
-      comboBoxActionType.Items.Clear();
+      comboBoxMessageType.Items.Clear();
 
-      string[] items = Enum.GetNames(typeof(MediaPortal.GUI.Library.Action.ActionType));
+      string[] items = Enum.GetNames(typeof(MediaPortal.GUI.Library.GUIMessage.MessageType));
       Array.Sort(items);
       
-      comboBoxActionType.Items.AddRange(items);
+      comboBoxMessageType.Items.AddRange(items);
     }
 
     private void buttonOK_Click(object sender, EventArgs e)

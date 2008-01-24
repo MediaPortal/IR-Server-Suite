@@ -493,6 +493,7 @@ namespace Commands
       specialCommands.Add(typeof(CommandLabel));
       specialCommands.Add(typeof(CommandGotoLabel));
       specialCommands.Add(typeof(CommandSwitch));
+      specialCommands.Add(typeof(CommandAbortMacro));
 
       // Variable Commands ...
       specialCommands.Add(typeof(CommandSetVariable));

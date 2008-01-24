@@ -24,6 +24,11 @@ namespace MediaPortal.Plugins
       InitializeComponent();
     }
 
+    public MultiMapNameBox(string mapName) : base()
+    {
+      textBoxName.Text = mapName;
+    }
+
 
     private void buttonOK_Click(object sender, EventArgs e)
     {

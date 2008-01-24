@@ -296,7 +296,10 @@ namespace IrssUtils
     /// Number of Segments in a Close Program Command.
     /// </summary>
     const int SegmentsCloseProgramCommand   = 2;
-    
+
+    const int SegmentsSendMPActionCommand = 3;
+    const int SegmentsSendMPMessageCommand = 5;
+
     #endregion Command Segments
 
     #endregion Constants
@@ -426,6 +429,26 @@ namespace IrssUtils
     }
 
     /// <summary>
+    /// Splits a Send MP Action Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
+    public static string[] SplitSendMPActionCommand(string command)
+    {
+      return SplitCommand(command, SegmentsSendMPActionCommand);
+    }
+
+    /// <summary>
+    /// Splits a Send MP Message Command into it's component parts.
+    /// </summary>
+    /// <param name="command">The command to be split.</param>
+    /// <returns>Returns string[] of command elements.</returns>
+    public static string[] SplitSendMPMsgCommand(string command)
+    {
+      return SplitCommand(command, SegmentsSendMPMessageCommand);
+    }
+
+    /// <summary>
     /// Splits the command (Gets called by all the specific command splitters).
     /// </summary>
     /// <param name="command">The command.</param>
@@ -447,7 +470,7 @@ namespace IrssUtils
     #endregion Command Splitters
 
     #region Command Execution
-    
+
     /// <summary>
     /// Given a split Run command this method will launch the process according to the details of the command structure.
     /// </summary>

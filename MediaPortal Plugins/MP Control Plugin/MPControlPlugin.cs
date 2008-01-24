@@ -1328,6 +1328,22 @@ namespace MediaPortal.Plugins
           else
             MPCommon.ProcessGoTo(screenID, _mpBasicHome);
         }
+        else if (command.StartsWith(Common.CmdPrefixSendMPAction, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSendMPActionCommand(command.Substring(Common.CmdPrefixSendMPAction.Length));
+          if (_inConfiguration)
+            MessageBox.Show(commands[0], Common.UITextSendMPAction, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.ProcessSendMediaPortalAction(commands);
+        }
+        else if (command.StartsWith(Common.CmdPrefixSendMPMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSendMPMsgCommand(command.Substring(Common.CmdPrefixSendMPMsg.Length));
+          if (_inConfiguration)
+            MessageBox.Show(commands[0], Common.UITextSendMPMsg, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          else
+            MPCommon.ProcessSendMediaPortalMessage(commands);
+        }
         else if (command.StartsWith(Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)

@@ -249,6 +249,18 @@ namespace MediaPortal.Plugins
         {
           newCommand = Common.CmdPrefixExit;
         }
+        else if (selected.Equals(Common.UITextSendMPAction, StringComparison.OrdinalIgnoreCase))
+        {
+          MPAction edit = new MPAction();
+          if (edit.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSendMPAction + edit.CommandString;
+        }
+        else if (selected.Equals(Common.UITextSendMPMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          MPMessage edit = new MPMessage();
+          if (edit.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSendMPMsg + edit.CommandString;
+        }
         else if (selected.Equals(Common.UITextVirtualKB, StringComparison.OrdinalIgnoreCase))
         {
           newCommand = Common.CmdPrefixVirtualKB;
@@ -509,6 +521,22 @@ namespace MediaPortal.Plugins
           GoToScreen goToScreen = new GoToScreen(selected.Substring(Common.CmdPrefixGotoScreen.Length));
           if (goToScreen.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixSendMPAction, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSendMPActionCommand(selected.Substring(Common.CmdPrefixSendMPAction.Length));
+
+          MPAction edit = new MPAction(commands);
+          if (edit.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSendMPAction + edit.CommandString;
+        }
+        else if (selected.StartsWith(Common.CmdPrefixSendMPMsg, StringComparison.OrdinalIgnoreCase))
+        {
+          string[] commands = Common.SplitSendMPMsgCommand(selected.Substring(Common.CmdPrefixSendMPMsg.Length));
+
+          MPMessage edit = new MPMessage(commands);
+          if (edit.ShowDialog(this) == DialogResult.OK)
+            newCommand = Common.CmdPrefixSendMPMsg + edit.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixBeep, StringComparison.OrdinalIgnoreCase))
         {
