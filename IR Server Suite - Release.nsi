@@ -223,6 +223,7 @@ Section "-Prepare"
   ExecWait '"taskkill" /F /IM WebRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
+  ExecWait '"taskkill" /F /IM IRFileTool.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
 
   IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StopInputService SkipStopInputService
@@ -269,7 +270,12 @@ Section "Input Service" SectionInputService
   SetShellVarContext all
 
   ; Uninstall current Input Service ...
+  IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" UninstallInputService SkipUninstallInputService
+
+UninstallInputService:
   ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
+
+SkipUninstallInputService:
   Sleep 100
 
   ; Installing Input Service
@@ -558,6 +564,29 @@ SectionEnd
 
 ;======================================
 
+Section /o "IR File Tool" SectionIRFileTool
+
+  DetailPrint "Installing IR File Tool ..."
+
+  ; Use the all users context
+  SetShellVarContext all
+
+  ; Installing IR Server
+  CreateDirectory "$DIR_INSTALL\IR File Tool"
+  SetOutPath "$DIR_INSTALL\IR File Tool"
+  SetOverwrite ifnewer
+  File "Applications\IR File Tool\bin\Release\*.*"
+
+  ; Create folders
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR File Tool"
+
+  ; Create start menu shortcut
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk" "$DIR_INSTALL\IR File Tool\IRFileTool.exe" "" "$DIR_INSTALL\IR File Tool\IRFileTool.exe" 0
+
+SectionEnd
+
+;======================================
+
 Section /o "Debug Client" SectionDebugClient
 
   DetailPrint "Installing Debug Client ..."
@@ -639,6 +668,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote} "Simulated remote control, works as an application or as a web hosted remote control (with included Web Remote)."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemoteSkinEditor} "Create or Modify skins for the Virtual Remote."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRBlast} "Command line tools for blasting IR codes."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRFileTool} "Tool for learning, modifying, testing, correcting and converting IR command files."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionDebugClient} "Very simple testing tool for troubleshooting problems."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -675,11 +705,17 @@ Section "Uninstall"
   ExecWait '"taskkill" /F /IM WebRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemote.exe'
   ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
+  ExecWait '"taskkill" /F /IM IRFileTool.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
   Sleep 100
 
   ; Uninstall current Input Service ...
+  IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" UninstallInputService SkipUninstallInputService
+
+UninstallInputService:
   ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
+
+SkipUninstallInputService:
   Sleep 100
 
   ; Remove files and uninstaller

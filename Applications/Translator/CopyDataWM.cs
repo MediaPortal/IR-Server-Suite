@@ -84,7 +84,7 @@ namespace Translator
         return false;
 
       CreateParams createParams = new CreateParams();
-      createParams.Caption      = "Test";
+      createParams.Caption      = CopyDataTarget;
       createParams.ExStyle      = 0x80;
       createParams.Style        = unchecked((int)0x80000000);
 
@@ -155,6 +155,8 @@ namespace Translator
 
       if (windowHandle != IntPtr.Zero)
         Win32.SendWindowsMessage(windowHandle, (int)Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero, Win32.VarPtr(copyData));
+      else
+        MessageBox.Show("Couldn't find target");
     }
 
   }

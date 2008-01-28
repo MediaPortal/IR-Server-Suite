@@ -18,6 +18,9 @@ using IrssUtils.Forms;
 namespace SkinEditor
 {
 
+  /// <summary>
+  /// Virtual Remote Skin Editor Main Form.
+  /// </summary>
   partial class MainForm : Form
   {
 
@@ -48,6 +51,9 @@ namespace SkinEditor
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainForm"/> class.
+    /// </summary>
     public MainForm()
     {
       InitializeComponent();
@@ -121,8 +127,6 @@ namespace SkinEditor
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
       StopClient();
-
-      IrssLog.Close();
     }
 
     #region Controls
@@ -595,13 +599,11 @@ namespace SkinEditor
             {
               _registered = false;
               MessageBox.Show(this, "Failed to register with server", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              Application.Exit();
             }
             return;
 
           case MessageType.ServerShutdown:
             MessageBox.Show(this, "Server has been shut down", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Application.Exit();
             return;
 
           case MessageType.Error:

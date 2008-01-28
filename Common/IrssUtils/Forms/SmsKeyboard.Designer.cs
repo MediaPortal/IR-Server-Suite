@@ -183,7 +183,7 @@ namespace IrssUtils.Forms
       this.tableLayoutPanelKeys.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
       this.tableLayoutPanelKeys.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.tableLayoutPanelKeys.Size = new System.Drawing.Size(168, 168);
-      this.tableLayoutPanelKeys.TabIndex = 1;
+      this.tableLayoutPanelKeys.TabIndex = 0;
       // 
       // button2
       // 
@@ -382,11 +382,16 @@ namespace IrssUtils.Forms
       this.textBoxKeys.BackColor = System.Drawing.Color.Gainsboro;
       this.textBoxKeys.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.textBoxKeys.Dock = System.Windows.Forms.DockStyle.Top;
+      this.textBoxKeys.Enabled = false;
       this.textBoxKeys.Font = new System.Drawing.Font("Courier New", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.textBoxKeys.HideSelection = false;
       this.textBoxKeys.Location = new System.Drawing.Point(0, 0);
       this.textBoxKeys.Name = "textBoxKeys";
+      this.textBoxKeys.ReadOnly = true;
+      this.textBoxKeys.ShortcutsEnabled = false;
       this.textBoxKeys.Size = new System.Drawing.Size(168, 30);
-      this.textBoxKeys.TabIndex = 0;
+      this.textBoxKeys.TabIndex = 1;
+      this.textBoxKeys.TabStop = false;
       this.textBoxKeys.WordWrap = false;
       this.textBoxKeys.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxKeys_KeyDown);
       // 

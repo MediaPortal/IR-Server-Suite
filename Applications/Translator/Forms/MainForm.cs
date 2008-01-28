@@ -716,23 +716,6 @@ namespace Translator
       }
     }
 
-    private void buttonNewMapping_Click(object sender, EventArgs e)
-    {
-      NewButtonMapping();
-    }
-    private void buttonDeleteMapping_Click(object sender, EventArgs e)
-    {
-      DeleteButtonMapping();
-    }
-    private void buttonEditMapping_Click(object sender, EventArgs e)
-    {
-      EditButtonMapping();
-    }
-    private void buttonClearMappings_Click(object sender, EventArgs e)
-    {
-      ClearButtonMappings();
-    }
-
     private void buttonOK_Click(object sender, EventArgs e)
     {
       this.Close();
@@ -756,91 +739,6 @@ namespace Translator
 
         case "tabPagePrograms":
           break;
-      }
-    }
-
-    private void buttonNewIR_Click(object sender, EventArgs e)
-    {
-      _learnIR = new LearnIR(
-        new LearnIrDelegate(Program.LearnIR),
-        new BlastIrDelegate(Program.BlastIR),
-        Program.TransceiverInformation.Ports);
-
-      _learnIR.ShowDialog(this);
-
-      _learnIR = null;
-      
-      RefreshIRList();
-    }
-    private void buttonEditIR_Click(object sender, EventArgs e)
-    {
-      EditIR();
-    }
-    private void buttonDeleteIR_Click(object sender, EventArgs e)
-    {
-      if (listViewIR.SelectedItems.Count != 1)
-        return;
-
-      string file = listViewIR.SelectedItems[0].Text;
-      string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
-      if (File.Exists(fileName))
-      {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-        {
-          File.Delete(fileName);
-          listViewIR.Items.Remove(listViewIR.SelectedItems[0]);
-        }
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-      }
-    }
-
-    private void buttonNewMacro_Click(object sender, EventArgs e)
-    {
-      MacroEditor macroEditor = new MacroEditor();
-      macroEditor.ShowDialog(this);
-
-      RefreshMacroList();
-    }
-    private void buttonEditMacro_Click(object sender, EventArgs e)
-    {
-      EditMacro();
-    }
-    private void buttonDeleteMacro_Click(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      string file = listViewMacro.SelectedItems[0].Text;
-      string fileName = Program.FolderMacros + file + Common.FileExtensionMacro;
-      if (File.Exists(fileName))
-      {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-        {
-          File.Delete(fileName);
-          listViewMacro.Items.Remove(listViewMacro.SelectedItems[0]);
-        }
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-      }
-    }
-    private void buttonTestMacro_Click(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      try
-      {
-        Program.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -1307,6 +1205,131 @@ namespace Translator
     }
 
     #endregion Menus
+
+    private void toolStripButtonNewMapping_Click(object sender, EventArgs e)
+    {
+      NewButtonMapping();
+    }
+    private void toolStripButtonEditMapping_Click(object sender, EventArgs e)
+    {
+      EditButtonMapping();
+    }
+    private void toolStripButtonDeleteMapping_Click(object sender, EventArgs e)
+    {
+      DeleteButtonMapping();
+    }
+    private void toolStripButtonDeleteAllMappings_Click(object sender, EventArgs e)
+    {
+      ClearButtonMappings();
+    }
+
+    private void toolStripButtonNewMacro_Click(object sender, EventArgs e)
+    {
+      MacroEditor macroEditor = new MacroEditor();
+      macroEditor.ShowDialog(this);
+
+      RefreshMacroList();
+    }
+    private void toolStripButtonEditMacro_Click(object sender, EventArgs e)
+    {
+      EditMacro();
+    }
+    private void toolStripButtonDeleteMacro_Click(object sender, EventArgs e)
+    {
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      string file = listViewMacro.SelectedItems[0].Text;
+      string fileName = Program.FolderMacros + file + Common.FileExtensionMacro;
+      if (File.Exists(fileName))
+      {
+        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        {
+          File.Delete(fileName);
+          listViewMacro.Items.Remove(listViewMacro.SelectedItems[0]);
+        }
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      }
+    }
+    private void toolStripButtonTestMacro_Click(object sender, EventArgs e)
+    {
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      try
+      {
+        Program.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+    private void toolStripButtonCreateShortcutForMacro_Click(object sender, EventArgs e)
+    {
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+      string macroName = listViewMacro.SelectedItems[0].Text;
+      string shortcutPath = Path.Combine(desktopPath, "Macro - " + macroName + ".lnk");
+
+      MSjogren.Samples.ShellLink.ShellShortcut shortcut = new MSjogren.Samples.ShellLink.ShellShortcut(shortcutPath);
+
+      string translatorFolder = Path.Combine(SystemRegistry.GetInstallFolder(), "Translator");
+
+      //shortcut.Arguments        = String.Format("-MACRO \"{0}{1}{2}\"", Program.FolderMacros, macroName, Common.FileExtensionMacro);
+      shortcut.Arguments        = String.Format("-MACRO \"{0}\"", macroName);
+      shortcut.Description      = "Launch Macro: " + macroName;
+      shortcut.Path             = Path.Combine(translatorFolder, "Translator.exe");
+      shortcut.WorkingDirectory = translatorFolder;
+      shortcut.WindowStyle      = ProcessWindowStyle.Normal;
+
+      shortcut.Save();
+    }
+
+    private void toolStripButtonNewIR_Click(object sender, EventArgs e)
+    {
+      _learnIR = new LearnIR(
+        new LearnIrDelegate(Program.LearnIR),
+        new BlastIrDelegate(Program.BlastIR),
+        Program.TransceiverInformation.Ports);
+
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
+
+      RefreshIRList();
+    }
+    private void toolStripButtonEditIR_Click(object sender, EventArgs e)
+    {
+      EditIR();
+    }
+    private void toolStripButtonDeleteIR_Click(object sender, EventArgs e)
+    {
+      if (listViewIR.SelectedItems.Count != 1)
+        return;
+
+      string file = listViewIR.SelectedItems[0].Text;
+      string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
+      if (File.Exists(fileName))
+      {
+        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        {
+          File.Delete(fileName);
+          listViewIR.Items.Remove(listViewIR.SelectedItems[0]);
+        }
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      }
+    }
+
 
   }
 

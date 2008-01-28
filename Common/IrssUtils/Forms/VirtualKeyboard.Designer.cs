@@ -254,7 +254,7 @@ namespace IrssUtils.Forms
       this.tableLayoutPanelKeys.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
       this.tableLayoutPanelKeys.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.tableLayoutPanelKeys.Size = new System.Drawing.Size(546, 220);
-      this.tableLayoutPanelKeys.TabIndex = 1;
+      this.tableLayoutPanelKeys.TabIndex = 0;
       // 
       // button2
       // 
@@ -1081,13 +1081,12 @@ namespace IrssUtils.Forms
       this.textBoxKeys.ReadOnly = true;
       this.textBoxKeys.ShortcutsEnabled = false;
       this.textBoxKeys.Size = new System.Drawing.Size(546, 30);
-      this.textBoxKeys.TabIndex = 0;
+      this.textBoxKeys.TabIndex = 1;
       this.textBoxKeys.TabStop = false;
       this.textBoxKeys.WordWrap = false;
       // 
       // VirtualKeyboard
       // 
-      this.AcceptButton = this.buttonDone;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.Color.Fuchsia;

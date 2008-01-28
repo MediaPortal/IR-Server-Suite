@@ -2014,11 +2014,11 @@ namespace IrssUtils
     public static IntPtr SendWindowsMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
     {
       IntPtr result = IntPtr.Zero;
-      
-      SendMessageTimeout(hWnd, msg, wParam, lParam, SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
+
+      IntPtr returnValue = SendMessageTimeout(hWnd, msg, wParam, lParam, SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
       int lastError = Marshal.GetLastWin32Error();
       
-      if (result == IntPtr.Zero && lastError != 0)
+      if (returnValue == IntPtr.Zero && lastError != 0)
         throw new Win32Exception(lastError);
 
       return result;

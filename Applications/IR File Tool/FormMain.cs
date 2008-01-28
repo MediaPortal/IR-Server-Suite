@@ -1,27 +1,64 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
+
+using IrssComms;
+using IrssUtils;
+using IrssUtils.Forms;
 
 namespace IrFileTool
 {
 
-  public partial class FormMain : Form
+  /// <summary>
+  /// IR File Tool Main Form.
+  /// </summary>
+  partial class FormMain : Form
   {
+
+    #region Constants
+
+    static readonly string ConfigurationFile = Common.FolderAppData + "IR File Tool\\IR File Tool.xml";
+
+    #endregion Constants
+
+    #region Variables
 
     string _fileName = String.Empty;
 
     IrCode _code = new IrCode();
 
 
+    Client _client;
+
+    bool _registered;
+
+    string _serverHost = String.Empty;
+
+
+    #endregion Variables
+
+    #region Constructor
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FormMain"/> class.
+    /// </summary>
     public FormMain()
     {
       InitializeComponent();
+
+      LoadSettings();
     }
+
+    #endregion Constructor
+
 
     void RefreshForm()
     {
@@ -66,6 +103,157 @@ namespace IrFileTool
     }
 
 
+    void LoadSettings()
+    {
+      try
+      {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(ConfigurationFile);
+
+        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+
+        _serverHost = "localhost";
+      }
+    }
+    void SaveSettings()
+    {
+      try
+      {
+        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
+        {
+          writer.Formatting = Formatting.Indented;
+          writer.Indentation = 1;
+          writer.IndentChar = (char)9;
+          writer.WriteStartDocument(true);
+          writer.WriteStartElement("settings"); // <settings>
+
+          writer.WriteAttributeString("ServerHost", _serverHost);
+
+          writer.WriteEndElement(); // </settings>
+          writer.WriteEndDocument();
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+    }
+
+
+
+    void CommsFailure(object obj)
+    {
+      Exception ex = obj as Exception;
+
+      if (ex != null)
+        IrssLog.Error("Communications failure: {0}", ex.Message);
+      else
+        IrssLog.Error("Communications failure");
+
+      StopClient();
+
+      MessageBox.Show(this, "Please report this error.", "IR File Tool - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+    void Connected(object obj)
+    {
+      IrssLog.Info("Connected to server");
+
+      IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
+      _client.Send(message);
+    }
+    void Disconnected(object obj)
+    {
+      IrssLog.Warn("Communications with server has been lost");
+
+      Thread.Sleep(1000);
+    }
+
+    bool StartClient(IPEndPoint endPoint)
+    {
+      if (_client != null)
+        return false;
+
+      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+
+      _client = new Client(endPoint, sink);
+      _client.CommsFailureCallback = new WaitCallback(CommsFailure);
+      _client.ConnectCallback = new WaitCallback(Connected);
+      _client.DisconnectCallback = new WaitCallback(Disconnected);
+
+      if (_client.Start())
+      {
+        return true;
+      }
+      else
+      {
+        _client = null;
+        return false;
+      }
+    }
+    void StopClient()
+    {
+      if (_client == null)
+        return;
+
+      _client.Dispose();
+      _client = null;
+    }
+
+    void ReceivedMessage(IrssMessage received)
+    {
+      IrssLog.Debug("Received Message \"{0}\"", received.Type);
+
+      try
+      {
+        switch (received.Type)
+        {
+          case MessageType.RegisterClient:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+            {
+              _registered = true;
+
+              groupBoxTestBlast.Enabled = true;
+              buttonLearn.Enabled = true;
+            }
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+            {
+              _registered = false;
+
+              groupBoxTestBlast.Enabled = false;
+              buttonLearn.Enabled = false;
+
+              MessageBox.Show(this, "Failed to register with server", "IR File Tool Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return;
+
+          case MessageType.ServerShutdown:
+            MessageBox.Show(this, "Server has been shut down", "IR File Tool Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+
+          case MessageType.Error:
+            MessageBox.Show(this, received.GetDataAsString(), "IR File Tool Error from Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        MessageBox.Show(this, ex.Message, "IR File Tool Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
+
+
+
+
+
+
+
+
     private void newToolStripMenuItem_Click(object sender, EventArgs e)
     {
       _code = new IrCode();
@@ -73,11 +261,13 @@ namespace IrFileTool
 
       RefreshForm();
     }
-
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (openFileDialog.ShowDialog(this) != DialogResult.OK)
         return;
+
+      if (String.IsNullOrEmpty(openFileDialog.InitialDirectory))
+        openFileDialog.InitialDirectory = Common.FolderIRCommands;
 
       using (FileStream file = File.OpenRead(openFileDialog.FileName))
       {
@@ -98,14 +288,15 @@ namespace IrFileTool
 
       RefreshForm();      
     }
-
     private void saveToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Save();
     }
-
     private void saveasToolStripMenuItem_Click(object sender, EventArgs e)
     {
+      if (String.IsNullOrEmpty(saveFileDialog.InitialDirectory))
+        saveFileDialog.InitialDirectory = Common.FolderIRCommands;
+
       if (saveFileDialog.ShowDialog(this) != DialogResult.OK)
         return;
 
@@ -113,12 +304,10 @@ namespace IrFileTool
 
       Save();
     }
-
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)
     {
       this.Close();
     }
-
     private void buttonAttemptDecode_Click(object sender, EventArgs e)
     {
       IrDecoder.DecodeIR(_code.TimingData, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
@@ -230,6 +419,49 @@ namespace IrFileTool
 
       RefreshForm();
     }
+
+    private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+
+      StartClient(endPoint);
+    }
+    private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (_registered)
+      {
+        IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
+        _client.Send(message);
+
+        _registered = false;
+      }
+
+      groupBoxTestBlast.Enabled = false;
+      buttonLearn.Enabled = false;
+
+      StopClient();
+    }
+    private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      ServerAddress serverAddress = new ServerAddress(_serverHost);
+      serverAddress.ShowDialog(this);
+
+      _serverHost = serverAddress.ServerHost;
+
+      SaveSettings();
+    }
+
+    private void buttonBlast_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void buttonLearn_Click(object sender, EventArgs e)
+    {
+
+    }
+
 
   }
 

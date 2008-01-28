@@ -844,6 +844,8 @@ namespace MediaPortal.Plugins
     /// <param name="msg">Message.</param>
     void OnMessage(GUIMessage msg)
     {
+      Log.Debug("MESSAGE RECEIVED: {0}", Enum.GetName(typeof(GUIMessage.MessageType), msg.Message));
+
       if (EventMapperEnabled)
         MapEvent(msg);
     }
