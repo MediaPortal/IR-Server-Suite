@@ -155,6 +155,7 @@ namespace Translator
       this.pageUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.scrollLockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.windowsKeyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabPageMouse = new System.Windows.Forms.TabPage();
       this.groupBoxMouseScroll = new System.Windows.Forms.GroupBox();
       this.checkBoxMouseScrollDown = new System.Windows.Forms.CheckBox();
@@ -177,7 +178,6 @@ namespace Translator
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-      this.windowsKeyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.groupBoxButton.SuspendLayout();
       this.groupBoxSet.SuspendLayout();
       this.tabControl.SuspendLayout();
@@ -284,10 +284,11 @@ namespace Translator
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxCommand.BackColor = System.Drawing.SystemColors.Info;
       this.textBoxCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.textBoxCommand.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.textBoxCommand.Location = new System.Drawing.Point(64, 264);
       this.textBoxCommand.Name = "textBoxCommand";
       this.textBoxCommand.ReadOnly = true;
-      this.textBoxCommand.Size = new System.Drawing.Size(336, 20);
+      this.textBoxCommand.Size = new System.Drawing.Size(336, 22);
       this.textBoxCommand.TabIndex = 2;
       // 
       // buttonSet
@@ -295,10 +296,10 @@ namespace Translator
       this.buttonSet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.buttonSet.Location = new System.Drawing.Point(8, 264);
       this.buttonSet.Name = "buttonSet";
-      this.buttonSet.Size = new System.Drawing.Size(48, 20);
+      this.buttonSet.Size = new System.Drawing.Size(48, 22);
       this.buttonSet.TabIndex = 1;
       this.buttonSet.Text = "Set";
-      this.toolTips.SetToolTip(this.buttonSet, "Click here to set the command");
+      this.toolTips.SetToolTip(this.buttonSet, "Click here to set the selected command");
       this.buttonSet.UseVisualStyleBackColor = true;
       this.buttonSet.Click += new System.EventHandler(this.buttonSet_Click);
       // 
@@ -1019,52 +1020,52 @@ namespace Translator
             this.toolStripSeparator2,
             this.specialKeysToolStripMenuItem});
       this.contextMenuStripKeystrokes.Name = "contextMenuStripKeystrokes";
-      this.contextMenuStripKeystrokes.Size = new System.Drawing.Size(153, 170);
+      this.contextMenuStripKeystrokes.Size = new System.Drawing.Size(145, 148);
       // 
       // cutToolStripMenuItem
       // 
       this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-      this.cutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.cutToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.cutToolStripMenuItem.Text = "Cut";
       this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
       // 
       // copyToolStripMenuItem
       // 
       this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-      this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.copyToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.copyToolStripMenuItem.Text = "Copy";
       this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
       // 
       // pasteToolStripMenuItem
       // 
       this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-      this.pasteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.pasteToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.pasteToolStripMenuItem.Text = "Paste";
       this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
       // 
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(141, 6);
       // 
       // selectAllToolStripMenuItem
       // 
       this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-      this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.selectAllToolStripMenuItem.Text = "Select All";
       this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
       // 
       // selectNoneToolStripMenuItem
       // 
       this.selectNoneToolStripMenuItem.Name = "selectNoneToolStripMenuItem";
-      this.selectNoneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.selectNoneToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.selectNoneToolStripMenuItem.Text = "Select None";
       this.selectNoneToolStripMenuItem.Click += new System.EventHandler(this.selectNoneToolStripMenuItem_Click);
       // 
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+      this.toolStripSeparator2.Size = new System.Drawing.Size(141, 6);
       // 
       // specialKeysToolStripMenuItem
       // 
@@ -1091,7 +1092,7 @@ namespace Translator
             this.tabToolStripMenuItem,
             this.windowsKeyToolStripMenuItem});
       this.specialKeysToolStripMenuItem.Name = "specialKeysToolStripMenuItem";
-      this.specialKeysToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.specialKeysToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
       this.specialKeysToolStripMenuItem.Text = "Special Keys";
       // 
       // arrowsToolStripMenuItem
@@ -1321,28 +1322,28 @@ namespace Translator
       // altToolStripMenuItem
       // 
       this.altToolStripMenuItem.Name = "altToolStripMenuItem";
-      this.altToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.altToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
       this.altToolStripMenuItem.Text = "Alt";
       this.altToolStripMenuItem.Click += new System.EventHandler(this.KeystrokeToolStripMenuItem_Click);
       // 
       // controlToolStripMenuItem
       // 
       this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
-      this.controlToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.controlToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
       this.controlToolStripMenuItem.Text = "Control";
       this.controlToolStripMenuItem.Click += new System.EventHandler(this.KeystrokeToolStripMenuItem_Click);
       // 
       // shiftToolStripMenuItem
       // 
       this.shiftToolStripMenuItem.Name = "shiftToolStripMenuItem";
-      this.shiftToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.shiftToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
       this.shiftToolStripMenuItem.Text = "Shift";
       this.shiftToolStripMenuItem.Click += new System.EventHandler(this.KeystrokeToolStripMenuItem_Click);
       // 
       // windowsToolStripMenuItem
       // 
       this.windowsToolStripMenuItem.Name = "windowsToolStripMenuItem";
-      this.windowsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.windowsToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
       this.windowsToolStripMenuItem.Text = "Windows";
       this.windowsToolStripMenuItem.Click += new System.EventHandler(this.KeystrokeToolStripMenuItem_Click);
       // 
@@ -1455,6 +1456,13 @@ namespace Translator
       this.tabToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.tabToolStripMenuItem.Text = "Tab";
       this.tabToolStripMenuItem.Click += new System.EventHandler(this.KeystrokeToolStripMenuItem_Click);
+      // 
+      // windowsKeyToolStripMenuItem
+      // 
+      this.windowsKeyToolStripMenuItem.Name = "windowsKeyToolStripMenuItem";
+      this.windowsKeyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.windowsKeyToolStripMenuItem.Text = "Windows Key";
+      this.windowsKeyToolStripMenuItem.Click += new System.EventHandler(this.KeystrokeToolStripMenuItem_Click);
       // 
       // tabPageMouse
       // 
@@ -1691,7 +1699,7 @@ namespace Translator
       this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonTest.Location = new System.Drawing.Point(408, 264);
       this.buttonTest.Name = "buttonTest";
-      this.buttonTest.Size = new System.Drawing.Size(48, 20);
+      this.buttonTest.Size = new System.Drawing.Size(48, 22);
       this.buttonTest.TabIndex = 3;
       this.buttonTest.Text = "Test";
       this.toolTips.SetToolTip(this.buttonTest, "Click here to test the currently set command");
@@ -1720,13 +1728,6 @@ namespace Translator
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
-      // 
-      // windowsKeyToolStripMenuItem
-      // 
-      this.windowsKeyToolStripMenuItem.Name = "windowsKeyToolStripMenuItem";
-      this.windowsKeyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.windowsKeyToolStripMenuItem.Text = "Windows Key";
-      this.windowsKeyToolStripMenuItem.Click += new System.EventHandler(this.KeystrokeToolStripMenuItem_Click);
       // 
       // ButtonMappingForm
       // 

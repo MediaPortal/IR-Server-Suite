@@ -55,9 +55,12 @@ namespace IrFileTool
       this.groupBoxCarrier = new System.Windows.Forms.GroupBox();
       this.groupBoxTestBlast = new System.Windows.Forms.GroupBox();
       this.comboBoxPort = new System.Windows.Forms.ComboBox();
+      this.statusStrip = new System.Windows.Forms.StatusStrip();
+      this.toolStripStatusLabelConnected = new System.Windows.Forms.ToolStripStatusLabel();
       this.menuStrip.SuspendLayout();
       this.groupBoxCarrier.SuspendLayout();
       this.groupBoxTestBlast.SuspendLayout();
+      this.statusStrip.SuspendLayout();
       this.SuspendLayout();
       // 
       // menuStrip
@@ -165,7 +168,7 @@ namespace IrFileTool
       this.textBoxPronto.Multiline = true;
       this.textBoxPronto.Name = "textBoxPronto";
       this.textBoxPronto.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-      this.textBoxPronto.Size = new System.Drawing.Size(312, 264);
+      this.textBoxPronto.Size = new System.Drawing.Size(312, 240);
       this.textBoxPronto.TabIndex = 1;
       // 
       // buttonSetCarrier
@@ -183,7 +186,7 @@ namespace IrFileTool
       // checkBoxStoreBinary
       // 
       this.checkBoxStoreBinary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.checkBoxStoreBinary.Location = new System.Drawing.Point(336, 272);
+      this.checkBoxStoreBinary.Location = new System.Drawing.Point(336, 248);
       this.checkBoxStoreBinary.Name = "checkBoxStoreBinary";
       this.checkBoxStoreBinary.Size = new System.Drawing.Size(160, 24);
       this.checkBoxStoreBinary.TabIndex = 6;
@@ -208,7 +211,7 @@ namespace IrFileTool
       this.buttonBlast.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonBlast.Location = new System.Drawing.Point(112, 24);
       this.buttonBlast.Name = "buttonBlast";
-      this.buttonBlast.Size = new System.Drawing.Size(51, 24);
+      this.buttonBlast.Size = new System.Drawing.Size(48, 24);
       this.buttonBlast.TabIndex = 1;
       this.buttonBlast.Text = "&Blast";
       this.toolTips.SetToolTip(this.buttonBlast, "Blast the current IR command for testing");
@@ -217,6 +220,7 @@ namespace IrFileTool
       // 
       // buttonLearn
       // 
+      this.buttonLearn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonLearn.Enabled = false;
       this.buttonLearn.Location = new System.Drawing.Point(360, 168);
       this.buttonLearn.Name = "buttonLearn";
@@ -262,6 +266,7 @@ namespace IrFileTool
       // 
       // groupBoxTestBlast
       // 
+      this.groupBoxTestBlast.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxTestBlast.Controls.Add(this.buttonBlast);
       this.groupBoxTestBlast.Controls.Add(this.comboBoxPort);
       this.groupBoxTestBlast.Enabled = false;
@@ -276,17 +281,38 @@ namespace IrFileTool
       // 
       this.comboBoxPort.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
+      this.comboBoxPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxPort.FormattingEnabled = true;
       this.comboBoxPort.Location = new System.Drawing.Point(8, 24);
       this.comboBoxPort.Name = "comboBoxPort";
       this.comboBoxPort.Size = new System.Drawing.Size(96, 21);
       this.comboBoxPort.TabIndex = 0;
       // 
+      // statusStrip
+      // 
+      this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabelConnected});
+      this.statusStrip.Location = new System.Drawing.Point(0, 283);
+      this.statusStrip.Name = "statusStrip";
+      this.statusStrip.Size = new System.Drawing.Size(504, 22);
+      this.statusStrip.TabIndex = 7;
+      this.statusStrip.Text = "statusStrip";
+      // 
+      // toolStripStatusLabelConnected
+      // 
+      this.toolStripStatusLabelConnected.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripStatusLabelConnected.Name = "toolStripStatusLabelConnected";
+      this.toolStripStatusLabelConnected.Size = new System.Drawing.Size(489, 17);
+      this.toolStripStatusLabelConnected.Spring = true;
+      this.toolStripStatusLabelConnected.Text = "Not connected";
+      this.toolStripStatusLabelConnected.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
       // FormMain
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(504, 305);
+      this.Controls.Add(this.statusStrip);
       this.Controls.Add(this.buttonLearn);
       this.Controls.Add(this.groupBoxTestBlast);
       this.Controls.Add(this.groupBoxCarrier);
@@ -304,6 +330,8 @@ namespace IrFileTool
       this.groupBoxCarrier.ResumeLayout(false);
       this.groupBoxCarrier.PerformLayout();
       this.groupBoxTestBlast.ResumeLayout(false);
+      this.statusStrip.ResumeLayout(false);
+      this.statusStrip.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -336,6 +364,8 @@ namespace IrFileTool
     private System.Windows.Forms.Button buttonBlast;
     private System.Windows.Forms.ComboBox comboBoxPort;
     private System.Windows.Forms.Button buttonLearn;
+    private System.Windows.Forms.StatusStrip statusStrip;
+    private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelConnected;
   }
 }
 

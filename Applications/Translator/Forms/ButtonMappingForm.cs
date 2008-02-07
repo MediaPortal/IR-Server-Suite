@@ -319,9 +319,17 @@ namespace Translator
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      if (String.IsNullOrEmpty(_keyCode) || String.IsNullOrEmpty(_command))
+      if (String.IsNullOrEmpty(_keyCode))
       {
-        MessageBox.Show(this, "You must set a valid button mapping to press OK", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "You must provide a valid button key code to create a button mapping", "KeyCode Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        textBoxKeyCode.Focus();
+        return;
+      }
+
+      if (String.IsNullOrEmpty(_command))
+      {
+        MessageBox.Show(this, "You must click SET to confirm the command you want to assign to this button mapping", "Command Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        buttonSet.Focus();
         return;
       }
 

@@ -42,6 +42,7 @@ namespace IrFileTool
 
     string _serverHost = String.Empty;
 
+    IRServerInfo _irServerInfo = new IRServerInfo();
 
     #endregion Variables
 
@@ -87,6 +88,10 @@ namespace IrFileTool
 
     void Save()
     {
+      if (String.IsNullOrEmpty(_fileName))
+        if (!GetSaveFileName())
+          return;
+
       if (!checkBoxStoreBinary.Checked)
       {
         Pronto.WriteProntoFile(_fileName, Pronto.ConvertIrCodeToProntoRaw(_code));
@@ -100,6 +105,18 @@ namespace IrFileTool
           file.Write(fileBytes, 0, fileBytes.Length);
         }
       }
+    }
+
+    bool GetSaveFileName()
+    {
+      if (String.IsNullOrEmpty(saveFileDialog.InitialDirectory))
+        saveFileDialog.InitialDirectory = Common.FolderIRCommands;
+
+      if (saveFileDialog.ShowDialog(this) != DialogResult.OK)
+        return false;
+
+      _fileName = saveFileDialog.FileName;
+      return true;
     }
 
 
@@ -143,6 +160,26 @@ namespace IrFileTool
       }
     }
 
+    delegate void UpdateWindowDel(string status);
+    void UpdateWindow(string status)
+    {
+      toolStripStatusLabelConnected.Text = status;
+
+      comboBoxPort.Items.Clear();
+      comboBoxPort.Items.AddRange(_irServerInfo.Ports);
+      comboBoxPort.SelectedIndex = 0;
+
+      if (_registered)
+      {
+        groupBoxTestBlast.Enabled = _irServerInfo.CanTransmit;
+        buttonLearn.Enabled = _irServerInfo.CanLearn;
+      }
+      else
+      {
+        groupBoxTestBlast.Enabled = false;
+        buttonLearn.Enabled = false;
+      }
+    }
 
 
     void CommsFailure(object obj)
@@ -214,28 +251,76 @@ namespace IrFileTool
           case MessageType.RegisterClient:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
+              _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
-              groupBoxTestBlast.Enabled = true;
-              buttonLearn.Enabled = true;
+              string message = "Connected";
+              IrssLog.Info(message);
+              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
 
-              groupBoxTestBlast.Enabled = false;
-              buttonLearn.Enabled = false;
-
-              MessageBox.Show(this, "Failed to register with server", "IR File Tool Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+              string message = "Failed to connect";
+              IrssLog.Warn(message);
+              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
             }
             return;
 
+          case MessageType.BlastIR:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+            {
+              string message = "Blast successful";
+              IrssLog.Info(message);
+              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+            }
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+            {
+              string message = "Failed to blast IR command";
+              IrssLog.Error(message);
+              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+            }
+            break;
+
+          case MessageType.LearnIR:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+            {
+              byte[] dataBytes = received.GetDataAsBytes();
+
+              _code = IrCode.FromByteArray(dataBytes);
+
+              _fileName = null;
+
+              string message = "Learned IR Successfully";
+              IrssLog.Info(message);
+              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+
+              RefreshForm();
+            }
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+            {
+              string message = "Failed to learn IR command";
+
+              IrssLog.Warn(message);
+              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+            }
+            else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
+            {
+              string message = "Learn IR command timed-out";
+
+              IrssLog.Warn(message);
+              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+            }
+            break;
+
           case MessageType.ServerShutdown:
-            MessageBox.Show(this, "Server has been shut down", "IR File Tool Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            _registered = false;
+            this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Server shut down" });
             return;
 
           case MessageType.Error:
-            MessageBox.Show(this, received.GetDataAsString(), "IR File Tool Error from Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            IrssLog.Error("Error from server: " + received.GetDataAsString());
             return;
         }
       }
@@ -247,27 +332,20 @@ namespace IrFileTool
     }
 
 
-
-
-
-
-
-
-
     private void newToolStripMenuItem_Click(object sender, EventArgs e)
     {
       _code = new IrCode();
-      _fileName = "New File.IR";
+      _fileName = null;
 
       RefreshForm();
     }
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      if (openFileDialog.ShowDialog(this) != DialogResult.OK)
-        return;
-
       if (String.IsNullOrEmpty(openFileDialog.InitialDirectory))
         openFileDialog.InitialDirectory = Common.FolderIRCommands;
+
+      if (openFileDialog.ShowDialog(this) != DialogResult.OK)
+        return;
 
       using (FileStream file = File.OpenRead(openFileDialog.FileName))
       {
@@ -294,15 +372,8 @@ namespace IrFileTool
     }
     private void saveasToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      if (String.IsNullOrEmpty(saveFileDialog.InitialDirectory))
-        saveFileDialog.InitialDirectory = Common.FolderIRCommands;
-
-      if (saveFileDialog.ShowDialog(this) != DialogResult.OK)
-        return;
-
-      _fileName = saveFileDialog.FileName;
-
-      Save();
+      if (GetSaveFileName())
+        Save();
     }
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -362,32 +433,30 @@ namespace IrFileTool
 
     void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
     {
-      MessageBox.Show(this, String.Format("Remote: {0}, {1}", Enum.GetName(typeof(IrProtocol), codeType), keyCode), "Decode IR", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-      if (textBoxCarrier.Text.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
+      if (DialogResult.Yes == MessageBox.Show(this, String.Format("Remote: {0}, {1}\nUse this protocol's carrier frequency?", Enum.GetName(typeof(IrProtocol), codeType), keyCode), "Decode IR", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
       {
         switch (codeType)
         {
-          case IrProtocol.Daewoo: textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.JVC: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.Daewoo:     textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.JVC:        textBoxCarrier.Text = "38000"; break;
           case IrProtocol.Matsushita: textBoxCarrier.Text = "56800"; break;
           case IrProtocol.Mitsubishi: textBoxCarrier.Text = "40000"; break;
-          case IrProtocol.NEC: textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.NRC17: textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.Panasonic: textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.RC5: textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC5X: textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC6: textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC6A: textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC6_MCE: textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.NEC:        textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.NRC17:      textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.Panasonic:  textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.RC5:        textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC5X:       textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC6:        textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC6A:       textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RC6_MCE:    textBoxCarrier.Text = "36000"; break;
           case IrProtocol.RC6_Foxtel: textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RCA: textBoxCarrier.Text = "56000"; break;
-          case IrProtocol.RCMM: textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RECS80: textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.Sharp: textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.SIRC: textBoxCarrier.Text = "40000"; break;
-          case IrProtocol.Toshiba: textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.XSAT: textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.RCA:        textBoxCarrier.Text = "56000"; break;
+          case IrProtocol.RCMM:       textBoxCarrier.Text = "36000"; break;
+          case IrProtocol.RECS80:     textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.Sharp:      textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.SIRC:       textBoxCarrier.Text = "40000"; break;
+          case IrProtocol.Toshiba:    textBoxCarrier.Text = "38000"; break;
+          case IrProtocol.XSAT:       textBoxCarrier.Text = "38000"; break;
 
           default:
             return;
@@ -422,6 +491,8 @@ namespace IrFileTool
 
     private void connectToolStripMenuItem_Click(object sender, EventArgs e)
     {
+      this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Connecting ..." });
+
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
 
@@ -437,8 +508,7 @@ namespace IrFileTool
         _registered = false;
       }
 
-      groupBoxTestBlast.Enabled = false;
-      buttonLearn.Enabled = false;
+      this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Disconnected" });
 
       StopClient();
     }
@@ -454,14 +524,34 @@ namespace IrFileTool
 
     private void buttonBlast_Click(object sender, EventArgs e)
     {
+      if (!_registered)
+        MessageBox.Show(this, "Not registered to an active Input Service", "Cannot blast", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
+      this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Blasting ..." });
+
+      string port = comboBoxPort.Text;
+      byte[] codeBytes = _code.ToByteArray(true);
+
+      byte[] outData = new byte[4 + port.Length + codeBytes.Length];
+
+      BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
+      Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
+
+      Array.Copy(codeBytes, 0, outData, 4 + port.Length, codeBytes.Length);
+
+      IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
+      _client.Send(message);
     }
-
     private void buttonLearn_Click(object sender, EventArgs e)
     {
+      if (!_registered)
+        MessageBox.Show(this, "Not registered to an active Input Service", "Cannot learn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
+      this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Learning ..." });
+
+      IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
+      _client.Send(message);
     }
-
 
   }
 

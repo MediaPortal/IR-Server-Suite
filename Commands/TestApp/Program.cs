@@ -33,20 +33,34 @@ namespace Commands
         Processor.CategorySpecial
       };
 
-      EditMacro edit1 = new EditMacro(
-        commandProcessor, 
-        @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\",
-        categories);
+      try
+      {
+        EditMacro edit1 = new EditMacro(
+          commandProcessor,
+          @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\",
+          categories);
 
-      edit1.ShowDialog();
+        edit1.ShowDialog();
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }
 
-      EditMacro edit2 = new EditMacro(
-        commandProcessor,
-        @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\",
-        categories,
-        @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\Toggle Example.Macro");
+      try
+      {
+        EditMacro edit2 = new EditMacro(
+          commandProcessor,
+          @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\",
+          categories,
+          @"C:\Documents and Settings\All Users.WINDOWS\Application Data\IR Server Suite\MP Blast Zone Plugin\Macro\Toggle Example.Macro");
 
-      edit2.ShowDialog();
+        edit2.ShowDialog();
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }
     }
 
 

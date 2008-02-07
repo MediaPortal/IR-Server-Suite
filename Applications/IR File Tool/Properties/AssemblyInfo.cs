@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("IR File Tool")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("For learning, modifying, testing, correcting and converting IR command files")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("IR File Tool")]
