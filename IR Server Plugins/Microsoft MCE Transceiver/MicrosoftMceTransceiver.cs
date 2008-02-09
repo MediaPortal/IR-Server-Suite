@@ -71,25 +71,27 @@ namespace MicrosoftMceTransceiver
 
     #region Configuration
 
-    int _learnTimeout           = 10000;
-    bool _disableMceServices    = true;
+    int _learnTimeout             = 10000;
+    bool _disableMceServices      = true;
 
-    bool _enableRemoteInput     = true;
-    int _remoteFirstRepeat      = 400;
-    int _remoteHeldRepeats      = 250;
+    bool _enableRemoteInput       = true;
+    bool _useSystemRatesRemote    = false;
+    int _remoteFirstRepeat        = 400;
+    int _remoteHeldRepeats        = 250;
 
-    bool _enableKeyboardInput   = false;
-    int _keyboardFirstRepeat    = 350;
-    int _keyboardHeldRepeats    = 0;
-    bool _handleKeyboardLocally = true;
+    bool _enableKeyboardInput     = false;
+    bool _useSystemRatesKeyboard  = true;
+    int _keyboardFirstRepeat      = 350;
+    int _keyboardHeldRepeats      = 0;
+    bool _handleKeyboardLocally   = true;
 
-    bool _enableMouseInput      = false;
-    bool _handleMouseLocally    = true;
-    double _mouseSensitivity    = 1.0d;
+    bool _enableMouseInput        = false;
+    bool _handleMouseLocally      = true;
+    double _mouseSensitivity      = 1.0d;
 
     // Hidden options ...
-    bool _storeAsPronto         = true;
-    bool _forceVistaDriver      = false;
+    bool _storeAsPronto           = true;
+    bool _forceVistaDriver        = false;
 
     #endregion Configuration
 
@@ -384,10 +386,12 @@ namespace MicrosoftMceTransceiver
       try   { _disableMceServices = bool.Parse(doc.DocumentElement.Attributes["DisableMceServices"].Value); } catch {}
 
       try   { _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); } catch {}
+      try   { _useSystemRatesRemote = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesRemote"].Value); } catch { }
       try   { _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); } catch {}
       try   { _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value); } catch {}
 
       try   { _enableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value); } catch {}
+      try   { _useSystemRatesKeyboard = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesKeyboard"].Value); } catch { }
       try   { _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value); } catch {}
       try   { _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value); } catch {}
       try   { _handleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value); } catch {}
@@ -399,6 +403,8 @@ namespace MicrosoftMceTransceiver
       // Hidden options ...
       try   { _storeAsPronto = bool.Parse(doc.DocumentElement.Attributes["StoreAsPronto"].Value); } catch {}
       try   { _forceVistaDriver = bool.Parse(doc.DocumentElement.Attributes["ForceVistaDriver"].Value); } catch {}
+
+
     }
     void SaveSettings()
     {
@@ -416,10 +422,12 @@ namespace MicrosoftMceTransceiver
           writer.WriteAttributeString("DisableMceServices", _disableMceServices.ToString());
 
           writer.WriteAttributeString("EnableRemoteInput", _enableRemoteInput.ToString());
+          writer.WriteAttributeString("UseSystemRatesRemote", _useSystemRatesRemote.ToString());
           writer.WriteAttributeString("RemoteFirstRepeat", _remoteFirstRepeat.ToString());
           writer.WriteAttributeString("RemoteHeldRepeats", _remoteHeldRepeats.ToString());
 
           writer.WriteAttributeString("EnableKeyboardInput", _enableKeyboardInput.ToString());
+          writer.WriteAttributeString("UseSystemRatesKeyboard", _useSystemRatesKeyboard.ToString());
           writer.WriteAttributeString("KeyboardFirstRepeat", _keyboardFirstRepeat.ToString());
           writer.WriteAttributeString("KeyboardHeldRepeats", _keyboardHeldRepeats.ToString());
           writer.WriteAttributeString("HandleKeyboardLocally", _handleKeyboardLocally.ToString());
@@ -564,7 +572,15 @@ namespace MicrosoftMceTransceiver
       {
         TimeSpan timeBetween = DateTime.Now.Subtract(_lastRemoteButtonTime);
 
-        if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < _remoteFirstRepeat)
+        int firstRepeat = _remoteFirstRepeat;
+        int heldRepeats = _remoteHeldRepeats;
+        if (_useSystemRatesRemote)
+        {
+          firstRepeat = SystemInformation.KeyboardDelay;
+          heldRepeats = SystemInformation.KeyboardSpeed;
+        }
+
+        if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < firstRepeat)
         {
 #if TRACE
           Trace.WriteLine("Skip First Repeat");
@@ -572,7 +588,7 @@ namespace MicrosoftMceTransceiver
           return;
         }
 
-        if (_remoteButtonRepeated && timeBetween.TotalMilliseconds < _remoteHeldRepeats)
+        if (_remoteButtonRepeated && timeBetween.TotalMilliseconds < heldRepeats)
         {
 #if TRACE
           Trace.WriteLine("Skip Held Repeat");
@@ -580,7 +596,7 @@ namespace MicrosoftMceTransceiver
           return;
         }
 
-        if (_remoteButtonRepeated && timeBetween.TotalMilliseconds > _remoteFirstRepeat)
+        if (_remoteButtonRepeated && timeBetween.TotalMilliseconds > firstRepeat)
           _remoteButtonRepeated = false;
         else
           _remoteButtonRepeated = true;
@@ -662,25 +678,29 @@ namespace MicrosoftMceTransceiver
         // Repeats ...
         TimeSpan timeBetween = DateTime.Now.Subtract(_lastKeyboardKeyTime);
 
-        if (!_keyboardKeyRepeated && timeBetween.TotalMilliseconds < _keyboardFirstRepeat)
+        int firstRepeat = _keyboardFirstRepeat;
+        int heldRepeats = _keyboardHeldRepeats;
+        if (_useSystemRatesRemote)
+        {
+          firstRepeat = SystemInformation.KeyboardDelay;
+          heldRepeats = SystemInformation.KeyboardSpeed;
+        }
+
+        if (!_keyboardKeyRepeated && timeBetween.TotalMilliseconds < firstRepeat)
           return;
 
-        if (_keyboardKeyRepeated && timeBetween.TotalMilliseconds < _keyboardHeldRepeats)
+        if (_keyboardKeyRepeated && timeBetween.TotalMilliseconds < heldRepeats)
           return;
 
-        if (_keyboardKeyRepeated && timeBetween.TotalMilliseconds > _keyboardFirstRepeat)
+        if (_keyboardKeyRepeated && timeBetween.TotalMilliseconds > firstRepeat)
           _keyboardKeyRepeated = false;
         else
           _keyboardKeyRepeated = true;
 
         if (_handleKeyboardLocally)
-        {
           KeyDown(keyCode, modifiers);
-        }
         else
-        {
           KeyDownRemote(keyCode, modifiers);
-        }
       }
 
       _lastKeyboardKeyCode = keyCode;

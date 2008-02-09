@@ -35,7 +35,7 @@ namespace MicrosoftMceTransceiver
       this.numericUpDownButtonHeldDelay = new System.Windows.Forms.NumericUpDown();
       this.buttonOK = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
-      this.groupBoxTimes = new System.Windows.Forms.GroupBox();
+      this.groupBoxRemoteTiming = new System.Windows.Forms.GroupBox();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.numericUpDownLearnTimeout = new System.Windows.Forms.NumericUpDown();
       this.numericUpDownKeyHeldDelay = new System.Windows.Forms.NumericUpDown();
@@ -57,9 +57,11 @@ namespace MicrosoftMceTransceiver
       this.tabPageMouse = new System.Windows.Forms.TabPage();
       this.labelMouseSensitivity = new System.Windows.Forms.Label();
       this.checkBoxEnableMouse = new System.Windows.Forms.CheckBox();
+      this.checkBoxUseSystemRatesRemote = new System.Windows.Forms.CheckBox();
+      this.checkBoxUseSystemRatesKeyboard = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).BeginInit();
-      this.groupBoxTimes.SuspendLayout();
+      this.groupBoxRemoteTiming.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLearnTimeout)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyHeldDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyRepeatDelay)).BeginInit();
@@ -77,7 +79,7 @@ namespace MicrosoftMceTransceiver
       this.labelButtonRepeatDelay.Location = new System.Drawing.Point(8, 24);
       this.labelButtonRepeatDelay.Name = "labelButtonRepeatDelay";
       this.labelButtonRepeatDelay.Size = new System.Drawing.Size(128, 20);
-      this.labelButtonRepeatDelay.TabIndex = 0;
+      this.labelButtonRepeatDelay.TabIndex = 1;
       this.labelButtonRepeatDelay.Text = "Button repeat delay:";
       this.labelButtonRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -86,7 +88,7 @@ namespace MicrosoftMceTransceiver
       this.labelButtonHeldDelay.Location = new System.Drawing.Point(8, 56);
       this.labelButtonHeldDelay.Name = "labelButtonHeldDelay";
       this.labelButtonHeldDelay.Size = new System.Drawing.Size(128, 20);
-      this.labelButtonHeldDelay.TabIndex = 2;
+      this.labelButtonHeldDelay.TabIndex = 3;
       this.labelButtonHeldDelay.Text = "Button held delay:";
       this.labelButtonHeldDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -105,7 +107,7 @@ namespace MicrosoftMceTransceiver
             0});
       this.numericUpDownButtonRepeatDelay.Name = "numericUpDownButtonRepeatDelay";
       this.numericUpDownButtonRepeatDelay.Size = new System.Drawing.Size(80, 20);
-      this.numericUpDownButtonRepeatDelay.TabIndex = 1;
+      this.numericUpDownButtonRepeatDelay.TabIndex = 2;
       this.numericUpDownButtonRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownButtonRepeatDelay.ThousandsSeparator = true;
       this.toolTips.SetToolTip(this.numericUpDownButtonRepeatDelay, "When the button is held this is the time between the first press and the first re" +
@@ -131,7 +133,7 @@ namespace MicrosoftMceTransceiver
             0});
       this.numericUpDownButtonHeldDelay.Name = "numericUpDownButtonHeldDelay";
       this.numericUpDownButtonHeldDelay.Size = new System.Drawing.Size(80, 20);
-      this.numericUpDownButtonHeldDelay.TabIndex = 3;
+      this.numericUpDownButtonHeldDelay.TabIndex = 4;
       this.numericUpDownButtonHeldDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownButtonHeldDelay.ThousandsSeparator = true;
       this.toolTips.SetToolTip(this.numericUpDownButtonHeldDelay, "When the button is held this is the time between repeats");
@@ -143,7 +145,7 @@ namespace MicrosoftMceTransceiver
       // 
       // buttonOK
       // 
-      this.buttonOK.Location = new System.Drawing.Point(128, 208);
+      this.buttonOK.Location = new System.Drawing.Point(128, 240);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 1;
@@ -154,7 +156,7 @@ namespace MicrosoftMceTransceiver
       // buttonCancel
       // 
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(200, 208);
+      this.buttonCancel.Location = new System.Drawing.Point(200, 240);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 2;
@@ -162,18 +164,18 @@ namespace MicrosoftMceTransceiver
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
       // 
-      // groupBoxTimes
+      // groupBoxRemoteTiming
       // 
-      this.groupBoxTimes.Controls.Add(this.labelButtonRepeatDelay);
-      this.groupBoxTimes.Controls.Add(this.numericUpDownButtonHeldDelay);
-      this.groupBoxTimes.Controls.Add(this.labelButtonHeldDelay);
-      this.groupBoxTimes.Controls.Add(this.numericUpDownButtonRepeatDelay);
-      this.groupBoxTimes.Location = new System.Drawing.Point(8, 40);
-      this.groupBoxTimes.Name = "groupBoxTimes";
-      this.groupBoxTimes.Size = new System.Drawing.Size(232, 88);
-      this.groupBoxTimes.TabIndex = 1;
-      this.groupBoxTimes.TabStop = false;
-      this.groupBoxTimes.Text = "Remote button timing (in milliseconds)";
+      this.groupBoxRemoteTiming.Controls.Add(this.labelButtonRepeatDelay);
+      this.groupBoxRemoteTiming.Controls.Add(this.numericUpDownButtonHeldDelay);
+      this.groupBoxRemoteTiming.Controls.Add(this.labelButtonHeldDelay);
+      this.groupBoxRemoteTiming.Controls.Add(this.numericUpDownButtonRepeatDelay);
+      this.groupBoxRemoteTiming.Location = new System.Drawing.Point(8, 72);
+      this.groupBoxRemoteTiming.Name = "groupBoxRemoteTiming";
+      this.groupBoxRemoteTiming.Size = new System.Drawing.Size(232, 88);
+      this.groupBoxRemoteTiming.TabIndex = 1;
+      this.groupBoxRemoteTiming.TabStop = false;
+      this.groupBoxRemoteTiming.Text = "Remote button timing (in milliseconds)";
       // 
       // numericUpDownLearnTimeout
       // 
@@ -182,7 +184,7 @@ namespace MicrosoftMceTransceiver
             0,
             0,
             0});
-      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(152, 64);
+      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(152, 72);
       this.numericUpDownLearnTimeout.Maximum = new decimal(new int[] {
             60000,
             0,
@@ -220,7 +222,7 @@ namespace MicrosoftMceTransceiver
             0});
       this.numericUpDownKeyHeldDelay.Name = "numericUpDownKeyHeldDelay";
       this.numericUpDownKeyHeldDelay.Size = new System.Drawing.Size(80, 20);
-      this.numericUpDownKeyHeldDelay.TabIndex = 3;
+      this.numericUpDownKeyHeldDelay.TabIndex = 4;
       this.numericUpDownKeyHeldDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownKeyHeldDelay.ThousandsSeparator = true;
       this.toolTips.SetToolTip(this.numericUpDownKeyHeldDelay, "When a key is held this is the time between repeats");
@@ -245,7 +247,7 @@ namespace MicrosoftMceTransceiver
             0});
       this.numericUpDownKeyRepeatDelay.Name = "numericUpDownKeyRepeatDelay";
       this.numericUpDownKeyRepeatDelay.Size = new System.Drawing.Size(80, 20);
-      this.numericUpDownKeyRepeatDelay.TabIndex = 1;
+      this.numericUpDownKeyRepeatDelay.TabIndex = 2;
       this.numericUpDownKeyRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownKeyRepeatDelay.ThousandsSeparator = true;
       this.toolTips.SetToolTip(this.numericUpDownKeyRepeatDelay, "When a key is held this is the time between the first press and the first repeat");
@@ -260,12 +262,12 @@ namespace MicrosoftMceTransceiver
       this.checkBoxHandleKeyboardLocal.AutoSize = true;
       this.checkBoxHandleKeyboardLocal.Checked = true;
       this.checkBoxHandleKeyboardLocal.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxHandleKeyboardLocal.Location = new System.Drawing.Point(8, 136);
+      this.checkBoxHandleKeyboardLocal.Location = new System.Drawing.Point(8, 168);
       this.checkBoxHandleKeyboardLocal.Name = "checkBoxHandleKeyboardLocal";
       this.checkBoxHandleKeyboardLocal.Size = new System.Drawing.Size(139, 17);
       this.checkBoxHandleKeyboardLocal.TabIndex = 2;
       this.checkBoxHandleKeyboardLocal.Text = "Handle keyboard locally";
-      this.toolTips.SetToolTip(this.checkBoxHandleKeyboardLocal, "Act on key presses locally (on the machine IR Server is running on)");
+      this.toolTips.SetToolTip(this.checkBoxHandleKeyboardLocal, "Act on key presses locally (on the machine Input Servie is running on)");
       this.checkBoxHandleKeyboardLocal.UseVisualStyleBackColor = true;
       // 
       // checkBoxHandleMouseLocal
@@ -278,7 +280,7 @@ namespace MicrosoftMceTransceiver
       this.checkBoxHandleMouseLocal.Size = new System.Drawing.Size(126, 17);
       this.checkBoxHandleMouseLocal.TabIndex = 1;
       this.checkBoxHandleMouseLocal.Text = "Handle mouse locally";
-      this.toolTips.SetToolTip(this.checkBoxHandleMouseLocal, "Act on mouse locally (on the machine IR Server is running on)");
+      this.toolTips.SetToolTip(this.checkBoxHandleMouseLocal, "Act on mouse locally (on the machine Input Service is running on)");
       this.checkBoxHandleMouseLocal.UseVisualStyleBackColor = true;
       // 
       // numericUpDownMouseSensitivity
@@ -316,7 +318,7 @@ namespace MicrosoftMceTransceiver
       this.checkBoxDisableMCEServices.AutoSize = true;
       this.checkBoxDisableMCEServices.Checked = true;
       this.checkBoxDisableMCEServices.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxDisableMCEServices.Location = new System.Drawing.Point(8, 96);
+      this.checkBoxDisableMCEServices.Location = new System.Drawing.Point(8, 104);
       this.checkBoxDisableMCEServices.Name = "checkBoxDisableMCEServices";
       this.checkBoxDisableMCEServices.Size = new System.Drawing.Size(216, 17);
       this.checkBoxDisableMCEServices.TabIndex = 2;
@@ -327,7 +329,7 @@ namespace MicrosoftMceTransceiver
       // 
       // labelLearnIRTimeout
       // 
-      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 64);
+      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 72);
       this.labelLearnIRTimeout.Name = "labelLearnIRTimeout";
       this.labelLearnIRTimeout.Size = new System.Drawing.Size(136, 20);
       this.labelLearnIRTimeout.TabIndex = 0;
@@ -343,7 +345,7 @@ namespace MicrosoftMceTransceiver
       this.tabControl.Location = new System.Drawing.Point(8, 8);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(256, 192);
+      this.tabControl.Size = new System.Drawing.Size(256, 224);
       this.tabControl.TabIndex = 0;
       // 
       // tabPageBasic
@@ -354,19 +356,20 @@ namespace MicrosoftMceTransceiver
       this.tabPageBasic.Location = new System.Drawing.Point(4, 22);
       this.tabPageBasic.Name = "tabPageBasic";
       this.tabPageBasic.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageBasic.Size = new System.Drawing.Size(248, 166);
+      this.tabPageBasic.Size = new System.Drawing.Size(248, 198);
       this.tabPageBasic.TabIndex = 0;
       this.tabPageBasic.Text = "Basic";
       this.tabPageBasic.UseVisualStyleBackColor = true;
       // 
       // tabPageRemote
       // 
+      this.tabPageRemote.Controls.Add(this.checkBoxUseSystemRatesRemote);
       this.tabPageRemote.Controls.Add(this.checkBoxEnableRemote);
-      this.tabPageRemote.Controls.Add(this.groupBoxTimes);
+      this.tabPageRemote.Controls.Add(this.groupBoxRemoteTiming);
       this.tabPageRemote.Location = new System.Drawing.Point(4, 22);
       this.tabPageRemote.Name = "tabPageRemote";
       this.tabPageRemote.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageRemote.Size = new System.Drawing.Size(248, 166);
+      this.tabPageRemote.Size = new System.Drawing.Size(248, 198);
       this.tabPageRemote.TabIndex = 1;
       this.tabPageRemote.Text = "Remote";
       this.tabPageRemote.UseVisualStyleBackColor = true;
@@ -381,17 +384,19 @@ namespace MicrosoftMceTransceiver
       this.checkBoxEnableRemote.Size = new System.Drawing.Size(155, 17);
       this.checkBoxEnableRemote.TabIndex = 0;
       this.checkBoxEnableRemote.Text = "Enable remote control input";
+      this.toolTips.SetToolTip(this.checkBoxEnableRemote, "Decode remote control button presses");
       this.checkBoxEnableRemote.UseVisualStyleBackColor = true;
       // 
       // tabPageKeyboard
       // 
+      this.tabPageKeyboard.Controls.Add(this.checkBoxUseSystemRatesKeyboard);
       this.tabPageKeyboard.Controls.Add(this.checkBoxHandleKeyboardLocal);
       this.tabPageKeyboard.Controls.Add(this.checkBoxEnableKeyboard);
       this.tabPageKeyboard.Controls.Add(this.groupBoxKeypressTiming);
       this.tabPageKeyboard.Location = new System.Drawing.Point(4, 22);
       this.tabPageKeyboard.Name = "tabPageKeyboard";
       this.tabPageKeyboard.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageKeyboard.Size = new System.Drawing.Size(248, 166);
+      this.tabPageKeyboard.Size = new System.Drawing.Size(248, 198);
       this.tabPageKeyboard.TabIndex = 2;
       this.tabPageKeyboard.Text = "Keyboard";
       this.tabPageKeyboard.UseVisualStyleBackColor = true;
@@ -406,6 +411,7 @@ namespace MicrosoftMceTransceiver
       this.checkBoxEnableKeyboard.Size = new System.Drawing.Size(132, 17);
       this.checkBoxEnableKeyboard.TabIndex = 0;
       this.checkBoxEnableKeyboard.Text = "Enable keyboard input";
+      this.toolTips.SetToolTip(this.checkBoxEnableKeyboard, "Decode remote keyboard input");
       this.checkBoxEnableKeyboard.UseVisualStyleBackColor = true;
       // 
       // groupBoxKeypressTiming
@@ -414,7 +420,7 @@ namespace MicrosoftMceTransceiver
       this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyHeldDelay);
       this.groupBoxKeypressTiming.Controls.Add(this.labelKeyHeldDelay);
       this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyRepeatDelay);
-      this.groupBoxKeypressTiming.Location = new System.Drawing.Point(8, 40);
+      this.groupBoxKeypressTiming.Location = new System.Drawing.Point(8, 72);
       this.groupBoxKeypressTiming.Name = "groupBoxKeypressTiming";
       this.groupBoxKeypressTiming.Size = new System.Drawing.Size(232, 88);
       this.groupBoxKeypressTiming.TabIndex = 1;
@@ -426,7 +432,7 @@ namespace MicrosoftMceTransceiver
       this.labelKeyRepeatDelay.Location = new System.Drawing.Point(8, 24);
       this.labelKeyRepeatDelay.Name = "labelKeyRepeatDelay";
       this.labelKeyRepeatDelay.Size = new System.Drawing.Size(128, 20);
-      this.labelKeyRepeatDelay.TabIndex = 0;
+      this.labelKeyRepeatDelay.TabIndex = 1;
       this.labelKeyRepeatDelay.Text = "Key repeat delay:";
       this.labelKeyRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -435,7 +441,7 @@ namespace MicrosoftMceTransceiver
       this.labelKeyHeldDelay.Location = new System.Drawing.Point(8, 56);
       this.labelKeyHeldDelay.Name = "labelKeyHeldDelay";
       this.labelKeyHeldDelay.Size = new System.Drawing.Size(128, 20);
-      this.labelKeyHeldDelay.TabIndex = 2;
+      this.labelKeyHeldDelay.TabIndex = 3;
       this.labelKeyHeldDelay.Text = "Key held delay:";
       this.labelKeyHeldDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -448,7 +454,7 @@ namespace MicrosoftMceTransceiver
       this.tabPageMouse.Location = new System.Drawing.Point(4, 22);
       this.tabPageMouse.Name = "tabPageMouse";
       this.tabPageMouse.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMouse.Size = new System.Drawing.Size(248, 166);
+      this.tabPageMouse.Size = new System.Drawing.Size(248, 198);
       this.tabPageMouse.TabIndex = 3;
       this.tabPageMouse.Text = "Mouse";
       this.tabPageMouse.UseVisualStyleBackColor = true;
@@ -472,7 +478,36 @@ namespace MicrosoftMceTransceiver
       this.checkBoxEnableMouse.Size = new System.Drawing.Size(119, 17);
       this.checkBoxEnableMouse.TabIndex = 0;
       this.checkBoxEnableMouse.Text = "Enable mouse input";
+      this.toolTips.SetToolTip(this.checkBoxEnableMouse, "Decode remote mouse input");
       this.checkBoxEnableMouse.UseVisualStyleBackColor = true;
+      // 
+      // checkBoxUseSystemRatesRemote
+      // 
+      this.checkBoxUseSystemRatesRemote.AutoSize = true;
+      this.checkBoxUseSystemRatesRemote.Checked = true;
+      this.checkBoxUseSystemRatesRemote.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxUseSystemRatesRemote.Location = new System.Drawing.Point(8, 40);
+      this.checkBoxUseSystemRatesRemote.Name = "checkBoxUseSystemRatesRemote";
+      this.checkBoxUseSystemRatesRemote.Size = new System.Drawing.Size(187, 17);
+      this.checkBoxUseSystemRatesRemote.TabIndex = 0;
+      this.checkBoxUseSystemRatesRemote.Text = "Use system keyboard rate settings";
+      this.toolTips.SetToolTip(this.checkBoxUseSystemRatesRemote, "Use the system keyboard repeat rate settings for remote button timing");
+      this.checkBoxUseSystemRatesRemote.UseVisualStyleBackColor = true;
+      this.checkBoxUseSystemRatesRemote.CheckedChanged += new System.EventHandler(this.checkBoxUseSystemRatesRemote_CheckedChanged);
+      // 
+      // checkBoxUseSystemRatesKeyboard
+      // 
+      this.checkBoxUseSystemRatesKeyboard.AutoSize = true;
+      this.checkBoxUseSystemRatesKeyboard.Checked = true;
+      this.checkBoxUseSystemRatesKeyboard.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxUseSystemRatesKeyboard.Location = new System.Drawing.Point(8, 40);
+      this.checkBoxUseSystemRatesKeyboard.Name = "checkBoxUseSystemRatesKeyboard";
+      this.checkBoxUseSystemRatesKeyboard.Size = new System.Drawing.Size(187, 17);
+      this.checkBoxUseSystemRatesKeyboard.TabIndex = 0;
+      this.checkBoxUseSystemRatesKeyboard.Text = "Use system keyboard rate settings";
+      this.toolTips.SetToolTip(this.checkBoxUseSystemRatesKeyboard, "Use the system keyboard repeat rate settings for remote keyboard repeat rates");
+      this.checkBoxUseSystemRatesKeyboard.UseVisualStyleBackColor = true;
+      this.checkBoxUseSystemRatesKeyboard.CheckedChanged += new System.EventHandler(this.checkBoxUseSystemRatesKeyboard_CheckedChanged);
       // 
       // Configure
       // 
@@ -480,19 +515,19 @@ namespace MicrosoftMceTransceiver
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(272, 241);
+      this.ClientSize = new System.Drawing.Size(272, 273);
       this.ControlBox = false;
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-      this.MinimumSize = new System.Drawing.Size(278, 266);
+      this.MinimumSize = new System.Drawing.Size(278, 298);
       this.Name = "Configure";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Microsoft MCE Configuration";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).EndInit();
-      this.groupBoxTimes.ResumeLayout(false);
+      this.groupBoxRemoteTiming.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLearnTimeout)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyHeldDelay)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyRepeatDelay)).EndInit();
@@ -519,7 +554,7 @@ namespace MicrosoftMceTransceiver
     private System.Windows.Forms.NumericUpDown numericUpDownButtonHeldDelay;
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.Button buttonCancel;
-    private System.Windows.Forms.GroupBox groupBoxTimes;
+    private System.Windows.Forms.GroupBox groupBoxRemoteTiming;
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.Label labelLearnIRTimeout;
     private System.Windows.Forms.NumericUpDown numericUpDownLearnTimeout;
@@ -541,5 +576,7 @@ namespace MicrosoftMceTransceiver
     private System.Windows.Forms.CheckBox checkBoxHandleMouseLocal;
     private System.Windows.Forms.CheckBox checkBoxEnableMouse;
     private System.Windows.Forms.CheckBox checkBoxDisableMCEServices;
+    private System.Windows.Forms.CheckBox checkBoxUseSystemRatesRemote;
+    private System.Windows.Forms.CheckBox checkBoxUseSystemRatesKeyboard;
   }
 }

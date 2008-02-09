@@ -29,6 +29,11 @@ namespace MicrosoftMceTransceiver
       get { return checkBoxEnableRemote.Checked; }
       set { checkBoxEnableRemote.Checked = value; }
     }
+    public bool UseSystemRatesForRemote
+    {
+      get { return checkBoxUseSystemRatesRemote.Checked; }
+      set { checkBoxUseSystemRatesRemote.Checked = value; }
+    }
     public int RemoteRepeatDelay
     {
       get { return Decimal.ToInt32(numericUpDownButtonRepeatDelay.Value); }
@@ -44,6 +49,11 @@ namespace MicrosoftMceTransceiver
     {
       get { return checkBoxEnableKeyboard.Checked; }
       set { checkBoxEnableKeyboard.Checked = value; }
+    }
+    public bool UseSystemRatesForKeyboard
+    {
+      get { return checkBoxUseSystemRatesKeyboard.Checked; }
+      set { checkBoxUseSystemRatesKeyboard.Checked = value; }
     }
     public int KeyboardRepeatDelay
     {
@@ -102,6 +112,15 @@ namespace MicrosoftMceTransceiver
     }
 
     #endregion Buttons
+
+    private void checkBoxUseSystemRatesRemote_CheckedChanged(object sender, EventArgs e)
+    {
+      groupBoxRemoteTiming.Enabled = !checkBoxUseSystemRatesRemote.Checked;
+    }
+    private void checkBoxUseSystemRatesKeyboard_CheckedChanged(object sender, EventArgs e)
+    {
+      groupBoxKeypressTiming.Enabled = !checkBoxUseSystemRatesKeyboard.Checked;
+    }
 
   }
 
