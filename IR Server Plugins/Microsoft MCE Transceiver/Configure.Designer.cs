@@ -44,21 +44,21 @@ namespace MicrosoftMceTransceiver
       this.checkBoxHandleMouseLocal = new System.Windows.Forms.CheckBox();
       this.numericUpDownMouseSensitivity = new System.Windows.Forms.NumericUpDown();
       this.checkBoxDisableMCEServices = new System.Windows.Forms.CheckBox();
+      this.checkBoxEnableRemote = new System.Windows.Forms.CheckBox();
+      this.checkBoxEnableKeyboard = new System.Windows.Forms.CheckBox();
+      this.checkBoxEnableMouse = new System.Windows.Forms.CheckBox();
+      this.checkBoxUseSystemRatesRemote = new System.Windows.Forms.CheckBox();
+      this.checkBoxUseSystemRatesKeyboard = new System.Windows.Forms.CheckBox();
       this.labelLearnIRTimeout = new System.Windows.Forms.Label();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageBasic = new System.Windows.Forms.TabPage();
       this.tabPageRemote = new System.Windows.Forms.TabPage();
-      this.checkBoxEnableRemote = new System.Windows.Forms.CheckBox();
       this.tabPageKeyboard = new System.Windows.Forms.TabPage();
-      this.checkBoxEnableKeyboard = new System.Windows.Forms.CheckBox();
       this.groupBoxKeypressTiming = new System.Windows.Forms.GroupBox();
       this.labelKeyRepeatDelay = new System.Windows.Forms.Label();
       this.labelKeyHeldDelay = new System.Windows.Forms.Label();
       this.tabPageMouse = new System.Windows.Forms.TabPage();
       this.labelMouseSensitivity = new System.Windows.Forms.Label();
-      this.checkBoxEnableMouse = new System.Windows.Forms.CheckBox();
-      this.checkBoxUseSystemRatesRemote = new System.Windows.Forms.CheckBox();
-      this.checkBoxUseSystemRatesKeyboard = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).BeginInit();
       this.groupBoxRemoteTiming.SuspendLayout();
@@ -145,6 +145,7 @@ namespace MicrosoftMceTransceiver
       // 
       // buttonOK
       // 
+      this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonOK.Location = new System.Drawing.Point(128, 240);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
@@ -155,6 +156,7 @@ namespace MicrosoftMceTransceiver
       // 
       // buttonCancel
       // 
+      this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.buttonCancel.Location = new System.Drawing.Point(200, 240);
       this.buttonCancel.Name = "buttonCancel";
@@ -327,6 +329,69 @@ namespace MicrosoftMceTransceiver
               "erver");
       this.checkBoxDisableMCEServices.UseVisualStyleBackColor = true;
       // 
+      // checkBoxEnableRemote
+      // 
+      this.checkBoxEnableRemote.AutoSize = true;
+      this.checkBoxEnableRemote.Checked = true;
+      this.checkBoxEnableRemote.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxEnableRemote.Location = new System.Drawing.Point(8, 8);
+      this.checkBoxEnableRemote.Name = "checkBoxEnableRemote";
+      this.checkBoxEnableRemote.Size = new System.Drawing.Size(155, 17);
+      this.checkBoxEnableRemote.TabIndex = 0;
+      this.checkBoxEnableRemote.Text = "Enable remote control input";
+      this.toolTips.SetToolTip(this.checkBoxEnableRemote, "Decode remote control button presses");
+      this.checkBoxEnableRemote.UseVisualStyleBackColor = true;
+      // 
+      // checkBoxEnableKeyboard
+      // 
+      this.checkBoxEnableKeyboard.AutoSize = true;
+      this.checkBoxEnableKeyboard.Checked = true;
+      this.checkBoxEnableKeyboard.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxEnableKeyboard.Location = new System.Drawing.Point(8, 8);
+      this.checkBoxEnableKeyboard.Name = "checkBoxEnableKeyboard";
+      this.checkBoxEnableKeyboard.Size = new System.Drawing.Size(132, 17);
+      this.checkBoxEnableKeyboard.TabIndex = 0;
+      this.checkBoxEnableKeyboard.Text = "Enable keyboard input";
+      this.toolTips.SetToolTip(this.checkBoxEnableKeyboard, "Decode remote keyboard input");
+      this.checkBoxEnableKeyboard.UseVisualStyleBackColor = true;
+      // 
+      // checkBoxEnableMouse
+      // 
+      this.checkBoxEnableMouse.AutoSize = true;
+      this.checkBoxEnableMouse.Checked = true;
+      this.checkBoxEnableMouse.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxEnableMouse.Location = new System.Drawing.Point(8, 8);
+      this.checkBoxEnableMouse.Name = "checkBoxEnableMouse";
+      this.checkBoxEnableMouse.Size = new System.Drawing.Size(119, 17);
+      this.checkBoxEnableMouse.TabIndex = 0;
+      this.checkBoxEnableMouse.Text = "Enable mouse input";
+      this.toolTips.SetToolTip(this.checkBoxEnableMouse, "Decode remote mouse input");
+      this.checkBoxEnableMouse.UseVisualStyleBackColor = true;
+      // 
+      // checkBoxUseSystemRatesRemote
+      // 
+      this.checkBoxUseSystemRatesRemote.AutoSize = true;
+      this.checkBoxUseSystemRatesRemote.Location = new System.Drawing.Point(8, 40);
+      this.checkBoxUseSystemRatesRemote.Name = "checkBoxUseSystemRatesRemote";
+      this.checkBoxUseSystemRatesRemote.Size = new System.Drawing.Size(187, 17);
+      this.checkBoxUseSystemRatesRemote.TabIndex = 0;
+      this.checkBoxUseSystemRatesRemote.Text = "Use system keyboard rate settings";
+      this.toolTips.SetToolTip(this.checkBoxUseSystemRatesRemote, "Use the system keyboard repeat rate settings for remote button timing");
+      this.checkBoxUseSystemRatesRemote.UseVisualStyleBackColor = true;
+      this.checkBoxUseSystemRatesRemote.CheckedChanged += new System.EventHandler(this.checkBoxUseSystemRatesRemote_CheckedChanged);
+      // 
+      // checkBoxUseSystemRatesKeyboard
+      // 
+      this.checkBoxUseSystemRatesKeyboard.AutoSize = true;
+      this.checkBoxUseSystemRatesKeyboard.Location = new System.Drawing.Point(8, 40);
+      this.checkBoxUseSystemRatesKeyboard.Name = "checkBoxUseSystemRatesKeyboard";
+      this.checkBoxUseSystemRatesKeyboard.Size = new System.Drawing.Size(187, 17);
+      this.checkBoxUseSystemRatesKeyboard.TabIndex = 0;
+      this.checkBoxUseSystemRatesKeyboard.Text = "Use system keyboard rate settings";
+      this.toolTips.SetToolTip(this.checkBoxUseSystemRatesKeyboard, "Use the system keyboard repeat rate settings for remote keyboard repeat rates");
+      this.checkBoxUseSystemRatesKeyboard.UseVisualStyleBackColor = true;
+      this.checkBoxUseSystemRatesKeyboard.CheckedChanged += new System.EventHandler(this.checkBoxUseSystemRatesKeyboard_CheckedChanged);
+      // 
       // labelLearnIRTimeout
       // 
       this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 72);
@@ -338,6 +403,9 @@ namespace MicrosoftMceTransceiver
       // 
       // tabControl
       // 
+      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl.Controls.Add(this.tabPageBasic);
       this.tabControl.Controls.Add(this.tabPageRemote);
       this.tabControl.Controls.Add(this.tabPageKeyboard);
@@ -374,19 +442,6 @@ namespace MicrosoftMceTransceiver
       this.tabPageRemote.Text = "Remote";
       this.tabPageRemote.UseVisualStyleBackColor = true;
       // 
-      // checkBoxEnableRemote
-      // 
-      this.checkBoxEnableRemote.AutoSize = true;
-      this.checkBoxEnableRemote.Checked = true;
-      this.checkBoxEnableRemote.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxEnableRemote.Location = new System.Drawing.Point(8, 8);
-      this.checkBoxEnableRemote.Name = "checkBoxEnableRemote";
-      this.checkBoxEnableRemote.Size = new System.Drawing.Size(155, 17);
-      this.checkBoxEnableRemote.TabIndex = 0;
-      this.checkBoxEnableRemote.Text = "Enable remote control input";
-      this.toolTips.SetToolTip(this.checkBoxEnableRemote, "Decode remote control button presses");
-      this.checkBoxEnableRemote.UseVisualStyleBackColor = true;
-      // 
       // tabPageKeyboard
       // 
       this.tabPageKeyboard.Controls.Add(this.checkBoxUseSystemRatesKeyboard);
@@ -400,19 +455,6 @@ namespace MicrosoftMceTransceiver
       this.tabPageKeyboard.TabIndex = 2;
       this.tabPageKeyboard.Text = "Keyboard";
       this.tabPageKeyboard.UseVisualStyleBackColor = true;
-      // 
-      // checkBoxEnableKeyboard
-      // 
-      this.checkBoxEnableKeyboard.AutoSize = true;
-      this.checkBoxEnableKeyboard.Checked = true;
-      this.checkBoxEnableKeyboard.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxEnableKeyboard.Location = new System.Drawing.Point(8, 8);
-      this.checkBoxEnableKeyboard.Name = "checkBoxEnableKeyboard";
-      this.checkBoxEnableKeyboard.Size = new System.Drawing.Size(132, 17);
-      this.checkBoxEnableKeyboard.TabIndex = 0;
-      this.checkBoxEnableKeyboard.Text = "Enable keyboard input";
-      this.toolTips.SetToolTip(this.checkBoxEnableKeyboard, "Decode remote keyboard input");
-      this.checkBoxEnableKeyboard.UseVisualStyleBackColor = true;
       // 
       // groupBoxKeypressTiming
       // 
@@ -468,47 +510,6 @@ namespace MicrosoftMceTransceiver
       this.labelMouseSensitivity.Text = "Mouse sensitivity:";
       this.labelMouseSensitivity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // checkBoxEnableMouse
-      // 
-      this.checkBoxEnableMouse.AutoSize = true;
-      this.checkBoxEnableMouse.Checked = true;
-      this.checkBoxEnableMouse.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxEnableMouse.Location = new System.Drawing.Point(8, 8);
-      this.checkBoxEnableMouse.Name = "checkBoxEnableMouse";
-      this.checkBoxEnableMouse.Size = new System.Drawing.Size(119, 17);
-      this.checkBoxEnableMouse.TabIndex = 0;
-      this.checkBoxEnableMouse.Text = "Enable mouse input";
-      this.toolTips.SetToolTip(this.checkBoxEnableMouse, "Decode remote mouse input");
-      this.checkBoxEnableMouse.UseVisualStyleBackColor = true;
-      // 
-      // checkBoxUseSystemRatesRemote
-      // 
-      this.checkBoxUseSystemRatesRemote.AutoSize = true;
-      this.checkBoxUseSystemRatesRemote.Checked = true;
-      this.checkBoxUseSystemRatesRemote.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxUseSystemRatesRemote.Location = new System.Drawing.Point(8, 40);
-      this.checkBoxUseSystemRatesRemote.Name = "checkBoxUseSystemRatesRemote";
-      this.checkBoxUseSystemRatesRemote.Size = new System.Drawing.Size(187, 17);
-      this.checkBoxUseSystemRatesRemote.TabIndex = 0;
-      this.checkBoxUseSystemRatesRemote.Text = "Use system keyboard rate settings";
-      this.toolTips.SetToolTip(this.checkBoxUseSystemRatesRemote, "Use the system keyboard repeat rate settings for remote button timing");
-      this.checkBoxUseSystemRatesRemote.UseVisualStyleBackColor = true;
-      this.checkBoxUseSystemRatesRemote.CheckedChanged += new System.EventHandler(this.checkBoxUseSystemRatesRemote_CheckedChanged);
-      // 
-      // checkBoxUseSystemRatesKeyboard
-      // 
-      this.checkBoxUseSystemRatesKeyboard.AutoSize = true;
-      this.checkBoxUseSystemRatesKeyboard.Checked = true;
-      this.checkBoxUseSystemRatesKeyboard.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxUseSystemRatesKeyboard.Location = new System.Drawing.Point(8, 40);
-      this.checkBoxUseSystemRatesKeyboard.Name = "checkBoxUseSystemRatesKeyboard";
-      this.checkBoxUseSystemRatesKeyboard.Size = new System.Drawing.Size(187, 17);
-      this.checkBoxUseSystemRatesKeyboard.TabIndex = 0;
-      this.checkBoxUseSystemRatesKeyboard.Text = "Use system keyboard rate settings";
-      this.toolTips.SetToolTip(this.checkBoxUseSystemRatesKeyboard, "Use the system keyboard repeat rate settings for remote keyboard repeat rates");
-      this.checkBoxUseSystemRatesKeyboard.UseVisualStyleBackColor = true;
-      this.checkBoxUseSystemRatesKeyboard.CheckedChanged += new System.EventHandler(this.checkBoxUseSystemRatesKeyboard_CheckedChanged);
-      // 
       // Configure
       // 
       this.AcceptButton = this.buttonOK;
@@ -520,8 +521,7 @@ namespace MicrosoftMceTransceiver
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
-      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-      this.MinimumSize = new System.Drawing.Size(278, 298);
+      this.MinimumSize = new System.Drawing.Size(280, 300);
       this.Name = "Configure";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Microsoft MCE Configuration";

@@ -22,6 +22,7 @@ namespace XBCDRCReceiver
     #region Constants
 
     const int DeviceBufferSize = 7;
+    const string DevicePathVidPid = "vid_045e&pid_0284";
 
     #endregion Constants
 
@@ -396,7 +397,7 @@ namespace XBCDRCReceiver
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        if (deviceInterfaceDetailData.DevicePath.IndexOf("vid_045e&pid_0284") != -1)
+        if (deviceInterfaceDetailData.DevicePath.IndexOf(DevicePathVidPid, StringComparison.OrdinalIgnoreCase) != -1)
         {
           SetupDiDestroyDeviceInfoList(handle);
           devicePath = deviceInterfaceDetailData.DevicePath;
@@ -427,7 +428,7 @@ namespace XBCDRCReceiver
 
             string keyCode = ((int)_deviceBuffer[3]).ToString();
 
-            if (keyCode != _lastCode || timeSpan.Milliseconds > 250)
+            if (keyCode != _lastCode || timeSpan.Milliseconds >= 250)
             {
               _remoteButtonHandler(keyCode);
 

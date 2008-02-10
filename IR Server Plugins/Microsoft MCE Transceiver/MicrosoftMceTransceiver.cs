@@ -259,10 +259,12 @@ namespace MicrosoftMceTransceiver
       config.DisableMceServices   = _disableMceServices;
 
       config.EnableRemote         = _enableRemoteInput;
+      config.UseSystemRatesForRemote = _useSystemRatesRemote;
       config.RemoteRepeatDelay    = _remoteFirstRepeat;
       config.RemoteHeldDelay      = _remoteHeldRepeats;
 
       config.EnableKeyboard       = _enableKeyboardInput;
+      config.UseSystemRatesForKeyboard = _useSystemRatesKeyboard;
       config.KeyboardRepeatDelay  = _keyboardFirstRepeat;
       config.KeyboardHeldDelay    = _keyboardHeldRepeats;
       config.HandleKeyboardLocal  = _handleKeyboardLocally;
@@ -277,10 +279,12 @@ namespace MicrosoftMceTransceiver
         _disableMceServices     = config.DisableMceServices;
 
         _enableRemoteInput      = config.EnableRemote;
+        _useSystemRatesRemote   = config.UseSystemRatesForRemote;
         _remoteFirstRepeat      = config.RemoteRepeatDelay;
         _remoteHeldRepeats      = config.RemoteHeldDelay;
 
         _enableKeyboardInput    = config.EnableKeyboard;
+        _useSystemRatesKeyboard = config.UseSystemRatesForKeyboard;
         _keyboardFirstRepeat    = config.KeyboardRepeatDelay;
         _keyboardHeldRepeats    = config.KeyboardHeldDelay;
         _handleKeyboardLocally  = config.HandleKeyboardLocal;
