@@ -11,7 +11,7 @@ using Microsoft.Win32.SafeHandles;
 
 using IRServerPluginInterface;
 
-namespace HcwTransceiver
+namespace HcwReceiver
 {
 
   /// <summary>
@@ -21,19 +21,11 @@ namespace HcwTransceiver
   public class HcwReceiver : IRServerPluginBase, IRemoteReceiver, IConfigure
   {
 
-    #region Delegates
-
-    //Sets up callback so that other forms can catch a key press
-    delegate void HCWEvent(int keypress);
-    //event HCWEvent HCWKeyPressed;
-
-    #endregion Delegates
-
     #region Constants
 
     static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\HCW Transceiver.xml";
+      "\\IR Server Suite\\IR Server\\HCW Receiver.xml";
 
     #endregion Constants
 
@@ -43,8 +35,8 @@ namespace HcwTransceiver
     bool _stopIrExe;
     bool _startIrExe;
 
-    IrRemoteWrapper _irRemoteWrapper = null;
-    RemoteHandler _remoteButtonHandler = null;
+    IrRemoteWrapper _irRemoteWrapper    = null;
+    RemoteHandler _remoteButtonHandler  = null;
     
     int _lastCode           = 0;
     DateTime _lastCodeTime  = DateTime.Now;
@@ -72,7 +64,7 @@ namespace HcwTransceiver
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Support for Hauppauge devices"; } }
+    public override string Description  { get { return "Support for Hauppauge IR devices"; } }
 
     /// <summary>
     /// Start the IR Server plugin.

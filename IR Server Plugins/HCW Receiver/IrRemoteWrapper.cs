@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 using Microsoft.Win32;
 
-namespace HcwTransceiver
+namespace HcwReceiver
 {
 
   /// <summary>

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("HCW Receiver")]
-[assembly: AssemblyDescription("IR Server plugin to support the HCW Receiver")]
+[assembly: AssemblyDescription("IR Server plugin to support HCW Receivers")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HcwReceiver")]

@@ -1,4 +1,4 @@
-namespace HcwTransceiver
+namespace HcwReceiver
 {
   partial class Configure
   {

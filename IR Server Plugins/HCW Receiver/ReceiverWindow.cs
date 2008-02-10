@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace HcwTransceiver
+namespace HcwReceiver
 {
 
   #region Delegates
