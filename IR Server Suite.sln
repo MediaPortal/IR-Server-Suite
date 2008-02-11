@@ -383,6 +383,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCW Receiver", "IR Server P
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Media Center Plugins", "Media Center Plugins", "{A4526325-E80D-492A-8D7A-5E791EAF6C73}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCE Control Plugin", "Media Center Plugins\MCE Control Plugin\MCE Control Plugin.csproj", "{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STB Blaster Plugin", "Media Center Plugins\STB Blaster Plugin\STB Blaster Plugin.csproj", "{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -801,6 +819,22 @@ Global
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|x86.ActiveCfg = Release|x86
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|x86.Build.0 = Release|x86
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}.Debug|x86.ActiveCfg = Debug|x86
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}.Debug|x86.Build.0 = Debug|x86
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}.Release|x86.ActiveCfg = Release|x86
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED}.Release|x86.Build.0 = Release|x86
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Debug|x86.ActiveCfg = Debug|x86
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Debug|x86.Build.0 = Debug|x86
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Release|x86.ActiveCfg = Release|x86
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -860,5 +894,7 @@ Global
 		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D} = {F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}
 		{966281F9-3898-4CB7-9940-99D49C21F170} = {F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}
 		{49CF376E-811C-4EB4-817F-A39C9529B608} = {F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}
+		{4355D0D7-2DF3-437D-90C3-FFD96347D9ED} = {A4526325-E80D-492A-8D7A-5E791EAF6C73}
+		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F} = {A4526325-E80D-492A-8D7A-5E791EAF6C73}
 	EndGlobalSection
 EndGlobal

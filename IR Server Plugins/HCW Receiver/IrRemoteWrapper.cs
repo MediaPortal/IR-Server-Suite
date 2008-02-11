@@ -118,6 +118,9 @@ namespace HcwReceiver
     /// </summary>
     public IrRemoteWrapper()
     {
+      string dllPath = GetDllPath();
+      IRSetDllDirectory(dllPath);
+
       _window = new ReceiverWindow();
       _window.ProcMsg = new ProcessMessage(WndProc);
     }

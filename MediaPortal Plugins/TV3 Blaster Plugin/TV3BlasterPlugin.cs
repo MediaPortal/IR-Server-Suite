@@ -363,6 +363,9 @@ namespace TvEngine
 
         Log.Info("TV3BlasterPlugin: Tune request - Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
 
+        if (_externalChannelConfigs == null)
+          throw new ApplicationException("Cannot process tune request, no STB settings are loaded");
+
         Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
         newThread.Name = "ProcessExternalChannel";
         newThread.IsBackground = true;

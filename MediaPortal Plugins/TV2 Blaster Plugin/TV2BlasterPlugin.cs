@@ -398,6 +398,9 @@ namespace MediaPortal.Plugins
 
       Log.Info("TV2BlasterPlugin: Tune request - Card: {0}, Channel: {1}", msg.Label2, msg.Label);
 
+      if (_externalChannelConfigs == null)
+        throw new ApplicationException("Cannot process tune request, no STB settings are loaded");
+
       try
       {
         Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
@@ -480,9 +483,12 @@ namespace MediaPortal.Plugins
 
         int card = int.Parse(data[1]);
 
-        // To work around a known bug in MediaPortal scheduled recording (Added: 25-Feb-2007)
+        // To work around a known bug in MediaPortal scheduled recording
         if (card < 0)
-          card = 0;
+        {
+          card = _externalChannelConfigs[0].CardId;
+          Log.Warn("TV2BlasterPlugin: MediaPortal reports invalid TV Card ID ({0}), using STB settings for first TV Card ({1})", data[1], card);
+        }
 
         ExternalChannelConfig config = GetExternalChannelConfig(card);
 
