@@ -38,4 +38,4 @@ using System.Runtime.InteropServices;
 
 [assembly: CLSCompliant(true)]
 
-[assembly: GuidAttribute("00506894-d61e-47b9-9039-879c543a73e1")]
+[assembly: Guid("00506894-d61e-47b9-9039-879c543a73e1")]

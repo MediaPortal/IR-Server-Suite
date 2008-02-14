@@ -2,15 +2,16 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("IRMan Receiver")]
-[assembly: AssemblyDescription("IR Server plugin to support the IRMan receiver")]
+[assembly: AssemblyTitle("LiveDrive Receiver")]
+[assembly: AssemblyDescription("IR Server plugin to support the Tira transceiver")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("IRManReceiver")]
+[assembly: AssemblyProduct("LiveDrive Receiver")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -33,4 +34,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.4.2")]
 
 [assembly: CLSCompliant(true)]
-[assembly: Guid("a50e930e-1653-40d5-ba5a-3c0315868c1b")]
+
+[assembly: Guid("65cae4f2-9799-4b6a-8b54-5a9203c41f57")]
+
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

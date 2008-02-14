@@ -401,6 +401,30 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STB Blaster Plugin", "Media
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tira Transceiver", "IR Server Plugins\Tira Transceiver\Tira Transceiver.csproj", "{6137C390-DDB0-44B0-8ED5-51B45C0D4404}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ira Transceiver", "IR Server Plugins\Ira Transceiver\Ira Transceiver.csproj", "{0E045E97-EEB2-461C-A416-CFC8E452E044}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech Receiver", "IR Server Plugins\Speech Receiver\Speech Receiver.csproj", "{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveDrive Receiver", "IR Server Plugins\LiveDrive Receiver\LiveDrive Receiver.csproj", "{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -835,6 +859,30 @@ Global
 		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Release|x86.ActiveCfg = Release|x86
 		{EC9F3A8D-3FB5-49EF-B10C-65DB9831B32F}.Release|x86.Build.0 = Release|x86
+		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Release|x86.ActiveCfg = Release|Any CPU
+		{0E045E97-EEB2-461C-A416-CFC8E452E044}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E045E97-EEB2-461C-A416-CFC8E452E044}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E045E97-EEB2-461C-A416-CFC8E452E044}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0E045E97-EEB2-461C-A416-CFC8E452E044}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E045E97-EEB2-461C-A416-CFC8E452E044}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E045E97-EEB2-461C-A416-CFC8E452E044}.Release|x86.ActiveCfg = Release|Any CPU
+		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Release|x86.ActiveCfg = Release|Any CPU
+		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -872,6 +920,10 @@ Global
 		{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
+		{6137C390-DDB0-44B0-8ED5-51B45C0D4404} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
+		{0E045E97-EEB2-461C-A416-CFC8E452E044} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
+		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
+		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{E8BEBBCC-1EE0-488D-8806-98ADCB7F0479} = {6C18D808-E5ED-4CFB-A7CD-E2BDBB1D9BDA}
 		{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90} = {6C18D808-E5ED-4CFB-A7CD-E2BDBB1D9BDA}
 		{CD395FC2-70E2-42C4-8A20-5469A0C5EB50} = {6C18D808-E5ED-4CFB-A7CD-E2BDBB1D9BDA}

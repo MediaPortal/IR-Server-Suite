@@ -4,12 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</ProjectGuid>
+    <ProjectGuid>{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Commands</RootNamespace>
-    <AssemblyName>CommandBase</AssemblyName>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RootNamespace>LiveDriveReceiver</RootNamespace>
+    <AssemblyName>LiveDrive Receiver</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,8 +19,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\LiveDrive Receiver.XML</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <DocumentationFile>bin\Debug\CommandBase.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,21 +33,32 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command.cs" />
-    <Compile Include="CommandExecutionException.cs" />
-    <Compile Include="CommandStructureException.cs" />
+    <Compile Include="Configure.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Configure.Designer.cs">
+      <DependentUpon>Configure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LiveDriveReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VariableList\VariableList.csproj">
-      <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
-      <Name>VariableList</Name>
+    <ProjectReference Include="..\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
+      <Project>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</Project>
+      <Name>IR Server Plugin Interface</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configure.resx">
+      <DependentUpon>Configure.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

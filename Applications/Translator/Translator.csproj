@@ -179,6 +179,7 @@
     <Content Include="Graphics\MoveUp.png" />
     <Content Include="Graphics\NoIcon.png" />
     <Content Include="Graphics\Plus.png" />
+    <Content Include="Graphics\Remap.png" />
     <Content Include="Graphics\ScrollDown.png" />
     <Content Include="Graphics\ScrollUp.png" />
     <Content Include="Graphics\Shortcut.png" />

@@ -180,7 +180,7 @@ namespace WiiRemoteReceiver
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
     }
-    
+
     /// <summary>
     /// Callback for mouse events.
     /// </summary>
@@ -252,7 +252,7 @@ namespace WiiRemoteReceiver
       }
 #endif
     }
-    
+
     void WiimoteChanged(object sender, WiimoteChangedEventArgs args)
     {
       WiimoteState ws = args.WiimoteState;

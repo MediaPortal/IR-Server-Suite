@@ -34,6 +34,6 @@ using System.Security.Permissions;
 [assembly: AssemblyFileVersion("1.0.4.2")]
 
 [assembly: CLSCompliant(true)]
-[assembly: GuidAttribute("db244336-eeac-4789-af94-6fbe53df225f")]
+[assembly: Guid("db244336-eeac-4789-af94-6fbe53df225f")]
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

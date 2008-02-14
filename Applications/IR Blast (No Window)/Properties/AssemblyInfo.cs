@@ -37,4 +37,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.4.2")]
 
 [assembly: CLSCompliant(true)]
-[assembly: GuidAttribute("81eb136b-cc74-4eed-976d-f96ebccd1ce4")]
+[assembly: Guid("81eb136b-cc74-4eed-976d-f96ebccd1ce4")]

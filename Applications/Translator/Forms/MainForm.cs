@@ -612,6 +612,50 @@ namespace Translator
       currentMappings.Clear();
       listViewButtons.Items.Clear();
     }
+    void RemapButtonMapping()
+    {
+      if (listViewButtons.SelectedIndices.Count != 1)
+        return;
+
+      ListViewItem item = listViewButtons.SelectedItems[0];
+
+      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+      if (currentMappings == null)
+        return;
+
+      ButtonMapping toModify = null;
+      foreach (ButtonMapping test in currentMappings)
+      {
+        if (test.KeyCode.Equals(item.SubItems[0].Text, StringComparison.Ordinal))
+        {
+          toModify = test;
+          break;
+        }
+      }
+
+      if (toModify == null)
+        return;
+
+      GetKeyCodeForm getKeyCode = new GetKeyCodeForm();
+      getKeyCode.ShowDialog(this);
+
+      string keyCode = getKeyCode.KeyCode;
+      if (String.IsNullOrEmpty(keyCode))
+        return;
+
+      foreach (ButtonMapping test in currentMappings)
+      {
+        if (test.KeyCode.Equals(keyCode, StringComparison.Ordinal))
+        {
+          MessageBox.Show(this, String.Format("{0} is already mapped to {1} ({2})", keyCode, test.Description, test.Command), "Cannot remap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+      }
+
+      item.SubItems[0].Text = keyCode;
+
+      toModify.KeyCode = keyCode;
+    }
 
     void ClickCopyFrom(object sender, EventArgs e)
     {
@@ -1203,6 +1247,10 @@ namespace Translator
     {
       ClearButtonMappings();
     }
+    private void remapButtonToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      RemapButtonMapping();
+    }
 
     #endregion Menus
 
@@ -1221,6 +1269,10 @@ namespace Translator
     private void toolStripButtonDeleteAllMappings_Click(object sender, EventArgs e)
     {
       ClearButtonMappings();
+    }
+    private void toolStripButtonRemapMapping_Click(object sender, EventArgs e)
+    {
+      RemapButtonMapping();
     }
 
     private void toolStripButtonNewMacro_Click(object sender, EventArgs e)
@@ -1329,7 +1381,6 @@ namespace Translator
         MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
       }
     }
-
 
   }
 
