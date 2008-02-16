@@ -1,4 +1,4 @@
-namespace WiiRemoteReceiver
+namespace InputService.Plugin
 {
   partial class Setup
   {

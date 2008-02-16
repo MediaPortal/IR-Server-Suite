@@ -7,7 +7,7 @@ using System.IO.Ports;
 using System.Text;
 using System.Windows.Forms;
 
-namespace IRManReceiver
+namespace InputService.Plugin
 {
 
   partial class Configure : Form

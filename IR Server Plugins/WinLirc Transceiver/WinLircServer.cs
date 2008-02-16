@@ -31,7 +31,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
-namespace WinLircTransceiver
+namespace InputService.Plugin
 {
 
   /// <summary>

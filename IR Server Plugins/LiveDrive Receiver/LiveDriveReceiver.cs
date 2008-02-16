@@ -10,16 +10,14 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
-
-namespace LiveDriveReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for LiveDrive, Audigy Drive and compatible Creative MIDI IR input devices.
   /// </summary>
   [CLSCompliant(false)]
-  public class LiveDriveReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
+  public class LiveDriveReceiver : PluginBase, IConfigure, IRemoteReceiver
   {
 
     #region Interop
@@ -128,7 +126,7 @@ namespace LiveDriveReceiver
 
     RemoteHandler _remoteButtonHandler;
 
-    int _repeatDelay;
+    int _midiIndex = 2;
 
     bool _stopping = false;
     MidiInProc _midiCallback = null;
@@ -136,7 +134,6 @@ namespace LiveDriveReceiver
     StringBuilder _buffer = null;
 
     int _midiInHandle = -1;
-    int _midiIndex = 2;
 
 
 
@@ -165,7 +162,7 @@ namespace LiveDriveReceiver
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Support for Creative LiveDrive, Audigy Drive and compatible MIDI-based IR receivers."; } }
+    public override string Description  { get { return "Support for Creative LiveDrive, Audigy Drive and compatible MIDI-based IR receivers"; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
@@ -260,11 +257,11 @@ namespace LiveDriveReceiver
 
       Configure config = new Configure();
 
-      config.RepeatDelay  = _repeatDelay;
+      config.DeviceIndex = _midiIndex;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
-        _repeatDelay  = config.RepeatDelay;
+        _midiIndex = config.DeviceIndex;
 
         SaveSettings();
       }
@@ -291,7 +288,7 @@ namespace LiveDriveReceiver
         XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
 
-        _repeatDelay  = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
+        _midiIndex = int.Parse(doc.DocumentElement.Attributes["DeviceIndex"].Value);
       }
 #if TRACE
       catch (Exception ex)
@@ -302,7 +299,7 @@ namespace LiveDriveReceiver
       {
 #endif
 
-        _repeatDelay  = 500;
+        _midiIndex = 2;
       }
     }
     /// <summary>
@@ -320,7 +317,7 @@ namespace LiveDriveReceiver
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
-          writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
+          writer.WriteAttributeString("DeviceIndex", _midiIndex.ToString());
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();

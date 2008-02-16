@@ -11,16 +11,39 @@ using System.Xml;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace CustomHIDReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server plugin to support HID USB devices.
   /// </summary>
-  public class CustomHIDReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
+  public class CustomHIDReceiver : PluginBase, IConfigure, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
+
+    static void Remote(string code)
+    {
+      Console.WriteLine(code);
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      CustomHIDReceiver c = new CustomHIDReceiver();
+
+      c.Configure(null);
+
+      c.RemoteCallback += new RemoteHandler(Remote);
+      
+      
+      c.Start();
+
+      Application.Run();
+
+      c.Stop();
+      c = null;
+
+
+    }
 
     #region Constants
 
@@ -57,20 +80,6 @@ namespace CustomHIDReceiver
 
     #endregion Variables
 
-    #region Constructor
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CustomHIDReceiver"/> class.
-    /// </summary>
-    public CustomHIDReceiver()
-    {
-      LoadSettings();
-
-      _receiverWindow = new ReceiverWindow("Custom HID Receiver");
-    }
-
-    #endregion Constructor
-    
     /// <summary>
     /// Name of the IR Server plugin.
     /// </summary>
@@ -93,22 +102,13 @@ namespace CustomHIDReceiver
     public override string Description  { get { return "Supports HID USB devices."; } }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
-    /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
-    {
-      // TODO: Add detection code.
-      return false;
-    }
-
-    /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
     public override void Start()
     {
+      LoadSettings();
+
+      _receiverWindow = new ReceiverWindow("Custom HID Receiver");
       _receiverWindow.ProcMsg += new ProcessMessage(ProcMessage);
 
       _device.dwFlags = RawInput.RawInputDeviceFlags.InputSink;      
@@ -140,6 +140,8 @@ namespace CustomHIDReceiver
       RegisterForRawInput(_device);
 
       _receiverWindow.ProcMsg -= new ProcessMessage(ProcMessage);
+      _receiverWindow.DestroyHandle();
+      _receiverWindow = null;
     }
 
     /// <summary>
@@ -147,7 +149,10 @@ namespace CustomHIDReceiver
     /// </summary>
     public void Configure(IWin32Window owner)
     {
+      LoadSettings();
+
       DeviceSelect deviceSelect = new DeviceSelect();
+      deviceSelect.SelectedDevice = _device;
 
       if (deviceSelect.ShowDialog(owner) == DialogResult.OK)
       {
@@ -400,6 +405,9 @@ namespace CustomHIDReceiver
 #if TRACE
                   Trace.WriteLine( String.Format("E0: {0}", raw.keyboard.MakeCode));
 #endif
+                  if (_keyboardHandler != null)
+                    _keyboardHandler(0xE000 | raw.keyboard.MakeCode, true);
+
                   break;
 
                 case RawInput.RawKeyboardFlags.KeyE1:

@@ -1,6 +1,6 @@
 using System;
 
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   #region Enumerations

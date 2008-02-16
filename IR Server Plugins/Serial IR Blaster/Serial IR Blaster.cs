@@ -10,15 +10,13 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
-
-namespace SerialIRBlaster
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for Serial IR Blaster device.
   /// </summary>
-  public class SerialIRBlaster : IRServerPluginBase, IConfigure, ITransmitIR
+  public class SerialIRBlaster : PluginBase, IConfigure, ITransmitIR
   {
 
     #region Constants

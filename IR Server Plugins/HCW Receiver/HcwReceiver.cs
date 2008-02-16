@@ -9,16 +9,14 @@ using System.Xml;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace HcwReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server plugin supporting Hauppauge devices.
   /// </summary>
   [CLSCompliant(false)]
-  public class HcwReceiver : IRServerPluginBase, IRemoteReceiver, IConfigure
+  public class HcwReceiver : PluginBase, IRemoteReceiver, IConfigure
   {
 
     #region Constants

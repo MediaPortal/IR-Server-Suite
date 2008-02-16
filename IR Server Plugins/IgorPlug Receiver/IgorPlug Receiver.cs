@@ -11,15 +11,13 @@ using System.Threading;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace IgorPlugReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server plugin supporting the IgorPlug device.
   /// </summary>
-  public class IgorPlugReceiver : IRServerPluginBase, IRemoteReceiver
+  public class IgorPlugReceiver : PluginBase, IRemoteReceiver
   {
 
     #region Constants

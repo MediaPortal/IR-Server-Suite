@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 using Microsoft.Win32.SafeHandles;
 
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   class NotifyWindow : NativeWindow, IDisposable

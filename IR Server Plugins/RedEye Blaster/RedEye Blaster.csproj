@@ -7,7 +7,7 @@
     <ProjectGuid>{5A9954F8-344C-489C-B8DA-8E8927271A02}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RedEyeBlaster</RootNamespace>
+    <RootNamespace>InputService.Plugin</RootNamespace>
     <AssemblyName>RedEye Blaster</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>

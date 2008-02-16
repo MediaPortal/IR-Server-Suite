@@ -7,9 +7,9 @@
     <ProjectGuid>{DC79E2EC-7D1B-4359-A285-38AC8154166B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Configuration</RootNamespace>
+    <RootNamespace>InputService.Configuration</RootNamespace>
     <AssemblyName>Input Service Configuration</AssemblyName>
-    <StartupObject>Configuration.Program</StartupObject>
+    <StartupObject>InputService.Configuration.Program</StartupObject>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>

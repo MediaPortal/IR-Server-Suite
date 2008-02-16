@@ -11,9 +11,7 @@ using System.Xml;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace UirtTransceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
@@ -21,7 +19,7 @@ namespace UirtTransceiver
   /// </summary>
   [CLSCompliant(false)]
   public class UirtTransceiver :
-    IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
+    PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
   {
 
     #region Constants

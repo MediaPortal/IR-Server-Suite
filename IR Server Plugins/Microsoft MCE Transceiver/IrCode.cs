@@ -5,7 +5,7 @@ using System.Text;
 
 // Remember: Pulse is Positive, Space is Negative.
 
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   /// <summary>

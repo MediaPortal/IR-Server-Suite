@@ -1,4 +1,4 @@
-namespace WinLircTransceiver
+namespace InputService.Plugin
 {
   partial class CreateIRFile
   {

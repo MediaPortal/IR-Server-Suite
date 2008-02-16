@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   partial class Configure : Form

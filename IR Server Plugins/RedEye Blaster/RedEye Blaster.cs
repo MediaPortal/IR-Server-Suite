@@ -10,9 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
-
-namespace RedEyeBlaster
+namespace InputService.Plugin
 {
 
   #region Enumerations
@@ -41,7 +39,7 @@ namespace RedEyeBlaster
   /// <summary>
   /// IR Server Plugin for RedEye serial IR Blaster device.  http://www.redremote.co.uk/serial/
   /// </summary>
-  public class SerialIRBlaster : IRServerPluginBase, IConfigure, ITransmitIR
+  public class SerialIRBlaster : PluginBase, IConfigure, ITransmitIR
   {
 
     #region Constants

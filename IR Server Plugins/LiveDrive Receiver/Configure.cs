@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace LiveDriveReceiver
+namespace InputService.Plugin
 {
 
   partial class Configure : Form
@@ -40,6 +40,11 @@ namespace LiveDriveReceiver
 
     #region Properties
 
+    public int DeviceIndex
+    {
+      get { return comboBoxDevice.SelectedIndex; }
+      set { comboBoxDevice.SelectedIndex = value; }
+    }
 
     #endregion Properties
 
@@ -48,6 +53,21 @@ namespace LiveDriveReceiver
     public Configure()
     {
       InitializeComponent();
+/*
+      MidiInCaps midiInCaps = new MidiInCaps();
+      ASCIIEncoding encoder = new ASCIIEncoding();
+
+      for (int i = 0; i < m_lirPlugin.MIDIDeviceCount; i++)
+      {
+        if (midiInGetDevCaps(i, ref midiInCaps, Marshal.SizeOf(typeof(MidiInCaps))) == 0)
+        {
+          string strName = encoder.GetString(midiInCaps.szPname);
+          int intNullIndex = strName.IndexOf((char)0);
+          strName = strName.Remove(intNullIndex, MidiInCaps.MAXPNAMELEN - intNullIndex);
+          cbxDevices.Items.Add(new MIDIDevice(strName, i));
+        }
+      }
+      */
     }
 
     #endregion Constructor

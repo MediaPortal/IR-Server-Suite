@@ -1,10 +1,10 @@
-namespace IRServerPluginInterface
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// Base class for all IR Server Plugins.
   /// </summary>
-  public abstract class IRServerPluginBase
+  public abstract class PluginBase
   {
 
     #region Properties

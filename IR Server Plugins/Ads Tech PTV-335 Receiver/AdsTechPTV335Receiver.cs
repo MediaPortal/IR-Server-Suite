@@ -3,15 +3,13 @@ using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-using IRServerPluginInterface;
-
-namespace AdsTechPTV335Receiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server plugin to support the Ads Tech PTV-335 Receiver device.
   /// </summary>
-  public class AdsTechPTV335Receiver : IRServerPluginBase, IRemoteReceiver
+  public class AdsTechPTV335Receiver : PluginBase, IRemoteReceiver
   {
 
     #region Interop

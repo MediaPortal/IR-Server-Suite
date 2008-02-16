@@ -13,9 +13,7 @@ using System.Xml;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   #region Enumerations
@@ -51,7 +49,7 @@ namespace MicrosoftMceTransceiver
   /// IR Server Plugin for Microsoft MCE Transceiver device.
   /// </summary>
   public class MicrosoftMceTransceiver :
-    IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
+    PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
 
     #region Constants

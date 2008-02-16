@@ -8,15 +8,13 @@ using System.Xml;
 
 using Microsoft.DirectX.DirectInput;
 
-using IRServerPluginInterface;
-
-namespace DirectInputReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for Direct Input game controllers.
   /// </summary>
-  public class DirectInputReceiver : IRServerPluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
+  public class DirectInputReceiver : PluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
   {
 
     #region Constants

@@ -27,7 +27,7 @@ using System;
 using System.Threading;
 using Microsoft.DirectX.DirectInput;
 
-namespace DirectInputReceiver
+namespace InputService.Plugin
 {
   /// <summary>
   /// Summary description for DirectInputListener.

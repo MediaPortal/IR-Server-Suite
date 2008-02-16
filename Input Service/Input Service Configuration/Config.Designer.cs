@@ -1,4 +1,4 @@
-namespace Configuration
+namespace InputService.Configuration
 {
   partial class Config
   {

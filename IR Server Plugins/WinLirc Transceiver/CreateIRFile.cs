@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-namespace WinLircTransceiver
+namespace InputService.Plugin
 {
 
   partial class CreateIRFile : Form

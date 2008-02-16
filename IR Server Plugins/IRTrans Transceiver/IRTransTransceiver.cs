@@ -15,9 +15,7 @@ using System.Xml;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace IRTransTransceiver
+namespace InputService.Plugin
 {
 
   #region Enumerations
@@ -180,7 +178,7 @@ namespace IRTransTransceiver
   /// <summary>
   /// IR Server Plugin for IRTrans.
   /// </summary>
-  public class IRTransTransceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
+  public class IRTransTransceiver : PluginBase, IConfigure, IRemoteReceiver
   {
 
     #region Constants

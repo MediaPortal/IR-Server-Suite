@@ -7,17 +7,15 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
-
 using WiimoteLib;
 
-namespace WiiRemoteReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for the Wii Remote.
   /// </summary>
-  public class WiiRemoteReceiver : IRServerPluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
+  public class WiiRemoteReceiver : PluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
   {
 
     #region Constants

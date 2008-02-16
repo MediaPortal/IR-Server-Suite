@@ -1,4 +1,4 @@
-namespace GirderPlugin
+namespace InputService.Plugin
 {
   partial class Config
   {

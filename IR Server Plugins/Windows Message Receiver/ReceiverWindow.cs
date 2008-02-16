@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace WindowsMessageReceiver
+namespace InputService.Plugin
 {
 
   #region Delegates

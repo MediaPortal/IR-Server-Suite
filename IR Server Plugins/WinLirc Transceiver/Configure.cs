@@ -7,7 +7,7 @@ using System.Text;
 using System.Net;
 using System.Windows.Forms;
 
-namespace WinLircTransceiver
+namespace InputService.Plugin
 {
 
   partial class Configure : Form

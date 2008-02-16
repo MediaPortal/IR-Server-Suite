@@ -1,6 +1,6 @@
 using System;
 
-namespace IgorPlugReceiver
+namespace InputService.Plugin
 {
 
   #region Enumerations

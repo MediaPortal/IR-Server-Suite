@@ -1,6 +1,6 @@
 using System;
 
-namespace IRServerPluginInterface
+namespace InputService.Plugin
 {
 
   /// <summary>

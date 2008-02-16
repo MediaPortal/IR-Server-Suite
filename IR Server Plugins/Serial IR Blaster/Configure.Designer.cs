@@ -1,4 +1,4 @@
-namespace SerialIRBlaster
+namespace InputService.Plugin
 {
   partial class Configure
   {

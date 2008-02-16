@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 using Microsoft.Win32;
 
-namespace CustomHIDReceiver
+namespace InputService.Plugin
 {
 
   internal class DeviceDetails

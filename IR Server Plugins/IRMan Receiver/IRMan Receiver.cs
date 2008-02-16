@@ -10,15 +10,13 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
-
-namespace IRManReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for IRMan Receiver device.
   /// </summary>
-  public class IRManReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
+  public class IRManReceiver : PluginBase, IConfigure, IRemoteReceiver
   {
 
     #region Constants

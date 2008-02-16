@@ -1,4 +1,4 @@
-namespace UirtTransceiver
+namespace InputService.Plugin
 {
   partial class Configure
   {

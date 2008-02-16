@@ -11,15 +11,13 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
-
-namespace WinLircTransceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for WinLirc.
   /// </summary>
-  public class WinLircTransceiver : IRServerPluginBase, IConfigure, IRemoteReceiver, ITransmitIR
+  public class WinLircTransceiver : PluginBase, IConfigure, IRemoteReceiver, ITransmitIR
   {
 
     #region Constants

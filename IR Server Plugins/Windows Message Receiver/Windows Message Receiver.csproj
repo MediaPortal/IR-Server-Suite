@@ -7,7 +7,7 @@
     <ProjectGuid>{4CBA81F9-F0C2-4242-8D72-204597285042}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WindowsMessageReceiver</RootNamespace>
+    <RootNamespace>InputService.Plugin</RootNamespace>
     <AssemblyName>Windows Message Receiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>

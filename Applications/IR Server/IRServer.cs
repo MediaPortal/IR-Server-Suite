@@ -13,7 +13,7 @@ using System.Xml;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
+using InputService.Plugin;
 using IrssComms;
 using IrssUtils;
 
@@ -71,10 +71,10 @@ namespace IRServer
     bool _registered; // Used for relay and repeater modes.
 
     string[] _pluginNameReceive;
-    List<IRServerPluginBase> _pluginReceive;
+    List<PluginBase> _pluginReceive;
 
     string _pluginNameTransmit;
-    IRServerPluginBase _pluginTransmit;
+    PluginBase _pluginTransmit;
 
     bool _inConfiguration;
 
@@ -172,13 +172,13 @@ namespace IRServer
           }
           else
           {
-            _pluginReceive = new List<IRServerPluginBase>(_pluginNameReceive.Length);
+            _pluginReceive = new List<PluginBase>(_pluginNameReceive.Length);
 
             for (int index = 0; index < _pluginNameReceive.Length; index++)
             {
               string pluginName = _pluginNameReceive[index];
 
-              IRServerPluginBase plugin = Program.GetPlugin(pluginName);
+              PluginBase plugin = Program.GetPlugin(pluginName);
 
               if (plugin == null)
               {
@@ -236,9 +236,9 @@ namespace IRServer
 
         if (_pluginReceive != null)
         {
-          List<IRServerPluginBase> removePlugins = new List<IRServerPluginBase>();
+          List<PluginBase> removePlugins = new List<PluginBase>();
 
-          foreach (IRServerPluginBase plugin in _pluginReceive)
+          foreach (PluginBase plugin in _pluginReceive)
           {
             try
             {
@@ -275,7 +275,7 @@ namespace IRServer
             }
           }
 
-          foreach (IRServerPluginBase plugin in removePlugins)
+          foreach (PluginBase plugin in removePlugins)
             _pluginReceive.Remove(plugin);
 
           if (_pluginReceive.Count == 0)
@@ -336,7 +336,7 @@ namespace IRServer
 
       if (_pluginReceive != null)
       {
-        foreach (IRServerPluginBase plugin in _pluginReceive)
+        foreach (PluginBase plugin in _pluginReceive)
         {
           try
           {
@@ -467,7 +467,7 @@ namespace IRServer
 
           if (_pluginReceive != null)
           {
-            foreach (IRServerPluginBase plugin in _pluginReceive)
+            foreach (PluginBase plugin in _pluginReceive)
             {
               try
               {
@@ -512,7 +512,7 @@ namespace IRServer
 
           if (_pluginReceive != null)
           {
-            foreach (IRServerPluginBase plugin in _pluginReceive)
+            foreach (PluginBase plugin in _pluginReceive)
             {
               try
               {
@@ -1280,12 +1280,12 @@ namespace IRServer
             {
               IrssMessage response = new IrssMessage(MessageType.AvailableBlasters, MessageFlags.Response);
 
-              IRServerPluginBase[] plugins = Program.AvailablePlugins();
+              PluginBase[] plugins = Program.AvailablePlugins();
               StringBuilder blasters = new StringBuilder();
 
               for (int index = 0; index < plugins.Length; index++)
               {
-                IRServerPluginBase plugin = plugins[index];
+                PluginBase plugin = plugins[index];
 
                 if (plugin is ITransmitIR)
                 {
@@ -1314,12 +1314,12 @@ namespace IRServer
             {
               IrssMessage response = new IrssMessage(MessageType.AvailableReceivers, MessageFlags.Response);
 
-              IRServerPluginBase[] plugins = Program.AvailablePlugins();
+              PluginBase[] plugins = Program.AvailablePlugins();
               StringBuilder receivers = new StringBuilder();
 
               for (int index = 0; index < plugins.Length; index++)
               {
-                IRServerPluginBase plugin = plugins[index];
+                PluginBase plugin = plugins[index];
 
                 if (plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver)
                 {

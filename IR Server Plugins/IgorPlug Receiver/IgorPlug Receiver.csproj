@@ -7,7 +7,7 @@
     <ProjectGuid>{A4023992-CCD6-461E-8E14-219A496734C5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IgorPlugReceiver</RootNamespace>
+    <RootNamespace>InputService.Plugin</RootNamespace>
     <AssemblyName>IgorPlug Receiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>

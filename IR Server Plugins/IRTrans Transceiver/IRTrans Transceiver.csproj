@@ -7,7 +7,7 @@
     <ProjectGuid>{883913F6-F4A7-4DE2-846A-C2102FAF499E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IRTransTransceiver</RootNamespace>
+    <RootNamespace>InputService.Plugin</RootNamespace>
     <AssemblyName>IRTrans Transceiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>

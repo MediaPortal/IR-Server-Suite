@@ -1,4 +1,4 @@
-namespace IRManReceiver
+namespace InputService.Plugin
 {
   partial class Configure
   {

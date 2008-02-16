@@ -1,4 +1,4 @@
-namespace IRTransTransceiver
+namespace InputService.Plugin
 {
   partial class Configure
   {

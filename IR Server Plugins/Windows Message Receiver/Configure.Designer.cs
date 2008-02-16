@@ -1,4 +1,4 @@
-namespace WindowsMessageReceiver
+namespace InputService.Plugin
 {
   partial class Configure
   {

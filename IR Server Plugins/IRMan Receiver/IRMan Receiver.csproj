@@ -7,7 +7,7 @@
     <ProjectGuid>{7C686499-7517-4338-8837-7E8617549D9A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IRManReceiver</RootNamespace>
+    <RootNamespace>InputService.Plugin</RootNamespace>
     <AssemblyName>IRMan Receiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>

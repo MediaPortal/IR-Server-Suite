@@ -11,9 +11,7 @@ using System.Threading;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   /// <summary>

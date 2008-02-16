@@ -14,15 +14,13 @@ using System.Xml;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace FusionRemoteReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for the DViCO FusionREMOTE USB Receiver device.
   /// </summary>
-  public class FusionRemoteReceiver : IRServerPluginBase, IRemoteReceiver
+  public class FusionRemoteReceiver : PluginBase, IRemoteReceiver
   {
 
     #region Constants

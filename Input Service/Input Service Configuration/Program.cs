@@ -8,10 +8,10 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
+using InputService.Plugin;
 using IrssUtils;
 
-namespace Configuration
+namespace InputService.Configuration
 {
 
   #region Enumerations
@@ -271,11 +271,11 @@ namespace Configuration
     /// Retreives a list of available Input Service plugins.
     /// </summary>
     /// <returns>Array of plugin instances.</returns>
-    internal static IRServerPluginBase[] AvailablePlugins()
+    internal static PluginBase[] AvailablePlugins()
     {
       try
       {
-        List<IRServerPluginBase> plugins = new List<IRServerPluginBase>();
+        List<PluginBase> plugins = new List<PluginBase>();
 
         string installFolder = SystemRegistry.GetInstallFolder();
         if (String.IsNullOrEmpty(installFolder))
@@ -292,9 +292,9 @@ namespace Configuration
 
             foreach (Type type in types)
             {
-              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(IRServerPluginBase)))
+              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
               {
-                IRServerPluginBase plugin = (IRServerPluginBase)assembly.CreateInstance(type.FullName);
+                PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
 
                 if (plugin != null)
                   plugins.Add(plugin);
@@ -330,16 +330,16 @@ namespace Configuration
     /// </summary>
     /// <param name="pluginName">Name of plugin to instantiate.</param>
     /// <returns>Plugin instance.</returns>
-    internal static IRServerPluginBase GetPlugin(string pluginName)
+    internal static PluginBase GetPlugin(string pluginName)
     {
       if (String.IsNullOrEmpty(pluginName))
         throw new ArgumentNullException("pluginName");
 
-      IRServerPluginBase[] serverPlugins = AvailablePlugins();
+      PluginBase[] serverPlugins = AvailablePlugins();
       if (serverPlugins == null)
         throw new FileNotFoundException("No available plugins found");
 
-      foreach (IRServerPluginBase plugin in serverPlugins)
+      foreach (PluginBase plugin in serverPlugins)
         if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
           return plugin;
 
@@ -356,11 +356,11 @@ namespace Configuration
 
       try
       {
-        IRServerPluginBase[] plugins = AvailablePlugins();
+        PluginBase[] plugins = AvailablePlugins();
 
         List<string> receivers = new List<string>();
 
-        foreach (IRServerPluginBase plugin in plugins)
+        foreach (PluginBase plugin in plugins)
           if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
             receivers.Add(plugin.Name);
 
@@ -391,11 +391,11 @@ namespace Configuration
 
       try
       {
-        IRServerPluginBase[] plugins = Program.AvailablePlugins();
+        PluginBase[] plugins = Program.AvailablePlugins();
 
         List<string> blasters = new List<string>();
 
-        foreach (IRServerPluginBase plugin in plugins)
+        foreach (PluginBase plugin in plugins)
           if (plugin is ITransmitIR && plugin.Detect())
             blasters.Add(plugin.Name);
 

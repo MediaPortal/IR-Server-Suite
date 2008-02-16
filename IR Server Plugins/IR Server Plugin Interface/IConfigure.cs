@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace IRServerPluginInterface
+namespace InputService.Plugin
 {
 
   /// <summary>

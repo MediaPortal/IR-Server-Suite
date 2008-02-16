@@ -1,4 +1,4 @@
-namespace LiveDriveReceiver
+namespace InputService.Plugin
 {
 
   partial class Configure
@@ -33,13 +33,14 @@ namespace LiveDriveReceiver
       this.buttonOK = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-      this.comboBox1 = new System.Windows.Forms.ComboBox();
+      this.comboBoxDevice = new System.Windows.Forms.ComboBox();
+      this.labelDevice = new System.Windows.Forms.Label();
       this.SuspendLayout();
       // 
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(112, 104);
+      this.buttonOK.Location = new System.Drawing.Point(112, 56);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 4;
@@ -51,7 +52,7 @@ namespace LiveDriveReceiver
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(184, 104);
+      this.buttonCancel.Location = new System.Drawing.Point(184, 56);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 5;
@@ -59,13 +60,23 @@ namespace LiveDriveReceiver
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
       // 
-      // comboBox1
+      // comboBoxDevice
       // 
-      this.comboBox1.FormattingEnabled = true;
-      this.comboBox1.Location = new System.Drawing.Point(8, 32);
-      this.comboBox1.Name = "comboBox1";
-      this.comboBox1.Size = new System.Drawing.Size(240, 21);
-      this.comboBox1.TabIndex = 6;
+      this.comboBoxDevice.FormattingEnabled = true;
+      this.comboBoxDevice.Location = new System.Drawing.Point(8, 24);
+      this.comboBoxDevice.Name = "comboBoxDevice";
+      this.comboBoxDevice.Size = new System.Drawing.Size(240, 21);
+      this.comboBoxDevice.TabIndex = 6;
+      this.toolTips.SetToolTip(this.comboBoxDevice, "Select your MIDI input device");
+      // 
+      // labelDevice
+      // 
+      this.labelDevice.AutoSize = true;
+      this.labelDevice.Location = new System.Drawing.Point(8, 8);
+      this.labelDevice.Name = "labelDevice";
+      this.labelDevice.Size = new System.Drawing.Size(125, 13);
+      this.labelDevice.TabIndex = 7;
+      this.labelDevice.Text = "Choose the input device:";
       // 
       // Configure
       // 
@@ -73,19 +84,21 @@ namespace LiveDriveReceiver
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(256, 137);
-      this.Controls.Add(this.comboBox1);
+      this.ClientSize = new System.Drawing.Size(256, 89);
+      this.Controls.Add(this.labelDevice);
+      this.Controls.Add(this.comboBoxDevice);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(264, 164);
+      this.MinimumSize = new System.Drawing.Size(264, 116);
       this.Name = "Configure";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "LiveDrive / Audigy Drive Configuration";
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
@@ -94,7 +107,8 @@ namespace LiveDriveReceiver
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.ToolTip toolTips;
-    private System.Windows.Forms.ComboBox comboBox1;
+    private System.Windows.Forms.ComboBox comboBoxDevice;
+    private System.Windows.Forms.Label labelDevice;
   }
 
 }

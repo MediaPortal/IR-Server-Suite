@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 using IrssUtils;
 
-namespace Configuration
+namespace InputService.Configuration
 {
 
   partial class Advanced : Form

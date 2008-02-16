@@ -5,11 +5,12 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0F6576B4-C88E-4E79-B7E9-9480498C5A32}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomHIDReceiver</RootNamespace>
+    <RootNamespace>InputService.Plugin</RootNamespace>
     <AssemblyName>Custom HID Receiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <StartupObject>InputService.Plugin.CustomHIDReceiver</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -83,7 +84,7 @@
     <ProjectReference Include="..\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
       <Project>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</Project>
       <Name>IR Server Plugin Interface</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

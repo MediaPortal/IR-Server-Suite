@@ -7,15 +7,13 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
-
-namespace WindowsMessageReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for receiving Windows Messages.
   /// </summary>
-  public class WindowsMessageReceiver : IRServerPluginBase, IConfigure, IRemoteReceiver
+  public class WindowsMessageReceiver : PluginBase, IConfigure, IRemoteReceiver
   {
     
     // TODO: Add Learn/Blast ability

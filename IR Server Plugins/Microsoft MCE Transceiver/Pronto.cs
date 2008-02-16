@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   /// <summary>

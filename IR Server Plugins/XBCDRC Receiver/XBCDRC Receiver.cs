@@ -8,15 +8,13 @@ using System.Runtime.InteropServices;
 
 using Microsoft.Win32.SafeHandles;
 
-using IRServerPluginInterface;
-
-namespace XBCDRCReceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for the XBox 1 IR Receiver with XBCDRC.
   /// </summary>
-  public class XBCDRCReceiver : IRServerPluginBase, IRemoteReceiver, IDisposable
+  public class XBCDRCReceiver : PluginBase, IRemoteReceiver, IDisposable
   {
 
     #region Constants

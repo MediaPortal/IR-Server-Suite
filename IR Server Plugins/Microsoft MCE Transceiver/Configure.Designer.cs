@@ -1,4 +1,4 @@
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
   partial class Configure
   {

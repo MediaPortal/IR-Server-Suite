@@ -9,10 +9,10 @@ using System.Security;
 using System.Text;
 using System.Windows.Forms;
 
-using IRServerPluginInterface;
+using InputService.Plugin;
 using IrssUtils;
 
-namespace Configuration
+namespace InputService.Configuration
 {
 
   partial class Config : Form
@@ -20,7 +20,7 @@ namespace Configuration
 
     #region Variables
 
-    IRServerPluginBase[] _transceivers;
+    PluginBase[] _transceivers;
 
     InputServiceMode _mode = InputServiceMode.ServerMode;
     string _hostComputer = String.Empty;
@@ -156,7 +156,7 @@ namespace Configuration
 
       row++;
 
-      foreach (IRServerPluginBase transceiver in _transceivers)
+      foreach (PluginBase transceiver in _transceivers)
       {
         gridPlugins.Rows.Insert(row);
 
@@ -241,7 +241,7 @@ namespace Configuration
 
       string plugin = gridPlugins[cell.Row.Index, 0].DisplayText;
 
-      foreach (IRServerPluginBase transceiver in _transceivers)
+      foreach (PluginBase transceiver in _transceivers)
         if (transceiver.Name == plugin)
           (transceiver as IConfigure).Configure(this);
     }
@@ -330,7 +330,7 @@ namespace Configuration
       {
         string name = gridPlugins[row, 0].DisplayText;
 
-        IRServerPluginBase plugin = Program.GetPlugin(name);
+        PluginBase plugin = Program.GetPlugin(name);
         
         bool detected = plugin.Detect();
 

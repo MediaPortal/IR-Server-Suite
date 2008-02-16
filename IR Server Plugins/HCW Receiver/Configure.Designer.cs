@@ -1,4 +1,4 @@
-namespace HcwReceiver
+namespace InputService.Plugin
 {
   partial class Configure
   {

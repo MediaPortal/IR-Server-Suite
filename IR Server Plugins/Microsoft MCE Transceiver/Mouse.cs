@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   /// <summary>

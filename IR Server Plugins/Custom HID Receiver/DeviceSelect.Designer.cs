@@ -1,4 +1,4 @@
-namespace CustomHIDReceiver
+namespace InputService.Plugin
 {
 
   partial class DeviceSelect

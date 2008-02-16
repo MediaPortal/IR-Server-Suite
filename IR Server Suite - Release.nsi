@@ -300,7 +300,7 @@ SkipUninstallInputService:
   File "IR Server Plugins\Custom HID Receiver\bin\Release\*.*"
   ;File "IR Server Plugins\Direct Input Receiver\bin\Release\*.*"
   File "IR Server Plugins\FusionRemote Receiver\bin\Release\*.*"
-  ;File "IR Server Plugins\General HID Receiver\bin\Release\*.*"
+  File "IR Server Plugins\General HID Receiver\bin\Release\*.*"
   File "IR Server Plugins\Girder Plugin\bin\Release\*.*"
   File "IR Server Plugins\HCW Receiver\bin\Release\*.*"
   File "IR Server Plugins\IgorPlug Receiver\bin\Release\*.*"

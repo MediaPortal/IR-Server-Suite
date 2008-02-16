@@ -1,4 +1,4 @@
-namespace RedEyeBlaster
+namespace InputService.Plugin
 {
   partial class Configure
   {

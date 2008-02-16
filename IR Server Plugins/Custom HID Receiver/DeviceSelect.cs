@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace CustomHIDReceiver
+namespace InputService.Plugin
 {
   
   internal partial class DeviceSelect : Form
@@ -29,7 +29,7 @@ namespace CustomHIDReceiver
         if (listViewDevices.SelectedItems.Count == 1)
           foreach (DeviceDetails details in _devices)
           {
-            if (details.ID.Equals(listViewDevices.SelectedItems[0].SubItems[1].Text))
+            if (details.ID.Equals(listViewDevices.SelectedItems[0].SubItems[1].Text, StringComparison.Ordinal))
             {
               RawInput.RAWINPUTDEVICE device = new RawInput.RAWINPUTDEVICE();
               device.usUsagePage = details.UsagePage;
@@ -39,6 +39,27 @@ namespace CustomHIDReceiver
           }
 
         return new RawInput.RAWINPUTDEVICE();
+      }
+
+      set
+      {
+        listViewDevices.SelectedItems.Clear();
+
+        foreach (DeviceDetails details in _devices)
+        {
+          if (details.Usage == value.usUsage && details.UsagePage == value.usUsagePage)
+          {
+            foreach(ListViewItem item in listViewDevices.Items)
+            {
+              if (details.ID.Equals(item.SubItems[1].Text, StringComparison.Ordinal))
+              {
+                item.Selected = true;
+                return;
+              }
+            }
+            return;
+          }
+        }
       }
     }
 
@@ -100,6 +121,11 @@ namespace CustomHIDReceiver
 
     private void buttonAdvanced_Click(object sender, EventArgs e)
     {
+      AdvancedSettings advancedSettings = new AdvancedSettings();
+      if (advancedSettings.ShowDialog(this) == DialogResult.OK)
+      {
+
+      }
 
     }
 

@@ -300,7 +300,7 @@ SkipUninstallInputService:
   File "IR Server Plugins\Custom HID Receiver\bin\Debug\*.*"
   ;File "IR Server Plugins\Direct Input Receiver\bin\Debug\*.*"
   File "IR Server Plugins\FusionRemote Receiver\bin\Debug\*.*"
-  ;File "IR Server Plugins\General HID Receiver\bin\Debug\*.*"
+  File "IR Server Plugins\General HID Receiver\bin\Debug\*.*"
   File "IR Server Plugins\Girder Plugin\bin\Debug\*.*"
   File "IR Server Plugins\HCW Receiver\bin\Debug\*.*"
   File "IR Server Plugins\IgorPlug Receiver\bin\Debug\*.*"
@@ -309,6 +309,7 @@ SkipUninstallInputService:
   File "IR Server Plugins\Microsoft MCE Transceiver\bin\Debug\*.*"
   File "IR Server Plugins\RedEye Blaster\bin\Debug\*.*"
   File "IR Server Plugins\Serial IR Blaster\bin\Debug\*.*"
+  
   File "IR Server Plugins\USB-UIRT Transceiver\bin\Debug\*.*"
   File "IR Server Plugins\Wii Remote Receiver\bin\Debug\*.*"
   File "IR Server Plugins\WiimoteLib\bin\Debug\*.*"

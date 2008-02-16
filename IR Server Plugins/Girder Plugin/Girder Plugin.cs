@@ -8,15 +8,13 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-using IRServerPluginInterface;
-
-namespace GirderPlugin
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for using Girder 3.x plugins.
   /// </summary>
-  public class GirderPlugin : IRServerPluginBase, IRemoteReceiver, ITransmitIR, IConfigure
+  public class GirderPlugin : PluginBase, IRemoteReceiver, ITransmitIR, IConfigure
   {
 
     #region Constants

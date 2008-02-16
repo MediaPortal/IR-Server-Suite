@@ -5,7 +5,7 @@ using System.Diagnostics;
 #endif
 using System.Text;
 
-namespace MicrosoftMceTransceiver
+namespace InputService.Plugin
 {
 
   #region Enumerations

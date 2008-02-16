@@ -7,17 +7,15 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
-using IRServerPluginInterface;
-
 using X10;
 
-namespace X10Transceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
   /// IR Server Plugin for X10 Transceiver devices.
   /// </summary>
-  public class X10Transceiver : IRServerPluginBase, IRemoteReceiver, _DIX10InterfaceEvents
+  public class X10Transceiver : PluginBase, IRemoteReceiver, _DIX10InterfaceEvents
   {
 
     #region Constants
@@ -55,7 +53,7 @@ namespace X10Transceiver
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81, with original MediaPortal code by CoolHammer, mPod, diehard2"; } }
+    public override string Author       { get { return "and-81, with original MediaPortal code by CoolHammer, mPod and diehard2"; } }
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>

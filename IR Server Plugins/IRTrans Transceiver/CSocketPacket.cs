@@ -1,7 +1,7 @@
 using System;
 using System.Net.Sockets;
 
-namespace IRTransTransceiver
+namespace InputService.Plugin
 {
 
   /// <summary>
