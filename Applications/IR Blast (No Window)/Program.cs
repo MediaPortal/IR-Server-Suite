@@ -97,7 +97,6 @@ namespace IRBlast
           else
           {
             IPAddress serverIP = Client.GetIPFromName(_serverHost);
-
             IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
 
             if (StartClient(endPoint))

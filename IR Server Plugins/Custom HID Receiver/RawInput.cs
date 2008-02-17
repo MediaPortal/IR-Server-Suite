@@ -11,6 +11,9 @@ using Microsoft.Win32;
 namespace InputService.Plugin
 {
 
+  /// <summary>
+  /// Device Details used to register for raw input.
+  /// </summary>
   internal class DeviceDetails
   {
     string _name;
@@ -18,21 +21,37 @@ namespace InputService.Plugin
     ushort _usagePage;
     ushort _usage;
 
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    /// <value>The name.</value>
     public string Name
     {
       get { return _name; }
       set { _name = value; }
     }
+    /// <summary>
+    /// Gets or sets the ID.
+    /// </summary>
+    /// <value>The ID.</value>
     public string ID
     {
       get { return _id; }
       set { _id = value; }
     }
+    /// <summary>
+    /// Gets or sets the usage page.
+    /// </summary>
+    /// <value>The usage page.</value>
     public ushort UsagePage
     {
       get { return _usagePage; }
       set { _usagePage = value; }
     }
+    /// <summary>
+    /// Gets or sets the usage.
+    /// </summary>
+    /// <value>The usage.</value>
     public ushort Usage
     {
       get { return _usage; }

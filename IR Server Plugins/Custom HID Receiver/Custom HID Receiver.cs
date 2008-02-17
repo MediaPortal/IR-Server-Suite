@@ -22,7 +22,17 @@ namespace InputService.Plugin
 
     static void Remote(string code)
     {
-      Console.WriteLine(code);
+      Console.WriteLine("Remote: {0}", code);
+    }
+
+    static void Keyboard(int button, bool up)
+    {
+      Console.WriteLine("Keyboard: {0}, {1}", button, up);
+    }
+
+    static void Mouse(int x, int y, int buttons)
+    {
+      Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
     }
 
     [STAThread]
@@ -33,7 +43,8 @@ namespace InputService.Plugin
       c.Configure(null);
 
       c.RemoteCallback += new RemoteHandler(Remote);
-      
+      c.KeyboardCallback += new KeyboardHandler(Keyboard);
+      c.MouseCallback += new MouseHandler(Mouse);      
       
       c.Start();
 
@@ -41,8 +52,6 @@ namespace InputService.Plugin
 
       c.Stop();
       c = null;
-
-
     }
 
     #region Constants
@@ -376,9 +385,11 @@ namespace InputService.Plugin
               Trace.WriteLine(String.Format("Extra: {0}", raw.mouse.ulExtraInformation));
               Trace.WriteLine(String.Format("Button Data: {0}", raw.mouse.buttonsStr.usButtonData));
               Trace.WriteLine(String.Format("Button Flags: {0}", raw.mouse.buttonsStr.usButtonFlags));
+              Trace.WriteLine(String.Format("Last X: {0}", raw.mouse.lLastX));
+              Trace.WriteLine(String.Format("Last Y: {0}", raw.mouse.lLastY));
 #endif
-              //if (_mouseHandler != null)
-                //_mouseHandler(0, 0, (int)raw.mouse.ulButtons);
+              if (_mouseHandler != null)
+                _mouseHandler(raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
 
               break;
             }
