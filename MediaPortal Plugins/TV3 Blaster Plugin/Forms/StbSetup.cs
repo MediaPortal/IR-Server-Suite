@@ -160,6 +160,11 @@ namespace TvEngine
     public void SetToCard(int cardId)
     {
       ExternalChannelConfig config = TV3BlasterPlugin.GetExternalChannelConfig(cardId);
+      if (config == null)
+      {
+        MessageBox.Show(this, "You must save your card configurations before copying between card setups", "No saved configration to copy from", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        return;
+      }
 
       // Setup command list.
       for (int i = 0; i < 10; i++)

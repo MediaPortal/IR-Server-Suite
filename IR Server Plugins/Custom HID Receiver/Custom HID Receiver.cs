@@ -20,16 +20,16 @@ namespace InputService.Plugin
   public class CustomHIDReceiver : PluginBase, IConfigure, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
 
+    #region Debug
+
     static void Remote(string code)
     {
       Console.WriteLine("Remote: {0}", code);
     }
-
     static void Keyboard(int button, bool up)
     {
       Console.WriteLine("Keyboard: {0}, {1}", button, up);
     }
-
     static void Mouse(int x, int y, int buttons)
     {
       Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
@@ -45,7 +45,7 @@ namespace InputService.Plugin
       c.RemoteCallback += new RemoteHandler(Remote);
       c.KeyboardCallback += new KeyboardHandler(Keyboard);
       c.MouseCallback += new MouseHandler(Mouse);      
-      
+
       c.Start();
 
       Application.Run();
@@ -53,6 +53,8 @@ namespace InputService.Plugin
       c.Stop();
       c = null;
     }
+
+    #endregion Debug
 
     #region Constants
 
@@ -108,7 +110,7 @@ namespace InputService.Plugin
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports HID USB devices."; } }
+    public override string Description  { get { return "Supports HID USB devices"; } }
 
     /// <summary>
     /// Start the IR Server plugin.
@@ -359,18 +361,14 @@ namespace InputService.Plugin
               byte[] newArray = new byte[raw.hid.dwSizeHid];
               Array.Copy(bRawData, offset, newArray, 0, newArray.Length);
 
-              StringBuilder str = new StringBuilder();
-              str.Append("HID: ");
-
-              foreach (byte b in newArray)
-                str.Append(String.Format("{0:X2} ", b));
+              string code = BitConverter.ToString(newArray);
 
 #if TRACE
-              Trace.WriteLine(str.ToString());
+              Trace.WriteLine(code);
 #endif
 
               if (_remoteHandler != null)
-                _remoteHandler(str.ToString());
+                _remoteHandler(code);
 
               break;
             }
@@ -397,14 +395,14 @@ namespace InputService.Plugin
           case RawInput.RawInputType.Keyboard:
             {
 #if TRACE
-              Trace.WriteLine(String.Format("Keyboard Event"));
+              Trace.WriteLine("Keyboard Event");
 #endif
               
               switch (raw.keyboard.Flags)
               {
                 case RawInput.RawKeyboardFlags.KeyBreak:
 #if TRACE
-                  Trace.WriteLine( String.Format("Break: {0}", raw.keyboard.VKey));
+                  Trace.WriteLine(String.Format("Break: {0}", raw.keyboard.VKey));
 #endif
 
                   if (_keyboardHandler != null)
@@ -414,7 +412,7 @@ namespace InputService.Plugin
 
                 case RawInput.RawKeyboardFlags.KeyE0:
 #if TRACE
-                  Trace.WriteLine( String.Format("E0: {0}", raw.keyboard.MakeCode));
+                  Trace.WriteLine(String.Format("E0: {0}", raw.keyboard.MakeCode));
 #endif
                   if (_keyboardHandler != null)
                     _keyboardHandler(0xE000 | raw.keyboard.MakeCode, true);
@@ -423,13 +421,16 @@ namespace InputService.Plugin
 
                 case RawInput.RawKeyboardFlags.KeyE1:
 #if TRACE
-                  Trace.WriteLine( String.Format("E1"));
+                  Trace.WriteLine("E1");
 #endif
+                  if (_keyboardHandler != null)
+                    _keyboardHandler(0xE100, true);
+
                   break;
 
                 case RawInput.RawKeyboardFlags.KeyMake:
 #if TRACE
-                  Trace.WriteLine( String.Format("Make: {0}", raw.keyboard.VKey));
+                  Trace.WriteLine(String.Format("Make: {0}", raw.keyboard.VKey));
 #endif
 
                   if (_keyboardHandler != null)
@@ -439,13 +440,13 @@ namespace InputService.Plugin
 
                 case RawInput.RawKeyboardFlags.TerminalServerSetLED:
 #if TRACE
-                  Trace.WriteLine( String.Format("TerminalServerSetLED"));
+                  Trace.WriteLine("TerminalServerSetLED");
 #endif
                   break;
 
                 case RawInput.RawKeyboardFlags.TerminalServerShadow:
 #if TRACE
-                  Trace.WriteLine( String.Format("TerminalServerShadow"));
+                  Trace.WriteLine("TerminalServerShadow");
 #endif
                   break;
               }

@@ -63,7 +63,7 @@ namespace InputService.Plugin
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Support the Ads Tech PTV-335 Receiver."; } }
+    public override string Description  { get { return "Supports the Ads Tech PTV-335 Receiver"; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.

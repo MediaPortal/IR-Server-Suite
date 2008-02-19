@@ -239,53 +239,7 @@ namespace InputService.Plugin
 
       data = null;
 
-      StringBuilder irCode = new StringBuilder(4096);
-      _learnTimedOut = false;
-
-      Timer timer = new Timer();
-      timer.Interval = _learnTimeout;
-      timer.Tick += new EventHandler(timer_Tick);
-      timer.Enabled = true;
-      timer.Start();
-
-      try
-      {
-        _abortLearn = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Int32)));
-        Marshal.WriteInt32(_abortLearn, AllowLearn);
-
-        result = UUIRTLearnIR(
-          _usbUirtHandle,                                     // Handle to USB-UIRT
-          UUIRTDRV_IRFMT_PRONTO,
-          irCode,                                             // Where to put the IR Code
-          null,                                               // Learn status callback
-          IntPtr.Zero,                                        // User data
-          _abortLearn,                                        // Abort flag?
-          0,
-          IntPtr.Zero,
-          IntPtr.Zero);
-      }
-      finally
-      {
-        Marshal.FreeHGlobal(_abortLearn);
-        _abortLearn = IntPtr.Zero;
-      }
-
-      timer.Stop();
-
-      if (_learnTimedOut)
-      {
-        return LearnStatus.Timeout;
-      }
-      else if (result)
-      {
-        data = Encoding.ASCII.GetBytes(irCode.ToString());
-
-        return LearnStatus.Success;
-      }
-      else
-      {
-        return LearnStatus.Failure;
-      }
+      return LearnStatus.Failure;
     }
 
     /// <summary>
