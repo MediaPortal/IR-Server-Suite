@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("General HID Receiver")]
-[assembly: AssemblyDescription("IR Server plugin to support custom HID USB devices")]
+[assembly: AssemblyTitle("Keyboard Input")]
+[assembly: AssemblyDescription("IR Server plugin to use the keyboard like a remote")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("GeneralHIDReceiver")]
+[assembly: AssemblyProduct("KeyboardInput")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

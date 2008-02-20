@@ -59,6 +59,7 @@ namespace InputService.Plugin
       this.labelKeyHeldDelay = new System.Windows.Forms.Label();
       this.tabPageMouse = new System.Windows.Forms.TabPage();
       this.labelMouseSensitivity = new System.Windows.Forms.Label();
+      this.checkBoxDisableAutomaticButtons = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).BeginInit();
       this.groupBoxRemoteTiming.SuspendLayout();
@@ -145,7 +146,7 @@ namespace InputService.Plugin
       // 
       // buttonOK
       // 
-      this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonOK.Location = new System.Drawing.Point(128, 240);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
@@ -156,7 +157,7 @@ namespace InputService.Plugin
       // 
       // buttonCancel
       // 
-      this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.buttonCancel.Location = new System.Drawing.Point(200, 240);
       this.buttonCancel.Name = "buttonCancel";
@@ -403,9 +404,6 @@ namespace InputService.Plugin
       // 
       // tabControl
       // 
-      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl.Controls.Add(this.tabPageBasic);
       this.tabControl.Controls.Add(this.tabPageRemote);
       this.tabControl.Controls.Add(this.tabPageKeyboard);
@@ -431,6 +429,7 @@ namespace InputService.Plugin
       // 
       // tabPageRemote
       // 
+      this.tabPageRemote.Controls.Add(this.checkBoxDisableAutomaticButtons);
       this.tabPageRemote.Controls.Add(this.checkBoxUseSystemRatesRemote);
       this.tabPageRemote.Controls.Add(this.checkBoxEnableRemote);
       this.tabPageRemote.Controls.Add(this.groupBoxRemoteTiming);
@@ -510,19 +509,32 @@ namespace InputService.Plugin
       this.labelMouseSensitivity.Text = "Mouse sensitivity:";
       this.labelMouseSensitivity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
+      // checkBoxDisableAutomaticButtons
+      // 
+      this.checkBoxDisableAutomaticButtons.AutoSize = true;
+      this.checkBoxDisableAutomaticButtons.Checked = true;
+      this.checkBoxDisableAutomaticButtons.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxDisableAutomaticButtons.Location = new System.Drawing.Point(8, 168);
+      this.checkBoxDisableAutomaticButtons.Name = "checkBoxDisableAutomaticButtons";
+      this.checkBoxDisableAutomaticButtons.Size = new System.Drawing.Size(148, 17);
+      this.checkBoxDisableAutomaticButtons.TabIndex = 3;
+      this.checkBoxDisableAutomaticButtons.Text = "Disable automatic buttons";
+      this.toolTips.SetToolTip(this.checkBoxDisableAutomaticButtons, "Prevent the operating system from automatically handling some buttons");
+      this.checkBoxDisableAutomaticButtons.UseVisualStyleBackColor = true;
+      // 
       // Configure
       // 
-      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(272, 273);
-      this.ControlBox = false;
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
+      this.MaximizeBox = false;
+      this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(280, 300);
       this.Name = "Configure";
+      this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Microsoft MCE Configuration";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).EndInit();
@@ -578,5 +590,6 @@ namespace InputService.Plugin
     private System.Windows.Forms.CheckBox checkBoxDisableMCEServices;
     private System.Windows.Forms.CheckBox checkBoxUseSystemRatesRemote;
     private System.Windows.Forms.CheckBox checkBoxUseSystemRatesKeyboard;
+    private System.Windows.Forms.CheckBox checkBoxDisableAutomaticButtons;
   }
 }

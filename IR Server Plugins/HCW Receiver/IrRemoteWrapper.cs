@@ -119,7 +119,10 @@ namespace InputService.Plugin
     public IrRemoteWrapper()
     {
       string dllPath = GetDllPath();
-      IRSetDllDirectory(dllPath);
+      if (String.IsNullOrEmpty(dllPath))
+        throw new ApplicationException("Could not find IrRemote.dll folder");
+
+      SetDllDirectory(dllPath);
 
       _window = new ReceiverWindow();
       _window.ProcMsg = new ProcessMessage(WndProc);
@@ -152,8 +155,10 @@ namespace InputService.Plugin
     /// </summary>
     public void StartIrExe()
     {
-      if (Process.GetProcessesByName("Ir").Length == 0)
-        Process.Start(GetHCWPath() + "Ir.exe", "/QUIET");
+      string exe = GetHCWPath() + "Ir.exe";
+
+      if (Process.GetProcessesByName("Ir").Length == 0 && File.Exists(exe))
+        Process.Start(exe, "/QUIET");
     }
 
     /// <summary>
@@ -161,8 +166,13 @@ namespace InputService.Plugin
     /// </summary>
     public void StopIrExe()
     {
-      Process.Start(GetHCWPath() + "Ir.exe", "/QUIT");
-      Thread.Sleep(500);
+      string exe = GetHCWPath() + "Ir.exe";
+
+      if (File.Exists(exe))
+      {
+        Process.Start(exe, "/QUIT");
+        Thread.Sleep(500);
+      }
 
       if (Process.GetProcessesByName("Ir").Length != 0)
         foreach (Process proc in Process.GetProcessesByName("Ir"))
@@ -170,11 +180,6 @@ namespace InputService.Plugin
     }
 
     #endregion Public Methods
-
-    static bool IRSetDllDirectory(string PathName)
-    {
-      return SetDllDirectory(PathName);
-    }
 
     static string GetHCWPath()
     {

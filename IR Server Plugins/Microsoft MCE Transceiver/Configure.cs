@@ -5,11 +5,19 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
+using Microsoft.Win32;
+
 namespace InputService.Plugin
 {
 
   partial class Configure : Form
   {
+
+    #region Constants
+
+    const string RegistrySubKey = @"SYSTEM\CurrentControlSet\Services\HidIr\Remotes\745a17a0-74d3-11d0-b6fe-00a0c90f57da";
+
+    #endregion Constants
 
     #region Properties
 
@@ -94,6 +102,11 @@ namespace InputService.Plugin
     public Configure()
     {
       InitializeComponent();
+
+      if (Registry.LocalMachine.GetValue(RegistrySubKey + @"\CodeSetNum0", null) == null)
+        checkBoxDisableAutomaticButtons.Checked = true;
+      else
+        checkBoxDisableAutomaticButtons.Checked = false;
     }
 
     #endregion Constructor
@@ -102,6 +115,27 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
+      if (checkBoxDisableAutomaticButtons.Checked)
+      {
+        using (RegistryKey key = Registry.LocalMachine.OpenSubKey(RegistrySubKey, true))
+        {
+          key.DeleteValue("CodeSetNum0", false);
+          key.DeleteValue("CodeSetNum1", false);
+          key.DeleteValue("CodeSetNum2", false);
+          key.DeleteValue("CodeSetNum3", false);
+        }
+      }
+      else
+      {
+        using (RegistryKey key = Registry.LocalMachine.OpenSubKey(RegistrySubKey, true))
+        {
+          key.SetValue("CodeSetNum0", 1, RegistryValueKind.DWord);
+          key.SetValue("CodeSetNum1", 2, RegistryValueKind.DWord);
+          key.SetValue("CodeSetNum2", 3, RegistryValueKind.DWord);
+          key.SetValue("CodeSetNum3", 4, RegistryValueKind.DWord);
+        }
+      }
+
       this.DialogResult = DialogResult.OK;
       this.Close();
     }

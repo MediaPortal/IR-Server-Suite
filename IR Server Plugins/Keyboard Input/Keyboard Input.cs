@@ -14,10 +14,35 @@ namespace InputService.Plugin
 {
 
   /// <summary>
-  /// Input Service Plugin to support general HID devices.
+  /// Input Service Plugin to capture ALL keyboard button presses and basic key combinations and forward as remote control commands.
   /// </summary>
-  public class GeneralHIDReceiver : PluginBase, IRemoteReceiver
+  public class KeyboardInput : PluginBase, IRemoteReceiver
   {
+
+    #region Debug
+
+    static void Remote(string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      KeyboardInput c = new KeyboardInput();
+      c.RemoteCallback += new RemoteHandler(Remote);
+
+      c.Start();
+
+      Application.Run();
+
+      c.Stop();
+      c = null;
+    }
+
+    #endregion Debug
+
+
 
     #region Interop
 
@@ -117,6 +142,8 @@ namespace InputService.Plugin
       MediaRewind = 50,
       MediaChannelUp = 51,
       MediaChannelDown = 52,
+      Delete = 53,
+      Flip3D = 54,
     }
 
     #endregion Enumerations
@@ -152,6 +179,8 @@ namespace InputService.Plugin
 
     #region Variables
 
+    bool _stealAppCommands = true;
+
     RemoteHandler _remoteButtonHandler;
 
     IntPtr _hookHandle;
@@ -164,7 +193,7 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "General HID"; } }
+    public override string Name         { get { return "Keyboard Input"; } }
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
@@ -179,7 +208,7 @@ namespace InputService.Plugin
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports general HID devices"; } }
+    public override string Description  { get { return "Captures ALL keyboard button presses and basic key combinations as remote control commands"; } }
 
     /// <summary>
     /// Start the IR Server plugin.
@@ -228,19 +257,29 @@ namespace InputService.Plugin
       if (code >= 0 && wParam == 256)
       {
         KeyboardHookStruct khs = new KeyboardHookStruct(lParam);
+        int keyCode = khs.virtualKey;
 
         AppCommands appCommand = KeyCodeToAppCommand((Keys)khs.virtualKey);
-
-        if (appCommand != AppCommands.None)
+        if (appCommand == AppCommands.None)
         {
-          int keys = (int)appCommand & ~0xF000;
-          int keyCode = (keys << 16) | code;
-
-          if (_remoteButtonHandler != null)
-            _remoteButtonHandler(keyCode.ToString());
-
-          return 1;
+          if (khs.virtualKey == (int)Keys.LShiftKey || khs.virtualKey == (int)Keys.LControlKey ||
+              khs.virtualKey == (int)Keys.RShiftKey || khs.virtualKey == (int)Keys.RControlKey)
+            return CallNextHookEx(_hookHandle, code, wParam, lParam);
+          
+          if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)      keyCode |= 0x00100000;
+          if ((Control.ModifierKeys & Keys.Control) == Keys.Control)  keyCode |= 0x01000000;
+          if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)          keyCode |= 0x10000000;
         }
+        else
+        {
+          keyCode |= (((int)appCommand) << 8);
+        }
+
+        if (_remoteButtonHandler != null)
+          _remoteButtonHandler(String.Format("{0:X8}", keyCode));
+
+         if (_stealAppCommands && appCommand != AppCommands.None)
+          return 1;
       }
 
       return CallNextHookEx(_hookHandle, code, wParam, lParam);
@@ -250,10 +289,22 @@ namespace InputService.Plugin
     {
       switch (keyCode)
       {
+        case Keys.BrowserBack:        return AppCommands.BrowserBackward;
+        case Keys.BrowserFavorites:   return AppCommands.BrowserFavorites;
+        case Keys.BrowserForward:     return AppCommands.BrowserForward;
+        case Keys.BrowserHome:        return AppCommands.BrowserHome;
+        case Keys.BrowserRefresh:     return AppCommands.BrowserRefresh;
+        case Keys.BrowserSearch:      return AppCommands.BrowserSearch;
+        case Keys.BrowserStop:        return AppCommands.BrowserStop;
+        case Keys.Help:               return AppCommands.Help;
+        case Keys.LaunchApplication1: return AppCommands.LaunchApp1;
+        case Keys.LaunchApplication2: return AppCommands.LaunchApp2;
+        case Keys.LaunchMail:         return AppCommands.LaunchMail;
         case Keys.MediaNextTrack:     return AppCommands.MediaNextTrack;
         case Keys.MediaPlayPause:     return AppCommands.MediaPlayPause;
         case Keys.MediaPreviousTrack: return AppCommands.MediaPreviousTrack;
         case Keys.MediaStop:          return AppCommands.MediaStop;
+        case Keys.SelectMedia:        return AppCommands.LaunchMediaSelect;
         case Keys.VolumeDown:         return AppCommands.VolumeDown;
         case Keys.VolumeMute:         return AppCommands.VolumeMute;
         case Keys.VolumeUp:           return AppCommands.VolumeUp;
