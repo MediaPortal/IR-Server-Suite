@@ -387,8 +387,8 @@ namespace InputService.Plugin
             deviceName = (string)Marshal.PtrToStringAnsi(pData);
 
             // Drop the "root" keyboard and mouse devices used for Terminal Services and the Remote Desktop
-            //if (deviceName.ToUpperInvariant().Contains("ROOT"))
-            //  continue;
+            if (deviceName.ToUpperInvariant().Contains("ROOT"))
+              continue;
 
             // If the device is identified in the list as a keyboard or 
             // HID device, create a DeviceInfo object to store information 
@@ -454,7 +454,7 @@ namespace InputService.Plugin
                   details.UsagePage = 0x01;
                   details.Usage = 0x06;
 
-                  devices.Add(details);
+                  //devices.Add(details);
                   break;
                 }
 
@@ -471,7 +471,7 @@ namespace InputService.Plugin
                   details.UsagePage = 0x01;
                   details.Usage = 0x02;
 
-                  devices.Add(details);
+                  //devices.Add(details);
                   break;
                 }
             }

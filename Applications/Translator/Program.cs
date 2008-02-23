@@ -868,11 +868,11 @@ namespace Translator
     }
     static void MouseHandlerCallback(int deltaX, int deltaY, int buttons)
     {
-      if (buttons != (int)Mouse.MouseEvents.None)
-        Mouse.Button((Mouse.MouseEvents)buttons);
-
       if (deltaX != 0 || deltaY != 0)
         Mouse.Move(deltaX, deltaY, false);
+
+      if (buttons != (int)Mouse.MouseEvents.None)
+        Mouse.Button((Mouse.MouseEvents)buttons);
     }
 
     static void MapEvent(MappingEvent theEvent)

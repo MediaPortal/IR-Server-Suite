@@ -162,12 +162,21 @@ namespace InputService.Plugin
     {
       LoadSettings();
 
-      DeviceSelect deviceSelect = new DeviceSelect();
+      DeviceSelect deviceSelect   = new DeviceSelect();
       deviceSelect.SelectedDevice = _device;
+      deviceSelect.InputByte      = _inputByte;
+      deviceSelect.ByteMask       = _byteMask;
+      deviceSelect.UseAllBytes    = _useAllBytes;
+      deviceSelect.RepeatDelay    = _repeatDelay;
 
       if (deviceSelect.ShowDialog(owner) == DialogResult.OK)
       {
-        _device = deviceSelect.SelectedDevice;
+        _device       = deviceSelect.SelectedDevice;
+        _inputByte    = deviceSelect.InputByte;
+        _byteMask     = deviceSelect.ByteMask;
+        _useAllBytes  = deviceSelect.UseAllBytes;
+        _repeatDelay  = deviceSelect.RepeatDelay;
+
         SaveSettings();
       }
     }
@@ -363,6 +372,12 @@ namespace InputService.Plugin
 
               string code = BitConverter.ToString(newArray);
 
+              if (!_useAllBytes)
+              {
+                int val = newArray[_inputByte] & _byteMask;
+                code = String.Format("{0:X2}", val);
+              }
+
 #if TRACE
               Trace.WriteLine(code);
 #endif
@@ -414,8 +429,8 @@ namespace InputService.Plugin
 #if TRACE
                   Trace.WriteLine(String.Format("E0: {0}", raw.keyboard.MakeCode));
 #endif
-                  if (_keyboardHandler != null)
-                    _keyboardHandler(0xE000 | raw.keyboard.MakeCode, true);
+                  //if (_keyboardHandler != null)
+                    //_keyboardHandler(0xE000 | raw.keyboard.MakeCode, true);
 
                   break;
 
@@ -423,8 +438,8 @@ namespace InputService.Plugin
 #if TRACE
                   Trace.WriteLine("E1");
 #endif
-                  if (_keyboardHandler != null)
-                    _keyboardHandler(0xE100, true);
+                  //if (_keyboardHandler != null)
+                    //_keyboardHandler(0xE100, true);
 
                   break;
 

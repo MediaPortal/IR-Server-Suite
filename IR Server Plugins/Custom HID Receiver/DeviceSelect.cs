@@ -18,6 +18,12 @@ namespace InputService.Plugin
 
     List<DeviceDetails> _devices;
 
+    int _inputByte;
+    byte _byteMask;
+    bool _useAllBytes;
+
+    int _repeatDelay;
+
     #endregion Variables
 
     #region Properties
@@ -61,6 +67,27 @@ namespace InputService.Plugin
           }
         }
       }
+    }
+
+    public int InputByte
+    {
+      get { return _inputByte; }
+      set { _inputByte = value; }
+    }
+    public byte ByteMask
+    {
+      get { return _byteMask; }
+      set { _byteMask = value; }
+    }
+    public bool UseAllBytes
+    {
+      get { return _useAllBytes; }
+      set { _useAllBytes = value; }
+    }
+    public int RepeatDelay
+    {
+      get { return _repeatDelay; }
+      set { _repeatDelay = value; }
     }
 
     #endregion Properties
@@ -122,9 +149,17 @@ namespace InputService.Plugin
     private void buttonAdvanced_Click(object sender, EventArgs e)
     {
       AdvancedSettings advancedSettings = new AdvancedSettings();
+      advancedSettings.InputByte    = _inputByte;
+      advancedSettings.ByteMask     = _byteMask;
+      advancedSettings.UseAllBytes  = _useAllBytes;
+      advancedSettings.RepeatDelay  = _repeatDelay;
+
       if (advancedSettings.ShowDialog(this) == DialogResult.OK)
       {
-
+        _inputByte    = advancedSettings.InputByte;
+        _byteMask     = advancedSettings.ByteMask;
+        _useAllBytes  = advancedSettings.UseAllBytes;
+        _repeatDelay  = advancedSettings.RepeatDelay;
       }
 
     }

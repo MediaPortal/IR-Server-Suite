@@ -336,6 +336,7 @@ namespace Translator
       this.labelProgramsDelete.TabIndex = 2;
       this.labelProgramsDelete.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.toolTip.SetToolTip(this.labelProgramsDelete, "Remove program");
+      this.labelProgramsDelete.Click += new System.EventHandler(this.labelProgramsDelete_Click);
       // 
       // labelProgramsEdit
       // 
@@ -348,6 +349,7 @@ namespace Translator
       this.labelProgramsEdit.TabIndex = 1;
       this.labelProgramsEdit.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.toolTip.SetToolTip(this.labelProgramsEdit, "Edit program");
+      this.labelProgramsEdit.Click += new System.EventHandler(this.labelProgramsEdit_Click);
       // 
       // labelProgramsAdd
       // 
@@ -360,6 +362,7 @@ namespace Translator
       this.labelProgramsAdd.TabIndex = 0;
       this.labelProgramsAdd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.toolTip.SetToolTip(this.labelProgramsAdd, "Add program");
+      this.labelProgramsAdd.Click += new System.EventHandler(this.labelProgramsAdd_Click);
       // 
       // toolStripButtonMappings
       // 
@@ -737,7 +740,7 @@ namespace Translator
       // 
       this.checkBoxAutoRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.checkBoxAutoRun.AutoSize = true;
-      this.checkBoxAutoRun.Location = new System.Drawing.Point(16, 440);
+      this.checkBoxAutoRun.Location = new System.Drawing.Point(8, 448);
       this.checkBoxAutoRun.Name = "checkBoxAutoRun";
       this.checkBoxAutoRun.Size = new System.Drawing.Size(167, 17);
       this.checkBoxAutoRun.TabIndex = 2;
@@ -861,15 +864,15 @@ namespace Translator
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(544, 472);
+      this.ClientSize = new System.Drawing.Size(544, 473);
       this.Controls.Add(this.tabControl);
-      this.Controls.Add(this.checkBoxAutoRun);
       this.Controls.Add(this.menuStrip);
       this.Controls.Add(this.buttonOK);
+      this.Controls.Add(this.checkBoxAutoRun);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MainMenuStrip = this.menuStrip;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(472, 448);
+      this.MinimumSize = new System.Drawing.Size(552, 480);
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Translator";

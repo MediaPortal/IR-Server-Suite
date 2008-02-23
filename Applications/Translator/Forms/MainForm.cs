@@ -1382,6 +1382,44 @@ namespace Translator
       }
     }
 
+    private void labelProgramsAdd_Click(object sender, EventArgs e)
+    {
+      AddProgram();
+    }
+    private void labelProgramsEdit_Click(object sender, EventArgs e)
+    {
+      if (listViewPrograms.SelectedItems.Count == 0)
+        return;
+
+      string selectedItem = listViewPrograms.SelectedItems[0].Text;
+
+      EditProgram(selectedItem);
+    }
+    private void labelProgramsDelete_Click(object sender, EventArgs e)
+    {
+      if (listViewPrograms.SelectedItems.Count == 0)
+        return;
+
+      string selectedItem = listViewPrograms.SelectedItems[0].Text;
+
+      string message = String.Format("Are you sure you want to remove all mappings for {0}?", selectedItem);
+      string caption = String.Format("Remove {0}?", selectedItem);
+
+      if (MessageBox.Show(this, message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+      {
+        foreach (ProgramSettings progSettings in Program.Config.Programs)
+        {
+          if (progSettings.Name.Equals(selectedItem))
+          {
+            Program.Config.Programs.Remove(progSettings);
+            break;
+          }
+        }
+
+        RefreshProgramList();
+      }
+    }
+
   }
 
 }

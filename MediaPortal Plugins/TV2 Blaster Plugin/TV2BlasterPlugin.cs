@@ -489,6 +489,10 @@ namespace MediaPortal.Plugins
           card = _externalChannelConfigs[0].CardId;
           Log.Warn("TV2BlasterPlugin: MediaPortal reports invalid TV Card ID ({0}), using STB settings for first TV Card ({1})", data[1], card);
         }
+        else
+        {
+          card++;
+        }
 
         ExternalChannelConfig config = GetExternalChannelConfig(card);
 

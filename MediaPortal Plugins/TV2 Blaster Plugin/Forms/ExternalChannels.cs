@@ -219,7 +219,7 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        _tvCardStbSetups[tabControlTVCards.SelectedIndex].SetToCard(comboBoxCopyFrom.SelectedIndex);
+        _tvCardStbSetups[tabControlTVCards.SelectedIndex].SetToCard(comboBoxCopyFrom.SelectedIndex + 1);
       }
       catch (Exception ex)
       {

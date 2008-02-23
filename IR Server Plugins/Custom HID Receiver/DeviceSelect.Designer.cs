@@ -98,7 +98,6 @@ namespace InputService.Plugin
       this.buttonAdvanced.TabIndex = 4;
       this.buttonAdvanced.Text = "Advanced";
       this.buttonAdvanced.UseVisualStyleBackColor = true;
-      this.buttonAdvanced.Visible = false;
       this.buttonAdvanced.Click += new System.EventHandler(this.buttonAdvanced_Click);
       // 
       // DeviceSelect

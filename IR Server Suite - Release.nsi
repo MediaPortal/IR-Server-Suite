@@ -307,6 +307,7 @@ SkipUninstallInputService:
   File "IR Server Plugins\IRTrans Transceiver\bin\Release\*.*"
   File "IR Server Plugins\Keyboard Input\bin\Release\*.*"
   File "IR Server Plugins\Microsoft MCE Transceiver\bin\Release\*.*"
+  File "IR Server Plugins\RC102 Receiver\bin\Release\*.*"
   File "IR Server Plugins\RedEye Blaster\bin\Release\*.*"
   File "IR Server Plugins\Serial IR Blaster\bin\Release\*.*"
   File "IR Server Plugins\USB-UIRT Transceiver\bin\Release\*.*"

@@ -886,6 +886,7 @@ namespace IrssUtils
     /// Get a list of commands found in the Command Libraries.
     /// </summary>
     /// <returns>Available commands.</returns>
+    /*
     public static Type[] GetLibraryCommands()
     {
       try
@@ -936,7 +937,7 @@ namespace IrssUtils
         return null;
       }
     }
-
+    */
     /// <summary>
     /// Returns a list of IR Commands.
     /// </summary>
