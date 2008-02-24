@@ -368,6 +368,7 @@ namespace TvEngine
 
         Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
         newThread.Name = "ProcessExternalChannel";
+        newThread.Priority = ThreadPriority.AboveNormal;
         newThread.IsBackground = true;
         newThread.Start(new int[] { analogChannel.ChannelNumber, tvEvent.Card.Id });
       }

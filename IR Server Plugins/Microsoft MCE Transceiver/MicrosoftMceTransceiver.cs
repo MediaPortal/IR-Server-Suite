@@ -48,9 +48,125 @@ namespace InputService.Plugin
   /// <summary>
   /// IR Server Plugin for Microsoft MCE Transceiver device.
   /// </summary>
-  public class MicrosoftMceTransceiver :
-    PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
+  public class MicrosoftMceTransceiver : PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
+
+    #region Debug
+
+    static void xRemote(string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+    static void xKeyboard(int button, bool up)
+    {
+      Console.WriteLine("Keyboard: {0}, {1}", button, up);
+    }
+    static void xMouse(int x, int y, int buttons)
+    {
+      Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
+    }
+
+    static void Dump(int[] timingData)
+    {
+      foreach (int time in timingData)
+        Console.Write("{0}, ", time);
+      Console.WriteLine();
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      MicrosoftMceTransceiver c = new MicrosoftMceTransceiver();
+
+      //c.Configure(null);
+
+      c.RemoteCallback += new RemoteHandler(xRemote);
+      c.KeyboardCallback += new KeyboardHandler(xKeyboard);
+      c.MouseCallback += new MouseHandler(xMouse);
+
+      c.Start();
+
+      //Application.Run();
+
+      byte[] fileBytes;
+      string fileName = @"C:\test2.IR";
+      /*
+      if (c.Learn(out fileBytes) == LearnStatus.Success)
+      {
+        using (FileStream writeFile = File.OpenWrite(fileName))
+        {
+          writeFile.Write(fileBytes, 0, fileBytes.Length);
+        }
+      }
+      */
+      Console.WriteLine("Testing IR longest length without crashing receiver");
+
+      using (FileStream file = File.OpenRead(fileName))
+      {
+        if (file.Length == 0)
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
+
+        fileBytes = new byte[file.Length];
+        file.Read(fileBytes, 0, (int)file.Length);
+      }
+
+      IrCode code = IrCode.FromByteArray(fileBytes);
+      Dump(code.TimingData);
+
+
+      Console.WriteLine("Press any key to begin ...");
+      Console.ReadKey();
+
+      int length = 750000;
+      //for (int length = 700000; length < 5000000; length += 50000)
+      while (true)
+      {
+        Console.WriteLine("Blasting with approx. total time of {0}us ...", length);
+
+        List<int> newCode = new List<int>();
+
+        int total = 0;
+        for (int index = 0; index < code.TimingData.Length; index++)
+        {
+          int time = code.TimingData[index];
+
+          if (total + Math.Abs(time) >= length)
+          {
+            if (time > 0)
+            {
+              break;
+            }
+            else
+            {
+              time = total - length;
+            }
+          }
+
+          newCode.Add(time);
+          total += Math.Abs(time);
+        }
+
+        Console.WriteLine("Blasting with actual total time of {0}us ...", total);
+
+        IrCode test = new IrCode(code.Carrier, newCode.ToArray());
+        Dump(test.TimingData);
+
+        c.Transmit("Both", test.ToByteArray(true));
+
+        Console.WriteLine("Blast complete, press any key to contiue ...");
+        if (Console.ReadKey().Key == ConsoleKey.Escape)
+          break;
+      }
+
+      Console.WriteLine("Done");
+
+      c.Stop();
+      c = null;
+    }
+
+    #endregion Debug
+
+
 
     #region Constants
 

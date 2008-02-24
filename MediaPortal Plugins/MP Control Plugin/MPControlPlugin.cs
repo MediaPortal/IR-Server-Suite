@@ -846,8 +846,7 @@ namespace MediaPortal.Plugins
     {
       Log.Debug("MESSAGE RECEIVED: {0}", Enum.GetName(typeof(GUIMessage.MessageType), msg.Message));
 
-      if (EventMapperEnabled)
-        MapEvent(msg);
+      MapEvent(msg);
     }
 
     /// <summary>

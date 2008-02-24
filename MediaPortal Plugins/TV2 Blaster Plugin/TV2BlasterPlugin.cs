@@ -405,6 +405,7 @@ namespace MediaPortal.Plugins
       {
         Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
         newThread.Name = "ProcessExternalChannel";
+        newThread.Priority = ThreadPriority.AboveNormal;
         newThread.IsBackground = true;
         newThread.Start(new string[] { msg.Label, msg.Label2 });
       }

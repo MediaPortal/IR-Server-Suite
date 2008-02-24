@@ -12,10 +12,10 @@ namespace InputService.Plugin
 {
 
   /// <summary>
-  /// IR Server Plugin for RC102 and compatible input devices.
+  /// IR Server Plugin for the IR507 IR receiver.
   /// </summary>
   [CLSCompliant(false)]
-  public class RC102Receiver : PluginBase, IRemoteReceiver
+  public class IR507Receiver : PluginBase, IRemoteReceiver
   {
 
     #region Interop
@@ -143,10 +143,8 @@ namespace InputService.Plugin
 
     const int DeviceBufferSize = 4;
 
-    const string DeviceID = "vid_147a&pid_e019";
-    //const string DeviceID = "vid_147a&pid_e001"; // 501
-    //const string DeviceID = "vid_0e6a&pid_6002"; // 507
-      
+    const string DeviceID = "vid_0e6a&pid_6002";
+
     #endregion Constants
 
     #region Variables
@@ -167,7 +165,7 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "RC102"; } }
+    public override string Name         { get { return "IR507"; } }
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
@@ -182,7 +180,7 @@ namespace InputService.Plugin
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Support for RC102 remote receiver"; } }
+    public override string Description  { get { return "Support for the IR507 IR Receiver"; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
