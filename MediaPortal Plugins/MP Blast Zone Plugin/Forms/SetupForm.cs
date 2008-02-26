@@ -288,7 +288,8 @@ namespace MediaPortal.Plugins
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Plugins\\MP Blast Zone Plugin\\index.html");
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Plugins\\MP Blast Zone Plugin\\index.html");
       }
       catch (Exception ex)
       {

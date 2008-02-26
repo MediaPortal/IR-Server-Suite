@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -299,7 +300,8 @@ namespace InputService.Configuration
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\Input Service.chm", HelpNavigator.Topic, "Input Service\\index.html");
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Input Service\\index.html");
       }
       catch (Exception ex)
       {

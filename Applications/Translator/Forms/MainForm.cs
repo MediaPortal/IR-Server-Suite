@@ -159,7 +159,7 @@ namespace Translator
       Icon small;
 
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = folder + "\\user32.dll";
+      string file = Path.Combine(folder, "user32.dll");
       Win32.ExtractIcons(file, 1, out large, out small);
       imageListPrograms.Images.Add(large);
 
@@ -1143,7 +1143,8 @@ namespace Translator
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Translator\\index.html");
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Translator\\index.html");
       }
       catch (Exception ex)
       {

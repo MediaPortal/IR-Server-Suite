@@ -99,6 +99,11 @@ namespace InputService.Plugin
     }
     */
 
+    /// <summary>
+    /// Converts an IR Code represented in Pronto data to an IrCode object.
+    /// </summary>
+    /// <param name="prontoData">The Pronto data to convert.</param>
+    /// <returns>IrCode object of interpretted Pronto data.</returns>
     public static IrCode ConvertProntoDataToIrCode(ushort[] prontoData)
     {
       if (prontoData == null || prontoData.Length == 0)
@@ -532,6 +537,24 @@ namespace InputService.Plugin
       return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
     }
 
+    /*
+    public static ushort[] ConvertIrCodeToPronto(IrCode irCode)
+    {
+      CodeType codeType;
+      Int64 value;
+
+      if (Decode(irCode, out codeType, out value))
+        return EncodePronto(codeType, value);
+      else
+        return null;
+    }
+    */
+
+    /// <summary>
+    /// Converts the ir code into Pronto raw format.
+    /// </summary>
+    /// <param name="irCode">The ir code to convert.</param>
+    /// <returns>Pronto data (raw format).</returns>
     public static ushort[] ConvertIrCodeToProntoRaw(IrCode irCode)
     {
       List<ushort> prontoData = new List<ushort>();
@@ -582,11 +605,21 @@ namespace InputService.Plugin
       return prontoData.ToArray();
     }
 
+    /// <summary>
+    /// Converts from a Pronto format carrier frequency to an integer format.
+    /// </summary>
+    /// <param name="prontoCarrier">The Pronto format carrier.</param>
+    /// <returns>The carrier frequency as an integer number.</returns>
     public static int ConvertFromProntoCarrier(ushort prontoCarrier)
     {
       return (int)(1000000 / (prontoCarrier * ProntoClock));
     }
 
+    /// <summary>
+    /// Converts from an integer number carrier frequency to a Pronto carrier format.
+    /// </summary>
+    /// <param name="carrierFrequency">The integer carrier frequency.</param>
+    /// <returns>The carrier frequency in Pronto format.</returns>
     public static ushort ConvertToProntoCarrier(int carrierFrequency)
     {
       return (ushort)(1000000 / (carrierFrequency * ProntoClock));

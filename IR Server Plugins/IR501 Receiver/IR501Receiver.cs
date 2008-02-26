@@ -141,10 +141,10 @@ namespace InputService.Plugin
 
     #region Constants
 
-    const int DeviceBufferSize = 4;
+    const int DeviceBufferSize = 255;
 
     const string DeviceID = "vid_147a&pid_e001";
-      
+
     #endregion Constants
 
     #region Variables
@@ -217,7 +217,7 @@ namespace InputService.Plugin
       if (String.IsNullOrEmpty(devicePath))
         throw new ApplicationException("Device not found");
 
-      SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
+      SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.Read, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
 
       if (deviceHandle.IsInvalid)
@@ -348,7 +348,7 @@ namespace InputService.Plugin
     {
       try
       {
-        if (_deviceStream.EndRead(asyncResult) == DeviceBufferSize && _deviceBuffer[1] == 0)
+        if (_deviceStream.EndRead(asyncResult) == 4 && _deviceBuffer[1] == 0)
         {
           TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
 

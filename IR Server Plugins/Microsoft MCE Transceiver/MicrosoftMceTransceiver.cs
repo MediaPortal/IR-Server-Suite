@@ -111,13 +111,15 @@ namespace InputService.Plugin
       }
 
       IrCode code = IrCode.FromByteArray(fileBytes);
+      //code.Carrier = 37010;
+      //code.TimingData = new int[] { +150, -5950, +450, -1300, +450, -400, +500, -1250, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +500, -400, +450, -400, +500, -400, +450, -1300, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +500, -1250, +450, -10250, +3450, -1750, +450, -400, +500, -1250, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -1300, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -1250, +500, -400, +450, -1250, +500, -400, +500, -350, +500, -400, +500, -350, +500, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -1250, +500, -350, +500, -400, +500, -350, +500, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -1250, +500, -10400 };
       Dump(code.TimingData);
 
 
       Console.WriteLine("Press any key to begin ...");
       Console.ReadKey();
 
-      int length = 750000;
+      int length = 1725000;
       //for (int length = 700000; length < 5000000; length += 50000)
       while (true)
       {
@@ -126,6 +128,7 @@ namespace InputService.Plugin
         List<int> newCode = new List<int>();
 
         int total = 0;
+        int pulseTotal = 0;
         for (int index = 0; index < code.TimingData.Length; index++)
         {
           int time = code.TimingData[index];
@@ -144,14 +147,17 @@ namespace InputService.Plugin
 
           newCode.Add(time);
           total += Math.Abs(time);
+          if (time > 0)
+            pulseTotal += time;
         }
 
         Console.WriteLine("Blasting with actual total time of {0}us ...", total);
+        Console.WriteLine("Blasting with total pulse time of {0}us ...", pulseTotal);
 
         IrCode test = new IrCode(code.Carrier, newCode.ToArray());
         Dump(test.TimingData);
 
-        c.Transmit("Both", test.ToByteArray(true));
+        c.Transmit("Both", test.ToByteArray());
 
         Console.WriteLine("Blast complete, press any key to contiue ...");
         if (Console.ReadKey().Key == ConsoleKey.Escape)
@@ -192,6 +198,7 @@ namespace InputService.Plugin
     bool _useSystemRatesRemote    = false;
     int _remoteFirstRepeat        = 400;
     int _remoteHeldRepeats        = 250;
+    bool _disableAutomaticButtons = false;
 
     bool _enableKeyboardInput     = false;
     bool _useSystemRatesKeyboard  = true;
@@ -204,7 +211,6 @@ namespace InputService.Plugin
     double _mouseSensitivity      = 1.0d;
 
     // Hidden options ...
-    bool _storeAsPronto           = true;
     bool _forceVistaDriver        = false;
 
     #endregion Configuration
@@ -376,6 +382,7 @@ namespace InputService.Plugin
       config.UseSystemRatesForRemote = _useSystemRatesRemote;
       config.RemoteRepeatDelay    = _remoteFirstRepeat;
       config.RemoteHeldDelay      = _remoteHeldRepeats;
+      config.DisableAutomaticButtons = _disableAutomaticButtons;
 
       config.EnableKeyboard       = _enableKeyboardInput;
       config.UseSystemRatesForKeyboard = _useSystemRatesKeyboard;
@@ -396,6 +403,7 @@ namespace InputService.Plugin
         _useSystemRatesRemote   = config.UseSystemRatesForRemote;
         _remoteFirstRepeat      = config.RemoteRepeatDelay;
         _remoteHeldRepeats      = config.RemoteHeldDelay;
+        _disableAutomaticButtons = config.DisableAutomaticButtons;
 
         _enableKeyboardInput    = config.EnableKeyboard;
         _useSystemRatesKeyboard = config.UseSystemRatesForKeyboard;
@@ -466,8 +474,6 @@ namespace InputService.Plugin
       if (code == null)
         throw new ArgumentException("Invalid IR Command data", "data");
 
-      //code.Finalize();
-
       _driver.Send(code, (int)blasterPort);
 
       return true;
@@ -486,7 +492,7 @@ namespace InputService.Plugin
       LearnStatus status = _driver.Learn(_learnTimeout, out code);
 
       if (code != null)
-        data = code.ToByteArray(_storeAsPronto);
+        data = code.ToByteArray();
       else
         data = null;
 
@@ -507,6 +513,7 @@ namespace InputService.Plugin
       try   { _useSystemRatesRemote = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesRemote"].Value); } catch { }
       try   { _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); } catch {}
       try   { _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value); } catch {}
+      try   { _disableAutomaticButtons = bool.Parse(doc.DocumentElement.Attributes["DisableAutomaticButtons"].Value); } catch {}
 
       try   { _enableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value); } catch {}
       try   { _useSystemRatesKeyboard = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesKeyboard"].Value); } catch { }
@@ -519,10 +526,7 @@ namespace InputService.Plugin
       try   { _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); } catch {}
 
       // Hidden options ...
-      try   { _storeAsPronto = bool.Parse(doc.DocumentElement.Attributes["StoreAsPronto"].Value); } catch {}
       try   { _forceVistaDriver = bool.Parse(doc.DocumentElement.Attributes["ForceVistaDriver"].Value); } catch {}
-
-
     }
     void SaveSettings()
     {
@@ -543,6 +547,7 @@ namespace InputService.Plugin
           writer.WriteAttributeString("UseSystemRatesRemote", _useSystemRatesRemote.ToString());
           writer.WriteAttributeString("RemoteFirstRepeat", _remoteFirstRepeat.ToString());
           writer.WriteAttributeString("RemoteHeldRepeats", _remoteHeldRepeats.ToString());
+          writer.WriteAttributeString("DisableAutomaticButtons", _disableAutomaticButtons.ToString());
 
           writer.WriteAttributeString("EnableKeyboardInput", _enableKeyboardInput.ToString());
           writer.WriteAttributeString("UseSystemRatesKeyboard", _useSystemRatesKeyboard.ToString());
@@ -555,7 +560,6 @@ namespace InputService.Plugin
           writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString());
 
           // Hidden options ...
-          writer.WriteAttributeString("StoreAsPronto", _storeAsPronto.ToString());
           writer.WriteAttributeString("ForceVistaDriver", _forceVistaDriver.ToString());
 
           writer.WriteEndElement(); // </settings>
@@ -694,8 +698,8 @@ namespace InputService.Plugin
         int heldRepeats = _remoteHeldRepeats;
         if (_useSystemRatesRemote)
         {
-          firstRepeat = SystemInformation.KeyboardDelay;
-          heldRepeats = SystemInformation.KeyboardSpeed;
+          firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
+          heldRepeats = (int)(1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
         }
 
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < firstRepeat)
@@ -800,8 +804,8 @@ namespace InputService.Plugin
         int heldRepeats = _keyboardHeldRepeats;
         if (_useSystemRatesRemote)
         {
-          firstRepeat = SystemInformation.KeyboardDelay;
-          heldRepeats = SystemInformation.KeyboardSpeed;
+          firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
+          heldRepeats = (int)(1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
         }
 
         if (!_keyboardKeyRepeated && timeBetween.TotalMilliseconds < firstRepeat)
@@ -896,6 +900,7 @@ namespace InputService.Plugin
         _mouseHandler(deltaX, deltaY, (int)buttons);
     }
 
+    // TODO: Convert this function to a lookup from an XML file, then provide multiple files and a way to fine-tune...
     static Keyboard.VKey ConvertMceKeyCodeToVKey(uint keyCode)
     {
       switch (keyCode)

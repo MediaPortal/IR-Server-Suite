@@ -82,7 +82,7 @@ namespace InputService
 
     #endregion Variables
 
-    #region Constructor / Destructor
+    #region Constructor
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InputService"/> class.
@@ -101,7 +101,7 @@ namespace InputService
       this.CanStop                      = true;
     }
 
-    #endregion Constructor / Destructor
+    #endregion Constructor
 
     #region IDisposable
 
@@ -146,6 +146,8 @@ namespace InputService
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
       IrssLog.Open(Common.FolderIrssLogs + "Input Service.log");
+
+      IrssLog.Info("Install folder: {0}", SystemRegistry.GetInstallFolder());
 
       IrssLog.Info("Starting Input Service ...");
 

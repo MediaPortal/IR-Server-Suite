@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.ServiceProcess;
 using System.Text;
 using System.Windows.Forms;
 
@@ -51,6 +52,11 @@ namespace InputService.Plugin
     {
       get { return Decimal.ToInt32(numericUpDownButtonHeldDelay.Value); }
       set { numericUpDownButtonHeldDelay.Value = new Decimal(value); }
+    }
+    public bool DisableAutomaticButtons
+    {
+      get { return checkBoxDisableAutomaticButtons.Checked; }
+      set { checkBoxDisableAutomaticButtons.Checked = value; }
     }
 
     public bool EnableKeyboard
@@ -115,25 +121,37 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      if (checkBoxDisableAutomaticButtons.Checked)
+      bool changeMade = false;
+
+      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(RegistrySubKey, true))
       {
-        using (RegistryKey key = Registry.LocalMachine.OpenSubKey(RegistrySubKey, true))
+        bool keysExist = (key.GetValue("CodeSetNum0", null) != null);
+
+        if (checkBoxDisableAutomaticButtons.Checked && keysExist)
         {
           key.DeleteValue("CodeSetNum0", false);
           key.DeleteValue("CodeSetNum1", false);
           key.DeleteValue("CodeSetNum2", false);
           key.DeleteValue("CodeSetNum3", false);
+
+          changeMade = true;
         }
-      }
-      else
-      {
-        using (RegistryKey key = Registry.LocalMachine.OpenSubKey(RegistrySubKey, true))
+        else if (!checkBoxDisableAutomaticButtons.Checked && !keysExist)
         {
           key.SetValue("CodeSetNum0", 1, RegistryValueKind.DWord);
           key.SetValue("CodeSetNum1", 2, RegistryValueKind.DWord);
           key.SetValue("CodeSetNum2", 3, RegistryValueKind.DWord);
           key.SetValue("CodeSetNum3", 4, RegistryValueKind.DWord);
+
+          changeMade = true;
         }
+      }
+
+      if (changeMade)
+      {
+        RestartService("blah"); // HidServ?
+
+        MessageBox.Show(this, "You must restart for changes to automatic button handling to take effect", "Restart required", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
 
       this.DialogResult = DialogResult.OK;
@@ -155,6 +173,39 @@ namespace InputService.Plugin
     {
       groupBoxKeypressTiming.Enabled = !checkBoxUseSystemRatesKeyboard.Checked;
     }
+
+
+    static void RestartService(string serviceName)
+    {
+      try
+      {
+        ServiceController[] services = ServiceController.GetServices();
+        foreach (ServiceController service in services)
+        {
+          System.Diagnostics.Trace.WriteLine(service.ServiceName);
+
+          if (service.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase))
+          {
+            if (service.Status != ServiceControllerStatus.Stopped)
+            {
+              service.Stop();
+              service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
+            }
+
+            service.Start();
+          }
+        }
+      }
+      catch (System.ComponentModel.Win32Exception ex)
+      {
+        MessageBox.Show(ex.Message, "Error restarting service", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+      catch (System.ServiceProcess.TimeoutException ex)
+      {
+        MessageBox.Show(ex.Message, "Error stopping service", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
 
   }
 

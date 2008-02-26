@@ -102,7 +102,8 @@ namespace WebRemote
     {
       try
       {
-        string[] skins = Directory.GetFiles(Program.InstallFolder + "\\Skins\\", "*.png", SearchOption.TopDirectoryOnly);
+        string path = Path.Combine(Program.InstallFolder, "Skins");
+        string[] skins = Directory.GetFiles(path, "*.png", SearchOption.TopDirectoryOnly);
         for (int index = 0; index < skins.Length; index++)
           skins[index] = Path.GetFileNameWithoutExtension(skins[index]);
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using MediaPortal.Configuration;
@@ -22,17 +23,17 @@ namespace MPUtils
     /// <summary>
     /// Folder for Custom Input Device data files.
     /// </summary>
-    public static readonly string CustomInputDevice = Config.GetFolder(Config.Dir.CustomInputDevice) + "\\";
+    public static readonly string CustomInputDevice = Config.GetFolder(Config.Dir.CustomInputDevice) + Path.DirectorySeparatorChar;
     
     /// <summary>
     /// Folder for Input Device data default files.
     /// </summary>
-    public static readonly string CustomInputDefault = Config.GetFolder(Config.Dir.CustomInputDefault) + "\\";
+    public static readonly string CustomInputDefault = Config.GetFolder(Config.Dir.CustomInputDefault) + Path.DirectorySeparatorChar;
 
     /// <summary>
     /// Path to the MediaPortal configuration file.
     /// </summary>
-    public static readonly string MPConfigFile = Config.GetFolder(Config.Dir.Config) + "\\MediaPortal.xml";
+    public static readonly string MPConfigFile = Path.Combine(Config.GetFolder(Config.Dir.Config), "MediaPortal.xml");
 
     #endregion Paths
 

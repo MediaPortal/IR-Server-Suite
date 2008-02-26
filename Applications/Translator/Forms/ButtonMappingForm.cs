@@ -625,7 +625,8 @@ namespace Translator
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Common\\keystrokes_info.html");
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Common\\keystrokes_info.html");
       }
       catch (Exception ex)
       {

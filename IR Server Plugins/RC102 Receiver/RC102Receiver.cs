@@ -145,8 +145,9 @@ namespace InputService.Plugin
 
     const string DeviceID = "vid_147a&pid_e019";
     //const string DeviceID = "vid_147a&pid_e001"; // 501
-    //const string DeviceID = "vid_0e6a&pid_6002"; // 507
-      
+    //const string DeviceID = "vid_147a&pid_e02a"; // 507
+    //const string DeviceID = "vid_0e6a&pid_6002"; // 507??
+
     #endregion Constants
 
     #region Variables
@@ -219,7 +220,7 @@ namespace InputService.Plugin
       if (String.IsNullOrEmpty(devicePath))
         throw new ApplicationException("Device not found");
 
-      SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
+      SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.Read, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
 
       if (deviceHandle.IsInvalid)

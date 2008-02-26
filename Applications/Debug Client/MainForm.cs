@@ -517,7 +517,8 @@ namespace DebugClient
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm");
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this,  file);
       }
       catch (Exception ex)
       {

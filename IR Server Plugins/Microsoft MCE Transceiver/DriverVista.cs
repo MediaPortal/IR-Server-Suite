@@ -455,6 +455,10 @@ namespace InputService.Plugin
 
     void TransmitIR(byte[] irData, int carrier, int transmitPortMask)
     {
+#if DEBUG
+      DebugWriteLine("TransmitIR({0} bytes, carrier: {1}, port: {2})", irData.Length, carrier, transmitPortMask);
+#endif
+
       if (!_deviceAvailable)
         throw new ApplicationException("Device not available");
 

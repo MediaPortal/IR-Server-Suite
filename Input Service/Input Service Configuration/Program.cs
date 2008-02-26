@@ -281,7 +281,8 @@ namespace InputService.Configuration
         if (String.IsNullOrEmpty(installFolder))
           return null;
 
-        string[] files = Directory.GetFiles(installFolder + "\\IR Server Plugins\\", "*.dll", SearchOption.TopDirectoryOnly);
+        string path = Path.Combine(installFolder, "IR Server Plugins");
+        string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
 
         foreach (string file in files)
         {

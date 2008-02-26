@@ -94,56 +94,43 @@ namespace InputService
     /// <returns>Array of plugin instances.</returns>
     internal static PluginBase[] AvailablePlugins()
     {
-      try
+      List<PluginBase> plugins = new List<PluginBase>();
+
+      string installFolder = SystemRegistry.GetInstallFolder();
+      if (String.IsNullOrEmpty(installFolder))
+        return null;
+
+      string path = Path.Combine(installFolder, "IR Server Plugins");
+      string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+      foreach (string file in files)
       {
-        List<PluginBase> plugins = new List<PluginBase>();
-
-        string installFolder = SystemRegistry.GetInstallFolder();
-        if (String.IsNullOrEmpty(installFolder))
-          return null;
-
-        string[] files = Directory.GetFiles(installFolder + "\\IR Server Plugins\\", "*.dll", SearchOption.TopDirectoryOnly);
-
-        foreach (string file in files)
+        try
         {
-          try
+          Assembly assembly = Assembly.LoadFrom(file);
+          Type[] types = assembly.GetExportedTypes();
+
+          foreach (Type type in types)
           {
-            Assembly assembly = Assembly.LoadFrom(file);
-            Type[] types = assembly.GetExportedTypes();
-
-            foreach (Type type in types)
+            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
             {
-              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
-              {
-                PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
 
-                if (plugin != null)
-                  plugins.Add(plugin);
-              }
+              if (plugin != null)
+                plugins.Add(plugin);
             }
           }
-          catch (BadImageFormatException)
-          {
-            // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
-          }
-          catch (TypeLoadException)
-          {
-            // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
-          }
         }
+        catch (BadImageFormatException)
+        {
+          // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
+        }
+        catch (TypeLoadException)
+        {
+          // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
+        }
+      }
 
-        return plugins.ToArray();
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine("IRServer: " + ex.ToString());
-#else
-      catch
-      {
-#endif
-        return null;
-      }
+      return plugins.ToArray();
     }
 
     /// <summary>
@@ -164,7 +151,7 @@ namespace InputService
         if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
           return plugin;
 
-      return null;
+      throw new ApplicationException(String.Format("Plugin not found ({0})", pluginName));
     }
 
     /// <summary>
@@ -173,29 +160,16 @@ namespace InputService
     /// <returns>String array of plugin names.</returns>
     internal static string[] DetectReceivers()
     {
-      try
-      {
-        PluginBase[] plugins = AvailablePlugins();
+      PluginBase[] plugins = AvailablePlugins();
 
-        List<string> receivers = new List<string>();
+      List<string> receivers = new List<string>();
 
-        foreach (PluginBase plugin in plugins)
-          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
-            receivers.Add(plugin.Name);
+      foreach (PluginBase plugin in plugins)
+        if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
+          receivers.Add(plugin.Name);
 
-        if (receivers.Count > 0)
-          return receivers.ToArray();
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine("IRServer: " + ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
+      if (receivers.Count > 0)
+        return receivers.ToArray();
 
       return null;
     }
@@ -206,29 +180,16 @@ namespace InputService
     /// <returns>String array of plugin names.</returns>
     internal static string[] DetectBlasters()
     {
-      try
-      {
-        PluginBase[] plugins = Program.AvailablePlugins();
+      PluginBase[] plugins = Program.AvailablePlugins();
 
-        List<string> blasters = new List<string>();
+      List<string> blasters = new List<string>();
 
-        foreach (PluginBase plugin in plugins)
-          if (plugin is ITransmitIR && plugin.Detect())
-            blasters.Add(plugin.Name);
+      foreach (PluginBase plugin in plugins)
+        if (plugin is ITransmitIR && plugin.Detect())
+          blasters.Add(plugin.Name);
 
-        if (blasters.Count > 0)
-          return blasters.ToArray();
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine("IRServer: " + ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
+      if (blasters.Count > 0)
+        return blasters.ToArray();
 
       return null;
     }

@@ -167,7 +167,7 @@ namespace Translator
       Icon small;
 
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = folder + "\\shell32.dll";
+      string file = Path.Combine(folder, "shell32.dll");
 
       Win32.ExtractIcons(file, IconLaunch, out large, out small);
       _listMain.Images.Add(large);
@@ -231,7 +231,7 @@ namespace Translator
       Icon small;
 
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = folder + "\\shell32.dll";
+      string file = Path.Combine(folder, "shell32.dll");
 
       Win32.ExtractIcons(file, IconDesktop, out large, out small);
       newList.Images.Add(large);
@@ -307,7 +307,7 @@ namespace Translator
       Icon small;
 
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = folder + "\\shell32.dll";
+      string file = Path.Combine(folder, "shell32.dll");
 
       Win32.ExtractIcons(file, IconWindows, out large, out small);
       newList.Images.Add(large);
@@ -360,7 +360,7 @@ namespace Translator
       Icon small;
 
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = folder + "\\shell32.dll";
+      string file = Path.Combine(folder, "shell32.dll");
 
       Win32.ExtractIcons(file, IconTasks, out large, out small);
       newList.Images.Add(large);
@@ -421,7 +421,7 @@ namespace Translator
       Icon small;
 
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = folder + "\\shell32.dll";
+      string file = Path.Combine(folder, "shell32.dll");
 
       Win32.ExtractIcons(file, 15, out large, out small);
       newList.Images.Add(large);
@@ -469,7 +469,7 @@ namespace Translator
       Icon small;
 
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = folder + "\\shell32.dll";
+      string file = Path.Combine(folder, "shell32.dll");
 
       Win32.ExtractIcons(file, IconAudio, out large, out small);
       newList.Images.Add(large);
@@ -508,7 +508,7 @@ namespace Translator
       Icon small;
 
       string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = folder + "\\shell32.dll";
+      string file = Path.Combine(folder, "shell32.dll");
 
       Win32.ExtractIcons(file, IconEject, out large, out small);
       newList.Images.Add(large);

@@ -371,7 +371,16 @@ namespace InputService.Plugin
       SetCarrierFrequency(code.Carrier);
 
       // Send packet
-      WriteSync(DataPacket(code));
+      byte[] data = DataPacket(code);
+
+      // If the code would go longer than the allowable limit, truncate the code
+      if (data.Length > 341) // 340 minus the overhead of 1 byte in 4 for header is 255 bytes of actual time code data, add one for a terminator byte
+      {
+        Array.Resize<byte>(ref data, 341); // Shrink the array to fit
+        data[340] = 0x80; // Set the terminator byte
+      }
+
+      WriteSync(data);
     }
 
     #endregion Driver overrides
@@ -939,7 +948,7 @@ namespace InputService.Plugin
     void WriteSync(byte[] data)
     {
 #if DEBUG
-      DebugWriteLine("WriteSync()");
+      DebugWriteLine("WriteSync({0} bytes)", data.Length);
       DebugDump(data);
 #endif
 
@@ -1104,19 +1113,19 @@ namespace InputService.Plugin
     /// This is used to determine the carrier frequency.
     /// </summary>
     /// <param name="code">The IrCode to analyse.</param>
-    /// <param name="onTime">The total ammount of pulse time.</param>
-    /// <param name="onCount">The total count of pulses.</param>
-    static void GetIrCodeLengths(IrCode code, out int onTime, out int onCount)
+    /// <param name="pulseTime">The total ammount of pulse time.</param>
+    /// <param name="pulseCount">The total count of pulses.</param>
+    static void GetIrCodeLengths(IrCode code, out int pulseTime, out int pulseCount)
     {
-      onTime  = 0;
-      onCount = 0;
+      pulseTime  = 0;
+      pulseCount = 0;
 
       foreach (int time in code.TimingData)
       {
         if (time > 0)
         {
-          onTime += time;
-          onCount++;
+          pulseTime += time;
+          pulseCount++;
         }
       }
     }

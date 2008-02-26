@@ -897,7 +897,8 @@ namespace IrssUtils
         if (String.IsNullOrEmpty(installFolder))
           return null;
 
-        string[] files = Directory.GetFiles(installFolder + "\\Commands\\", "*.dll", SearchOption.TopDirectoryOnly);
+        string folder = Path.Combine(installFolder, "Commands");
+        string[] files = Directory.GetFiles(folder, "*.dll", SearchOption.TopDirectoryOnly);
 
         foreach (string file in files)
         {

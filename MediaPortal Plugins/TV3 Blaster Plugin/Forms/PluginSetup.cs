@@ -217,7 +217,8 @@ namespace SetupTv.Sections
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Plugins\\TV3 Blaster Plugin\\index.html");
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Plugins\\TV3 Blaster Plugin\\index.html");
       }
       catch (Exception ex)
       {

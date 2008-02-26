@@ -30,9 +30,9 @@ namespace InputService.Plugin
     public const int CarrierFrequencyDefault  = 36000;
 
     /// <summary>
-    /// How long the longest IR Code space should be (microseconds).
+    /// How long the longest IR Code space should be (in microseconds).
     /// </summary>
-    const int LongestSpace = -100000;
+    const int LongestSpace = -75000;
 
     #endregion Constants
 
@@ -89,8 +89,8 @@ namespace InputService.Plugin
       if (_timingData.Length == 0)
         return false;
 
+      // Find long spaces and trim the IR code ...
       List<int> newData = new List<int>();
-
       foreach (int time in _timingData)
       {
         if (time <= LongestSpace)
@@ -152,34 +152,18 @@ namespace InputService.Plugin
     /// <summary>
     /// Creates a byte array representation of this IR Code.
     /// </summary>
-    /// <param name="asPronto">Set this parameter true to convert the IR Code into Pronto format.</param>
-    /// <returns>Byte array representation.</returns>
-    public byte[] ToByteArray(bool asPronto)
+    /// <returns>Byte array representation (internally it is in Pronto format).</returns>
+    public byte[] ToByteArray()
     {
       StringBuilder output = new StringBuilder();
 
-      if (asPronto)
-      {
-        ushort[] prontoData = Pronto.ConvertIrCodeToProntoRaw(this);
+      ushort[] prontoData = Pronto.ConvertIrCodeToProntoRaw(this);
 
-        for (int index = 0; index < prontoData.Length; index++)
-        {
-          output.Append(prontoData[index].ToString("X4"));
-          if (index != prontoData.Length - 1)
-            output.Append(' ');
-        }
-      }
-      else // Native format (only benefit is a slightly more accurate Carrier Frequency)
+      for (int index = 0; index < prontoData.Length; index++)
       {
-        output.Append("MCE,");
-        output.AppendFormat("{0},", _carrier);
-
-        for (int index = 0; index < _timingData.Length; index++)
-        {
-          output.Append(_timingData[index]);
-          if (index != _timingData.Length - 1)
-            output.Append(',');
-        }
+        output.Append(prontoData[index].ToString("X4"));
+        if (index != prontoData.Length - 1)
+          output.Append(' ');
       }
 
       return Encoding.ASCII.GetBytes(output.ToString());
@@ -219,36 +203,29 @@ namespace InputService.Plugin
       if (len != 0)
         timingData.Add(len * 50);
 
-      // Seems some old files have excessively long delays in them .. this might fix that problem ...
       IrCode newCode = new IrCode(timingData.ToArray());
-      newCode.FinalizeData();
+      newCode.FinalizeData(); // Seems some old files have excessively long delays in them .. this might fix that problem ...
 
       return newCode;
     }
 
     /// <summary>
-    /// Create an IrCode object from Native file bytes.
+    /// Creates an IrCode object from Pronto format file bytes.
     /// </summary>
     /// <param name="data">IR file bytes.</param>
     /// <returns>New IrCode object.</returns>
-    static IrCode FromNativeData(string data)
+    static IrCode FromProntoData(byte[] data)
     {
-      if (String.IsNullOrEmpty(data))
-        throw new ArgumentNullException("data");
+      string code = Encoding.ASCII.GetString(data);
 
-      string[] elements = data.Split(new char[] { ',' });
+      string[] stringData = code.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-      if (elements.Length < 3)
-        throw new ApplicationException("Invalid native IR file data");
+      ushort[] prontoData = new ushort[stringData.Length];
+      for (int i = 0; i < stringData.Length; i++)
+        prontoData[i] = ushort.Parse(stringData[i], System.Globalization.NumberStyles.HexNumber);
 
-      IrCode newCode = new IrCode();
-      newCode.Carrier = int.Parse(elements[1]);
-
-      int[] timingData = new int[elements.Length - 2];
-      for (int index = 2; index < elements.Length; index++)
-        timingData[index - 2] = int.Parse(elements[index]);
-
-      newCode.TimingData = timingData;
+      IrCode newCode = Pronto.ConvertProntoDataToIrCode(prontoData);
+      newCode.FinalizeData(); // Seems some old files have excessively long delays in them .. this might fix that problem ...
 
       return newCode;
     }
@@ -261,27 +238,9 @@ namespace InputService.Plugin
     public static IrCode FromByteArray(byte[] data)
     {
       if (data[4] == ' ')
-      {
-        string code = Encoding.ASCII.GetString(data);
-
-        string[] stringData = code.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-        ushort[] prontoData = new ushort[stringData.Length];
-        for (int i = 0; i < stringData.Length; i++)
-          prontoData[i] = ushort.Parse(stringData[i], System.Globalization.NumberStyles.HexNumber);
-
-        return Pronto.ConvertProntoDataToIrCode(prontoData);
-      }
-      else if (data[0] == 'M' && data[1] == 'C' && data[2] == 'E')
-      {
-        string code = Encoding.ASCII.GetString(data);
-
-        return FromNativeData(code);
-      }
+        return FromProntoData(data);
       else
-      {
         return FromOldData(data);
-      }
     }
 
     #endregion Static Methods

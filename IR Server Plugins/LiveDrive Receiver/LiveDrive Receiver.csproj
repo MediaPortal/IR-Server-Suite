@@ -7,7 +7,7 @@
     <ProjectGuid>{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LiveDriveReceiver</RootNamespace>
+    <RootNamespace>InputService.Plugin</RootNamespace>
     <AssemblyName>LiveDrive Receiver</AssemblyName>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>

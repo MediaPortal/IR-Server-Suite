@@ -141,9 +141,10 @@ namespace InputService.Plugin
 
     #region Constants
 
-    const int DeviceBufferSize = 4;
+    const int DeviceBufferSize = 255;
 
-    const string DeviceID = "vid_0e6a&pid_6002";
+    //const string DeviceID = "vid_0e6a&pid_6002";
+    const string DeviceID = "vid_147a&pid_e02a";
 
     #endregion Constants
 
@@ -217,8 +218,12 @@ namespace InputService.Plugin
       if (String.IsNullOrEmpty(devicePath))
         throw new ApplicationException("Device not found");
 
-      SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
+      //Console.WriteLine("Opening device: {0}", devicePath);
+
+      SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.Read, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
+
+      //Console.WriteLine("Last Error: {0}", lastError);
 
       if (deviceHandle.IsInvalid)
         throw new Win32Exception(lastError, "Failed to open device");
@@ -348,7 +353,10 @@ namespace InputService.Plugin
     {
       try
       {
-        if (_deviceStream.EndRead(asyncResult) == DeviceBufferSize && _deviceBuffer[1] == 0)
+        //int read = _deviceStream.EndRead(asyncResult);
+        //Console.WriteLine(BitConverter.ToString(_deviceBuffer, 0, read));
+
+        if (_deviceStream.EndRead(asyncResult) == 4 && _deviceBuffer[1] == 0)
         {
           TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
 
@@ -373,6 +381,31 @@ namespace InputService.Plugin
     }
 
     #endregion Implementation
+
+    #region Debug
+
+    [STAThread]
+    static void Main()
+    {
+      try
+      {
+        IR507Receiver c = new IR507Receiver();
+        c.Start();
+
+        while (Console.ReadKey().Key != ConsoleKey.Escape)
+        {
+          Console.WriteLine("Press escape to quit");
+        }
+
+        c.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+    }
+
+    #endregion Debug
 
   }
 

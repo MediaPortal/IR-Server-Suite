@@ -135,7 +135,8 @@ namespace SkinEditor
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Virtual Remote\\Skin Editor\\index.html");
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Virtual Remote\\Skin Editor\\index.html");
       }
       catch (Exception ex)
       {

@@ -112,7 +112,8 @@ namespace VirtualRemote
     {
       try
       {
-        string[] skins = Directory.GetFiles(Program.InstallFolder + "\\Skins\\", "*.png", SearchOption.TopDirectoryOnly);
+        string path = Path.Combine(Program.InstallFolder, "Skins");
+        string[] skins = Directory.GetFiles(path, "*.png", SearchOption.TopDirectoryOnly);
         for (int index = 0; index < skins.Length; index++)
           skins[index] = Path.GetFileNameWithoutExtension(skins[index]);
 
@@ -205,7 +206,8 @@ namespace VirtualRemote
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "Virtual Remote\\index.html");
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Virtual Remote\\index.html");
       }
       catch (Exception ex)
       {

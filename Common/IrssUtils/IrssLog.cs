@@ -116,6 +116,14 @@ namespace IrssUtils
 
           string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Opened", DateTime.Now);
           _streamWriter.WriteLine(message);
+
+#if TRACE
+          Trace.WriteLine(message);
+#endif
+
+          message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - {1}", DateTime.Now, System.Reflection.Assembly.GetCallingAssembly().FullName);
+          _streamWriter.WriteLine(message);
+
 #if TRACE
           Trace.WriteLine(message);
 #endif
