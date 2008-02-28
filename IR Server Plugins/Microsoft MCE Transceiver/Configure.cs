@@ -148,11 +148,7 @@ namespace InputService.Plugin
       }
 
       if (changeMade)
-      {
-        RestartService("blah"); // HidServ?
-
         MessageBox.Show(this, "You must restart for changes to automatic button handling to take effect", "Restart required", MessageBoxButtons.OK, MessageBoxIcon.Information);
-      }
 
       this.DialogResult = DialogResult.OK;
       this.Close();
@@ -173,39 +169,6 @@ namespace InputService.Plugin
     {
       groupBoxKeypressTiming.Enabled = !checkBoxUseSystemRatesKeyboard.Checked;
     }
-
-
-    static void RestartService(string serviceName)
-    {
-      try
-      {
-        ServiceController[] services = ServiceController.GetServices();
-        foreach (ServiceController service in services)
-        {
-          System.Diagnostics.Trace.WriteLine(service.ServiceName);
-
-          if (service.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase))
-          {
-            if (service.Status != ServiceControllerStatus.Stopped)
-            {
-              service.Stop();
-              service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
-            }
-
-            service.Start();
-          }
-        }
-      }
-      catch (System.ComponentModel.Win32Exception ex)
-      {
-        MessageBox.Show(ex.Message, "Error restarting service", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-      catch (System.ServiceProcess.TimeoutException ex)
-      {
-        MessageBox.Show(ex.Message, "Error stopping service", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
 
   }
 

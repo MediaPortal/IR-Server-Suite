@@ -359,7 +359,7 @@ namespace InputService.Plugin
                 if (_buffer.Length > 0)
                 {
                   if (_remoteButtonHandler != null)
-                    _remoteButtonHandler(_buffer.ToString());
+                    _remoteButtonHandler(this.Name, _buffer.ToString());
 
                   _buffer.Remove(0, _buffer.Length);
                 }

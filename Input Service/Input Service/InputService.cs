@@ -446,6 +446,8 @@ namespace InputService
     /// <returns>true if the event is handled, otherwise false.</returns>
     protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
     {
+      IrssLog.Info("PowerEvent: {0}", Enum.GetName(typeof(PowerBroadcastStatus), powerStatus));
+
       switch (powerStatus)
       {
 
@@ -729,11 +731,19 @@ namespace InputService
       }
     }
 
-    void RemoteHandlerCallback(string keyCode)
+    void RemoteHandlerCallback(string deviceName, string keyCode)
     {
-      IrssLog.Debug("Remote Event: {0}", keyCode);
+      IrssLog.Debug("{0} generated a remote event: {1}", deviceName, keyCode);
 
-      byte[] bytes = Encoding.ASCII.GetBytes(keyCode);
+      byte[] deviceNameBytes = Encoding.ASCII.GetBytes(deviceName);
+      byte[] keyCodeBytes = Encoding.ASCII.GetBytes(keyCode);
+
+      byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
+
+      BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(bytes, 0);
+      deviceNameBytes.CopyTo(bytes, 4);
+      BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
+      keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
 
       switch (_mode)
       {
@@ -759,9 +769,9 @@ namespace InputService
       }
     }
 
-    void KeyboardHandlerCallback(int vKey, bool keyUp)
+    void KeyboardHandlerCallback(string deviceName, int vKey, bool keyUp)
     {
-      IrssLog.Debug("Keyboard Event: {0}, keyUp: {1}", vKey, keyUp);
+      IrssLog.Debug("{0} generated a keyboard event: {1}, keyUp: {2}", deviceName, vKey, keyUp);
 
       byte[] bytes = new byte[8];
       BitConverter.GetBytes(vKey).CopyTo(bytes, 0);
@@ -791,9 +801,9 @@ namespace InputService
       }
     }
 
-    void MouseHandlerCallback(int deltaX, int deltaY, int buttons)
+    void MouseHandlerCallback(string deviceName, int deltaX, int deltaY, int buttons)
     {
-      IrssLog.Debug("Mouse Event - deltaX: {0}, deltaY: {1}, buttons: {2}", deltaX, deltaY, buttons);
+      IrssLog.Debug("{0} generated a mouse Event - deltaX: {1}, deltaY: {2}, buttons: {3}", deviceName, deltaX, deltaY, buttons);
 
       byte[] bytes = new byte[12];
       BitConverter.GetBytes(deltaX).CopyTo(bytes, 0);

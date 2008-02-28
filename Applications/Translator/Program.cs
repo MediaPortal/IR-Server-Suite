@@ -673,7 +673,13 @@ namespace Translator
         switch (received.Type)
         {
           case MessageType.RemoteEvent:
-            RemoteHandlerCallback(received.GetDataAsString());
+            byte[] data = received.GetDataAsBytes();
+            int deviceNameSize = BitConverter.ToInt32(data, 0);
+            string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
+            int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
+            string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+
+            RemoteHandlerCallback(deviceName, keyCode);
             break;
 
           case MessageType.KeyboardEvent:
@@ -683,7 +689,7 @@ namespace Translator
             int vKey    = BitConverter.ToInt32(dataBytes, 0);
             bool keyUp  = BitConverter.ToBoolean(dataBytes, 4);
 
-            KeyboardHandlerCallback(vKey, keyUp);
+            KeyboardHandlerCallback("TODO", vKey, keyUp);
             break;
           }
 
@@ -695,7 +701,7 @@ namespace Translator
             int deltaY  = BitConverter.ToInt32(dataBytes, 4);
             int buttons = BitConverter.ToInt32(dataBytes, 8);
 
-            MouseHandlerCallback(deltaX, deltaY, buttons);
+            MouseHandlerCallback("TODO", deltaX, deltaY, buttons);
             break;
           }
 
@@ -798,7 +804,7 @@ namespace Translator
       return null;
     }
 
-    static void RemoteHandlerCallback(string keyCode)
+    static void RemoteHandlerCallback(string deviceName, string keyCode)
     {
       if (_inConfiguration)
         return;
@@ -859,14 +865,14 @@ namespace Translator
 
       IrssLog.Debug("No mapping found for KeyCode = {0}", keyCode);
     }
-    static void KeyboardHandlerCallback(int vKey, bool keyUp)
+    static void KeyboardHandlerCallback(string deviceName, int vKey, bool keyUp)
     {
       if (keyUp)
         Keyboard.KeyUp((Keyboard.VKey)vKey);
       else
         Keyboard.KeyDown((Keyboard.VKey)vKey);
     }
-    static void MouseHandlerCallback(int deltaX, int deltaY, int buttons)
+    static void MouseHandlerCallback(string deviceName, int deltaX, int deltaY, int buttons)
     {
       if (deltaX != 0 || deltaY != 0)
         Mouse.Move(deltaX, deltaY, false);

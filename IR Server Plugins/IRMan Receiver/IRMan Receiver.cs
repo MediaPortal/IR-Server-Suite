@@ -213,13 +213,13 @@ namespace InputService.Plugin
         {
           if (timeSpan.Milliseconds > _repeatDelay)
           {
-            _remoteButtonHandler(thisCode);
+            _remoteButtonHandler(this.Name, thisCode);
             _lastCodeTime = DateTime.Now;
           }
         }
         else
         {
-          _remoteButtonHandler(thisCode);
+          _remoteButtonHandler(this.Name, thisCode);
           _lastCodeTime = DateTime.Now;
         }
 

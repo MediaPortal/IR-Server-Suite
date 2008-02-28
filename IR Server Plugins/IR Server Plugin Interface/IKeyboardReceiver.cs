@@ -8,9 +8,10 @@ namespace InputService.Plugin
   /// <summary>
   /// IR Server callback for keyboard key press handling.
   /// </summary>
+  /// <param name="deviceName">The device that detected the key event.</param>
   /// <param name="vKey">Virtual key code.</param>
   /// <param name="keyUp">Is this key coming up.</param>
-  public delegate void KeyboardHandler(int vKey, bool keyUp);
+  public delegate void KeyboardHandler(string deviceName, int vKey, bool keyUp);
 
   #endregion Delegates
 

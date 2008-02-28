@@ -274,7 +274,7 @@ namespace InputService.Plugin
 
       string buttonCode = cmd.Remote + ": " + cmd.Button;
 
-      _remoteButtonHandler(buttonCode);
+      _remoteButtonHandler(this.Name, buttonCode);
     }
     
     #endregion Implementation

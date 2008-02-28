@@ -22,15 +22,15 @@ namespace InputService.Plugin
 
     #region Debug
 
-    static void Remote(string code)
+    static void Remote(string deviceName, string code)
     {
       Console.WriteLine("Remote: {0}", code);
     }
-    static void Keyboard(int button, bool up)
+    static void Keyboard(string deviceName, int button, bool up)
     {
       Console.WriteLine("Keyboard: {0}, {1}", button, up);
     }
-    static void Mouse(int x, int y, int buttons)
+    static void Mouse(string deviceName, int x, int y, int buttons)
     {
       Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
     }
@@ -321,7 +321,7 @@ namespace InputService.Plugin
 #endif
 
       if (_keyboardHandler != null)
-        _keyboardHandler(param, false);
+        _keyboardHandler(this.Name, param, false);
     }
 
     void ProcessKeyUp(int param)
@@ -331,7 +331,7 @@ namespace InputService.Plugin
 #endif
 
       if (_keyboardHandler != null)
-        _keyboardHandler(param, true);
+        _keyboardHandler(this.Name, param, true);
     }
 
     void ProcessAppCommand(int param)
@@ -383,7 +383,7 @@ namespace InputService.Plugin
 #endif
 
               if (_remoteHandler != null)
-                _remoteHandler(code);
+                _remoteHandler(this.Name, code);
 
               break;
             }
@@ -402,7 +402,7 @@ namespace InputService.Plugin
               Trace.WriteLine(String.Format("Last Y: {0}", raw.mouse.lLastY));
 #endif
               if (_mouseHandler != null)
-                _mouseHandler(raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
+                _mouseHandler(this.Name, raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
 
               break;
             }
@@ -421,7 +421,7 @@ namespace InputService.Plugin
 #endif
 
                   if (_keyboardHandler != null)
-                    _keyboardHandler(raw.keyboard.VKey, true);
+                    _keyboardHandler(this.Name, raw.keyboard.VKey, true);
 
                   break;
 
@@ -430,7 +430,7 @@ namespace InputService.Plugin
                   Trace.WriteLine(String.Format("E0: {0}", raw.keyboard.MakeCode));
 #endif
                   //if (_keyboardHandler != null)
-                    //_keyboardHandler(0xE000 | raw.keyboard.MakeCode, true);
+                  //  _keyboardHandler(this.Name, 0xE000 | raw.keyboard.MakeCode, true);
 
                   break;
 
@@ -439,7 +439,7 @@ namespace InputService.Plugin
                   Trace.WriteLine("E1");
 #endif
                   //if (_keyboardHandler != null)
-                    //_keyboardHandler(0xE100, true);
+                  //  _keyboardHandler(this.Name, 0xE100, true);
 
                   break;
 
@@ -449,7 +449,7 @@ namespace InputService.Plugin
 #endif
 
                   if (_keyboardHandler != null)
-                    _keyboardHandler(raw.keyboard.VKey, false);
+                    _keyboardHandler(this.Name, raw.keyboard.VKey, false);
 
                   break;
 

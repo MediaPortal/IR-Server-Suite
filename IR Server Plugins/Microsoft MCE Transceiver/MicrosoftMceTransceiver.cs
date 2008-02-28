@@ -53,15 +53,15 @@ namespace InputService.Plugin
 
     #region Debug
 
-    static void xRemote(string code)
+    static void xRemote(string deviceName, string code)
     {
       Console.WriteLine("Remote: {0}", code);
     }
-    static void xKeyboard(int button, bool up)
+    static void xKeyboard(string deviceName, int button, bool up)
     {
       Console.WriteLine("Keyboard: {0}, {1}", button, up);
     }
-    static void xMouse(int x, int y, int buttons)
+    static void xMouse(string deviceName, int x, int y, int buttons)
     {
       Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
     }
@@ -89,7 +89,7 @@ namespace InputService.Plugin
       //Application.Run();
 
       byte[] fileBytes;
-      string fileName = @"C:\test2.IR";
+      //string fileName = @"C:\test2.IR";
       /*
       if (c.Learn(out fileBytes) == LearnStatus.Success)
       {
@@ -100,7 +100,7 @@ namespace InputService.Plugin
       }
       */
       Console.WriteLine("Testing IR longest length without crashing receiver");
-
+      /*
       using (FileStream file = File.OpenRead(fileName))
       {
         if (file.Length == 0)
@@ -109,6 +109,9 @@ namespace InputService.Plugin
         fileBytes = new byte[file.Length];
         file.Read(fileBytes, 0, (int)file.Length);
       }
+      */
+
+      fileBytes = Encoding.ASCII.GetBytes("0000 0076 005A 0000 0009 0019 0009 005D 0007 001A 0007 0062 0007 002E 0009 002C 0009 001E 0009 004A 0007 01E1 0009 0019 0009 0053 0009 0019 0009 001A 0007 001A 0009 002C 0009 001A 0007 001A 0007 0DAB 0009 0019 0009 005D 0007 001A 0009 0061 0007 002E 0007 002E 0009 001E 0009 004A 0007 01E1 0009 0019 0009 002C 0009 003F 0009 001A 0007 001A 0007 002E 0009 0019 0009 001A 0009 0AF5 0009 0019 0009 005B 0009 001A 0007 0062 0007 002E 0009 002C 0009 001E 0009 004A 0007 01E1 0007 001A 0009 002C 0009 0041 0007 0019 0009 001A 0009 002C 0009 0019 0009 001A 0007 0AF7 0007 001A 0009 005D 0007 001A 0007 0062 0007 002E 0009 002C 0009 001E 0009 0048 0009 01E1 0009 0019 0009 002C 0009 003F 0009 001A 0007 001A 0007 002E 0009 0019 0009 0019 0009 0AF7 0009 0019 0009 005B 0009 001A 0009 0061 0007 002E 0007 002E 0009 001E 0009 004A 0007 01E1 0007 001A 0009 002C 0009 003F 0009 001A 0007 001A 0009 002C 0007 001A 0009 001A 0007 0DB9");
 
       IrCode code = IrCode.FromByteArray(fileBytes);
       //code.Carrier = 37010;
@@ -180,8 +183,8 @@ namespace InputService.Plugin
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\Input Service\\Microsoft MCE Transceiver.xml";
     
-    readonly Guid MicrosoftGuid   = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
-    readonly Guid ReplacementGuid = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f, 0xb1, 0x72, 0x8b);
+    static readonly Guid MicrosoftGuid   = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
+    static readonly Guid ReplacementGuid = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f, 0xb1, 0x72, 0x8b);
 
     const int VistaVersionNumber  = 6;
 
@@ -733,7 +736,7 @@ namespace InputService.Plugin
       _lastRemoteButtonTime = DateTime.Now;
 
       if (_remoteHandler != null)
-        _remoteHandler(keyCode.ToString());
+        _remoteHandler(this.Name, keyCode.ToString());
     }
     void KeyboardEvent(uint keyCode, uint modifiers)
     {
@@ -897,7 +900,7 @@ namespace InputService.Plugin
       #endregion Movement Delta
 
       if (!_handleMouseLocally)
-        _mouseHandler(deltaX, deltaY, (int)buttons);
+        _mouseHandler(this.Name, deltaX, deltaY, (int)buttons);
     }
 
     // TODO: Convert this function to a lookup from an XML file, then provide multiple files and a way to fine-tune...
@@ -1059,28 +1062,28 @@ namespace InputService.Plugin
       if (keyCode != 0)
       {
         Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
-        _keyboardHandler((int)vKey, true);
+        _keyboardHandler(this.Name, (int)vKey, true);
       }
 
       if (modifiers != 0)
       {
         if ((modifiers & (uint)KeyModifiers.LeftAlt) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_LMENU, true);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LMENU, true);
         if ((modifiers & (uint)KeyModifiers.LeftControl) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_LCONTROL, true);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LCONTROL, true);
         if ((modifiers & (uint)KeyModifiers.LeftShift) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_LSHIFT, true);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LSHIFT, true);
         if ((modifiers & (uint)KeyModifiers.LeftWin) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_LWIN, true);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LWIN, true);
 
         if ((modifiers & (uint)KeyModifiers.RightAlt) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_RMENU, true);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RMENU, true);
         if ((modifiers & (uint)KeyModifiers.RightControl) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_RCONTROL, true);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RCONTROL, true);
         if ((modifiers & (uint)KeyModifiers.RightShift) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_RSHIFT, true);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RSHIFT, true);
         if ((modifiers & (uint)KeyModifiers.RightWin) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_RWIN, true);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RWIN, true);
       }
     }
     void KeyDownRemote(uint keyCode, uint modifiers)
@@ -1091,28 +1094,28 @@ namespace InputService.Plugin
       if (modifiers != 0)
       {
         if ((modifiers & (uint)KeyModifiers.LeftAlt) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_LMENU, false);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LMENU, false);
         if ((modifiers & (uint)KeyModifiers.LeftControl) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_LCONTROL, false);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LCONTROL, false);
         if ((modifiers & (uint)KeyModifiers.LeftShift) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_LSHIFT, false);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LSHIFT, false);
         if ((modifiers & (uint)KeyModifiers.LeftWin) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_LWIN, false);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LWIN, false);
 
         if ((modifiers & (uint)KeyModifiers.RightAlt) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_RMENU, false);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RMENU, false);
         if ((modifiers & (uint)KeyModifiers.RightControl) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_RCONTROL, false);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RCONTROL, false);
         if ((modifiers & (uint)KeyModifiers.RightShift) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_RSHIFT, false);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RSHIFT, false);
         if ((modifiers & (uint)KeyModifiers.RightWin) != 0)
-          _keyboardHandler((int)Keyboard.VKey.VK_RWIN, false);
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RWIN, false);
       }
 
       if (keyCode != 0)
       {
         Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
-        _keyboardHandler((int)vKey, false);
+        _keyboardHandler(this.Name, (int)vKey, false);
       }
     }
 

@@ -167,7 +167,7 @@ namespace InputService.Plugin
         if (retVal == 0)
           Thread.Sleep(PacketTimeout);
         else if (_remoteHandler != null)
-          _remoteHandler(key.ToString("X2"));
+          _remoteHandler(this.Name, key.ToString("X2"));
       }
     }
     

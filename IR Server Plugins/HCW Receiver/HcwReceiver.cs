@@ -145,7 +145,7 @@ namespace InputService.Plugin
       if (_lastCode != button || timeSpan.Milliseconds >= _repeatDelay)
       {
         if (_remoteButtonHandler != null)
-          _remoteButtonHandler(button.ToString());
+          _remoteButtonHandler(this.Name, button.ToString());
 
         _lastCodeTime = now;
       }

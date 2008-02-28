@@ -190,11 +190,11 @@ namespace InputService.Plugin
 
     #region Variables
 
-    static RemoteHandler _remoteHandler;
+    RemoteHandler _remoteHandler;
 
-    static FileStream _deviceStream;
-    static byte[] _deviceBuffer;
-    static DateTime _lastCodeTime = DateTime.Now;
+    FileStream _deviceStream;
+    byte[] _deviceBuffer;
+    DateTime _lastCodeTime = DateTime.Now;
 
     #endregion Variables
 
@@ -304,7 +304,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Opens the device.
     /// </summary>
-    static void OpenDevice()
+    void OpenDevice()
     {
       Guid hidGuid = new Guid();
       HidD_GetHidGuid(ref hidGuid);
@@ -402,7 +402,7 @@ namespace InputService.Plugin
     /// Called when a device read completes.
     /// </summary>
     /// <param name="asyncResult">The async result.</param>
-    static void OnReadComplete(IAsyncResult asyncResult)
+    void OnReadComplete(IAsyncResult asyncResult)
     {
       try
       {
@@ -424,7 +424,7 @@ namespace InputService.Plugin
           _lastCodeTime = DateTime.Now;
 
           if (_remoteHandler != null)
-            _remoteHandler(keyCode.ToString());
+            _remoteHandler(this.Name, keyCode.ToString());
         }
         else
         {
@@ -436,7 +436,7 @@ namespace InputService.Plugin
             _lastCodeTime = DateTime.Now;
 
             if (_remoteHandler != null)
-              _remoteHandler(keyCode.ToString());
+              _remoteHandler(this.Name, keyCode.ToString());
           }
         }
 

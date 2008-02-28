@@ -312,7 +312,7 @@ namespace InputService.Plugin
       _lastRemoteButtonTime = DateTime.Now;
 
       if (_remoteHandler != null)
-        _remoteHandler(keyCode.ToString());
+        _remoteHandler(this.Name, keyCode.ToString());
     }
 
     static int[] GetTimingData(byte[] data)

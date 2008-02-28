@@ -21,7 +21,7 @@ namespace InputService.Plugin
 
     #region Debug
 
-    static void Remote(string code)
+    static void Remote(string deviceName, string code)
     {
       Console.WriteLine("Remote: {0}", code);
     }
@@ -276,7 +276,7 @@ namespace InputService.Plugin
         }
 
         if (_remoteButtonHandler != null)
-          _remoteButtonHandler(String.Format("{0:X8}", keyCode));
+          _remoteButtonHandler(this.Name, String.Format("{0:X8}", keyCode));
 
          if (_stealAppCommands && appCommand != AppCommands.None)
           return 1;

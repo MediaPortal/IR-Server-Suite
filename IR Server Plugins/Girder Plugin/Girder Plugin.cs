@@ -201,7 +201,7 @@ namespace InputService.Plugin
     void PluginCallback(string eventstring, IntPtr payload, int len, int device)
     {
       if (_remoteButtonHandler != null)
-        _remoteButtonHandler(eventstring);
+        _remoteButtonHandler(this.Name, eventstring);
     }
 
     void LoadSettings()

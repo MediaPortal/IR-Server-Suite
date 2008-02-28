@@ -8,8 +8,9 @@ namespace InputService.Plugin
   /// <summary>
   /// IR Server callback for remote button press handling.
   /// </summary>
+  /// <param name="deviceName">The device that detected the remote button.</param>
   /// <param name="keyCode">Remote button code.</param>
-  public delegate void RemoteHandler(string keyCode);
+  public delegate void RemoteHandler(string deviceName, string keyCode);
 
   #endregion Delegates
 

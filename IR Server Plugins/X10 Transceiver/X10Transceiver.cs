@@ -163,7 +163,7 @@ namespace InputService.Plugin
           string keyCode = Enum.GetName(typeof(X10.EX10Command), eCommand);
 
           if (RemoteCallback != null)
-            RemoteCallback(keyCode);
+            RemoteCallback(this.Name, keyCode);
         }
 #if TRACE
         catch (Exception ex)

@@ -211,7 +211,7 @@ namespace InputService.Plugin
       {
         int longParam = m.LParam.ToInt32();
         if (_remoteButtonHandler != null)
-          _remoteButtonHandler(longParam.ToString());
+          _remoteButtonHandler(this.Name, longParam.ToString());
       }
     }
 

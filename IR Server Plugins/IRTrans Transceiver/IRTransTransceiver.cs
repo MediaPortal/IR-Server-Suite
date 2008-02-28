@@ -198,13 +198,13 @@ namespace InputService.Plugin
 
     #region Variables
 
-    static RemoteHandler _remoteButtonHandler;
+    RemoteHandler _remoteButtonHandler;
 
-    static Socket _socket;
-    static AsyncCallback _pfnCallBack;
-    static string _irTransRemoteModel;
-    static string _irTransServerAddress;
-    static int _irTransServerPort;
+    Socket _socket;
+    AsyncCallback _pfnCallBack;
+    string _irTransRemoteModel;
+    string _irTransServerAddress;
+    int _irTransServerPort;
 
     #endregion Variables
 
@@ -344,7 +344,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Loads the settings.
     /// </summary>
-    static void LoadSettings()
+    void LoadSettings()
     {
       try
       {
@@ -372,7 +372,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Saves the settings.
     /// </summary>
-    static void SaveSettings()
+    void SaveSettings()
     {
       try
       {
@@ -410,7 +410,7 @@ namespace InputService.Plugin
     /// <param name="address">The address.</param>
     /// <param name="port">The port.</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    static bool Connect(string address, int port)
+    bool Connect(string address, int port)
     {
       // TODO: put this on a thread, retry every 30 seconds ...
       try
@@ -438,7 +438,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Starts receiving.
     /// </summary>
-    static void BeginReceive()
+    void BeginReceive()
     {
       try
       {
@@ -465,7 +465,7 @@ namespace InputService.Plugin
     /// Called when data received.
     /// </summary>
     /// <param name="asyncResult">The async result.</param>
-    static void OnDataReceived(IAsyncResult asyncResult)
+    void OnDataReceived(IAsyncResult asyncResult)
     {
       try
       {
@@ -498,7 +498,7 @@ namespace InputService.Plugin
                 string keyCode = received.Command.Trim();
 
                 if (_remoteButtonHandler != null)
-                  _remoteButtonHandler(keyCode);
+                  _remoteButtonHandler(this.Name, keyCode);
               }
 #if TRACE
               catch (Exception ex)

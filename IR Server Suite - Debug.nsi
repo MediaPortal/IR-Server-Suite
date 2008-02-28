@@ -318,6 +318,7 @@ SkipUninstallInputService:
   File "IR Server Plugins\Windows Message Receiver\bin\Debug\Windows Message Receiver.*"
   File "IR Server Plugins\WinLirc Transceiver\bin\Debug\WinLirc Transceiver.*"
   File "IR Server Plugins\X10 Transceiver\bin\Debug\X10 Transceiver.*"
+  File "IR Server Plugins\X10 Transceiver\bin\Debug\Interop.X10.dll"
   File "IR Server Plugins\XBCDRC Receiver\bin\Debug\XBCDRC Receiver.*"
 
   ; Create App Data Folder for IR Server configuration files.

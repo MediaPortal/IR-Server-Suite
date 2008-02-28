@@ -365,7 +365,7 @@ namespace InputService.Plugin
           if (keyCode != _lastCode || timeSpan.Milliseconds > 250)
           {
             if (_remoteButtonHandler != null)
-              _remoteButtonHandler(keyCode.ToString());
+              _remoteButtonHandler(this.Name, keyCode.ToString());
 
             _lastCodeTime = DateTime.Now;
           }

@@ -257,18 +257,18 @@ namespace InputService.Plugin
 
       if (_previousState != null)
       {
-        if (ws.ButtonState.A && !_previousState.ButtonState.A)          RemoteCallback("Wiimote_Button:A");
-        if (ws.ButtonState.B && !_previousState.ButtonState.B)          RemoteCallback("Wiimote_Button:B");
-        if (ws.ButtonState.Home && !_previousState.ButtonState.Home)    RemoteCallback("Wiimote_Button:Home");
-        if (ws.ButtonState.Minus && !_previousState.ButtonState.Minus)  RemoteCallback("Wiimote_Button:Minus");
-        if (ws.ButtonState.One && !_previousState.ButtonState.One)      RemoteCallback("Wiimote_Button:One");
-        if (ws.ButtonState.Plus && !_previousState.ButtonState.Plus)    RemoteCallback("Wiimote_Button:Plus");
-        if (ws.ButtonState.Two && !_previousState.ButtonState.Two)      RemoteCallback("Wiimote_Button:Two");
+        if (ws.ButtonState.A && !_previousState.ButtonState.A)          RemoteCallback(this.Name, "Wiimote_Button:A");
+        if (ws.ButtonState.B && !_previousState.ButtonState.B)          RemoteCallback(this.Name, "Wiimote_Button:B");
+        if (ws.ButtonState.Home && !_previousState.ButtonState.Home)    RemoteCallback(this.Name, "Wiimote_Button:Home");
+        if (ws.ButtonState.Minus && !_previousState.ButtonState.Minus)  RemoteCallback(this.Name, "Wiimote_Button:Minus");
+        if (ws.ButtonState.One && !_previousState.ButtonState.One)      RemoteCallback(this.Name, "Wiimote_Button:One");
+        if (ws.ButtonState.Plus && !_previousState.ButtonState.Plus)    RemoteCallback(this.Name, "Wiimote_Button:Plus");
+        if (ws.ButtonState.Two && !_previousState.ButtonState.Two)      RemoteCallback(this.Name, "Wiimote_Button:Two");
 
-        if (ws.ButtonState.Down && !_previousState.ButtonState.Down)    RemoteCallback("Wiimote_Pad:Down");
-        if (ws.ButtonState.Left && !_previousState.ButtonState.Left)    RemoteCallback("Wiimote_Pad:Left");
-        if (ws.ButtonState.Right && !_previousState.ButtonState.Right)  RemoteCallback("Wiimote_Pad:Right");
-        if (ws.ButtonState.Up && !_previousState.ButtonState.Up)        RemoteCallback("Wiimote_Pad:Up");
+        if (ws.ButtonState.Down && !_previousState.ButtonState.Down)    RemoteCallback(this.Name, "Wiimote_Pad:Down");
+        if (ws.ButtonState.Left && !_previousState.ButtonState.Left)    RemoteCallback(this.Name, "Wiimote_Pad:Left");
+        if (ws.ButtonState.Right && !_previousState.ButtonState.Right)  RemoteCallback(this.Name, "Wiimote_Pad:Right");
+        if (ws.ButtonState.Up && !_previousState.ButtonState.Up)        RemoteCallback(this.Name, "Wiimote_Pad:Up");
 
         if (ws.ExtensionType == ExtensionType.Nunchuk)
         {
@@ -296,34 +296,34 @@ namespace InputService.Plugin
             else
             {
               if (deltaX != 0 || deltaY != 0 || mouseButtons != Mouse.MouseEvents.None)
-                MouseCallback(deltaX, deltaY, (int)mouseButtons);
+                MouseCallback(this.Name, deltaX, deltaY, (int)mouseButtons);
             }
           }
           else
           {
-            if (ws.NunchukState.C && !_previousState.NunchukState.C) RemoteCallback("WiimoteNunchuk_Button:C");
-            if (ws.NunchukState.Z && !_previousState.NunchukState.Z) RemoteCallback("WiimoteNunchuk_Button:Z");
+            if (ws.NunchukState.C && !_previousState.NunchukState.C) RemoteCallback(this.Name, "WiimoteNunchuk_Button:C");
+            if (ws.NunchukState.Z && !_previousState.NunchukState.Z) RemoteCallback(this.Name, "WiimoteNunchuk_Button:Z");
           }
         }
 
         if (ws.ExtensionType == ExtensionType.ClassicController)
         {
-          if (ws.ClassicControllerState.ButtonState.A && !_previousState.ClassicControllerState.ButtonState.A)                RemoteCallback("WiimoteClassic_Button:A");
-          if (ws.ClassicControllerState.ButtonState.B && !_previousState.ClassicControllerState.ButtonState.B)                RemoteCallback("WiimoteClassic_Button:B");
-          if (ws.ClassicControllerState.ButtonState.Home && !_previousState.ClassicControllerState.ButtonState.Home)          RemoteCallback("WiimoteClassic_Button:Home");
-          if (ws.ClassicControllerState.ButtonState.Minus && !_previousState.ClassicControllerState.ButtonState.Minus)        RemoteCallback("WiimoteClassic_Button:Minus");
-          if (ws.ClassicControllerState.ButtonState.Plus && !_previousState.ClassicControllerState.ButtonState.Plus)          RemoteCallback("WiimoteClassic_Button:Plus");
-          if (ws.ClassicControllerState.ButtonState.X && !_previousState.ClassicControllerState.ButtonState.X)                RemoteCallback("WiimoteClassic_Button:X");
-          if (ws.ClassicControllerState.ButtonState.Y && !_previousState.ClassicControllerState.ButtonState.Y)                RemoteCallback("WiimoteClassic_Button:Y");
-          if (ws.ClassicControllerState.ButtonState.TriggerL && !_previousState.ClassicControllerState.ButtonState.TriggerL)  RemoteCallback("WiimoteClassic_Button:TriggerL");
-          if (ws.ClassicControllerState.ButtonState.TriggerR && !_previousState.ClassicControllerState.ButtonState.TriggerR)  RemoteCallback("WiimoteClassic_Button:TriggerR");
-          if (ws.ClassicControllerState.ButtonState.ZL && !_previousState.ClassicControllerState.ButtonState.ZL)              RemoteCallback("WiimoteClassic_Button:ZL");
-          if (ws.ClassicControllerState.ButtonState.ZR && !_previousState.ClassicControllerState.ButtonState.ZR)              RemoteCallback("WiimoteClassic_Button:ZR");
+          if (ws.ClassicControllerState.ButtonState.A && !_previousState.ClassicControllerState.ButtonState.A)                RemoteCallback(this.Name, "WiimoteClassic_Button:A");
+          if (ws.ClassicControllerState.ButtonState.B && !_previousState.ClassicControllerState.ButtonState.B)                RemoteCallback(this.Name, "WiimoteClassic_Button:B");
+          if (ws.ClassicControllerState.ButtonState.Home && !_previousState.ClassicControllerState.ButtonState.Home)          RemoteCallback(this.Name, "WiimoteClassic_Button:Home");
+          if (ws.ClassicControllerState.ButtonState.Minus && !_previousState.ClassicControllerState.ButtonState.Minus)        RemoteCallback(this.Name, "WiimoteClassic_Button:Minus");
+          if (ws.ClassicControllerState.ButtonState.Plus && !_previousState.ClassicControllerState.ButtonState.Plus)          RemoteCallback(this.Name, "WiimoteClassic_Button:Plus");
+          if (ws.ClassicControllerState.ButtonState.X && !_previousState.ClassicControllerState.ButtonState.X)                RemoteCallback(this.Name, "WiimoteClassic_Button:X");
+          if (ws.ClassicControllerState.ButtonState.Y && !_previousState.ClassicControllerState.ButtonState.Y)                RemoteCallback(this.Name, "WiimoteClassic_Button:Y");
+          if (ws.ClassicControllerState.ButtonState.TriggerL && !_previousState.ClassicControllerState.ButtonState.TriggerL)  RemoteCallback(this.Name, "WiimoteClassic_Button:TriggerL");
+          if (ws.ClassicControllerState.ButtonState.TriggerR && !_previousState.ClassicControllerState.ButtonState.TriggerR)  RemoteCallback(this.Name, "WiimoteClassic_Button:TriggerR");
+          if (ws.ClassicControllerState.ButtonState.ZL && !_previousState.ClassicControllerState.ButtonState.ZL)              RemoteCallback(this.Name, "WiimoteClassic_Button:ZL");
+          if (ws.ClassicControllerState.ButtonState.ZR && !_previousState.ClassicControllerState.ButtonState.ZR)              RemoteCallback(this.Name, "WiimoteClassic_Button:ZR");
 
-          if (ws.ClassicControllerState.ButtonState.Down && !_previousState.ClassicControllerState.ButtonState.Down)          RemoteCallback("WiimoteClassic_Pad:Down");
-          if (ws.ClassicControllerState.ButtonState.Left && !_previousState.ClassicControllerState.ButtonState.Left)          RemoteCallback("WiimoteClassic_Pad:Left");
-          if (ws.ClassicControllerState.ButtonState.Right && !_previousState.ClassicControllerState.ButtonState.Right)        RemoteCallback("WiimoteClassic_Pad:Right");
-          if (ws.ClassicControllerState.ButtonState.Up && !_previousState.ClassicControllerState.ButtonState.Up)              RemoteCallback("WiimoteClassic_Pad:Up");
+          if (ws.ClassicControllerState.ButtonState.Down && !_previousState.ClassicControllerState.ButtonState.Down)          RemoteCallback(this.Name, "WiimoteClassic_Pad:Down");
+          if (ws.ClassicControllerState.ButtonState.Left && !_previousState.ClassicControllerState.ButtonState.Left)          RemoteCallback(this.Name, "WiimoteClassic_Pad:Left");
+          if (ws.ClassicControllerState.ButtonState.Right && !_previousState.ClassicControllerState.ButtonState.Right)        RemoteCallback(this.Name, "WiimoteClassic_Pad:Right");
+          if (ws.ClassicControllerState.ButtonState.Up && !_previousState.ClassicControllerState.ButtonState.Up)              RemoteCallback(this.Name, "WiimoteClassic_Pad:Up");
         }
 
         if (ws.IRState.Found1 && ws.IRState.Found2)
@@ -343,7 +343,7 @@ namespace InputService.Plugin
             int deltaX = x - prevX;
             int deltaY = y - prevY;
 
-            MouseCallback(deltaX, deltaY, 0);
+            MouseCallback(this.Name, deltaX, deltaY, 0);
           }
         }
       }

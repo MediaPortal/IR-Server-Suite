@@ -61,7 +61,13 @@ namespace Translator
     {
       if (received.Type == MessageType.RemoteEvent)
       {
-        _keyCode = received.GetDataAsString();
+        byte[] data = received.GetDataAsBytes();
+        int deviceNameSize = BitConverter.ToInt32(data, 0);
+        string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
+        int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
+        string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+
+        _keyCode = keyCode;
 
         this.Invoke(_keyCodeSet);
       }

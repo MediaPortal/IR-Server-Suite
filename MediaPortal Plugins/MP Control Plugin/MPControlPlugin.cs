@@ -643,8 +643,9 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Handles remote buttons received.
     /// </summary>
+    /// <param name="deviceName">Name of the device.</param>
     /// <param name="keyCode">The remote button.</param>
-    static void RemoteHandler(string keyCode)
+    static void RemoteHandler(string deviceName, string keyCode)
     {
       // If user has stipulated that MP must have focus to recognize commands ...
       if (RequireFocus && !GUIGraphicsContext.HasFocus)
@@ -763,7 +764,15 @@ namespace MediaPortal.Plugins
         {
           case MessageType.RemoteEvent:
             if (!_inConfiguration)
-              RemoteHandler(received.GetDataAsString());
+            {
+              byte[] data = received.GetDataAsBytes();
+              int deviceNameSize = BitConverter.ToInt32(data, 0);
+              string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
+              int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
+              string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+
+              RemoteHandler(deviceName, keyCode);
+            }
             break;
 
           case MessageType.BlastIR:
