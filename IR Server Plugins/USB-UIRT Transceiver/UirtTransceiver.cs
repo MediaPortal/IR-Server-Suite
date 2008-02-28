@@ -18,8 +18,7 @@ namespace InputService.Plugin
   /// IR Server Plugin for USB-UIRT Transceiver device.
   /// </summary>
   [CLSCompliant(false)]
-  public class UirtTransceiver :
-    PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
+  public class UirtTransceiver : PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IDisposable
   {
 
     #region Constants
@@ -158,7 +157,8 @@ namespace InputService.Plugin
     IntPtr _abortLearn = IntPtr.Zero;
     bool _learnTimedOut;
     bool _isUsbUirtLoaded;
-    IntPtr _usbUirtHandle = new IntPtr(-1);
+    IntPtr _usbUirtHandle = IntPtr.Zero;
+    UUIRTReceiveCallbackDelegate _receiveCallbackDelegate;
     bool _disposed;
 
     #endregion Variables
@@ -276,12 +276,14 @@ namespace InputService.Plugin
 
       _usbUirtHandle = UUIRTOpen();
 
-      if (_usbUirtHandle == new IntPtr(-1) || _usbUirtHandle == IntPtr.Zero)
+      if (_usbUirtHandle == IntPtr.Zero)
         throw new ApplicationException("Failed to initialize");
 
       _isUsbUirtLoaded = true;
 
-      UUIRTSetReceiveCallback(_usbUirtHandle, new UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback), 0);
+      _receiveCallbackDelegate = new UUIRTReceiveCallbackDelegate(UUIRTReceiveCallback);
+
+      UUIRTSetReceiveCallback(_usbUirtHandle, _receiveCallbackDelegate, 0);
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
@@ -305,10 +307,11 @@ namespace InputService.Plugin
       if (_abortLearn != IntPtr.Zero)
         Marshal.WriteInt32(_abortLearn, AbortLearn);
 
-      if (_usbUirtHandle != new IntPtr(-1) && _usbUirtHandle != IntPtr.Zero)
+      if (_usbUirtHandle != IntPtr.Zero)
       {
         UUIRTClose(_usbUirtHandle);
-        _usbUirtHandle = new IntPtr(-1);
+        _usbUirtHandle = IntPtr.Zero;
+        _receiveCallbackDelegate = null;
       }
 
       _isUsbUirtLoaded = false;

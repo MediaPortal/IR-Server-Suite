@@ -151,6 +151,7 @@ namespace VirtualRemote
             throw new FileNotFoundException("Skin file not found", xmlFile);
         }
 
+        Program.Device = Path.GetFileNameWithoutExtension(xmlFile);
         LoadSkinXml(xmlFile);
 
         this.BackgroundImage = new Bitmap(skinFile);

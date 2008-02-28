@@ -23,6 +23,81 @@ namespace Abstractor
   public partial class MainForm : Form
   {
 
+    /*
+    static readonly string[] AbstractButtons = new string[] {
+
+      // Primary buttons ...
+      "Up",
+      "Down",
+      "Left",
+      "Right",
+      "OK",      
+      "Volume Up",
+      "Volume Down",
+      "Channel Up",
+      "Channel Down",      
+      "Start",
+      "Back",
+      "Info",
+      "Mute",
+      "Number 0",
+      "Number 1",
+      "Number 2",
+      "Number 3",
+      "Number 4",
+      "Number 5",
+      "Number 6",
+      "Number 7",
+      "Number 8",
+      "Number 9",
+      "Play",
+      "Pause",
+      "Play / Pause",
+      "Stop",
+      "Fast Forward",
+      "Rewind",
+      "Record",
+      "Next Chapter",
+      "Previous Chapter",
+      "Power",
+      
+      // Secondary buttons ...
+      "Power 2",
+      "Power 3",
+      "Teletext",
+      "Teletext Red",
+      "Teletext Green",
+      "Teletext Yellow",
+      "Teletext Blue",
+      "Subtitles",
+      "Menu",
+      "Clear",
+      "Enter",
+      "#",
+      "*",
+      "Task Swap",
+      "Fullscreen",
+      "Aspect Ratio",
+      "Setup",
+      "Music",
+      "Pictures",
+      "Videos",
+      "DVD",
+      "TV",
+      "Guide",
+      "Live TV",
+      "Radio",
+      "Print",
+      "Snapshot",
+      "Open",
+      "Close",
+      "Eject",
+      "Scroll Up",
+      "Scroll Down",
+      "Page Up",
+      "Page Down"
+    };*/
+
     public enum AbstractButton
     {
       Up,
@@ -82,6 +157,8 @@ namespace Abstractor
       TV,
       Guide,
       LiveTV,
+      Radio,
+      Print,
       Snapshot,
       Open,
       Close,
@@ -109,7 +186,6 @@ namespace Abstractor
 
     delegate void DelegateAddStatusLine(string status);
     DelegateAddStatusLine _addStatusLine;
-
     void AddStatusLine(string status)
     {
       IrssLog.Info(status);
@@ -122,7 +198,6 @@ namespace Abstractor
 
     delegate void DelegateSetDevices(string[] devices);
     DelegateSetDevices _setDevices;
-
     void SetDevices(string[] devices)
     {
       comboBoxDevice.Items.Clear();
@@ -231,6 +306,9 @@ namespace Abstractor
               _registered = true;
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
 
+              _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
+              _abstractRemoteButtons.CaseSensitive = true;
+
               _client.Send(new IrssMessage(MessageType.ActiveReceivers, MessageFlags.Request));
               _client.Send(new IrssMessage(MessageType.ActiveBlasters, MessageFlags.Request));
             }
@@ -312,8 +390,31 @@ namespace Abstractor
 
       // Determine abstract button details ...
       string abstractButton = LookupAbstractButton(deviceName, keyCode);
-      string abstractText = String.Format("Abstract Button \"{0}\"", abstractButton);
+
+      bool isAbstract = true;
+      if (String.IsNullOrEmpty(abstractButton))
+      {
+        isAbstract = false;
+        abstractButton = String.Format("{0} ({1})", deviceName, keyCode);
+      }
+
+      string abstractText = String.Format("Button: {0}", abstractButton);
       this.Invoke(_addStatusLine, abstractText);
+
+      if (checkBoxForwardAbstract.Checked && isAbstract)
+      {
+        byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Abstract");
+        byte[] keyCodeBytes = Encoding.ASCII.GetBytes(abstractButton);
+
+        byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
+
+        BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(bytes, 0);
+        deviceNameBytes.CopyTo(bytes, 4);
+        BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
+        keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
+
+        _client.Send(new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, bytes));
+      }
     }
 
     void CommsFailure(object obj)
@@ -374,9 +475,6 @@ namespace Abstractor
 
     private void buttonConnect_Click(object sender, EventArgs e)
     {
-      _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
-      _abstractRemoteButtons.CaseSensitive = true;
-
       try
       {
         AddStatusLine("Connect");
@@ -402,8 +500,6 @@ namespace Abstractor
     }
     private void buttonDisconnect_Click(object sender, EventArgs e)
     {
-      _abstractRemoteButtons = null;
-
       AddStatusLine("Disconnect");
 
       try
@@ -443,12 +539,18 @@ namespace Abstractor
           {
             string button = rows[0]["AbstractButton"].ToString() as string;
             if (!String.IsNullOrEmpty(button))
-              return button + " on " + table.ExtendedProperties["Remote"] as string + " through " + deviceName;
+            {
+#if TRACE
+              Trace.WriteLine(button + ", remote: " + table.ExtendedProperties["Remote"] as string + ", device: " + deviceName);
+#endif
+              return button;
+            }
           }
         }
       }
 
-      return String.Format("{0} ({1})", deviceName, keyCode);
+      return null;
+      //return String.Format("{0} ({1})", deviceName, keyCode);
     }
 
 
@@ -462,6 +564,14 @@ namespace Abstractor
           string remote = Path.GetFileNameWithoutExtension(file);
           this.Invoke(_addStatusLine, String.Format("Loading {0} remote map \"{1}\"", device, remote));
 
+          string tableName = String.Format("{0}:{1}", device, remote);
+
+          if (_abstractRemoteButtons.Tables.Contains(tableName))
+          {
+            this.Invoke(_addStatusLine, "Table already loaded");
+            continue;
+          }
+
           DataTable table = _abstractRemoteButtons.Tables.Add("RemoteTable");
           table.ReadXmlSchema("RemoteTable.xsd");
           table.ReadXml(file);
@@ -470,7 +580,7 @@ namespace Abstractor
           table.ExtendedProperties.Add("Device", device);
           table.ExtendedProperties.Add("Remote", remote);
 
-          table.TableName = String.Format("{0}:{1}", device, remote);
+          table.TableName = tableName;
         }
       }
     }
@@ -496,11 +606,7 @@ namespace Abstractor
       listViewButtonMap.Items.Clear();
       foreach (string abstractButton in abstractButtons)
         listViewButtonMap.Items.Add(new ListViewItem(new string[] { abstractButton, String.Empty }));
-
-      listViewButtonMap.Sort();
     }
-
-
     void SaveMap()
     {
       if (String.IsNullOrEmpty(textBoxRemoteName.Text))
@@ -519,27 +625,7 @@ namespace Abstractor
 
       DataTable table = new DataTable("RemoteTable");
       table.ReadXmlSchema("RemoteTable.xsd");
-      
-      /*
-      DataColumn column;
 
-      column = new DataColumn("RawCode", typeof(string));
-      column.Caption = "Raw Code";
-      column.ColumnMapping = MappingType.Attribute;
-      column.DefaultValue = String.Empty;
-      column.ReadOnly = false;
-      column.Unique = true;
-      table.Columns.Add(column);
-
-      column = new DataColumn("AbstractButton", typeof(string));
-      column.Caption = "Abstract Button";
-      column.ColumnMapping = MappingType.Attribute;
-      column.DefaultValue = String.Empty;
-      column.ReadOnly = false;
-      column.Unique = false;
-      table.Columns.Add(column);
-      */
-      
       foreach (ListViewItem item in listViewButtonMap.Items)
       {
         if (!String.IsNullOrEmpty(item.SubItems[1].Text))
@@ -548,7 +634,6 @@ namespace Abstractor
 
       table.WriteXml(path);
     }
-
     void LoadMap()
     {
       if (String.IsNullOrEmpty(textBoxRemoteName.Text))
@@ -591,8 +676,6 @@ namespace Abstractor
         ListViewItem item = new ListViewItem(subitems);
         listViewButtonMap.Items.Add(item);
       }
-
-      listViewButtonMap.Sort();
     }
 
     private void listViewButtonMap_KeyDown(object sender, KeyEventArgs e)

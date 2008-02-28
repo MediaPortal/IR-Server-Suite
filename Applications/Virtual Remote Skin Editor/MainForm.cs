@@ -595,7 +595,7 @@ namespace SkinEditor
               int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
               string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
 
-              listViewButtons.SelectedItems[0].SubItems[1].Text = String.Format("{0} ({1})", deviceName, keyCode);
+              listViewButtons.SelectedItems[0].SubItems[1].Text = keyCode;
             }
             return;
 

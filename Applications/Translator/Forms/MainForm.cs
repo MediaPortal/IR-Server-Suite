@@ -504,15 +504,8 @@ namespace Translator
       if (map == null)
       {
         string description = String.Empty;
-        try
-        {
-          MceButton temp = (MceButton)Enum.Parse(typeof(MceButton), keyCode, true);
-          description = Enum.GetName(typeof(MceButton), temp);
-        }
-        catch
-        {
-          // keyCode did not fall within MceButton enum
-        }
+
+        // TODO: Get description from Abstract Remote Model ...
 
         map = new ButtonMappingForm(keyCode, description, String.Empty);
       }

@@ -809,15 +809,22 @@ namespace Translator
       if (_inConfiguration)
         return;
 
+      // Ability to handle Abstract and Complex remote buttons ...
+      string button = keyCode;
+      
+      // TODO: Include abstract button support ...
+      //if (!deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
+      //  button = String.Format("{0} ({1})", deviceName, keyCode);
+ 
       ProgramSettings active = ActiveProgram();
       if (active == null)
       {
         // Try system wide button mappings ...
         foreach (ButtonMapping buttonMap in _config.SystemWideMappings)
         {
-          if (buttonMap.KeyCode.Equals(keyCode, StringComparison.Ordinal))
+          if (buttonMap.KeyCode.Equals(button, StringComparison.Ordinal))
           {
-            IrssLog.Debug("KeyCode {0} mapped in System Wide mappings", keyCode);
+            IrssLog.Debug("KeyCode {0} mapped in System Wide mappings", button);
             try
             {
               ProcessCommand(buttonMap.Command, true);
@@ -832,9 +839,9 @@ namespace Translator
         // Try active program button mappings ...
         foreach (ButtonMapping buttonMap in active.ButtonMappings)
         {
-          if (buttonMap.KeyCode.Equals(keyCode, StringComparison.Ordinal))
+          if (buttonMap.KeyCode.Equals(button, StringComparison.Ordinal))
           {
-            IrssLog.Debug("KeyCode {0} mapped in \"{1}\" mappings", keyCode, active.Name);
+            IrssLog.Debug("KeyCode {0} mapped in \"{1}\" mappings", button, active.Name);
             try
             {
               ProcessCommand(buttonMap.Command, true);
@@ -849,9 +856,9 @@ namespace Translator
           // Try system wide button mappings ...
           foreach (ButtonMapping buttonMap in _config.SystemWideMappings)
           {
-            if (buttonMap.KeyCode.Equals(keyCode, StringComparison.Ordinal))
+            if (buttonMap.KeyCode.Equals(button, StringComparison.Ordinal))
             {
-              IrssLog.Debug("KeyCode {0} mapped in System Wide mappings", keyCode);
+              IrssLog.Debug("KeyCode {0} mapped in System Wide mappings", button);
               try
               {
                 ProcessCommand(buttonMap.Command, true);
@@ -863,7 +870,7 @@ namespace Translator
         }
       }
 
-      IrssLog.Debug("No mapping found for KeyCode = {0}", keyCode);
+      IrssLog.Debug("No mapping found for KeyCode = {0}", button);
     }
     static void KeyboardHandlerCallback(string deviceName, int vKey, bool keyUp)
     {

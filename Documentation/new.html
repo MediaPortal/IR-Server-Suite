@@ -38,6 +38,9 @@
 <LI>IR Server Plugin: Added support for RC102 and compatible receivers - Experimental.</LI>
 <LI>TCP Comms: Automatically maps "localhost" to loopback address, avoiding the lookup process.  This <i>might</i> solve a host name lookup problem for some users.</LI>
 <LI>IR Server Plugin: Added Keyboard Input plugin, should enable mapping special (App Command) keyboard buttons (like Forward, Back, Play, Stop, Volume, etc...) as well as basic key combinations.</LI>
+<LI>USB-UIRT: Fixed a bug that caused the receive callback to get garbage collected, crashing the Input Service.</LI>
+<LI>FusionREMOTE: Can now tell the difference between different DViCo remotes (You will need to re-teach the button keycodes).</LI>
+<LI>General: Receiving device is now communicated with remote button codes, this is in preparation for a major overhaul of the remote mapping system to facilitate automatic configuration for controlling your whole PC!  This feature will not be completed until 1.0.5.0 but it will be very big if it comes together as planned.</LI>
 </UL></P>
 <BR>
 
