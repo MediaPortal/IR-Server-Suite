@@ -7,8 +7,8 @@
     <ProjectGuid>{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PVR150Tuner</RootNamespace>
-    <AssemblyName>PVR150Tuner</AssemblyName>
+    <RootNamespace>HcwPvrTuner</RootNamespace>
+    <AssemblyName>HcwPvrTuner</AssemblyName>
     <StartupObject>PVR150Tuner.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -36,7 +36,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PVR150Tuner.exe.manifest">
+    <Content Include="HcwPvrTuner.exe.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

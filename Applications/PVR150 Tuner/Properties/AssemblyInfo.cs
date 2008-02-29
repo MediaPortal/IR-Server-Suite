@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PVR150 Tuner")]
-[assembly: AssemblyDescription("Command line tuner for Hauppauge PVR-150 devices")]
+[assembly: AssemblyTitle("HCW PVR Tuner")]
+[assembly: AssemblyDescription("Command line tuner for Hauppauge PVR devices")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("PVR150 Tuner")]
+[assembly: AssemblyProduct("HCW PVR Tuner")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

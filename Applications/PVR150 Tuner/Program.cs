@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace PVR150Tuner
+namespace HcwPvrTuner
 {
 
   static class Program
@@ -48,7 +48,7 @@ namespace PVR150Tuner
 
     #region Constants
 
-    const int ReturnError = 1;
+    const int ReturnError   = 1;
     const int ReturnSuccess = 0;
 
     #endregion Constants
@@ -59,13 +59,13 @@ namespace PVR150Tuner
     [STAThread]
     static int Main(string[] args)
     {
-      Console.WriteLine("PVR150 Tuner");
+      Console.WriteLine("HCW PVR Tuner");
       Console.WriteLine();
 
       if (args.Length != 1)
       {
         Console.WriteLine("Usage:");
-        Console.WriteLine("      PVR150Tuner.exe <Channel Number>");
+        Console.WriteLine("       HcwPvrTuner.exe <Channel Number>");
         Console.WriteLine();
         return ReturnError;
       }
