@@ -44,9 +44,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\RedEye Blaster.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "RedEye Blaster.xml");
 
     static readonly string[] Ports = new string[] { "Default" };
 

@@ -768,7 +768,6 @@ namespace InputService
           }
       }
     }
-
     void KeyboardHandlerCallback(string deviceName, int vKey, bool keyUp)
     {
       IrssLog.Debug("{0} generated a keyboard event: {1}, keyUp: {2}", deviceName, vKey, keyUp);
@@ -800,7 +799,6 @@ namespace InputService
           }
       }
     }
-
     void MouseHandlerCallback(string deviceName, int deltaX, int deltaY, int buttons)
     {
       IrssLog.Debug("{0} generated a mouse Event - deltaX: {1}, deltaY: {2}, buttons: {3}", deviceName, deltaX, deltaY, buttons);

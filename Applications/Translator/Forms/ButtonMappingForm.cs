@@ -544,13 +544,15 @@ namespace Translator
       }
       else if (radioButtonClass.Checked)
       {
-        // TODO: Locate Class
+        WindowList windowList = new WindowList(true);
+        if (windowList.ShowDialog(this) == DialogResult.OK)
+          textBoxMsgTarget.Text = windowList.SelectedItem;
       }
       else if (radioButtonWindowTitle.Checked)
       {
-        WindowList windowList = new WindowList();
+        WindowList windowList = new WindowList(false);
         if (windowList.ShowDialog(this) == DialogResult.OK)
-          textBoxMsgTarget.Text = windowList.SelectedWindowTitle;
+          textBoxMsgTarget.Text = windowList.SelectedItem;
       }
     }
 
@@ -566,7 +568,7 @@ namespace Translator
     }
     private void radioButtonClass_CheckedChanged(object sender, EventArgs e)
     {
-      buttonFindMsgTarget.Enabled = false;
+      buttonFindMsgTarget.Enabled = true;
       textBoxMsgTarget.Enabled = true;
     }
     private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)

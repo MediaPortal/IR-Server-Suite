@@ -31,9 +31,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Windows Messages.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Windows Messages.xml");
 
     const int WM_APP            = 0x8000;
     const int DefaultMessageID  = 0x0018;

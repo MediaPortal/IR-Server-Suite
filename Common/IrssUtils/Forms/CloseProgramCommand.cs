@@ -102,13 +102,15 @@ namespace IrssUtils.Forms
       }
       else if (radioButtonClass.Checked)
       {
-        // TODO: Locate Class
+        WindowList windowList = new WindowList(true);
+        if (windowList.ShowDialog(this) == DialogResult.OK)
+          textBoxTarget.Text = windowList.SelectedItem;
       }
       else if (radioButtonWindowTitle.Checked)
       {
-        WindowList windowList = new WindowList();
+        WindowList windowList = new WindowList(false);
         if (windowList.ShowDialog(this) == DialogResult.OK)
-          textBoxTarget.Text = windowList.SelectedWindowTitle;
+          textBoxTarget.Text = windowList.SelectedItem;
       }
     }
 
@@ -136,7 +138,7 @@ namespace IrssUtils.Forms
     }
     private void radioButtonClass_CheckedChanged(object sender, EventArgs e)
     {
-      buttonFindTarget.Enabled = false;
+      buttonFindTarget.Enabled = true;
       textBoxTarget.Enabled = true;
     }
     private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)

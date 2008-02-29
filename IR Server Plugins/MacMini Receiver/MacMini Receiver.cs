@@ -21,7 +21,7 @@ namespace InputService.Plugin
 
     const int DeviceBufferSize = 5;
     const string DevicePathVidPid = "vid_045e&pid_0284";
-    const string DeviceGuid = "{9DE464EB-5DAC-4498-88BC-5010CFD2F724}";
+    //const string DeviceGuid = "{9DE464EB-5DAC-4498-88BC-5010CFD2F724}";
 
     static readonly byte[] RepeatCode = new byte[] { 0x26, 0x00, 0x00, 0x00, 0x00 };
     static readonly byte[] FlatCode = new byte[] { 0x25, 0x87, 0xE0 };

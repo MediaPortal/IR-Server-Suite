@@ -19,9 +19,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Girder Plugin.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Girder Plugin.xml");
 
     static readonly string[] Ports  = new string[] { "Plugin" };
 

@@ -84,7 +84,8 @@ namespace IRServer
       if (String.IsNullOrEmpty(installFolder))
         return null;
 
-      string[] files = Directory.GetFiles(installFolder + "\\IR Server Plugins\\", "*.dll", SearchOption.TopDirectoryOnly);
+      string path = Path.Combine(installFolder, "IR Server Plugins");
+      string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
       foreach (string file in files)
       {
         try
@@ -96,10 +97,17 @@ namespace IRServer
           {
             if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
             {
-              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+              try
+              {
+                PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
 
-              if (plugin != null)
-                plugins.Add(plugin);
+                if (plugin != null)
+                  plugins.Add(plugin);
+              }
+              catch
+              {
+                // Ignore this plugin ...
+              }
             }
           }
         }

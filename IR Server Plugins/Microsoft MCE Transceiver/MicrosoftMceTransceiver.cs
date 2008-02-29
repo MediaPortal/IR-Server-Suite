@@ -11,6 +11,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
+using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
 namespace InputService.Plugin
@@ -179,14 +180,14 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Microsoft MCE Transceiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Microsoft MCE Transceiver.xml");
     
     static readonly Guid MicrosoftGuid   = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94, 0xfc, 0x57);
     static readonly Guid ReplacementGuid = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f, 0xb1, 0x72, 0x8b);
 
     const int VistaVersionNumber  = 6;
+
+    const string AutomaticButtonsRegKey = @"SYSTEM\CurrentControlSet\Services\HidIr\Remotes\745a17a0-74d3-11d0-b6fe-00a0c90f57da";
 
     #endregion Constants
 
@@ -213,9 +214,6 @@ namespace InputService.Plugin
     bool _handleMouseLocally      = true;
     double _mouseSensitivity      = 1.0d;
 
-    // Hidden options ...
-    bool _forceVistaDriver        = false;
-
     #endregion Configuration
 
     Driver _driver;
@@ -232,6 +230,8 @@ namespace InputService.Plugin
     uint _lastKeyboardModifiers           = 0;
 
     Mouse.MouseEvents _mouseButtons       = Mouse.MouseEvents.None;
+
+    bool _ignoreAutomaticButtons          = false;
 
     RemoteHandler _remoteHandler;
     KeyboardHandler _keyboardHandler;
@@ -294,6 +294,8 @@ namespace InputService.Plugin
 
       LoadSettings();
 
+      _ignoreAutomaticButtons = CheckAutomaticButtons();
+
       if (_disableMceServices)
         DisableMceServices();
 
@@ -306,14 +308,10 @@ namespace InputService.Plugin
       {
         if (deviceGuid == MicrosoftGuid)
         {
-          if (_forceVistaDriver || Environment.OSVersion.Version.Major >= VistaVersionNumber)
-          {
+          if (Environment.OSVersion.Version.Major >= VistaVersionNumber)
             newDriver = new DriverVista(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
-          }
           else
-          {
             newDriver = new DriverXP(deviceGuid, devicePath, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
-          }
         }
         else
         {
@@ -527,9 +525,6 @@ namespace InputService.Plugin
       try   { _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value); } catch {}
       try   { _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); } catch {}
       try   { _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); } catch {}
-
-      // Hidden options ...
-      try   { _forceVistaDriver = bool.Parse(doc.DocumentElement.Attributes["ForceVistaDriver"].Value); } catch {}
     }
     void SaveSettings()
     {
@@ -561,9 +556,6 @@ namespace InputService.Plugin
           writer.WriteAttributeString("EnableMouseInput", _enableMouseInput.ToString());
           writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
           writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString());
-
-          // Hidden options ...
-          writer.WriteAttributeString("ForceVistaDriver", _forceVistaDriver.ToString());
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
@@ -624,6 +616,34 @@ namespace InputService.Plugin
       }
 #endif
       return false;
+    }
+
+    internal static bool CheckAutomaticButtons()
+    {
+      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, false))
+      {
+        return (key.GetValue("CodeSetNum0", null) != null);
+      }
+    }
+    internal static void EnableAutomaticButtons()
+    {
+      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, true))
+      {
+        key.SetValue("CodeSetNum0", 1, RegistryValueKind.DWord);
+        key.SetValue("CodeSetNum1", 2, RegistryValueKind.DWord);
+        key.SetValue("CodeSetNum2", 3, RegistryValueKind.DWord);
+        key.SetValue("CodeSetNum3", 4, RegistryValueKind.DWord);
+      }
+    }
+    internal static void DisableAutomaticButtons()
+    {
+      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, true))
+      {
+        key.DeleteValue("CodeSetNum0", false);
+        key.DeleteValue("CodeSetNum1", false);
+        key.DeleteValue("CodeSetNum2", false);
+        key.DeleteValue("CodeSetNum3", false);
+      }
     }
 
     static void DisableMceServices()
@@ -692,6 +712,46 @@ namespace InputService.Plugin
 
       if (!_enableRemoteInput)
         return;
+
+      if (_ignoreAutomaticButtons && codeType == IrProtocol.RC6_MCE)
+      {
+        // Always ignore these buttones ...
+        if (keyCode == 0x7bdc ||  // Back
+            keyCode == 0x7bdd ||  // OK
+            keyCode == 0x7bde ||  // Right
+            keyCode == 0x7bdf ||  // Left
+            keyCode == 0x7be0 ||  // Down
+            keyCode == 0x7be1 ||  // Up
+            keyCode == 0x7bee ||  // Volume_Down
+            keyCode == 0x7bef ||  // Volume_Up
+            keyCode == 0x7bf1 ||  // Mute
+            keyCode == 0x7bf3 ||  // PC_Power
+            keyCode == 0x7bf6 ||  // Number_9
+            keyCode == 0x7bf7 ||  // Number_8
+            keyCode == 0x7bf8 ||  // Number_7
+            keyCode == 0x7bf9 ||  // Number_6
+            keyCode == 0x7bfa ||  // Number_5
+            keyCode == 0x7bfb ||  // Number_4
+            keyCode == 0x7bfc ||  // Number_3
+            keyCode == 0x7bfd ||  // Number_2
+            keyCode == 0x7bfe ||  // Number_1
+            keyCode == 0x7bff)    // Number_0
+        {
+#if TRACE
+          Trace.WriteLine("Ignoring remote button due to automatic handling");
+#endif
+          return;
+        }
+
+        // Only ignore Start if the services aren't disabled ...
+        if (keyCode == 0x7bf2 && !_disableMceServices)
+        {
+#if TRACE
+          Trace.WriteLine("Ignoring Start button due to automatic handling and the MCE services being active");
+#endif
+          return;
+        }
+      }
 
       if (!firstPress && _lastRemoteButtonCodeType == codeType && _lastRemoteButtonKeyCode == keyCode)
       {

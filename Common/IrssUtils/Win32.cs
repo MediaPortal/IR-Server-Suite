@@ -1901,6 +1901,12 @@ namespace IrssUtils
       IntPtr hWnd,
       int nIndex);
 
+    [DllImport("user32.dll")]
+    static extern int GetClassName(
+      IntPtr hWnd,
+      StringBuilder lpClassName,
+      int nMaxCount);
+
     #endregion Interop
 
     #region Methods
@@ -2055,6 +2061,19 @@ namespace IrssUtils
     public static int EnumerateWindows(EnumWindowsProc ewp, IntPtr lParam)
     {
       return EnumWindows(ewp, lParam);
+    }
+
+    /// <summary>
+    /// Gets the name of a class from a handle.
+    /// </summary>
+    /// <param name="hWnd">The handle to retreive the class name for.</param>
+    /// <returns>The class name.</returns>
+    public static string GetClassName(IntPtr hWnd)
+    {
+      StringBuilder name = new StringBuilder(255);
+      GetClassName(hWnd, name, name.Capacity);
+
+      return name.ToString();
     }
 
     /// <summary>

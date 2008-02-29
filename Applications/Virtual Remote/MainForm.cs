@@ -135,18 +135,17 @@ namespace VirtualRemote
         if (String.IsNullOrEmpty(skin))
           return;
 
-        string skinFile = String.Format("{0}\\Skins\\{1}.png", Program.InstallFolder, skin);
+        string skinFile = Path.Combine(Program.InstallFolder, String.Format("Skins\\{0}.png", skin));
         if (!File.Exists(skinFile))
           throw new FileNotFoundException("Skin graphic file not found", skinFile);
 
         // Try to load xml file of same name, failing that load using first word of skin name ...
-        string xmlFile = String.Format("{0}\\Skins\\{1}.xml", Program.InstallFolder, skin);
+        string xmlFile = Path.Combine(Program.InstallFolder, String.Format("Skins\\{0}.xml", skin));
         if (!File.Exists(xmlFile))
         {
           string firstWord = skin.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
 
-          xmlFile = String.Format("{0}\\Skins\\{1}.xml", Program.InstallFolder, firstWord);
-
+          xmlFile = Path.Combine(Program.InstallFolder, String.Format("Skins\\{0}.xml", firstWord));
           if (!File.Exists(xmlFile))
             throw new FileNotFoundException("Skin file not found", xmlFile);
         }

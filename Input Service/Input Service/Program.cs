@@ -113,10 +113,17 @@ namespace InputService
           {
             if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
             {
-              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+              try
+              {
+                PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
 
-              if (plugin != null)
-                plugins.Add(plugin);
+                if (plugin != null)
+                  plugins.Add(plugin);
+              }
+              catch
+              {
+                // Ignore this plugin ...
+              }
             }
           }
         }

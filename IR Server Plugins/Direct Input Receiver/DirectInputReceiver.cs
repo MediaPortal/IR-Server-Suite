@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -19,9 +20,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Direct Input Receiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Direct Input Receiver.xml");
 
     #endregion Constants
 

@@ -10,20 +10,26 @@ namespace IrssUtils.Forms
 {
 
   /// <summary>
-  /// Window List form.
+  /// Window or Class List form.
   /// </summary>
   public partial class WindowList : Form
   {
 
+    #region Variables
+
+    bool _listClasses;
+
+    #endregion Variables
+
     #region Properties
 
     /// <summary>
-    /// Gets the selected window title.
+    /// Gets the selected window title or class name.
     /// </summary>
-    /// <value>The selected window title.</value>
-    public string SelectedWindowTitle
+    /// <value>The selected window title or class name.</value>
+    public string SelectedItem
     {
-      get { return listBoxWindows.SelectedItem as string; }
+      get { return listBoxItems.SelectedItem as string; }
     }
 
     #endregion Properties
@@ -33,9 +39,17 @@ namespace IrssUtils.Forms
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowList"/> class.
     /// </summary>
-    public WindowList()
+    /// <param name="listClasses">if set to <c>true</c> [list classes].</param>
+    public WindowList(bool listClasses)
     {
+      _listClasses = listClasses;
+
       InitializeComponent();
+
+      if (listClasses)
+        this.Text = "Class List";
+      else
+        this.Text = "Window List";
 
       PopulateList();
     }
@@ -51,10 +65,17 @@ namespace IrssUtils.Forms
 
     bool AddWindow(IntPtr hWnd, IntPtr lParam)
     {
-      string title = Win32.GetWindowTitle(hWnd);
+      string windowTitle = Win32.GetWindowTitle(hWnd);
 
-      if (!String.IsNullOrEmpty(title))
-        listBoxWindows.Items.Add(title);
+      if (_listClasses && String.IsNullOrEmpty(windowTitle))
+      {
+        string className = Win32.GetClassName(hWnd);
+        listBoxItems.Items.Add(className);
+      }
+      else if (!_listClasses && !String.IsNullOrEmpty(windowTitle))
+      {
+        listBoxItems.Items.Add(windowTitle);
+      }
 
       return true;
     }

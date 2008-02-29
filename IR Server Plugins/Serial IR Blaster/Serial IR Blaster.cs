@@ -21,9 +21,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Serial IR Blaster.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Serial IR Blaster.xml");
 
     static readonly string[] Ports = new string[] { "Default" };
 

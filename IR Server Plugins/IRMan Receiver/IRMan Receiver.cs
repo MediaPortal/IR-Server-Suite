@@ -21,9 +21,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\IRMan Receiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "IRMan Receiver.xml");
 
     const int DeviceBufferSize = 6;
 
@@ -68,17 +66,6 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Receiver support for the Serial IRMan device"; } }
-
-    /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
-    /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
-    {
-      return false;
-    }
 
     /// <summary>
     /// Start the IR Server plugin.

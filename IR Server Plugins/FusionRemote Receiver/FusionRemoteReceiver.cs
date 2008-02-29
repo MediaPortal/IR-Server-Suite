@@ -25,9 +25,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\FusionRemote Receiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "FusionRemote Receiver.xml");
 
     const string DeviceID = "VID_0FE9&PID_9010";
 

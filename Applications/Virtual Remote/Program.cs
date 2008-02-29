@@ -227,7 +227,7 @@ namespace VirtualRemote
         if (String.IsNullOrEmpty(_installFolder))
           _installFolder = ".";
         else
-          _installFolder += "\\Virtual Remote";
+          _installFolder = Path.Combine(_installFolder, "Virtual Remote");
       }
       catch (Exception ex)
       {

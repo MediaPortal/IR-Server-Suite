@@ -183,9 +183,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\IRTrans Transceiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "IRTrans Transceiver.xml");
 
     const string  DefaultRemoteModel    = "mediacenter";
     const string  DefaultServerAddress  = "localhost";

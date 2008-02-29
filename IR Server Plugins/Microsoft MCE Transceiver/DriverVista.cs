@@ -569,7 +569,7 @@ namespace InputService.Plugin
     public override void Start()
     {
 #if DEBUG
-      DebugOpen("\\MicrosoftMceTransceiver_DriverVista.log");
+      DebugOpen("MicrosoftMceTransceiver_DriverVista.log");
       DebugWriteLine("Start()");
 #endif
 

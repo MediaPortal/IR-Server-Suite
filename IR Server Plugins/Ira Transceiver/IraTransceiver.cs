@@ -37,14 +37,12 @@ namespace InputService.Plugin
   /// IR Server Plugin for Ira Transceiver device.
   /// </summary>
   [CLSCompliant(false)]
-  public class IraTransceiver : IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver
+  public class IraTransceiver : PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver
   {
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Ira Transceiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Ira Transceiver.xml");
 
     static readonly string[] Ports = new string[] { "Default" };
 
@@ -104,13 +102,13 @@ namespace InputService.Plugin
     /// </summary>
     public override void Suspend()
     {
-      if (_deviceType == DeviceType.Tira)
+      /*if (_deviceType == DeviceType.Tira)
       {
         byte[] suspendCommand = new byte[] { 49, 57, 0, 0, 0, 0, 0, 0 };
         Array.Copy(_suspendCommand, 0, suspendCommand, 2, _suspendCommand.Length);
 
         _serialPort.Write(suspendCommand);
-      }
+      }*/
 
       Disconnect();
     }
@@ -138,7 +136,7 @@ namespace InputService.Plugin
     /// Configure the IR Server plugin.
     /// </summary>
     public void Configure(IWin32Window owner)
-    {
+    {/*
       LoadSettings();
 
       Configure config = new Configure();
@@ -154,7 +152,7 @@ namespace InputService.Plugin
         _learnTimeout = config.LearnTimeout;
 
         SaveSettings();
-      }
+      }*/
     }
 
     /// <summary>
@@ -216,7 +214,7 @@ namespace InputService.Plugin
 
       Disconnect();
       Connect(57600);
-
+      /*
       if (_learnTimedOut)
       {
         status = LearnStatus.Timeout;
@@ -231,7 +229,7 @@ namespace InputService.Plugin
       {
         status = LearnStatus.Failure;
       }
-
+      */
       Disconnect();
       Connect(9600);
 
@@ -242,7 +240,7 @@ namespace InputService.Plugin
     /// Loads the settings.
     /// </summary>
     void LoadSettings()
-    {
+    {/*
       try
       {
         XmlDocument doc = new XmlDocument();
@@ -264,13 +262,13 @@ namespace InputService.Plugin
         _repeatDelay = 500;
         _blastRepeats = 3;
         _learnTimeout = 10000;
-      }
+      }*/
     }
     /// <summary>
     /// Saves the settings.
     /// </summary>
     void SaveSettings()
-    {
+    {/*
       try
       {
         using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
@@ -298,13 +296,13 @@ namespace InputService.Plugin
       catch
       {
       }
-#endif
+#endif*/
     }
 
     void Connect(int baud)
     {
       _serialPort = new SerialPort(_port, baud, Parity.None, 8, StopBits.One);
-      _serialPort.CtsHolding      = (_deviceType == DeviceType.Tira);
+      //_serialPort.CtsHolding      = (_deviceType == DeviceType.Tira);
       _serialPort.RtsEnable       = (_deviceType == DeviceType.Tira);
       _serialPort.ReadBufferSize  = DeviceBufferSize;
       _serialPort.ReadTimeout     = 1000;
@@ -340,7 +338,7 @@ namespace InputService.Plugin
         // Assume it is a button press.
         default:
           if (_remoteButtonHandler != null)
-            _remoteButtonHandler(received);
+            _remoteButtonHandler(this.Name, received);
           break;
       }
 

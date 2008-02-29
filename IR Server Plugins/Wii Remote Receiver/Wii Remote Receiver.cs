@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 #endif
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -20,9 +21,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Wii Remote Receiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Wii Remote Receiver.xml");
 
     readonly int ScreenWidth = Screen.PrimaryScreen.WorkingArea.Width;
     readonly int ScreenHeight = Screen.PrimaryScreen.WorkingArea.Height;

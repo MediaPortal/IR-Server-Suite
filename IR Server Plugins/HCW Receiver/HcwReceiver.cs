@@ -21,9 +21,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\IR Server\\HCW Receiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "HCW Receiver.xml");
 
     #endregion Constants
 

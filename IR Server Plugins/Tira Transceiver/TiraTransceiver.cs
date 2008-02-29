@@ -18,14 +18,12 @@ namespace InputService.Plugin
   /// IR Server Plugin for Tira Transceiver device.
   /// </summary>
   [CLSCompliant(false)]
-  public class TiraTransceiver : IRServerPluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver
+  public class TiraTransceiver : PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver
   {
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Tira Transceiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Tira Transceiver.xml");
 
     static readonly string[] Ports = new string[] { "Default" };
 

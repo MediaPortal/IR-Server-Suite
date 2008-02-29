@@ -112,6 +112,9 @@ namespace IRServer
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Config"/> class.
+    /// </summary>
     public Config()
     {
       InitializeComponent();
@@ -322,7 +325,8 @@ namespace IRServer
     {
       try
       {
-        Help.ShowHelp(this, SystemRegistry.GetInstallFolder() + "\\IR Server Suite.chm", HelpNavigator.Topic, "IR Server\\index.html");
+        string helpFile = System.IO.Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, helpFile, HelpNavigator.Topic, "IR Server\\index.html");
       }
       catch (Exception ex)
       {

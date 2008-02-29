@@ -77,9 +77,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\LiveDrive Receiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "LiveDrive Receiver.xml");
 
     const int BufferLength  = 256;
 

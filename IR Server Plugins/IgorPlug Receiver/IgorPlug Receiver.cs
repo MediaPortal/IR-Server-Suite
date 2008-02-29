@@ -167,7 +167,7 @@ namespace InputService.Plugin
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "IgorPlug Receiver"; } }
+    public override string Description  { get { return "IgorPlug USB Receiver"; } }
 
     /// <summary>
     /// Start the IR Server plugin.
@@ -335,7 +335,7 @@ namespace InputService.Plugin
     {
       bool Result = false;
 
-      SafeFileHandle handle = CreateFile("\\\\.\\IgorPlugUSB_0",
+      SafeFileHandle handle = CreateFile(@"\\.\IgorPlugUSB_0",
         CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite,
         CreateFileShares.Read | CreateFileShares.Write,
         IntPtr.Zero,

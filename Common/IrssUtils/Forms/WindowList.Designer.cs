@@ -28,28 +28,28 @@ namespace IrssUtils.Forms
     /// </summary>
     private void InitializeComponent()
     {
-      this.listBoxWindows = new System.Windows.Forms.ListBox();
+      this.listBoxItems = new System.Windows.Forms.ListBox();
       this.SuspendLayout();
       // 
       // listBoxWindows
       // 
-      this.listBoxWindows.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.listBoxWindows.FormattingEnabled = true;
-      this.listBoxWindows.HorizontalScrollbar = true;
-      this.listBoxWindows.IntegralHeight = false;
-      this.listBoxWindows.Location = new System.Drawing.Point(0, 0);
-      this.listBoxWindows.Name = "listBoxWindows";
-      this.listBoxWindows.Size = new System.Drawing.Size(292, 376);
-      this.listBoxWindows.TabIndex = 0;
-      this.listBoxWindows.DoubleClick += new System.EventHandler(this.listBoxWindows_DoubleClick);
-      this.listBoxWindows.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBoxWindows_KeyPress);
+      this.listBoxItems.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.listBoxItems.FormattingEnabled = true;
+      this.listBoxItems.HorizontalScrollbar = true;
+      this.listBoxItems.IntegralHeight = false;
+      this.listBoxItems.Location = new System.Drawing.Point(0, 0);
+      this.listBoxItems.Name = "listBoxWindows";
+      this.listBoxItems.Size = new System.Drawing.Size(292, 376);
+      this.listBoxItems.TabIndex = 0;
+      this.listBoxItems.DoubleClick += new System.EventHandler(this.listBoxWindows_DoubleClick);
+      this.listBoxItems.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBoxWindows_KeyPress);
       // 
       // WindowList
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(292, 376);
-      this.Controls.Add(this.listBoxWindows);
+      this.Controls.Add(this.listBoxItems);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
@@ -65,6 +65,6 @@ namespace IrssUtils.Forms
 
     #endregion
 
-    private System.Windows.Forms.ListBox listBoxWindows;
+    private System.Windows.Forms.ListBox listBoxItems;
   }
 }

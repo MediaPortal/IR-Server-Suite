@@ -58,9 +58,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Custom HID Receiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Custom HID Receiver.xml");
 
     const int DeviceBufferSize = 255;
 

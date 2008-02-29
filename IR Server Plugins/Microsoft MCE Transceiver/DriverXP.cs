@@ -183,7 +183,7 @@ namespace InputService.Plugin
     public override void Start()
     {
 #if DEBUG
-      DebugOpen("\\MicrosoftMceTransceiver_DriverXP.log");
+      DebugOpen("MicrosoftMceTransceiver_DriverXP.log");
       DebugWriteLine("Start()");
 #endif
 

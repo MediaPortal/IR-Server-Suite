@@ -6,19 +6,11 @@ using System.ServiceProcess;
 using System.Text;
 using System.Windows.Forms;
 
-using Microsoft.Win32;
-
 namespace InputService.Plugin
 {
 
   partial class Configure : Form
   {
-
-    #region Constants
-
-    const string RegistrySubKey = @"SYSTEM\CurrentControlSet\Services\HidIr\Remotes\745a17a0-74d3-11d0-b6fe-00a0c90f57da";
-
-    #endregion Constants
 
     #region Properties
 
@@ -105,14 +97,14 @@ namespace InputService.Plugin
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Configure"/> class.
+    /// </summary>
     public Configure()
     {
       InitializeComponent();
 
-      if (Registry.LocalMachine.GetValue(RegistrySubKey + @"\CodeSetNum0", null) == null)
-        checkBoxDisableAutomaticButtons.Checked = true;
-      else
-        checkBoxDisableAutomaticButtons.Checked = false;
+      checkBoxDisableAutomaticButtons.Checked = !MicrosoftMceTransceiver.CheckAutomaticButtons();;
     }
 
     #endregion Constructor
@@ -123,28 +115,17 @@ namespace InputService.Plugin
     {
       bool changeMade = false;
 
-      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(RegistrySubKey, true))
+      bool keysExist = MicrosoftMceTransceiver.CheckAutomaticButtons();
+
+      if (checkBoxDisableAutomaticButtons.Checked && keysExist)
       {
-        bool keysExist = (key.GetValue("CodeSetNum0", null) != null);
-
-        if (checkBoxDisableAutomaticButtons.Checked && keysExist)
-        {
-          key.DeleteValue("CodeSetNum0", false);
-          key.DeleteValue("CodeSetNum1", false);
-          key.DeleteValue("CodeSetNum2", false);
-          key.DeleteValue("CodeSetNum3", false);
-
-          changeMade = true;
-        }
-        else if (!checkBoxDisableAutomaticButtons.Checked && !keysExist)
-        {
-          key.SetValue("CodeSetNum0", 1, RegistryValueKind.DWord);
-          key.SetValue("CodeSetNum1", 2, RegistryValueKind.DWord);
-          key.SetValue("CodeSetNum2", 3, RegistryValueKind.DWord);
-          key.SetValue("CodeSetNum3", 4, RegistryValueKind.DWord);
-
-          changeMade = true;
-        }
+        MicrosoftMceTransceiver.DisableAutomaticButtons();
+        changeMade = true;
+      }
+      else if (!checkBoxDisableAutomaticButtons.Checked && !keysExist)
+      {
+        MicrosoftMceTransceiver.EnableAutomaticButtons();
+        changeMade = true;
       }
 
       if (changeMade)

@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+
 namespace InputService.Plugin
 {
 
@@ -6,6 +9,17 @@ namespace InputService.Plugin
   /// </summary>
   public abstract class PluginBase
   {
+
+    #region Constants
+
+    /// <summary>
+    /// Plugin configuration file base path.
+    /// </summary>
+    public static readonly string ConfigurationPath =
+      Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+      Path.Combine("IR Server Suite", "Input Service"));
+
+    #endregion Constants
 
     #region Properties
 
@@ -51,12 +65,12 @@ namespace InputService.Plugin
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
-    public abstract void Suspend();
+    public virtual void Suspend() { }
 
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
-    public abstract void Resume();
+    public virtual void Resume() { }
 
     /// <summary>
     /// Stop the IR Server plugin.

@@ -3,6 +3,7 @@ using System.Collections;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
@@ -20,9 +21,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\X10 Receiver.xml";
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "X10 Transceiver.xml");
 
     #endregion Constants
 

@@ -13,7 +13,7 @@ namespace InputService.Plugin
   /// <summary>
   /// IR Server Plugin for the receiving speech commands.
   /// </summary>
-  public class SpeechReceiver : IRServerPluginBase, IRemoteReceiver, IConfigure
+  public class SpeechReceiver : PluginBase, IRemoteReceiver, IConfigure
   {
 
     #region Constants
@@ -87,7 +87,7 @@ namespace InputService.Plugin
     /// </summary>
     /// <param name="owner">The owner window to use for creating modal dialogs.</param>
     public void Configure(IWin32Window owner)
-    {
+    {/*
       LoadSettings();
 
       Setup setup = new Setup();
@@ -111,7 +111,7 @@ namespace InputService.Plugin
         _led4 = setup.LED4;
 
         SaveSettings();
-      }
+      }*/
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ namespace InputService.Plugin
     }
 
     void LoadSettings()
-    {
+    {/*
       XmlDocument doc = new XmlDocument();
 
       try { doc.Load(ConfigurationFile); }
@@ -147,10 +147,10 @@ namespace InputService.Plugin
       try { _led3 = bool.Parse(doc.DocumentElement.Attributes["LED3"].Value); }
       catch { }
       try { _led4 = bool.Parse(doc.DocumentElement.Attributes["LED4"].Value); }
-      catch { }
+      catch { }*/
     }
     void SaveSettings()
-    {
+    {/*
       try
       {
         using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
@@ -183,7 +183,7 @@ namespace InputService.Plugin
       catch
       {
       }
-#endif
+#endif*/
     }
 
     #endregion Implementation
