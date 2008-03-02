@@ -250,6 +250,8 @@ Refer to IR Blast help for more information.",
 
       _client.Dispose();
       _client = null;
+
+      _registered = false;
     }
 
     static void ReceivedMessage(IrssMessage received)

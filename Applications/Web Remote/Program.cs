@@ -502,6 +502,8 @@ namespace WebRemote
 
       _client.Dispose();
       _client = null;
+
+      _registered = false;
     }
 
     static void SendMessage(IrssMessage message)

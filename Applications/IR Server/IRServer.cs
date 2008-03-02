@@ -660,11 +660,13 @@ namespace IRServer
     }
     void StopClient()
     {
-      if (_client != null)
-      {
-        _client.Dispose();
-        _client = null;
-      }
+      if (_client == null)
+        return;
+      
+      _client.Dispose();
+      _client = null;
+
+      _registered = false;
     }
 
     bool StartRelay()

@@ -1177,7 +1177,7 @@ namespace InputService
             if ((combo.Message.Flags & MessageFlags.Request) == MessageFlags.Request)
             {
               IrssLog.Info("Shutdown command received");
-              Stop();
+              this.Stop();
             }
             break;
           #endregion ServerShutdown

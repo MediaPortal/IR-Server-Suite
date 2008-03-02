@@ -336,6 +336,8 @@ namespace VirtualRemote
 
       _client.Dispose();
       _client = null;
+
+      _registered = false;
     }
 
     internal static bool ProcessClick(int x, int y)

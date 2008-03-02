@@ -746,11 +746,13 @@ namespace MediaPortal.Plugins
     }
     internal static void StopClient()
     {
-      if (_client != null)
-      {
-        _client.Dispose();
-        _client = null;
-      }
+      if (_client == null)
+        return;
+
+      _client.Dispose();
+      _client = null;
+
+      _registered = false;
     }
 
     static void ReceivedMessage(IrssMessage received)

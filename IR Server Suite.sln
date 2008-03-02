@@ -437,7 +437,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCW PVR Tuner", "Applicatio
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote (PocketPC2003)", "DeviceApplication1\Virtual Remote (PocketPC2003).csproj", "{48839540-780F-4323-8F50-68E2A2385502}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote (PocketPC2003)", "Applications\Virtual Remote (PocketPC2003)\Virtual Remote (PocketPC2003).csproj", "{48839540-780F-4323-8F50-68E2A2385502}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote (WinCE5)", "Applications\Virtual Remote (WinCE5)\Virtual Remote (WinCE5).csproj", "{3BB1C204-D08E-43E5-AC68-DCDD624404A5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote (Smartphone2003)", "Applications\Virtual Remote (Smartphone2003)\Virtual Remote (Smartphone2003).csproj", "{BA322C1E-D7C6-4673-80E2-123B7714B0DB}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -1115,6 +1127,30 @@ Global
 		{48839540-780F-4323-8F50-68E2A2385502}.Release|Any CPU.Build.0 = Release|Any CPU
 		{48839540-780F-4323-8F50-68E2A2385502}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{48839540-780F-4323-8F50-68E2A2385502}.Release|x86.ActiveCfg = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.MyDboxSVN|Any CPU.ActiveCfg = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.MyDboxSVN|Any CPU.Build.0 = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.MyDboxSVN|Any CPU.Deploy.0 = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.MyDboxSVN|x86.ActiveCfg = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Release|x86.ActiveCfg = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.MyDboxSVN|Any CPU.ActiveCfg = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.MyDboxSVN|Any CPU.Build.0 = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.MyDboxSVN|Any CPU.Deploy.0 = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.MyDboxSVN|x86.ActiveCfg = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1136,6 +1172,8 @@ Global
 		{66F37FF9-0398-4954-812D-065C2D153746} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{48839540-780F-4323-8F50-68E2A2385502} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{7C686499-7517-4338-8837-7E8617549D9A} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}
 		{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4} = {0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}

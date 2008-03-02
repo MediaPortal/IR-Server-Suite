@@ -345,6 +345,8 @@ namespace DebugClient
 
       _client.Dispose();
       _client = null;
+
+      _registered = false;
     }
 
     #region Controls
