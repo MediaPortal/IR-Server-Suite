@@ -214,11 +214,6 @@ namespace VirtualRemote
       }
     }
 
-    private void menuItemQuit_Click(object sender, EventArgs e)
-    {
-      Quit();
-    }
-
     private void button_Click(object sender, EventArgs e)
     {
       Button origin = sender as Button;
@@ -258,6 +253,11 @@ namespace VirtualRemote
       IPEndPoint endPoint = new IPEndPoint(serverIP, ServerPort);
 
       StartClient(endPoint);
+    }
+
+    private void buttonQuit_Click(object sender, EventArgs e)
+    {
+      Quit();
     }
 
   }

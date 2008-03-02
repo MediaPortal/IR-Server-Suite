@@ -31,12 +31,12 @@ namespace VirtualRemote
     {
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageNavigation = new System.Windows.Forms.TabPage();
+      this.buttonStart = new System.Windows.Forms.Button();
       this.buttonMute = new System.Windows.Forms.Button();
       this.buttonChannelDown = new System.Windows.Forms.Button();
       this.buttonChannelUp = new System.Windows.Forms.Button();
       this.buttonVolDown = new System.Windows.Forms.Button();
       this.buttonVolUp = new System.Windows.Forms.Button();
-      this.buttonInfo = new System.Windows.Forms.Button();
       this.buttonBack = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.buttonRight = new System.Windows.Forms.Button();
@@ -68,6 +68,7 @@ namespace VirtualRemote
       this.buttonNum2 = new System.Windows.Forms.Button();
       this.buttonNum1 = new System.Windows.Forms.Button();
       this.tabPageMisc = new System.Windows.Forms.TabPage();
+      this.buttonInfo = new System.Windows.Forms.Button();
       this.buttonFullscreen = new System.Windows.Forms.Button();
       this.buttonAspectRatio = new System.Windows.Forms.Button();
       this.buttonPower = new System.Windows.Forms.Button();
@@ -81,14 +82,14 @@ namespace VirtualRemote
       this.buttonTV = new System.Windows.Forms.Button();
       this.buttonPictures = new System.Windows.Forms.Button();
       this.buttonMusic = new System.Windows.Forms.Button();
-      this.buttonVideos = new System.Windows.Forms.Button();
-      this.buttonStart = new System.Windows.Forms.Button();
+      this.buttonVideo = new System.Windows.Forms.Button();
       this.tabPageSetup = new System.Windows.Forms.TabPage();
+      this.buttonQuit = new System.Windows.Forms.Button();
+      this.textBoxStatus = new System.Windows.Forms.TextBox();
       this.buttonConnect = new System.Windows.Forms.Button();
       this.buttonDisconnect = new System.Windows.Forms.Button();
       this.labelText = new System.Windows.Forms.Label();
       this.textBoxComputer = new System.Windows.Forms.TextBox();
-      this.textBoxStatus = new System.Windows.Forms.TextBox();
       this.tabControl.SuspendLayout();
       this.tabPageNavigation.SuspendLayout();
       this.tabPagePlayback.SuspendLayout();
@@ -113,12 +114,13 @@ namespace VirtualRemote
       // 
       // tabPageNavigation
       // 
+      this.tabPageNavigation.AutoScroll = true;
+      this.tabPageNavigation.Controls.Add(this.buttonStart);
       this.tabPageNavigation.Controls.Add(this.buttonMute);
       this.tabPageNavigation.Controls.Add(this.buttonChannelDown);
       this.tabPageNavigation.Controls.Add(this.buttonChannelUp);
       this.tabPageNavigation.Controls.Add(this.buttonVolDown);
       this.tabPageNavigation.Controls.Add(this.buttonVolUp);
-      this.tabPageNavigation.Controls.Add(this.buttonInfo);
       this.tabPageNavigation.Controls.Add(this.buttonBack);
       this.tabPageNavigation.Controls.Add(this.buttonOK);
       this.tabPageNavigation.Controls.Add(this.buttonRight);
@@ -130,19 +132,28 @@ namespace VirtualRemote
       this.tabPageNavigation.Size = new System.Drawing.Size(232, 238);
       this.tabPageNavigation.Text = "Navigation ";
       // 
+      // buttonStart
+      // 
+      this.buttonStart.Location = new System.Drawing.Point(160, 8);
+      this.buttonStart.Name = "buttonStart";
+      this.buttonStart.Size = new System.Drawing.Size(64, 40);
+      this.buttonStart.TabIndex = 1;
+      this.buttonStart.Tag = "Start";
+      this.buttonStart.Text = "Start";
+      // 
       // buttonMute
       // 
-      this.buttonMute.Location = new System.Drawing.Point(80, 192);
+      this.buttonMute.Location = new System.Drawing.Point(80, 184);
       this.buttonMute.Name = "buttonMute";
       this.buttonMute.Size = new System.Drawing.Size(72, 40);
-      this.buttonMute.TabIndex = 12;
+      this.buttonMute.TabIndex = 9;
       this.buttonMute.Tag = "Mute";
       this.buttonMute.Text = "Mute";
       this.buttonMute.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonChannelDown
       // 
-      this.buttonChannelDown.Location = new System.Drawing.Point(160, 192);
+      this.buttonChannelDown.Location = new System.Drawing.Point(160, 184);
       this.buttonChannelDown.Name = "buttonChannelDown";
       this.buttonChannelDown.Size = new System.Drawing.Size(64, 40);
       this.buttonChannelDown.TabIndex = 11;
@@ -152,7 +163,7 @@ namespace VirtualRemote
       // 
       // buttonChannelUp
       // 
-      this.buttonChannelUp.Location = new System.Drawing.Point(160, 144);
+      this.buttonChannelUp.Location = new System.Drawing.Point(160, 136);
       this.buttonChannelUp.Name = "buttonChannelUp";
       this.buttonChannelUp.Size = new System.Drawing.Size(64, 40);
       this.buttonChannelUp.TabIndex = 10;
@@ -162,7 +173,7 @@ namespace VirtualRemote
       // 
       // buttonVolDown
       // 
-      this.buttonVolDown.Location = new System.Drawing.Point(8, 192);
+      this.buttonVolDown.Location = new System.Drawing.Point(8, 184);
       this.buttonVolDown.Name = "buttonVolDown";
       this.buttonVolDown.Size = new System.Drawing.Size(64, 40);
       this.buttonVolDown.TabIndex = 8;
@@ -172,23 +183,13 @@ namespace VirtualRemote
       // 
       // buttonVolUp
       // 
-      this.buttonVolUp.Location = new System.Drawing.Point(8, 144);
+      this.buttonVolUp.Location = new System.Drawing.Point(8, 136);
       this.buttonVolUp.Name = "buttonVolUp";
       this.buttonVolUp.Size = new System.Drawing.Size(64, 40);
       this.buttonVolUp.TabIndex = 7;
       this.buttonVolUp.Tag = "VolumeUp";
       this.buttonVolUp.Text = "Vol+";
       this.buttonVolUp.Click += new System.EventHandler(this.button_Click);
-      // 
-      // buttonInfo
-      // 
-      this.buttonInfo.Location = new System.Drawing.Point(160, 8);
-      this.buttonInfo.Name = "buttonInfo";
-      this.buttonInfo.Size = new System.Drawing.Size(64, 40);
-      this.buttonInfo.TabIndex = 1;
-      this.buttonInfo.Tag = "Info";
-      this.buttonInfo.Text = "Info";
-      this.buttonInfo.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonBack
       // 
@@ -202,7 +203,7 @@ namespace VirtualRemote
       // 
       // buttonOK
       // 
-      this.buttonOK.Location = new System.Drawing.Point(80, 80);
+      this.buttonOK.Location = new System.Drawing.Point(80, 72);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(72, 40);
       this.buttonOK.TabIndex = 4;
@@ -212,7 +213,7 @@ namespace VirtualRemote
       // 
       // buttonRight
       // 
-      this.buttonRight.Location = new System.Drawing.Point(160, 80);
+      this.buttonRight.Location = new System.Drawing.Point(160, 72);
       this.buttonRight.Name = "buttonRight";
       this.buttonRight.Size = new System.Drawing.Size(64, 40);
       this.buttonRight.TabIndex = 5;
@@ -222,7 +223,7 @@ namespace VirtualRemote
       // 
       // buttonLeft
       // 
-      this.buttonLeft.Location = new System.Drawing.Point(8, 80);
+      this.buttonLeft.Location = new System.Drawing.Point(8, 72);
       this.buttonLeft.Name = "buttonLeft";
       this.buttonLeft.Size = new System.Drawing.Size(64, 40);
       this.buttonLeft.TabIndex = 3;
@@ -232,7 +233,7 @@ namespace VirtualRemote
       // 
       // buttonDown
       // 
-      this.buttonDown.Location = new System.Drawing.Point(80, 128);
+      this.buttonDown.Location = new System.Drawing.Point(80, 120);
       this.buttonDown.Name = "buttonDown";
       this.buttonDown.Size = new System.Drawing.Size(72, 40);
       this.buttonDown.TabIndex = 6;
@@ -242,7 +243,7 @@ namespace VirtualRemote
       // 
       // buttonUp
       // 
-      this.buttonUp.Location = new System.Drawing.Point(80, 32);
+      this.buttonUp.Location = new System.Drawing.Point(80, 24);
       this.buttonUp.Name = "buttonUp";
       this.buttonUp.Size = new System.Drawing.Size(72, 40);
       this.buttonUp.TabIndex = 2;
@@ -252,6 +253,7 @@ namespace VirtualRemote
       // 
       // tabPagePlayback
       // 
+      this.tabPagePlayback.AutoScroll = true;
       this.tabPagePlayback.Controls.Add(this.buttonNextChapter);
       this.tabPagePlayback.Controls.Add(this.buttonPreviousChapter);
       this.tabPagePlayback.Controls.Add(this.buttonFastForward);
@@ -267,7 +269,7 @@ namespace VirtualRemote
       // 
       // buttonNextChapter
       // 
-      this.buttonNextChapter.Location = new System.Drawing.Point(160, 152);
+      this.buttonNextChapter.Location = new System.Drawing.Point(160, 136);
       this.buttonNextChapter.Name = "buttonNextChapter";
       this.buttonNextChapter.Size = new System.Drawing.Size(64, 48);
       this.buttonNextChapter.TabIndex = 7;
@@ -277,7 +279,7 @@ namespace VirtualRemote
       // 
       // buttonPreviousChapter
       // 
-      this.buttonPreviousChapter.Location = new System.Drawing.Point(8, 152);
+      this.buttonPreviousChapter.Location = new System.Drawing.Point(8, 136);
       this.buttonPreviousChapter.Name = "buttonPreviousChapter";
       this.buttonPreviousChapter.Size = new System.Drawing.Size(64, 48);
       this.buttonPreviousChapter.TabIndex = 6;
@@ -287,7 +289,7 @@ namespace VirtualRemote
       // 
       // buttonFastForward
       // 
-      this.buttonFastForward.Location = new System.Drawing.Point(160, 88);
+      this.buttonFastForward.Location = new System.Drawing.Point(160, 72);
       this.buttonFastForward.Name = "buttonFastForward";
       this.buttonFastForward.Size = new System.Drawing.Size(64, 48);
       this.buttonFastForward.TabIndex = 5;
@@ -297,7 +299,7 @@ namespace VirtualRemote
       // 
       // buttonRewind
       // 
-      this.buttonRewind.Location = new System.Drawing.Point(8, 88);
+      this.buttonRewind.Location = new System.Drawing.Point(8, 72);
       this.buttonRewind.Name = "buttonRewind";
       this.buttonRewind.Size = new System.Drawing.Size(64, 48);
       this.buttonRewind.TabIndex = 3;
@@ -307,7 +309,7 @@ namespace VirtualRemote
       // 
       // buttonPause
       // 
-      this.buttonPause.Location = new System.Drawing.Point(160, 24);
+      this.buttonPause.Location = new System.Drawing.Point(160, 8);
       this.buttonPause.Name = "buttonPause";
       this.buttonPause.Size = new System.Drawing.Size(64, 48);
       this.buttonPause.TabIndex = 2;
@@ -317,7 +319,7 @@ namespace VirtualRemote
       // 
       // buttonStop
       // 
-      this.buttonStop.Location = new System.Drawing.Point(80, 24);
+      this.buttonStop.Location = new System.Drawing.Point(80, 8);
       this.buttonStop.Name = "buttonStop";
       this.buttonStop.Size = new System.Drawing.Size(72, 48);
       this.buttonStop.TabIndex = 1;
@@ -327,7 +329,7 @@ namespace VirtualRemote
       // 
       // buttonPlay
       // 
-      this.buttonPlay.Location = new System.Drawing.Point(80, 88);
+      this.buttonPlay.Location = new System.Drawing.Point(80, 72);
       this.buttonPlay.Name = "buttonPlay";
       this.buttonPlay.Size = new System.Drawing.Size(72, 48);
       this.buttonPlay.TabIndex = 4;
@@ -337,7 +339,7 @@ namespace VirtualRemote
       // 
       // buttonRecord
       // 
-      this.buttonRecord.Location = new System.Drawing.Point(8, 24);
+      this.buttonRecord.Location = new System.Drawing.Point(8, 8);
       this.buttonRecord.Name = "buttonRecord";
       this.buttonRecord.Size = new System.Drawing.Size(64, 48);
       this.buttonRecord.TabIndex = 0;
@@ -347,6 +349,7 @@ namespace VirtualRemote
       // 
       // tabPageNumbers
       // 
+      this.tabPageNumbers.AutoScroll = true;
       this.tabPageNumbers.Controls.Add(this.buttonEnter);
       this.tabPageNumbers.Controls.Add(this.buttonClear);
       this.tabPageNumbers.Controls.Add(this.buttonHash);
@@ -370,7 +373,7 @@ namespace VirtualRemote
       // 
       this.buttonEnter.Location = new System.Drawing.Point(80, 200);
       this.buttonEnter.Name = "buttonEnter";
-      this.buttonEnter.Size = new System.Drawing.Size(136, 32);
+      this.buttonEnter.Size = new System.Drawing.Size(144, 32);
       this.buttonEnter.TabIndex = 13;
       this.buttonEnter.Tag = "Enter";
       this.buttonEnter.Text = "Enter";
@@ -388,7 +391,7 @@ namespace VirtualRemote
       // 
       // buttonHash
       // 
-      this.buttonHash.Location = new System.Drawing.Point(152, 152);
+      this.buttonHash.Location = new System.Drawing.Point(160, 152);
       this.buttonHash.Name = "buttonHash";
       this.buttonHash.Size = new System.Drawing.Size(64, 40);
       this.buttonHash.TabIndex = 11;
@@ -400,7 +403,7 @@ namespace VirtualRemote
       // 
       this.buttonNum0.Location = new System.Drawing.Point(80, 152);
       this.buttonNum0.Name = "buttonNum0";
-      this.buttonNum0.Size = new System.Drawing.Size(64, 40);
+      this.buttonNum0.Size = new System.Drawing.Size(72, 40);
       this.buttonNum0.TabIndex = 10;
       this.buttonNum0.Tag = "Number0";
       this.buttonNum0.Text = "0";
@@ -418,7 +421,7 @@ namespace VirtualRemote
       // 
       // buttonNum9
       // 
-      this.buttonNum9.Location = new System.Drawing.Point(152, 104);
+      this.buttonNum9.Location = new System.Drawing.Point(160, 104);
       this.buttonNum9.Name = "buttonNum9";
       this.buttonNum9.Size = new System.Drawing.Size(64, 40);
       this.buttonNum9.TabIndex = 8;
@@ -430,7 +433,7 @@ namespace VirtualRemote
       // 
       this.buttonNum8.Location = new System.Drawing.Point(80, 104);
       this.buttonNum8.Name = "buttonNum8";
-      this.buttonNum8.Size = new System.Drawing.Size(64, 40);
+      this.buttonNum8.Size = new System.Drawing.Size(72, 40);
       this.buttonNum8.TabIndex = 7;
       this.buttonNum8.Tag = "Number8";
       this.buttonNum8.Text = "8";
@@ -448,7 +451,7 @@ namespace VirtualRemote
       // 
       // buttonNum6
       // 
-      this.buttonNum6.Location = new System.Drawing.Point(152, 56);
+      this.buttonNum6.Location = new System.Drawing.Point(160, 56);
       this.buttonNum6.Name = "buttonNum6";
       this.buttonNum6.Size = new System.Drawing.Size(64, 40);
       this.buttonNum6.TabIndex = 5;
@@ -460,7 +463,7 @@ namespace VirtualRemote
       // 
       this.buttonNum5.Location = new System.Drawing.Point(80, 56);
       this.buttonNum5.Name = "buttonNum5";
-      this.buttonNum5.Size = new System.Drawing.Size(64, 40);
+      this.buttonNum5.Size = new System.Drawing.Size(72, 40);
       this.buttonNum5.TabIndex = 4;
       this.buttonNum5.Tag = "Number5";
       this.buttonNum5.Text = "5";
@@ -478,7 +481,7 @@ namespace VirtualRemote
       // 
       // buttonNum3
       // 
-      this.buttonNum3.Location = new System.Drawing.Point(152, 8);
+      this.buttonNum3.Location = new System.Drawing.Point(160, 8);
       this.buttonNum3.Name = "buttonNum3";
       this.buttonNum3.Size = new System.Drawing.Size(64, 40);
       this.buttonNum3.TabIndex = 2;
@@ -490,7 +493,7 @@ namespace VirtualRemote
       // 
       this.buttonNum2.Location = new System.Drawing.Point(80, 8);
       this.buttonNum2.Name = "buttonNum2";
-      this.buttonNum2.Size = new System.Drawing.Size(64, 40);
+      this.buttonNum2.Size = new System.Drawing.Size(72, 40);
       this.buttonNum2.TabIndex = 1;
       this.buttonNum2.Tag = "Number2";
       this.buttonNum2.Text = "2";
@@ -508,6 +511,8 @@ namespace VirtualRemote
       // 
       // tabPageMisc
       // 
+      this.tabPageMisc.AutoScroll = true;
+      this.tabPageMisc.Controls.Add(this.buttonInfo);
       this.tabPageMisc.Controls.Add(this.buttonFullscreen);
       this.tabPageMisc.Controls.Add(this.buttonAspectRatio);
       this.tabPageMisc.Controls.Add(this.buttonPower);
@@ -521,19 +526,27 @@ namespace VirtualRemote
       this.tabPageMisc.Controls.Add(this.buttonTV);
       this.tabPageMisc.Controls.Add(this.buttonPictures);
       this.tabPageMisc.Controls.Add(this.buttonMusic);
-      this.tabPageMisc.Controls.Add(this.buttonVideos);
-      this.tabPageMisc.Controls.Add(this.buttonStart);
+      this.tabPageMisc.Controls.Add(this.buttonVideo);
       this.tabPageMisc.Location = new System.Drawing.Point(4, 25);
       this.tabPageMisc.Name = "tabPageMisc";
       this.tabPageMisc.Size = new System.Drawing.Size(232, 238);
       this.tabPageMisc.Text = "Misc";
       // 
+      // buttonInfo
+      // 
+      this.buttonInfo.Location = new System.Drawing.Point(80, 8);
+      this.buttonInfo.Name = "buttonInfo";
+      this.buttonInfo.Size = new System.Drawing.Size(72, 40);
+      this.buttonInfo.TabIndex = 1;
+      this.buttonInfo.Tag = "Info";
+      this.buttonInfo.Text = "Info";
+      // 
       // buttonFullscreen
       // 
       this.buttonFullscreen.Location = new System.Drawing.Point(128, 152);
       this.buttonFullscreen.Name = "buttonFullscreen";
-      this.buttonFullscreen.Size = new System.Drawing.Size(96, 32);
-      this.buttonFullscreen.TabIndex = 15;
+      this.buttonFullscreen.Size = new System.Drawing.Size(96, 40);
+      this.buttonFullscreen.TabIndex = 10;
       this.buttonFullscreen.Tag = "Fullscreen";
       this.buttonFullscreen.Text = "Fullscreen";
       this.buttonFullscreen.Click += new System.EventHandler(this.button_Click);
@@ -542,28 +555,28 @@ namespace VirtualRemote
       // 
       this.buttonAspectRatio.Location = new System.Drawing.Point(8, 152);
       this.buttonAspectRatio.Name = "buttonAspectRatio";
-      this.buttonAspectRatio.Size = new System.Drawing.Size(96, 32);
-      this.buttonAspectRatio.TabIndex = 14;
+      this.buttonAspectRatio.Size = new System.Drawing.Size(96, 40);
+      this.buttonAspectRatio.TabIndex = 9;
       this.buttonAspectRatio.Tag = "AspectRatio";
       this.buttonAspectRatio.Text = "Aspect Ratio";
       this.buttonAspectRatio.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonPower
       // 
-      this.buttonPower.Location = new System.Drawing.Point(80, 104);
+      this.buttonPower.Location = new System.Drawing.Point(8, 8);
       this.buttonPower.Name = "buttonPower";
-      this.buttonPower.Size = new System.Drawing.Size(72, 40);
-      this.buttonPower.TabIndex = 13;
+      this.buttonPower.Size = new System.Drawing.Size(64, 40);
+      this.buttonPower.TabIndex = 0;
       this.buttonPower.Tag = "Power";
       this.buttonPower.Text = "Power";
       this.buttonPower.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonTeletext
       // 
-      this.buttonTeletext.Location = new System.Drawing.Point(160, 104);
+      this.buttonTeletext.Location = new System.Drawing.Point(160, 8);
       this.buttonTeletext.Name = "buttonTeletext";
       this.buttonTeletext.Size = new System.Drawing.Size(64, 40);
-      this.buttonTeletext.TabIndex = 7;
+      this.buttonTeletext.TabIndex = 2;
       this.buttonTeletext.Tag = "Teletext";
       this.buttonTeletext.Text = "Teletext";
       this.buttonTeletext.Click += new System.EventHandler(this.button_Click);
@@ -574,8 +587,8 @@ namespace VirtualRemote
       this.buttonBlue.Location = new System.Drawing.Point(184, 200);
       this.buttonBlue.Name = "buttonBlue";
       this.buttonBlue.Size = new System.Drawing.Size(40, 32);
-      this.buttonBlue.TabIndex = 12;
-      this.buttonBlue.Tag = "TeletextBlue";
+      this.buttonBlue.TabIndex = 14;
+      this.buttonBlue.Tag = "Blue";
       this.buttonBlue.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonYellow
@@ -584,8 +597,8 @@ namespace VirtualRemote
       this.buttonYellow.Location = new System.Drawing.Point(128, 200);
       this.buttonYellow.Name = "buttonYellow";
       this.buttonYellow.Size = new System.Drawing.Size(40, 32);
-      this.buttonYellow.TabIndex = 11;
-      this.buttonYellow.Tag = "TeletextYellow";
+      this.buttonYellow.TabIndex = 13;
+      this.buttonYellow.Tag = "Yellow";
       this.buttonYellow.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonGreen
@@ -594,8 +607,8 @@ namespace VirtualRemote
       this.buttonGreen.Location = new System.Drawing.Point(64, 200);
       this.buttonGreen.Name = "buttonGreen";
       this.buttonGreen.Size = new System.Drawing.Size(40, 32);
-      this.buttonGreen.TabIndex = 10;
-      this.buttonGreen.Tag = "TeletextGreen";
+      this.buttonGreen.TabIndex = 12;
+      this.buttonGreen.Tag = "Green";
       this.buttonGreen.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonRed
@@ -604,8 +617,8 @@ namespace VirtualRemote
       this.buttonRed.Location = new System.Drawing.Point(8, 200);
       this.buttonRed.Name = "buttonRed";
       this.buttonRed.Size = new System.Drawing.Size(40, 32);
-      this.buttonRed.TabIndex = 9;
-      this.buttonRed.Tag = "TeletextRed";
+      this.buttonRed.TabIndex = 11;
+      this.buttonRed.Tag = "Red";
       this.buttonRed.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonDVD
@@ -640,46 +653,38 @@ namespace VirtualRemote
       // 
       // buttonPictures
       // 
-      this.buttonPictures.Location = new System.Drawing.Point(160, 8);
+      this.buttonPictures.Location = new System.Drawing.Point(80, 104);
       this.buttonPictures.Name = "buttonPictures";
-      this.buttonPictures.Size = new System.Drawing.Size(64, 40);
-      this.buttonPictures.TabIndex = 2;
+      this.buttonPictures.Size = new System.Drawing.Size(72, 40);
+      this.buttonPictures.TabIndex = 7;
       this.buttonPictures.Tag = "Pictures";
       this.buttonPictures.Text = "Pictures";
       this.buttonPictures.Click += new System.EventHandler(this.button_Click);
       // 
       // buttonMusic
       // 
-      this.buttonMusic.Location = new System.Drawing.Point(80, 8);
+      this.buttonMusic.Location = new System.Drawing.Point(8, 104);
       this.buttonMusic.Name = "buttonMusic";
-      this.buttonMusic.Size = new System.Drawing.Size(72, 40);
-      this.buttonMusic.TabIndex = 1;
+      this.buttonMusic.Size = new System.Drawing.Size(64, 40);
+      this.buttonMusic.TabIndex = 6;
       this.buttonMusic.Tag = "Music";
       this.buttonMusic.Text = "Music";
       this.buttonMusic.Click += new System.EventHandler(this.button_Click);
       // 
-      // buttonVideos
+      // buttonVideo
       // 
-      this.buttonVideos.Location = new System.Drawing.Point(8, 8);
-      this.buttonVideos.Name = "buttonVideos";
-      this.buttonVideos.Size = new System.Drawing.Size(64, 40);
-      this.buttonVideos.TabIndex = 0;
-      this.buttonVideos.Tag = "Videos";
-      this.buttonVideos.Text = "Videos";
-      this.buttonVideos.Click += new System.EventHandler(this.button_Click);
-      // 
-      // buttonStart
-      // 
-      this.buttonStart.Location = new System.Drawing.Point(8, 104);
-      this.buttonStart.Name = "buttonStart";
-      this.buttonStart.Size = new System.Drawing.Size(64, 40);
-      this.buttonStart.TabIndex = 6;
-      this.buttonStart.Tag = "Start";
-      this.buttonStart.Text = "Start";
-      this.buttonStart.Click += new System.EventHandler(this.button_Click);
+      this.buttonVideo.Location = new System.Drawing.Point(160, 104);
+      this.buttonVideo.Name = "buttonVideo";
+      this.buttonVideo.Size = new System.Drawing.Size(64, 40);
+      this.buttonVideo.TabIndex = 8;
+      this.buttonVideo.Tag = "Video";
+      this.buttonVideo.Text = "Video";
+      this.buttonVideo.Click += new System.EventHandler(this.button_Click);
       // 
       // tabPageSetup
       // 
+      this.tabPageSetup.AutoScroll = true;
+      this.tabPageSetup.Controls.Add(this.buttonQuit);
       this.tabPageSetup.Controls.Add(this.textBoxStatus);
       this.tabPageSetup.Controls.Add(this.buttonConnect);
       this.tabPageSetup.Controls.Add(this.buttonDisconnect);
@@ -689,6 +694,29 @@ namespace VirtualRemote
       this.tabPageSetup.Name = "tabPageSetup";
       this.tabPageSetup.Size = new System.Drawing.Size(232, 238);
       this.tabPageSetup.Text = "Setup ";
+      // 
+      // buttonQuit
+      // 
+      this.buttonQuit.Location = new System.Drawing.Point(72, 152);
+      this.buttonQuit.Name = "buttonQuit";
+      this.buttonQuit.Size = new System.Drawing.Size(88, 32);
+      this.buttonQuit.TabIndex = 4;
+      this.buttonQuit.Tag = "";
+      this.buttonQuit.Text = "Quit";
+      this.buttonQuit.Click += new System.EventHandler(this.buttonQuit_Click);
+      // 
+      // textBoxStatus
+      // 
+      this.textBoxStatus.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+      this.textBoxStatus.Location = new System.Drawing.Point(8, 104);
+      this.textBoxStatus.Multiline = true;
+      this.textBoxStatus.Name = "textBoxStatus";
+      this.textBoxStatus.ReadOnly = true;
+      this.textBoxStatus.Size = new System.Drawing.Size(216, 40);
+      this.textBoxStatus.TabIndex = 3;
+      this.textBoxStatus.TabStop = false;
+      this.textBoxStatus.Text = "Not connected";
+      this.textBoxStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       // 
       // buttonConnect
       // 
@@ -715,7 +743,7 @@ namespace VirtualRemote
       this.labelText.Location = new System.Drawing.Point(8, 8);
       this.labelText.Name = "labelText";
       this.labelText.Size = new System.Drawing.Size(216, 20);
-      this.labelText.Text = "Select IR Server host computer";
+      this.labelText.Text = "Select server host computer";
       // 
       // textBoxComputer
       // 
@@ -724,23 +752,10 @@ namespace VirtualRemote
       this.textBoxComputer.Size = new System.Drawing.Size(216, 23);
       this.textBoxComputer.TabIndex = 0;
       // 
-      // textBoxStatus
-      // 
-      this.textBoxStatus.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-      this.textBoxStatus.Location = new System.Drawing.Point(8, 104);
-      this.textBoxStatus.Multiline = true;
-      this.textBoxStatus.Name = "textBoxStatus";
-      this.textBoxStatus.ReadOnly = true;
-      this.textBoxStatus.Size = new System.Drawing.Size(216, 128);
-      this.textBoxStatus.TabIndex = 4;
-      this.textBoxStatus.TabStop = false;
-      this.textBoxStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-      // 
       // FormMain
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-      this.AutoScroll = true;
       this.ClientSize = new System.Drawing.Size(240, 267);
       this.Controls.Add(this.tabControl);
       this.KeyPreview = true;
@@ -766,7 +781,6 @@ namespace VirtualRemote
     private System.Windows.Forms.Button buttonChannelUp;
     private System.Windows.Forms.Button buttonVolDown;
     private System.Windows.Forms.Button buttonVolUp;
-    private System.Windows.Forms.Button buttonInfo;
     private System.Windows.Forms.Button buttonBack;
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.Button buttonRight;
@@ -805,8 +819,7 @@ namespace VirtualRemote
     private System.Windows.Forms.Button buttonTV;
     private System.Windows.Forms.Button buttonPictures;
     private System.Windows.Forms.Button buttonMusic;
-    private System.Windows.Forms.Button buttonVideos;
-    private System.Windows.Forms.Button buttonStart;
+    private System.Windows.Forms.Button buttonVideo;
     private System.Windows.Forms.Button buttonTeletext;
     private System.Windows.Forms.Button buttonEnter;
     private System.Windows.Forms.Button buttonClear;
@@ -819,6 +832,9 @@ namespace VirtualRemote
     private System.Windows.Forms.Button buttonConnect;
     private System.Windows.Forms.Button buttonDisconnect;
     private System.Windows.Forms.TextBox textBoxStatus;
+    private System.Windows.Forms.Button buttonStart;
+    private System.Windows.Forms.Button buttonInfo;
+    private System.Windows.Forms.Button buttonQuit;
   }
 
 }

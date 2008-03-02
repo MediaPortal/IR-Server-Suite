@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 //
 [assembly: AssemblyTitle("Virtual Remote")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Smartphone remote control simulator for use with IR Server Suite")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("VirtualRemote")]

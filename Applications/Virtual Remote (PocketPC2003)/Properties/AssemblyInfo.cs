@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Virtual Remote")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("PocketPC remote control simulator for use with IR Server Suite")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("VirtualRemote")]

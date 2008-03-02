@@ -31,7 +31,7 @@ namespace VirtualRemote
       new string[] { "Back", "Up", "Info", "Left", "OK", "Right", "VolumeUp", "Down", "ChannelUp", "VolumeDown", "Mute", "ChannelDown" },
       new string[] { "Record", "Stop", "Pause", "Rewind", "Play", "FastForward", "PreviousChapter", null, "NextChapter", null, null, null },
       new string[] { "Number1", "Number2", "Number3", "Number4", "Number5", "Number6", "Number7", "Number8", "Number9", "Star", "Number0", "Hash", },
-      new string[] { "Power", "TV", "TeletextRed", "Music", "Videos", "TeletextGreen", "Pictures", "Guide", "TeletextYellow", "DVD", "Teletext", "TeletextBlue" }
+      new string[] { "Power", "TV", "Red", "Music", "Videos", "Green", "Pictures", "Guide", "Yellow", "DVD", "Teletext", "Blue" }
     };
 
     #endregion Constants
@@ -341,31 +341,35 @@ namespace VirtualRemote
       // pictureBoxNumbers
       // 
       this.pictureBoxNumbers.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxNumbers.Image")));
-      this.pictureBoxNumbers.Location = new System.Drawing.Point(8, 48);
-      this.pictureBoxNumbers.Size = new System.Drawing.Size(160, 119);
+      this.pictureBoxNumbers.Location = new System.Drawing.Point(0, 48);
+      this.pictureBoxNumbers.Size = new System.Drawing.Size(176, 131);
+      this.pictureBoxNumbers.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
       // 
       // pictureBoxNavigation
       // 
       this.pictureBoxNavigation.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxNavigation.Image")));
-      this.pictureBoxNavigation.Location = new System.Drawing.Point(8, 48);
-      this.pictureBoxNavigation.Size = new System.Drawing.Size(160, 119);
+      this.pictureBoxNavigation.Location = new System.Drawing.Point(0, 48);
+      this.pictureBoxNavigation.Size = new System.Drawing.Size(176, 131);
+      this.pictureBoxNavigation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
       // 
       // pictureBoxPlayback
       // 
       this.pictureBoxPlayback.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxPlayback.Image")));
-      this.pictureBoxPlayback.Location = new System.Drawing.Point(8, 48);
-      this.pictureBoxPlayback.Size = new System.Drawing.Size(160, 119);
+      this.pictureBoxPlayback.Location = new System.Drawing.Point(0, 48);
+      this.pictureBoxPlayback.Size = new System.Drawing.Size(176, 131);
+      this.pictureBoxPlayback.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
       // 
       // pictureBoxMisc
       // 
       this.pictureBoxMisc.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxMisc.Image")));
-      this.pictureBoxMisc.Location = new System.Drawing.Point(8, 48);
-      this.pictureBoxMisc.Size = new System.Drawing.Size(160, 119);
+      this.pictureBoxMisc.Location = new System.Drawing.Point(0, 48);
+      this.pictureBoxMisc.Size = new System.Drawing.Size(176, 131);
+      this.pictureBoxMisc.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
       // 
       // labelStatus
       // 
       this.labelStatus.Location = new System.Drawing.Point(0, 0);
-      this.labelStatus.Size = new System.Drawing.Size(176, 32);
+      this.labelStatus.Size = new System.Drawing.Size(176, 48);
       this.labelStatus.Text = "Not connected";
       this.labelStatus.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
