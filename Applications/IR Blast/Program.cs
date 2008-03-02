@@ -47,7 +47,7 @@ namespace IRBlast
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Append(Common.FolderIrssLogs + "IR Blast.log");
+      IrssLog.Append("IR Blast.log");
 
       ShowHeader();
 
@@ -141,7 +141,7 @@ namespace IRBlast
                       }
                       else
                       {
-                        fileName = Common.FolderIRCommands + digit + Common.FileExtensionIR;
+                        fileName = Path.Combine(Common.FolderIRCommands, digit + Common.FileExtensionIR);
                         BlastIR(fileName, _blastPort);
                       }
                       
@@ -155,7 +155,7 @@ namespace IRBlast
                   }
                   else
                   {
-                    fileName = Common.FolderIRCommands + command;
+                    fileName = Path.Combine(Common.FolderIRCommands, command);
                     BlastIR(fileName, _blastPort);
                   }
 

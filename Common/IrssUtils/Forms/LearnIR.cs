@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -131,7 +132,7 @@ namespace IrssUtils.Forms
       buttonTest.Enabled = false;
       buttonDone.Enabled = false;
 
-      string fileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
+      string fileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
 
       if (_learnIrDelegate(fileName))
       {
@@ -165,7 +166,7 @@ namespace IrssUtils.Forms
 
       try
       {
-        string fileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
+        string fileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
         string port = comboBoxPort.SelectedItem as string;
 
         _blastIrDelegate(fileName, port);

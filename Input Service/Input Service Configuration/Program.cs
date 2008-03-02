@@ -42,7 +42,7 @@ namespace InputService.Configuration
 
     #region Constants
 
-    static readonly string ConfigurationFile = Common.FolderAppData + "Input Service\\Input Service.xml";
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Input Service\\Input Service.xml");
 
     #endregion Constants
 
@@ -87,7 +87,7 @@ namespace InputService.Configuration
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "Input Service Configuration.log");
+      IrssLog.Open("Input Service Configuration.log");
 
       LoadSettings();
 

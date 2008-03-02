@@ -112,8 +112,7 @@ namespace VirtualRemote
     {
       try
       {
-        string path = Path.Combine(Program.InstallFolder, "Skins");
-        string[] skins = Directory.GetFiles(path, "*.png", SearchOption.TopDirectoryOnly);
+        string[] skins = Directory.GetFiles(Program.SkinsFolder, "*.png", SearchOption.TopDirectoryOnly);
         for (int index = 0; index < skins.Length; index++)
           skins[index] = Path.GetFileNameWithoutExtension(skins[index]);
 
@@ -135,17 +134,17 @@ namespace VirtualRemote
         if (String.IsNullOrEmpty(skin))
           return;
 
-        string skinFile = Path.Combine(Program.InstallFolder, String.Format("Skins\\{0}.png", skin));
+        string skinFile = Path.Combine(Program.SkinsFolder, skin + ".png");
         if (!File.Exists(skinFile))
           throw new FileNotFoundException("Skin graphic file not found", skinFile);
 
         // Try to load xml file of same name, failing that load using first word of skin name ...
-        string xmlFile = Path.Combine(Program.InstallFolder, String.Format("Skins\\{0}.xml", skin));
+        string xmlFile = Path.Combine(Program.SkinsFolder, skin + ".xml");
         if (!File.Exists(xmlFile))
         {
           string firstWord = skin.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
 
-          xmlFile = Path.Combine(Program.InstallFolder, String.Format("Skins\\{0}.xml", firstWord));
+          xmlFile = Path.Combine(Program.SkinsFolder, firstWord + ".xml");
           if (!File.Exists(xmlFile))
             throw new FileNotFoundException("Skin file not found", xmlFile);
         }

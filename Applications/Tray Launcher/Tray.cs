@@ -27,7 +27,7 @@ namespace TrayLauncher
 
     const string DefaultKeyCode = "31730";
 
-    static readonly string ConfigurationFile = Common.FolderAppData + "Tray Launcher\\Tray Launcher.xml";
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Tray Launcher\\Tray Launcher.xml");
 
     #endregion Constants
 

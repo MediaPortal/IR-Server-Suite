@@ -51,7 +51,7 @@ namespace MediaPortal.Plugins
       textBoxName.Text    = name;
       textBoxName.Enabled = false;
 
-      string fileName = MPControlPlugin.FolderMacros + name + Common.FileExtensionMacro;
+      string fileName = Path.Combine(MPControlPlugin.FolderMacros, name + Common.FileExtensionMacro);
       ReadFromFile(fileName);
     }
 
@@ -398,7 +398,8 @@ namespace MediaPortal.Plugins
 
       try
       {
-        WriteToFile(MPControlPlugin.FolderMacros + name + Common.FileExtensionMacro);
+        string fileName = Path.Combine(MPControlPlugin.FolderMacros, name + Common.FileExtensionMacro);
+        WriteToFile(fileName);
 
         MPControlPlugin.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
@@ -435,7 +436,8 @@ namespace MediaPortal.Plugins
 
       try
       {
-        WriteToFile(MPControlPlugin.FolderMacros + name + Common.FileExtensionMacro);
+        string fileName = Path.Combine(MPControlPlugin.FolderMacros, name + Common.FileExtensionMacro);
+        WriteToFile(fileName);
       }
       catch (Exception ex)
       {

@@ -26,11 +26,11 @@ namespace Translator
 
     #region Constants
 
-    internal static readonly string ConfigFile = Common.FolderAppData + "Translator\\Translator.xml";
+    internal static readonly string ConfigFile    = Path.Combine(Common.FolderAppData, "Translator\\Translator.xml");
 
-    internal static readonly string FolderMacros = Common.FolderAppData + "Translator\\Macro\\";
+    internal static readonly string FolderMacros  = Path.Combine(Common.FolderAppData, "Translator\\Macro");
 
-    const string ProcessCommandThreadName = "ProcessCommand";
+    const string ProcessCommandThreadName         = "ProcessCommand";
 
     #endregion Constants
 
@@ -118,7 +118,7 @@ namespace Translator
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "Translator.log");
+      IrssLog.Open("Translator.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
@@ -1045,13 +1045,13 @@ namespace Translator
 
         if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
-          string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+          string fileName = Path.Combine(FolderMacros, command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
           IrssMacro.ExecuteMacro(fileName, _variables, new ProcessCommandCallback(ProcCommand));
         }
         else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-          BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+          BlastIR(Path.Combine(Common.FolderIRCommands, commands[0] + Common.FileExtensionIR), commands[1]);
         }
         else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
         {

@@ -212,7 +212,7 @@ namespace Abstractor
     public MainForm()
     {
       IrssLog.LogLevel = IrssLog.Level.Debug;
-      IrssLog.Open(Common.FolderIrssLogs + "Abstractor.log");
+      IrssLog.Open("Abstractor.log");
 
       InitializeComponent();
 

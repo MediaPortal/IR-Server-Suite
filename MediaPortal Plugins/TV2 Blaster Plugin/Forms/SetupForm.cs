@@ -115,7 +115,7 @@ namespace MediaPortal.Plugins
       try
       {
         string command = listViewIR.SelectedItems[0].Text;
-        string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
+        string fileName = Path.Combine(Common.FolderIRCommands, command + Common.FileExtensionIR);
 
         if (File.Exists(fileName))
         {
@@ -150,7 +150,7 @@ namespace MediaPortal.Plugins
       try
       {
         string command = listViewMacro.SelectedItems[0].Text;
-        string fileName = TV2BlasterPlugin.FolderMacros + command + Common.FileExtensionMacro;
+        string fileName = Path.Combine(TV2BlasterPlugin.FolderMacros, command + Common.FileExtensionMacro);
 
         if (File.Exists(fileName))
         {
@@ -212,7 +212,7 @@ namespace MediaPortal.Plugins
         return;
 
       string file = listViewIR.SelectedItems[0].Text;
-      string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
+      string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
         if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete",  MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -243,7 +243,7 @@ namespace MediaPortal.Plugins
         return;
 
       string file = listViewMacro.SelectedItems[0].Text;
-      string fileName = TV2BlasterPlugin.FolderMacros + file + Common.FileExtensionMacro;
+      string fileName = Path.Combine(TV2BlasterPlugin.FolderMacros, file + Common.FileExtensionMacro);
       if (File.Exists(fileName))
       {
         if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -335,7 +335,7 @@ namespace MediaPortal.Plugins
 
       ListViewItem originItem = origin.Items[e.Item];
 
-      string oldFileName = Common.FolderIRCommands + originItem.Text + Common.FileExtensionIR;
+      string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
       if (!File.Exists(oldFileName))
       {
         MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -354,7 +354,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        string newFileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
+        string newFileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
 
         File.Move(oldFileName, newFileName);
       }
@@ -381,7 +381,7 @@ namespace MediaPortal.Plugins
 
       ListViewItem originItem = origin.Items[e.Item];
 
-      string oldFileName = TV2BlasterPlugin.FolderMacros + originItem.Text + Common.FileExtensionMacro;
+      string oldFileName = Path.Combine(TV2BlasterPlugin.FolderMacros, originItem.Text + Common.FileExtensionMacro);
       if (!File.Exists(oldFileName))
       {
         MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -400,7 +400,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        string newFileName = TV2BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
+        string newFileName = Path.Combine(TV2BlasterPlugin.FolderMacros, name + Common.FileExtensionMacro);
 
         File.Move(oldFileName, newFileName);
       }

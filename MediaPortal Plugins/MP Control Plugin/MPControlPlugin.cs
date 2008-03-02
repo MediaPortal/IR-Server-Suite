@@ -42,17 +42,17 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion = "MP Control Plugin 1.0.4.2 for IR Server";
+    internal const string PluginVersion                 = "MP Control Plugin 1.0.4.2 for IR Server";
 
-    internal static readonly string FolderMacros = Common.FolderAppData + "MP Control Plugin\\Macro\\";
+    internal static readonly string FolderMacros        = Path.Combine(Common.FolderAppData, "MP Control Plugin\\Macro");
 
-    internal static readonly string RemotesFile = Common.FolderAppData + "MP Control Plugin\\Remotes.xml";
-    internal static readonly string MultiMappingFile = Common.FolderAppData + "MP Control Plugin\\MultiMapping.xml";
-    internal static readonly string EventMappingFile = Common.FolderAppData + "MP Control Plugin\\EventMapping.xml";
+    internal static readonly string RemotesFile         = Path.Combine(Common.FolderAppData, "MP Control Plugin\\Remotes.xml");
+    internal static readonly string MultiMappingFile    = Path.Combine(Common.FolderAppData, "MP Control Plugin\\MultiMapping.xml");
+    internal static readonly string EventMappingFile    = Path.Combine(Common.FolderAppData, "MP Control Plugin\\EventMapping.xml");
 
-    internal static readonly string RemotePresetsFolder = Common.FolderAppData + "MP Control Plugin\\Remote Presets\\";
+    internal static readonly string RemotePresetsFolder = Path.Combine(Common.FolderAppData, "MP Control Plugin\\Remote Presets");
 
-    const string ProcessCommandThreadName = "ProcessCommand";
+    const string ProcessCommandThreadName               = "ProcessCommand";
 
     #endregion Constants
 
@@ -1262,13 +1262,13 @@ namespace MediaPortal.Plugins
 
         if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
-          string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+          string fileName = Path.Combine(FolderMacros, command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
           ProcMacro(fileName);
         }
         else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-          BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+          BlastIR(Path.Combine(Common.FolderIRCommands, commands[0] + Common.FileExtensionIR), commands[1]);
         }
         else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
         {

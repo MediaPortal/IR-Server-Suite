@@ -25,7 +25,7 @@ namespace SkinEditor
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "Virtual Remote Skin Editor.log");
+      IrssLog.Open("Virtual Remote Skin Editor.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 

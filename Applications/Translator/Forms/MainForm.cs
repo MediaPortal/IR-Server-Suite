@@ -412,7 +412,7 @@ namespace Translator
         return;
 
       string command = listViewIR.SelectedItems[0].Text;
-      string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
+      string fileName = Path.Combine(Common.FolderIRCommands, command + Common.FileExtensionIR);
 
       if (File.Exists(fileName))
       {
@@ -438,7 +438,7 @@ namespace Translator
         return;
 
       string command = listViewMacro.SelectedItems[0].Text;
-      string fileName = Program.FolderMacros + command + Common.FileExtensionMacro;
+      string fileName = Path.Combine(Program.FolderMacros, command + Common.FileExtensionMacro);
 
       if (File.Exists(fileName))
       {
@@ -805,7 +805,7 @@ namespace Translator
 
       ListViewItem originItem = origin.Items[e.Item];
 
-      string oldFileName = Common.FolderIRCommands + originItem.Text + Common.FileExtensionIR;
+      string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
       if (!File.Exists(oldFileName))
       {
         MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -824,7 +824,7 @@ namespace Translator
 
       try
       {
-        string newFileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
+        string newFileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
 
         File.Move(oldFileName, newFileName);
       }
@@ -851,7 +851,7 @@ namespace Translator
 
       ListViewItem originItem = origin.Items[e.Item];
 
-      string oldFileName = Program.FolderMacros + originItem.Text + Common.FileExtensionMacro;
+      string oldFileName = Path.Combine(Program.FolderMacros, originItem.Text + Common.FileExtensionMacro);
       if (!File.Exists(oldFileName))
       {
         MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -870,8 +870,7 @@ namespace Translator
 
       try
       {
-        string newFileName = Program.FolderMacros + name + Common.FileExtensionMacro;
-
+        string newFileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
         File.Move(oldFileName, newFileName);
       }
       catch (Exception ex)
@@ -1286,7 +1285,7 @@ namespace Translator
         return;
 
       string file = listViewMacro.SelectedItems[0].Text;
-      string fileName = Program.FolderMacros + file + Common.FileExtensionMacro;
+      string fileName = Path.Combine(Program.FolderMacros, file + Common.FileExtensionMacro);
       if (File.Exists(fileName))
       {
         if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -1328,7 +1327,7 @@ namespace Translator
 
       string translatorFolder = Path.Combine(SystemRegistry.GetInstallFolder(), "Translator");
 
-      //shortcut.Arguments        = String.Format("-MACRO \"{0}{1}{2}\"", Program.FolderMacros, macroName, Common.FileExtensionMacro);
+      //shortcut.Arguments        = String.Format("-MACRO \"{0}\"", Path.Combine(Program.FolderMacros, macroName + Common.FileExtensionMacro));
       shortcut.Arguments        = String.Format("-MACRO \"{0}\"", macroName);
       shortcut.Description      = "Launch Macro: " + macroName;
       shortcut.Path             = Path.Combine(translatorFolder, "Translator.exe");
@@ -1361,7 +1360,7 @@ namespace Translator
         return;
 
       string file = listViewIR.SelectedItems[0].Text;
-      string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
+      string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
         if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)

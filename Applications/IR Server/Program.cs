@@ -46,7 +46,7 @@ namespace IRServer
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "IR Server.log");
+      IrssLog.Open("IR Server.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 

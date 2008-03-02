@@ -225,6 +225,7 @@ Section "-Prepare"
   ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
   ExecWait '"taskkill" /F /IM IRFileTool.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
+  ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
 
   IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StopInputService SkipStopInputService
 
@@ -307,7 +308,7 @@ SkipUninstallInputService:
   File "IR Server Plugins\IR507 Receiver\bin\Release\IR507 Receiver.dll"
   File "IR Server Plugins\IRMan Receiver\bin\Release\IRMan Receiver.dll"
   File "IR Server Plugins\IRTrans Transceiver\bin\Release\IRTrans Transceiver.dll"
-  File "IR Server Plugins\Keyboard Input\bin\Release\Keyboard Input.dll"
+  ;File "IR Server Plugins\Keyboard Input\bin\Release\Keyboard Input.dll"
   File "IR Server Plugins\Microsoft MCE Transceiver\bin\Release\Microsoft MCE Transceiver.dll"
   File "IR Server Plugins\RC102 Receiver\bin\Release\RC102 Receiver.dll"
   File "IR Server Plugins\RedEye Blaster\bin\Release\RedEye Blaster.dll"
@@ -368,7 +369,7 @@ SectionEnd
 
 ;======================================
 
-Section "MP Blast Zone Plugin" SectionMPBlastZonePlugin
+Section /o "MP Blast Zone Plugin" SectionMPBlastZonePlugin
 
   DetailPrint "Installing MP Blast Zone Plugin ..."
 
@@ -592,6 +593,29 @@ SectionEnd
 
 ;======================================
 
+Section /o "Keyboard Input Relay" SectionKeyboardInputRelay
+
+  DetailPrint "Installing Keyboard Input Relay ..."
+
+  ; Use the all users context
+  SetShellVarContext all
+
+  ; Installing IR Server
+  CreateDirectory "$DIR_INSTALL\Keyboard Input Relay"
+  SetOutPath "$DIR_INSTALL\Keyboard Input Relay"
+  SetOverwrite ifnewer
+  File "Applications\Keyboard Input Relay\bin\Release\*.*"
+
+  ; Create folders
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
+
+  ; Create start menu shortcut
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" "" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" 0
+
+SectionEnd
+
+;======================================
+
 Section /o "Debug Client" SectionDebugClient
 
   DetailPrint "Installing Debug Client ..."
@@ -668,13 +692,14 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPBlastZonePlugin} "Lets you control your IR devices from within the MediaPortal GUI."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin} "For tuning external channels (on Set Top Boxes) with the default MediaPortal TV engine."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin} "For tuning external channels (on Set Top Boxes) with the MediaPortal TV server."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator} "Control your whole PC via Infrared Remote."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator} "Control your whole PC."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher} "Simple tray application to launch an application of your choosing when a particular button is pressed."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote} "Simulated remote control, works as an application or as a web hosted remote control (with included Web Remote)."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemoteSkinEditor} "Create or Modify skins for the Virtual Remote."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRBlast} "Command line tools for blasting IR codes."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRFileTool} "Tool for learning, modifying, testing, correcting and converting IR command files."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionDebugClient} "Very simple testing tool for troubleshooting problems."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionKeyboardInputRelay} "Relays keyboard input to the Input Service to act on keypresses like remote buttons."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionDebugClient} "Very simple testing tool for troubleshooting input and communications problems."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;======================================
@@ -712,6 +737,7 @@ Section "Uninstall"
   ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
   ExecWait '"taskkill" /F /IM IRFileTool.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
+  ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
   Sleep 100
 
   ; Uninstall current Input Service ...

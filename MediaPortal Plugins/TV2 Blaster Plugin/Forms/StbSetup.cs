@@ -219,7 +219,7 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      string fileName = Common.FolderSTB + xmlFile + ".xml";
+      string fileName = Path.Combine(Common.FolderSTB, xmlFile + ".xml");
 
       XmlDocument doc = new XmlDocument();
       doc.Load(fileName);

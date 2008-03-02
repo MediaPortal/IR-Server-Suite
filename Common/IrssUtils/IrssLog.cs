@@ -81,52 +81,24 @@ namespace IrssUtils
     /// <summary>
     /// Open a log file to record to.
     /// </summary>
-    /// <param name="fileName">File path, absolute.</param>
+    /// <param name="fileName">Log file name.</param>
     public static void Open(string fileName)
     {
-      if (_streamWriter == null && _logLevel > Level.Off)
+      if (_streamWriter != null || _logLevel == Level.Off)
+        return;
+
+      string filePath = Path.Combine(Common.FolderIrssLogs, fileName);
+
+      if (File.Exists(filePath))
       {
-        if (File.Exists(fileName))
-        {
-          try
-          {
-            string backup = Path.ChangeExtension(fileName, ExtensionBackupFile);
-
-            if (File.Exists(backup))
-              File.Delete(backup);
-
-            File.Move(fileName, backup);
-          }
-#if TRACE
-          catch (Exception ex)
-          {
-            Trace.WriteLine(ex.ToString());
-          }
-#else
-          catch
-          {
-          }
-#endif
-        }
-
         try
         {
-          _streamWriter = new StreamWriter(fileName, false);
-          _streamWriter.AutoFlush = true;
+          string backup = Path.ChangeExtension(filePath, ExtensionBackupFile);
 
-          string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Opened", DateTime.Now);
-          _streamWriter.WriteLine(message);
+          if (File.Exists(backup))
+            File.Delete(backup);
 
-#if TRACE
-          Trace.WriteLine(message);
-#endif
-
-          message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - {1}", DateTime.Now, System.Reflection.Assembly.GetCallingAssembly().FullName);
-          _streamWriter.WriteLine(message);
-
-#if TRACE
-          Trace.WriteLine(message);
-#endif
+          File.Move(filePath, backup);
         }
 #if TRACE
         catch (Exception ex)
@@ -139,61 +111,93 @@ namespace IrssUtils
         }
 #endif
       }
+
+      try
+      {
+        _streamWriter = new StreamWriter(filePath, false);
+        _streamWriter.AutoFlush = true;
+
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Opened", DateTime.Now);
+        _streamWriter.WriteLine(message);
+
+#if TRACE
+        Trace.WriteLine(message);
+#endif
+
+        message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - {1}", DateTime.Now, System.Reflection.Assembly.GetCallingAssembly().FullName);
+        _streamWriter.WriteLine(message);
+
+#if TRACE
+        Trace.WriteLine(message);
+#endif
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
     }
 
     /// <summary>
     /// Open a log file to append log entries to.
     /// </summary>
-    /// <param name="fileName">File path, absolute.</param>
+    /// <param name="fileName">Log file name.</param>
     public static void Append(string fileName)
     {
-      if (_streamWriter == null && _logLevel > Level.Off)
+      if (_streamWriter != null || _logLevel == Level.Off)
+        return;
+
+      string filePath = Path.Combine(Common.FolderIrssLogs, fileName);
+
+      try
       {
-        try
+        if (File.Exists(filePath) && File.GetCreationTime(filePath).Ticks < DateTime.Now.Subtract(TimeSpan.FromDays(7)).Ticks)
         {
-          if (File.Exists(fileName) && File.GetCreationTime(fileName).Ticks < DateTime.Now.Subtract(TimeSpan.FromDays(7)).Ticks)
-          {
-            string backup = Path.ChangeExtension(fileName, ExtensionBackupFile);
+          string backup = Path.ChangeExtension(filePath, ExtensionBackupFile);
 
-            if (File.Exists(backup))
-              File.Delete(backup);
+          if (File.Exists(backup))
+            File.Delete(backup);
 
-            File.Move(fileName, backup);
-          }
+          File.Move(filePath, backup);
         }
+      }
 #if TRACE
-        catch (Exception ex)
-        {
-          Trace.WriteLine(ex.ToString());
-        }
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
 #else
-        catch
-        {
-        }
+      catch
+      {
+      }
 #endif
 
-        try
-        {
-          _streamWriter = new StreamWriter(fileName, true);
-          _streamWriter.AutoFlush = true;
+      try
+      {
+        _streamWriter = new StreamWriter(filePath, true);
+        _streamWriter.AutoFlush = true;
 
-          string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Opened", DateTime.Now);
-          _streamWriter.WriteLine(message);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Opened", DateTime.Now);
+        _streamWriter.WriteLine(message);
 #if TRACE
-          Trace.WriteLine(message);
-#endif
-        }
-#if TRACE
-        catch (Exception ex)
-        {
-          Trace.WriteLine(ex.ToString());
-        }
-#else
-        catch
-        {
-        }
+        Trace.WriteLine(message);
 #endif
       }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
     }
     
     /// <summary>

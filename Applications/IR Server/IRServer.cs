@@ -51,7 +51,7 @@ namespace IRServer
 
     #region Constants
 
-    static readonly string ConfigurationFile = Common.FolderAppData + "IR Server\\IR Server.xml";
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "IR Server\\IR Server.xml");
 
     #endregion Constants
 

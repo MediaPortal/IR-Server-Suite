@@ -46,7 +46,8 @@ namespace VirtualRemote
     /// <param name="serverHost">The server host.</param>
     public ServerAddress(string serverHost) : this()
     {
-      textBoxServerHost.Text = serverHost;
+      if (serverHost != null)
+        textBoxServerHost.Text = serverHost;
     }
 
     /// <summary>
@@ -90,6 +91,8 @@ namespace VirtualRemote
       // 
       this.textBoxServerHost.Location = new System.Drawing.Point(8, 64);
       this.textBoxServerHost.Size = new System.Drawing.Size(160, 24);
+      this.textBoxServerHost.Text = "192.168.0.1";
+      this.textBoxServerHost.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxServerHost_KeyDown);
       // 
       // labelDescription
       // 
@@ -118,6 +121,22 @@ namespace VirtualRemote
     {
       this.DialogResult = DialogResult.Cancel;
       this.Close();
+    }
+
+    private void textBoxServerHost_KeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.KeyCode)
+      {
+        case Keys.Enter:
+          this.DialogResult = DialogResult.OK;
+          this.Close();
+          break;
+
+        case Keys.Escape:
+          this.DialogResult = DialogResult.Cancel;
+          this.Close();
+          break;
+      }
     }
 
   }

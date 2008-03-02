@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Xml;
 
@@ -75,7 +76,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(fileName))
         throw new ArgumentNullException("fileName");
 
-      string path = Common.FolderAppData + fileName + Common.FileExtensionVariableList;
+      string path = Path.Combine(Common.FolderAppData, fileName + Common.FileExtensionVariableList);
 
       using (XmlTextWriter writer = new XmlTextWriter(path, Encoding.UTF8))
       {
@@ -101,7 +102,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(fileName))
         throw new ArgumentNullException("fileName");
 
-      string path = Common.FolderAppData + fileName + Common.FileExtensionVariableList;
+      string path = Path.Combine(Common.FolderAppData, fileName + Common.FileExtensionVariableList);
 
       XmlDocument doc = new XmlDocument();
       doc.Load(path);

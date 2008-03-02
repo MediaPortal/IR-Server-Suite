@@ -153,7 +153,7 @@ namespace SetupTv.Sections
       try
       {
         string command = listViewIR.SelectedItems[0].Text;
-        string fileName = Common.FolderIRCommands + command + Common.FileExtensionIR;
+        string fileName = Path.Combine(Common.FolderIRCommands, command + Common.FileExtensionIR);
 
         if (File.Exists(fileName))
         {
@@ -263,7 +263,7 @@ namespace SetupTv.Sections
         return;
 
       string file = listViewIR.SelectedItems[0].Text;
-      string fileName = Common.FolderIRCommands + file + Common.FileExtensionIR;
+      string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
         if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete",  MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -368,7 +368,7 @@ namespace SetupTv.Sections
 
       ListViewItem originItem = origin.Items[e.Item];
 
-      string oldFileName = Common.FolderIRCommands + originItem.Text + Common.FileExtensionIR;
+      string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
       if (!File.Exists(oldFileName))
       {
         MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -387,7 +387,7 @@ namespace SetupTv.Sections
 
       try
       {
-        string newFileName = Common.FolderIRCommands + name + Common.FileExtensionIR;
+        string newFileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
 
         File.Move(oldFileName, newFileName);
       }

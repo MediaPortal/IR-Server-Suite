@@ -26,7 +26,7 @@ namespace VirtualRemote
 
     const string DefaultSkin = "MCE";
 
-    static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Virtual Remote.xml";
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Virtual Remote\\Virtual Remote.xml");
 
     #endregion Constants
 
@@ -38,7 +38,7 @@ namespace VirtualRemote
 
     static string _serverHost;
 
-    static string _installFolder;
+    static string _skinsFolder;
 
     static string _remoteSkin;
 
@@ -61,9 +61,9 @@ namespace VirtualRemote
       set { _serverHost = value; }
     }
 
-    internal static string InstallFolder
+    internal static string SkinsFolder
     {
-      get { return _installFolder; }
+      get { return _skinsFolder; }
     }
 
     internal static string RemoteSkin
@@ -100,7 +100,7 @@ namespace VirtualRemote
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "Virtual Remote.log");
+      IrssLog.Open("Virtual Remote.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
@@ -223,17 +223,17 @@ namespace VirtualRemote
     {
       try
       {
-        _installFolder = SystemRegistry.GetInstallFolder();
-        if (String.IsNullOrEmpty(_installFolder))
-          _installFolder = ".";
+        _skinsFolder = SystemRegistry.GetInstallFolder();
+        if (String.IsNullOrEmpty(_skinsFolder))
+          _skinsFolder = ".\\Skins";
         else
-          _installFolder = Path.Combine(_installFolder, "Virtual Remote");
+          _skinsFolder = Path.Combine(_skinsFolder, "Virtual Remote\\Skins");
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
-        _installFolder = ".";
+        _skinsFolder = ".\\Skins";
       }
 
       XmlDocument doc = new XmlDocument();

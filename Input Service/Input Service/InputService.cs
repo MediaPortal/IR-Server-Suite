@@ -57,7 +57,7 @@ namespace InputService
 
     #region Constants
 
-    static readonly string ConfigurationFile = Common.FolderAppData + "Input Service\\Input Service.xml";
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Input Service\\Input Service.xml");
 
     #endregion Constants
 
@@ -145,7 +145,7 @@ namespace InputService
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "Input Service.log");
+      IrssLog.Open("Input Service.log");
 
       IrssLog.Info("Install folder: {0}", SystemRegistry.GetInstallFolder());
 

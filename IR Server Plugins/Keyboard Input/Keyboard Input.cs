@@ -184,6 +184,8 @@ namespace InputService.Plugin
     RemoteHandler _remoteButtonHandler;
 
     IntPtr _hookHandle;
+    HookDelegate _hookDelegate;
+    IntPtr _libPtr;
 
     #endregion Variables
 
@@ -215,8 +217,9 @@ namespace InputService.Plugin
     /// </summary>
     public override void Start()
     {
-      IntPtr hInstance = LoadLibrary("User32");
-      _hookHandle = SetWindowsHookEx(HookType.WH_KEYBOARD_LL, new HookDelegate(InternalHookDelegate), hInstance, 0);
+      _hookDelegate = new HookDelegate(InternalHookDelegate);
+      _libPtr = LoadLibrary("User32");
+      _hookHandle = SetWindowsHookEx(HookType.WH_KEYBOARD_LL, _hookDelegate, _libPtr, 0);
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
@@ -238,7 +241,10 @@ namespace InputService.Plugin
     public override void Stop()
     {
       UnhookWindowsHookEx(_hookHandle);
+
       _hookHandle = IntPtr.Zero;
+      _hookDelegate = null;
+      _libPtr = IntPtr.Zero;
     }
 
     /// <summary>

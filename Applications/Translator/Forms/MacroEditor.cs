@@ -47,7 +47,7 @@ namespace Translator
       textBoxName.Text    = name;
       textBoxName.Enabled = false;
 
-      string fileName = Program.FolderMacros + name + Common.FileExtensionMacro;
+      string fileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
       string[] commands = IrssMacro.ReadFromFile(fileName);
 
       listBoxMacro.Items.AddRange(commands);
@@ -344,7 +344,9 @@ namespace Translator
         foreach (string item in listBoxMacro.Items)
           commands[index++] = item;
 
-        IrssMacro.WriteToFile(Program.FolderMacros + name + Common.FileExtensionMacro, commands);
+        string fileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
+
+        IrssMacro.WriteToFile(fileName, commands);
 
         Program.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
@@ -386,7 +388,9 @@ namespace Translator
         foreach (string item in listBoxMacro.Items)
           commands[index++] = item;
 
-        IrssMacro.WriteToFile(Program.FolderMacros + name + Common.FileExtensionMacro, commands);
+        string fileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
+
+        IrssMacro.WriteToFile(fileName, commands);
       }
       catch (Exception ex)
       {

@@ -51,7 +51,7 @@ namespace MediaPortal.Plugins
       textBoxName.Text    = name;
       textBoxName.Enabled = false;
 
-      string fileName = TV2BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
+      string fileName = Path.Combine(TV2BlasterPlugin.FolderMacros, name + Common.FileExtensionMacro);
       ReadFromFile(fileName);
     }
 
@@ -351,7 +351,8 @@ namespace MediaPortal.Plugins
 
       try
       {
-        WriteToFile(TV2BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro);
+        string fileName = Path.Combine(TV2BlasterPlugin.FolderMacros, name + Common.FileExtensionMacro);
+        WriteToFile(fileName);
 
         TV2BlasterPlugin.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
@@ -388,7 +389,8 @@ namespace MediaPortal.Plugins
 
       try
       {
-        WriteToFile(TV2BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro);
+        string fileName = Path.Combine(TV2BlasterPlugin.FolderMacros, name + Common.FileExtensionMacro);
+        WriteToFile(fileName);
       }
       catch (Exception ex)
       {

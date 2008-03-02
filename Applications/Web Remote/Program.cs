@@ -35,7 +35,7 @@ namespace WebRemote
     const string DefaultSkin = "MCE";
     const int DefaultWebPort = 2481;
 
-    static readonly string ConfigurationFile = Common.FolderAppData + "Virtual Remote\\Web Remote.xml";
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Virtual Remote\\Web Remote.xml");
 
     #endregion Constants
 
@@ -49,7 +49,7 @@ namespace WebRemote
 
     static bool _registered;
     static string _serverHost;
-    static string _installFolder;
+    static string _skinsFolder;
     static string _remoteSkin;
 
     static string _device;
@@ -68,9 +68,9 @@ namespace WebRemote
 
     #region Properties
 
-    internal static string InstallFolder
+    internal static string SkinsFolder
     {
-      get { return _installFolder; }
+      get { return _skinsFolder; }
     }
 
     internal static string RemoteSkin
@@ -113,7 +113,7 @@ namespace WebRemote
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "Web Remote.log");
+      IrssLog.Open("Web Remote.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
@@ -287,7 +287,7 @@ namespace WebRemote
       SetSkin(_remoteSkin);
 
       _imageMap = CreateImageMap();
-      _webFile = String.Format("{0}\\Skins\\web.html", _installFolder);
+      _webFile = Path.Combine(_skinsFolder, "web.html");
     }
 
     static void SetSkin(string skin)
@@ -297,17 +297,17 @@ namespace WebRemote
         if (String.IsNullOrEmpty(skin))
           return;
 
-        _imageFile = String.Format("{0}\\Skins\\{1}.png", _installFolder, skin);
+        _imageFile = Path.Combine(_skinsFolder, skin + ".png");
         if (!File.Exists(_imageFile))
           throw new FileNotFoundException("Skin graphic file not found", _imageFile);
 
         // Try to load xml file of same name, failing that load using first word of skin name ...
-        string xmlFile = String.Format("{0}\\Skins\\{1}.xml", _installFolder, skin);
+        string xmlFile = Path.Combine(_skinsFolder, skin + ".xml");
         if (!File.Exists(xmlFile))
         {
           string firstWord = skin.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
 
-          xmlFile = String.Format("{0}\\Skins\\{1}.xml", _installFolder, firstWord);
+          xmlFile = Path.Combine(_skinsFolder, firstWord + ".xml");
 
           if (!File.Exists(xmlFile))
             throw new FileNotFoundException("Skin file not found", xmlFile);
@@ -383,17 +383,17 @@ namespace WebRemote
     {
       try
       {
-        _installFolder = SystemRegistry.GetInstallFolder();
-        if (String.IsNullOrEmpty(_installFolder))
-          _installFolder = ".";
+        _skinsFolder = SystemRegistry.GetInstallFolder();
+        if (String.IsNullOrEmpty(_skinsFolder))
+          _skinsFolder = ".\\Skins";
         else
-          _installFolder += "\\Virtual Remote";
+          _skinsFolder = Path.Combine(_skinsFolder, "Virtual Remote\\Skins");
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
-        _installFolder = ".";
+        _skinsFolder = ".\\Skins";
       }
 
       XmlDocument doc = new XmlDocument();

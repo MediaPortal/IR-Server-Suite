@@ -48,24 +48,22 @@ namespace IrssUtils
     /// <summary>
     /// IR Server Suite "Application Data" folder location (includes trailing '\')
     /// </summary>
-    public static readonly string FolderAppData =
-      Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\";
+    public static readonly string FolderAppData     = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IR Server Suite");
 
     /// <summary>
     /// IR Server Suite "Logs" folder location (includes trailing '\')
     /// </summary>
-    public static readonly string FolderIrssLogs    = FolderAppData + "Logs\\";
+    public static readonly string FolderIrssLogs    = Path.Combine(FolderAppData, "Logs");
 
     /// <summary>
     /// IR Server Suite "IR Commands" folder location (includes trailing '\')
     /// </summary>
-    public static readonly string FolderIRCommands  = FolderAppData + "IR Commands\\";
+    public static readonly string FolderIRCommands  = Path.Combine(FolderAppData, "IR Commands");
 
     /// <summary>
     /// IR Server Suite "Set Top Boxes" folder location (includes trailing '\')
     /// </summary>
-    public static readonly string FolderSTB         = FolderAppData + "Set Top Boxes\\";
+    public static readonly string FolderSTB         = Path.Combine(FolderAppData, "Set Top Boxes");
 
     #endregion Folders
 
@@ -1182,6 +1180,32 @@ namespace IrssUtils
     {
       return Win32.WindowsExit(Win32.ExitWindows.ShutDown, Win32.ShutdownReasons.FlagUserDefined);
     }
+
+    /*
+    public static string ConstructFilePath(string baseFolder, string fileName)
+    {
+      return Path.Combine(baseFolder, fileName);
+    }
+    public static string ConstructFilePath(string baseFolder, string fileName, string extension)
+    {
+      if (!extension.StartsWith("."))
+        extension = "." + extension;
+
+      if (fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
+        fileName = fileName.Substring(0, fileName.Length - extension.Length);
+
+      fileName += extension;
+
+      return Path.Combine(baseFolder, fileName);
+    }
+    public static string ConstructFilePath(string baseFolder, string subFolder, string fileName, string extension)
+    {
+      string folder = Path.Combine(baseFolder, subFolder);
+
+      return ConstructFilePath(folder, fileName, extension);
+    }
+    */
+
 
 
     static Process GetProcessByWindowHandle(IntPtr windowHandle)

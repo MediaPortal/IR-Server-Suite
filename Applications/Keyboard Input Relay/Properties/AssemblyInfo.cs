@@ -3,16 +3,14 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-//
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-//
-[assembly: AssemblyTitle("Translator")]
-[assembly: AssemblyDescription("PC control application for use with Input Service")]
+[assembly: AssemblyTitle("Keyboard Input Relay")]
+[assembly: AssemblyDescription("Relays keyboard input to the input service to use like remote button presses")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("Translator")]
+[assembly: AssemblyProduct("Keyboard Input Relay")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -22,7 +20,9 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-//
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("cf85e48e-e867-49e5-b240-693378fdd11c")]
+
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
@@ -30,12 +30,7 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
 [assembly: AssemblyVersion("1.0.4.2")]
 [assembly: AssemblyFileVersion("1.0.4.2")]
 
 [assembly: CLSCompliant(true)]
-
-[assembly: Guid("00506894-d61e-47b9-9039-879c543a73e1")]

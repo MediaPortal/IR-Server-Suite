@@ -24,7 +24,7 @@ namespace IrFileTool
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "IR File Tool.log");
+      IrssLog.Open("IR File Tool.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 

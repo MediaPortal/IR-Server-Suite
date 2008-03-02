@@ -40,7 +40,7 @@ namespace VirtualRemote
 
     Client _client;
 
-    string _serverHost = "192.168.0.3";
+    string _serverHost;
 
     bool _registered;
 
@@ -199,12 +199,12 @@ namespace VirtualRemote
       }
       catch
       {
-        _serverHost = "192.168.0.1";
+        _serverHost = null;
         return;
       }
 
       try { _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value; }
-      catch { _serverHost = "192.168.0.1"; }
+      catch { _serverHost = null; }
     }
     void SaveSettings()
     {
@@ -384,6 +384,7 @@ namespace VirtualRemote
       this.Menu = this.mainMenu;
       this.Text = "Virtual Remote";
       this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormMain_KeyDown);
+      this.Load += new System.EventHandler(this.FormMain_Load);
 
     }
 
@@ -415,6 +416,12 @@ namespace VirtualRemote
 
     private void menuItemConnect_Click(object sender, EventArgs e)
     {
+      if (_serverHost == null)
+        menuItemSetup_Click(null, null);
+
+      if (_serverHost == null)
+        return;
+
       labelStatus.Text = String.Format("Connecting to {0} ...", _serverHost);
 
       IPAddress serverIP = IPAddress.Parse(_serverHost);
@@ -458,6 +465,11 @@ namespace VirtualRemote
           case Keys.F9: ButtonPress(Buttons[_page][11]); break;
         }
       }
+    }
+
+    private void FormMain_Load(object sender, EventArgs e)
+    {
+      menuItemConnect_Click(null, null);
     }
 
 

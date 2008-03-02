@@ -99,7 +99,7 @@ namespace DebugClient
 
     #region Constants
 
-    static readonly string DebugIRFile = IrssUtils.Common.FolderIRCommands + "DebugClient.IR";
+    static readonly string DebugIRFile = Path.Combine(Common.FolderIRCommands, "DebugClient.IR");
 
     #endregion
 
@@ -131,7 +131,7 @@ namespace DebugClient
     private void MainForm_Load(object sender, EventArgs e)
     {
       IrssLog.LogLevel = IrssLog.Level.Debug;
-      IrssLog.Open(Common.FolderIrssLogs + "Debug Client.log");
+      IrssLog.Open("Debug Client.log");
 
       _addStatusLine = new DelegateAddStatusLine(AddStatusLine);
 

@@ -39,13 +39,13 @@ namespace TvEngine
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion = "TV3 Blaster Plugin 1.0.4.2 for IR Server";
+    internal const string PluginVersion           = "TV3 Blaster Plugin 1.0.4.2 for TV Server";
 
-    internal static readonly string FolderMacros = Common.FolderAppData + "TV3 Blaster Plugin\\Macro\\";
+    internal static readonly string FolderMacros  = Path.Combine(Common.FolderAppData, "TV3 Blaster Plugin\\Macro");
 
-    internal static readonly string ExtCfgFolder = Common.FolderAppData + "TV3 Blaster Plugin\\";
+    internal static readonly string ExtCfgFolder  = Path.Combine(Common.FolderAppData, "TV3 Blaster Plugin");
 
-    const string ProcessCommandThreadName = "ProcessCommand";
+    const string ProcessCommandThreadName         = "ProcessCommand";
 
     #endregion Constants
 
@@ -398,7 +398,7 @@ namespace TvEngine
       int index = 0;
       foreach (TvDatabase.Card card in cards)
       {
-        string fileName = String.Format("{0}ExternalChannelConfig{1}.xml", ExtCfgFolder, card.IdCard);
+        string fileName = Path.Combine(ExtCfgFolder, String.Format("ExternalChannelConfig{0}.xml", card.IdCard));
         try
         {
           _externalChannelConfigs[index] = ExternalChannelConfig.Load(fileName);
@@ -705,18 +705,18 @@ namespace TvEngine
 
         if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
-          string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+          string fileName = Path.Combine(FolderMacros, command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
           ProcMacro(fileName);
         }
         else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-          BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+          BlastIR(Path.Combine(Common.FolderIRCommands, commands[0] + Common.FileExtensionIR), commands[1]);
         }
         else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
-          BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
+          BlastIR(Path.Combine(Common.FolderSTB, commands[0] + Common.FileExtensionIR), commands[1]);
         }
         else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
         {

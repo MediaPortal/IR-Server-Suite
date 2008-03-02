@@ -56,13 +56,13 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion = "MP Blast Zone Plugin 1.0.4.2 for IR Server";
+    internal const string PluginVersion           = "MP Blast Zone Plugin 1.0.4.2 for IR Server";
 
-    internal static readonly string MenuFile = Common.FolderAppData + "MP Blast Zone Plugin\\Menu.xml";
+    internal static readonly string MenuFile      = Path.Combine(Common.FolderAppData, "MP Blast Zone Plugin\\Menu.xml");
 
-    internal static readonly string FolderMacros = Common.FolderAppData + "MP Blast Zone Plugin\\Macro\\";
+    internal static readonly string FolderMacros  = Path.Combine(Common.FolderAppData, "MP Blast Zone Plugin\\Macro");
 
-    const string ProcessCommandThreadName = "ProcessCommand";
+    const string ProcessCommandThreadName         = "ProcessCommand";
 
     #endregion Constants
 
@@ -281,7 +281,9 @@ namespace MediaPortal.Plugins
       if (!StartClient(endPoint))
         Log.Error("MPBlastZonePlugin: Failed to start local comms, IR blasting is disabled for this session");
 
-      if (Load(GUIGraphicsContext.Skin + "\\BlastZone.xml"))
+      string skinFile = Path.Combine(GUIGraphicsContext.Skin, "BlastZone.xml");
+
+      if (Load(skinFile))
       {
         if (LogVerbose)
           Log.Info("MPBlastZonePlugin: Started");
@@ -686,18 +688,18 @@ namespace MediaPortal.Plugins
 
         if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
-          string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+          string fileName = Path.Combine(FolderMacros, command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
           ProcMacro(fileName);
         }
         else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-          BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+          BlastIR(Path.Combine(Common.FolderIRCommands, commands[0] + Common.FileExtensionIR), commands[1]);
         }
         else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
-          BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
+          BlastIR(Path.Combine(Common.FolderSTB, commands[0] + Common.FileExtensionIR), commands[1]);
         }
         else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
         {

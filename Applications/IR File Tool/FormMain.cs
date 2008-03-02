@@ -25,7 +25,7 @@ namespace IrFileTool
 
     #region Constants
 
-    static readonly string ConfigurationFile = Common.FolderAppData + "IR File Tool\\IR File Tool.xml";
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "IR File Tool\\IR File Tool.xml");
 
     #endregion Constants
 

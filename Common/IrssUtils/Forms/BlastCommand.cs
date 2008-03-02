@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -184,7 +185,7 @@ namespace IrssUtils.Forms
 
       try
       {
-        string fileName = _baseFolder + name + Common.FileExtensionIR;
+        string fileName = Path.Combine(_baseFolder, name + Common.FileExtensionIR);
         string port = comboBoxPort.SelectedItem as string;
 
         _blastIrDelegate(fileName, port);

@@ -29,7 +29,7 @@ namespace TrayLauncher
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open(Common.FolderIrssLogs + "Tray Launcher.log");
+      IrssLog.Open("Tray Launcher.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
