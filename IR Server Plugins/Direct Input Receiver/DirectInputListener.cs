@@ -29,21 +29,28 @@ using Microsoft.DirectX.DirectInput;
 
 namespace InputService.Plugin
 {
+
   /// <summary>
   /// Summary description for DirectInputListener.
   /// </summary>
   /// 
   class DirectInputListener
   {
+
+    #region Variables
+
     Device device = null;
     Thread inputListener = null;
-    bool isRunning = false;
+    volatile bool isListening = false;
     int delay = 150; // sleep time in milliseconds
 
     // event: send info on joystick state change 
     public delegate void diStateChange(object sender, JoystickState state);
     public event diStateChange OnStateChange = null;
 
+    #endregion Variables
+
+    #region Constructor / Deconstructor
 
     public DirectInputListener()
     {
@@ -52,21 +59,19 @@ namespace InputService.Plugin
       //
     }
 
-
     ~DirectInputListener()
     {
       StopListener();
       DeInitDevice();
     }
 
+    #endregion Constructor / Deconstructor
+
+    #region Properties
+
     public Device SelectedDevice
     {
       get { return device; }
-    }
-
-    public bool IsRunning
-    {
-      get { return isRunning; }
     }
 
     public int Delay
@@ -74,6 +79,8 @@ namespace InputService.Plugin
       get { return delay; }
       set { delay = value; }
     }
+
+    #endregion Properties
 
     public bool InitDevice(Guid guid)
     {
@@ -87,16 +94,16 @@ namespace InputService.Plugin
         if ((doi.ObjectId & (int) DeviceObjectTypeFlags.Axis) != 0)
         {
           // We found an axis, set the range to a max of 10,000
-          device.Properties.SetRange(ParameterHow.ById,
-                                     doi.ObjectId, new InputRange(-5000, 5000));
+          device.Properties.SetRange(ParameterHow.ById, doi.ObjectId, new InputRange(-5000, 5000));
         }
       }
+
       StopListener();
       StartListener();
       device.Acquire();
+
       return true;
     }
-
     public void DeInitDevice()
     {
       if (null != device)
@@ -113,11 +120,11 @@ namespace InputService.Plugin
       }
     }
 
-
     public string GetCurrentButtonCombo()
     {
       string res = "";
       JoystickState state;
+
       if (CheckDevice())
       {
         // Get the state of the device.
@@ -133,6 +140,7 @@ namespace InputService.Plugin
           return res;
         }
       }
+
       return res;
     }
 
@@ -158,7 +166,7 @@ namespace InputService.Plugin
 
     void ThreadFunction()
     {
-      while (true)
+      while (isListening)
       {
         UpdateInputState();
         Thread.Sleep(delay);
@@ -172,6 +180,7 @@ namespace InputService.Plugin
       {
         return false;
       }
+
       try
       {
         // Poll the device for info.
@@ -198,7 +207,6 @@ namespace InputService.Plugin
             return false;
           }
         }
-
       } //catch(InputException inputex)
 
       return (device != null);
@@ -207,6 +215,7 @@ namespace InputService.Plugin
     void UpdateInputState()
     {
       JoystickState state;
+
       if (CheckDevice())
       {
         // Get the state of the device.
@@ -214,12 +223,11 @@ namespace InputService.Plugin
         {
           state = device.CurrentJoystickState;
         }
-          // Catch any exceptions. None will be handled here, 
-          // any device re-aquisition will be handled above.  
-        catch (InputException)
+        catch (InputException) // Catch any exceptions. None will be handled here, any device re-aquisition will be handled above.
         {
           return;
         }
+
         // send events here
         if (null != this.OnStateChange)
         {
@@ -231,31 +239,28 @@ namespace InputService.Plugin
 
     public void StopListener()
     {
-      if (null != inputListener)
-      {
-        isRunning = false;
+      if (inputListener != null)
+        return;
+
+      isListening = false;
+
+      Thread.Sleep(500);
+
+      if (inputListener != null && inputListener.IsAlive)
         inputListener.Abort();
-        inputListener = null;
-      }
+      
+      inputListener = null;
     }
 
     void StartListener()
     {
+      isListening = true;
+
       inputListener = new Thread(new ThreadStart(this.ThreadFunction));
+      inputListener.IsBackground = true;
       inputListener.Start();
-      isRunning = true;
     }
-
-    public void Pause()
-    {
-      isRunning = false;
-    }
-
-    public void Resume()
-    {
-      isRunning = true;
-    }
-
 
   }
+
 }

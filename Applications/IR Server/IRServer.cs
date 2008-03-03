@@ -176,20 +176,27 @@ namespace IRServer
 
             for (int index = 0; index < _pluginNameReceive.Length; index++)
             {
-              string pluginName = _pluginNameReceive[index];
-
-              PluginBase plugin = Program.GetPlugin(pluginName);
-
-              if (plugin == null)
+              try
               {
-                IrssLog.Warn("Receiver plugin not found: {0}", pluginName);
+                string pluginName = _pluginNameReceive[index];
+
+                PluginBase plugin = Program.GetPlugin(pluginName);
+
+                if (plugin == null)
+                {
+                  IrssLog.Warn("Receiver plugin not found: {0}", pluginName);
+                }
+                else
+                {
+                  _pluginReceive.Add(plugin);
+
+                  if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
+                    _pluginTransmit = plugin;
+                }
               }
-              else
+              catch (Exception ex)
               {
-                _pluginReceive.Add(plugin);
-
-                if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
-                  _pluginTransmit = plugin;
+                IrssLog.Error(ex);
               }
             }
 

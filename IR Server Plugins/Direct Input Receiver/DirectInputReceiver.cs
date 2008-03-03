@@ -198,8 +198,9 @@ namespace InputService.Plugin
     {
       if (_diListener != null)
       {
-        UnacquireDevice();
-
+        _diListener.DeInitDevice();
+        _diListener.StopListener();
+        
         _diListener.OnStateChange -= new DirectInputListener.diStateChange(diListener_OnStateChange);
         _diListener = null;
       }
@@ -295,11 +296,6 @@ namespace InputService.Plugin
     void diListener_OnStateChange(object sender, JoystickState state)
     {
       SendActions(state);
-    }
-
-    void UnacquireDevice()
-    {
-      _diListener.DeInitDevice();
     }
 
     bool AcquireDevice()
