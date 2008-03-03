@@ -999,8 +999,18 @@ namespace IRServer
       {
         IrssLog.Info("Blast IR");
 
-        if (_pluginTransmit == null || !(_pluginTransmit is ITransmitIR))
+        if (_pluginTransmit == null)
+        {
+          IrssLog.Warn("No transmit plugin loaded, can't blast");
           return false;
+        }
+
+        ITransmitIR _blaster = _pluginTransmit as ITransmitIR;
+        if (_blaster == null)
+        {
+          IrssLog.Error("Active transmit plugin doesn't support blasting!");
+          return false;
+        }
 
         string port = "Default";
 
@@ -1011,7 +1021,7 @@ namespace IRServer
         byte[] codeData = new byte[data.Length - (4 + portLen)];
         Array.Copy(data, 4 + portLen, codeData, 0, codeData.Length);
 
-        return (_pluginTransmit as ITransmitIR).Transmit(port, codeData);
+        return _blaster.Transmit(port, codeData);
       }
       catch (Exception ex)
       {
@@ -1030,7 +1040,9 @@ namespace IRServer
         IrssLog.Warn("No transmit plugin loaded, can't learn");
         return LearnStatus.Failure;
       }
-      else if (!(_pluginTransmit is ILearnIR))
+
+      ILearnIR _learner = _pluginTransmit as ILearnIR;
+      if (_learner == null)
       {
         IrssLog.Warn("Active transmit plugin doesn't support learn");
         return LearnStatus.Failure;
@@ -1042,7 +1054,7 @@ namespace IRServer
 
       try
       {
-        status = (_pluginTransmit as ILearnIR).Learn(out data);
+        status = _learner.Learn(out data);
         switch (status)
         {
           case LearnStatus.Success:

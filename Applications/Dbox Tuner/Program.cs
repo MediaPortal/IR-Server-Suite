@@ -12,6 +12,8 @@ using IrssUtils;
 namespace DboxTuner
 {
 
+  #region Enumerations
+
   internal enum StbBoxType
   {
     Unknown,
@@ -19,6 +21,8 @@ namespace DboxTuner
     EnigmaV2,
     Neutrino,
   }
+
+  #endregion Enumerations
 
   /// <summary>
   /// Based on MyDbox MediaPortal plugin by Mark Koenig (kroko).
@@ -250,8 +254,10 @@ namespace DboxTuner
             using (StreamReader reader = new StreamReader(receiveStream, encode))
               return reader.ReadToEnd();
       }
-      catch
+      catch (Exception ex)
       {
+        IrssLog.Error(ex);
+
         return String.Empty;
       }
     }
@@ -466,9 +472,9 @@ namespace DboxTuner
         ds.Tables.Add(table);
 
       }
-      catch
+      catch (Exception ex)
       {
-
+        IrssLog.Error(ex);
       }
 
       #endregion Convert data to dataset
