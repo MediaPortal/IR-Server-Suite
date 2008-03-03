@@ -926,8 +926,8 @@ namespace InputService.Plugin
 #else
       catch (Exception)
       {
-        if (_readHandle != null)
-          CancelIo(_readHandle);
+        if (_eHomeHandle != null)
+          CancelIo(_eHomeHandle);
       }
 #endif
       finally

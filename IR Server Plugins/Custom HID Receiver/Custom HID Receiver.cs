@@ -46,6 +46,10 @@ namespace InputService.Plugin
       c.KeyboardCallback += new KeyboardHandler(Keyboard);
       c.MouseCallback += new MouseHandler(Mouse);      
 
+      Console.WriteLine("Usage: {0}", c._device.usUsage);
+      Console.WriteLine("UsagePage: {0}", c._device.usUsagePage);
+      Console.WriteLine();
+
       c.Start();
 
       Application.Run();
