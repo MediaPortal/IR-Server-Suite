@@ -80,8 +80,18 @@ namespace DboxTuner
         {
           case "SETUP":
             SetupForm setup = new SetupForm();
+            setup.Address  = _address;
+            setup.UserName = _userName;
+            setup.Password = _password;
+            setup.BoxType  = _boxType;
+
             if (setup.ShowDialog() == DialogResult.OK)
             {
+              _address  = setup.Address;
+              _userName = setup.UserName;
+              _password = setup.Password;
+              _boxType  = setup.BoxType;
+
               SaveSettings();
               Info("Setup saved");
             }

@@ -58,8 +58,6 @@ namespace DboxTuner
     {
       get
       {
-        DboxFunctions dboxfunc = new DboxFunctions(_url, _userName, _password, _boxtype);
-        //dboxfunc.ErrorLog("data.cs box = " + _boxtype);
         string command = "";
         string temp = "";
         string sreturn = "";
@@ -79,7 +77,6 @@ namespace DboxTuner
             sreturn = sreturn.Replace(";", " ");
             sreturn = sreturn.Replace(" selected", ""); // removes enigma v1's selected tag in bouquets output
 
-            //dboxfunc.ErrorLog("returned bouquets: " + sreturn);
             // set the bouquet command for this boxtype
             command = "/cgi-bin/getServices?ref=";
             break;
@@ -111,7 +108,6 @@ namespace DboxTuner
             }
             
             command = "/web/fetchchannels?ServiceListBrowse=";
-            //dboxfunc.ErrorLog("returned bouquets: " + sreturn);
             break;
 
           default:
@@ -149,18 +145,13 @@ namespace DboxTuner
               else
                 temp = s.Split(' ')[0];                                        //otherboxes splitchar is " "
               
-              //dboxfunc.ErrorLog("splitted string to temp: " + temp);
-              
               if (_boxtype == "Neutrino")
                 _Command = command + temp + "&mode=TV";  //build neutrino command
               else
                 _Command = command + temp;                                      //build enigma command
-              
-              //dboxfunc.ErrorLog("sending command: " + _Command);
-              
+
               sreturn = request.PostData(_Command);                                //request list of channels contained in bouquetID "temp"
               sreturn = sreturn.Replace(";selected", "");
-              //dboxfunc.ErrorLog("sent command and returned: " + sreturn);
               
               if (_boxtype == "Enigma v2")
               {
@@ -190,21 +181,17 @@ namespace DboxTuner
 
               string[] OneBouquet = sreturn.Split('\n');
               string bucket = "";
-              ////dboxfunc.ErrorLog("starting onebouquet again");
+
               if (OneBouquet[0] != "")
               {
-
                 foreach (string bouquets in OneBouquet)
                 {
-
-                  //dboxfunc.ErrorLog("on top of onebouquets foreach");
                   if (bouquets != "")
                   {
-                    //dboxfunc.ErrorLog("string is: " + bouquets);
                     if ((bouquets.IndexOf(' ') > -1) || (bouquets.IndexOf(';') > -1))
                     {
                       row = table.NewRow();
-                      //dboxfunc.ErrorLog("created new row");
+
                       int start = 0;
                       // modifying the enigma string so it's the same as neutrino
                       // that way I don't need to rewrite this textfilter
@@ -218,8 +205,6 @@ namespace DboxTuner
                           bucket = Convert.ToString(++loopcount) + " " + chan_id + " " + chan_name;
 
                       }
-                      //dboxfunc.ErrorLog("starting string functions");
-                      //dboxfunc.ErrorLog("split tmp_ref: " + s + " number of chars: " + s.Length);
 
                       if (_boxtype == "Neutrino")
                         bucket = bouquets;
@@ -233,21 +218,16 @@ namespace DboxTuner
                       
                       start = tmp_Ref.Length + 1;
                       String tmp_Bouquet = s.Substring(start, s.Length - start);
-                      //dboxfunc.ErrorLog("split tmp_bouq, bucket is: " + bucket);
 
                       String tmp_Channel = bucket.Split(' ')[0];
-                      //dboxfunc.ErrorLog("split channel");
                       String tmp_ID = bucket.Split(' ')[1];
                       
                       if (_boxtype == "Enigma v1")
                         tmp_ID = tmp_ID.Replace("1:0:0:0:0:0:0:0:0:0:", _url + "/rootX");  //workaround for the inability to stream internal recordings from the enigma hdd
 
-                      //dboxfunc.ErrorLog("split ID");
                       start = tmp_Channel.Length + tmp_ID.Length + 2;
                       String tmp_Name = bucket.Substring(start, bucket.Length - start);
-                      //dboxfunc.ErrorLog("split name");
                       tmp_Name = tmp_Name.Replace("\"", "'");
-                      //dboxfunc.ErrorLog("ended string functions");
                       
                       row["BouqNo"] = tmp_Ref;
                       row["BouqName"] = tmp_Bouquet;
@@ -255,19 +235,13 @@ namespace DboxTuner
                       row["ID"] = tmp_ID;
                       row["Name"] = @tmp_Name;
                       
-                      //dboxfunc.ErrorLog("ended row functions");
-                      //dboxfunc.ErrorLog("added: " + tmp_Ref + "channel: " + tmp_Channel + "id: " + tmp_ID + "name: " + tmp_Name);
                       // test if enigma got a error on service list
-                      //dboxfunc.ErrorLog("trying to add row" + tmp_Channel);
                       table.Rows.Add(row);
-                      //dboxfunc.ErrorLog("Added row" + tmp_Channel);
 
                       if (tmp_ID == "E:" || tmp_Name == "<n/a>")
                       {
                         // kill the row or we get error
-                        //dboxfunc.ErrorLog("trying to remove row" + tmp_Channel);
                         table.Rows.Remove(row);
-                        //dboxfunc.ErrorLog("removed row" + tmp_Channel);
                       }
                     }
                   }
@@ -283,7 +257,7 @@ namespace DboxTuner
         {
 
         }
-        //dboxfunc.ErrorLog("returning bouquets dataset");
+
         return ds;
       }
     }

@@ -39,13 +39,35 @@ namespace DboxTuner
 
     #region Variables
 
-    string _url = "";
-    string _userName = "";
-    string _password = "";
-    string _boxType = "";
-    static DataTable _bouquets = null;
+    string _boxType = "unknown";
 
     #endregion Variables
+
+    #region Properties
+
+    public string BoxType
+    {
+      get { return _boxType; }
+      set { _boxType = value; }
+    }
+
+    public string Address
+    {
+      get { return textBoxIpAddress.Text; }
+      set { textBoxIpAddress.Text = value; }
+    }
+    public string UserName
+    {
+      get { return textBoxUserName.Text; }
+      set { textBoxUserName.Text = value; }
+    }
+    public string Password
+    {
+      get { return textBoxPassword.Text; }
+      set { textBoxPassword.Text = value; }
+    }
+
+    #endregion Properties
 
     #region Constructor
 
@@ -69,6 +91,7 @@ namespace DboxTuner
       this.buttonCancel = new System.Windows.Forms.Button();
       this.statusStrip = new System.Windows.Forms.StatusStrip();
       this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+      this.buttonDetectBoxType = new System.Windows.Forms.Button();
       this.statusStrip.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -140,7 +163,7 @@ namespace DboxTuner
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(128, 88);
+      this.buttonOK.Location = new System.Drawing.Point(128, 120);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 7;
@@ -152,7 +175,7 @@ namespace DboxTuner
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(200, 88);
+      this.buttonCancel.Location = new System.Drawing.Point(200, 120);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 8;
@@ -164,7 +187,7 @@ namespace DboxTuner
       // 
       this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-      this.statusStrip.Location = new System.Drawing.Point(0, 123);
+      this.statusStrip.Location = new System.Drawing.Point(0, 153);
       this.statusStrip.Name = "statusStrip";
       this.statusStrip.Size = new System.Drawing.Size(272, 22);
       this.statusStrip.TabIndex = 9;
@@ -174,11 +197,23 @@ namespace DboxTuner
       this.toolStripStatusLabel.Name = "toolStripStatusLabel";
       this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
       // 
+      // buttonDetectBoxType
+      // 
+      this.buttonDetectBoxType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonDetectBoxType.Location = new System.Drawing.Point(8, 120);
+      this.buttonDetectBoxType.Name = "buttonDetectBoxType";
+      this.buttonDetectBoxType.Size = new System.Drawing.Size(104, 24);
+      this.buttonDetectBoxType.TabIndex = 10;
+      this.buttonDetectBoxType.Text = "Redetect box";
+      this.buttonDetectBoxType.UseVisualStyleBackColor = true;
+      this.buttonDetectBoxType.Click += new System.EventHandler(this.buttonDetectBoxType_Click);
+      // 
       // SetupForm
       // 
       this.AcceptButton = this.buttonOK;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(272, 145);
+      this.ClientSize = new System.Drawing.Size(272, 175);
+      this.Controls.Add(this.buttonDetectBoxType);
       this.Controls.Add(this.statusStrip);
       this.Controls.Add(this.buttonGetData);
       this.Controls.Add(this.buttonCancel);
@@ -191,7 +226,7 @@ namespace DboxTuner
       this.Controls.Add(this.labelPassword);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(278, 170);
+      this.MinimumSize = new System.Drawing.Size(278, 200);
       this.Name = "SetupForm";
       this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -203,67 +238,65 @@ namespace DboxTuner
 
     }
 
+    static string DetectBoxType(string url, string userName, string password)
+    {
+      Request request = new Request(url, userName, password);
+
+      // Detect Neutrino
+      string str1 = request.PostData("/control/getmode").ToLower();
+      if (str1.Contains("tv") || str1.Contains("radio") || str1.Contains("unknown"))
+        return "Neutrino";
+
+      // Detect enigma v1
+      string str2 = request.PostData("/cgi-bin/status").ToLower();
+      if (str2.Contains("enigma"))
+        return "Enigma v1";
+        
+      // Detect enigma v2
+      string str3 = request.PostData("/web/stream.m3u");
+      if (str3.Contains("#EXTM3U"))
+        return "Enigma v2";
+
+      return "unknown";
+    }
+
     private void buttonGetData_Click(object sender, EventArgs e)
     {
       StatusMessage("Attempting to read channel list ...");
 
       try
       {
-        _url = "http://" + textBoxIpAddress.Text;
-        _userName = textBoxUserName.Text;
-        _password = textBoxPassword.Text;
+        string url = "http://" + textBoxIpAddress.Text;
+        string userName = textBoxUserName.Text;
+        string password = textBoxPassword.Text;
 
-
-        //detect boxtype
-
-        // test if the value is one of the valid boxtypes, if it's not run detection routine
-        if (_boxType != "Neutrino" && _boxType != "Enigma v1" && _boxType != "Enigma v2")
+        // Detect box type ...
+        if (_boxType.Equals("unknown", StringComparison.OrdinalIgnoreCase))
         {
-          Request request = new Request(_url, _userName, _password);
-          _boxType = "unknown";
-
-          string str1 = request.PostData("/control/getmode").ToLower(); // neutrino
-          if (str1.Contains("tv") || str1.Contains("radio") || str1.Contains("unknown"))
-            _boxType = "Neutrino";
-
-          if (_boxType != "Neutrino")
-          {
-            string str2 = request.PostData("/cgi-bin/status").ToLower(); // enigma v1
-            if (str2.Contains("enigma"))
-              _boxType = "Enigma v1";
-          }
-
-          if ((_boxType != "Neutrino") && (_boxType != "Enigma v1"))
-          {
-            string str3 = request.PostData("/web/stream.m3u"); // enigma v2
-            if (str3.Contains("#EXTM3U"))
-              _boxType = "Enigma v2";
-          }
-
-          StatusMessage("Detected: {0}", _boxType);
+          _boxType = DetectBoxType(url, userName, password);
         }
 
-        if (_boxType == "Neutrino" || _boxType == "Enigma v1" || _boxType == "Enigma v2")
+        if (_boxType.Equals("unknown", StringComparison.OrdinalIgnoreCase))
         {
-          //get bouquets
-          Data _DBox = new Data(_url, _userName, _password, _boxType);
-          DboxFunctions dboxfunc = new DboxFunctions(_url, _userName, _password, _boxType);
+          StatusMessage("ERROR - No STB or unknown type detected!");
+        }
+        else
+        {
+          StatusMessage("Detected box type: {0}", _boxType);
+
+          Data data = new Data(url, userName, password, _boxType);
           
-          _bouquets = _DBox.UserTVBouquets.Tables[0];
+          DataTable bouquets = data.UserTVBouquets.Tables[0];
           
-          if (_bouquets.Rows.Count != 0)
-            StatusMessage("{0} channels found", _bouquets.Rows.Count);
+          if (bouquets.Rows.Count != 0)
+            StatusMessage("{0} channels found", bouquets.Rows.Count);
           else
             StatusMessage("ERROR - No channels found!");
 
           if (File.Exists(Program.DataFile))
             File.Delete(Program.DataFile);
 
-          _bouquets.WriteXml(Program.DataFile, XmlWriteMode.WriteSchema);
-        }
-        else
-        {
-          StatusMessage("ERROR - No STB detected!");
+          bouquets.WriteXml(Program.DataFile, XmlWriteMode.WriteSchema);
         }
       }
       catch
@@ -287,6 +320,15 @@ namespace DboxTuner
     {
       this.DialogResult = DialogResult.Cancel;
       this.Close();
+    }
+
+    private void buttonDetectBoxType_Click(object sender, EventArgs e)
+    {
+      string url = "http://" + textBoxIpAddress.Text;
+      string userName = textBoxUserName.Text;
+      string password = textBoxPassword.Text;
+
+      _boxType = DetectBoxType(url, userName, password);
     }
 
   }

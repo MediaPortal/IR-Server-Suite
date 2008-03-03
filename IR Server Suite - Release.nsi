@@ -513,10 +513,19 @@ Section "Virtual Remote and Web Remote" SectionVirtualRemote
   File "Applications\Virtual Remote\bin\Release\*.*"
   File "Applications\Web Remote\bin\Release\WebRemote.exe"
 
+  ; Installing skins
   CreateDirectory "$DIR_INSTALL\Virtual Remote\Skins"
   SetOutPath "$DIR_INSTALL\Virtual Remote\Skins"
   SetOverwrite ifnewer
   File "Applications\Virtual Remote\Skins\*.*"
+
+  ; Installing Virtual Remote for Smart Devices
+  CreateDirectory "$DIR_INSTALL\Virtual Remote\Smart Devices"
+  SetOutPath "$DIR_INSTALL\Virtual Remote\Smart Devices"
+  SetOverwrite ifnewer
+  File "Applications\Virtual Remote (PocketPC2003) Installer\Release\*.cab"
+  File "Applications\Virtual Remote (Smartphone2003) Installer\Release\*.cab"
+  File "Applications\Virtual Remote (WinCE5) Installer\Release\*.cab"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Virtual Remote"
@@ -524,6 +533,7 @@ Section "Virtual Remote and Web Remote" SectionVirtualRemote
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk" "$DIR_INSTALL\Virtual Remote\VirtualRemote.exe" "" "$DIR_INSTALL\Virtual Remote\VirtualRemote.exe" 0
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk" "$DIR_INSTALL\Virtual Remote\WebRemote.exe" "" "$DIR_INSTALL\Virtual Remote\WebRemote.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote for Smart Devices.lnk" "$DIR_INSTALL\Virtual Remote\Smart Devices"
 
 SectionEnd
 
@@ -694,7 +704,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin} "For tuning external channels (on Set Top Boxes) with the MediaPortal TV server."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator} "Control your whole PC."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher} "Simple tray application to launch an application of your choosing when a particular button is pressed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote} "Simulated remote control, works as an application or as a web hosted remote control (with included Web Remote)."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote} "Simulated remote control, works as an application or as a web hosted remote control (with included Web Remote and Smart Device versions)."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemoteSkinEditor} "Create or Modify skins for the Virtual Remote."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRBlast} "Command line tools for blasting IR codes."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRFileTool} "Tool for learning, modifying, testing, correcting and converting IR command files."

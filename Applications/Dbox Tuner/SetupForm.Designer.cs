@@ -39,6 +39,7 @@ namespace DboxTuner
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.StatusStrip statusStrip;
     private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+    private System.Windows.Forms.Button buttonDetectBoxType;
   }
 
 }

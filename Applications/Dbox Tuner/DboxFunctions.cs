@@ -57,39 +57,6 @@ namespace DboxTuner
 
     #endregion Constructor
 
-    public string GetID()
-    {
-      //ErrorLog("entered getid with " +_Url + " "+_UserName+" "+_Password+" "+_Boxtype);
-      Request request = new Request(_url, _userName, _password);
-      XmlDocument doc = new XmlDocument();
-      XmlNode elem = doc.DocumentElement;
-
-      string s = "";
-      //get actual channel (ID)
-
-      switch (_boxType)
-      {
-        case "Enigma v1":
-          doc.LoadXml(request.PostData("/xml/streaminfo"));
-          elem = doc.SelectSingleNode("/streaminfo/service/reference");
-          s = elem.InnerText;
-          break;
-
-        case "Enigma v2":
-          doc.LoadXml(request.PostData("/web/subservices"));
-          elem = doc.SelectSingleNode("/e2servicelist/e2service/e2servicereference");
-          s = elem.InnerText;
-          break;
-
-        default:
-          s = request.PostData(_command + "zapto");
-          s = s.Replace("\n", "");
-          //ErrorLog("get channel "+s+" for "+_Boxtype);
-          break;
-      }
-
-      return s;
-    }
     public string ZapTo(string ID)
     {
       Request request = new Request(_url, _userName, _password);
@@ -161,27 +128,6 @@ namespace DboxTuner
       }
 
     }
-    public string GetEpgXml(string ID)
-    {
-      Request request = new Request(_url, _userName, _password);
-      string s = "";
-      // get epg from box (xml formatted)
-      switch (_boxType)
-      {
-        case "Enigma v1":
-          s = request.PostData("/xml/serviceepg?ref=" + ID);
-          break;
-        case "Enigma v2":
-          s = request.PostData("/web/epgservice?ref=" + ID);
-          break;
-        default:
-          s = request.PostData(_command + "epg?xml=true&channelid=" + ID + "&details=true"); // &max=20
-          break;
-      }
-      s = s.Replace("&", "&amp;");
-      return s;
-
-    }
     public void ShowMessage(string message)
     {
       Request request = new Request(_url, _userName, _password);
@@ -222,6 +168,64 @@ namespace DboxTuner
         default:
           s = request.PostData(_command + "info?version");
           s = s.Replace("\n", " ");
+          break;
+      }
+
+      return s;
+    }
+
+    // Unused ...
+
+    public string GetEpgXml(string ID)
+    {
+      Request request = new Request(_url, _userName, _password);
+      string s = "";
+      // get epg from box (xml formatted)
+      switch (_boxType)
+      {
+        case "Enigma v1":
+          s = request.PostData("/xml/serviceepg?ref=" + ID);
+          break;
+        case "Enigma v2":
+          s = request.PostData("/web/epgservice?ref=" + ID);
+          break;
+        default:
+          s = request.PostData(_command + "epg?xml=true&channelid=" + ID + "&details=true"); // &max=20
+          break;
+      }
+
+      s = s.Replace("&", "&amp;");
+      
+      return s;
+    }
+    public string GetID()
+    {
+      //ErrorLog("entered getid with " +_Url + " "+_UserName+" "+_Password+" "+_Boxtype);
+      Request request = new Request(_url, _userName, _password);
+      XmlDocument doc = new XmlDocument();
+      XmlNode elem = doc.DocumentElement;
+
+      string s = "";
+      //get actual channel (ID)
+
+      switch (_boxType)
+      {
+        case "Enigma v1":
+          doc.LoadXml(request.PostData("/xml/streaminfo"));
+          elem = doc.SelectSingleNode("/streaminfo/service/reference");
+          s = elem.InnerText;
+          break;
+
+        case "Enigma v2":
+          doc.LoadXml(request.PostData("/web/subservices"));
+          elem = doc.SelectSingleNode("/e2servicelist/e2service/e2servicereference");
+          s = elem.InnerText;
+          break;
+
+        default:
+          s = request.PostData(_command + "zapto");
+          s = s.Replace("\n", "");
+          //ErrorLog("get channel "+s+" for "+_Boxtype);
           break;
       }
 
