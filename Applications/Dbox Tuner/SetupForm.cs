@@ -39,13 +39,13 @@ namespace DboxTuner
 
     #region Variables
 
-    string _boxType = "unknown";
+    StbBoxType _boxType = StbBoxType.Unknown;
 
     #endregion Variables
 
     #region Properties
 
-    public string BoxType
+    public StbBoxType BoxType
     {
       get { return _boxType; }
       set { _boxType = value; }
@@ -238,45 +238,19 @@ namespace DboxTuner
 
     }
 
-    static string DetectBoxType(string url, string userName, string password)
-    {
-      Request request = new Request(url, userName, password);
-
-      // Detect Neutrino
-      string str1 = request.PostData("/control/getmode").ToLower();
-      if (str1.Contains("tv") || str1.Contains("radio") || str1.Contains("unknown"))
-        return "Neutrino";
-
-      // Detect enigma v1
-      string str2 = request.PostData("/cgi-bin/status").ToLower();
-      if (str2.Contains("enigma"))
-        return "Enigma v1";
-        
-      // Detect enigma v2
-      string str3 = request.PostData("/web/stream.m3u");
-      if (str3.Contains("#EXTM3U"))
-        return "Enigma v2";
-
-      return "unknown";
-    }
-
     private void buttonGetData_Click(object sender, EventArgs e)
     {
       StatusMessage("Attempting to read channel list ...");
 
       try
       {
-        string url = "http://" + textBoxIpAddress.Text;
-        string userName = textBoxUserName.Text;
-        string password = textBoxPassword.Text;
+        string url = Program.UrlPrefix + Address;
 
         // Detect box type ...
-        if (_boxType.Equals("unknown", StringComparison.OrdinalIgnoreCase))
-        {
-          _boxType = DetectBoxType(url, userName, password);
-        }
+        if (BoxType == StbBoxType.Unknown)
+          BoxType = Program.DetectBoxType(url, UserName, Password);
 
-        if (_boxType.Equals("unknown", StringComparison.OrdinalIgnoreCase))
+        if (BoxType == StbBoxType.Unknown)
         {
           StatusMessage("ERROR - No STB or unknown type detected!");
         }
@@ -284,9 +258,7 @@ namespace DboxTuner
         {
           StatusMessage("Detected box type: {0}", _boxType);
 
-          Data data = new Data(url, userName, password, _boxType);
-          
-          DataTable bouquets = data.UserTVBouquets.Tables[0];
+          DataTable bouquets = Program.GetData(url, UserName, Password, BoxType).Tables[0];
           
           if (bouquets.Rows.Count != 0)
             StatusMessage("{0} channels found", bouquets.Rows.Count);
@@ -324,11 +296,7 @@ namespace DboxTuner
 
     private void buttonDetectBoxType_Click(object sender, EventArgs e)
     {
-      string url = "http://" + textBoxIpAddress.Text;
-      string userName = textBoxUserName.Text;
-      string password = textBoxPassword.Text;
-
-      _boxType = DetectBoxType(url, userName, password);
+      BoxType = Program.DetectBoxType(Program.UrlPrefix + Address, UserName, Password);
     }
 
   }

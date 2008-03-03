@@ -35,10 +35,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IR507Receiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RawInput.cs" />
+    <Compile Include="ReceiverWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IR Server Plugin Interface\IR Server Plugin Interface.csproj">

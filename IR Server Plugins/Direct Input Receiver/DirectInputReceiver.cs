@@ -18,24 +18,50 @@ namespace InputService.Plugin
   public class DirectInputReceiver : PluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
   {
 
+    #region Debug
+
+    static void Remote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+    static void Keyboard(string deviceName, int button, bool up)
+    {
+      Console.WriteLine("Keyboard: {0}, {1}", button, up);
+    }
+    static void Mouse(string deviceName, int x, int y, int buttons)
+    {
+      Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      DirectInputReceiver c = new DirectInputReceiver();
+
+      c.Configure(null);
+
+      c.RemoteCallback += new RemoteHandler(Remote);
+      //c.KeyboardCallback += new KeyboardHandler(Keyboard);
+      c.MouseCallback += new MouseHandler(Mouse);
+
+      c.Start();
+
+      Application.Run();
+
+      c.Stop();
+      c = null;
+    }
+
+    #endregion Debug
+
+
     #region Constants
 
     static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Direct Input Receiver.xml");
 
+    const int AxisLimit = 4200;
+
     #endregion Constants
-
-    #region Variables
-
-    RemoteHandler _remoteHandler;
-    MouseHandler _mouseHandler;
-
-    DirectInputListener _diListener;
-
-    string _selectedDeviceGUID;
-
-    DeviceList _deviceList;
-
-    #endregion Variables
 
     #region Enumerations
 
@@ -84,44 +110,22 @@ namespace InputService.Plugin
       button18  = 3047,
       button19  = 3048,
       button20  = 3049,
-
-      comboKillProcess  = 4000,
-      comboCloseProcess = 4001,
     }
 
     #endregion Enumerations
 
+    #region Variables
 
-    void InitDeviceList()
-    {
-      _deviceList = Manager.GetDevices(DeviceClass.GameControl, EnumDevicesFlags.AttachedOnly);
-    }
-    
-    void diListener_OnStateChange(object sender, JoystickState state)
-    {
-      //SendActions(state);
-    }
+    RemoteHandler _remoteHandler;
+    MouseHandler _mouseHandler;
 
-    void UnacquireDevice()
-    {
-      _diListener.DeInitDevice();
-    }
+    DirectInputListener _diListener;
 
-    bool AcquireDevice()
-    {
-      if (_deviceList == null)
-        return false;
+    string _selectedDeviceGUID;
 
-      bool res = false;
-      
-      foreach (DeviceInstance di in _deviceList)
-        if (di.InstanceGuid.ToString() == _selectedDeviceGUID)
-          res = _diListener.InitDevice(di.InstanceGuid);
+    DeviceList _deviceList;
 
-      return res;
-    }
-
-
+    #endregion Variables
 
     /// <summary>
     /// Name of the IR Server plugin.
@@ -149,6 +153,7 @@ namespace InputService.Plugin
     public override bool Detect()
     {
       // TODO: Add detection code.
+
       return false;
     }
 
@@ -159,6 +164,9 @@ namespace InputService.Plugin
     public override void Start()
     {
       LoadSettings();
+
+      if (String.IsNullOrEmpty(_selectedDeviceGUID))
+        throw new ApplicationException("Direct Input requires configuration");
 
       InitDeviceList();
 
@@ -204,23 +212,21 @@ namespace InputService.Plugin
     /// </summary>
     public void Configure(IWin32Window owner)
     {
-      /*
       LoadSettings();
 
       InitDeviceList();
 
-      Configure config = new Configure();
-
-      config.MouseSensitivity     = _mouseSensitivity;
+      Configure config = new Configure(_deviceList);
+      config.DeviceGuid = _selectedDeviceGUID;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
-
-        _mouseSensitivity       = config.MouseSensitivity;
-
-        SaveSettings();
+        if (!String.IsNullOrEmpty(config.DeviceGuid))
+        {
+          _selectedDeviceGUID = config.DeviceGuid;
+          SaveSettings();
+        }
       }
-      */
     }
 
     /// <summary>
@@ -239,7 +245,6 @@ namespace InputService.Plugin
       get { return _mouseHandler; }
       set { _mouseHandler = value; }
     }
-
 
 
     void LoadSettings()
@@ -282,6 +287,200 @@ namespace InputService.Plugin
     }
 
 
+    void InitDeviceList()
+    {
+      _deviceList = Manager.GetDevices(DeviceClass.GameControl, EnumDevicesFlags.AttachedOnly);
+    }
+
+    void diListener_OnStateChange(object sender, JoystickState state)
+    {
+      SendActions(state);
+    }
+
+    void UnacquireDevice()
+    {
+      _diListener.DeInitDevice();
+    }
+
+    bool AcquireDevice()
+    {
+      if (_deviceList == null)
+        return false;
+
+      bool res = false;
+
+      foreach (DeviceInstance di in _deviceList)
+        if (_selectedDeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
+          res = _diListener.InitDevice(di.InstanceGuid);
+
+      return res;
+    }
+
+    void SendActions(JoystickState state)
+    {
+      int actionCode = -1;
+
+      //int curAxisValue = 0;
+      // todo: timer stuff!!
+
+      // buttons first!
+      byte[] buttons = state.GetButtons();
+      int button = 0;
+
+      // button combos
+      /*
+      string sep = "";
+      string pressedButtons = "";
+      foreach (byte b in buttons)
+      {
+        if ((b & 0x80) != 0)
+        {
+          pressedButtons += sep + button.ToString("00");
+          sep = ",";
+        }
+        button++;
+      }
+      */
+
+      // single buttons
+      if (actionCode == -1)
+      {
+        button = 0;
+        bool foundButton = false;
+        foreach (byte b in buttons)
+        {
+          if (0 != (b & 0x80))
+          {
+            foundButton = true;
+            break;
+          }
+          button++;
+        }
+        if (foundButton)
+        {
+          if ((button >= 0) && (button <= 19))
+          {
+            // don't need no stinkin' enum-constants here....
+            actionCode = 3030 + button;
+          }
+        }
+      }
+
+      // pov next
+      if (actionCode == -1)
+      {
+        int[] pov = state.GetPointOfView();
+        switch (pov[0])
+        {
+          case 0:     actionCode = (int)joyButton.povN;   break;
+          case 4500:  actionCode = (int)joyButton.povNE;  break;
+          case 9000:  actionCode = (int)joyButton.povE;   break;
+          case 13500: actionCode = (int)joyButton.povSE;  break;
+          case 18000: actionCode = (int)joyButton.povS;   break;
+          case 22500: actionCode = (int)joyButton.povSW;  break;
+          case 27000: actionCode = (int)joyButton.povW;   break;
+          case 31500: actionCode = (int)joyButton.povNW;  break;
+        }
+      }
+
+      if (actionCode == -1)
+      {
+        // axes next
+        if (Math.Abs(state.X) > AxisLimit)
+        {
+          //curAxisValue = state.X;
+          if (state.X > 0)
+          {
+            actionCode = (int)joyButton.axisXUp; // right
+          }
+          else
+          {
+            actionCode = (int)joyButton.axisXDown; // left
+          }
+        }
+        else if (Math.Abs(state.Y) > AxisLimit)
+        {
+          //curAxisValue = state.Y;
+          if (state.Y > 0)
+          {
+            // down
+            actionCode = (int)joyButton.axisYUp;
+          }
+          else
+          {
+            // up
+            actionCode = (int)joyButton.axisYDown;
+          }
+        }
+        else if (Math.Abs(state.Z) > AxisLimit)
+        {
+          //curAxisValue = state.Z;
+          if (state.Z > 0)
+          {
+            actionCode = (int)joyButton.axisZUp;
+          }
+          else
+          {
+            actionCode = (int)joyButton.axisZDown;
+          }
+        }
+      }
+
+      if (actionCode == -1)
+      {
+        // rotation
+        if (Math.Abs(state.Rx) > AxisLimit)
+        {
+          //curAxisValue = state.Rx;
+          if (state.Rx > 0)
+          {
+            actionCode = (int)joyButton.rotationXUp;
+          }
+          else
+          {
+            actionCode = (int)joyButton.rotationXDown;
+          }
+        }
+        else if (Math.Abs(state.Ry) > AxisLimit)
+        {
+          //curAxisValue = state.Ry;
+          if (state.Ry > 0)
+          {
+            actionCode = (int)joyButton.rotationYUp;
+          }
+          else
+          {
+            actionCode = (int)joyButton.rotationYDown;
+          }
+        }
+        else if (Math.Abs(state.Rz) > AxisLimit)
+        {
+          //curAxisValue = state.Rz;
+          if (state.Rz > 0)
+          {
+            actionCode = (int)joyButton.rotationZUp;
+          }
+          else
+          {
+            actionCode = (int)joyButton.rotationZDown;
+          }
+        }
+      }
+
+      if (actionCode != -1 && _remoteHandler != null)
+      {
+        string keyCode = TranslateActionCode(actionCode);
+
+        _remoteHandler(this.Name, keyCode);
+      }
+    }
+
+    string TranslateActionCode(int actionCode)
+    {
+      joyButton j = (joyButton)actionCode;
+
+      return Enum.GetName(typeof(joyButton), j);
+    }
 
   }
 

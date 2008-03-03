@@ -299,7 +299,7 @@ SkipUninstallInputService:
   
   File "IR Server Plugins\Ads Tech PTV-335 Receiver\bin\Debug\Ads Tech PTV-335 Receiver.*"
   File "IR Server Plugins\Custom HID Receiver\bin\Debug\Custom HID Receiver.*"
-  ;File "IR Server Plugins\Direct Input Receiver\bin\Debug\Direct Input Receiver.*"
+  File "IR Server Plugins\Direct Input Receiver\bin\Debug\Direct Input Receiver.*"
   File "IR Server Plugins\FusionRemote Receiver\bin\Debug\FusionREMOTE Receiver.*"
   File "IR Server Plugins\Girder Plugin\bin\Debug\Girder Plugin.*"
   File "IR Server Plugins\HCW Receiver\bin\Debug\HCW Receiver.*"

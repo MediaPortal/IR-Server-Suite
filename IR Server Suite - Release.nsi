@@ -299,7 +299,7 @@ SkipUninstallInputService:
   
   File "IR Server Plugins\Ads Tech PTV-335 Receiver\bin\Release\Ads Tech PTV-335 Receiver.dll"
   File "IR Server Plugins\Custom HID Receiver\bin\Release\Custom HID Receiver.dll"
-  ;File "IR Server Plugins\Direct Input Receiver\bin\Release\Direct Input Receiver.dll"
+  File "IR Server Plugins\Direct Input Receiver\bin\Release\Direct Input Receiver.dll"
   File "IR Server Plugins\FusionRemote Receiver\bin\Release\FusionREMOTE Receiver.dll"
   File "IR Server Plugins\Girder Plugin\bin\Release\Girder Plugin.dll"
   File "IR Server Plugins\HCW Receiver\bin\Release\HCW Receiver.dll"
