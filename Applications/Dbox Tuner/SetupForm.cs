@@ -235,17 +235,18 @@ namespace DboxTuner
         {
           StatusMessage("Detected box type: {0}", _boxType);
 
-          DataTable bouquets = Program.GetData(url, UserName, Password, BoxType).Tables[0];
+          DataSet dataSet = Program.GetData(url, UserName, Password, BoxType);
+          DataTable dataTable = dataSet.Tables[0];
           
-          if (bouquets.Rows.Count != 0)
-            StatusMessage("{0} channels found", bouquets.Rows.Count);
+          if (dataTable.Rows.Count != 0)
+            StatusMessage("{0} channels found", dataTable.Rows.Count);
           else
             StatusMessage("ERROR - No channels found!");
 
           if (File.Exists(Program.DataFile))
             File.Delete(Program.DataFile);
 
-          bouquets.WriteXml(Program.DataFile, XmlWriteMode.WriteSchema);
+          dataTable.WriteXml(Program.DataFile, XmlWriteMode.WriteSchema);
         }
       }
       catch (Exception ex)

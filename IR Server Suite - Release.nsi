@@ -324,6 +324,10 @@ SkipUninstallInputService:
 
   ; Create App Data Folder for IR Server configuration files.
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service"
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
+  SetOutPath "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
+  SetOverwrite ifnewer
+  File /r /x .svn "Input Service\Input Service\Abstract Remote Maps\*.*"
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" "" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" 0
@@ -468,6 +472,12 @@ Section "Translator" SectionTranslator
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator\Macro"
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator\Default Settings"
+
+  ; Copy in default settings files  
+  SetOutPath "$APPDATA\${PRODUCT_NAME}\Translator\Default Settings"
+  SetOverwrite ifnewer
+  File "Applications\Translator\Default Settings\*.xml"
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator\Translator.exe" "" "$DIR_INSTALL\Translator\Translator.exe" 0

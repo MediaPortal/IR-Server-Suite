@@ -26,11 +26,13 @@ namespace Translator
 
     #region Constants
 
-    internal static readonly string ConfigFile    = Path.Combine(Common.FolderAppData, "Translator\\Translator.xml");
+    internal static readonly string ConfigFile            = Path.Combine(Common.FolderAppData, "Translator\\Translator.xml");
 
-    internal static readonly string FolderMacros  = Path.Combine(Common.FolderAppData, "Translator\\Macro");
+    internal static readonly string FolderMacros          = Path.Combine(Common.FolderAppData, "Translator\\Macro");
 
-    const string ProcessCommandThreadName         = "ProcessCommand";
+    internal static readonly string FolderDefaultSettings = Path.Combine(Common.FolderAppData, "Translator\\Default Settings");
+
+    const string ProcessCommandThreadName                 = "ProcessCommand";
 
     #endregion Constants
 

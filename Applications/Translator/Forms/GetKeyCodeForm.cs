@@ -68,13 +68,13 @@ namespace Translator
         string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
 
         _keyCode = keyCode;
-        /*
+        ///*
         if (!deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
         {
           _keyCode = String.Format("{0} ({1})", deviceName, keyCode);
           // TODO: REMOVE!
           return;
-        }*/
+        }//*/
 
         this.Invoke(_keyCodeSet);
       }

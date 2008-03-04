@@ -142,6 +142,9 @@ namespace Translator
       comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof(ProcessWindowStyle)));
       comboBoxWindowStyle.SelectedIndex = 0;
 
+      // Setup Windows Message tab
+      radioButtonActiveWindow.Checked = true;
+
       // Setup Misc tab
       comboBoxMiscCommand.Items.Clear();
       comboBoxMiscCommand.Items.Add(Common.UITextTranslator);

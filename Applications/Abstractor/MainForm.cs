@@ -616,7 +616,10 @@ namespace Abstractor
       }
 
       string device = comboBoxDevice.Text;
-      
+
+      if (!Directory.Exists(device))
+        Directory.CreateDirectory(device);
+
       string fileName = Path.ChangeExtension(textBoxRemoteName.Text, ".xml");
 
       string path = Path.Combine(device, fileName);

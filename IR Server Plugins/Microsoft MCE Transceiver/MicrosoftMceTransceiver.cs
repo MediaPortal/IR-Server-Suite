@@ -726,6 +726,7 @@ namespace InputService.Plugin
             keyCode == 0x7bef ||  // Volume_Up
             keyCode == 0x7bf1 ||  // Mute
             keyCode == 0x7bf3 ||  // PC_Power
+            keyCode == 0x7bf4 ||  // Enter
             keyCode == 0x7bf6 ||  // Number_9
             keyCode == 0x7bf7 ||  // Number_8
             keyCode == 0x7bf8 ||  // Number_7

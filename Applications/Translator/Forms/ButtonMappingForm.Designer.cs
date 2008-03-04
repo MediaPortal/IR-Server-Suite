@@ -223,7 +223,7 @@ namespace Translator
       // 
       this.labelKeyCode.Location = new System.Drawing.Point(8, 16);
       this.labelKeyCode.Name = "labelKeyCode";
-      this.labelKeyCode.Size = new System.Drawing.Size(80, 21);
+      this.labelKeyCode.Size = new System.Drawing.Size(80, 22);
       this.labelKeyCode.TabIndex = 0;
       this.labelKeyCode.Text = "Code:";
       this.labelKeyCode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -242,10 +242,11 @@ namespace Translator
       this.textBoxKeyCode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxKeyCode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.textBoxKeyCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.textBoxKeyCode.Location = new System.Drawing.Point(88, 16);
       this.textBoxKeyCode.Name = "textBoxKeyCode";
       this.textBoxKeyCode.ReadOnly = true;
-      this.textBoxKeyCode.Size = new System.Drawing.Size(368, 20);
+      this.textBoxKeyCode.Size = new System.Drawing.Size(368, 22);
       this.textBoxKeyCode.TabIndex = 1;
       this.textBoxKeyCode.TabStop = false;
       this.textBoxKeyCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -893,12 +894,10 @@ namespace Translator
       // radioButtonActiveWindow
       // 
       this.radioButtonActiveWindow.Anchor = System.Windows.Forms.AnchorStyles.Top;
-      this.radioButtonActiveWindow.Checked = true;
       this.radioButtonActiveWindow.Location = new System.Drawing.Point(16, 24);
       this.radioButtonActiveWindow.Name = "radioButtonActiveWindow";
       this.radioButtonActiveWindow.Size = new System.Drawing.Size(104, 16);
       this.radioButtonActiveWindow.TabIndex = 0;
-      this.radioButtonActiveWindow.TabStop = true;
       this.radioButtonActiveWindow.Text = "Active window";
       this.radioButtonActiveWindow.UseVisualStyleBackColor = true;
       this.radioButtonActiveWindow.CheckedChanged += new System.EventHandler(this.radioButtonActiveWindow_CheckedChanged);

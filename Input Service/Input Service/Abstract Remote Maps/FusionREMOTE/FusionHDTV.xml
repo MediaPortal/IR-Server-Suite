@@ -22,10 +22,10 @@
   <RemoteTable RawCode="1BF90000" AbstractButton="Record" />
   <RemoteTable RawCode="0AF90000" AbstractButton="Power" />
   <RemoteTable RawCode="0CF90000" AbstractButton="Power2" />
-  <RemoteTable RawCode="05F90000" AbstractButton="TeletextRed" />
-  <RemoteTable RawCode="09F90000" AbstractButton="TeletextGreen" />
-  <RemoteTable RawCode="42F90000" AbstractButton="TeletextYellow" />
-  <RemoteTable RawCode="43F90000" AbstractButton="TeletextBlue" />
+  <RemoteTable RawCode="05F90000" AbstractButton="Red" />
+  <RemoteTable RawCode="09F90000" AbstractButton="Green" />
+  <RemoteTable RawCode="42F90000" AbstractButton="Yellow" />
+  <RemoteTable RawCode="43F90000" AbstractButton="Blue" />
   <RemoteTable RawCode="08F90000" AbstractButton="Menu" />
   <RemoteTable RawCode="0EF90000" AbstractButton="TaskSwap" />
   <RemoteTable RawCode="04F90000" AbstractButton="Fullscreen" />

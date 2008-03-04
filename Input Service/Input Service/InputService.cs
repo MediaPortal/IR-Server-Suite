@@ -19,7 +19,6 @@ using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
 using InputService.Plugin;
-
 using IrssComms;
 using IrssUtils;
 
@@ -235,29 +234,23 @@ namespace InputService
         switch (_mode)
         {
           case InputServiceMode.ServerMode:
-            {
-              StartServer();
-              IrssLog.Info("Started in Server Mode");
-              break;
-            }
+            StartServer();
+            IrssLog.Info("Started in Server Mode");
+            break;
 
           case InputServiceMode.RelayMode:
-            {
-              if (StartRelay())
-                IrssLog.Info("Started in Relay Mode");
-              else
-                IrssLog.Error("Failed to start in Relay Mode");
-              break;
-            }
+            if (StartRelay())
+              IrssLog.Info("Started in Relay Mode");
+            else
+              IrssLog.Error("Failed to start in Relay Mode");
+            break;
 
           case InputServiceMode.RepeaterMode:
-            {
-              if (StartRepeater())
-                IrssLog.Info("Started in Repeater Mode");
-              else
-                IrssLog.Error("Failed to start in Repeater Mode");
-              break;
-            }
+            if (StartRepeater())
+              IrssLog.Info("Started in Repeater Mode");
+            else
+              IrssLog.Error("Failed to start in Repeater Mode");
+            break;
         }
       }
       catch (Exception ex)
@@ -344,6 +337,8 @@ namespace InputService
 
       if (_abstractRemoteMode)
       {
+        IrssLog.Info("Input Service is running in Abstract Remote mode");
+
         _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
         _abstractRemoteButtons.CaseSensitive = true;
 
@@ -682,11 +677,13 @@ namespace InputService
     }
     void StopClient()
     {
-      if (_client != null)
-      {
-        _client.Dispose();
-        _client = null;
-      }
+      if (_client == null)
+        return;
+
+      _client.Dispose();
+      _client = null;
+
+      _registered = false;
     }
 
     bool StartRelay()
@@ -773,7 +770,7 @@ namespace InputService
           if (_abstractRemoteMode)
           {
             string abstractButton = LookupAbstractButton(deviceName, keyCode);
-            if (String.IsNullOrEmpty(abstractButton))
+            if (!String.IsNullOrEmpty(abstractButton))
             {
               messageDeviceName = "Abstract";
               messageKeyCode    = abstractButton;
@@ -1085,7 +1082,7 @@ namespace InputService
         return LearnStatus.Failure;
       }
 
-      ILearnIR _learner = _pluginTransmit as ILearnIR;      
+      ILearnIR _learner = _pluginTransmit as ILearnIR;
       if (_learner == null)
       {
         IrssLog.Warn("Active transmit plugin doesn't support learn");
@@ -1623,7 +1620,7 @@ namespace InputService
       {
         string receivers        = doc.DocumentElement.Attributes["PluginReceive"].Value;
         if (!String.IsNullOrEmpty(receivers))
-          _pluginNameReceive = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+          _pluginNameReceive    = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
       }
       catch (Exception ex)
       {
@@ -1718,9 +1715,7 @@ namespace InputService
               string button = rows[0]["AbstractButton"].ToString() as string;
               if (!String.IsNullOrEmpty(button))
               {
-#if TRACE
-                Trace.WriteLine(button + ", remote: " + table.ExtendedProperties["Remote"] as string + ", device: " + deviceName);
-#endif
+                IrssLog.Debug(button + ", remote: " + table.ExtendedProperties["Remote"] as string + ", device: " + deviceName);
                 return button;
               }
             }
@@ -1758,9 +1753,10 @@ namespace InputService
         table.ExtendedProperties.Add("Remote", remote);
 
         table.TableName = tableName;
+
+        IrssLog.Info("Abstract Remote Table ({0}) loaded", tableName);
       }
     }
-
 
     #endregion Implementation
 

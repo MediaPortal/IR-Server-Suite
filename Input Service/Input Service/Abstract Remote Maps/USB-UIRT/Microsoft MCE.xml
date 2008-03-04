@@ -68,14 +68,14 @@
   <RemoteTable RawCode="4326ABF050F1" AbstractButton="Power2" />  
   <RemoteTable RawCode="3F2C1CF340F1" AbstractButton="Teletext" />
   <RemoteTable RawCode="3F2C1DF350F1" AbstractButton="Teletext" />  
-  <RemoteTable RawCode="3F2C1EF340F1" AbstractButton="TeletextRed" />
-  <RemoteTable RawCode="3F2C1FF350F1" AbstractButton="TeletextRed" />
-  <RemoteTable RawCode="412EC4F340F1" AbstractButton="TeletextGreen" />
-  <RemoteTable RawCode="412EC5F350F1" AbstractButton="TeletextGreen" />
-  <RemoteTable RawCode="3F2C12F340F1" AbstractButton="TeletextYellow" />
-  <RemoteTable RawCode="3F2C13F350F1" AbstractButton="TeletextYellow" />
-  <RemoteTable RawCode="412EC0F340F1" AbstractButton="TeletextBlue" />
-  <RemoteTable RawCode="412EC1F350F1" AbstractButton="TeletextBlue" />
+  <RemoteTable RawCode="3F2C1EF340F1" AbstractButton="Red" />
+  <RemoteTable RawCode="3F2C1FF350F1" AbstractButton="Red" />
+  <RemoteTable RawCode="412EC4F340F1" AbstractButton="Green" />
+  <RemoteTable RawCode="412EC5F350F1" AbstractButton="Green" />
+  <RemoteTable RawCode="3F2C12F340F1" AbstractButton="Yellow" />
+  <RemoteTable RawCode="3F2C13F350F1" AbstractButton="Yellow" />
+  <RemoteTable RawCode="412EC0F340F1" AbstractButton="Blue" />
+  <RemoteTable RawCode="412EC1F350F1" AbstractButton="Blue" />
   <RemoteTable RawCode="412FADF040F1" AbstractButton="Clear" />
   <RemoteTable RawCode="412FACF050F1" AbstractButton="Clear" />
   <RemoteTable RawCode="412FACF040F1" AbstractButton="Enter" />

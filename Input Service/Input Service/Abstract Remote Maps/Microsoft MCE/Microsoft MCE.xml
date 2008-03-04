@@ -34,10 +34,10 @@
   <RemoteTable RawCode="31642" AbstractButton="Power" />
   <RemoteTable RawCode="31731" AbstractButton="Power2" />
   <RemoteTable RawCode="31653" AbstractButton="Teletext" />
-  <RemoteTable RawCode="31652" AbstractButton="TeletextRed" />
-  <RemoteTable RawCode="31651" AbstractButton="TeletextGreen" />
-  <RemoteTable RawCode="31650" AbstractButton="TeletextYellow" />
-  <RemoteTable RawCode="31649" AbstractButton="TeletextBlue" />
+  <RemoteTable RawCode="31652" AbstractButton="Red" />
+  <RemoteTable RawCode="31651" AbstractButton="Green" />
+  <RemoteTable RawCode="31650" AbstractButton="Yellow" />
+  <RemoteTable RawCode="31649" AbstractButton="Blue" />
   <RemoteTable RawCode="31733" AbstractButton="Clear" />
   <RemoteTable RawCode="31732" AbstractButton="Enter" />
   <RemoteTable RawCode="31715" AbstractButton="Hash" />

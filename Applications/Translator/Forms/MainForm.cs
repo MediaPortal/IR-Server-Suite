@@ -351,7 +351,27 @@ namespace Translator
         Program.Config.Programs.Add(progSettings);
 
         RefreshProgramList();
+
+        string programFile = Path.GetFileName(progSettings.FileName);
+        string settingsFile = Path.Combine(Program.FolderDefaultSettings, programFile + ".xml");
+        if (File.Exists(settingsFile))
+        {
+          if (DialogResult.Yes == MessageBox.Show(this, String.Format("Do you want to use the default settings for {0}", programFile), "Default settings found", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+          {
+            List<ButtonMapping> mappings = LoadDefaultSettings(settingsFile);
+
+            progSettings.ButtonMappings.AddRange(mappings);
+
+            RefreshButtonList();
+          }
+        }
       }
+    }
+
+    List<ButtonMapping> LoadDefaultSettings(string settingsFile)
+    {
+      // TODO: Implement this :)
+      return new List<ButtonMapping>();
     }
 
     bool EditCurrentProgram()

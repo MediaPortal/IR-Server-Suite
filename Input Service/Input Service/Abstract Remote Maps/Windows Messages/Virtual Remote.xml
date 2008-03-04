@@ -1,10 +1,10 @@
 <?xml version="1.0" standalone="yes"?>
 <DocumentElement>
   <RemoteTable RawCode="101" AbstractButton="Power" />
-  <RemoteTable RawCode="94" AbstractButton="TeletextBlue" />
-  <RemoteTable RawCode="93" AbstractButton="TeletextYellow" />
-  <RemoteTable RawCode="92" AbstractButton="TeletextGreen" />
-  <RemoteTable RawCode="91" AbstractButton="TeletextRed" />
+  <RemoteTable RawCode="94" AbstractButton="Blue" />
+  <RemoteTable RawCode="93" AbstractButton="Yellow" />
+  <RemoteTable RawCode="92" AbstractButton="Green" />
+  <RemoteTable RawCode="91" AbstractButton="Red" />
   <RemoteTable RawCode="90" AbstractButton="Teletext" />
   <RemoteTable RawCode="80" AbstractButton="Radio" />
   <RemoteTable RawCode="78" AbstractButton="Print" />
