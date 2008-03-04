@@ -1,0 +1,27 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="povN" AbstractButton="Up" />
+  <RemoteTable RawCode="povS" AbstractButton="Down" />
+  <RemoteTable RawCode="povW" AbstractButton="Left" />
+  <RemoteTable RawCode="povE" AbstractButton="Right" />
+  <RemoteTable RawCode="button1" AbstractButton="OK" />
+  <RemoteTable RawCode="axisYDown" AbstractButton="VolumeUp" />
+  <RemoteTable RawCode="axisYUp" AbstractButton="VolumeDown" />
+  <RemoteTable RawCode="axisXUp" AbstractButton="ChannelUp" />
+  <RemoteTable RawCode="axisXDown" AbstractButton="ChannelDown" />
+  <RemoteTable RawCode="button7" AbstractButton="Start" />
+  <RemoteTable RawCode="button8" AbstractButton="Back" />
+  <RemoteTable RawCode="button10" AbstractButton="Info" />
+  <RemoteTable RawCode="button9" AbstractButton="Mute" />
+  <RemoteTable RawCode="button4" AbstractButton="Play" />
+  <RemoteTable RawCode="button3" AbstractButton="Pause" />
+  <RemoteTable RawCode="button2" AbstractButton="Stop" />
+  <RemoteTable RawCode="button12" AbstractButton="FastForward" />
+  <RemoteTable RawCode="button11" AbstractButton="Rewind" />
+  <RemoteTable RawCode="button5" AbstractButton="NextChapter" />
+  <RemoteTable RawCode="button6" AbstractButton="PreviousChapter" />
+  <RemoteTable RawCode="rotationXUp" AbstractButton="Red" />
+  <RemoteTable RawCode="rotationYUp" AbstractButton="Green" />
+  <RemoteTable RawCode="rotationYDown" AbstractButton="Yellow" />
+  <RemoteTable RawCode="rotationXDown" AbstractButton="Blue" />
+</DocumentElement>
