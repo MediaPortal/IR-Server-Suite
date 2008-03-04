@@ -1,0 +1,39 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="00F90000" AbstractButton="Up" />
+  <RemoteTable RawCode="01F90000" AbstractButton="Down" />
+  <RemoteTable RawCode="03F90000" AbstractButton="Left" />
+  <RemoteTable RawCode="02F90000" AbstractButton="Right" />
+  <RemoteTable RawCode="1FF90000" AbstractButton="OK" />
+  <RemoteTable RawCode="0DF90000" AbstractButton="Mute" />
+  <RemoteTable RawCode="10F90000" AbstractButton="Number0" />
+  <RemoteTable RawCode="11F90000" AbstractButton="Number1" />
+  <RemoteTable RawCode="12F90000" AbstractButton="Number2" />
+  <RemoteTable RawCode="13F90000" AbstractButton="Number3" />
+  <RemoteTable RawCode="14F90000" AbstractButton="Number4" />
+  <RemoteTable RawCode="15F90000" AbstractButton="Number5" />
+  <RemoteTable RawCode="16F90000" AbstractButton="Number6" />
+  <RemoteTable RawCode="17F90000" AbstractButton="Number7" />
+  <RemoteTable RawCode="18F90000" AbstractButton="Number8" />
+  <RemoteTable RawCode="19F90000" AbstractButton="Number9" />
+  <RemoteTable RawCode="1EF90000" AbstractButton="Stop" />
+  <RemoteTable RawCode="1DF90000" AbstractButton="FastForward" />
+  <RemoteTable RawCode="1CF90000" AbstractButton="Rewind" />
+  <RemoteTable RawCode="1BF90000" AbstractButton="Record" />
+  <RemoteTable RawCode="0AF90000" AbstractButton="Power" />
+  <RemoteTable RawCode="0CF90000" AbstractButton="Power2" />
+  <RemoteTable RawCode="05F90000" AbstractButton="TeletextRed" />
+  <RemoteTable RawCode="09F90000" AbstractButton="TeletextGreen" />
+  <RemoteTable RawCode="42F90000" AbstractButton="TeletextYellow" />
+  <RemoteTable RawCode="43F90000" AbstractButton="TeletextBlue" />
+  <RemoteTable RawCode="08F90000" AbstractButton="Menu" />
+  <RemoteTable RawCode="0EF90000" AbstractButton="TaskSwap" />
+  <RemoteTable RawCode="04F90000" AbstractButton="Fullscreen" />
+  <RemoteTable RawCode="07F90000" AbstractButton="AspectRatio" />
+  <RemoteTable RawCode="41F90000" AbstractButton="Videos" />
+  <RemoteTable RawCode="06F90000" AbstractButton="TV" />
+  <RemoteTable RawCode="0BF90000" AbstractButton="Guide" />
+  <RemoteTable RawCode="0FF90000" AbstractButton="LiveTV" />
+  <RemoteTable RawCode="1AF90000" AbstractButton="Snapshot" />
+  <RemoteTable RawCode="40F90000" AbstractButton="Open" />
+</DocumentElement>

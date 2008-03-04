@@ -57,28 +57,35 @@ namespace InputService
 
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Input Service\\Input Service.xml");
+    static readonly string ConfigurationFile        = Path.Combine(Common.FolderAppData, "Input Service\\Input Service.xml");
+
+    static readonly string AbstractRemoteMapFolder  = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
+
+    static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
 
     #endregion Constants
 
     #region Variables
 
-    List<ClientManager> _registeredClients;
-    List<ClientManager> _registeredRepeaters;
-
-    Server _server;
-    Client _client;
-
+    bool _abstractRemoteMode;
     InputServiceMode _mode;
     string _hostComputer;
-
-    bool _registered; // Used for relay and repeater modes.
 
     string[] _pluginNameReceive;
     List<PluginBase> _pluginReceive;
 
     string _pluginNameTransmit;
     PluginBase _pluginTransmit;
+
+    Server _server;
+    Client _client;
+
+    List<ClientManager> _registeredClients;
+    List<ClientManager> _registeredRepeaters;
+
+    bool _registered; // Used for relay and repeater modes.
+
+    DataSet _abstractRemoteButtons;
 
     #endregion Variables
 
@@ -153,10 +160,10 @@ namespace InputService
 
       LoadSettings();
 
+      #region Load plugin(s)
+
       _pluginReceive  = null;
       _pluginTransmit = null;
-
-      // Load Plugins ...
 
       if (_pluginNameReceive == null && String.IsNullOrEmpty(_pluginNameTransmit))
       {
@@ -218,8 +225,11 @@ namespace InputService
           }
         }
       }
+      
+      #endregion Load plugin(s)
 
-      // Mode select ...
+      #region Mode select
+
       try
       {
         switch (_mode)
@@ -256,7 +266,9 @@ namespace InputService
         IrssLog.Error(ex);
       }
 
-      // Start plugin(s) ...
+      #endregion Mode select
+
+      #region Start plugin(s)
 
       bool startedTransmit = false;
 
@@ -325,6 +337,23 @@ namespace InputService
           _pluginTransmit = null;
         }
       }
+
+      #endregion Start plugin(s)
+
+      #region Setup Abstract Remote Model processing
+
+      if (_abstractRemoteMode)
+      {
+        _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
+        _abstractRemoteButtons.CaseSensitive = true;
+
+        List<string> receivers = new List<string>(_pluginReceive.Count);
+        foreach (PluginBase plugin in _pluginReceive)
+          if (plugin is IRemoteReceiver)
+            LoadAbstractDeviceFiles(plugin.Name);
+      }
+
+      #endregion Setup Abstract Remote Model processing
 
       IrssLog.Info("Input Service started");
     }
@@ -735,8 +764,40 @@ namespace InputService
     {
       IrssLog.Debug("{0} generated a remote event: {1}", deviceName, keyCode);
 
-      byte[] deviceNameBytes = Encoding.ASCII.GetBytes(deviceName);
-      byte[] keyCodeBytes = Encoding.ASCII.GetBytes(keyCode);
+      string messageDeviceName  = deviceName;
+      string messageKeyCode     = keyCode;
+
+      switch (_mode)
+      {
+        case InputServiceMode.ServerMode:
+          if (_abstractRemoteMode)
+          {
+            string abstractButton = LookupAbstractButton(deviceName, keyCode);
+            if (String.IsNullOrEmpty(abstractButton))
+            {
+              messageDeviceName = "Abstract";
+              messageKeyCode    = abstractButton;
+
+              IrssLog.Info("Abstract Remote Button mapped: {0}", abstractButton);
+            }
+            else
+            {
+              IrssLog.Info("Abstract Remote Button not found: {0} ({1})", deviceName, keyCode);
+            }
+          }
+          break;
+
+        case InputServiceMode.RelayMode:
+          // Don't do anything in relay mode, just pass it on.
+          break;
+
+        case InputServiceMode.RepeaterMode:
+          IrssLog.Debug("Remote event ignored, Input Service is in Repeater Mode.");
+          return;
+      }
+
+      byte[] deviceNameBytes = Encoding.ASCII.GetBytes(messageDeviceName);
+      byte[] keyCodeBytes = Encoding.ASCII.GetBytes(messageKeyCode);
 
       byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
 
@@ -758,12 +819,6 @@ namespace InputService
           {
             IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, bytes);
             _client.Send(message);
-            break;
-          }
-
-        case InputServiceMode.RepeaterMode:
-          {
-            IrssLog.Debug("Remote event ignored, Input Service is in Repeater Mode.");
             break;
           }
       }
@@ -1085,7 +1140,55 @@ namespace InputService
             }
             else
             {
-              IrssMessage forward = new IrssMessage(MessageType.RemoteEvent, MessageFlags.Notify, combo.Message.GetDataAsBytes());
+              byte[] data = combo.Message.GetDataAsBytes();
+
+              if (_abstractRemoteMode)
+              {
+                // Decode message ...
+                int deviceNameSize = BitConverter.ToInt32(data, 0);
+                string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
+                int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
+                string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+
+                // Check that the device maps are loaded for the forwarded device
+                bool foundDevice = false;
+                foreach (PluginBase plugin in _pluginReceive)
+                {
+                  if (plugin is IRemoteReceiver && plugin.Name.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
+                  {
+                    foundDevice = true;
+                    break;
+                  }
+                }
+
+                // If the remote maps are not already loaded for this device then attempt to load them
+                if (!foundDevice)
+                  LoadAbstractDeviceFiles(deviceName);
+
+                // Find abstract button mapping
+                string abstractButton = LookupAbstractButton(deviceName, keyCode);
+                if (String.IsNullOrEmpty(abstractButton))
+                {
+                  IrssLog.Info("Abstract Remote Button mapped from forwarded remote event: {0}", abstractButton);
+
+                  // Encode new message ...
+                  byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Abstract");
+                  byte[] keyCodeBytes = Encoding.ASCII.GetBytes(abstractButton);
+
+                  data = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
+
+                  BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(data, 0);
+                  deviceNameBytes.CopyTo(data, 4);
+                  BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(data, 4 + deviceNameBytes.Length);
+                  keyCodeBytes.CopyTo(data, 8 + deviceNameBytes.Length);
+                }
+                else
+                {
+                  IrssLog.Info("Abstract Remote Button not found for forwarded remote event: {0} ({1})", deviceName, keyCode);
+                }
+              }
+
+              IrssMessage forward = new IrssMessage(MessageType.RemoteEvent, MessageFlags.Notify, data);
               SendToAllExcept(combo.Manager, forward);
             }
             break;
@@ -1470,6 +1573,7 @@ namespace InputService
 
     void LoadSettings()
     {
+      _abstractRemoteMode = false;
       _mode               = InputServiceMode.ServerMode;
       _hostComputer       = String.Empty;
       _pluginNameReceive  = null;
@@ -1503,6 +1607,9 @@ namespace InputService
         return;
       }
 
+      try { _abstractRemoteMode = bool.Parse(doc.DocumentElement.Attributes["AbstractRemoteMode"].Value); }
+      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+
       try { _mode               = (InputServiceMode)Enum.Parse(typeof(InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
@@ -1535,6 +1642,7 @@ namespace InputService
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
+          writer.WriteAttributeString("AbstractRemoteMode", _abstractRemoteMode.ToString());
           writer.WriteAttributeString("Mode", Enum.GetName(typeof(InputServiceMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
@@ -1588,6 +1696,71 @@ namespace InputService
         IrssLog.Error(ex);
       }
     }
+
+    string LookupAbstractButton(string deviceName, string keyCode)
+    {
+      if (_abstractRemoteButtons == null || _abstractRemoteButtons.Tables.Count == 0)
+        return null;
+
+      try
+      {
+        foreach (DataTable table in _abstractRemoteButtons.Tables)
+        {
+          string device = table.ExtendedProperties["Device"] as string;
+
+          if (device.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
+          {
+            string expression = String.Format("RawCode = '{0}'", keyCode);
+
+            DataRow[] rows = table.Select(expression);
+            if (rows.Length == 1)
+            {
+              string button = rows[0]["AbstractButton"].ToString() as string;
+              if (!String.IsNullOrEmpty(button))
+              {
+#if TRACE
+                Trace.WriteLine(button + ", remote: " + table.ExtendedProperties["Remote"] as string + ", device: " + deviceName);
+#endif
+                return button;
+              }
+            }
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+
+      return null;
+      //return String.Format("{0} ({1})", deviceName, keyCode);
+    }
+
+    void LoadAbstractDeviceFiles(string device)
+    {
+      string path = Path.Combine(AbstractRemoteMapFolder, device);
+      string[] files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly);
+      foreach (string file in files)
+      {
+        string remote = Path.GetFileNameWithoutExtension(file);
+        string tableName = String.Format("{0}:{1}", device, remote);
+        if (_abstractRemoteButtons.Tables.Contains(tableName))
+        {
+          IrssLog.Warn("Abstract Remote Table already loaded ({0})", tableName);
+          continue;
+        }
+
+        DataTable table = _abstractRemoteButtons.Tables.Add("RemoteTable");
+        table.ReadXmlSchema(AbstractRemoteSchemaFile);
+        table.ReadXml(file);
+
+        table.ExtendedProperties.Add("Device", device);
+        table.ExtendedProperties.Add("Remote", remote);
+
+        table.TableName = tableName;
+      }
+    }
+
 
     #endregion Implementation
 
