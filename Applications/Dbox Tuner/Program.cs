@@ -182,7 +182,7 @@ namespace DboxTuner
       IrssLog.Info(message);
       Console.WriteLine(message);
     }
-    
+
     static void LoadSettings()
     {
       try
@@ -195,14 +195,17 @@ namespace DboxTuner
         _password = doc.DocumentElement.Attributes["Password"].Value;
         _boxType  = (StbBoxType)Enum.Parse(typeof(StbBoxType), doc.DocumentElement.Attributes["BoxType"].Value);
       }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("Configuration file not found, using defaults");
+
+        CreateDefaultSettings();
+      }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
-        _address  = "192.168.0.100";
-        _userName = "root";
-        _password = "dbox2";
-        _boxType  = StbBoxType.Unknown;
+        CreateDefaultSettings();
       }
     }
     static void SaveSettings()
@@ -231,7 +234,15 @@ namespace DboxTuner
         IrssLog.Error(ex);
       }
     }
+    static void CreateDefaultSettings()
+    {
+      _address = "192.168.0.100";
+      _userName = "root";
+      _password = "dbox2";
+      _boxType = StbBoxType.Unknown;
 
+      SaveSettings();
+    }
 
     internal static string PostData(string url, string userName, string password, StbBoxType boxType, string command)
     {

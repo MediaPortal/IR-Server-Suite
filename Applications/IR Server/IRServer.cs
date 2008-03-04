@@ -1555,7 +1555,7 @@ namespace IRServer
       {
         string receivers        = doc.DocumentElement.Attributes["PluginReceive"].Value;
         if (!String.IsNullOrEmpty(receivers))
-          _pluginNameReceive = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+          _pluginNameReceive    = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
       }
       catch (Exception ex)
       {

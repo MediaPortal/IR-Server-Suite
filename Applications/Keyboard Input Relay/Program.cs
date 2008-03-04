@@ -253,12 +253,18 @@ namespace KeyboardInputRelay
       {
         doc.Load(ConfigurationFile);
       }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("Configuration file not found, using defaults");
+
+        CreateDefaultSettings();
+        return;
+      }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
-        _serverHost = "localhost";
-
+        CreateDefaultSettings();
         return;
       }
 
@@ -286,6 +292,12 @@ namespace KeyboardInputRelay
       {
         IrssLog.Error(ex);
       }
+    }
+    static void CreateDefaultSettings()
+    {
+      _serverHost = "localhost";
+
+      SaveSettings();
     }
 
     static void CommsFailure(object obj)

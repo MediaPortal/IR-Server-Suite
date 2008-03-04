@@ -62,6 +62,8 @@ namespace HcwPvrTuner
       Console.WriteLine("HCW PVR Tuner");
       Console.WriteLine();
 
+      // TODO: Add standard IRSS logging ...
+
       if (args.Length != 1)
       {
         Console.WriteLine("Usage:");

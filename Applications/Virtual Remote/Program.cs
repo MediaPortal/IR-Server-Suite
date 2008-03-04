@@ -242,13 +242,17 @@ namespace VirtualRemote
       {
         doc.Load(ConfigurationFile);
       }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("Configuration file not found, using defaults");
+
+        CreateDefaultSettings();
+        return;
+      }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
-
-        _serverHost = "localhost";
-        _remoteSkin = DefaultSkin;
-
+        CreateDefaultSettings();
         return;
       }
 
@@ -279,6 +283,14 @@ namespace VirtualRemote
         IrssLog.Error(ex);
       }
     }
+    static void CreateDefaultSettings()
+    {
+      _serverHost = "localhost";
+      _remoteSkin = DefaultSkin;
+
+      SaveSettings();
+    }
+
 
     static void CommsFailure(object obj)
     {

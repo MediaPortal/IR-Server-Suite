@@ -402,15 +402,18 @@ namespace WebRemote
       {
         doc.Load(ConfigurationFile);
       }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("Configuration file not found, using defaults");
+
+        CreateDefaultSettings();
+        return;
+      }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
-        _serverHost = "localhost";
-        _remoteSkin = DefaultSkin;
-        _webPort = DefaultWebPort;
-        //_passwordHash = null;
-
+        CreateDefaultSettings();
         return;
       }
 
@@ -444,6 +447,15 @@ namespace WebRemote
       {
         IrssLog.Error(ex);
       }
+    }
+    static void CreateDefaultSettings()
+    {
+      _serverHost   = "localhost";
+      _remoteSkin   = DefaultSkin;
+      _webPort      = DefaultWebPort;
+      //_passwordHash = null;
+
+      SaveSettings();
     }
 
     static void CommsFailure(object obj)

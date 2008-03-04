@@ -489,11 +489,17 @@ namespace SkinEditor
 
         _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
       }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("Configuration file not found, using defaults");
+
+        CreateDefaultSettings();
+      }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
-        _serverHost = "localhost";
+        CreateDefaultSettings();
       }
     }
     void SaveSettings()
@@ -518,6 +524,12 @@ namespace SkinEditor
       {
         IrssLog.Error(ex);
       }
+    }
+    void CreateDefaultSettings()
+    {
+      _serverHost = "localhost";
+
+      SaveSettings();
     }
 
     void CommsFailure(object obj)

@@ -193,14 +193,17 @@ namespace TrayLauncher
         _launchOnLoad   = bool.Parse(doc.DocumentElement.Attributes["LaunchOnLoad"].Value);
         _launchKeyCode  = doc.DocumentElement.Attributes["LaunchKeyCode"].Value;
       }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("Configuration file not found, using defaults");
+
+        CreateDefaultSettings();
+      }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
-        _serverHost     = "localhost";
-        _programFile    = String.Empty;
-        _launchOnLoad   = false;
-        _launchKeyCode  = DefaultKeyCode;
+        CreateDefaultSettings();
       }
     }
     void SaveSettings()
@@ -240,6 +243,15 @@ namespace TrayLauncher
       {
         IrssLog.Error(ex);
       }
+    }
+    void CreateDefaultSettings()
+    {
+      _serverHost = "localhost";
+      _programFile = String.Empty;
+      _launchOnLoad = false;
+      _launchKeyCode = DefaultKeyCode;
+
+      SaveSettings();
     }
 
     void CommsFailure(object obj)
