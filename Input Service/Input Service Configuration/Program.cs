@@ -48,6 +48,7 @@ namespace InputService.Configuration
 
     #region Variables
 
+    static bool _abstractRemoteMode;
     static InputServiceMode _mode;
     static string _hostComputer;
     static string[] _pluginNameReceive;
@@ -133,6 +134,7 @@ namespace InputService.Configuration
     {
       IrssLog.Info("Loading settings ...");
 
+      _abstractRemoteMode = false;
       _mode               = InputServiceMode.ServerMode;
       _hostComputer       = String.Empty;
       _pluginNameReceive  = null;
@@ -169,6 +171,9 @@ namespace InputService.Configuration
         return;
       }
 
+      try { _abstractRemoteMode = bool.Parse(doc.DocumentElement.Attributes["AbstractRemoteMode"].Value); }
+      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+
       try { _mode = (InputServiceMode)Enum.Parse(typeof(InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
@@ -203,6 +208,7 @@ namespace InputService.Configuration
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
+          writer.WriteAttributeString("AbstractRemoteMode", _abstractRemoteMode.ToString());
           writer.WriteAttributeString("Mode", Enum.GetName(typeof(InputServiceMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);

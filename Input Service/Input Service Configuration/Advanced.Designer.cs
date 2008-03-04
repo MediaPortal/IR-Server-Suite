@@ -39,6 +39,7 @@ namespace InputService.Configuration
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+      this.checkBoxAbstractRemoteMode = new System.Windows.Forms.CheckBox();
       this.groupBoxMode.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -129,7 +130,7 @@ namespace InputService.Configuration
       this.buttonCancel.Location = new System.Drawing.Point(328, 136);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
-      this.buttonCancel.TabIndex = 2;
+      this.buttonCancel.TabIndex = 3;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -140,10 +141,23 @@ namespace InputService.Configuration
       this.buttonOK.Location = new System.Drawing.Point(256, 136);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
-      this.buttonOK.TabIndex = 1;
+      this.buttonOK.TabIndex = 2;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
+      // 
+      // checkBoxAbstractRemoteMode
+      // 
+      this.checkBoxAbstractRemoteMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.checkBoxAbstractRemoteMode.AutoSize = true;
+      this.checkBoxAbstractRemoteMode.Enabled = false;
+      this.checkBoxAbstractRemoteMode.Location = new System.Drawing.Point(8, 136);
+      this.checkBoxAbstractRemoteMode.Name = "checkBoxAbstractRemoteMode";
+      this.checkBoxAbstractRemoteMode.Size = new System.Drawing.Size(159, 17);
+      this.checkBoxAbstractRemoteMode.TabIndex = 1;
+      this.checkBoxAbstractRemoteMode.Text = "Use Abstract Remote Model";
+      this.toolTips.SetToolTip(this.checkBoxAbstractRemoteMode, "Enable automatic abstract remote model translation");
+      this.checkBoxAbstractRemoteMode.UseVisualStyleBackColor = true;
       // 
       // Advanced
       // 
@@ -152,6 +166,7 @@ namespace InputService.Configuration
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(400, 169);
+      this.Controls.Add(this.checkBoxAbstractRemoteMode);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Controls.Add(this.groupBoxMode);
@@ -162,6 +177,7 @@ namespace InputService.Configuration
       this.groupBoxMode.ResumeLayout(false);
       this.groupBoxMode.PerformLayout();
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
@@ -176,5 +192,6 @@ namespace InputService.Configuration
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.ToolTip toolTips;
+    private System.Windows.Forms.CheckBox checkBoxAbstractRemoteMode;
   }
 }
