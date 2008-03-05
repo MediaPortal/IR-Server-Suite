@@ -1,0 +1,100 @@
+<HTML>
+<HEAD><TITLE>Abstract Remote Model</TITLE></HEAD>
+<BODY>
+
+<H2>Abstract Remote Model<BR><HR COLOR="RED"></H2>
+
+<P>The biggest problem with PC remote control applications is the configuration process.  They generally fall into one of two categories.  The first category is the “easy to setup but inflexible” category, and the second is the “difficult to setup but highly flexible” category.</P>
+
+<P><B>Case in point: ByRemote HIP vs Promixis Girder.</B></P>
+
+<P>HIP is easy to setup without any prior knowledge, but HIP is not as feature rich or flexible as Girder.  Don't get me wrong here, it's a fantastic program which I highly recommend, but it's not <I>as</I> feature rich as Girder.</P>
+
+<P>Girder on the other hand is very difficult to setup <I>compared to HIP</I>, it has a steep learning curve, but is feature rich and flexible.</P>
+
+<P>This document does not seek to make a value judgement on either application.  Both have their advantages and disadvantages.</P>
+
+<P>One of the goals in software development is to produce software that "just works".  Software that is easy to use but also powerful enough to be adapted different situations.</P>
+
+<P>For PC Remote Control software one solution to the traditional trade-off between usability and flexibility is the subject of this document, the Abstract Remote Model.</P>
+
+<P>By agreeing on the most common remote buttons and including a collection of mappings to make all the supported remotes fit the common model we can provide a default configuration that will work on all supported remotes with no setup required.  Default configurations would be supplied for a large number of common PC applications, as well as general OS navigation and use.</P>
+
+<P>The drawback with other simplified systems of this nature is that you lose the flexibility to define different buttons and functions outside the simplified model, but with the Abstract Remote Model proposed any remote button that is not mapped onto the abstract model will be passed on in it’s raw form, thereby enabling the user to customize beyond the default configuration.</P>
+
+<P>What follows is the Abstract Remote Model button list as of Version 0.1 of the Abstract Remote Model.</P>
+
+<TABLE>
+<TR><TD>Abstract Button Name</TD><TD>Brief description</TD><TD>Explanation</TD></TR>
+<TR><TD>Up</TD><TD>Up Arrow</TD><TD>A feature of almost all PC remote controls, the arrow buttons are generally used to control the on screen cursor or item selection.</TD></TR>
+<TR><TD>Down</TD><TD>Down Arrow</TD><TD>
+<TR><TD>Left</TD><TD>Left Arrow</TD><TD>
+<TR><TD>Right</TD><TD>Right Arrow</TD><TD>
+<TR><TD>OK</TD><TD>OK / Select</TD><TD>Used to make a selection.</TD></TR>
+<TR><TD>VolumeUp</TD><TD>Increase Volume</TD><TD>Increase the system or application volume.</TD></TR>
+<TR><TD>VolumeDown</TD><TD>Decrease Volume</TD><TD>Decrease the system or application volume.</TD></TR>
+<TR><TD>ChannelUp</TD><TD>Channel Up</TD><TD>In TV systems this button is used to increment the channel.</TD></TR>
+<TR><TD>ChannelDown</TD><TD>Channel Down</TD><TD>In TV systems this button is used to decrement the channel.</TD></TR>
+<TR><TD>Start</TD><TD>Start / Home / Go</TD><TD>This button may appear under many labels, in MCE convention it is referred to as the Start button and is used to launch a common application or while in that application it is also used to return to the main menu or home screen.</TD></TR>
+<TR><TD>Back</TD><TD>Back</TD><TD>Often mapped as the keyboard Escape key, this buttons most common function is to leave a menu or abort an operation or selection.</TD></TR>
+<TR><TD>Info</TD><TD>Info / More</TD><TD>
+<TR><TD>Mute</TD><TD>Mute Volume</TD><TD>Mute either the system or application volume.</TD></TR>
+<TR><TD>Number0</TD><TD>0</TD><TD>Numbers from 0 through to 9 are used as either simple numerical text input, as channel number entry, or as an “sms-style” alpha-numeric text entry system.</TD></TR>
+<TR><TD>Number1</TD><TD>1</TD><TD>
+<TR><TD>Number2</TD><TD>2</TD><TD>
+<TR><TD>Number3</TD><TD>3</TD><TD>
+<TR><TD>Number4</TD><TD>4</TD><TD>
+<TR><TD>Number5</TD><TD>5</TD><TD>
+<TR><TD>Number6</TD><TD>6</TD><TD>
+<TR><TD>Number7</TD><TD>7</TD><TD>
+<TR><TD>Number8</TD><TD>8</TD><TD>
+<TR><TD>Number9</TD><TD>9</TD><TD>
+<TR><TD>Play</TD><TD>Play</TD><TD>Used to commence playback.</TD></TR>
+<TR><TD>Pause</TD><TD>Pause</TD><TD>Used to pause playback.</TD></TR>
+<TR><TD>PlayPause</TD><TD>Play / Pause</TD><TD>Many remotes will combine play and the pause functions into one button that pauses when playback is already running and commences playback when it is not.
+<TR><TD>Stop</TD><TD>Stop</TD><TD>Stop playback.</TD></TR>
+<TR><TD>FastForward</TD><TD>Fast Forward</TD><TD>Increase the playback rate.</TD></TR>
+<TR><TD>Rewind</TD><TD>Rewind</TD><TD>Reverse the playback and increase the rate.</TD></TR>
+<TR><TD>Record</TD><TD>Record</TD><TD>Record.</TD></TR>
+<TR><TD>NextChapter</TD><TD>Chapter +</TD><TD>Skip to the next chapter or item in a playlist, can also be used as a Page Up or Down.</TD></TR>
+<TR><TD>PreviousChapter</TD><TD>Chapter -</TD><TD>Skip back to the previous chapter or item in a playlist, can also be used as a Page Up or Down.</TD></TR>
+<TR><TD>Power</TD><TD>Power (Software)</TD><TD>Power button.  For this purpose we will assume it refers to the running software.</TD></TR>
+<TR><TD>Power2</TD><TD>Power (PC)</TD><TD>Second Power button.  For this purpose we will assume it always refers to the PCs power state.</TD></TR>
+<TR><TD>Power3</TD><TD>Power (Other)</TD><TD>Third Power button.  User definable.  Remove?</TD></TR>
+<TR><TD>Teletext</TD><TD>Teletext</TD><TD>Turns Teletext (or can be subtitles) on or off.</TD></TR>
+<TR><TD>Red</TD><TD>Red Teletext Button</TD><TD>When used in a teletext system these buttons each serve a purpose, however in systems or situations that do not have teletext these buttons can be given user-defined functions.</TD></TR>
+<TR><TD>Green</TD><TD>Green Teletext Button</TD><TD>
+<TR><TD>Yellow</TD><TD>Yellow Teletext Button</TD><TD>
+<TR><TD>Blue</TD><TD>Blue Teletext Button</TD><TD>
+<TR><TD>Subtitles</TD><TD>Subtitles</TD><TD>Toggle or Cycle subtitles.</TD></TR>
+<TR><TD>Menu</TD><TD>Menu</TD><TD>Go to Menu (often DVD Menu).</TD></TR>
+<TR><TD>Clear</TD><TD>Clear / Delete</TD><TD>Clear a text entry or delete a single character (backspace).</TD></TR>
+<TR><TD>Enter</TD><TD>Enter</TD><TD>Simulates a keyboard Enter button press, or is used to add a carriage return to a block of text, where as pressing OK/Select would finish the text entry mode.</TD></TR>
+<TR><TD>Hash</TD><TD>#</TD><TD>Used for special functions in alpha-numeric text entry modes.  Or simply as a special character.</TD></TR>
+<TR><TD>Star</TD><TD>*</TD><TD>
+<TR><TD>TaskSwap</TD><TD>Task Swap / Alt-Tab</TD><TD>Used to switch between running applications on the PC.</TD></TR>
+<TR><TD>Fullscreen</TD><TD>Toggle Fullscreen</TD><TD>Toggle video playback or window size between fullscreen and windowed.</TD></TR>
+<TR><TD>AspectRatio</TD><TD>Toggle Aspect Ratio</TD><TD>Cycle the video aspect ratio between available values.</TD></TR>
+<TR><TD>Setup</TD><TD>Setup</TD><TD>Setup.  General configuration button.</TD></TR>
+<TR><TD>Music</TD><TD>Music</TD><TD>Go to the Music section of a program, or used to launch a music application.</TD></TR>
+<TR><TD>Pictures</TD><TD>Pictures</TD><TD>Go to the Pictures section of a program, or used to launch a picture viewer application.</TD></TR>
+<TR><TD>Videos</TD><TD>Videos</TD><TD>Go to the Videos section of a program, or used to launch a video player application.</TD></TR>
+<TR><TD>DVD</TD><TD>DVD</TD><TD>Go to the DVD section of a program, or used to launch a DVD player application.</TD></TR>
+<TR><TD>TV</TD><TD>Television</TD><TD>Go to the Television section of a program, or used to launch a television application.</TD></TR>
+<TR><TD>Guide</TD><TD>Guide / EPG</TD><TD>Go to the Guide or EPG section of a program.</TD></TR>
+<TR><TD>LiveTV</TD><TD>Live TV</TD><TD>Go to the Live TV section of a program, or used to launch a live TV application.</TD></TR>
+<TR><TD>Radio</TD><TD>Radio</TD><TD>Go to the Radio section of a program, or used to launch a radio application.</TD></TR>
+<TR><TD>Print</TD><TD>Print</TD><TD>Print the current view/document.</TD></TR>
+<TR><TD>Snapshot</TD><TD>Create Snapshot</TD><TD>Create an image snapshot of the current view.</TD></TR>
+<TR><TD>Open</TD><TD>Open</TD><TD>Open a file/program.</TD></TR>
+<TR><TD>Close</TD><TD>Close</TD><TD>Close a file/program.</TD></TR>
+<TR><TD>Eject</TD><TD>Eject</TD><TD>Eject a CD/DVD.</TD></TR>
+<TR><TD>ScrollUp</TD><TD>Scroll Up</TD><TD>Scroll the view up. Remove?</TD></TR>
+<TR><TD>ScrollDown</TD><TD>Scroll Down</TD><TD>Scroll the view down. Remove?</TD></TR>
+<TR><TD>PageUp</TD><TD>Page Up</TD><TD>Page Up. Remove?</TD></TR>
+<TR><TD>PageDown</TD><TD>Page Down</TD><TD>Page Down. Remove?</TD></TR>
+
+</TABLE>
+
+</BODY>
+</HTML>
