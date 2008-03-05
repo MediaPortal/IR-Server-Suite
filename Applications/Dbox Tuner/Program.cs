@@ -150,7 +150,17 @@ namespace DboxTuner
             _tvBouquets = new DataTable();
             _tvBouquets.ReadXml(DataFile);
 
-            string expression = String.Format("ChanNo = '{0}'", args[1]);
+            string expression = String.Format("Channel = '{0}'", args[1]); // Works on EnigmaV1, others unknown.
+
+            /*
+            string expression;
+            switch (_boxType)
+            {
+              case StbBoxType.EnigmaV1: expression = String.Format("Channel = '{0}'", args[1]); break;
+              case StbBoxType.EnigmaV2: expression = String.Format("Channel = '{0}'", args[1]); break;
+              default: expression = String.Format("Channel = '{0}'", args[1]); break;
+            }
+            */
 
             DataRow[] rows = _tvBouquets.Select(expression);
             if (rows.Length == 1)

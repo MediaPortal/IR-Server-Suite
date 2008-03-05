@@ -184,6 +184,7 @@ namespace Abstractor
 
     IRServerInfo _irServerInfo = new IRServerInfo();
 
+    //string[] _devices;
     string _selectedDevice;
 
     #endregion Variables
@@ -204,6 +205,9 @@ namespace Abstractor
     DelegateSetDevices _setDevices;
     void SetDevices(string[] devices)
     {
+      // TODO: add code to automatically add devices to the list if they come from forwarded remote button presses.
+      //_devices = devices;
+
       comboBoxDevice.Items.Clear();
       comboBoxDevice.Items.AddRange(devices);
       comboBoxDevice.SelectedIndex = 0;

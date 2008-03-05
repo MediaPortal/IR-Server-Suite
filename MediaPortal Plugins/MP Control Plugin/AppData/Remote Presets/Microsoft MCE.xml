@@ -37,6 +37,21 @@
 		<button name="Info">
 			<code value="31728" />
 		</button>		
+		<button name="Up">
+			<code value="31713" />
+		</button>
+		<button name="Left">
+			<code value="31711" />
+		</button>
+		<button name="Ok">
+			<code value="31709" />
+		</button>
+		<button name="Right">
+			<code value="31710" />
+		</button>
+		<button name="Down">
+			<code value="31712" />
+		</button>
 		<button name="VolumeUp">
 			<code value="31727" />
 		</button>
@@ -66,6 +81,48 @@
 		</button>
 		<button name="DVDMenu">
 			<code value="31707" />
+		</button>
+		<button name="NumPad1">
+			<code value="31742" />
+		</button>
+		<button name="NumPad2">
+			<code value="31741" />
+		</button>
+		<button name="NumPad3">
+			<code value="31740" />
+		</button>
+		<button name="NumPad4">
+			<code value="31739" />
+		</button>
+		<button name="NumPad5">
+			<code value="31738" />
+		</button>
+		<button name="NumPad6">
+			<code value="31737" />
+		</button>
+		<button name="NumPad7">
+			<code value="31736" />
+		</button>
+		<button name="NumPad8">
+			<code value="31735" />
+		</button>
+		<button name="NumPad9">
+			<code value="31734" />
+		</button>
+		<button name="NumPad0">
+			<code value="31743" />
+		</button>
+		<button name="Oem8">
+			<code value="31714" />
+		</button>
+		<button name="OemGate">
+			<code value="31715" />
+		</button>		
+		<button name="Clear">
+			<code value="31733" />
+		</button>
+		<button name="Enter">
+			<code value="31732" />
 		</button>
 		<button name="Teletext">
 			<code value="31653" />
@@ -107,24 +164,5 @@
 			<code value="31638" />
 		</button>
 		<button name="Power1" />
-		<button name="Up" />
-		<button name="Left" />
-		<button name="Ok" />
-		<button name="Right" />
-		<button name="Down" />
-		<button name="NumPad1" />
-		<button name="NumPad2" />
-		<button name="NumPad3" />
-		<button name="NumPad4" />
-		<button name="NumPad5" />
-		<button name="NumPad6" />
-		<button name="NumPad7" />
-		<button name="NumPad8" />
-		<button name="NumPad9" />
-		<button name="NumPad0" />
-		<button name="Oem8" />
-		<button name="OemGate" />
-		<button name="Clear" />
-		<button name="Enter" />
 	</remote>
 </remotes>

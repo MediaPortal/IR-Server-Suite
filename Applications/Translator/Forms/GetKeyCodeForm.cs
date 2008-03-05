@@ -31,6 +31,10 @@ namespace Translator
 
     #region Properties
 
+    /// <summary>
+    /// Gets the key code received.
+    /// </summary>
+    /// <value>The key code.</value>
     public string KeyCode
     {
       get { return _keyCode; }
@@ -69,7 +73,11 @@ namespace Translator
         int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
         string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
 
-        _keyCode = keyCode;
+        // TODO: When Abstract Remote Model becomes on by default
+        //if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase)
+          _keyCode = keyCode;
+        //else
+        //  _keyCode = String.Format("{0} ({1})", deviceName, keyCode);
 
         this.Invoke(_keyCodeSet);
       }

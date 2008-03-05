@@ -40,7 +40,10 @@ namespace InputService.Configuration
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.checkBoxAbstractRemoteMode = new System.Windows.Forms.CheckBox();
+      this.buttonExclusions = new System.Windows.Forms.Button();
+      this.groupBoxAbstractRemoteModel = new System.Windows.Forms.GroupBox();
       this.groupBoxMode.SuspendLayout();
+      this.groupBoxAbstractRemoteModel.SuspendLayout();
       this.SuspendLayout();
       // 
       // groupBoxMode
@@ -127,7 +130,7 @@ namespace InputService.Configuration
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(328, 136);
+      this.buttonCancel.Location = new System.Drawing.Point(328, 208);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 3;
@@ -138,7 +141,7 @@ namespace InputService.Configuration
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(256, 136);
+      this.buttonOK.Location = new System.Drawing.Point(256, 208);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 2;
@@ -148,15 +151,40 @@ namespace InputService.Configuration
       // 
       // checkBoxAbstractRemoteMode
       // 
-      this.checkBoxAbstractRemoteMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.checkBoxAbstractRemoteMode.AutoSize = true;
-      this.checkBoxAbstractRemoteMode.Location = new System.Drawing.Point(8, 136);
+      this.checkBoxAbstractRemoteMode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.checkBoxAbstractRemoteMode.Location = new System.Drawing.Point(16, 24);
       this.checkBoxAbstractRemoteMode.Name = "checkBoxAbstractRemoteMode";
-      this.checkBoxAbstractRemoteMode.Size = new System.Drawing.Size(159, 17);
-      this.checkBoxAbstractRemoteMode.TabIndex = 1;
-      this.checkBoxAbstractRemoteMode.Text = "Use Abstract Remote Model";
+      this.checkBoxAbstractRemoteMode.Size = new System.Drawing.Size(264, 24);
+      this.checkBoxAbstractRemoteMode.TabIndex = 0;
+      this.checkBoxAbstractRemoteMode.Text = "Use the Abstract Remote Model";
       this.toolTips.SetToolTip(this.checkBoxAbstractRemoteMode, "Enable automatic abstract remote model translation");
       this.checkBoxAbstractRemoteMode.UseVisualStyleBackColor = true;
+      // 
+      // buttonExclusions
+      // 
+      this.buttonExclusions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonExclusions.Enabled = false;
+      this.buttonExclusions.Location = new System.Drawing.Point(296, 24);
+      this.buttonExclusions.Name = "buttonExclusions";
+      this.buttonExclusions.Size = new System.Drawing.Size(80, 24);
+      this.buttonExclusions.TabIndex = 1;
+      this.buttonExclusions.Text = "Exclusions";
+      this.toolTips.SetToolTip(this.buttonExclusions, "Configure Abstract Remote Model exclusions");
+      this.buttonExclusions.UseVisualStyleBackColor = true;
+      // 
+      // groupBoxAbstractRemoteModel
+      // 
+      this.groupBoxAbstractRemoteModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxAbstractRemoteModel.Controls.Add(this.buttonExclusions);
+      this.groupBoxAbstractRemoteModel.Controls.Add(this.checkBoxAbstractRemoteMode);
+      this.groupBoxAbstractRemoteModel.Location = new System.Drawing.Point(8, 136);
+      this.groupBoxAbstractRemoteModel.Name = "groupBoxAbstractRemoteModel";
+      this.groupBoxAbstractRemoteModel.Size = new System.Drawing.Size(384, 56);
+      this.groupBoxAbstractRemoteModel.TabIndex = 1;
+      this.groupBoxAbstractRemoteModel.TabStop = false;
+      this.groupBoxAbstractRemoteModel.Text = "Abstract Remote Model";
       // 
       // Advanced
       // 
@@ -164,8 +192,8 @@ namespace InputService.Configuration
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(400, 169);
-      this.Controls.Add(this.checkBoxAbstractRemoteMode);
+      this.ClientSize = new System.Drawing.Size(400, 241);
+      this.Controls.Add(this.groupBoxAbstractRemoteModel);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Controls.Add(this.groupBoxMode);
@@ -173,14 +201,14 @@ namespace InputService.Configuration
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(406, 194);
+      this.MinimumSize = new System.Drawing.Size(406, 266);
       this.Name = "Advanced";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Input Service Configuration - Advanced";
       this.groupBoxMode.ResumeLayout(false);
       this.groupBoxMode.PerformLayout();
+      this.groupBoxAbstractRemoteModel.ResumeLayout(false);
       this.ResumeLayout(false);
-      this.PerformLayout();
 
     }
 
@@ -196,5 +224,7 @@ namespace InputService.Configuration
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.CheckBox checkBoxAbstractRemoteMode;
+    private System.Windows.Forms.Button buttonExclusions;
+    private System.Windows.Forms.GroupBox groupBoxAbstractRemoteModel;
   }
 }
