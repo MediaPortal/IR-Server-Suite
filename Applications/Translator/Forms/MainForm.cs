@@ -531,7 +531,7 @@ namespace Translator
 
       if (map.ShowDialog(this) == DialogResult.OK)
       {
-        if (existing == null)
+        if (existing == null) // Create new mapping
         {
           listViewButtons.Items.Add(
             new ListViewItem(
@@ -540,7 +540,7 @@ namespace Translator
 
           currentMappings.Add(new ButtonMapping(map.KeyCode, map.Description, map.Command));
         }
-        else
+        else // Replace existing mapping
         {
           for (int index = 0; index < listViewButtons.Items.Count; index++)
           {

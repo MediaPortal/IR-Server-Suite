@@ -30,16 +30,14 @@ namespace IrssUtils.Forms
     private void InitializeComponent()
     {
       this.buttonDone = new System.Windows.Forms.Button();
-      this.labelLearned = new System.Windows.Forms.Label();
       this.buttonLearn = new System.Windows.Forms.Button();
       this.labelName = new System.Windows.Forms.Label();
       this.textBoxName = new System.Windows.Forms.TextBox();
       this.buttonTest = new System.Windows.Forms.Button();
-      this.groupBoxStatus = new System.Windows.Forms.GroupBox();
       this.comboBoxPort = new System.Windows.Forms.ComboBox();
       this.labelPort = new System.Windows.Forms.Label();
       this.groupBoxTest = new System.Windows.Forms.GroupBox();
-      this.groupBoxStatus.SuspendLayout();
+      this.labelStatus = new System.Windows.Forms.Label();
       this.groupBoxTest.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -53,20 +51,6 @@ namespace IrssUtils.Forms
       this.buttonDone.Text = "OK";
       this.buttonDone.UseVisualStyleBackColor = true;
       this.buttonDone.Click += new System.EventHandler(this.buttonDone_Click);
-      // 
-      // labelLearned
-      // 
-      this.labelLearned.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.labelLearned.BackColor = System.Drawing.Color.WhiteSmoke;
-      this.labelLearned.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.labelLearned.Location = new System.Drawing.Point(8, 16);
-      this.labelLearned.Name = "labelLearned";
-      this.labelLearned.Size = new System.Drawing.Size(248, 24);
-      this.labelLearned.TabIndex = 0;
-      this.labelLearned.Text = "Status";
-      this.labelLearned.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       // 
       // buttonLearn
       // 
@@ -100,7 +84,7 @@ namespace IrssUtils.Forms
       // buttonTest
       // 
       this.buttonTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonTest.Enabled = false;
+      this.buttonTest.Enabled = true;
       this.buttonTest.Location = new System.Drawing.Point(200, 16);
       this.buttonTest.Name = "buttonTest";
       this.buttonTest.Size = new System.Drawing.Size(56, 24);
@@ -108,19 +92,6 @@ namespace IrssUtils.Forms
       this.buttonTest.Text = "Test";
       this.buttonTest.UseVisualStyleBackColor = true;
       this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
-      // 
-      // groupBoxStatus
-      // 
-      this.groupBoxStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBoxStatus.Controls.Add(this.labelLearned);
-      this.groupBoxStatus.Location = new System.Drawing.Point(8, 40);
-      this.groupBoxStatus.Name = "groupBoxStatus";
-      this.groupBoxStatus.Size = new System.Drawing.Size(264, 48);
-      this.groupBoxStatus.TabIndex = 2;
-      this.groupBoxStatus.TabStop = false;
-      this.groupBoxStatus.Text = "Status";
       // 
       // comboBoxPort
       // 
@@ -149,12 +120,25 @@ namespace IrssUtils.Forms
       this.groupBoxTest.Controls.Add(this.comboBoxPort);
       this.groupBoxTest.Controls.Add(this.buttonTest);
       this.groupBoxTest.Controls.Add(this.labelPort);
-      this.groupBoxTest.Location = new System.Drawing.Point(8, 96);
+      this.groupBoxTest.Location = new System.Drawing.Point(8, 40);
       this.groupBoxTest.Name = "groupBoxTest";
       this.groupBoxTest.Size = new System.Drawing.Size(264, 48);
       this.groupBoxTest.TabIndex = 3;
       this.groupBoxTest.TabStop = false;
       this.groupBoxTest.Text = "Test";
+      // 
+      // labelStatus
+      // 
+      this.labelStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.labelStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.labelStatus.Location = new System.Drawing.Point(8, 96);
+      this.labelStatus.Name = "labelStatus";
+      this.labelStatus.Size = new System.Drawing.Size(264, 48);
+      this.labelStatus.TabIndex = 6;
+      this.labelStatus.Text = "Status";
+      this.labelStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       // 
       // LearnIR
       // 
@@ -162,9 +146,9 @@ namespace IrssUtils.Forms
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(280, 185);
+      this.Controls.Add(this.labelStatus);
       this.Controls.Add(this.groupBoxTest);
       this.Controls.Add(this.buttonDone);
-      this.Controls.Add(this.groupBoxStatus);
       this.Controls.Add(this.buttonLearn);
       this.Controls.Add(this.labelName);
       this.Controls.Add(this.textBoxName);
@@ -176,7 +160,6 @@ namespace IrssUtils.Forms
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Learn IR Command";
-      this.groupBoxStatus.ResumeLayout(false);
       this.groupBoxTest.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
@@ -186,15 +169,14 @@ namespace IrssUtils.Forms
     #endregion
 
     private System.Windows.Forms.Button buttonDone;
-    private System.Windows.Forms.Label labelLearned;
     private System.Windows.Forms.Button buttonLearn;
     private System.Windows.Forms.Label labelName;
     private System.Windows.Forms.TextBox textBoxName;
     private System.Windows.Forms.Button buttonTest;
-    private System.Windows.Forms.GroupBox groupBoxStatus;
     private System.Windows.Forms.ComboBox comboBoxPort;
     private System.Windows.Forms.Label labelPort;
     private System.Windows.Forms.GroupBox groupBoxTest;
+    private System.Windows.Forms.Label labelStatus;
   }
 
 }

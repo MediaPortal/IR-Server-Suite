@@ -20,7 +20,7 @@ namespace IrssUtils.Forms
     LearnIrDelegate _learnIrDelegate;
     BlastIrDelegate _blastIrDelegate;
 
-    bool _resetTextBoxNameEnabled;
+    bool _isNewCode;
 
     #endregion Variables
 
@@ -52,11 +52,11 @@ namespace IrssUtils.Forms
       comboBoxPort.Items.AddRange(ports);
       comboBoxPort.SelectedIndex = 0;
 
-      labelLearned.Text         = "Not yet learned";
-      buttonTest.Enabled        = false;
+      labelStatus.Text          = "Nothing learned yet";
+      groupBoxTest.Enabled      = false;
       textBoxName.Text          = "New";
       textBoxName.Enabled       = true;
-      _resetTextBoxNameEnabled  = true;
+      _isNewCode                = true;
     }
 
     /// <summary>
@@ -72,11 +72,11 @@ namespace IrssUtils.Forms
       if (String.IsNullOrEmpty(existingCodeName))
         throw new ArgumentNullException("existingCodeName");
 
-      labelLearned.Text         = "Not yet re-learned";
-      buttonTest.Enabled        = true;
+      labelStatus.Text          = "IR Command is unchanged";
+      groupBoxTest.Enabled      = true;
       textBoxName.Text          = existingCodeName;
       textBoxName.Enabled       = false;
-      _resetTextBoxNameEnabled  = false;
+      _isNewCode                = false;
     }
 
     #endregion Constructor
@@ -90,20 +90,20 @@ namespace IrssUtils.Forms
     /// <param name="success">Success status.</param>
     public void LearnStatus(string status, bool success)
     {
-      if (labelLearned.InvokeRequired)
+      if (labelStatus.InvokeRequired)
       {
         this.Invoke(new LearnStatusDelegate(LearnStatus), new object[] { status, success });
       }
       else
       {
-        labelLearned.Text = status;
-        labelLearned.ForeColor = success ? Color.Green : Color.Red;
-        labelLearned.Update();
+        labelStatus.Text = status;
+        labelStatus.ForeColor = success ? Color.Green : Color.Red;
+        labelStatus.Update();
 
-        textBoxName.Enabled = _resetTextBoxNameEnabled;
-        buttonLearn.Enabled = true;
-        buttonTest.Enabled = success;
-        buttonDone.Enabled = true;
+        textBoxName.Enabled   = _isNewCode;
+        buttonLearn.Enabled   = true;
+        groupBoxTest.Enabled  = success || !_isNewCode;
+        buttonDone.Enabled    = true;
       }
     }
 
@@ -127,28 +127,27 @@ namespace IrssUtils.Forms
         return;
       }
 
-      textBoxName.Enabled = false;
-      buttonLearn.Enabled = false;
-      buttonTest.Enabled = false;
-      buttonDone.Enabled = false;
+      textBoxName.Enabled   = false;
+      buttonLearn.Enabled   = false;
+      groupBoxTest.Enabled  = false;
+      buttonDone.Enabled    = false;
 
       string fileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
-
       if (_learnIrDelegate(fileName))
       {
-        labelLearned.Text = "Press button to learn now";
-        labelLearned.ForeColor = Color.Blue;
-        labelLearned.Update();
+        labelStatus.Text = "Hold your remote close to the receiver and tap the button to learn";
+        labelStatus.ForeColor = Color.Blue;
+        labelStatus.Update();
       }
       else
       {
-        labelLearned.Text = "Failed to learn IR";
-        labelLearned.ForeColor = Color.Red;
+        labelStatus.Text = "Failed to learn IR";
+        labelStatus.ForeColor = Color.Red;
 
-        textBoxName.Enabled = _resetTextBoxNameEnabled;
-        buttonLearn.Enabled = true;
-        buttonTest.Enabled = false;
-        buttonDone.Enabled = true;
+        textBoxName.Enabled   = _isNewCode;
+        buttonLearn.Enabled   = true;
+        groupBoxTest.Enabled  = !_isNewCode;
+        buttonDone.Enabled    = true;
       }
     }
 

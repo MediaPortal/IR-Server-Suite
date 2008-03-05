@@ -98,6 +98,10 @@ namespace Abstractor
       "Page Down"
     };*/
 
+    static readonly string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
+    static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
+
+
     public enum AbstractButton
     {
       Up,
@@ -180,7 +184,7 @@ namespace Abstractor
 
     IRServerInfo _irServerInfo = new IRServerInfo();
 
-    DataSet _abstractRemoteButtons;
+    string _selectedDevice;
 
     #endregion Variables
 
@@ -230,7 +234,6 @@ namespace Abstractor
 
       ClearMap();
       /*
-
       DataTable table = new DataTable("RemoteTable");
 
       DataColumn column;
@@ -259,26 +262,10 @@ namespace Abstractor
         table.Rows.Add(button.ToString(), name);
       }
 
-      //table.WriteXmlSchema("RemoteTable.xsd");
+      //table.WriteXmlSchema(AbstractRemoteSchemaFile);
 
-      table.WriteXml("Microsoft MCE.xml");
-      table.WriteXml("XBCDRC.xml");
-      
-       */
-
-      //_abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
-      //_abstractRemoteButtons.CaseSensitive = true;
-
-      //_abstractRemoteButtons.ReadXmlSchema("RemoteTable.xsd");
-
-
-      //_abstractRemoteButtons.Tables.Add(table);
-      //_abstractRemoteButtons.Tables.Add(table);
-
-      
-      //_lookupTable.WriteXmlSchema("Abstract Remote Model 0.1.xsd");
-      //_lookupTable.WriteXml("Abstract Remote Button List.xml",  XmlWriteMode.WriteSchema);
-      //_abstractRemoteButtons.WriteXml("Abstract Remote Button List.xml", XmlWriteMode.WriteSchema);
+      table.WriteXml("Template.xml");
+      */
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -306,9 +293,6 @@ namespace Abstractor
               _registered = true;
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
 
-              _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
-              _abstractRemoteButtons.CaseSensitive = true;
-
               _client.Send(new IrssMessage(MessageType.ActiveReceivers, MessageFlags.Request));
               _client.Send(new IrssMessage(MessageType.ActiveBlasters, MessageFlags.Request));
             }
@@ -328,8 +312,6 @@ namespace Abstractor
             string[] receivers = received.GetDataAsString().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             this.Invoke(_setDevices, new Object[] { receivers });
-
-            LoadDeviceFiles(receivers);
             break;
 
           case MessageType.RemoteEvent:
@@ -363,7 +345,7 @@ namespace Abstractor
       this.Invoke(_addStatusLine, text);
 
       // If this remote event matches the criteria then set it to an abstract button in the list view ...
-      if (deviceName.Equals(comboBoxDevice.Text, StringComparison.OrdinalIgnoreCase))
+      if (deviceName.Equals(_selectedDevice, StringComparison.OrdinalIgnoreCase))
       {
         if (listViewButtonMap.SelectedItems.Count == 1)
         {
@@ -386,34 +368,6 @@ namespace Abstractor
             }
           }
         }
-      }
-
-      // Determine abstract button details ...
-      string abstractButton = LookupAbstractButton(deviceName, keyCode);
-
-      bool isAbstract = true;
-      if (String.IsNullOrEmpty(abstractButton))
-      {
-        isAbstract = false;
-        abstractButton = String.Format("{0} ({1})", deviceName, keyCode);
-      }
-
-      string abstractText = String.Format("Button: {0}", abstractButton);
-      this.Invoke(_addStatusLine, abstractText);
-
-      if (checkBoxForwardAbstract.Checked && isAbstract)
-      {
-        byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Abstract");
-        byte[] keyCodeBytes = Encoding.ASCII.GetBytes(abstractButton);
-
-        byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
-
-        BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(bytes, 0);
-        deviceNameBytes.CopyTo(bytes, 4);
-        BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
-        keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
-
-        _client.Send(new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, bytes));
       }
     }
 
@@ -524,67 +478,6 @@ namespace Abstractor
       }
     }
 
-    string LookupAbstractButton(string deviceName, string keyCode)
-    {
-      foreach (DataTable table in _abstractRemoteButtons.Tables)
-      {
-        string device = table.ExtendedProperties["Device"] as string;
-
-        if (device.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
-        {
-          string expression = String.Format("RawCode = '{0}'", keyCode);
-
-          DataRow[] rows = table.Select(expression);
-          if (rows.Length == 1)
-          {
-            string button = rows[0]["AbstractButton"].ToString() as string;
-            if (!String.IsNullOrEmpty(button))
-            {
-#if TRACE
-              Trace.WriteLine(button + ", remote: " + table.ExtendedProperties["Remote"] as string + ", device: " + deviceName);
-#endif
-              return button;
-            }
-          }
-        }
-      }
-
-      return null;
-      //return String.Format("{0} ({1})", deviceName, keyCode);
-    }
-
-
-    void LoadDeviceFiles(string[] devices)
-    {
-      foreach (string device in devices)
-      {
-        string[] files = Directory.GetFiles(device, "*.xml", SearchOption.TopDirectoryOnly);
-        foreach (string file in files)
-        {
-          string remote = Path.GetFileNameWithoutExtension(file);
-          this.Invoke(_addStatusLine, String.Format("Loading {0} remote map \"{1}\"", device, remote));
-
-          string tableName = String.Format("{0}:{1}", device, remote);
-
-          if (_abstractRemoteButtons.Tables.Contains(tableName))
-          {
-            this.Invoke(_addStatusLine, "Table already loaded");
-            continue;
-          }
-
-          DataTable table = _abstractRemoteButtons.Tables.Add("RemoteTable");
-          table.ReadXmlSchema("RemoteTable.xsd");
-          table.ReadXml(file);
-
-
-          table.ExtendedProperties.Add("Device", device);
-          table.ExtendedProperties.Add("Remote", remote);
-
-          table.TableName = tableName;
-        }
-      }
-    }
-
     private void buttonClear_Click(object sender, EventArgs e)
     {
       ClearMap();
@@ -615,19 +508,18 @@ namespace Abstractor
         return;
       }
 
-      string device = comboBoxDevice.Text;
+      string directory = Path.Combine(AbstractRemoteMapFolder, _selectedDevice);
 
-      if (!Directory.Exists(device))
-        Directory.CreateDirectory(device);
+      if (!Directory.Exists(directory))
+        Directory.CreateDirectory(directory);
 
       string fileName = Path.ChangeExtension(textBoxRemoteName.Text, ".xml");
-
-      string path = Path.Combine(device, fileName);
+      string path = Path.Combine(directory, fileName);
 
       this.Invoke(_addStatusLine, String.Format("Writing to file \"{0}\"", path));
 
       DataTable table = new DataTable("RemoteTable");
-      table.ReadXmlSchema("RemoteTable.xsd");
+      table.ReadXmlSchema(AbstractRemoteSchemaFile);
 
       foreach (ListViewItem item in listViewButtonMap.Items)
       {
@@ -641,27 +533,24 @@ namespace Abstractor
     {
       if (String.IsNullOrEmpty(textBoxRemoteName.Text))
       {
-        MessageBox.Show(this, "You must include a remote name before saving", "Missing remote name", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "You must include a remote name to load", "Missing remote name", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
 
-      string device = comboBoxDevice.Text;
-      
       string fileName = Path.ChangeExtension(textBoxRemoteName.Text, ".xml");
-
-      string path = Path.Combine(device, fileName);
+      string directory = Path.Combine(AbstractRemoteMapFolder, _selectedDevice);
+      string path = Path.Combine(directory, fileName);
 
       if (!File.Exists(path))
       {
-        MessageBox.Show(this, String.Format("Remote file not found ({0}) in device folder ({1})", fileName, device), "Remote file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, String.Format("Remote file not found ({0}) in device folder ({1})", fileName, _selectedDevice), "Remote file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
 
-      this.Invoke(_addStatusLine, String.Format("Reading from file \"{0}\"", path));
+      this.Invoke(_addStatusLine, String.Format("Reading remote from file \"{0}\" (device: {1})", fileName, _selectedDevice));
 
       DataTable table = new DataTable("RemoteTable");
-      table.ReadXmlSchema("RemoteTable.xsd");
-
+      table.ReadXmlSchema(AbstractRemoteSchemaFile);
       table.ReadXml(path);
 
       string[] abstractButtons = Enum.GetNames(typeof(AbstractButton));
@@ -683,13 +572,18 @@ namespace Abstractor
 
     private void listViewButtonMap_KeyDown(object sender, KeyEventArgs e)
     {
-      if (e.KeyCode == Keys.Space)
+      if (e.KeyCode == Keys.Delete)
       {
         if (listViewButtonMap.SelectedItems.Count == 1)
         {
           listViewButtonMap.SelectedItems[0].SubItems[1].Text = String.Empty;
         }
       }
+    }
+
+    private void comboBoxDevice_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      _selectedDevice = comboBoxDevice.Text;
     }
 
 

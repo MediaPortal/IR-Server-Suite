@@ -59,7 +59,6 @@ namespace InputService
     static readonly string ConfigurationFile        = Path.Combine(Common.FolderAppData, "Input Service\\Input Service.xml");
 
     static readonly string AbstractRemoteMapFolder  = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
-
     static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
 
     #endregion Constants

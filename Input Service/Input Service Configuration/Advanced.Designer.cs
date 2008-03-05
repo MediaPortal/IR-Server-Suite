@@ -150,7 +150,6 @@ namespace InputService.Configuration
       // 
       this.checkBoxAbstractRemoteMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.checkBoxAbstractRemoteMode.AutoSize = true;
-      this.checkBoxAbstractRemoteMode.Enabled = false;
       this.checkBoxAbstractRemoteMode.Location = new System.Drawing.Point(8, 136);
       this.checkBoxAbstractRemoteMode.Name = "checkBoxAbstractRemoteMode";
       this.checkBoxAbstractRemoteMode.Size = new System.Drawing.Size(159, 17);
@@ -170,7 +169,11 @@ namespace InputService.Configuration
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Controls.Add(this.groupBoxMode);
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.MaximizeBox = false;
+      this.MinimizeBox = false;
+      this.MinimumSize = new System.Drawing.Size(406, 194);
       this.Name = "Advanced";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Input Service Configuration - Advanced";

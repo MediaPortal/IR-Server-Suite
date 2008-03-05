@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 using IrssComms;
@@ -48,7 +49,8 @@ namespace Translator
 
     private void GetKeyCodeForm_Load(object sender, EventArgs e)
     {
-      labelStatus.Text = "Press the remote button to map";
+      labelStatus.Text = "Press the remote button you want to map";
+      labelStatus.ForeColor = Color.Blue;
 
       _keyCodeSet = new DelegateKeyCodeSet(KeyCodeSet);
 
@@ -68,13 +70,6 @@ namespace Translator
         string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
 
         _keyCode = keyCode;
-        ///*
-        if (!deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
-        {
-          _keyCode = String.Format("{0} ({1})", deviceName, keyCode);
-          // TODO: REMOVE!
-          return;
-        }//*/
 
         this.Invoke(_keyCodeSet);
       }
@@ -83,15 +78,27 @@ namespace Translator
     void KeyCodeSet()
     {
       timer.Stop();
-
       Program.HandleMessage -= new ClientMessageSink(MessageReceiver);
 
+      labelStatus.Text = String.Format("Received: {0}", _keyCode);
+      labelStatus.ForeColor = Color.Green;
+      labelStatus.Update();
+
+      Thread.Sleep(1000);
       this.Close();
     }
 
     private void timer_Tick(object sender, EventArgs e)
     {
-      KeyCodeSet();
+      timer.Stop();
+      Program.HandleMessage -= new ClientMessageSink(MessageReceiver);
+
+      labelStatus.Text = "Timed out";
+      labelStatus.ForeColor = Color.Red;
+      labelStatus.Update();
+
+      Thread.Sleep(2000);
+      this.Close();
     }
 
   }

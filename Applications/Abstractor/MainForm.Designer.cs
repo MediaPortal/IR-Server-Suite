@@ -36,6 +36,7 @@ namespace Abstractor
       this.groupBoxStatus = new System.Windows.Forms.GroupBox();
       this.listBoxStatus = new System.Windows.Forms.ListBox();
       this.groupBoxMapAbstract = new System.Windows.Forms.GroupBox();
+      this.checkBoxToggle = new System.Windows.Forms.CheckBox();
       this.buttonClear = new System.Windows.Forms.Button();
       this.buttonLoad = new System.Windows.Forms.Button();
       this.buttonSave = new System.Windows.Forms.Button();
@@ -46,8 +47,6 @@ namespace Abstractor
       this.listViewButtonMap = new System.Windows.Forms.ListView();
       this.columnHeaderAbstractButton = new System.Windows.Forms.ColumnHeader();
       this.columnHeaderKeyCode = new System.Windows.Forms.ColumnHeader();
-      this.checkBoxToggle = new System.Windows.Forms.CheckBox();
-      this.checkBoxForwardAbstract = new System.Windows.Forms.CheckBox();
       this.groupBoxSetup.SuspendLayout();
       this.groupBoxStatus.SuspendLayout();
       this.groupBoxMapAbstract.SuspendLayout();
@@ -92,7 +91,7 @@ namespace Abstractor
       // 
       // buttonConnect
       // 
-      this.buttonConnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonConnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonConnect.Location = new System.Drawing.Point(264, 32);
       this.buttonConnect.Name = "buttonConnect";
       this.buttonConnect.Size = new System.Drawing.Size(80, 24);
@@ -103,7 +102,7 @@ namespace Abstractor
       // 
       // buttonDisconnect
       // 
-      this.buttonDisconnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonDisconnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonDisconnect.Location = new System.Drawing.Point(352, 32);
       this.buttonDisconnect.Name = "buttonDisconnect";
       this.buttonDisconnect.Size = new System.Drawing.Size(80, 24);
@@ -117,9 +116,9 @@ namespace Abstractor
       this.groupBoxStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxStatus.Controls.Add(this.listBoxStatus);
-      this.groupBoxStatus.Location = new System.Drawing.Point(8, 344);
+      this.groupBoxStatus.Location = new System.Drawing.Point(8, 424);
       this.groupBoxStatus.Name = "groupBoxStatus";
-      this.groupBoxStatus.Size = new System.Drawing.Size(440, 192);
+      this.groupBoxStatus.Size = new System.Drawing.Size(440, 136);
       this.groupBoxStatus.TabIndex = 2;
       this.groupBoxStatus.TabStop = false;
       this.groupBoxStatus.Text = "Status";
@@ -135,7 +134,7 @@ namespace Abstractor
       this.listBoxStatus.Location = new System.Drawing.Point(8, 16);
       this.listBoxStatus.Name = "listBoxStatus";
       this.listBoxStatus.ScrollAlwaysVisible = true;
-      this.listBoxStatus.Size = new System.Drawing.Size(424, 168);
+      this.listBoxStatus.Size = new System.Drawing.Size(424, 112);
       this.listBoxStatus.TabIndex = 0;
       // 
       // groupBoxMapAbstract
@@ -154,15 +153,26 @@ namespace Abstractor
       this.groupBoxMapAbstract.Controls.Add(this.listViewButtonMap);
       this.groupBoxMapAbstract.Location = new System.Drawing.Point(8, 80);
       this.groupBoxMapAbstract.Name = "groupBoxMapAbstract";
-      this.groupBoxMapAbstract.Size = new System.Drawing.Size(440, 256);
+      this.groupBoxMapAbstract.Size = new System.Drawing.Size(440, 336);
       this.groupBoxMapAbstract.TabIndex = 1;
       this.groupBoxMapAbstract.TabStop = false;
       this.groupBoxMapAbstract.Text = "Abstract Remote Map";
       // 
+      // checkBoxToggle
+      // 
+      this.checkBoxToggle.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.checkBoxToggle.Location = new System.Drawing.Point(96, 304);
+      this.checkBoxToggle.Name = "checkBoxToggle";
+      this.checkBoxToggle.Size = new System.Drawing.Size(160, 24);
+      this.checkBoxToggle.TabIndex = 6;
+      this.checkBoxToggle.Text = "Remote uses Toggle codes";
+      this.checkBoxToggle.UseVisualStyleBackColor = true;
+      this.checkBoxToggle.Visible = false;
+      // 
       // buttonClear
       // 
       this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonClear.Location = new System.Drawing.Point(8, 224);
+      this.buttonClear.Location = new System.Drawing.Point(8, 304);
       this.buttonClear.Name = "buttonClear";
       this.buttonClear.Size = new System.Drawing.Size(80, 24);
       this.buttonClear.TabIndex = 5;
@@ -173,7 +183,7 @@ namespace Abstractor
       // buttonLoad
       // 
       this.buttonLoad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonLoad.Location = new System.Drawing.Point(264, 224);
+      this.buttonLoad.Location = new System.Drawing.Point(264, 304);
       this.buttonLoad.Name = "buttonLoad";
       this.buttonLoad.Size = new System.Drawing.Size(80, 24);
       this.buttonLoad.TabIndex = 7;
@@ -184,7 +194,7 @@ namespace Abstractor
       // buttonSave
       // 
       this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonSave.Location = new System.Drawing.Point(352, 224);
+      this.buttonSave.Location = new System.Drawing.Point(352, 304);
       this.buttonSave.Name = "buttonSave";
       this.buttonSave.Size = new System.Drawing.Size(80, 24);
       this.buttonSave.TabIndex = 8;
@@ -194,6 +204,7 @@ namespace Abstractor
       // 
       // labelDevice
       // 
+      this.labelDevice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.labelDevice.Location = new System.Drawing.Point(232, 24);
       this.labelDevice.Name = "labelDevice";
       this.labelDevice.Size = new System.Drawing.Size(72, 20);
@@ -210,11 +221,14 @@ namespace Abstractor
       // 
       // comboBoxDevice
       // 
+      this.comboBoxDevice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.comboBoxDevice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxDevice.FormattingEnabled = true;
       this.comboBoxDevice.Location = new System.Drawing.Point(304, 24);
       this.comboBoxDevice.Name = "comboBoxDevice";
       this.comboBoxDevice.Size = new System.Drawing.Size(128, 21);
       this.comboBoxDevice.TabIndex = 3;
+      this.comboBoxDevice.SelectedIndexChanged += new System.EventHandler(this.comboBoxDevice_SelectedIndexChanged);
       // 
       // textBoxRemoteName
       // 
@@ -238,7 +252,7 @@ namespace Abstractor
       this.listViewButtonMap.Location = new System.Drawing.Point(8, 48);
       this.listViewButtonMap.MultiSelect = false;
       this.listViewButtonMap.Name = "listViewButtonMap";
-      this.listViewButtonMap.Size = new System.Drawing.Size(424, 168);
+      this.listViewButtonMap.Size = new System.Drawing.Size(424, 248);
       this.listViewButtonMap.TabIndex = 4;
       this.listViewButtonMap.UseCompatibleStateImageBehavior = false;
       this.listViewButtonMap.View = System.Windows.Forms.View.Details;
@@ -254,38 +268,16 @@ namespace Abstractor
       this.columnHeaderKeyCode.Text = "KeyCode";
       this.columnHeaderKeyCode.Width = 288;
       // 
-      // checkBoxToggle
-      // 
-      this.checkBoxToggle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.checkBoxToggle.Location = new System.Drawing.Point(96, 224);
-      this.checkBoxToggle.Name = "checkBoxToggle";
-      this.checkBoxToggle.Size = new System.Drawing.Size(160, 24);
-      this.checkBoxToggle.TabIndex = 6;
-      this.checkBoxToggle.Text = "Remote uses Toggle codes";
-      this.checkBoxToggle.UseVisualStyleBackColor = true;
-      this.checkBoxToggle.Visible = false;
-      // 
-      // checkBoxForwardAbstract
-      // 
-      this.checkBoxForwardAbstract.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.checkBoxForwardAbstract.Location = new System.Drawing.Point(8, 544);
-      this.checkBoxForwardAbstract.Name = "checkBoxForwardAbstract";
-      this.checkBoxForwardAbstract.Size = new System.Drawing.Size(168, 24);
-      this.checkBoxForwardAbstract.TabIndex = 3;
-      this.checkBoxForwardAbstract.Text = "Forward abstract buttons";
-      this.checkBoxForwardAbstract.UseVisualStyleBackColor = true;
-      // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(456, 569);
-      this.Controls.Add(this.checkBoxForwardAbstract);
       this.Controls.Add(this.groupBoxMapAbstract);
       this.Controls.Add(this.groupBoxSetup);
       this.Controls.Add(this.groupBoxStatus);
       this.Name = "MainForm";
-      this.Text = "Abstractor";
+      this.Text = "Abstract Remote Map Creator";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
       this.groupBoxSetup.ResumeLayout(false);
       this.groupBoxStatus.ResumeLayout(false);
@@ -316,7 +308,6 @@ namespace Abstractor
     private System.Windows.Forms.ColumnHeader columnHeaderAbstractButton;
     private System.Windows.Forms.ColumnHeader columnHeaderKeyCode;
     private System.Windows.Forms.CheckBox checkBoxToggle;
-    private System.Windows.Forms.CheckBox checkBoxForwardAbstract;
   }
 }
 

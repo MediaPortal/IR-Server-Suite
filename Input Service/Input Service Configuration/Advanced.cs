@@ -17,6 +17,11 @@ namespace InputService.Configuration
 
     #region Properties
 
+    public bool AbstractRemoteMode
+    {
+      get { return checkBoxAbstractRemoteMode.Checked; }
+      set { checkBoxAbstractRemoteMode.Checked = value; }
+    }
     public InputServiceMode Mode
     {
       get

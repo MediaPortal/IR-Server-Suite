@@ -37,6 +37,7 @@ namespace Translator
       // labelStatus
       // 
       this.labelStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.labelStatus.Location = new System.Drawing.Point(0, 0);
       this.labelStatus.Name = "labelStatus";
       this.labelStatus.Size = new System.Drawing.Size(288, 57);

@@ -35,7 +35,7 @@ namespace DboxTuner
     internal const string UrlPrefix = "http://";
 
     internal static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Dbox Tuner\\Dbox Tuner.xml");
-    internal static readonly string DataFile = Path.Combine(Common.FolderAppData, "Dbox Tuner\\Data.xml");
+    internal static readonly string DataFile          = Path.Combine(Common.FolderAppData, "Dbox Tuner\\Data.xml");
 
     #endregion Constants
 

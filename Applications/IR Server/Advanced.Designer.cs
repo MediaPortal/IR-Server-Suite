@@ -39,6 +39,7 @@ namespace IRServer
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+      this.checkBoxAbstractRemoteMode = new System.Windows.Forms.CheckBox();
       this.groupBoxMode.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -125,7 +126,7 @@ namespace IRServer
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(328, 144);
+      this.buttonCancel.Location = new System.Drawing.Point(328, 136);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 2;
@@ -136,7 +137,7 @@ namespace IRServer
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(256, 144);
+      this.buttonOK.Location = new System.Drawing.Point(256, 136);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 1;
@@ -144,24 +145,39 @@ namespace IRServer
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
       // 
+      // checkBoxAbstractRemoteMode
+      // 
+      this.checkBoxAbstractRemoteMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.checkBoxAbstractRemoteMode.AutoSize = true;
+      this.checkBoxAbstractRemoteMode.Location = new System.Drawing.Point(8, 136);
+      this.checkBoxAbstractRemoteMode.Name = "checkBoxAbstractRemoteMode";
+      this.checkBoxAbstractRemoteMode.Size = new System.Drawing.Size(159, 17);
+      this.checkBoxAbstractRemoteMode.TabIndex = 3;
+      this.checkBoxAbstractRemoteMode.Text = "Use Abstract Remote Model";
+      this.toolTips.SetToolTip(this.checkBoxAbstractRemoteMode, "Enable automatic abstract remote model translation");
+      this.checkBoxAbstractRemoteMode.UseVisualStyleBackColor = true;
+      // 
       // Advanced
       // 
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(402, 177);
+      this.ClientSize = new System.Drawing.Size(398, 167);
+      this.Controls.Add(this.checkBoxAbstractRemoteMode);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Controls.Add(this.groupBoxMode);
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-      this.MinimumSize = new System.Drawing.Size(418, 213);
+      this.MinimumSize = new System.Drawing.Size(406, 194);
       this.Name = "Advanced";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "IR Server - Advanced Configuration";
       this.groupBoxMode.ResumeLayout(false);
       this.groupBoxMode.PerformLayout();
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
@@ -176,5 +192,6 @@ namespace IRServer
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.ToolTip toolTips;
+    private System.Windows.Forms.CheckBox checkBoxAbstractRemoteMode;
   }
 }

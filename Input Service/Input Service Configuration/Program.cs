@@ -94,14 +94,16 @@ namespace InputService.Configuration
 
       Config config = new Config();
 
-      config.Mode           = _mode;
-      config.HostComputer   = _hostComputer;
-      config.PluginReceive  = _pluginNameReceive;
-      config.PluginTransmit = _pluginNameTransmit;
+      config.AbstractRemoteMode = _abstractRemoteMode;
+      config.Mode               = _mode;
+      config.HostComputer       = _hostComputer;
+      config.PluginReceive      = _pluginNameReceive;
+      config.PluginTransmit     = _pluginNameTransmit;
 
       if (config.ShowDialog() == DialogResult.OK)
       {
-        if ((_mode != config.Mode) ||
+        if ((_abstractRemoteMode != config.AbstractRemoteMode) ||
+            (_mode != config.Mode) ||
             (_hostComputer != config.HostComputer) ||
             (_pluginNameReceive != config.PluginReceive) ||
             (_pluginNameTransmit != config.PluginTransmit))
@@ -110,6 +112,7 @@ namespace InputService.Configuration
           if (MessageBox.Show("Input Service will now be restarted for configuration changes to take effect", "Restarting Input Service", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
           {
             // Change settings ...
+            _abstractRemoteMode = config.AbstractRemoteMode;
             _mode               = config.Mode;
             _hostComputer       = config.HostComputer;
             _pluginNameReceive  = config.PluginReceive;
