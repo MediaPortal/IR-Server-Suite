@@ -24,10 +24,10 @@ namespace IrssUtils.Forms
     {
       get
       {
-        return
-          textBoxHeading.Text + "|" +
-          textBoxText.Text + "|" +
-          numericUpDownTimeout.Value.ToString();
+        return String.Format("{0}|{1}|{2}",
+          textBoxHeading.Text,
+          textBoxText.Text,
+          numericUpDownTimeout.Value.ToString());
       }
     }
 

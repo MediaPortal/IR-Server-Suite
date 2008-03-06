@@ -175,12 +175,12 @@ namespace InputService.Plugin
       if (_lastCommand.IsSameCommand(command))
         if ((command.Time - _lastCommand.Time) < _buttonReleaseTime)
         {
-          Trace.WriteLine("WLirc: Command '" + command.Button + "' ignored because of repeat filter");
+          Trace.WriteLine(String.Format("WLirc: Command '{0}' ignored because of repeat filter", command.Button));
           return;
         }
       #endregion
 
-      Trace.WriteLine("WLirc: Command '" + command.Button + "' accepted");
+      Trace.WriteLine(String.Format("WLirc: Command '{0}' accepted", command.Button));
       _lastCommand = command;
 
       if (CommandEvent != null)

@@ -26,7 +26,7 @@ namespace SkinEditor
 
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Virtual Remote Skin Editor\\Virtual Remote Skin Editor.xml");
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Virtual Remote\\Virtual Remote Skin Editor.xml");
 
     #endregion Constants
 

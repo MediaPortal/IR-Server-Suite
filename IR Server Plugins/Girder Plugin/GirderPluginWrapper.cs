@@ -934,7 +934,7 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     bool i18n_translate(string orig, IntPtr szstore, int size)
     {
 #if TRACE
-      Trace.WriteLine("i18n_translate(" + orig + ")");
+      Trace.WriteLine(String.Format("i18n_translate({0})", orig));
 #endif
 
       return WriteString(szstore, size, orig);
@@ -997,7 +997,7 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     int get_int_var(string name)
     {
 #if TRACE
-      Trace.WriteLine("get_int_var(" + name + ")");
+      Trace.WriteLine(String.Format("get_int_var({0})", name));
 #endif
 
       return 0;
@@ -1006,7 +1006,7 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     double get_double_var(string name)
     {
 #if TRACE
-      Trace.WriteLine("get_double_var(" + name + ")");
+      Trace.WriteLine(String.Format("get_double_var({0})", name));
 #endif
 
       return 0.0;
@@ -1048,7 +1048,7 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     bool delete_var(string name)
     {
 #if TRACE
-      Trace.WriteLine("delete_var(" + name + ")");
+      Trace.WriteLine(String.Format("delete_var({0})", name));
 #endif
 
       return true;

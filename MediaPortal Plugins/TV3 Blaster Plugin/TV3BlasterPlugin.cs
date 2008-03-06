@@ -454,7 +454,7 @@ namespace TvEngine
             channel.Append(digit);
 
         // Pad the channel number with leading 0's to meet ChannelDigits length.
-        while (channel.Length < config.ChannelDigits)
+        while (channel.ToString().Length < config.ChannelDigits)
           channel.Insert(0, '0');
 
         // Process the channel and blast the relevant IR Commands.

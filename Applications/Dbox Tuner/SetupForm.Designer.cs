@@ -40,6 +40,9 @@ namespace DboxTuner
     private System.Windows.Forms.StatusStrip statusStrip;
     private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
     private System.Windows.Forms.Button buttonDetectBoxType;
+    private System.Windows.Forms.Label labelTimeout;
+    private System.Windows.Forms.NumericUpDown numericUpDownTimeout;
+    private System.Windows.Forms.Label labelMilliseconds;
   }
 
 }

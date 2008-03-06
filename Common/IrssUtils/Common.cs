@@ -491,6 +491,7 @@ namespace IrssUtils
         process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true);
         process.StartInfo.CreateNoWindow    = bool.Parse(commands[4]);
         process.StartInfo.UseShellExecute   = bool.Parse(commands[5]);
+        //process.PriorityClass = ProcessPriorityClass.
 
         bool waitForExit  = bool.Parse(commands[6]);
         bool forceFocus   = bool.Parse(commands[7]);

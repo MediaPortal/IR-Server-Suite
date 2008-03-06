@@ -270,7 +270,7 @@ namespace InputService.Plugin
       if (_remoteButtonHandler == null)
         return;
 
-      string buttonCode = cmd.Remote + ": " + cmd.Button;
+      string buttonCode = String.Format("{0}: {1}", cmd.Remote, cmd.Button);
 
       _remoteButtonHandler(this.Name, buttonCode);
     }

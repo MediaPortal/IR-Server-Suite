@@ -111,8 +111,7 @@ namespace InputService.Plugin
       this.numericUpDownButtonRepeatDelay.TabIndex = 2;
       this.numericUpDownButtonRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownButtonRepeatDelay.ThousandsSeparator = true;
-      this.toolTips.SetToolTip(this.numericUpDownButtonRepeatDelay, "When the button is held this is the time between the first press and the first re" +
-              "peat");
+      this.toolTips.SetToolTip(this.numericUpDownButtonRepeatDelay, "When the button is held this is the time between the first press and the first repeat");
       this.numericUpDownButtonRepeatDelay.Value = new decimal(new int[] {
             10000,
             0,
@@ -326,8 +325,7 @@ namespace InputService.Plugin
       this.checkBoxDisableMCEServices.Size = new System.Drawing.Size(216, 17);
       this.checkBoxDisableMCEServices.TabIndex = 2;
       this.checkBoxDisableMCEServices.Text = "Disable Windows Media Center services";
-      this.toolTips.SetToolTip(this.checkBoxDisableMCEServices, "Disable Microsoft Windows Media Center services to prevent interference with IR S" +
-              "erver");
+      this.toolTips.SetToolTip(this.checkBoxDisableMCEServices, "Disable Microsoft Windows Media Center services to prevent interference with the Input Service");
       this.checkBoxDisableMCEServices.UseVisualStyleBackColor = true;
       // 
       // checkBoxEnableRemote

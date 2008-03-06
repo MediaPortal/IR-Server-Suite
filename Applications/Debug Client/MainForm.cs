@@ -135,9 +135,6 @@ namespace DebugClient
 
       _addStatusLine = new DelegateAddStatusLine(AddStatusLine);
 
-      comboBoxRemoteButtons.Items.AddRange(Enum.GetNames(typeof(MceButton)));
-      comboBoxRemoteButtons.SelectedIndex = 0;
-
       comboBoxPort.Items.Clear();
       comboBoxPort.Items.Add("None");
       comboBoxPort.SelectedIndex = 0;
@@ -482,14 +479,6 @@ namespace DebugClient
       }
     }
 
-    private void comboBoxRemoteButtons_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (comboBoxRemoteButtons.SelectedItem.ToString().Equals("Custom", StringComparison.OrdinalIgnoreCase))
-        numericUpDownButton.Enabled = true;
-      else
-        numericUpDownButton.Enabled = false;
-    }
-
     private void buttonSendRemoteButton_Click(object sender, EventArgs e)
     {
       AddStatusLine("Send Remote Button");
@@ -508,11 +497,17 @@ namespace DebugClient
           return;
         }
 
-        int keyCode = (int)Enum.Parse(typeof(MceButton), comboBoxRemoteButtons.SelectedItem.ToString(), true);
-        if (keyCode == -1)
-          keyCode = Decimal.ToInt32(numericUpDownButton.Value);
+        byte[] deviceNameBytes = Encoding.ASCII.GetBytes(textBoxRemoteDevice.Text);
+        byte[] keyCodeBytes = Encoding.ASCII.GetBytes(textBoxRemoteCode.Text);
 
-        IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, keyCode.ToString());
+        byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
+
+        BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(bytes, 0);
+        deviceNameBytes.CopyTo(bytes, 4);
+        BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
+        keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
+
+        IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, bytes);
         _client.Send(message);
       }
       catch (Exception ex)

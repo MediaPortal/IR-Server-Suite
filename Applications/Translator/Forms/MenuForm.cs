@@ -197,7 +197,7 @@ namespace Translator
       if (String.IsNullOrEmpty(subMenuName))
         labelHeader.Text = WindowTitle;
       else
-        labelHeader.Text = WindowTitle + " - " + subMenuName;
+        labelHeader.Text = String.Format("{0} - {1}", WindowTitle, subMenuName);
     }
 
 

@@ -1705,9 +1705,13 @@ namespace MediaPortal.Plugins
 
     private void buttonDefault_Click(object sender, System.EventArgs e)
     {
-      if (File.Exists(Config.GetFile(Config.Dir.CustomInputDevice, inputClassName + ".xml")))
-        File.Delete(Config.GetFile(Config.Dir.CustomInputDevice, inputClassName + ".xml"));
-      LoadMapping(inputClassName + ".xml", true);
+      string fileName = inputClassName + ".xml";
+      string filePath = Config.GetFile(Config.Dir.CustomInputDevice, fileName);
+
+      if (File.Exists(filePath))
+        File.Delete(filePath);
+
+      LoadMapping(fileName, true);
     }
 
     private void textBoxKeyCode_KeyPress(object sender, KeyPressEventArgs e)

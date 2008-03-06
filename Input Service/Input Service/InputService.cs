@@ -1714,7 +1714,7 @@ namespace InputService
               string button = rows[0]["AbstractButton"].ToString() as string;
               if (!String.IsNullOrEmpty(button))
               {
-                IrssLog.Debug(button + ", remote: " + table.ExtendedProperties["Remote"] as string + ", device: " + deviceName);
+                IrssLog.Debug("{0}, remote: {1}, device: {2}", button, table.ExtendedProperties["Remote"] as string, deviceName);
                 return button;
               }
             }

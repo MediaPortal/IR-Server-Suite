@@ -23,12 +23,12 @@ namespace MPUtils
     /// <summary>
     /// Folder for Custom Input Device data files.
     /// </summary>
-    public static readonly string CustomInputDevice = Config.GetFolder(Config.Dir.CustomInputDevice) + Path.DirectorySeparatorChar;
+    public static readonly string CustomInputDevice = Config.GetFolder(Config.Dir.CustomInputDevice);
     
     /// <summary>
     /// Folder for Input Device data default files.
     /// </summary>
-    public static readonly string CustomInputDefault = Config.GetFolder(Config.Dir.CustomInputDefault) + Path.DirectorySeparatorChar;
+    public static readonly string CustomInputDefault = Config.GetFolder(Config.Dir.CustomInputDefault);
 
     /// <summary>
     /// Path to the MediaPortal configuration file.

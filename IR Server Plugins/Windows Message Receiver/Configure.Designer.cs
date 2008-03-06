@@ -72,8 +72,7 @@ namespace InputService.Plugin
       this.numericUpDownMessageType.TabIndex = 1;
       this.numericUpDownMessageType.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownMessageType.ThousandsSeparator = true;
-      this.toolTips.SetToolTip(this.numericUpDownMessageType, "When the button is held this is the time between the first press and the first re" +
-              "peat");
+      this.toolTips.SetToolTip(this.numericUpDownMessageType, "When the button is held this is the time between the first press and the first repeat");
       this.numericUpDownMessageType.Value = new decimal(new int[] {
             32768,
             0,

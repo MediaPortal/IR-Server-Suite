@@ -215,7 +215,7 @@ namespace MediaPortal.Plugins
       string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete",  MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
@@ -246,7 +246,7 @@ namespace MediaPortal.Plugins
       string fileName = Path.Combine(TV2BlasterPlugin.FolderMacros, file + Common.FileExtensionMacro);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else

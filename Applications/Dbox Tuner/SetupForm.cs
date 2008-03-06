@@ -43,6 +43,11 @@ namespace DboxTuner
       get { return textBoxPassword.Text; }
       set { textBoxPassword.Text = value; }
     }
+    public int Timeout
+    {
+      get { return decimal.ToInt32(numericUpDownTimeout.Value); }
+      set { numericUpDownTimeout.Value = new decimal(value); }
+    }
 
     #endregion Properties
 
@@ -69,13 +74,17 @@ namespace DboxTuner
       this.statusStrip = new System.Windows.Forms.StatusStrip();
       this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
       this.buttonDetectBoxType = new System.Windows.Forms.Button();
+      this.labelTimeout = new System.Windows.Forms.Label();
+      this.numericUpDownTimeout = new System.Windows.Forms.NumericUpDown();
+      this.labelMilliseconds = new System.Windows.Forms.Label();
       this.statusStrip.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTimeout)).BeginInit();
       this.SuspendLayout();
       // 
       // buttonGetData
       // 
       this.buttonGetData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonGetData.Location = new System.Drawing.Point(8, 88);
+      this.buttonGetData.Location = new System.Drawing.Point(8, 112);
       this.buttonGetData.Name = "buttonGetData";
       this.buttonGetData.Size = new System.Drawing.Size(104, 24);
       this.buttonGetData.TabIndex = 6;
@@ -140,7 +149,7 @@ namespace DboxTuner
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(128, 120);
+      this.buttonOK.Location = new System.Drawing.Point(128, 144);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 7;
@@ -152,7 +161,7 @@ namespace DboxTuner
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(200, 120);
+      this.buttonCancel.Location = new System.Drawing.Point(200, 144);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 8;
@@ -164,7 +173,7 @@ namespace DboxTuner
       // 
       this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-      this.statusStrip.Location = new System.Drawing.Point(0, 153);
+      this.statusStrip.Location = new System.Drawing.Point(0, 177);
       this.statusStrip.Name = "statusStrip";
       this.statusStrip.Size = new System.Drawing.Size(272, 22);
       this.statusStrip.TabIndex = 9;
@@ -177,7 +186,7 @@ namespace DboxTuner
       // buttonDetectBoxType
       // 
       this.buttonDetectBoxType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonDetectBoxType.Location = new System.Drawing.Point(8, 120);
+      this.buttonDetectBoxType.Location = new System.Drawing.Point(8, 144);
       this.buttonDetectBoxType.Name = "buttonDetectBoxType";
       this.buttonDetectBoxType.Size = new System.Drawing.Size(104, 24);
       this.buttonDetectBoxType.TabIndex = 10;
@@ -185,11 +194,61 @@ namespace DboxTuner
       this.buttonDetectBoxType.UseVisualStyleBackColor = true;
       this.buttonDetectBoxType.Click += new System.EventHandler(this.buttonDetectBoxType_Click);
       // 
+      // labelTimeout
+      // 
+      this.labelTimeout.Location = new System.Drawing.Point(8, 80);
+      this.labelTimeout.Name = "labelTimeout";
+      this.labelTimeout.Size = new System.Drawing.Size(80, 20);
+      this.labelTimeout.TabIndex = 11;
+      this.labelTimeout.Text = "Timeout:";
+      this.labelTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // numericUpDownTimeout
+      // 
+      this.numericUpDownTimeout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.numericUpDownTimeout.Increment = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+      this.numericUpDownTimeout.Location = new System.Drawing.Point(88, 80);
+      this.numericUpDownTimeout.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+      this.numericUpDownTimeout.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+      this.numericUpDownTimeout.Name = "numericUpDownTimeout";
+      this.numericUpDownTimeout.Size = new System.Drawing.Size(144, 20);
+      this.numericUpDownTimeout.TabIndex = 12;
+      this.numericUpDownTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.numericUpDownTimeout.Value = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+      // 
+      // labelMilliseconds
+      // 
+      this.labelMilliseconds.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.labelMilliseconds.Location = new System.Drawing.Point(232, 80);
+      this.labelMilliseconds.Name = "labelMilliseconds";
+      this.labelMilliseconds.Size = new System.Drawing.Size(32, 20);
+      this.labelMilliseconds.TabIndex = 13;
+      this.labelMilliseconds.Text = "ms";
+      this.labelMilliseconds.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      // 
       // SetupForm
       // 
-      this.AcceptButton = this.buttonOK;
-      this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(272, 175);
+      this.ClientSize = new System.Drawing.Size(272, 199);
+      this.Controls.Add(this.labelMilliseconds);
+      this.Controls.Add(this.numericUpDownTimeout);
+      this.Controls.Add(this.labelTimeout);
       this.Controls.Add(this.buttonDetectBoxType);
       this.Controls.Add(this.statusStrip);
       this.Controls.Add(this.buttonGetData);
@@ -210,6 +269,7 @@ namespace DboxTuner
       this.Text = "Dbox Tuner Setup";
       this.statusStrip.ResumeLayout(false);
       this.statusStrip.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTimeout)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -225,7 +285,7 @@ namespace DboxTuner
 
         // Detect box type ...
         if (BoxType == StbBoxType.Unknown)
-          BoxType = Program.DetectBoxType(url, UserName, Password);
+          BoxType = Program.DetectBoxType(url, UserName, Password, Timeout);
 
         if (BoxType == StbBoxType.Unknown)
         {
@@ -235,7 +295,7 @@ namespace DboxTuner
         {
           StatusMessage("Detected box type: {0}", _boxType);
 
-          DataSet dataSet = Program.GetData(url, UserName, Password, BoxType);
+          DataSet dataSet = Program.GetData(url, UserName, Password, BoxType, Timeout);
           DataTable dataTable = dataSet.Tables[0];
           
           if (dataTable.Rows.Count != 0)
@@ -283,7 +343,7 @@ namespace DboxTuner
 
     private void buttonDetectBoxType_Click(object sender, EventArgs e)
     {
-      BoxType = Program.DetectBoxType(Program.UrlPrefix + Address, UserName, Password);
+      BoxType = Program.DetectBoxType(Program.UrlPrefix + Address, UserName, Password, Timeout);
     }
 
   }

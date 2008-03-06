@@ -183,15 +183,15 @@ namespace MediaPortal.Plugins
     public string GetXmlPath(string deviceXmlName)
     {
       string path = string.Empty;
-      string pathCustom = MPUtils.MPCommon.CustomInputDevice + deviceXmlName + ".xml";
-      string pathDefault = MPUtils.MPCommon.CustomInputDefault + deviceXmlName + ".xml";
+      string pathCustom   = Path.Combine(MPUtils.MPCommon.CustomInputDevice, deviceXmlName + ".xml");
+      string pathDefault  = Path.Combine(MPUtils.MPCommon.CustomInputDefault, deviceXmlName + ".xml");
 
-      if (System.IO.File.Exists(pathCustom) && CheckXmlFile(pathCustom))
+      if (File.Exists(pathCustom) && CheckXmlFile(pathCustom))
       {
         path = pathCustom;
         Log.Info("MAP: using custom mappings for {0}", deviceXmlName);
       }
-      else if (System.IO.File.Exists(pathDefault) && CheckXmlFile(pathDefault))
+      else if (File.Exists(pathDefault) && CheckXmlFile(pathDefault))
       {
         path = pathDefault;
         Log.Info("MAP: using default mappings for {0}", deviceXmlName);

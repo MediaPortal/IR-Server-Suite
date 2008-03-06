@@ -514,7 +514,7 @@ namespace MediaPortal.Plugins
       string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
@@ -547,7 +547,7 @@ namespace MediaPortal.Plugins
       string fileName = Path.Combine(MPControlPlugin.FolderMacros, file + Common.FileExtensionMacro);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
@@ -678,21 +678,25 @@ namespace MediaPortal.Plugins
 
       string mappingName = multiMapNameBox.MapName;
 
-      string pathCustom = MPUtils.MPCommon.CustomInputDevice + "MPControlPlugin.xml";
-      string pathDefault = MPUtils.MPCommon.CustomInputDefault + "MPControlPlugin.xml";
+      string pathCustom = Path.Combine(MPUtils.MPCommon.CustomInputDevice, "MPControlPlugin.xml");
+      string pathDefault = Path.Combine(MPUtils.MPCommon.CustomInputDefault, "MPControlPlugin.xml");
 
       string sourceFile;
       if (File.Exists(pathCustom))
+      {
         sourceFile = pathCustom;
+      }
       else if (File.Exists(pathDefault))
+      {
         sourceFile = pathDefault;
+      }
       else
       {
         Log.Error("MPControlPlugin: Default remote map \"MPControlPlugin.xml\" is missing");
         return;
       }
 
-      string destinationFile = MPUtils.MPCommon.CustomInputDevice + mappingName + ".xml";
+      string destinationFile = Path.Combine(MPUtils.MPCommon.CustomInputDevice, mappingName + ".xml");
 
       File.Copy(sourceFile, destinationFile, true);
 

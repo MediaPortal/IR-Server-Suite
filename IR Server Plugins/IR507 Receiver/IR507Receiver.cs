@@ -5,8 +5,7 @@ using System.Diagnostics;
 #endif
 using System.IO;
 using System.Runtime.InteropServices;
-
-using Microsoft.Win32.SafeHandles;
+using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
@@ -18,47 +17,37 @@ namespace InputService.Plugin
   public class IR507Receiver : PluginBase, IRemoteReceiver
   {
 
-    #region Interop
+    #region Debug
 
-    [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern SafeFileHandle CreateFile(
-        String fileName,
-        [MarshalAs(UnmanagedType.U4)] FileAccess fileAccess,
-        [MarshalAs(UnmanagedType.U4)] FileShare fileShare,
-        IntPtr securityAttributes,
-        [MarshalAs(UnmanagedType.U4)] FileMode creationDisposition,
-        [MarshalAs(UnmanagedType.U4)] EFileAttributes flags,
-        IntPtr template);
-
-    [Flags]
-    enum EFileAttributes : uint
+    [STAThread]
+    static void Main()
     {
-      Readonly          = 0x00000001,
-      Hidden            = 0x00000002,
-      System            = 0x00000004,
-      Directory         = 0x00000010,
-      Archive           = 0x00000020,
-      Device            = 0x00000040,
-      Normal            = 0x00000080,
-      Temporary         = 0x00000100,
-      SparseFile        = 0x00000200,
-      ReparsePoint      = 0x00000400,
-      Compressed        = 0x00000800,
-      Offline           = 0x00001000,
-      NotContentIndexed = 0x00002000,
-      Encrypted         = 0x00004000,
-      Write_Through     = 0x80000000,
-      Overlapped        = 0x40000000,
-      NoBuffering       = 0x20000000,
-      RandomAccess      = 0x10000000,
-      SequentialScan    = 0x08000000,
-      DeleteOnClose     = 0x04000000,
-      BackupSemantics   = 0x02000000,
-      PosixSemantics    = 0x01000000,
-      OpenReparsePoint  = 0x00200000,
-      OpenNoRecall      = 0x00100000,
-      FirstPipeInstance = 0x00080000,
+      try
+      {
+        IR507Receiver c = new IR507Receiver();
+
+        c.RemoteCallback += new RemoteHandler(Remote);
+        c.Start();
+
+        Application.Run();
+
+        c.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
     }
+
+    static void Remote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+
+    #endregion Debug
+
+
+    #region Interop
 
     [StructLayout(LayoutKind.Sequential)]
     struct DeviceInfoData
@@ -141,9 +130,7 @@ namespace InputService.Plugin
 
     #region Constants
 
-    const int DeviceBufferSize = 255;
-
-    //const string DeviceID = "vid_0e6a&pid_6002";
+    //const string DeviceID = "vid_0e6a&pid_6002";  // Unknown
     const string DeviceID = "vid_147a&pid_e02a";
 
     #endregion Constants
@@ -152,10 +139,10 @@ namespace InputService.Plugin
 
     RemoteHandler _remoteButtonHandler;
 
-    FileStream _deviceStream;
-    byte[] _deviceBuffer;
+    ReceiverWindow _receiverWindow;
+    RawInput.RAWINPUTDEVICE _device;
 
-    int _lastCode = -1;
+    string _lastCode = String.Empty;
     DateTime _lastCodeTime = DateTime.Now;
 
     #endregion Variables
@@ -211,28 +198,16 @@ namespace InputService.Plugin
     /// </summary>
     public override void Start()
     {
-      Guid guid = new Guid();
-      HidD_GetHidGuid(ref guid);
+      _receiverWindow = new ReceiverWindow("IR507 Receiver");
+      _receiverWindow.ProcMsg += new ProcessMessage(ProcMessage);
 
-      string devicePath = FindDevice(guid);
-      if (String.IsNullOrEmpty(devicePath))
-        throw new ApplicationException("Device not found");
+      _device.usUsage     = 1;
+      _device.usUsagePage = 12;
+      _device.dwFlags     = RawInput.RawInputDeviceFlags.InputSink;
+      _device.hwndTarget  = _receiverWindow.Handle;
 
-      //Console.WriteLine("Opening device: {0}", devicePath);
-
-      SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.Read, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
-      int lastError = Marshal.GetLastWin32Error();
-
-      //Console.WriteLine("Last Error: {0}", lastError);
-
-      if (deviceHandle.IsInvalid)
-        throw new Win32Exception(lastError, "Failed to open device");
-
-      //_deviceWatcher.RegisterDeviceRemoval(deviceHandle);
-
-      _deviceBuffer = new byte[DeviceBufferSize];
-      _deviceStream = new FileStream(deviceHandle, FileAccess.Read, _deviceBuffer.Length, true);
-      _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
+      if (!RegisterForRawInput(_device))
+        throw new ApplicationException("Failed to register for HID Raw input");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
@@ -253,21 +228,12 @@ namespace InputService.Plugin
     /// </summary>
     public override void Stop()
     {
-      if (_deviceStream == null)
-        return;
+      _device.dwFlags |= RawInput.RawInputDeviceFlags.Remove;
+      RegisterForRawInput(_device);
 
-      try
-      {
-        _deviceStream.Dispose();
-      }
-      catch (IOException)
-      {
-        // we are closing the stream so ignore this
-      }
-      finally
-      {
-        _deviceStream = null;
-      }
+      _receiverWindow.ProcMsg -= new ProcessMessage(ProcMessage);
+      _receiverWindow.DestroyHandle();
+      _receiverWindow = null;
     }
 
     /// <summary>
@@ -278,6 +244,70 @@ namespace InputService.Plugin
     {
       get { return _remoteButtonHandler; }
       set { _remoteButtonHandler = value; }
+    }
+
+    bool RegisterForRawInput(RawInput.RAWINPUTDEVICE device)
+    {
+      RawInput.RAWINPUTDEVICE[] devices = new RawInput.RAWINPUTDEVICE[1];
+      devices[0] = device;
+
+      return RegisterForRawInput(devices);
+    }
+    bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
+    {
+      return RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(devices[0]));
+    }
+
+    void ProcMessage(ref Message m)
+    {
+      if (m.Msg != RawInput.WM_INPUT)
+        return;
+
+      uint dwSize = 0;
+
+      RawInput.GetRawInputData(m.LParam, RawInput.RawInputCommand.Input, IntPtr.Zero, ref dwSize, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)));
+
+      IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
+      try
+      {
+        if (buffer == IntPtr.Zero)
+          return;
+
+        if (RawInput.GetRawInputData(m.LParam, RawInput.RawInputCommand.Input, buffer, ref dwSize, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER))) != dwSize)
+          return;
+
+        RawInput.RAWINPUT raw = (RawInput.RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RawInput.RAWINPUT));
+
+        if (raw.header.dwType == RawInput.RawInputType.HID)
+        {
+          int offset = Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof(RawInput.RAWHID));
+
+          byte[] bRawData = new byte[offset + raw.hid.dwSizeHid];
+          Marshal.Copy(buffer, bRawData, 0, bRawData.Length);
+
+          byte[] newArray = new byte[raw.hid.dwSizeHid];
+          Array.Copy(bRawData, offset, newArray, 0, newArray.Length);
+
+          string code = BitConverter.ToString(newArray);
+
+          TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
+
+          if (!code.Equals(_lastCode, StringComparison.Ordinal) || timeSpan.Milliseconds > 250)
+          {
+            if (_remoteButtonHandler != null)
+              _remoteButtonHandler(this.Name, code);
+
+            _lastCodeTime = DateTime.Now;
+          }
+
+          _lastCode = code;
+        }
+      }
+      finally
+      {
+        Marshal.FreeHGlobal(buffer);
+      }
+
     }
 
     static string FindDevice(Guid classGuid)
@@ -349,63 +379,7 @@ namespace InputService.Plugin
       return devicePath;
     }
 
-    void OnReadComplete(IAsyncResult asyncResult)
-    {
-      try
-      {
-        //int read = _deviceStream.EndRead(asyncResult);
-        //Console.WriteLine(BitConverter.ToString(_deviceBuffer, 0, read));
-
-        if (_deviceStream.EndRead(asyncResult) == 4 && _deviceBuffer[1] == 0)
-        {
-          TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
-
-          int keyCode = (int)_deviceBuffer[2];
-
-          if (keyCode != _lastCode || timeSpan.Milliseconds > 250)
-          {
-            if (_remoteButtonHandler != null)
-              _remoteButtonHandler(this.Name, keyCode.ToString());
-
-            _lastCodeTime = DateTime.Now;
-          }
-
-          _lastCode = keyCode;
-        }
-
-        _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, new AsyncCallback(OnReadComplete), null);
-      }
-      catch (Exception)
-      {
-      }
-    }
-
     #endregion Implementation
-
-    #region Debug
-
-    [STAThread]
-    static void Main()
-    {
-      try
-      {
-        IR507Receiver c = new IR507Receiver();
-        c.Start();
-
-        while (Console.ReadKey().Key != ConsoleKey.Escape)
-        {
-          Console.WriteLine("Press escape to quit");
-        }
-
-        c.Stop();
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-    }
-
-    #endregion Debug
 
   }
 

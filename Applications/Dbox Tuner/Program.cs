@@ -45,6 +45,7 @@ namespace DboxTuner
     static string _userName;
     static string _password;
     static StbBoxType _boxType;
+    static int _timeout;
 
     static string _url;
     static DataTable _tvBouquets;
@@ -101,6 +102,7 @@ namespace DboxTuner
             setup.UserName = _userName;
             setup.Password = _password;
             setup.BoxType  = _boxType;
+            setup.Timeout   = _timeout;
 
             if (setup.ShowDialog() == DialogResult.OK)
             {
@@ -108,6 +110,7 @@ namespace DboxTuner
               _userName = setup.UserName;
               _password = setup.Password;
               _boxType  = setup.BoxType;
+              _timeout  = setup.Timeout;
 
               SaveSettings();
               Info("Setup saved");
@@ -204,6 +207,7 @@ namespace DboxTuner
         _userName = doc.DocumentElement.Attributes["UserName"].Value;
         _password = doc.DocumentElement.Attributes["Password"].Value;
         _boxType  = (StbBoxType)Enum.Parse(typeof(StbBoxType), doc.DocumentElement.Attributes["BoxType"].Value);
+        _timeout  = int.Parse(doc.DocumentElement.Attributes["Timeout"].Value);
       }
       catch (FileNotFoundException)
       {
@@ -234,6 +238,7 @@ namespace DboxTuner
           writer.WriteAttributeString("UserName", _userName);
           writer.WriteAttributeString("Password", _password);
           writer.WriteAttributeString("BoxType", Enum.GetName(typeof(StbBoxType), _boxType));
+          writer.WriteAttributeString("Timeout", _timeout.ToString());
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
@@ -246,22 +251,23 @@ namespace DboxTuner
     }
     static void CreateDefaultSettings()
     {
-      _address = "192.168.0.100";
+      _address  = "192.168.0.100";
       _userName = "root";
       _password = "dbox2";
-      _boxType = StbBoxType.Unknown;
+      _boxType  = StbBoxType.Unknown;
+      _timeout  = 2000;
 
       SaveSettings();
     }
 
-    internal static string PostData(string url, string userName, string password, StbBoxType boxType, string command)
+    internal static string PostData(string url, string userName, string password, StbBoxType boxType, int timeout, string command)
     {
       try
       {
         Uri uri = new Uri(url + command);
         WebRequest request = WebRequest.Create(uri);
         request.Credentials = new NetworkCredential(userName, password);
-        request.Timeout = 2000;
+        request.Timeout = timeout;
 
         // back to iso encoding sorry , should work anywhere in EU
         // which it doesn't, because dreambox use utf-8 encoding, making all UTF-8 extended characters a multibyte garble if we encode those to iso
@@ -283,7 +289,7 @@ namespace DboxTuner
       }
     }
 
-    internal static DataSet GetData(string url, string userName, string password, StbBoxType boxType)
+    internal static DataSet GetData(string url, string userName, string password, StbBoxType boxType, int timeout)
     {
       DataSet ds = new DataSet();
       
@@ -298,10 +304,10 @@ namespace DboxTuner
       {
         case StbBoxType.EnigmaV1:
           // get userbouquets (ref=4097:7:0:6:0:0:0:0:0:0:)
-          sreturn = PostData(url, userName, password, boxType, "/cgi-bin/getServices?ref=4097:7:0:6:0:0:0:0:0:0:");
+          sreturn = PostData(url, userName, password, boxType, timeout, "/cgi-bin/getServices?ref=4097:7:0:6:0:0:0:0:0:0:");
 
           // get internal hdd recording
-          if (!PostData(url, userName, password, boxType, "/cgi-bin/getServices?ref=2:47:0:0:0:0:0:0:0:0:/var/media/movie/").Contains("E: "))
+          if (!PostData(url, userName, password, boxType, timeout, "/cgi-bin/getServices?ref=2:47:0:0:0:0:0:0:0:0:/var/media/movie/").Contains("E: "))
             sreturn += "2:47:0:0:0:0:0:0:0:0:/var/media/movie/;Recordings\n";
 
           // replace neutrino split character with ; 
@@ -316,7 +322,7 @@ namespace DboxTuner
           string serviceID    = String.Empty;
           string serviceName  = String.Empty;
 
-          string returnedXml  = PostData(url, userName, password, boxType, "/web/fetchchannels?ServiceListBrowse=1:7:1:0:0:0:0:0:0:0:(type == 1) FROM BOUQUET \"bouquets.tv\" ORDER BY bouquet");
+          string returnedXml  = PostData(url, userName, password, boxType, timeout, "/web/fetchchannels?ServiceListBrowse=1:7:1:0:0:0:0:0:0:0:(type == 1) FROM BOUQUET \"bouquets.tv\" ORDER BY bouquet");
 
           // xmlbased, return all userbouquets
           XmlDocument doc = new XmlDocument();
@@ -346,7 +352,7 @@ namespace DboxTuner
           break;
 
         default:
-          sreturn = PostData(url, userName, password, boxType, "/control/getbouquets");
+          sreturn = PostData(url, userName, password, boxType, timeout, "/control/getbouquets");
           // set the bouquet command for this boxtype
           command = "/control/getbouquet?bouquet=";
           break;
@@ -390,7 +396,7 @@ namespace DboxTuner
 
 
             //request list of channels contained in bouquetID "temp"
-            sreturn = PostData(url, userName, password, boxType, curCommand);
+            sreturn = PostData(url, userName, password, boxType, timeout, curCommand);
             sreturn = sreturn.Replace(";selected", "");
 
             if (boxType == StbBoxType.EnigmaV2)
@@ -503,17 +509,17 @@ namespace DboxTuner
       return ds;
     }
 
-    internal static StbBoxType DetectBoxType(string url, string userName, string password)
+    internal static StbBoxType DetectBoxType(string url, string userName, string password, int timeout)
     {
-      string str1 = PostData(url, userName, password, StbBoxType.Unknown, "/control/getmode").ToUpperInvariant();
+      string str1 = PostData(url, userName, password, StbBoxType.Unknown, timeout, "/control/getmode").ToUpperInvariant();
       if (str1.Contains("TV") || str1.Contains("RADIO") || str1.Contains("UNKNOWN"))
         return StbBoxType.Neutrino;
 
-      string str2 = PostData(url, userName, password, StbBoxType.Unknown, "/cgi-bin/status").ToUpperInvariant();
+      string str2 = PostData(url, userName, password, StbBoxType.Unknown, timeout, "/cgi-bin/status").ToUpperInvariant();
       if (str2.Contains("ENIGMA"))
         return StbBoxType.EnigmaV1;
 
-      string str3 = PostData(url, userName, password, StbBoxType.Unknown, "/web/stream.m3u").ToUpperInvariant();
+      string str3 = PostData(url, userName, password, StbBoxType.Unknown, timeout, "/web/stream.m3u").ToUpperInvariant();
       if (str3.Contains("#EXTM3U"))
         return StbBoxType.EnigmaV2;
 
@@ -524,9 +530,9 @@ namespace DboxTuner
     {
       switch (_boxType)
       {
-        case StbBoxType.EnigmaV1: return PostData(_url, _userName, _password, _boxType, "/cgi-bin/zapTo?path=" + ID);
-        case StbBoxType.EnigmaV2: return PostData(_url, _userName, _password, _boxType, "/web/zap?ZapTo=" + ID);
-        default:                  return PostData(_url, _userName, _password, _boxType, "/control/zapto?" + ID);
+        case StbBoxType.EnigmaV1: return PostData(_url, _userName, _password, _boxType, _timeout, "/cgi-bin/zapTo?path=" + ID);
+        case StbBoxType.EnigmaV2: return PostData(_url, _userName, _password, _boxType, _timeout, "/web/zap?ZapTo=" + ID);
+        default:                  return PostData(_url, _userName, _password, _boxType, _timeout, "/control/zapto?" + ID);
       }
     }
     static void WakeUp()
@@ -534,15 +540,15 @@ namespace DboxTuner
       switch (_boxType)
       {
         case StbBoxType.EnigmaV1:
-          PostData(_url, _userName, _password, _boxType, "/cgi-bin/admin?command=wakeup");
+          PostData(_url, _userName, _password, _boxType, _timeout, "/cgi-bin/admin?command=wakeup");
           break;
 
         case StbBoxType.EnigmaV2: // donno if wakeup is correct command
-          PostData(_url, _userName, _password, _boxType, "/web/powerstate?newstate=wakeup");
+          PostData(_url, _userName, _password, _boxType, _timeout, "/web/powerstate?newstate=wakeup");
           break;
 
         case StbBoxType.Neutrino: // off = wakeup
-          PostData(_url, _userName, _password, _boxType, "/control/standby?off");
+          PostData(_url, _userName, _password, _boxType, _timeout, "/control/standby?off");
           break;
       }
     }
@@ -551,7 +557,7 @@ namespace DboxTuner
       //set playback to spts only required for neutrino, (i think)
 
       if (_boxType == StbBoxType.Neutrino) //send neutrino command
-        return PostData(_url, _userName, _password, _boxType, "/control/system?setAViAExtPlayBack=spts");
+        return PostData(_url, _userName, _password, _boxType, _timeout, "/control/system?setAViAExtPlayBack=spts");
       else // return ok for enigma
         return "ok";
     }
@@ -562,19 +568,19 @@ namespace DboxTuner
       switch (_boxType)
       {
         case StbBoxType.EnigmaV1:
-          status = PostData(_url, _userName, _password, _boxType, "/cgi-bin/audio?mute=0");
+          status = PostData(_url, _userName, _password, _boxType, _timeout, "/cgi-bin/audio?mute=0");
           break;
 
         case StbBoxType.EnigmaV2:
-          status = PostData(_url, _userName, _password, _boxType, "/web/vol?set=mute");
+          status = PostData(_url, _userName, _password, _boxType, _timeout, "/web/vol?set=mute");
           break;
 
         default:
-          status = PostData(_url, _userName, _password, _boxType, "/control/volume?status");
+          status = PostData(_url, _userName, _password, _boxType, _timeout, "/control/volume?status");
           if (status.Equals("0", StringComparison.Ordinal))
-            status = PostData(_url, _userName, _password, _boxType, "/control/volume?mute");
+            status = PostData(_url, _userName, _password, _boxType, _timeout, "/control/volume?mute");
           if (status.Equals("1", StringComparison.Ordinal))
-            status = PostData(_url, _userName, _password, _boxType, "/control/volume?unmute");
+            status = PostData(_url, _userName, _password, _boxType, _timeout, "/control/volume?unmute");
           break;
       }
 
@@ -585,15 +591,15 @@ namespace DboxTuner
       switch (_boxType)
       {
         case StbBoxType.EnigmaV1:
-          PostData(_url, _userName, _password, _boxType, "/cgi-bin/xmessage?timeout=10&caption=Message&body=" + message);
+          PostData(_url, _userName, _password, _boxType, _timeout, "/cgi-bin/xmessage?timeout=10&caption=Message&body=" + message);
           break;
 
         case StbBoxType.EnigmaV2:
-          PostData(_url, _userName, _password, _boxType, "/web/message?type=1&timeout=10&text=" + message);
+          PostData(_url, _userName, _password, _boxType, _timeout, "/web/message?type=1&timeout=10&text=" + message);
           break;
 
         default:
-          PostData(_url, _userName, _password, _boxType, "/control/message?popup=" + message);
+          PostData(_url, _userName, _password, _boxType, _timeout, "/control/message?popup=" + message);
           break;
       }
     }
@@ -604,18 +610,18 @@ namespace DboxTuner
       switch (_boxType)
       {
         case StbBoxType.EnigmaV1:
-          info = PostData(_url, _userName, _password, _boxType, "/xml/boxinfo");
+          info = PostData(_url, _userName, _password, _boxType, _timeout, "/xml/boxinfo");
           info = info.Replace("\n", " ");
           info = info.Replace("  ", "");
           break;
 
         case StbBoxType.EnigmaV2:
-          info = PostData(_url, _userName, _password, _boxType, "/web/about");
+          info = PostData(_url, _userName, _password, _boxType, _timeout, "/web/about");
           info = info.Replace("\n", " ");
           break;
 
         default:
-          info = PostData(_url, _userName, _password, _boxType, "/control/info?version");
+          info = PostData(_url, _userName, _password, _boxType, _timeout, "/control/info?version");
           info = info.Replace("\n", " ");
           break;
       }
@@ -632,15 +638,15 @@ namespace DboxTuner
       switch (_boxType)
       {
         case StbBoxType.EnigmaV1:
-          epgXml = PostData(_url, _userName, _password, _boxType, "/xml/serviceepg?ref=" + ID);
+          epgXml = PostData(_url, _userName, _password, _boxType, _timeout, "/xml/serviceepg?ref=" + ID);
           break;
 
         case StbBoxType.EnigmaV2:
-          epgXml = PostData(_url, _userName, _password, _boxType, "/web/epgservice?ref=" + ID);
+          epgXml = PostData(_url, _userName, _password, _boxType, _timeout, "/web/epgservice?ref=" + ID);
           break;
 
         default:
-          epgXml = PostData(_url, _userName, _password, _boxType, "/control/epg?xml=true&channelid=" + ID + "&details=true"); // &max=20
+          epgXml = PostData(_url, _userName, _password, _boxType, _timeout, "/control/epg?xml=true&channelid=" + ID + "&details=true"); // &max=20
           break;
       }
 
@@ -659,21 +665,21 @@ namespace DboxTuner
       switch (_boxType)
       {
         case StbBoxType.EnigmaV1:
-          xml = PostData(_url, _userName, _password, _boxType, "/xml/streaminfo");
+          xml = PostData(_url, _userName, _password, _boxType, _timeout, "/xml/streaminfo");
           doc.LoadXml(xml);
           elem = doc.SelectSingleNode("/streaminfo/service/reference");
           id = elem.InnerText;
           break;
 
         case StbBoxType.EnigmaV2:
-          xml = PostData(_url, _userName, _password, _boxType, "/web/subservices"); 
+          xml = PostData(_url, _userName, _password, _boxType, _timeout, "/web/subservices"); 
           doc.LoadXml(xml);
           elem = doc.SelectSingleNode("/e2servicelist/e2service/e2servicereference");
           id = elem.InnerText;
           break;
 
         default:
-          id = PostData(_url, _userName, _password, _boxType, "/control/zapto");
+          id = PostData(_url, _userName, _password, _boxType, _timeout, "/control/zapto");
           id = id.Replace("\n", "");
           break;
       }

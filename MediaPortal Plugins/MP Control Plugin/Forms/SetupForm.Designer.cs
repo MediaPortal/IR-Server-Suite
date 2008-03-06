@@ -251,8 +251,7 @@ namespace MediaPortal.Plugins
       this.checkBoxMultiMapping.TabIndex = 0;
       this.checkBoxMultiMapping.Text = "Enable";
       this.checkBoxMultiMapping.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTips.SetToolTip(this.checkBoxMultiMapping, "Enable the multi-mapping feature, which lets you cycle through remote button mapp" +
-              "ings");
+      this.toolTips.SetToolTip(this.checkBoxMultiMapping, "Enable the multi-mapping feature, which lets you cycle through remote button mappings");
       this.checkBoxMultiMapping.UseVisualStyleBackColor = true;
       // 
       // checkBoxEventMapper
@@ -263,8 +262,7 @@ namespace MediaPortal.Plugins
       this.checkBoxEventMapper.TabIndex = 0;
       this.checkBoxEventMapper.Text = "Enable";
       this.checkBoxEventMapper.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTips.SetToolTip(this.checkBoxEventMapper, "Enable the event mapper, which lets you map plugin functions to MediaPortal inter" +
-              "nal events");
+      this.toolTips.SetToolTip(this.checkBoxEventMapper, "Enable the event mapper, which lets you map plugin functions to MediaPortal internal events");
       this.checkBoxEventMapper.UseVisualStyleBackColor = true;
       // 
       // buttonSetCommand
@@ -440,8 +438,7 @@ namespace MediaPortal.Plugins
       this.checkBoxMouseMode.TabIndex = 0;
       this.checkBoxMouseMode.Text = "Enable";
       this.checkBoxMouseMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTips.SetToolTip(this.checkBoxMouseMode, "Enable the mouse mode feature, which lets you control the on-screen mouse with yo" +
-              "ur remote");
+      this.toolTips.SetToolTip(this.checkBoxMouseMode, "Enable the mouse mode feature, which lets you control the on-screen mouse with your remote");
       this.checkBoxMouseMode.UseVisualStyleBackColor = true;
       // 
       // comboBoxMouseModeButton
@@ -486,8 +483,7 @@ namespace MediaPortal.Plugins
       this.checkBoxMouseAcceleration.Size = new System.Drawing.Size(152, 24);
       this.checkBoxMouseAcceleration.TabIndex = 4;
       this.checkBoxMouseAcceleration.Text = "Use mouse acceleration";
-      this.toolTips.SetToolTip(this.checkBoxMouseAcceleration, "Enable mouse acceleration, which makes the mouse move in larger steps when holdin" +
-              "g the remote button down");
+      this.toolTips.SetToolTip(this.checkBoxMouseAcceleration, "Enable mouse acceleration, which makes the mouse move in larger steps when holding the remote button down");
       this.checkBoxMouseAcceleration.UseVisualStyleBackColor = true;
       // 
       // buttonClearAll

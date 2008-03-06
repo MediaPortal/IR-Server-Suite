@@ -1307,7 +1307,7 @@ namespace Translator
       string fileName = Path.Combine(Program.FolderMacros, file + Common.FileExtensionMacro);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
         {
           File.Delete(fileName);
           listViewMacro.Items.Remove(listViewMacro.SelectedItems[0]);
@@ -1340,7 +1340,7 @@ namespace Translator
 
       string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
       string macroName = listViewMacro.SelectedItems[0].Text;
-      string shortcutPath = Path.Combine(desktopPath, "Macro - " + macroName + ".lnk");
+      string shortcutPath = Path.Combine(desktopPath, String.Format("Macro - {0}.lnk", macroName));
 
       MSjogren.Samples.ShellLink.ShellShortcut shortcut = new MSjogren.Samples.ShellLink.ShellShortcut(shortcutPath);
 
@@ -1382,7 +1382,7 @@ namespace Translator
       string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, "Are you sure you want to delete \"" + file + "\"?", "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
         {
           File.Delete(fileName);
           listViewIR.Items.Remove(listViewIR.SelectedItems[0]);

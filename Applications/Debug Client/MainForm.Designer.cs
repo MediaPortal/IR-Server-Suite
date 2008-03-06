@@ -39,9 +39,10 @@ namespace DebugClient
       this.listBoxStatus = new System.Windows.Forms.ListBox();
       this.groupBoxStatus = new System.Windows.Forms.GroupBox();
       this.groupBoxRemoteButton = new System.Windows.Forms.GroupBox();
-      this.labelCustomButton = new System.Windows.Forms.Label();
-      this.numericUpDownButton = new System.Windows.Forms.NumericUpDown();
-      this.comboBoxRemoteButtons = new System.Windows.Forms.ComboBox();
+      this.textBoxRemoteCode = new System.Windows.Forms.TextBox();
+      this.textBoxRemoteDevice = new System.Windows.Forms.TextBox();
+      this.labelRemoteCode = new System.Windows.Forms.Label();
+      this.labelRemoteDevice = new System.Windows.Forms.Label();
       this.buttonSendRemoteButton = new System.Windows.Forms.Button();
       this.groupBoxSetup = new System.Windows.Forms.GroupBox();
       this.comboBoxComputer = new System.Windows.Forms.ComboBox();
@@ -51,7 +52,6 @@ namespace DebugClient
       this.buttonHelp = new System.Windows.Forms.Button();
       this.groupBoxStatus.SuspendLayout();
       this.groupBoxRemoteButton.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButton)).BeginInit();
       this.groupBoxSetup.SuspendLayout();
       this.groupBoxCommands.SuspendLayout();
       this.SuspendLayout();
@@ -156,9 +156,10 @@ namespace DebugClient
       // 
       this.groupBoxRemoteButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBoxRemoteButton.Controls.Add(this.labelCustomButton);
-      this.groupBoxRemoteButton.Controls.Add(this.numericUpDownButton);
-      this.groupBoxRemoteButton.Controls.Add(this.comboBoxRemoteButtons);
+      this.groupBoxRemoteButton.Controls.Add(this.textBoxRemoteCode);
+      this.groupBoxRemoteButton.Controls.Add(this.textBoxRemoteDevice);
+      this.groupBoxRemoteButton.Controls.Add(this.labelRemoteCode);
+      this.groupBoxRemoteButton.Controls.Add(this.labelRemoteDevice);
       this.groupBoxRemoteButton.Controls.Add(this.buttonSendRemoteButton);
       this.groupBoxRemoteButton.Location = new System.Drawing.Point(8, 136);
       this.groupBoxRemoteButton.Name = "groupBoxRemoteButton";
@@ -167,44 +168,37 @@ namespace DebugClient
       this.groupBoxRemoteButton.TabStop = false;
       this.groupBoxRemoteButton.Text = "Remote button";
       // 
-      // labelCustomButton
+      // textBoxRemoteCode
       // 
-      this.labelCustomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.labelCustomButton.Location = new System.Drawing.Point(136, 16);
-      this.labelCustomButton.Name = "labelCustomButton";
-      this.labelCustomButton.Size = new System.Drawing.Size(144, 20);
-      this.labelCustomButton.TabIndex = 1;
-      this.labelCustomButton.Text = "Custom button key code:";
-      this.labelCustomButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.textBoxRemoteCode.Location = new System.Drawing.Point(232, 16);
+      this.textBoxRemoteCode.Name = "textBoxRemoteCode";
+      this.textBoxRemoteCode.Size = new System.Drawing.Size(100, 20);
+      this.textBoxRemoteCode.TabIndex = 7;
       // 
-      // numericUpDownButton
+      // textBoxRemoteDevice
       // 
-      this.numericUpDownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.numericUpDownButton.Location = new System.Drawing.Point(288, 16);
-      this.numericUpDownButton.Maximum = new decimal(new int[] {
-            32768,
-            0,
-            0,
-            0});
-      this.numericUpDownButton.Name = "numericUpDownButton";
-      this.numericUpDownButton.Size = new System.Drawing.Size(72, 20);
-      this.numericUpDownButton.TabIndex = 2;
-      this.numericUpDownButton.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-      this.numericUpDownButton.ThousandsSeparator = true;
-      this.toolTips.SetToolTip(this.numericUpDownButton, "Specify a custom button code to forward to the server");
+      this.textBoxRemoteDevice.Location = new System.Drawing.Point(64, 16);
+      this.textBoxRemoteDevice.Name = "textBoxRemoteDevice";
+      this.textBoxRemoteDevice.Size = new System.Drawing.Size(100, 20);
+      this.textBoxRemoteDevice.TabIndex = 6;
       // 
-      // comboBoxRemoteButtons
+      // labelRemoteCode
       // 
-      this.comboBoxRemoteButtons.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.comboBoxRemoteButtons.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxRemoteButtons.FormattingEnabled = true;
-      this.comboBoxRemoteButtons.Location = new System.Drawing.Point(8, 16);
-      this.comboBoxRemoteButtons.Name = "comboBoxRemoteButtons";
-      this.comboBoxRemoteButtons.Size = new System.Drawing.Size(120, 21);
-      this.comboBoxRemoteButtons.TabIndex = 0;
-      this.toolTips.SetToolTip(this.comboBoxRemoteButtons, "Choose a remote control button to forward to the server");
-      this.comboBoxRemoteButtons.SelectedIndexChanged += new System.EventHandler(this.comboBoxRemoteButtons_SelectedIndexChanged);
+      this.labelRemoteCode.Location = new System.Drawing.Point(176, 16);
+      this.labelRemoteCode.Name = "labelRemoteCode";
+      this.labelRemoteCode.Size = new System.Drawing.Size(56, 20);
+      this.labelRemoteCode.TabIndex = 5;
+      this.labelRemoteCode.Text = "Code:";
+      this.labelRemoteCode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // labelRemoteDevice
+      // 
+      this.labelRemoteDevice.Location = new System.Drawing.Point(8, 16);
+      this.labelRemoteDevice.Name = "labelRemoteDevice";
+      this.labelRemoteDevice.Size = new System.Drawing.Size(56, 20);
+      this.labelRemoteDevice.TabIndex = 4;
+      this.labelRemoteDevice.Text = "Device:";
+      this.labelRemoteDevice.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // buttonSendRemoteButton
       // 
@@ -299,7 +293,7 @@ namespace DebugClient
       this.Load += new System.EventHandler(this.MainForm_Load);
       this.groupBoxStatus.ResumeLayout(false);
       this.groupBoxRemoteButton.ResumeLayout(false);
-      ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButton)).EndInit();
+      this.groupBoxRemoteButton.PerformLayout();
       this.groupBoxSetup.ResumeLayout(false);
       this.groupBoxCommands.ResumeLayout(false);
       this.ResumeLayout(false);
@@ -317,16 +311,17 @@ namespace DebugClient
     private System.Windows.Forms.ListBox listBoxStatus;
     private System.Windows.Forms.GroupBox groupBoxStatus;
     private System.Windows.Forms.GroupBox groupBoxRemoteButton;
-    private System.Windows.Forms.NumericUpDown numericUpDownButton;
-    private System.Windows.Forms.ComboBox comboBoxRemoteButtons;
     private System.Windows.Forms.Button buttonSendRemoteButton;
-    private System.Windows.Forms.Label labelCustomButton;
     private System.Windows.Forms.GroupBox groupBoxSetup;
     private System.Windows.Forms.GroupBox groupBoxCommands;
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.ComboBox comboBoxPort;
     private System.Windows.Forms.ComboBox comboBoxComputer;
     private System.Windows.Forms.Button buttonHelp;
+    private System.Windows.Forms.Label labelRemoteCode;
+    private System.Windows.Forms.Label labelRemoteDevice;
+    private System.Windows.Forms.TextBox textBoxRemoteCode;
+    private System.Windows.Forms.TextBox textBoxRemoteDevice;
   }
 }
 

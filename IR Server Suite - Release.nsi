@@ -328,6 +328,7 @@ SkipUninstallInputService:
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
   SetOverwrite ifnewer
   File /r /x .svn "Input Service\Input Service\Abstract Remote Maps\*.*"
+  File "Input Service\Input Service\RemoteTable.xsd"
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" "" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" 0
@@ -509,9 +510,9 @@ SectionEnd
 
 ;======================================
 
-Section "Virtual Remote and Web Remote" SectionVirtualRemote
+Section "Virtual Remote" SectionVirtualRemote
 
-  DetailPrint "Installing Virtual Remote and Web Remote..."
+  DetailPrint "Installing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
 
   ; Use the all users context
   SetShellVarContext all
@@ -521,7 +522,8 @@ Section "Virtual Remote and Web Remote" SectionVirtualRemote
   SetOutPath "$DIR_INSTALL\Virtual Remote"
   SetOverwrite ifnewer
   File "Applications\Virtual Remote\bin\Release\*.*"
-  File "Applications\Web Remote\bin\Release\WebRemote.exe"
+  File "Applications\Web Remote\bin\Release\WebRemote.*"
+  File "Applications\Virtual Remote Skin Editor\bin\Release\VirtualRemoteSkinEditor.*"
 
   ; Installing skins
   CreateDirectory "$DIR_INSTALL\Virtual Remote\Skins"
@@ -542,37 +544,15 @@ Section "Virtual Remote and Web Remote" SectionVirtualRemote
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk" "$DIR_INSTALL\Virtual Remote\VirtualRemote.exe" "" "$DIR_INSTALL\Virtual Remote\VirtualRemote.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk" "$DIR_INSTALL\Virtual Remote\WebRemote.exe" "" "$DIR_INSTALL\Virtual Remote\WebRemote.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk" "$DIR_INSTALL\Virtual Remote\VirtualRemoteSkinEditor.exe" "" "$DIR_INSTALL\Virtual Remote\VirtualRemoteSkinEditor.exe" 0
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote for Smart Devices.lnk" "$DIR_INSTALL\Virtual Remote\Smart Devices"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk" "$DIR_INSTALL\Virtual Remote\WebRemote.exe" "" "$DIR_INSTALL\Virtual Remote\WebRemote.exe" 0
 
 SectionEnd
 
 ;======================================
 
-Section /o "Virtual Remote Skin Editor" SectionVirtualRemoteSkinEditor
-
-  DetailPrint "Installing Virtual Remote Skin Editor ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing Virtual Remote
-  CreateDirectory "$DIR_INSTALL\Virtual Remote Skin Editor"
-  SetOutPath "$DIR_INSTALL\Virtual Remote Skin Editor"
-  SetOverwrite ifnewer
-  File "Applications\Virtual Remote Skin Editor\bin\Release\*.*"
-
-  ; Create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Virtual Remote Skin Editor"
-
-  ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk" "$DIR_INSTALL\Virtual Remote Skin Editor\VirtualRemoteSkinEditor.exe" "" "$DIR_INSTALL\Virtual Remote Skin Editor\VirtualRemoteSkinEditor.exe" 0
-
-SectionEnd
-
-;======================================
-
-Section "IR Blast (Command line tool)" SectionIRBlast
+Section "IR Blast" SectionIRBlast
 
   DetailPrint "Installing IR Blast ..."
 
@@ -631,6 +611,43 @@ Section /o "Keyboard Input Relay" SectionKeyboardInputRelay
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" "" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" 0
+
+SectionEnd
+
+;======================================
+
+Section /o "Dbox Tuner" SectionDboxTuner
+
+  DetailPrint "Installing Dbox Tuner ..."
+
+  ; Use the all users context
+  SetShellVarContext all
+
+  ; Installing IR Server
+  CreateDirectory "$DIR_INSTALL\Dbox Tuner"
+  SetOutPath "$DIR_INSTALL\Dbox Tuner"
+  SetOverwrite ifnewer
+  File "Applications\Dbox Tuner\bin\Release\*.*"
+
+  ; Create folders
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Dbox Tuner"
+
+SectionEnd
+
+;======================================
+
+Section /o "HCW PVR Tuner" SectionHcwPvrTuner
+
+  DetailPrint "Installing HCW PVR Tuner ..."
+
+  ; Use the all users context
+  SetShellVarContext all
+
+  ; Installing IR Server
+  CreateDirectory "$DIR_INSTALL\HCW PVR Tuner"
+  SetOutPath "$DIR_INSTALL\HCW PVR Tuner"
+  SetOverwrite ifnewer
+  File "Applications\HCW PVR Tuner\bin\Release\*.*"
 
 SectionEnd
 
@@ -714,11 +731,12 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin} "For tuning external channels (on Set Top Boxes) with the MediaPortal TV server."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator} "Control your whole PC."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher} "Simple tray application to launch an application of your choosing when a particular button is pressed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote} "Simulated remote control, works as an application or as a web hosted remote control (with included Web Remote and Smart Device versions)."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemoteSkinEditor} "Create or Modify skins for the Virtual Remote."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote} "Simulated remote control, works as an application or as a web hosted remote control (with included Web Remote).  Also includes a Skin Editor and Smart Device versions of Virtual Remote."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRBlast} "Command line tools for blasting IR codes."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRFileTool} "Tool for learning, modifying, testing, correcting and converting IR command files."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionKeyboardInputRelay} "Relays keyboard input to the Input Service to act on keypresses like remote buttons."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionDboxTuner} "Command line tuner for Dreambox devices."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionHcwPvrTuner} "Command line tuner for Hauppauge PVR devices."
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionDebugClient} "Very simple testing tool for troubleshooting input and communications problems."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -811,6 +829,7 @@ SkipUninstallInputService:
   DetailPrint "Removing application auto-runs ..."
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Tray Launcher"
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
 
   SetAutoClose true
 

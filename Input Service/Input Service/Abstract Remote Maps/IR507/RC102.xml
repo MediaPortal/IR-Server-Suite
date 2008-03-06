@@ -1,0 +1,26 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="?1" AbstractButton="Up" />
+  <RemoteTable RawCode="?2" AbstractButton="Down" />
+  <RemoteTable RawCode="?3" AbstractButton="Left" />
+  <RemoteTable RawCode="?4" AbstractButton="Right" />
+  <RemoteTable RawCode="?5" AbstractButton="OK" />
+  <RemoteTable RawCode="01-F7-1C-03" AbstractButton="VolumeUp" />
+  <RemoteTable RawCode="01-F7-1E-05" AbstractButton="VolumeDown" />
+  <RemoteTable RawCode="01-F7-1D-04" AbstractButton="ChannelUp" />
+  <RemoteTable RawCode="01-F7-1F-06" AbstractButton="ChannelDown" />
+  <RemoteTable RawCode="01-F7-18-0F" AbstractButton="Menu" />
+  <RemoteTable RawCode="01-F7-1B-02" AbstractButton="Back" />
+  <RemoteTable RawCode="01-F7-17-0E" AbstractButton="Close" />
+  <RemoteTable RawCode="01-F7-20-08" AbstractButton="Mute" />
+  <RemoteTable RawCode="01-F7-22-0A" AbstractButton="Play" />
+  <RemoteTable RawCode="01-F7-26-0E" AbstractButton="Pause" />
+  <RemoteTable RawCode="01-F7-25-0D" AbstractButton="Stop" />
+  <RemoteTable RawCode="01-F7-27-0F" AbstractButton="FastForward" />
+  <RemoteTable RawCode="01-F7-24-0C" AbstractButton="Rewind" />
+  <RemoteTable RawCode="01-F7-23-0B" AbstractButton="NextChapter" />
+  <RemoteTable RawCode="01-F7-21-09" AbstractButton="PreviousChapter" />
+  <RemoteTable RawCode="01-F7-15-0C" AbstractButton="Music" />
+  <RemoteTable RawCode="01-F7-16-0D" AbstractButton="Present" />
+  <RemoteTable RawCode="01-F7-14-0B" AbstractButton="DVD" />
+</DocumentElement>
