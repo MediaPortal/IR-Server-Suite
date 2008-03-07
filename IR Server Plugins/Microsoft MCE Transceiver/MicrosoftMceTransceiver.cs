@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
@@ -257,6 +258,11 @@ namespace InputService.Plugin
     /// A description of the IR Server plugin.
     /// </summary>
     public override string Description  { get { return "Microsoft MCE Infrared Transceiver"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.

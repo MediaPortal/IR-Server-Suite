@@ -3,6 +3,7 @@ using System.ComponentModel;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -211,6 +212,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Captures ALL keyboard button presses and basic key combinations as remote control commands"; } }
+    /// <summary>
+    /// Gets the plugin icon.
+    /// </summary>
+    /// <value>The plugin icon.</value>
+    public override Icon DeviceIcon { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Start the IR Server plugin.

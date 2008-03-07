@@ -53,6 +53,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Support using voice commands to control IR Server Suite"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Start the IR Server plugin.

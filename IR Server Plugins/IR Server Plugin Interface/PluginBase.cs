@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.IO;
 
 namespace InputService.Plugin
@@ -46,6 +47,12 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public abstract string Description { get; }
+
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public virtual Icon DeviceIcon { get { return null; } }
 
     #endregion Properties
 

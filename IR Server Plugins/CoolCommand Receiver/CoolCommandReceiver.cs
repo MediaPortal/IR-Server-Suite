@@ -5,6 +5,7 @@ using System.ComponentModel;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -63,6 +64,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Leadtek Winfast CoolCommand Receiver"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.

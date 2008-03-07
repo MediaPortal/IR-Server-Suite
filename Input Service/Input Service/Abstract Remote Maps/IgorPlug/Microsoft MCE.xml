@@ -51,4 +51,5 @@
   <RemoteTable RawCode="31706" AbstractButton="LiveTV" />
   <RemoteTable RawCode="31663" AbstractButton="Radio" />
   <RemoteTable RawCode="31665" AbstractButton="Print" />
+  <RemoteTable RawCode="31671" AbstractButton="RecordedTV" />
 </DocumentElement>

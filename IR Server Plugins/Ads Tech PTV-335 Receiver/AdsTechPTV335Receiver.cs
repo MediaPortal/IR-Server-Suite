@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
@@ -64,6 +65,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Supports the Ads Tech PTV-335 Receiver"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.

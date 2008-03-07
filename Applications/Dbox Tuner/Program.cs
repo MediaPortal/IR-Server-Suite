@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -150,6 +151,16 @@ namespace DboxTuner
           case "ZAP":
             Info("Command: Zap, Channel: {0}", args[1]);
 
+            try
+            {
+              Info("Raising process priority");
+              Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            }
+            catch
+            {
+              Info("Failed to elevate process priority");
+            }
+
             _tvBouquets = new DataTable();
             _tvBouquets.ReadXml(DataFile);
 
@@ -168,7 +179,11 @@ namespace DboxTuner
             DataRow[] rows = _tvBouquets.Select(expression);
             if (rows.Length == 1)
             {
+              //string channelName = rows[0]["ChannelName"] as string;
               string channelID = rows[0]["ID"] as string;
+
+              //Info("Zapping to channel {0} \"{1}\"", channelName, channelID);
+
               ZapTo(channelID);
               break;
             }
@@ -255,7 +270,7 @@ namespace DboxTuner
       _userName = "root";
       _password = "dbox2";
       _boxType  = StbBoxType.Unknown;
-      _timeout  = 2000;
+      _timeout  = 4000;
 
       SaveSettings();
     }

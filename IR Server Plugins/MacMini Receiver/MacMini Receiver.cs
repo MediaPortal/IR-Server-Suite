@@ -3,6 +3,7 @@ using System.ComponentModel;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -221,22 +222,27 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name { get { return "Mac Mini"; } }
+    public override string Name         { get { return "Mac Mini"; } }
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version { get { return "1.0.4.2"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author { get { return "and-81"; } }
+    public override string Author       { get { return "and-81"; } }
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description { get { return "Supports the IR receiver built into the Mac Mini"; } }
+    public override string Description  { get { return "Supports the IR receiver built into the Mac Mini"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.

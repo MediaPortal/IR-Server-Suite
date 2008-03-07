@@ -70,6 +70,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Supports the Nintendo Wii Remote"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.

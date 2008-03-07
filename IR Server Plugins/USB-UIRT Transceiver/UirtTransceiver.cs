@@ -2,6 +2,7 @@ using System;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
@@ -239,6 +240,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Support for the USB-UIRT transceiver"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.

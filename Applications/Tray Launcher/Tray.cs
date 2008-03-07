@@ -25,8 +25,6 @@ namespace TrayLauncher
 
     #region Constants
 
-    const string DefaultKeyCode = "31730";
-
     static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Tray Launcher\\Tray Launcher.xml");
 
     #endregion Constants
@@ -246,10 +244,10 @@ namespace TrayLauncher
     }
     void CreateDefaultSettings()
     {
-      _serverHost = "localhost";
-      _programFile = String.Empty;
-      _launchOnLoad = false;
-      _launchKeyCode = DefaultKeyCode;
+      _serverHost     = "localhost";
+      _programFile    = String.Empty;
+      _launchOnLoad   = false;
+      _launchKeyCode  = "Start";
 
       SaveSettings();
     }

@@ -2,6 +2,7 @@ using System;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -73,6 +74,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Supports receiving simulated button presses through Windows Messages"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Start the IR Server plugin.

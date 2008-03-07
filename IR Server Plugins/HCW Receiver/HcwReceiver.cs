@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -45,7 +46,7 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "HCW Receiver"; } }
+    public override string Name         { get { return "Hauppauge"; } }
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
@@ -61,6 +62,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Support for Hauppauge IR devices"; } }
+    /// <summary>
+    /// Gets a display icon for the plugin.
+    /// </summary>
+    /// <value>The icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Start the IR Server plugin.

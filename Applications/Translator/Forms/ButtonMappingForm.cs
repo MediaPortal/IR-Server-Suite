@@ -516,6 +516,13 @@ namespace Translator
 
     private void buttonTest_Click(object sender, EventArgs e)
     {
+      if (String.IsNullOrEmpty(_command))
+      {
+        MessageBox.Show(this, "You must Set the command before you can Test it", "No command Set", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        buttonSet.Focus();
+        return;
+      }
+
       if (_command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
         MessageBox.Show(this, "Keystroke commands cannot be tested here", "Cannot test Keystroke command", MessageBoxButtons.OK, MessageBoxIcon.Stop);

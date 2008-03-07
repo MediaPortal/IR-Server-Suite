@@ -3,6 +3,7 @@ using System.Collections.Generic;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
@@ -52,9 +53,9 @@ namespace InputService.Plugin
 
     #region Variables
 
-    DeviceType _deviceType;
+    //DeviceType _deviceType;
 
-    string _port;
+    //string _port;
 
 
     RemoteHandler _remoteButtonHandler;
@@ -69,22 +70,27 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name { get { return "Ira/Tira"; } }
+    public override string Name         { get { return "Ira"; } }
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version { get { return "1.0.4.2"; } }
+    public override string Version      { get { return "1.0.4.2"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author { get { return "and-81"; } }
+    public override string Author       { get { return "and-81"; } }
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description { get { return "Support for the Ira/Tira transceiver"; } }
+    public override string Description  { get { return "Support for the Ira/Tira transceiver"; } }
+    /// <summary>
+    /// Gets the plugin icon.
+    /// </summary>
+    /// <value>The plugin icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Start the IR Server plugin.

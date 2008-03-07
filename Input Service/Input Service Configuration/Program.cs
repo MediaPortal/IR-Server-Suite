@@ -177,10 +177,10 @@ namespace InputService.Configuration
       try { _abstractRemoteMode = bool.Parse(doc.DocumentElement.Attributes["AbstractRemoteMode"].Value); }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
-      try { _mode = (InputServiceMode)Enum.Parse(typeof(InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
+      try { _mode               = (InputServiceMode)Enum.Parse(typeof(InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
-      try { _hostComputer = doc.DocumentElement.Attributes["HostComputer"].Value; }
+      try { _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value; }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
       try { _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value; }
@@ -188,9 +188,9 @@ namespace InputService.Configuration
 
       try
       {
-        string receivers = doc.DocumentElement.Attributes["PluginReceive"].Value;
+        string receivers        = doc.DocumentElement.Attributes["PluginReceive"].Value;
         if (!String.IsNullOrEmpty(receivers))
-          _pluginNameReceive = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+          _pluginNameReceive    = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
       }
       catch (Exception ex)
       {

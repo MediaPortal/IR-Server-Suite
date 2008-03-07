@@ -66,9 +66,9 @@ namespace InputService.Configuration
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
-          checkBox = gridPlugins[row, 1] as SourceGrid.Cells.CheckBox;
+          checkBox = gridPlugins[row, ColReceive] as SourceGrid.Cells.CheckBox;
           if (checkBox != null && checkBox.Checked)
-            receivers.Add(gridPlugins[row, 0].DisplayText);
+            receivers.Add(gridPlugins[row, ColName].DisplayText);
         }
 
         if (receivers.Count == 0)
@@ -81,13 +81,13 @@ namespace InputService.Configuration
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
-          checkBox = gridPlugins[row, 1] as SourceGrid.Cells.CheckBox;
+          checkBox = gridPlugins[row, ColReceive] as SourceGrid.Cells.CheckBox;
           if (checkBox == null)
             continue;
 
           if (value == null)
             checkBox.Checked = false;
-          else if (Array.IndexOf<string>(value, gridPlugins[row, 0].DisplayText) != -1)
+          else if (Array.IndexOf<string>(value, gridPlugins[row, ColName].DisplayText) != -1)
             checkBox.Checked = true;
           else
             checkBox.Checked = false;
@@ -101,23 +101,26 @@ namespace InputService.Configuration
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
-          checkBox = gridPlugins[row, 2] as SourceGrid.Cells.CheckBox;
+          checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
           if (checkBox != null && checkBox.Checked)
-            return gridPlugins[row, 0].DisplayText;
+            return gridPlugins[row, ColName].DisplayText;
         }
 
         return String.Empty;
       }
       set
       {
+        if (String.IsNullOrEmpty(value))
+          return;
+
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
-          checkBox = gridPlugins[row, 2] as SourceGrid.Cells.CheckBox;
+          checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
           if (checkBox == null)
             continue;
 
-          if (gridPlugins[row, 0].DisplayText.Equals(value, StringComparison.OrdinalIgnoreCase))
+          if (gridPlugins[row, ColName].DisplayText.Equals(value, StringComparison.OrdinalIgnoreCase))
             checkBox.Checked = true;
           else
             checkBox.Checked = false;
@@ -146,6 +149,75 @@ namespace InputService.Configuration
 
     #endregion Constructor
 
+    #region Controls
+
+    private void buttonOK_Click(object sender, EventArgs e)
+    {
+      this.DialogResult = DialogResult.OK;
+      this.Close();
+    }
+    private void buttonCancel_Click(object sender, EventArgs e)
+    {
+      this.DialogResult = DialogResult.Cancel;
+      this.Close();
+    }
+
+    private void buttonClickEvent_Executed(object sender, EventArgs e)
+    {
+      SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
+      SourceGrid.Cells.Button cell = (SourceGrid.Cells.Button)context.Cell;
+
+      IConfigure plugin = cell.Row.Tag as IConfigure;
+      if (plugin != null)
+        plugin.Configure(this);
+    }
+    private void TransmitChanged(object sender, EventArgs e)
+    {
+      SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
+      SourceGrid.Cells.CheckBox cell = (SourceGrid.Cells.CheckBox)context.Cell;
+
+      if (!cell.Checked)
+        return;
+
+      PluginBase plugin = cell.Row.Tag as PluginBase;
+
+      for (int row = 1; row < gridPlugins.RowsCount; row++)
+      {
+        SourceGrid.Cells.CheckBox checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
+
+        if (checkBox != null && checkBox.Checked && !gridPlugins[row, ColName].DisplayText.Equals(plugin.Name, StringComparison.OrdinalIgnoreCase))
+          checkBox.Checked = false;
+      }
+    }
+    private void PluginDoubleClick(object sender, EventArgs e)
+    {
+      SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
+      SourceGrid.Cells.Cell cell = (SourceGrid.Cells.Cell)context.Cell;
+
+      SourceGrid.Cells.CheckBox checkBoxReceive   = gridPlugins[cell.Row.Index, ColReceive] as SourceGrid.Cells.CheckBox;
+      if (checkBoxReceive != null)
+        checkBoxReceive.Checked = true;
+
+      SourceGrid.Cells.CheckBox checkBoxTransmit  = gridPlugins[cell.Row.Index, ColTransmit] as SourceGrid.Cells.CheckBox;
+      if (checkBoxTransmit != null)
+        checkBoxTransmit.Checked = true;
+    }
+
+    private void toolStripButtonDetect_Click(object sender, EventArgs e)
+    {
+      Detect();
+    }
+    private void toolStripButtonAdvancedSettings_Click(object sender, EventArgs e)
+    {
+      Advanced();
+    }
+    private void toolStripButtonHelp_Click(object sender, EventArgs e)
+    {
+      ShowHelp();
+    }
+
+    #endregion Controls
+
     void CreateGrid()
     {
       int row = 0;
@@ -155,7 +227,7 @@ namespace InputService.Configuration
 
       // Setup Column Headers
       gridPlugins.Rows.Insert(row);
-      gridPlugins[row, ColIcon]       = new SourceGrid.Cells.ColumnHeader("*");
+      gridPlugins[row, ColIcon]       = new SourceGrid.Cells.ColumnHeader(" ");
       gridPlugins[row, ColName]       = new SourceGrid.Cells.ColumnHeader("Name");
       gridPlugins[row, ColReceive]    = new SourceGrid.Cells.ColumnHeader("Receive");
       gridPlugins[row, ColTransmit]   = new SourceGrid.Cells.ColumnHeader("Transmit");
@@ -167,8 +239,11 @@ namespace InputService.Configuration
         gridPlugins.Rows.Insert(++row);
         gridPlugins.Rows[row].Tag = transceiver;
 
-        // TODO: Icon Cell
-        gridPlugins[row, ColIcon] = new SourceGrid.Cells.Cell();
+        // Icon Cell
+        if (transceiver.DeviceIcon != null)
+          gridPlugins[row, ColIcon] = new SourceGrid.Cells.Image(transceiver.DeviceIcon);
+        else
+          gridPlugins[row, ColIcon] = new SourceGrid.Cells.Cell();
 
         // Name Cell
         SourceGrid.Cells.Cell nameCell = new SourceGrid.Cells.Cell(transceiver.Name);
@@ -234,92 +309,7 @@ namespace InputService.Configuration
       gridPlugins.AutoSizeCells();
     }
 
-    #region Controls
-
-    private void buttonOK_Click(object sender, EventArgs e)
-    {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
-    }
-    private void buttonCancel_Click(object sender, EventArgs e)
-    {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
-    }
-
-    private void buttonClickEvent_Executed(object sender, EventArgs e)
-    {
-      SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
-      SourceGrid.Cells.Button cell = (SourceGrid.Cells.Button)context.Cell;
-
-      IConfigure plugin = cell.Row.Tag as IConfigure;
-      if (plugin != null)
-        plugin.Configure(this);
-    }
-    private void TransmitChanged(object sender, EventArgs e)
-    {
-      SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
-      SourceGrid.Cells.CheckBox cell = (SourceGrid.Cells.CheckBox)context.Cell;
-
-      if (!cell.Checked)
-        return;
-
-      PluginBase plugin = cell.Row.Tag as PluginBase;
-
-      for (int row = 1; row < gridPlugins.RowsCount; row++)
-      {
-        SourceGrid.Cells.CheckBox checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
-
-        if (checkBox != null && checkBox.Checked && !gridPlugins[row, ColName].DisplayText.Equals(plugin.Name, StringComparison.OrdinalIgnoreCase))
-          checkBox.Checked = false;
-      }
-    }
-    private void PluginDoubleClick(object sender, EventArgs e)
-    {
-      SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
-      SourceGrid.Cells.Cell cell = (SourceGrid.Cells.Cell)context.Cell;
-
-      SourceGrid.Cells.CheckBox checkBoxReceive   = gridPlugins[cell.Row.Index, ColReceive] as SourceGrid.Cells.CheckBox;
-      if (checkBoxReceive != null)
-        checkBoxReceive.Checked = true;
-
-      SourceGrid.Cells.CheckBox checkBoxTransmit  = gridPlugins[cell.Row.Index, ColTransmit] as SourceGrid.Cells.CheckBox;
-      if (checkBoxTransmit != null)
-        checkBoxTransmit.Checked = true;
-    }
-
-    private void buttonHelp_Click(object sender, EventArgs e)
-    {
-      try
-      {
-        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this, file, HelpNavigator.Topic, "Input Service\\index.html");
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-    
-    private void buttonAdvanced_Click(object sender, EventArgs e)
-    {
-      Advanced advanced = new Advanced();
-
-      advanced.AbstractRemoteMode = _abstractRemoteMode;
-      advanced.Mode               = _mode;
-      advanced.HostComputer       = _hostComputer;
-
-      if (advanced.ShowDialog(this) == DialogResult.OK)
-      {
-        _abstractRemoteMode = advanced.AbstractRemoteMode;
-        _mode               = advanced.Mode;
-        _hostComputer       = advanced.HostComputer;
-      }
-    }
-
-    #endregion Controls
-
-    private void buttonDetect_Click(object sender, EventArgs e)
+    void Detect()
     {
       SourceGrid.Cells.CheckBox checkBox;
       for (int row = 1; row < gridPlugins.RowsCount; row++)
@@ -337,6 +327,33 @@ namespace InputService.Configuration
         checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
         if (checkBox != null)
           checkBox.Checked = detected;
+      }
+    }
+    void Advanced()
+    {
+      Advanced advanced = new Advanced();
+
+      advanced.AbstractRemoteMode = _abstractRemoteMode;
+      advanced.Mode = _mode;
+      advanced.HostComputer = _hostComputer;
+
+      if (advanced.ShowDialog(this) == DialogResult.OK)
+      {
+        _abstractRemoteMode = advanced.AbstractRemoteMode;
+        _mode = advanced.Mode;
+        _hostComputer = advanced.HostComputer;
+      }
+    }
+    void ShowHelp()
+    {
+      try
+      {
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Input Service\\index.html");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

@@ -1159,28 +1159,32 @@ namespace InputService
 
                 // If the remote maps are not already loaded for this device then attempt to load them
                 if (!foundDevice)
-                  LoadAbstractDeviceFiles(deviceName);
+                  foundDevice = LoadAbstractDeviceFiles(deviceName);
 
-                // Find abstract button mapping
-                string abstractButton = LookupAbstractButton(deviceName, keyCode);
-                if (String.IsNullOrEmpty(abstractButton))
+                // If the device map is loaded then try to convert the button to abstract
+                if (foundDevice)
                 {
-                  IrssLog.Info("Abstract Remote Button mapped from forwarded remote event: {0}", abstractButton);
+                  // Find abstract button mapping
+                  string abstractButton = LookupAbstractButton(deviceName, keyCode);
+                  if (String.IsNullOrEmpty(abstractButton))
+                  {
+                    IrssLog.Info("Abstract Remote Button mapped from forwarded remote event: {0}", abstractButton);
 
-                  // Encode new message ...
-                  byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Abstract");
-                  byte[] keyCodeBytes = Encoding.ASCII.GetBytes(abstractButton);
+                    // Encode new message ...
+                    byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Abstract");
+                    byte[] keyCodeBytes = Encoding.ASCII.GetBytes(abstractButton);
 
-                  data = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
+                    data = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
 
-                  BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(data, 0);
-                  deviceNameBytes.CopyTo(data, 4);
-                  BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(data, 4 + deviceNameBytes.Length);
-                  keyCodeBytes.CopyTo(data, 8 + deviceNameBytes.Length);
-                }
-                else
-                {
-                  IrssLog.Info("Abstract Remote Button not found for forwarded remote event: {0} ({1})", deviceName, keyCode);
+                    BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(data, 0);
+                    deviceNameBytes.CopyTo(data, 4);
+                    BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(data, 4 + deviceNameBytes.Length);
+                    keyCodeBytes.CopyTo(data, 8 + deviceNameBytes.Length);
+                  }
+                  else
+                  {
+                    IrssLog.Info("Abstract Remote Button not found for forwarded remote event: {0} ({1})", deviceName, keyCode);
+                  }
                 }
               }
 
@@ -1711,7 +1715,7 @@ namespace InputService
             DataRow[] rows = table.Select(expression);
             if (rows.Length == 1)
             {
-              string button = rows[0]["AbstractButton"].ToString() as string;
+              string button = rows[0]["AbstractButton"] as string;
               if (!String.IsNullOrEmpty(button))
               {
                 IrssLog.Debug("{0}, remote: {1}, device: {2}", button, table.ExtendedProperties["Remote"] as string, deviceName);
@@ -1727,34 +1731,49 @@ namespace InputService
       }
 
       return null;
-      //return String.Format("{0} ({1})", deviceName, keyCode);
     }
 
-    void LoadAbstractDeviceFiles(string device)
+    bool LoadAbstractDeviceFiles(string device)
     {
+      if (String.IsNullOrEmpty(device))
+        return false;
+
       string path = Path.Combine(AbstractRemoteMapFolder, device);
-      string[] files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly);
-      foreach (string file in files)
+      if (Directory.Exists(path))
+        return false;
+
+      try
       {
-        string remote = Path.GetFileNameWithoutExtension(file);
-        string tableName = String.Format("{0}:{1}", device, remote);
-        if (_abstractRemoteButtons.Tables.Contains(tableName))
+        string[] files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly);
+        foreach (string file in files)
         {
-          IrssLog.Warn("Abstract Remote Table already loaded ({0})", tableName);
-          continue;
+          string remote = Path.GetFileNameWithoutExtension(file);
+          string tableName = String.Format("{0}:{1}", device, remote);
+          if (_abstractRemoteButtons.Tables.Contains(tableName))
+          {
+            IrssLog.Warn("Abstract Remote Table already loaded ({0})", tableName);
+            continue;
+          }
+
+          DataTable table = _abstractRemoteButtons.Tables.Add("RemoteTable");
+          table.ReadXmlSchema(AbstractRemoteSchemaFile);
+          table.ReadXml(file);
+
+          table.ExtendedProperties.Add("Device", device);
+          table.ExtendedProperties.Add("Remote", remote);
+
+          table.TableName = tableName;
+
+          IrssLog.Info("Abstract Remote Table ({0}) loaded", tableName);
         }
-
-        DataTable table = _abstractRemoteButtons.Tables.Add("RemoteTable");
-        table.ReadXmlSchema(AbstractRemoteSchemaFile);
-        table.ReadXml(file);
-
-        table.ExtendedProperties.Add("Device", device);
-        table.ExtendedProperties.Add("Remote", remote);
-
-        table.TableName = tableName;
-
-        IrssLog.Info("Abstract Remote Table ({0}) loaded", tableName);
       }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        return false;
+      }
+
+      return true;
     }
 
     #endregion Implementation

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 #if TRACE
 using System.Diagnostics;
 #endif
+using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Text;
@@ -66,6 +67,11 @@ namespace InputService.Plugin
     /// </summary>
     /// <value>The description.</value>
     public override string Description  { get { return "Receiver support for the Serial IRMan device"; } }
+    /// <summary>
+    /// Gets the plugin icon.
+    /// </summary>
+    /// <value>The plugin icon.</value>
+    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
     /// Start the IR Server plugin.

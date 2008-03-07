@@ -387,7 +387,7 @@ namespace VirtualRemote
       BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
       keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
 
-      IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, bytes);
+      IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, bytes);
       SendMessage(message);
     }
 
