@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -68,6 +69,7 @@ namespace IRServer
     bool _abstractRemoteMode;
     IRServerMode _mode;
     string _hostComputer;
+    string _processPriority;
 
     string[] _pluginNameReceive;
     List<PluginBase> _pluginReceive;
@@ -160,6 +162,25 @@ namespace IRServer
       IrssLog.Info("Starting IR Server ...");
 
       LoadSettings();
+
+      #region Process Priority Adjustment
+
+      if (!_processPriority.Equals("No Change", StringComparison.OrdinalIgnoreCase))
+      {
+        try
+        {
+          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), _processPriority);
+          Process.GetCurrentProcess().PriorityClass = priority;
+
+          IrssLog.Info("Process priority set to: {0}", _processPriority);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
+
+      #endregion Process Priority Adjustment
 
       #region Load plugin(s)
 
@@ -344,7 +365,6 @@ namespace IRServer
         _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
         _abstractRemoteButtons.CaseSensitive = true;
 
-        List<string> receivers = new List<string>(_pluginReceive.Count);
         foreach (PluginBase plugin in _pluginReceive)
           if (plugin is IRemoteReceiver)
             LoadAbstractDeviceFiles(plugin.Name);
@@ -471,24 +491,30 @@ namespace IRServer
 
       try
       {
-        Config config         = new Config();
-        config.Mode           = _mode;
-        config.HostComputer   = _hostComputer;
-        config.PluginReceive  = _pluginNameReceive;
-        config.PluginTransmit = _pluginNameTransmit;
+        Config config             = new Config();
+        config.AbstractRemoteMode = _abstractRemoteMode;
+        config.Mode               = _mode;
+        config.HostComputer       = _hostComputer;
+        config.ProcessPriority    = _processPriority;
+        config.PluginReceive      = _pluginNameReceive;
+        config.PluginTransmit     = _pluginNameTransmit;
 
         if (config.ShowDialog() == DialogResult.OK)
         {
-          if ((_mode               != config.Mode)            ||
-              (_hostComputer       != config.HostComputer)    ||
-              (_pluginNameReceive  != config.PluginReceive)   ||
+          if ((_abstractRemoteMode != config.AbstractRemoteMode)  ||
+              (_mode               != config.Mode)                ||
+              (_hostComputer       != config.HostComputer)        ||
+              (_processPriority    != config.ProcessPriority)     ||
+              (_pluginNameReceive  != config.PluginReceive)       ||
               (_pluginNameTransmit != config.PluginTransmit)  )
           {
             Stop(); // Shut down communications
 
             // Change settings ...
+            _abstractRemoteMode = config.AbstractRemoteMode;
             _mode               = config.Mode;
             _hostComputer       = config.HostComputer;
+            _processPriority    = config.ProcessPriority;
             _pluginNameReceive  = config.PluginReceive;
             _pluginNameTransmit = config.PluginTransmit;
 
@@ -653,7 +679,7 @@ namespace IRServer
 
       StopClient();
 
-      MessageBox.Show("Please report this error.", "IR Server - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show("Please report this error", "IR Server - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
     void Connected(object obj)
     {
@@ -1190,28 +1216,32 @@ namespace IRServer
 
                 // If the remote maps are not already loaded for this device then attempt to load them
                 if (!foundDevice)
-                  LoadAbstractDeviceFiles(deviceName);
+                  foundDevice = LoadAbstractDeviceFiles(deviceName);
 
-                // Find abstract button mapping
-                string abstractButton = LookupAbstractButton(deviceName, keyCode);
-                if (String.IsNullOrEmpty(abstractButton))
+                // If the device map is loaded then try to convert the button to abstract
+                if (foundDevice)
                 {
-                  IrssLog.Info("Abstract Remote Button mapped from forwarded remote event: {0}", abstractButton);
+                  // Find abstract button mapping
+                  string abstractButton = LookupAbstractButton(deviceName, keyCode);
+                  if (String.IsNullOrEmpty(abstractButton))
+                  {
+                    IrssLog.Info("Abstract Remote Button mapped from forwarded remote event: {0}", abstractButton);
 
-                  // Encode new message ...
-                  byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Abstract");
-                  byte[] keyCodeBytes = Encoding.ASCII.GetBytes(abstractButton);
+                    // Encode new message ...
+                    byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Abstract");
+                    byte[] keyCodeBytes = Encoding.ASCII.GetBytes(abstractButton);
 
-                  data = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
+                    data = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
 
-                  BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(data, 0);
-                  deviceNameBytes.CopyTo(data, 4);
-                  BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(data, 4 + deviceNameBytes.Length);
-                  keyCodeBytes.CopyTo(data, 8 + deviceNameBytes.Length);
-                }
-                else
-                {
-                  IrssLog.Info("Abstract Remote Button not found for forwarded remote event: {0} ({1})", deviceName, keyCode);
+                    BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(data, 0);
+                    deviceNameBytes.CopyTo(data, 4);
+                    BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(data, 4 + deviceNameBytes.Length);
+                    keyCodeBytes.CopyTo(data, 8 + deviceNameBytes.Length);
+                  }
+                  else
+                  {
+                    IrssLog.Info("Abstract Remote Button not found for forwarded remote event: {0} ({1})", deviceName, keyCode);
+                  }
                 }
               }
 
@@ -1624,6 +1654,7 @@ namespace IRServer
       _abstractRemoteMode = false;
       _mode               = IRServerMode.ServerMode;
       _hostComputer       = String.Empty;
+      _processPriority    = "No Change";
       _pluginNameReceive  = null;
       _pluginNameTransmit = String.Empty;
 
@@ -1664,6 +1695,9 @@ namespace IRServer
       try { _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value; }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
+      try { _processPriority    = doc.DocumentElement.Attributes["ProcessPriority"].Value; }
+      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+
       try { _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value; }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
@@ -1693,6 +1727,7 @@ namespace IRServer
           writer.WriteAttributeString("AbstractRemoteMode", _abstractRemoteMode.ToString());
           writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
+          writer.WriteAttributeString("ProcessPriority", _processPriority);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
 
           if (_pluginNameReceive != null)
@@ -1763,10 +1798,10 @@ namespace IRServer
             DataRow[] rows = table.Select(expression);
             if (rows.Length == 1)
             {
-              string button = rows[0]["AbstractButton"].ToString() as string;
+              string button = rows[0]["AbstractButton"] as string;
               if (!String.IsNullOrEmpty(button))
               {
-                IrssLog.Debug(button + ", remote: " + table.ExtendedProperties["Remote"] as string + ", device: " + deviceName);
+                IrssLog.Debug("{0}, remote: {1}, device: {2}", button, table.ExtendedProperties["Remote"] as string, deviceName);
                 return button;
               }
             }
@@ -1779,34 +1814,49 @@ namespace IRServer
       }
 
       return null;
-      //return String.Format("{0} ({1})", deviceName, keyCode);
     }
 
-    void LoadAbstractDeviceFiles(string device)
+    bool LoadAbstractDeviceFiles(string device)
     {
+      if (String.IsNullOrEmpty(device))
+        return false;
+
       string path = Path.Combine(AbstractRemoteMapFolder, device);
-      string[] files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly);
-      foreach (string file in files)
+      if (Directory.Exists(path))
+        return false;
+
+      try
       {
-        string remote = Path.GetFileNameWithoutExtension(file);
-        string tableName = String.Format("{0}:{1}", device, remote);
-        if (_abstractRemoteButtons.Tables.Contains(tableName))
+        string[] files = Directory.GetFiles(path, "*.xml", SearchOption.TopDirectoryOnly);
+        foreach (string file in files)
         {
-          IrssLog.Warn("Abstract Remote Table already loaded ({0})", tableName);
-          continue;
+          string remote = Path.GetFileNameWithoutExtension(file);
+          string tableName = String.Format("{0}:{1}", device, remote);
+          if (_abstractRemoteButtons.Tables.Contains(tableName))
+          {
+            IrssLog.Warn("Abstract Remote Table already loaded ({0})", tableName);
+            continue;
+          }
+
+          DataTable table = _abstractRemoteButtons.Tables.Add("RemoteTable");
+          table.ReadXmlSchema(AbstractRemoteSchemaFile);
+          table.ReadXml(file);
+
+          table.ExtendedProperties.Add("Device", device);
+          table.ExtendedProperties.Add("Remote", remote);
+
+          table.TableName = tableName;
+
+          IrssLog.Info("Abstract Remote Table ({0}) loaded", tableName);
         }
-
-        DataTable table = _abstractRemoteButtons.Tables.Add("RemoteTable");
-        table.ReadXmlSchema(AbstractRemoteSchemaFile);
-        table.ReadXml(file);
-
-        table.ExtendedProperties.Add("Device", device);
-        table.ExtendedProperties.Add("Remote", remote);
-
-        table.TableName = tableName;
-
-        IrssLog.Info("Abstract Remote Table ({0}) loaded", tableName);
       }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        return false;
+      }
+
+      return true;
     }
 
     #endregion Implementation

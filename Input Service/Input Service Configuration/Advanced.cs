@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -60,7 +60,7 @@ namespace InputService.Configuration
     {
       get
       {
-        return comboBoxPriority.SelectedText;
+        return comboBoxPriority.SelectedItem as string;
       }
       set
       {
@@ -103,6 +103,7 @@ namespace InputService.Configuration
 
     private void buttonExclusions_Click(object sender, EventArgs e)
     {
+      /*
       Exclusions exclusions = new Exclusions(new string[] { "plugin1", "plugin2", "plugin3" });
       exclusions.ExclusionList = new string[] { "plugin1" };
 
@@ -110,6 +111,7 @@ namespace InputService.Configuration
       {
 
       }
+      */
     }
 
     private void radioButtonServer_CheckedChanged(object sender, EventArgs e)

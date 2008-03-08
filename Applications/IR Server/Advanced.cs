@@ -60,7 +60,7 @@ namespace IRServer
     {
       get
       {
-        return comboBoxPriority.SelectedText;
+        return comboBoxPriority.SelectedItem as string;
       }
       set
       {
@@ -133,7 +133,6 @@ namespace IRServer
     }
 
     #endregion Controls
-      
 
   }
 

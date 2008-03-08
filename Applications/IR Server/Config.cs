@@ -32,9 +32,10 @@ namespace IRServer
 
     PluginBase[] _transceivers;
 
-    bool _abstractRemoteMode;
-    IRServerMode _mode = IRServerMode.ServerMode;
-    string _hostComputer = String.Empty;
+    bool _abstractRemoteMode  = false;
+    IRServerMode _mode        = IRServerMode.ServerMode;
+    string _hostComputer      = String.Empty;
+    string _processPriority   = String.Empty;
 
     #endregion Variables
 
@@ -54,6 +55,11 @@ namespace IRServer
     {
       get { return _hostComputer; }
       set { _hostComputer = value; }
+    }
+    public string ProcessPriority
+    {
+      get { return _processPriority; }
+      set { _processPriority = value; }
     }
 
     public string[] PluginReceive
@@ -253,7 +259,7 @@ namespace IRServer
       SourceGrid.Cells.ColumnHeader header = new SourceGrid.Cells.ColumnHeader(" ");
       header.AutomaticSortEnabled = false;
       gridPlugins[row, ColIcon] = header;
-      
+
       gridPlugins[row, ColName]       = new SourceGrid.Cells.ColumnHeader("Name");
       gridPlugins[row, ColReceive]    = new SourceGrid.Cells.ColumnHeader("Receive");
       gridPlugins[row, ColTransmit]   = new SourceGrid.Cells.ColumnHeader("Transmit");
@@ -367,14 +373,16 @@ namespace IRServer
       Advanced advanced = new Advanced();
 
       advanced.AbstractRemoteMode = _abstractRemoteMode;
-      advanced.Mode = _mode;
-      advanced.HostComputer = _hostComputer;
+      advanced.Mode               = _mode;
+      advanced.HostComputer       = _hostComputer;
+      advanced.ProcessPriority    = _processPriority;
 
       if (advanced.ShowDialog(this) == DialogResult.OK)
       {
         _abstractRemoteMode = advanced.AbstractRemoteMode;
-        _mode = advanced.Mode;
-        _hostComputer = advanced.HostComputer;
+        _mode               = advanced.Mode;
+        _hostComputer       = advanced.HostComputer;
+        _processPriority    = advanced.ProcessPriority;
       }
     }
     void ShowHelp()
