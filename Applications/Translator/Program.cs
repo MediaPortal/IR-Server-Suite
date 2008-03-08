@@ -813,13 +813,14 @@ namespace Translator
       if (_inConfiguration)
         return;
 
-      // TODO: Ability to handle Abstract and Complex remote buttons ...
-      string button = keyCode;
-      
-      // TODO: Include abstract button support ...
-      //if (!deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
+      string button;
+
+      // TODO: When Abstract Remote Model becomes on by default
+      //if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase)
+        button = keyCode;
+      //else
       //  button = String.Format("{0} ({1})", deviceName, keyCode);
- 
+
       ProgramSettings active = ActiveProgram();
       if (active == null)
       {
@@ -833,7 +834,11 @@ namespace Translator
             {
               ProcessCommand(buttonMap.Command, true);
             }
-            catch (Exception ex) { IrssLog.Error(ex); }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex);
+            }
+
             return;
           }
         }
@@ -850,7 +855,11 @@ namespace Translator
             {
               ProcessCommand(buttonMap.Command, true);
             }
-            catch (Exception ex) { IrssLog.Error(ex); }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex);
+            }
+
             return;
           }
         }
@@ -867,7 +876,11 @@ namespace Translator
               {
                 ProcessCommand(buttonMap.Command, true);
               }
-              catch (Exception ex) { IrssLog.Error(ex); }
+              catch (Exception ex)
+              {
+                IrssLog.Error(ex);
+              }
+
               return;
             }
           }

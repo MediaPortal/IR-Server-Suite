@@ -30,18 +30,27 @@ namespace InputService.Plugin
     [STAThread]
     static void Main()
     {
-      TechnotrendReceiver c = new TechnotrendReceiver();
+      try
+      {
+        TechnotrendReceiver c = new TechnotrendReceiver();
 
-      //c.Configure(null);
+        //c.Configure(null);
 
-      c.RemoteCallback += new RemoteHandler(xRemote);
+        c.RemoteCallback += new RemoteHandler(xRemote);
 
-      c.Start();
+        c.Start();
 
-      Application.Run();
+        Application.Run();
 
-      c.Stop();
-      c = null;
+        c.Stop();
+        c = null;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+
+      Console.ReadKey();
     }
 
     #endregion Debug
@@ -157,19 +166,19 @@ namespace InputService.Plugin
 
     #region Interop
 
-    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "_bdaapiEnumerate@4", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiEnumerate")]
     static extern UInt32 bdaapiEnumerate(DEVICE_CAT DevType);
 
-    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "_bdaapiOpen@8", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiOpen")]
     static extern IntPtr bdaapiOpen(DEVICE_CAT DevType, uint uiDevID);
 
-    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "_bdaapiClose@4", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiClose")]
     static extern void bdaapiClose(IntPtr hOpen);
 
-    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "_bdaapiOpenIR@12", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiOpenIR")]
     static extern TYPE_RET_VAL bdaapiOpenIR(IntPtr hOpen, PIRCBFCN CallbackFcn, IntPtr Context);
 
-    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "_bdaapiCloseIR@4", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiCloseIR")]
     static extern TYPE_RET_VAL bdaapiCloseIR(IntPtr hOpen);
 
     #endregion Interop
@@ -278,7 +287,7 @@ namespace InputService.Plugin
     {
       IntPtr handle;
       TYPE_RET_VAL error;
-      
+
       for (DEVICE_CAT cat = DEVICE_CAT.UNKNOWN; cat <= DEVICE_CAT.USB_2_PINNACLE; cat++)
       {
         if (bdaapiEnumerate(cat) > 0)
@@ -301,6 +310,9 @@ namespace InputService.Plugin
           }
         }
       }
+
+      if (_handles.Count == 0)
+        throw new ApplicationException("No Technotrend IR devices found");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
@@ -356,7 +368,7 @@ namespace InputService.Plugin
 
       int code = Marshal.ReadInt32(Buf);
       int trigger = code & 0x800;
-      
+
       code = code & 0x3F;
 
       DateTime now = DateTime.Now;

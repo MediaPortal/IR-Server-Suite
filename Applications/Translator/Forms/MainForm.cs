@@ -8,6 +8,8 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 
 using IrssComms;
 using IrssUtils;
@@ -351,18 +353,23 @@ namespace Translator
         Program.Config.Programs.Add(progSettings);
 
         RefreshProgramList();
+
+        // TODO: Detect and offer preconfigured settings ...
         /*
         string programFile = Path.GetFileName(progSettings.FileName);
         string settingsFile = Path.Combine(Program.FolderDefaultSettings, programFile + ".xml");
         if (File.Exists(settingsFile))
         {
-          if (MessageBox.Show(this, String.Format("Do you want to use the default settings for {0}", programFile), "Default settings found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+          if (MessageBox.Show(this, String.Format("Do you want to use the default settings for {0} ({1})?", progSettings.Name, programFile), "Default settings available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           {
             List<ButtonMapping> mappings = LoadDefaultSettings(settingsFile);
 
-            progSettings.ButtonMappings.AddRange(mappings);
+            if (mappings != null)
+            {
+              progSettings.ButtonMappings.AddRange(mappings);
 
-            RefreshButtonList();
+              RefreshButtonList();
+            }
           }
         }
         */
@@ -371,8 +378,18 @@ namespace Translator
 
     List<ButtonMapping> LoadDefaultSettings(string settingsFile)
     {
-      // TODO: Implement this :)
-      return new List<ButtonMapping>();
+      try
+      {
+        XmlSerializer reader = new XmlSerializer(typeof(List<ButtonMapping>));
+        using (StreamReader file = new StreamReader(settingsFile))
+          return (List<ButtonMapping>)reader.Deserialize(file);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+
+      return null;
     }
 
     bool EditCurrentProgram()
@@ -482,7 +499,7 @@ namespace Translator
         try
         {
           eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), item.SubItems[0].Text, true);
-          command = item.SubItems[1].Text;
+          command   = item.SubItems[1].Text;
 
           Program.Config.Events.Add(new MappedEvent(eventType, command));
         }
@@ -525,6 +542,7 @@ namespace Translator
         string description = String.Empty;
 
         // TODO: Get description from Abstract Remote Model ...
+        description = keyCode + " button";
 
         map = new ButtonMappingForm(keyCode, description, String.Empty);
       }

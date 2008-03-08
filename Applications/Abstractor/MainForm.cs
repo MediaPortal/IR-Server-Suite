@@ -184,7 +184,7 @@ namespace Abstractor
 
     IRServerInfo _irServerInfo = new IRServerInfo();
 
-    //string[] _devices;
+    string[] _devices;
     string _selectedDevice;
 
     #endregion Variables
@@ -205,8 +205,7 @@ namespace Abstractor
     DelegateSetDevices _setDevices;
     void SetDevices(string[] devices)
     {
-      // TODO: add code to automatically add devices to the list if they come from forwarded remote button presses.
-      //_devices = devices;
+      _devices = devices;
 
       comboBoxDevice.Items.Clear();
       comboBoxDevice.Items.AddRange(devices);
@@ -315,7 +314,7 @@ namespace Abstractor
 
             string[] receivers = received.GetDataAsString().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            this.Invoke(_setDevices, new Object[] { receivers });
+            this.Invoke(_setDevices, new object[] { receivers });
             break;
 
           case MessageType.RemoteEvent:
@@ -347,6 +346,23 @@ namespace Abstractor
     {
       string text = String.Format("Remote Event \"{0}\", \"{1}\"", deviceName, keyCode);
       this.Invoke(_addStatusLine, text);
+
+      bool foundDevice = false;
+      foreach (string device in _devices)
+      {
+        if (device.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
+        {
+          foundDevice = true;
+          break;
+        }
+      }
+
+      if (!foundDevice)
+      {
+        List<string> newDevices = new List<string>(_devices);
+        newDevices.Add(deviceName);
+        this.Invoke(_setDevices, new object[] { newDevices.ToArray() });
+      }
 
       // If this remote event matches the criteria then set it to an abstract button in the list view ...
       if (deviceName.Equals(_selectedDevice, StringComparison.OrdinalIgnoreCase))

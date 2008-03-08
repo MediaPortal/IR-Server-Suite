@@ -81,6 +81,15 @@ namespace InputService.Plugin
     public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// </summary>
+    /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
+    public override bool Detect()
+    {
+      return true;
+    }
+
+    /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
     public override void Start()

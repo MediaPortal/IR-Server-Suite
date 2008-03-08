@@ -1,0 +1,47 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="2020" AbstractButton="Up" />
+  <RemoteTable RawCode="2021" AbstractButton="Down" />
+  <RemoteTable RawCode="2022" AbstractButton="Left" />
+  <RemoteTable RawCode="2023" AbstractButton="Right" />
+  <RemoteTable RawCode="2037" AbstractButton="OK" />
+  <RemoteTable RawCode="2016" AbstractButton="VolumeUp" />
+  <RemoteTable RawCode="2017" AbstractButton="VolumeDown" />
+  <RemoteTable RawCode="2032" AbstractButton="ChannelUp" />
+  <RemoteTable RawCode="2033" AbstractButton="ChannelDown" />
+  <RemoteTable RawCode="2059" AbstractButton="Start" />
+  <RemoteTable RawCode="2031" AbstractButton="Back" />
+  <RemoteTable RawCode="2013" AbstractButton="Info" />
+  <RemoteTable RawCode="2015" AbstractButton="Mute" />
+  <RemoteTable RawCode="2000" AbstractButton="Number0" />
+  <RemoteTable RawCode="2001" AbstractButton="Number1" />
+  <RemoteTable RawCode="2002" AbstractButton="Number2" />
+  <RemoteTable RawCode="2003" AbstractButton="Number3" />
+  <RemoteTable RawCode="2004" AbstractButton="Number4" />
+  <RemoteTable RawCode="2005" AbstractButton="Number5" />
+  <RemoteTable RawCode="2006" AbstractButton="Number6" />
+  <RemoteTable RawCode="2007" AbstractButton="Number7" />
+  <RemoteTable RawCode="2008" AbstractButton="Number8" />
+  <RemoteTable RawCode="2009" AbstractButton="Number9" />
+  <RemoteTable RawCode="2053" AbstractButton="Play" />
+  <RemoteTable RawCode="2048" AbstractButton="Pause" />
+  <RemoteTable RawCode="2054" AbstractButton="Stop" />
+  <RemoteTable RawCode="2052" AbstractButton="FastForward" />
+  <RemoteTable RawCode="2050" AbstractButton="Rewind" />
+  <RemoteTable RawCode="2055" AbstractButton="Record" />
+  <RemoteTable RawCode="2030" AbstractButton="NextChapter" />
+  <RemoteTable RawCode="2036" AbstractButton="PreviousChapter" />
+  <RemoteTable RawCode="2061" AbstractButton="Power" />
+  <RemoteTable RawCode="2011" AbstractButton="Red" />
+  <RemoteTable RawCode="2046" AbstractButton="Green" />
+  <RemoteTable RawCode="2056" AbstractButton="Yellow" />
+  <RemoteTable RawCode="2041" AbstractButton="Blue" />
+  <RemoteTable RawCode="2014" AbstractButton="Hash" />
+  <RemoteTable RawCode="2010" AbstractButton="Star" />
+  <RemoteTable RawCode="2025" AbstractButton="Music" />
+  <RemoteTable RawCode="2026" AbstractButton="Pictures" />
+  <RemoteTable RawCode="2024" AbstractButton="Videos" />
+  <RemoteTable RawCode="2028" AbstractButton="TV" />
+  <RemoteTable RawCode="2027" AbstractButton="Guide" />
+  <RemoteTable RawCode="2012" AbstractButton="Radio" />
+</DocumentElement>

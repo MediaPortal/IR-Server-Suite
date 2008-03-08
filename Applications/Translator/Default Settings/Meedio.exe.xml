@@ -1,64 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ServerHost>localhost</ServerHost>
-  <SystemWideMappings />
-  <Programs>
-    <ProgramSettings Name="Meedio" FileName="e:\meedio\meedioapp\meedio.exe" Folder="" Arguments="" UseShellExecute="false" ForceWindowFocus="false" IgnoreSystemWide="false" WindowState="Normal">
-      <ButtonMappings>
-        <ButtonMapping KeyCode="Up" Description="UP" Command="Window Message: CLASS|H2-WM-COMMAND|273|1|0" />
-        <ButtonMapping KeyCode="Down" Description="DOWN" Command="Window Message: CLASS|H2-WM-COMMAND|273|2|0" />
-        <ButtonMapping KeyCode="Left" Description="LEFT" Command="Window Message: CLASS|H2-WM-COMMAND|273|3|0" />
-        <ButtonMapping KeyCode="Right" Description="RIGHT" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
-        <ButtonMapping KeyCode="OK" Description="SELECT" Command="Window Message: CLASS|H2-WM-COMMAND|273|5|0" />
-        <ButtonMapping KeyCode="VolumeUp" Description="VOLUP" Command="Window Message: CLASS|H2-WM-COMMAND|273|30|0" />
-        <ButtonMapping KeyCode="VolumeDown" Description="VOLDN" Command="Window Message: CLASS|H2-WM-COMMAND|273|31|0" />
-        <ButtonMapping KeyCode="ChannelUp" Description="CHANNELUP" Command="Window Message: CLASS|H2-WM-COMMAND|273|7|0" />
-        <ButtonMapping KeyCode="ChannelDown" Description="CHANNELDN" Command="Window Message: CLASS|H2-WM-COMMAND|273|8|0" />
-        <ButtonMapping KeyCode="Start" Description="HOME" Command="Window Message: CLASS|H2-WM-COMMAND|273|44|0" />
-        <ButtonMapping KeyCode="Back" Description="BACK" Command="Window Message: CLASS|H2-WM-COMMAND|273|6|0" />
-        <ButtonMapping KeyCode="Info" Description="INFO" Command="Window Message: CLASS|H2-WM-COMMAND|273|36|0" />
-        <ButtonMapping KeyCode="Mute" Description="MUTE" Command="Window Message: CLASS|H2-WM-COMMAND|273|32|0" />
-        <ButtonMapping KeyCode="Number0" Description="0" Command="Window Message: CLASS|H2-WM-COMMAND|273|10|0" />
-        <ButtonMapping KeyCode="Number1" Description="1" Command="Window Message: CLASS|H2-WM-COMMAND|273|11|0" />
-        <ButtonMapping KeyCode="Number2" Description="2" Command="Window Message: CLASS|H2-WM-COMMAND|273|12|0" />
-        <ButtonMapping KeyCode="Number3" Description="3" Command="Window Message: CLASS|H2-WM-COMMAND|273|13|0" />
-        <ButtonMapping KeyCode="Number4" Description="4" Command="Window Message: CLASS|H2-WM-COMMAND|273|14|0" />
-        <ButtonMapping KeyCode="Number5" Description="5" Command="Window Message: CLASS|H2-WM-COMMAND|273|15|0" />
-        <ButtonMapping KeyCode="Number6" Description="6" Command="Window Message: CLASS|H2-WM-COMMAND|273|16|0" />
-        <ButtonMapping KeyCode="Number7" Description="7" Command="Window Message: CLASS|H2-WM-COMMAND|273|17|0" />
-        <ButtonMapping KeyCode="Number8" Description="8" Command="Window Message: CLASS|H2-WM-COMMAND|273|18|0" />
-        <ButtonMapping KeyCode="Number9" Description="9" Command="Window Message: CLASS|H2-WM-COMMAND|273|19|0" />
-        <ButtonMapping KeyCode="Play" Description="PLAY" Command="Window Message: CLASS|H2-WM-COMMAND|273|21|0" />
-        <ButtonMapping KeyCode="Pause" Description="PAUSE" Command="Window Message: CLASS|H2-WM-COMMAND|273|22|0" />
-        <ButtonMapping KeyCode="Stop" Description="STOP" Command="Window Message: CLASS|H2-WM-COMMAND|273|27|0" />
-        <ButtonMapping KeyCode="FastForward" Description="FFWD" Command="Window Message: CLASS|H2-WM-COMMAND|273|25|0" />
-        <ButtonMapping KeyCode="Rewind" Description="REW" Command="Window Message: CLASS|H2-WM-COMMAND|273|26|0" />
-        <ButtonMapping KeyCode="Record" Description="RECORD" Command="Window Message: CLASS|H2-WM-COMMAND|273|28|0" />
-        <ButtonMapping KeyCode="NextChapter" Description="NEXT" Command="Window Message: CLASS|H2-WM-COMMAND|273|23|0" />
-        <ButtonMapping KeyCode="PreviousChapter" Description="PREVIOUS" Command="Window Message: CLASS|H2-WM-COMMAND|273|24|0" />
-        <ButtonMapping KeyCode="Power" Description="POWER" Command="Window Message: CLASS|H2-WM-COMMAND|273|38|0" />
-        <ButtonMapping KeyCode="Power2" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
-        <ButtonMapping KeyCode="Teletext" Description="TELETEXT" Command="Window Message: CLASS|H2-WM-COMMAND|273|52|0" />
-        <ButtonMapping KeyCode="Red" Description="RED" Command="Window Message: CLASS|H2-WM-COMMAND|273|53|0" />
-        <ButtonMapping KeyCode="Green" Description="GREEN" Command="Window Message: CLASS|H2-WM-COMMAND|273|54|0" />
-        <ButtonMapping KeyCode="Yellow" Description="YELLOW" Command="Window Message: CLASS|H2-WM-COMMAND|273|55|0" />
-        <ButtonMapping KeyCode="Blue" Description="BLUE" Command="Window Message: CLASS|H2-WM-COMMAND|273|56|0" />
-        <ButtonMapping KeyCode="Clear" Description="CLEAR" Command="Window Message: CLASS|H2-WM-COMMAND|273|39|0" />
-        <ButtonMapping KeyCode="Enter" Description="ENTER" Command="Window Message: CLASS|H2-WM-COMMAND|273|20|0" />
-        <ButtonMapping KeyCode="_Hash" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
-        <ButtonMapping KeyCode="_Star" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
-        <ButtonMapping KeyCode="Music" Description="GOTO-MUSIC" Command="Window Message: CLASS|H2-WM-COMMAND|273|46|0" />
-        <ButtonMapping KeyCode="Pictures" Description="GOTO-PHOTOS" Command="Window Message: CLASS|H2-WM-COMMAND|273|47|0" />
-        <ButtonMapping KeyCode="Videos" Description="GOTO-VIDEO" Command="Window Message: CLASS|H2-WM-COMMAND|273|50|0" />
-        <ButtonMapping KeyCode="DVD" Description="GOTO-DVD" Command="Window Message: CLASS|H2-WM-COMMAND|273|48|0" />
-        <ButtonMapping KeyCode="TV" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
-        <ButtonMapping KeyCode="Guide" Description="GUIDE" Command="Window Message: CLASS|H2-WM-COMMAND|273|34|0" />
-        <ButtonMapping KeyCode="LiveTV" Description="GOTO-TV" Command="Window Message: CLASS|H2-WM-COMMAND|273|49|0" />
-        <ButtonMapping KeyCode="PreviousChannel" Description="PREV-CH" Command="Window Message: CLASS|H2-WM-COMMAND|273|33|0" />
-        <ButtonMapping KeyCode="_Radio" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
-        <ButtonMapping KeyCode="_Print" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
-      </ButtonMappings>
-    </ProgramSettings>
-  </Programs>
-  <Events />
+  <ButtonMappings>
+	<ButtonMapping KeyCode="Up" Description="UP" Command="Window Message: CLASS|H2-WM-COMMAND|273|1|0" />
+	<ButtonMapping KeyCode="Down" Description="DOWN" Command="Window Message: CLASS|H2-WM-COMMAND|273|2|0" />
+	<ButtonMapping KeyCode="Left" Description="LEFT" Command="Window Message: CLASS|H2-WM-COMMAND|273|3|0" />
+	<ButtonMapping KeyCode="Right" Description="RIGHT" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
+	<ButtonMapping KeyCode="OK" Description="SELECT" Command="Window Message: CLASS|H2-WM-COMMAND|273|5|0" />
+	<ButtonMapping KeyCode="VolumeUp" Description="VOLUP" Command="Window Message: CLASS|H2-WM-COMMAND|273|30|0" />
+	<ButtonMapping KeyCode="VolumeDown" Description="VOLDN" Command="Window Message: CLASS|H2-WM-COMMAND|273|31|0" />
+	<ButtonMapping KeyCode="ChannelUp" Description="CHANNELUP" Command="Window Message: CLASS|H2-WM-COMMAND|273|7|0" />
+	<ButtonMapping KeyCode="ChannelDown" Description="CHANNELDN" Command="Window Message: CLASS|H2-WM-COMMAND|273|8|0" />
+	<ButtonMapping KeyCode="Start" Description="HOME" Command="Window Message: CLASS|H2-WM-COMMAND|273|44|0" />
+	<ButtonMapping KeyCode="Back" Description="BACK" Command="Window Message: CLASS|H2-WM-COMMAND|273|6|0" />
+	<ButtonMapping KeyCode="Info" Description="INFO" Command="Window Message: CLASS|H2-WM-COMMAND|273|36|0" />
+	<ButtonMapping KeyCode="Mute" Description="MUTE" Command="Window Message: CLASS|H2-WM-COMMAND|273|32|0" />
+	<ButtonMapping KeyCode="Number0" Description="0" Command="Window Message: CLASS|H2-WM-COMMAND|273|10|0" />
+	<ButtonMapping KeyCode="Number1" Description="1" Command="Window Message: CLASS|H2-WM-COMMAND|273|11|0" />
+	<ButtonMapping KeyCode="Number2" Description="2" Command="Window Message: CLASS|H2-WM-COMMAND|273|12|0" />
+	<ButtonMapping KeyCode="Number3" Description="3" Command="Window Message: CLASS|H2-WM-COMMAND|273|13|0" />
+	<ButtonMapping KeyCode="Number4" Description="4" Command="Window Message: CLASS|H2-WM-COMMAND|273|14|0" />
+	<ButtonMapping KeyCode="Number5" Description="5" Command="Window Message: CLASS|H2-WM-COMMAND|273|15|0" />
+	<ButtonMapping KeyCode="Number6" Description="6" Command="Window Message: CLASS|H2-WM-COMMAND|273|16|0" />
+	<ButtonMapping KeyCode="Number7" Description="7" Command="Window Message: CLASS|H2-WM-COMMAND|273|17|0" />
+	<ButtonMapping KeyCode="Number8" Description="8" Command="Window Message: CLASS|H2-WM-COMMAND|273|18|0" />
+	<ButtonMapping KeyCode="Number9" Description="9" Command="Window Message: CLASS|H2-WM-COMMAND|273|19|0" />
+	<ButtonMapping KeyCode="Play" Description="PLAY" Command="Window Message: CLASS|H2-WM-COMMAND|273|21|0" />
+	<ButtonMapping KeyCode="Pause" Description="PAUSE" Command="Window Message: CLASS|H2-WM-COMMAND|273|22|0" />
+	<ButtonMapping KeyCode="Stop" Description="STOP" Command="Window Message: CLASS|H2-WM-COMMAND|273|27|0" />
+	<ButtonMapping KeyCode="FastForward" Description="FFWD" Command="Window Message: CLASS|H2-WM-COMMAND|273|25|0" />
+	<ButtonMapping KeyCode="Rewind" Description="REW" Command="Window Message: CLASS|H2-WM-COMMAND|273|26|0" />
+	<ButtonMapping KeyCode="Record" Description="RECORD" Command="Window Message: CLASS|H2-WM-COMMAND|273|28|0" />
+	<ButtonMapping KeyCode="NextChapter" Description="NEXT" Command="Window Message: CLASS|H2-WM-COMMAND|273|23|0" />
+	<ButtonMapping KeyCode="PreviousChapter" Description="PREVIOUS" Command="Window Message: CLASS|H2-WM-COMMAND|273|24|0" />
+	<ButtonMapping KeyCode="Power" Description="POWER" Command="Window Message: CLASS|H2-WM-COMMAND|273|38|0" />
+	<ButtonMapping KeyCode="Power2" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
+	<ButtonMapping KeyCode="Teletext" Description="TELETEXT" Command="Window Message: CLASS|H2-WM-COMMAND|273|52|0" />
+	<ButtonMapping KeyCode="Red" Description="RED" Command="Window Message: CLASS|H2-WM-COMMAND|273|53|0" />
+	<ButtonMapping KeyCode="Green" Description="GREEN" Command="Window Message: CLASS|H2-WM-COMMAND|273|54|0" />
+	<ButtonMapping KeyCode="Yellow" Description="YELLOW" Command="Window Message: CLASS|H2-WM-COMMAND|273|55|0" />
+	<ButtonMapping KeyCode="Blue" Description="BLUE" Command="Window Message: CLASS|H2-WM-COMMAND|273|56|0" />
+	<ButtonMapping KeyCode="Clear" Description="CLEAR" Command="Window Message: CLASS|H2-WM-COMMAND|273|39|0" />
+	<ButtonMapping KeyCode="Enter" Description="ENTER" Command="Window Message: CLASS|H2-WM-COMMAND|273|20|0" />
+	<ButtonMapping KeyCode="_Hash" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
+	<ButtonMapping KeyCode="_Star" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
+	<ButtonMapping KeyCode="Music" Description="GOTO-MUSIC" Command="Window Message: CLASS|H2-WM-COMMAND|273|46|0" />
+	<ButtonMapping KeyCode="Pictures" Description="GOTO-PHOTOS" Command="Window Message: CLASS|H2-WM-COMMAND|273|47|0" />
+	<ButtonMapping KeyCode="Videos" Description="GOTO-VIDEO" Command="Window Message: CLASS|H2-WM-COMMAND|273|50|0" />
+	<ButtonMapping KeyCode="DVD" Description="GOTO-DVD" Command="Window Message: CLASS|H2-WM-COMMAND|273|48|0" />
+	<ButtonMapping KeyCode="TV" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
+	<ButtonMapping KeyCode="Guide" Description="GUIDE" Command="Window Message: CLASS|H2-WM-COMMAND|273|34|0" />
+	<ButtonMapping KeyCode="LiveTV" Description="GOTO-TV" Command="Window Message: CLASS|H2-WM-COMMAND|273|49|0" />
+	<ButtonMapping KeyCode="PreviousChannel" Description="PREV-CH" Command="Window Message: CLASS|H2-WM-COMMAND|273|33|0" />
+	<ButtonMapping KeyCode="_Radio" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
+	<ButtonMapping KeyCode="_Print" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
+  </ButtonMappings>
 </Configuration>

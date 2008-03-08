@@ -241,9 +241,16 @@ namespace InputService.Configuration
 
         // Icon Cell
         if (transceiver.DeviceIcon != null)
-          gridPlugins[row, ColIcon] = new SourceGrid.Cells.Image(transceiver.DeviceIcon);
+        {
+          SourceGrid.Cells.Image iconCell = new SourceGrid.Cells.Image(transceiver.DeviceIcon);
+          iconCell.Editor.EnableEdit = false;
+
+          gridPlugins[row, ColIcon] = iconCell;
+        }
         else
+        {
           gridPlugins[row, ColIcon] = new SourceGrid.Cells.Cell();
+        }
 
         // Name Cell
         SourceGrid.Cells.Cell nameCell = new SourceGrid.Cells.Cell(transceiver.Name);

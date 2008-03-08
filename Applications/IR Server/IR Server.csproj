@@ -118,6 +118,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Graphics\Advanced.png" />
+    <None Include="Graphics\Detect.png" />
+    <Content Include="Graphics\Help.png" />
     <Content Include="Icon.ico" />
     <Content Include="Icon16.ico" />
     <Content Include="IRServer.exe.manifest">

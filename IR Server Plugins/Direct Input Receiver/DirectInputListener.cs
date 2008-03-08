@@ -52,12 +52,10 @@ namespace InputService.Plugin
 
     #region Constructor / Deconstructor
 
-    public DirectInputListener()
-    {
-      //
-      // TODO: Add constructor logic here
-      //
-    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DirectInputListener"/> class.
+    /// </summary>
+    public DirectInputListener() { }
 
     ~DirectInputListener()
     {

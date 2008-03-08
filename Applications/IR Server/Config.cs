@@ -66,9 +66,9 @@ namespace IRServer
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
-          checkBox = gridPlugins[row, 1] as SourceGrid.Cells.CheckBox;
+          checkBox = gridPlugins[row, ColReceive] as SourceGrid.Cells.CheckBox;
           if (checkBox != null && checkBox.Checked)
-            receivers.Add(gridPlugins[row, 0].DisplayText);
+            receivers.Add(gridPlugins[row, ColName].DisplayText);
         }
 
         if (receivers.Count == 0)
@@ -81,13 +81,13 @@ namespace IRServer
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
-          checkBox = gridPlugins[row, 1] as SourceGrid.Cells.CheckBox;
+          checkBox = gridPlugins[row, ColReceive] as SourceGrid.Cells.CheckBox;
           if (checkBox == null)
             continue;
 
           if (value == null)
             checkBox.Checked = false;
-          else if (Array.IndexOf<string>(value, gridPlugins[row, 0].DisplayText) != -1)
+          else if (Array.IndexOf<string>(value, gridPlugins[row, ColName].DisplayText) != -1)
             checkBox.Checked = true;
           else
             checkBox.Checked = false;
@@ -101,23 +101,26 @@ namespace IRServer
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
-          checkBox = gridPlugins[row, 2] as SourceGrid.Cells.CheckBox;
+          checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
           if (checkBox != null && checkBox.Checked)
-            return gridPlugins[row, 0].DisplayText;
+            return gridPlugins[row, ColName].DisplayText;
         }
 
         return String.Empty;
       }
       set
       {
+        if (String.IsNullOrEmpty(value))
+          return;
+
         SourceGrid.Cells.CheckBox checkBox;
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
-          checkBox = gridPlugins[row, 2] as SourceGrid.Cells.CheckBox;
+          checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
           if (checkBox == null)
             continue;
 
-          if (gridPlugins[row, 0].DisplayText.Equals(value, StringComparison.OrdinalIgnoreCase))
+          if (gridPlugins[row, ColName].DisplayText.Equals(value, StringComparison.OrdinalIgnoreCase))
             checkBox.Checked = true;
           else
             checkBox.Checked = false;
@@ -156,94 +159,6 @@ namespace IRServer
     }
 
     #endregion Constructor
-
-    void CreateGrid()
-    {
-      int row = 0;
-
-      gridPlugins.Rows.Clear();
-      gridPlugins.Columns.SetCount(5);
-
-      // Setup Column Headers
-      gridPlugins.Rows.Insert(row);
-      gridPlugins[row, ColIcon]       = new SourceGrid.Cells.ColumnHeader("*");
-      gridPlugins[row, ColName]       = new SourceGrid.Cells.ColumnHeader("Name");
-      gridPlugins[row, ColReceive]    = new SourceGrid.Cells.ColumnHeader("Receive");
-      gridPlugins[row, ColTransmit]   = new SourceGrid.Cells.ColumnHeader("Transmit");
-      gridPlugins[row, ColConfigure]  = new SourceGrid.Cells.ColumnHeader("Configure");
-      gridPlugins.FixedRows = 1;
-
-      foreach (PluginBase transceiver in _transceivers)
-      {
-        gridPlugins.Rows.Insert(++row);
-        gridPlugins.Rows[row].Tag = transceiver;
-
-        // TODO: Icon Cell
-        gridPlugins[row, ColIcon] = new SourceGrid.Cells.Cell();
-
-        // Name Cell
-        SourceGrid.Cells.Cell nameCell = new SourceGrid.Cells.Cell(transceiver.Name);
-
-        SourceGrid.Cells.Controllers.CustomEvents nameCellController = new SourceGrid.Cells.Controllers.CustomEvents();
-        nameCellController.DoubleClick += new EventHandler(PluginDoubleClick);
-        nameCell.AddController(nameCellController);
-
-        nameCell.AddController(new SourceGrid.Cells.Controllers.ToolTipText());
-        nameCell.ToolTipText = String.Format("{0}\nVersion: {1}\nAuthor: {2}\n{3}", transceiver.Name, transceiver.Version, transceiver.Author, transceiver.Description);
-
-        gridPlugins[row, ColName] = nameCell;
-
-        // Receive Cell
-        if (transceiver is IRemoteReceiver || transceiver is IMouseReceiver || transceiver is IKeyboardReceiver)
-        {
-          gridPlugins[row, ColReceive] = new SourceGrid.Cells.CheckBox();
-        }
-        else
-        {
-          gridPlugins[row, ColReceive] = new SourceGrid.Cells.Cell();
-        }
-
-        // Transmit Cell
-        if (transceiver is ITransmitIR)
-        {
-          SourceGrid.Cells.CheckBox checkbox = new SourceGrid.Cells.CheckBox();
-
-          SourceGrid.Cells.Controllers.CustomEvents checkboxcontroller = new SourceGrid.Cells.Controllers.CustomEvents();
-          checkboxcontroller.ValueChanged += new EventHandler(TransmitChanged);
-          checkbox.Controller.AddController(checkboxcontroller);
-
-          gridPlugins[row, ColTransmit] = checkbox;
-        }
-        else
-        {
-          gridPlugins[row, ColTransmit] = new SourceGrid.Cells.Cell();
-        }
-
-        // Configure Cell
-        if (transceiver is IConfigure)
-        {
-          SourceGrid.Cells.Button button = new SourceGrid.Cells.Button("Configure");
-
-          SourceGrid.Cells.Controllers.Button buttonClickEvent = new SourceGrid.Cells.Controllers.Button();
-          buttonClickEvent.Executed += new EventHandler(buttonClickEvent_Executed);
-          button.Controller.AddController(buttonClickEvent);
-
-          gridPlugins[row, ColConfigure] = button;
-        }
-        else
-        {
-          gridPlugins[row, ColConfigure] = new SourceGrid.Cells.Cell();
-        }
-      }
-
-      gridPlugins.Columns[ColIcon].AutoSizeMode       = SourceGrid.AutoSizeMode.EnableAutoSize;
-      gridPlugins.Columns[ColName].AutoSizeMode       = SourceGrid.AutoSizeMode.Default;
-      gridPlugins.Columns[ColReceive].AutoSizeMode    = SourceGrid.AutoSizeMode.EnableAutoSize;
-      gridPlugins.Columns[ColTransmit].AutoSizeMode   = SourceGrid.AutoSizeMode.EnableAutoSize;
-      gridPlugins.Columns[ColConfigure].AutoSizeMode  = SourceGrid.AutoSizeMode.EnableAutoSize;
-      gridPlugins.AutoStretchColumnsToFitWidth        = true;
-      gridPlugins.AutoSizeCells();
-    }
 
     #region Controls
 
@@ -311,38 +226,120 @@ namespace IRServer
         checkBoxTransmit.Checked = true;
     }
 
-    private void buttonHelp_Click(object sender, EventArgs e)
+    private void toolStripButtonDetect_Click(object sender, EventArgs e)
     {
-      try
-      {
-        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this, file, HelpNavigator.Topic, "IR Server\\index.html");
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
+      Detect();
     }
-    
-    private void buttonAdvanced_Click(object sender, EventArgs e)
+    private void toolStripButtonAdvancedSettings_Click(object sender, EventArgs e)
     {
-      Advanced advanced = new Advanced();
-
-      advanced.AbstractRemoteMode = _abstractRemoteMode;
-      advanced.Mode               = _mode;
-      advanced.HostComputer       = _hostComputer;
-
-      if (advanced.ShowDialog(this) == DialogResult.OK)
-      {
-        _abstractRemoteMode = advanced.AbstractRemoteMode;
-        _mode               = advanced.Mode;
-        _hostComputer       = advanced.HostComputer;
-      }
+      Advanced();
+    }
+    private void toolStripButtonHelp_Click(object sender, EventArgs e)
+    {
+      ShowHelp();
     }
 
     #endregion Controls
 
-    private void buttonDetect_Click(object sender, EventArgs e)
+    void CreateGrid()
+    {
+      int row = 0;
+
+      gridPlugins.Rows.Clear();
+      gridPlugins.Columns.SetCount(5);
+
+      // Setup Column Headers
+      gridPlugins.Rows.Insert(row);
+      gridPlugins[row, ColIcon]       = new SourceGrid.Cells.ColumnHeader(" ");
+      gridPlugins[row, ColName]       = new SourceGrid.Cells.ColumnHeader("Name");
+      gridPlugins[row, ColReceive]    = new SourceGrid.Cells.ColumnHeader("Receive");
+      gridPlugins[row, ColTransmit]   = new SourceGrid.Cells.ColumnHeader("Transmit");
+      gridPlugins[row, ColConfigure]  = new SourceGrid.Cells.ColumnHeader("Configure");
+      gridPlugins.FixedRows = 1;
+
+      foreach (PluginBase transceiver in _transceivers)
+      {
+        gridPlugins.Rows.Insert(++row);
+        gridPlugins.Rows[row].Tag = transceiver;
+
+        // Icon Cell
+        if (transceiver.DeviceIcon != null)
+        {
+          SourceGrid.Cells.Image iconCell = new SourceGrid.Cells.Image(transceiver.DeviceIcon);
+          iconCell.Editor.EnableEdit = false;
+
+          gridPlugins[row, ColIcon] = iconCell;
+        }
+        else
+        {
+          gridPlugins[row, ColIcon] = new SourceGrid.Cells.Cell();
+        }
+
+        // Name Cell
+        SourceGrid.Cells.Cell nameCell = new SourceGrid.Cells.Cell(transceiver.Name);
+
+        SourceGrid.Cells.Controllers.CustomEvents nameCellController = new SourceGrid.Cells.Controllers.CustomEvents();
+        nameCellController.DoubleClick += new EventHandler(PluginDoubleClick);
+        nameCell.AddController(nameCellController);
+
+        nameCell.AddController(new SourceGrid.Cells.Controllers.ToolTipText());
+        nameCell.ToolTipText = String.Format("{0}\nVersion: {1}\nAuthor: {2}\n{3}", transceiver.Name, transceiver.Version, transceiver.Author, transceiver.Description);
+
+        gridPlugins[row, ColName] = nameCell;
+
+        // Receive Cell
+        if (transceiver is IRemoteReceiver || transceiver is IMouseReceiver || transceiver is IKeyboardReceiver)
+        {
+          gridPlugins[row, ColReceive] = new SourceGrid.Cells.CheckBox();
+        }
+        else
+        {
+          gridPlugins[row, ColReceive] = new SourceGrid.Cells.Cell();
+        }
+
+        // Transmit Cell
+        if (transceiver is ITransmitIR)
+        {
+          SourceGrid.Cells.CheckBox checkbox = new SourceGrid.Cells.CheckBox();
+
+          SourceGrid.Cells.Controllers.CustomEvents checkboxcontroller = new SourceGrid.Cells.Controllers.CustomEvents();
+          checkboxcontroller.ValueChanged += new EventHandler(TransmitChanged);
+          checkbox.Controller.AddController(checkboxcontroller);
+
+          gridPlugins[row, ColTransmit] = checkbox;
+        }
+        else
+        {
+          gridPlugins[row, ColTransmit] = new SourceGrid.Cells.Cell();
+        }
+
+        // Configure Cell
+        if (transceiver is IConfigure)
+        {
+          SourceGrid.Cells.Button button = new SourceGrid.Cells.Button("Configure");
+
+          SourceGrid.Cells.Controllers.Button buttonClickEvent = new SourceGrid.Cells.Controllers.Button();
+          buttonClickEvent.Executed += new EventHandler(buttonClickEvent_Executed);
+          button.Controller.AddController(buttonClickEvent);
+
+          gridPlugins[row, ColConfigure] = button;
+        }
+        else
+        {
+          gridPlugins[row, ColConfigure] = new SourceGrid.Cells.Cell();
+        }
+      }
+
+      gridPlugins.Columns[ColIcon].AutoSizeMode       = SourceGrid.AutoSizeMode.EnableAutoSize;
+      gridPlugins.Columns[ColName].AutoSizeMode       = SourceGrid.AutoSizeMode.Default;
+      gridPlugins.Columns[ColReceive].AutoSizeMode    = SourceGrid.AutoSizeMode.EnableAutoSize;
+      gridPlugins.Columns[ColTransmit].AutoSizeMode   = SourceGrid.AutoSizeMode.EnableAutoSize;
+      gridPlugins.Columns[ColConfigure].AutoSizeMode  = SourceGrid.AutoSizeMode.EnableAutoSize;
+      gridPlugins.AutoStretchColumnsToFitWidth        = true;
+      gridPlugins.AutoSizeCells();
+    }
+
+    void Detect()
     {
       SourceGrid.Cells.CheckBox checkBox;
       for (int row = 1; row < gridPlugins.RowsCount; row++)
@@ -360,6 +357,33 @@ namespace IRServer
         checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
         if (checkBox != null)
           checkBox.Checked = detected;
+      }
+    }
+    void Advanced()
+    {
+      Advanced advanced = new Advanced();
+
+      advanced.AbstractRemoteMode = _abstractRemoteMode;
+      advanced.Mode = _mode;
+      advanced.HostComputer = _hostComputer;
+
+      if (advanced.ShowDialog(this) == DialogResult.OK)
+      {
+        _abstractRemoteMode = advanced.AbstractRemoteMode;
+        _mode = advanced.Mode;
+        _hostComputer = advanced.HostComputer;
+      }
+    }
+    void ShowHelp()
+    {
+      try
+      {
+        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Input Service\\index.html");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

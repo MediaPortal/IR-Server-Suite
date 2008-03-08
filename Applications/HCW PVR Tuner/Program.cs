@@ -1,6 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 
+using IrssUtils;
+
 namespace HcwPvrTuner
 {
 
@@ -62,6 +64,13 @@ namespace HcwPvrTuner
       Console.WriteLine("HCW PVR Tuner");
       Console.WriteLine();
 
+#if DEBUG
+      IrssLog.LogLevel = IrssLog.Level.Debug;
+#else
+      IrssLog.LogLevel = IrssLog.Level.Info;
+#endif
+      IrssLog.Append("Dbox Tuner.log");
+
       // TODO: Add standard IRSS logging ...
 
       if (args.Length != 1)
@@ -80,8 +89,7 @@ namespace HcwPvrTuner
         if (!int.TryParse(args[0], out channelNumber))
           throw new ApplicationException(String.Format("Failed to convert command line parameter ({0}) to channel number", args[0]));
 
-        Console.WriteLine("Attempting to tune channel {0} ...", channelNumber);
-        Console.WriteLine();
+        Info("Attempting to tune channel {0} ...", channelNumber);
 
         int returnValue = UIR_Open(0, 0);
         if (returnValue == 0)
@@ -95,14 +103,12 @@ namespace HcwPvrTuner
         returnValue = UIR_GetConfig(-1, -1, ref config);
         if (returnValue == 0)
         {
-          Console.WriteLine("Device configuration ...");
-          Console.WriteLine();
-          Console.WriteLine("Device:          {0}    Vendor:         {1}", config.d, config.e);
-          Console.WriteLine("Region:          {0}    Code Set:       {1}", config.c, config.f);
-          Console.WriteLine("Digit Delay:     {0}    Minimum Digits: {1}", config.j, config.i);
-          Console.WriteLine("One Digit Delay: {0}    Tune Delay:     {1}", config.n, config.m);
-          Console.WriteLine("Need Enter:      {0}    Enter Delay:    {1}", config.k, config.l);
-          Console.WriteLine();
+          Info("Device configuration ...");
+          Info("Device:          {0}    Vendor:         {1}", config.d, config.e);
+          Info("Region:          {0}    Code Set:       {1}", config.c, config.f);
+          Info("Digit Delay:     {0}    Minimum Digits: {1}", config.j, config.i);
+          Info("One Digit Delay: {0}    Tune Delay:     {1}", config.n, config.m);
+          Info("Need Enter:      {0}    Enter Delay:    {1}", config.k, config.l);
         }
         else
         {
@@ -115,12 +121,12 @@ namespace HcwPvrTuner
       }
       catch (ApplicationException ex)
       {
-        Console.WriteLine("Error: {0}", ex.Message);
+        Info("Error: {0}", ex.Message);
         return ReturnError;
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Info(ex.ToString());
         return ReturnError;
       }
       finally
@@ -129,8 +135,18 @@ namespace HcwPvrTuner
           UIR_Close();
       }
 
-      Console.WriteLine("Done.");
+      Info("Done.");
+
+      IrssLog.Close();
+
       return ReturnSuccess;
+    }
+
+    static void Info(string format, params object[] args)
+    {
+      string message = String.Format(format, args);
+      IrssLog.Info(message);
+      Console.WriteLine(message);
     }
 
   }

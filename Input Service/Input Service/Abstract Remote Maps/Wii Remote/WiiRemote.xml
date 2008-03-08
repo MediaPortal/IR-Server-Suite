@@ -1,0 +1,30 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="Wiimote_Pad:Up" AbstractButton="Up" />
+  <RemoteTable RawCode="WiimoteClassic_Pad:Up" AbstractButton="Up" />
+  <RemoteTable RawCode="Wiimote_Pad:Down" AbstractButton="Down" />
+  <RemoteTable RawCode="WiimoteClassic_Pad:Down" AbstractButton="Down" />
+  <RemoteTable RawCode="Wiimote_Pad:Left" AbstractButton="Left" />
+  <RemoteTable RawCode="WiimoteClassic_Pad:Left" AbstractButton="Left" />
+  <RemoteTable RawCode="Wiimote_Pad:Right" AbstractButton="Right" />
+  <RemoteTable RawCode="WiimoteClassic_Pad:Right" AbstractButton="Right" />
+  <RemoteTable RawCode="Wiimote_Button:B" AbstractButton="OK" />
+  <RemoteTable RawCode="WiimoteClassic_Button:B" AbstractButton="OK" />
+  <RemoteTable RawCode="Wiimote_Button:Plus" AbstractButton="ChannelUp" />
+  <RemoteTable RawCode="WiimoteClassic_Button:Plus" AbstractButton="ChannelUp" />
+  <RemoteTable RawCode="Wiimote_Button:Minus" AbstractButton="ChannelDown" />
+  <RemoteTable RawCode="WiimoteClassic_Button:Minus" AbstractButton="ChannelDown" />
+  <RemoteTable RawCode="Wiimote_Button:Home" AbstractButton="Start" />
+  <RemoteTable RawCode="WiimoteClassic_Button:Home" AbstractButton="Start" />
+  <RemoteTable RawCode="Wiimote_Button:A" AbstractButton="Back" />
+  <RemoteTable RawCode="WiimoteClassic_Button:A" AbstractButton="Back" />
+  <RemoteTable RawCode="Wiimote_Special" AbstractButton="Power" />
+  <RemoteTable RawCode="Wiimote_Button:One" AbstractButton="Menu" />
+  <RemoteTable RawCode="Wiimote_Button:Two" AbstractButton="Setup" />
+  <RemoteTable RawCode="WiimoteClassic_Button:ZR" AbstractButton="Info" />
+  <RemoteTable RawCode="WiimoteClassic_Button:TriggerR" AbstractButton="Play" />
+  <RemoteTable RawCode="WiimoteClassic_Button:TriggerL" AbstractButton="Pause" />
+  <RemoteTable RawCode="WiimoteClassic_Button:ZL" AbstractButton="Stop" />
+  <RemoteTable RawCode="WiimoteClassic_Button:Y" AbstractButton="Menu" />
+  <RemoteTable RawCode="WiimoteClassic_Button:X" AbstractButton="Setup" />
+</DocumentElement>

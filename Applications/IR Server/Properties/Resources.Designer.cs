@@ -60,6 +60,27 @@ namespace IRServer.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Advanced {
+            get {
+                object obj = ResourceManager.GetObject("Advanced", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Detect {
+            get {
+                object obj = ResourceManager.GetObject("Detect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Help {
+            get {
+                object obj = ResourceManager.GetObject("Help", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon Icon16 {
             get {
                 object obj = ResourceManager.GetObject("Icon16", resourceCulture);

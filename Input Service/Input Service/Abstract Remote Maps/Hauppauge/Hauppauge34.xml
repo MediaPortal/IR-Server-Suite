@@ -1,0 +1,36 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="1032" AbstractButton="Up" />
+  <RemoteTable RawCode="1033" AbstractButton="Down" />
+  <RemoteTable RawCode="1017" AbstractButton="Left" />
+  <RemoteTable RawCode="1016" AbstractButton="Right" />
+  <RemoteTable RawCode="1037" AbstractButton="OK" />
+  <RemoteTable RawCode="1059" AbstractButton="Start" />
+  <RemoteTable RawCode="1031" AbstractButton="Back" />
+  <RemoteTable RawCode="1015" AbstractButton="Mute" />
+  <RemoteTable RawCode="1000" AbstractButton="Number0" />
+  <RemoteTable RawCode="1001" AbstractButton="Number1" />
+  <RemoteTable RawCode="1002" AbstractButton="Number2" />
+  <RemoteTable RawCode="1003" AbstractButton="Number3" />
+  <RemoteTable RawCode="1004" AbstractButton="Number4" />
+  <RemoteTable RawCode="1005" AbstractButton="Number5" />
+  <RemoteTable RawCode="1006" AbstractButton="Number6" />
+  <RemoteTable RawCode="1007" AbstractButton="Number7" />
+  <RemoteTable RawCode="1008" AbstractButton="Number8" />
+  <RemoteTable RawCode="1009" AbstractButton="Number9" />
+  <RemoteTable RawCode="1053" AbstractButton="Play" />
+  <RemoteTable RawCode="1048" AbstractButton="Pause" />
+  <RemoteTable RawCode="1054" AbstractButton="Stop" />
+  <RemoteTable RawCode="1052" AbstractButton="FastForward" />
+  <RemoteTable RawCode="1050" AbstractButton="Rewind" />
+  <RemoteTable RawCode="1055" AbstractButton="Record" />
+  <RemoteTable RawCode="1030" AbstractButton="NextChapter" />
+  <RemoteTable RawCode="1036" AbstractButton="PreviousChapter" />
+  <RemoteTable RawCode="1061" AbstractButton="Power" />
+  <RemoteTable RawCode="1011" AbstractButton="Red" />
+  <RemoteTable RawCode="1046" AbstractButton="Green" />
+  <RemoteTable RawCode="1056" AbstractButton="Yellow" />
+  <RemoteTable RawCode="1041" AbstractButton="Blue" />
+  <RemoteTable RawCode="1013" AbstractButton="Menu" />
+  <RemoteTable RawCode="1060" AbstractButton="Fullscreen" />
+</DocumentElement>

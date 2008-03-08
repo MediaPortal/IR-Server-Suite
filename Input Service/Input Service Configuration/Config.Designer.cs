@@ -118,7 +118,7 @@ namespace InputService.Configuration
       // 
       // toolStripButtonAdvancedSettings
       // 
-      this.toolStripButtonAdvancedSettings.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonAdvancedSettings.Image")));
+      this.toolStripButtonAdvancedSettings.Image = global::InputService.Configuration.Properties.Resources.Advanced;
       this.toolStripButtonAdvancedSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonAdvancedSettings.Name = "toolStripButtonAdvancedSettings";
       this.toolStripButtonAdvancedSettings.Size = new System.Drawing.Size(75, 22);
