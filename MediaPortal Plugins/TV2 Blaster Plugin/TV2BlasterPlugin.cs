@@ -399,7 +399,7 @@ namespace MediaPortal.Plugins
       Log.Info("TV2BlasterPlugin: Tune request - Card: {0}, Channel: {1}", msg.Label2, msg.Label);
 
       if (_externalChannelConfigs == null)
-        throw new ApplicationException("Cannot process tune request, no STB settings are loaded");
+        throw new InvalidOperationException("Cannot process tune request, no STB settings are loaded");
 
       try
       {
@@ -716,7 +716,7 @@ namespace MediaPortal.Plugins
         Log.Debug("TV2BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
-        throw new ApplicationException("Cannot Blast, not registered to an active Input Service");
+        throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
 
       using (FileStream file = File.OpenRead(fileName))
       {

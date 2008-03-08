@@ -23,6 +23,8 @@ namespace Abstractor
   public partial class MainForm : Form
   {
 
+    #region Constants
+
     /*
     static readonly string[] AbstractButtons = new string[] {
 
@@ -101,6 +103,9 @@ namespace Abstractor
     static readonly string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
     static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
 
+    #endregion Constants
+
+    #region Enumerations
 
     public enum AbstractButton
     {
@@ -173,6 +178,7 @@ namespace Abstractor
       PageDown,
     }
 
+    #endregion Enumerations
 
     #region Variables
 
@@ -182,7 +188,7 @@ namespace Abstractor
 
     bool _registered;
 
-    IRServerInfo _irServerInfo = new IRServerInfo();
+    //IRServerInfo _irServerInfo = new IRServerInfo();
 
     string[] _devices;
     string _selectedDevice;
@@ -215,6 +221,7 @@ namespace Abstractor
         textBoxRemoteName.Text = devices[0];
     }
 
+    #region Constructor
 
     public MainForm()
     {
@@ -271,6 +278,9 @@ namespace Abstractor
       */
     }
 
+    #endregion Constructor
+
+
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
       buttonDisconnect_Click(null, null);
@@ -294,7 +304,7 @@ namespace Abstractor
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
               _registered = true;
-              _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
+              //_irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
 
               _client.Send(new IrssMessage(MessageType.ActiveReceivers, MessageFlags.Request));
               _client.Send(new IrssMessage(MessageType.ActiveBlasters, MessageFlags.Request));

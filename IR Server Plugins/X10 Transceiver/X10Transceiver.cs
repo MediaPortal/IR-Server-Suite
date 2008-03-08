@@ -20,12 +20,6 @@ namespace InputService.Plugin
   public class X10Transceiver : PluginBase, IRemoteReceiver, _DIX10InterfaceEvents
   {
 
-    #region Constants
-
-    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "X10 Transceiver.xml");
-
-    #endregion Constants
-
     #region Variables
 
     static RemoteHandler _remoteButtonHandler;
@@ -99,7 +93,7 @@ namespace InputService.Plugin
     {
       X10Inter = new X10Interface();
       if (X10Inter == null)
-        throw new ApplicationException("Failed to start X10 interface");
+        throw new InvalidOperationException("Failed to start X10 interface");
 
       // Bind the interface using a connection point
       icpc = (IConnectionPointContainer)X10Inter;

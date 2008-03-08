@@ -431,7 +431,7 @@ namespace InputService.Plugin
                   //details.ID = GetDeviceDesc(deviceName);
 
                   details.UsagePage = di.HIDInfo.UsagePage;
-                  details.Usage = di.HIDInfo.Usage;
+                  details.Usage     = di.HIDInfo.Usage;
 
                   devices.Add(details);
                   break;
@@ -452,7 +452,7 @@ namespace InputService.Plugin
                   //details.ID = String.Format("{0}-{1}", di.KeyboardInfo.Type, di.KeyboardInfo.SubType);
 
                   details.UsagePage = 0x01;
-                  details.Usage = 0x06;
+                  details.Usage     = 0x06;
 
                   //devices.Add(details);
                   break;
@@ -469,7 +469,7 @@ namespace InputService.Plugin
                   details.Name = "HID Mouse";
 
                   details.UsagePage = 0x01;
-                  details.Usage = 0x02;
+                  details.Usage     = 0x02;
 
                   //devices.Add(details);
                   break;
@@ -486,7 +486,7 @@ namespace InputService.Plugin
       }
       else
       {
-        throw new ApplicationException("An error occurred while retrieving the list of devices.");
+        throw new InvalidOperationException("An error occurred while retrieving the list of devices");
       }
 
     }

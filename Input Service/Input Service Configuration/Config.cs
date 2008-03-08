@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -33,9 +32,10 @@ namespace InputService.Configuration
 
     PluginBase[] _transceivers;
 
-    bool _abstractRemoteMode;
-    InputServiceMode _mode = InputServiceMode.ServerMode;
-    string _hostComputer = String.Empty;
+    bool _abstractRemoteMode  = false;
+    InputServiceMode _mode    = InputServiceMode.ServerMode;
+    string _hostComputer      = String.Empty;
+    string _processPriority   = String.Empty;
 
     #endregion Variables
 
@@ -55,6 +55,11 @@ namespace InputService.Configuration
     {
       get { return _hostComputer; }
       set { _hostComputer = value; }
+    }
+    public string ProcessPriority
+    {
+      get { return _processPriority; }
+      set { _processPriority = value; }
     }
 
     public string[] PluginReceive
@@ -227,7 +232,11 @@ namespace InputService.Configuration
 
       // Setup Column Headers
       gridPlugins.Rows.Insert(row);
-      gridPlugins[row, ColIcon]       = new SourceGrid.Cells.ColumnHeader(" ");
+
+      SourceGrid.Cells.ColumnHeader header = new SourceGrid.Cells.ColumnHeader(" ");
+      header.AutomaticSortEnabled = false;
+      gridPlugins[row, ColIcon] = header;
+
       gridPlugins[row, ColName]       = new SourceGrid.Cells.ColumnHeader("Name");
       gridPlugins[row, ColReceive]    = new SourceGrid.Cells.ColumnHeader("Receive");
       gridPlugins[row, ColTransmit]   = new SourceGrid.Cells.ColumnHeader("Transmit");
@@ -341,14 +350,16 @@ namespace InputService.Configuration
       Advanced advanced = new Advanced();
 
       advanced.AbstractRemoteMode = _abstractRemoteMode;
-      advanced.Mode = _mode;
-      advanced.HostComputer = _hostComputer;
+      advanced.Mode               = _mode;
+      advanced.HostComputer       = _hostComputer;
+      advanced.ProcessPriority    = _processPriority;
 
       if (advanced.ShowDialog(this) == DialogResult.OK)
       {
         _abstractRemoteMode = advanced.AbstractRemoteMode;
-        _mode = advanced.Mode;
-        _hostComputer = advanced.HostComputer;
+        _mode               = advanced.Mode;
+        _hostComputer       = advanced.HostComputer;
+        _processPriority    = advanced.ProcessPriority;
       }
     }
     void ShowHelp()

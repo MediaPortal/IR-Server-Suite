@@ -213,7 +213,7 @@ namespace InputService.Plugin
       _device.hwndTarget  = _receiverWindow.Handle;
 
       if (!RegisterForRawInput(_device))
-        throw new ApplicationException("Failed to register for HID Raw input");
+        throw new InvalidOperationException("Failed to register for HID Raw input");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

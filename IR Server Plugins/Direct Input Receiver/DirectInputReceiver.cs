@@ -158,7 +158,10 @@ namespace InputService.Plugin
     /// </returns>
     public override bool Detect()
     {
-      // TODO: Add detection code.
+      InitDeviceList();
+
+      if (_deviceList.Count != 0)
+        return true;
 
       return false;
     }
@@ -171,17 +174,26 @@ namespace InputService.Plugin
     {
       LoadSettings();
 
-      if (String.IsNullOrEmpty(_selectedDeviceGUID))
-        throw new ApplicationException("Direct Input requires configuration");
-
       InitDeviceList();
+
+      if (_deviceList.Count == 0)
+        throw new InvalidOperationException("No Direct Input devices connected");
+
+      if (String.IsNullOrEmpty(_selectedDeviceGUID))
+      {
+#if TRACE
+        Trace.WriteLine("No direct input device selected in plugin configuration, using first found");
+#endif
+        DeviceInstance di = (DeviceInstance)_deviceList.Current;
+        _selectedDeviceGUID = di.InstanceGuid.ToString();        
+      }
 
       _diListener = new DirectInputListener();
       _diListener.Delay = 150;
       _diListener.OnStateChange += new DirectInputListener.diStateChange(diListener_OnStateChange);
 
       if (!AcquireDevice())
-        throw new ApplicationException("Failed to acquire device");
+        throw new InvalidOperationException("Failed to acquire device");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
@@ -309,13 +321,11 @@ namespace InputService.Plugin
       if (_deviceList == null)
         return false;
 
-      bool res = false;
-
       foreach (DeviceInstance di in _deviceList)
         if (_selectedDeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
-          res = _diListener.InitDevice(di.InstanceGuid);
+          return _diListener.InitDevice(di.InstanceGuid);
 
-      return res;
+      return false;
     }
 
     void SendActions(JoystickState state)

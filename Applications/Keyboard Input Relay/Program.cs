@@ -38,7 +38,7 @@ namespace KeyboardInputRelay
     static extern int UnhookWindowsHookEx(IntPtr hhook);
 
     [DllImport("user32.dll")]
-    static extern int CallNextHookEx(IntPtr hhook, int code, int wParam, IntPtr lParam);
+    static extern IntPtr CallNextHookEx(IntPtr hhook, int code, int wParam, IntPtr lParam);
 
     [DllImport("kernel32.dll")]
     static extern IntPtr LoadLibrary(string lpFileName);
@@ -47,7 +47,7 @@ namespace KeyboardInputRelay
 
     #region Delegates
 
-    delegate int HookDelegate(int code, int wParam, IntPtr lParam);
+    delegate IntPtr HookDelegate(int code, int wParam, IntPtr lParam);
 
     #endregion Delegates
 
@@ -416,6 +416,9 @@ namespace KeyboardInputRelay
       _notifyIcon.Text = "Keyboard Input Relay - Connecting ...";
 
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
+
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel("Keyboard Input Relay"));
+      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
       _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, new EventHandler(NotifyIcon_ClickSetup));
       _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, new EventHandler(NotifyIcon_ClickQuit));
 
@@ -456,7 +459,7 @@ namespace KeyboardInputRelay
       _libPtr = IntPtr.Zero;
     }
 
-    static int InternalHookDelegate(int code, int wParam, IntPtr lParam)
+    static IntPtr InternalHookDelegate(int code, int wParam, IntPtr lParam)
     {
       try
       {
@@ -498,7 +501,7 @@ namespace KeyboardInputRelay
           }
 
           if (_stealAppCommands && appCommand != AppCommands.None)
-            return 1;
+            return new IntPtr(1);
         }
       }
       catch (Exception ex)

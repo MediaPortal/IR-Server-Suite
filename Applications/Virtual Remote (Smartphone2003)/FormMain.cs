@@ -23,7 +23,7 @@ namespace VirtualRemote
 
     #region Constants
 
-    static readonly string ConfigurationFile = "VirtualRemote.xml";
+    const string ConfigurationFile = "VirtualRemote.xml";
 
     const int ServerPort = 24000;
 

@@ -146,7 +146,7 @@ namespace IRServer
         if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
           return plugin;
 
-      throw new ApplicationException(String.Format("Plugin not found ({0})", pluginName));
+      throw new InvalidOperationException(String.Format("Plugin not found ({0})", pluginName));
     }
 
     /// <summary>

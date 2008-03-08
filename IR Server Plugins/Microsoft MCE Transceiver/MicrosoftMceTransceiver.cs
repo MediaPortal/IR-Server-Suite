@@ -296,7 +296,7 @@ namespace InputService.Plugin
 #endif
 
       if (_driver != null)
-        throw new ApplicationException("MicrosoftMceTransceiver already started");
+        throw new InvalidOperationException("MicrosoftMceTransceiver already started");
 
       LoadSettings();
 
@@ -326,7 +326,7 @@ namespace InputService.Plugin
       }
       else
       {
-        throw new ApplicationException("Device not found");
+        throw new InvalidOperationException("Device not found");
       }
 
       newDriver.Start();
@@ -566,137 +566,6 @@ namespace InputService.Plugin
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
         }
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
-    }
-
-    bool FindDevice(out Guid deviceGuid, out string devicePath)
-    {
-      devicePath = null;
-
-      // Try eHome driver ...
-      deviceGuid = MicrosoftGuid;
-      try
-      {
-        devicePath = Driver.Find(deviceGuid);
-
-        if (!String.IsNullOrEmpty(devicePath))
-          return true;
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
-      // Try Replacement driver ...
-      deviceGuid = ReplacementGuid;
-      try
-      {
-        devicePath = Driver.Find(deviceGuid);
-
-        if (!String.IsNullOrEmpty(devicePath))
-          return true;
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
-      return false;
-    }
-
-    internal static bool CheckAutomaticButtons()
-    {
-      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, false))
-      {
-        return (key.GetValue("CodeSetNum0", null) != null);
-      }
-    }
-    internal static void EnableAutomaticButtons()
-    {
-      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, true))
-      {
-        key.SetValue("CodeSetNum0", 1, RegistryValueKind.DWord);
-        key.SetValue("CodeSetNum1", 2, RegistryValueKind.DWord);
-        key.SetValue("CodeSetNum2", 3, RegistryValueKind.DWord);
-        key.SetValue("CodeSetNum3", 4, RegistryValueKind.DWord);
-      }
-    }
-    internal static void DisableAutomaticButtons()
-    {
-      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, true))
-      {
-        key.DeleteValue("CodeSetNum0", false);
-        key.DeleteValue("CodeSetNum1", false);
-        key.DeleteValue("CodeSetNum2", false);
-        key.DeleteValue("CodeSetNum3", false);
-      }
-    }
-
-    static void DisableMceServices()
-    {
-      // Vista ...
-      // Stop Microsoft MCE ehRecvr, mcrdsvc and ehSched processes (if they exist)
-      try
-      {
-        ServiceController[] services = ServiceController.GetServices();
-        foreach (ServiceController service in services)
-        {
-          if (service.ServiceName.Equals("ehRecvr", StringComparison.OrdinalIgnoreCase))
-          {
-            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
-              service.Stop();
-          }
-          else if (service.ServiceName.Equals("ehSched", StringComparison.OrdinalIgnoreCase))
-          {
-            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
-              service.Stop();
-          }
-          else if (service.ServiceName.Equals("mcrdsvc", StringComparison.OrdinalIgnoreCase))
-          {
-            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
-              service.Stop();
-          }
-        }
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
-
-      // XP & Vista ...
-      // Kill Microsoft MCE ehtray process (if it exists)
-      try
-      {
-        Process[] processes = Process.GetProcesses();
-        foreach (Process proc in processes)
-          if (proc.ProcessName.Equals("ehtray", StringComparison.OrdinalIgnoreCase))
-            proc.Kill();
       }
 #if TRACE
       catch (Exception ex)
@@ -970,6 +839,202 @@ namespace InputService.Plugin
         _mouseHandler(this.Name, deltaX, deltaY, (int)buttons);
     }
 
+    void KeyUpRemote(uint keyCode, uint modifiers)
+    {
+      if (_keyboardHandler == null)
+        return;
+
+      if (keyCode != 0)
+      {
+        Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
+        _keyboardHandler(this.Name, (int)vKey, true);
+      }
+
+      if (modifiers != 0)
+      {
+        if ((modifiers & (uint)KeyModifiers.LeftAlt) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LMENU, true);
+        if ((modifiers & (uint)KeyModifiers.LeftControl) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LCONTROL, true);
+        if ((modifiers & (uint)KeyModifiers.LeftShift) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LSHIFT, true);
+        if ((modifiers & (uint)KeyModifiers.LeftWin) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LWIN, true);
+
+        if ((modifiers & (uint)KeyModifiers.RightAlt) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RMENU, true);
+        if ((modifiers & (uint)KeyModifiers.RightControl) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RCONTROL, true);
+        if ((modifiers & (uint)KeyModifiers.RightShift) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RSHIFT, true);
+        if ((modifiers & (uint)KeyModifiers.RightWin) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RWIN, true);
+      }
+    }
+    void KeyDownRemote(uint keyCode, uint modifiers)
+    {
+      if (_keyboardHandler == null)
+        return;
+
+      if (modifiers != 0)
+      {
+        if ((modifiers & (uint)KeyModifiers.LeftAlt) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LMENU, false);
+        if ((modifiers & (uint)KeyModifiers.LeftControl) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LCONTROL, false);
+        if ((modifiers & (uint)KeyModifiers.LeftShift) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LSHIFT, false);
+        if ((modifiers & (uint)KeyModifiers.LeftWin) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LWIN, false);
+
+        if ((modifiers & (uint)KeyModifiers.RightAlt) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RMENU, false);
+        if ((modifiers & (uint)KeyModifiers.RightControl) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RCONTROL, false);
+        if ((modifiers & (uint)KeyModifiers.RightShift) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RSHIFT, false);
+        if ((modifiers & (uint)KeyModifiers.RightWin) != 0)
+          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RWIN, false);
+      }
+
+      if (keyCode != 0)
+      {
+        Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
+        _keyboardHandler(this.Name, (int)vKey, false);
+      }
+    }
+
+    internal static bool CheckAutomaticButtons()
+    {
+      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, false))
+      {
+        return (key.GetValue("CodeSetNum0", null) != null);
+      }
+    }
+    internal static void EnableAutomaticButtons()
+    {
+      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, true))
+      {
+        key.SetValue("CodeSetNum0", 1, RegistryValueKind.DWord);
+        key.SetValue("CodeSetNum1", 2, RegistryValueKind.DWord);
+        key.SetValue("CodeSetNum2", 3, RegistryValueKind.DWord);
+        key.SetValue("CodeSetNum3", 4, RegistryValueKind.DWord);
+      }
+    }
+    internal static void DisableAutomaticButtons()
+    {
+      using (RegistryKey key = Registry.LocalMachine.OpenSubKey(AutomaticButtonsRegKey, true))
+      {
+        key.DeleteValue("CodeSetNum0", false);
+        key.DeleteValue("CodeSetNum1", false);
+        key.DeleteValue("CodeSetNum2", false);
+        key.DeleteValue("CodeSetNum3", false);
+      }
+    }
+
+    static bool FindDevice(out Guid deviceGuid, out string devicePath)
+    {
+      devicePath = null;
+
+      // Try eHome driver ...
+      deviceGuid = MicrosoftGuid;
+      try
+      {
+        devicePath = Driver.Find(deviceGuid);
+
+        if (!String.IsNullOrEmpty(devicePath))
+          return true;
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
+      // Try Replacement driver ...
+      deviceGuid = ReplacementGuid;
+      try
+      {
+        devicePath = Driver.Find(deviceGuid);
+
+        if (!String.IsNullOrEmpty(devicePath))
+          return true;
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
+      return false;
+    }
+
+    static void DisableMceServices()
+    {
+      // Vista ...
+      // Stop Microsoft MCE ehRecvr, mcrdsvc and ehSched processes (if they exist)
+      try
+      {
+        ServiceController[] services = ServiceController.GetServices();
+        foreach (ServiceController service in services)
+        {
+          if (service.ServiceName.Equals("ehRecvr", StringComparison.OrdinalIgnoreCase))
+          {
+            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
+              service.Stop();
+          }
+          else if (service.ServiceName.Equals("ehSched", StringComparison.OrdinalIgnoreCase))
+          {
+            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
+              service.Stop();
+          }
+          else if (service.ServiceName.Equals("mcrdsvc", StringComparison.OrdinalIgnoreCase))
+          {
+            if (service.Status != ServiceControllerStatus.Stopped && service.Status != ServiceControllerStatus.StopPending)
+              service.Stop();
+          }
+        }
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
+
+      // XP & Vista ...
+      // Kill Microsoft MCE ehtray process (if it exists)
+      try
+      {
+        Process[] processes = Process.GetProcesses();
+        foreach (Process proc in processes)
+          if (proc.ProcessName.Equals("ehtray", StringComparison.OrdinalIgnoreCase))
+            proc.Kill();
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+      catch
+      {
+      }
+#endif
+    }
+
     // TODO: Convert this function to a lookup from an XML file, then provide multiple files and a way to fine-tune...
     static Keyboard.VKey ConvertMceKeyCodeToVKey(uint keyCode)
     {
@@ -1118,71 +1183,6 @@ namespace InputService.Plugin
       {
         Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
         Keyboard.KeyDown(vKey);
-      }
-    }
-
-    void KeyUpRemote(uint keyCode, uint modifiers)
-    {
-      if (_keyboardHandler == null)
-        return;
-
-      if (keyCode != 0)
-      {
-        Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
-        _keyboardHandler(this.Name, (int)vKey, true);
-      }
-
-      if (modifiers != 0)
-      {
-        if ((modifiers & (uint)KeyModifiers.LeftAlt) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LMENU, true);
-        if ((modifiers & (uint)KeyModifiers.LeftControl) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LCONTROL, true);
-        if ((modifiers & (uint)KeyModifiers.LeftShift) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LSHIFT, true);
-        if ((modifiers & (uint)KeyModifiers.LeftWin) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LWIN, true);
-
-        if ((modifiers & (uint)KeyModifiers.RightAlt) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RMENU, true);
-        if ((modifiers & (uint)KeyModifiers.RightControl) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RCONTROL, true);
-        if ((modifiers & (uint)KeyModifiers.RightShift) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RSHIFT, true);
-        if ((modifiers & (uint)KeyModifiers.RightWin) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RWIN, true);
-      }
-    }
-    void KeyDownRemote(uint keyCode, uint modifiers)
-    {
-      if (_keyboardHandler == null)
-        return;
-
-      if (modifiers != 0)
-      {
-        if ((modifiers & (uint)KeyModifiers.LeftAlt) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LMENU, false);
-        if ((modifiers & (uint)KeyModifiers.LeftControl) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LCONTROL, false);
-        if ((modifiers & (uint)KeyModifiers.LeftShift) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LSHIFT, false);
-        if ((modifiers & (uint)KeyModifiers.LeftWin) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_LWIN, false);
-
-        if ((modifiers & (uint)KeyModifiers.RightAlt) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RMENU, false);
-        if ((modifiers & (uint)KeyModifiers.RightControl) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RCONTROL, false);
-        if ((modifiers & (uint)KeyModifiers.RightShift) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RSHIFT, false);
-        if ((modifiers & (uint)KeyModifiers.RightWin) != 0)
-          _keyboardHandler(this.Name, (int)Keyboard.VKey.VK_RWIN, false);
-      }
-
-      if (keyCode != 0)
-      {
-        Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
-        _keyboardHandler(this.Name, (int)vKey, false);
       }
     }
 

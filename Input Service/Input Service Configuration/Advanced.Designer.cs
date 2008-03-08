@@ -42,14 +42,17 @@ namespace InputService.Configuration
       this.checkBoxAbstractRemoteMode = new System.Windows.Forms.CheckBox();
       this.buttonExclusions = new System.Windows.Forms.Button();
       this.groupBoxAbstractRemoteModel = new System.Windows.Forms.GroupBox();
+      this.groupBoxPriority = new System.Windows.Forms.GroupBox();
+      this.labelPriority = new System.Windows.Forms.Label();
+      this.comboBoxPriority = new System.Windows.Forms.ComboBox();
       this.groupBoxMode.SuspendLayout();
       this.groupBoxAbstractRemoteModel.SuspendLayout();
+      this.groupBoxPriority.SuspendLayout();
       this.SuspendLayout();
       // 
       // groupBoxMode
       // 
-      this.groupBoxMode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
+      this.groupBoxMode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxMode.Controls.Add(this.labelComputer);
       this.groupBoxMode.Controls.Add(this.radioButtonRepeater);
@@ -130,10 +133,10 @@ namespace InputService.Configuration
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(328, 208);
+      this.buttonCancel.Location = new System.Drawing.Point(328, 272);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
-      this.buttonCancel.TabIndex = 3;
+      this.buttonCancel.TabIndex = 4;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -141,10 +144,10 @@ namespace InputService.Configuration
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(256, 208);
+      this.buttonOK.Location = new System.Drawing.Point(256, 272);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
-      this.buttonOK.TabIndex = 2;
+      this.buttonOK.TabIndex = 3;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -160,6 +163,7 @@ namespace InputService.Configuration
       this.checkBoxAbstractRemoteMode.Text = "Use the Abstract Remote Model";
       this.toolTips.SetToolTip(this.checkBoxAbstractRemoteMode, "Enable automatic abstract remote model translation");
       this.checkBoxAbstractRemoteMode.UseVisualStyleBackColor = true;
+      this.checkBoxAbstractRemoteMode.CheckedChanged += new System.EventHandler(this.checkBoxAbstractRemoteMode_CheckedChanged);
       // 
       // buttonExclusions
       // 
@@ -172,10 +176,12 @@ namespace InputService.Configuration
       this.buttonExclusions.Text = "Exclusions";
       this.toolTips.SetToolTip(this.buttonExclusions, "Configure Abstract Remote Model exclusions");
       this.buttonExclusions.UseVisualStyleBackColor = true;
+      this.buttonExclusions.Visible = false;
+      this.buttonExclusions.Click += new System.EventHandler(this.buttonExclusions_Click);
       // 
       // groupBoxAbstractRemoteModel
       // 
-      this.groupBoxAbstractRemoteModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+      this.groupBoxAbstractRemoteModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxAbstractRemoteModel.Controls.Add(this.buttonExclusions);
       this.groupBoxAbstractRemoteModel.Controls.Add(this.checkBoxAbstractRemoteMode);
@@ -186,13 +192,45 @@ namespace InputService.Configuration
       this.groupBoxAbstractRemoteModel.TabStop = false;
       this.groupBoxAbstractRemoteModel.Text = "Abstract Remote Model";
       // 
+      // groupBoxPriority
+      // 
+      this.groupBoxPriority.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxPriority.Controls.Add(this.labelPriority);
+      this.groupBoxPriority.Controls.Add(this.comboBoxPriority);
+      this.groupBoxPriority.Location = new System.Drawing.Point(8, 200);
+      this.groupBoxPriority.Name = "groupBoxPriority";
+      this.groupBoxPriority.Size = new System.Drawing.Size(384, 56);
+      this.groupBoxPriority.TabIndex = 2;
+      this.groupBoxPriority.TabStop = false;
+      this.groupBoxPriority.Text = "Process Priority";
+      // 
+      // labelPriority
+      // 
+      this.labelPriority.Location = new System.Drawing.Point(8, 21);
+      this.labelPriority.Name = "labelPriority";
+      this.labelPriority.Size = new System.Drawing.Size(88, 24);
+      this.labelPriority.TabIndex = 0;
+      this.labelPriority.Text = "Set Priority:";
+      this.labelPriority.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // comboBoxPriority
+      // 
+      this.comboBoxPriority.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.comboBoxPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+      this.comboBoxPriority.FormattingEnabled = true;
+      this.comboBoxPriority.Location = new System.Drawing.Point(104, 24);
+      this.comboBoxPriority.Name = "comboBoxPriority";
+      this.comboBoxPriority.Size = new System.Drawing.Size(272, 21);
+      this.comboBoxPriority.TabIndex = 1;
+      // 
       // Advanced
       // 
-      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(400, 241);
+      this.ClientSize = new System.Drawing.Size(400, 304);
+      this.Controls.Add(this.groupBoxPriority);
       this.Controls.Add(this.groupBoxAbstractRemoteModel);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
@@ -201,13 +239,14 @@ namespace InputService.Configuration
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(406, 266);
+      this.MinimumSize = new System.Drawing.Size(406, 336);
       this.Name = "Advanced";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Input Service Configuration - Advanced";
       this.groupBoxMode.ResumeLayout(false);
       this.groupBoxMode.PerformLayout();
       this.groupBoxAbstractRemoteModel.ResumeLayout(false);
+      this.groupBoxPriority.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -226,5 +265,8 @@ namespace InputService.Configuration
     private System.Windows.Forms.CheckBox checkBoxAbstractRemoteMode;
     private System.Windows.Forms.Button buttonExclusions;
     private System.Windows.Forms.GroupBox groupBoxAbstractRemoteModel;
+    private System.Windows.Forms.GroupBox groupBoxPriority;
+    private System.Windows.Forms.ComboBox comboBoxPriority;
+    private System.Windows.Forms.Label labelPriority;
   }
 }

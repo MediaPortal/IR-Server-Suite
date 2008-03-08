@@ -364,7 +364,7 @@ namespace TvEngine
         Log.Info("TV3BlasterPlugin: Tune request - Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
 
         if (_externalChannelConfigs == null)
-          throw new ApplicationException("Cannot process tune request, no STB settings are loaded");
+          throw new InvalidOperationException("Cannot process tune request, no STB settings are loaded");
 
         Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
         newThread.Name = "ProcessExternalChannel";
@@ -445,7 +445,7 @@ namespace TvEngine
 
         ExternalChannelConfig config = GetExternalChannelConfig(data[1]);
         if (config == null)
-          throw new ApplicationException(String.Format("External channel config for card \"{0}\" not found", data[1]));
+          throw new InvalidOperationException(String.Format("External channel config for card \"{0}\" not found", data[1]));
 
         // Clean up the "data[0]" string into "channel".
         StringBuilder channel = new StringBuilder();
@@ -639,7 +639,7 @@ namespace TvEngine
         Log.Debug("TV3BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
-        throw new ApplicationException("Cannot Blast, not registered to an active Input Service");
+        throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
 
       using (FileStream file = File.OpenRead(fileName))
       {

@@ -51,6 +51,7 @@ namespace InputService.Configuration
     static bool _abstractRemoteMode;
     static InputServiceMode _mode;
     static string _hostComputer;
+    static string _processPriority;
     static string[] _pluginNameReceive;
     static string _pluginNameTransmit;
 
@@ -97,24 +98,26 @@ namespace InputService.Configuration
       config.AbstractRemoteMode = _abstractRemoteMode;
       config.Mode               = _mode;
       config.HostComputer       = _hostComputer;
+      config.ProcessPriority    = _processPriority;
       config.PluginReceive      = _pluginNameReceive;
       config.PluginTransmit     = _pluginNameTransmit;
 
       if (config.ShowDialog() == DialogResult.OK)
       {
-        if ((_abstractRemoteMode != config.AbstractRemoteMode) ||
-            (_mode != config.Mode) ||
-            (_hostComputer != config.HostComputer) ||
-            (_pluginNameReceive != config.PluginReceive) ||
-            (_pluginNameTransmit != config.PluginTransmit))
+        if ((_abstractRemoteMode  != config.AbstractRemoteMode) ||
+            (_mode                != config.Mode)               ||
+            (_hostComputer        != config.HostComputer)       ||
+            (_processPriority     != config.ProcessPriority)    ||
+            (_pluginNameReceive   != config.PluginReceive)      ||
+            (_pluginNameTransmit  != config.PluginTransmit))
         {
-
           if (MessageBox.Show("Input Service will now be restarted for configuration changes to take effect", "Restarting Input Service", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
           {
             // Change settings ...
             _abstractRemoteMode = config.AbstractRemoteMode;
             _mode               = config.Mode;
             _hostComputer       = config.HostComputer;
+            _processPriority    = config.ProcessPriority;
             _pluginNameReceive  = config.PluginReceive;
             _pluginNameTransmit = config.PluginTransmit;
 
@@ -140,6 +143,7 @@ namespace InputService.Configuration
       _abstractRemoteMode = false;
       _mode               = InputServiceMode.ServerMode;
       _hostComputer       = String.Empty;
+      _processPriority    = "No Change";
       _pluginNameReceive  = null;
       _pluginNameTransmit = String.Empty;
 
@@ -183,6 +187,9 @@ namespace InputService.Configuration
       try { _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value; }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
+      try { _processPriority    = doc.DocumentElement.Attributes["ProcessPriority"].Value; }
+      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+
       try { _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value; }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
@@ -214,6 +221,7 @@ namespace InputService.Configuration
           writer.WriteAttributeString("AbstractRemoteMode", _abstractRemoteMode.ToString());
           writer.WriteAttributeString("Mode", Enum.GetName(typeof(InputServiceMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
+          writer.WriteAttributeString("ProcessPriority", _processPriority);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
 
           if (_pluginNameReceive != null)
@@ -333,27 +341,6 @@ namespace InputService.Configuration
 #endif
         return null;
       }
-    }
-
-    /// <summary>
-    /// Retreives a plugin instance given the plugin name.
-    /// </summary>
-    /// <param name="pluginName">Name of plugin to instantiate.</param>
-    /// <returns>Plugin instance.</returns>
-    internal static PluginBase GetPlugin(string pluginName)
-    {
-      if (String.IsNullOrEmpty(pluginName))
-        throw new ArgumentNullException("pluginName");
-
-      PluginBase[] serverPlugins = AvailablePlugins();
-      if (serverPlugins == null)
-        throw new FileNotFoundException("No available plugins found");
-
-      foreach (PluginBase plugin in serverPlugins)
-        if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
-          return plugin;
-
-      return null;
     }
 
     /// <summary>

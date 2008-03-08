@@ -266,7 +266,7 @@ namespace InputService.Plugin
       if (Connect(_irTransServerAddress, _irTransServerPort))
         BeginReceive();
       else
-        throw new ApplicationException("Failed to connect");
+        throw new InvalidOperationException("Failed to connect");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

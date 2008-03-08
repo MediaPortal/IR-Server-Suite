@@ -312,7 +312,7 @@ namespace InputService.Plugin
       }
 
       if (_handles.Count == 0)
-        throw new ApplicationException("No Technotrend IR devices found");
+        throw new InvalidOperationException("No Technotrend IR devices found");
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

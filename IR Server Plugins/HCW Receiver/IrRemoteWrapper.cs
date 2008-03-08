@@ -120,7 +120,7 @@ namespace InputService.Plugin
     {
       string dllPath = GetDllPath();
       if (String.IsNullOrEmpty(dllPath))
-        throw new ApplicationException("Could not find IrRemote.dll folder");
+        throw new DirectoryNotFoundException("Could not find IrRemote.dll folder");
 
       SetDllDirectory(dllPath);
 
@@ -138,7 +138,7 @@ namespace InputService.Plugin
     public void Start()
     {
       if (!IR_Open(_window.Handle, 0, false, 0))
-        throw new ApplicationException("Failed to open IR device");
+        throw new InvalidOperationException("Failed to open IR device");
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ namespace InputService.Plugin
     public void Stop()
     {
       if (!IR_Close(_window.Handle, 0))
-        throw new ApplicationException("Failed to close IR device");
+        throw new InvalidOperationException("Failed to close IR device");
     }
 
     /// <summary>

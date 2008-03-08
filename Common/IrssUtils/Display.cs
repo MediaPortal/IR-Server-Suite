@@ -93,7 +93,7 @@ namespace IrssUtils
       devMode.dmSize        = (short)Marshal.SizeOf(typeof(DEVMODE));
 
       if (EnumDisplaySettings(null, ENUM_CURRENT_SETTINGS, ref devMode) == 0)
-        throw new ApplicationException("Failed to enumerate display settings");
+        throw new InvalidOperationException("Failed to enumerate display settings");
 
       return devMode;
     }
@@ -171,11 +171,11 @@ namespace IrssUtils
 
       int test = ChangeDisplaySettings(ref devMode, CDS_TEST);
       if (test != DISP_CHANGE_SUCCESSFUL)
-        throw new ApplicationException(String.Format("Testing display mode change failed ({0})", test));
+        throw new InvalidOperationException(String.Format("Testing display mode change failed ({0})", test));
 
       int set = ChangeDisplaySettings(ref devMode, CDS_UPDATEREGISTRY);
       if (set != DISP_CHANGE_SUCCESSFUL)
-        throw new ApplicationException(String.Format("Setting display mode failed ({0})", set));
+        throw new InvalidOperationException(String.Format("Setting display mode failed ({0})", set));
     }
 
   }

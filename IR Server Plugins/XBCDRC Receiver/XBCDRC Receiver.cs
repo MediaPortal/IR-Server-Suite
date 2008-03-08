@@ -273,7 +273,7 @@ namespace InputService.Plugin
 
       string devicePath = FindDevice(guid);
       if (String.IsNullOrEmpty(devicePath))
-        throw new ApplicationException("Device not found");
+        throw new InvalidOperationException("Device not found");
 
       SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero, FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();

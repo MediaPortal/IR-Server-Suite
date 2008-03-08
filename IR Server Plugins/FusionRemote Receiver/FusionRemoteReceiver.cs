@@ -317,7 +317,7 @@ namespace InputService.Plugin
       string devicePath = FindDevice(hidGuid, DeviceID);
 
       if (devicePath == null)
-        throw new ApplicationException("No device detected");
+        throw new InvalidOperationException("No device detected");
 
       SafeFileHandle deviceHandle = CreateFile(devicePath, GENERIC_READ, EFileShares.Read | EFileShares.Write, IntPtr.Zero, ECreationDisposition.OpenExisting, EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();

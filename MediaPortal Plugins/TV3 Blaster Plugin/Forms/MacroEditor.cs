@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 #if TRACE
 using System.Diagnostics;
 #endif
@@ -229,7 +228,7 @@ namespace TvEngine
         }
         else
         {
-          throw new ApplicationException(String.Format("Unknown command in macro command list \"{0}\"", selected));
+          throw new IrssUtils.Exceptions.CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
         }
 
         if (!String.IsNullOrEmpty(newCommand))

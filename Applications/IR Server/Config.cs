@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -250,7 +249,11 @@ namespace IRServer
 
       // Setup Column Headers
       gridPlugins.Rows.Insert(row);
-      gridPlugins[row, ColIcon]       = new SourceGrid.Cells.ColumnHeader(" ");
+
+      SourceGrid.Cells.ColumnHeader header = new SourceGrid.Cells.ColumnHeader(" ");
+      header.AutomaticSortEnabled = false;
+      gridPlugins[row, ColIcon] = header;
+      
       gridPlugins[row, ColName]       = new SourceGrid.Cells.ColumnHeader("Name");
       gridPlugins[row, ColReceive]    = new SourceGrid.Cells.ColumnHeader("Receive");
       gridPlugins[row, ColTransmit]   = new SourceGrid.Cells.ColumnHeader("Transmit");

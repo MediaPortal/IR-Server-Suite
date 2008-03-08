@@ -8,7 +8,7 @@ namespace IrssUtils.Exceptions
   /// The exception that is thrown when a structural error in a macro is discovered.
   /// </summary>
   [Serializable]
-  public class MacroStructureException : ApplicationException
+  public class MacroStructureException : Exception
   {
 
     /// <summary>

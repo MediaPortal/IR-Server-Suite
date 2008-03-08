@@ -68,7 +68,7 @@ namespace IrFileTool
       else
         this.Text = "IR File Tool - " + _fileName;
 
-      textBoxPronto.Text = Encoding.ASCII.GetString(_code.ToByteArray(true));
+      textBoxPronto.Text = Encoding.ASCII.GetString(_code.ToByteArray());
 
       switch (_code.Carrier)
       {
@@ -543,7 +543,7 @@ namespace IrFileTool
       this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Blasting ..." });
 
       string port = comboBoxPort.Text;
-      byte[] codeBytes = _code.ToByteArray(true);
+      byte[] codeBytes = _code.ToByteArray();
 
       byte[] outData = new byte[4 + port.Length + codeBytes.Length];
 

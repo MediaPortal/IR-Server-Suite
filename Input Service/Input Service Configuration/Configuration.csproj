@@ -70,6 +70,12 @@
     <Compile Include="Config.Designer.cs">
       <DependentUpon>Config.cs</DependentUpon>
     </Compile>
+    <Compile Include="Exclusions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Exclusions.Designer.cs">
+      <DependentUpon>Exclusions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -84,6 +90,10 @@
     <EmbeddedResource Include="Config.resx">
       <DependentUpon>Config.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Exclusions.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Exclusions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>

@@ -97,7 +97,7 @@ namespace InputService.Plugin
     {
       int retVal = Init();
       if (retVal == 0)
-        throw new ApplicationException("Failed to initialize device access");
+        throw new InvalidOperationException("Failed to initialize device access");
 
       StartReadThread();
     }

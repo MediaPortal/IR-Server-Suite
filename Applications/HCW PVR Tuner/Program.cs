@@ -71,8 +71,6 @@ namespace HcwPvrTuner
 #endif
       IrssLog.Append("Dbox Tuner.log");
 
-      // TODO: Add standard IRSS logging ...
-
       if (args.Length != 1)
       {
         Console.WriteLine("Usage:");
@@ -87,13 +85,13 @@ namespace HcwPvrTuner
       {
         int channelNumber;
         if (!int.TryParse(args[0], out channelNumber))
-          throw new ApplicationException(String.Format("Failed to convert command line parameter ({0}) to channel number", args[0]));
+          throw new ArgumentException(String.Format("Failed to convert command line parameter ({0}) to channel number", args[0]));
 
         Info("Attempting to tune channel {0} ...", channelNumber);
 
         int returnValue = UIR_Open(0, 0);
         if (returnValue == 0)
-          throw new ApplicationException(String.Format("Failed to start device access ({0})", returnValue));
+          throw new InvalidOperationException(String.Format("Failed to start device access ({0})", returnValue));
         else
           deviceOpen = true;
 
@@ -112,17 +110,12 @@ namespace HcwPvrTuner
         }
         else
         {
-          throw new ApplicationException(String.Format("Failed to retrieve device configuration ({0})", returnValue));
+          throw new InvalidOperationException(String.Format("Failed to retrieve device configuration ({0})", returnValue));
         }
 
         returnValue = UIR_GotoChannel(config.d, config.f, channelNumber);
         if (returnValue == 0)
-          throw new ApplicationException(String.Format("Failed to tune channel ({0})", returnValue));
-      }
-      catch (ApplicationException ex)
-      {
-        Info("Error: {0}", ex.Message);
-        return ReturnError;
+          throw new InvalidOperationException(String.Format("Failed to tune channel ({0})", returnValue));
       }
       catch (Exception ex)
       {

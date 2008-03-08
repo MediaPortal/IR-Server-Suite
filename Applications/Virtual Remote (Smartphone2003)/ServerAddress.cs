@@ -12,7 +12,7 @@ namespace VirtualRemote
   /// <summary>
   /// Summary description for ServerAddress.
   /// </summary>
-  public class ServerAddress : Form
+  class ServerAddress : Form
   {
 
     private MainMenu mainMenu;

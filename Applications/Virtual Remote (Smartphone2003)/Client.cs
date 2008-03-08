@@ -13,14 +13,14 @@ namespace VirtualRemote
   /// Message handling delegate for client.
   /// </summary>
   /// <param name="message">Message received.</param>
-  public delegate void ClientMessageSink(IrssMessage message);
+  delegate void ClientMessageSink(IrssMessage message);
 
   #endregion Delegates
 
   /// <summary>
   /// TCP communications client class.
   /// </summary>
-  public class Client : IDisposable
+  class Client : IDisposable
   {
 
     #region Variables

@@ -326,7 +326,7 @@ namespace InputService.Plugin
     void StartReceive(int receivePort, int timeout)
     {
       if (!_deviceAvailable)
-        throw new ApplicationException("Device not available");
+        throw new InvalidOperationException("Device not available");
 
       int bytesReturned;
 
@@ -354,7 +354,7 @@ namespace InputService.Plugin
     void StopReceive()
     {
       if (!_deviceAvailable)
-        throw new ApplicationException("Device not available");
+        throw new InvalidOperationException("Device not available");
 
       int bytesReturned;
       IoControl(IoCtrl.StopReceive, IntPtr.Zero, 0, IntPtr.Zero, 0, out bytesReturned);
@@ -363,7 +363,7 @@ namespace InputService.Plugin
     void GetDeviceCapabilities()
     {
       if (!_deviceAvailable)
-        throw new ApplicationException("Device not available");
+        throw new InvalidOperationException("Device not available");
 
       int bytesReturned;
 
@@ -419,7 +419,7 @@ namespace InputService.Plugin
     void GetBlasters()
     {
       if (!_deviceAvailable)
-        throw new ApplicationException("Device not available");
+        throw new InvalidOperationException("Device not available");
 
       if (_numTxPorts <= 0)
         return;
@@ -460,7 +460,7 @@ namespace InputService.Plugin
 #endif
 
       if (!_deviceAvailable)
-        throw new ApplicationException("Device not available");
+        throw new InvalidOperationException("Device not available");
 
       int bytesReturned;
 
@@ -521,7 +521,7 @@ namespace InputService.Plugin
     void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
     {
       if (!_deviceAvailable)
-        throw new ApplicationException("Device not available");
+        throw new InvalidOperationException("Device not available");
 
       try
       {

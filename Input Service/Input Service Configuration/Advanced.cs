@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -56,6 +56,18 @@ namespace InputService.Configuration
       get { return comboBoxComputer.Text; }
       set { comboBoxComputer.Text = value; }
     }
+    public string ProcessPriority
+    {
+      get
+      {
+        return comboBoxPriority.SelectedText;
+      }
+      set
+      {
+        comboBoxPriority.SelectedItem = value;
+      }
+
+    }
 
     #endregion Properties
 
@@ -68,6 +80,10 @@ namespace InputService.Configuration
       List<string> networkPCs = Network.GetComputers(false);
       if (networkPCs != null)
         comboBoxComputer.Items.AddRange(networkPCs.ToArray());
+
+      comboBoxPriority.Items.Add("No Change");
+      comboBoxPriority.Items.AddRange(Enum.GetNames(typeof(ProcessPriorityClass)));
+      comboBoxPriority.SelectedIndex = 0;
     }
 
     #endregion Constructor
@@ -85,6 +101,17 @@ namespace InputService.Configuration
       this.Close();
     }
 
+    private void buttonExclusions_Click(object sender, EventArgs e)
+    {
+      Exclusions exclusions = new Exclusions(new string[] { "plugin1", "plugin2", "plugin3" });
+      exclusions.ExclusionList = new string[] { "plugin1" };
+
+      if (exclusions.ShowDialog(this) == DialogResult.OK)
+      {
+
+      }
+    }
+
     private void radioButtonServer_CheckedChanged(object sender, EventArgs e)
     {
       comboBoxComputer.Enabled = false;
@@ -96,6 +123,11 @@ namespace InputService.Configuration
     private void radioButtonRepeater_CheckedChanged(object sender, EventArgs e)
     {
       comboBoxComputer.Enabled = true;
+    }
+
+    private void checkBoxAbstractRemoteMode_CheckedChanged(object sender, EventArgs e)
+    {
+      //buttonExclusions.Enabled = checkBoxAbstractRemoteMode.Checked;
     }
 
     #endregion Controls

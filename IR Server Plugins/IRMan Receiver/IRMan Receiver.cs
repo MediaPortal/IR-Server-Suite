@@ -107,7 +107,7 @@ namespace InputService.Plugin
       }
       else
       {
-        throw new ApplicationException("Failed to initialize device");
+        throw new IOException("Failed to initialize device");
       }
     }
     /// <summary>

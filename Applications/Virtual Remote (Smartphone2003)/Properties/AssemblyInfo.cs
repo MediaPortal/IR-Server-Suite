@@ -30,3 +30,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.4.2")]
+
+[assembly: CLSCompliant(true)]

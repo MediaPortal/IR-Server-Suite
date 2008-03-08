@@ -9,7 +9,7 @@ namespace VirtualRemote
   /// <summary>
   /// Type of message.
   /// </summary>
-  public enum MessageType
+  enum MessageType
   {
     /// <summary>
     /// Unknown message type.
@@ -117,7 +117,7 @@ namespace VirtualRemote
   /// Flags to determine more information about the message.
   /// </summary>
   [Flags]
-  public enum MessageFlags
+  enum MessageFlags
   {
     /// <summary>
     /// No Flags.
@@ -168,7 +168,7 @@ namespace VirtualRemote
   /// <summary>
   /// Message class for passing over network.
   /// </summary>
-  public class IrssMessage
+  class IrssMessage
   {
 
     #region Members

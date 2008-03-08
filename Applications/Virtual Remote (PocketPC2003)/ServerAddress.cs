@@ -8,7 +8,7 @@ namespace VirtualRemote
   /// <summary>
   /// Server Address form.
   /// </summary>
-  public partial class ServerAddress : Form
+  partial class ServerAddress : Form
   {
 
     #region Properties

@@ -98,9 +98,11 @@ namespace WiimoteLib
 		public static extern void HidD_GetHidGuid(out Guid gHid);
 
 		[DllImport("hid.dll")]
-		public static extern Boolean HidD_GetAttributes(IntPtr HidDeviceObject, ref HIDD_ATTRIBUTES Attributes);
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static extern bool HidD_GetAttributes(IntPtr HidDeviceObject, ref HIDD_ATTRIBUTES Attributes);
 
 		[DllImport("hid.dll")]
+    [return: MarshalAs(UnmanagedType.U1)]
 		internal extern static bool HidD_SetOutputReport(
 			IntPtr HidDeviceObject,
 			byte[] lpReportBuffer,
@@ -115,7 +117,8 @@ namespace WiimoteLib
 			);
 
 		[DllImport(@"setupapi.dll", CharSet=CharSet.Auto, SetLastError = true)]
-		public static extern Boolean SetupDiEnumDeviceInterfaces(
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetupDiEnumDeviceInterfaces(
 			IntPtr hDevInfo,
 			//ref SP_DEVINFO_DATA devInfo,
 			IntPtr devInvo,
@@ -125,7 +128,8 @@ namespace WiimoteLib
 		);
 
 		[DllImport(@"setupapi.dll", SetLastError = true)]
-		public static extern Boolean SetupDiGetDeviceInterfaceDetail(
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetupDiGetDeviceInterfaceDetail(
 			IntPtr hDevInfo,
 			ref SP_DEVICE_INTERFACE_DATA deviceInterfaceData,
 			IntPtr deviceInterfaceDetailData,
@@ -135,7 +139,8 @@ namespace WiimoteLib
 		);
 
 		[DllImport(@"setupapi.dll", SetLastError = true)]
-		public static extern Boolean SetupDiGetDeviceInterfaceDetail(
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetupDiGetDeviceInterfaceDetail(
 			IntPtr hDevInfo,
 			ref SP_DEVICE_INTERFACE_DATA deviceInterfaceData,
 			ref SP_DEVICE_INTERFACE_DETAIL_DATA deviceInterfaceDetailData,
@@ -145,7 +150,7 @@ namespace WiimoteLib
 		);
 
 		[DllImport(@"setupapi.dll", CharSet=CharSet.Auto, SetLastError = true)]
-		public static extern UInt16 SetupDiDestroyDeviceInfoList( IntPtr hDevInfo );
+		public static extern int SetupDiDestroyDeviceInfoList( IntPtr hDevInfo );
 
 		[DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern SafeFileHandle CreateFile(

@@ -535,7 +535,7 @@ namespace InputService.Plugin
         case DeviceType.Microsoft:  portPacket = MicrosoftPorts[port];  break;
         case DeviceType.SmkTopseed: portPacket = SmkTopseedPorts[port]; break;
         default:
-          throw new ApplicationException("Invalid device type");
+          throw new InvalidOperationException("Invalid device type");
       }
 
       WriteSync(portPacket);
@@ -750,7 +750,7 @@ namespace InputService.Plugin
         bool success = false;
         safeWaitHandle.DangerousAddRef(ref success);
         if (!success)
-          throw new ApplicationException("Failed to initialize safe wait handle");
+          throw new InvalidOperationException("Failed to initialize safe wait handle");
 
         DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
         overlapped.ClearAndSetEvent(safeWaitHandle.DangerousGetHandle());
@@ -780,7 +780,7 @@ namespace InputService.Plugin
               else if (handle == 1)
                 throw new ThreadInterruptedException("Read thread stopping by request");
               else
-                throw new ApplicationException(String.Format("Invalid wait handle return: {0}", handle));
+                throw new InvalidOperationException(String.Format("Invalid wait handle return: {0}", handle));
             }
 
             bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesRead, true);
@@ -956,7 +956,7 @@ namespace InputService.Plugin
 #endif
 
       if (!_deviceAvailable)
-        throw new ApplicationException("Device not available");
+        throw new InvalidOperationException("Device not available");
 
       int lastError;
 
@@ -969,7 +969,7 @@ namespace InputService.Plugin
         bool success = false;
         safeWaitHandle.DangerousAddRef(ref success);
         if (!success)
-          throw new ApplicationException("Failed to initialize safe wait handle");
+          throw new InvalidOperationException("Failed to initialize safe wait handle");
 
         DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
         overlapped.ClearAndSetEvent(safeWaitHandle.DangerousGetHandle());
@@ -989,7 +989,7 @@ namespace InputService.Plugin
         if (handle == ErrorWaitTimeout)
           throw new System.TimeoutException("Timeout trying to write data to device");
         else if (handle != 0)
-          throw new ApplicationException(String.Format("Invalid wait handle return: {0}", handle));
+          throw new InvalidOperationException(String.Format("Invalid wait handle return: {0}", handle));
 
         bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesWritten, true);
         lastError = Marshal.GetLastWin32Error();

@@ -642,12 +642,12 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
         throw new ArgumentException("Empty or null file name", "fileName");
 
       if (!LoadGirderPlugin(fileName))
-        throw new ApplicationException(String.Format("Failed to load girder plugin ({0})", fileName));
+        throw new InvalidOperationException(String.Format("Failed to load girder plugin ({0})", fileName));
 
       int requiredApi = GirRequestedApi;
 
       if (requiredApi > GirMaxApi)
-        throw new ApplicationException(String.Format("Failed to load girder plugin ({0}), plugin requires newer API version ({1})", fileName, requiredApi));
+        throw new InvalidOperationException(String.Format("Failed to load girder plugin ({0}), plugin requires newer API version ({1})", fileName, requiredApi));
 
       _apiFunctions = new GirApiFunctions();
       _apiFunctions.delete_var = new t_delete_var(delete_var);
@@ -1113,7 +1113,7 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
     {
       _pluginDll = LoadLibrary(girderPluginFile);
       if (_pluginDll == IntPtr.Zero)
-        throw new ApplicationException(String.Format("Failed to load girder plugin dll ({0})", girderPluginFile));
+        throw new InvalidOperationException(String.Format("Failed to call LoadLibrary on girder plugin dll ({0})", girderPluginFile));
 
       try
       {

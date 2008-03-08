@@ -84,7 +84,7 @@ namespace InputService.Plugin
         _pluginWrapper.Dispose();
         _pluginWrapper = null;
 
-        throw new ApplicationException("Failed to initiate girder plugin");
+        throw new InvalidOperationException("Failed to initiate girder plugin");
       }
 
       if (!_pluginWrapper.GirStart())
@@ -93,7 +93,7 @@ namespace InputService.Plugin
         _pluginWrapper.Dispose();
         _pluginWrapper = null;
 
-        throw new ApplicationException("Failed to start girder plugin");
+        throw new InvalidOperationException("Failed to start girder plugin");
       }
 
     }

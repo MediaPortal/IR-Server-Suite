@@ -229,8 +229,8 @@ namespace IrssUtils
         case IfEquals:      comparisonResult = commands[0].Equals(commands[2], StringComparison.OrdinalIgnoreCase);         break;
         case IfNotEqual:    comparisonResult = !commands[0].Equals(commands[2], StringComparison.OrdinalIgnoreCase);        break;
         case IfContains:    comparisonResult = commands[0].ToUpperInvariant().Contains(commands[2].ToUpperInvariant());     break;
-        case IfStartsWith:  comparisonResult = commands[0].ToUpperInvariant().StartsWith(commands[2].ToUpperInvariant());   break;
-        case IfEndsWith:    comparisonResult = commands[0].ToUpperInvariant().EndsWith(commands[2].ToUpperInvariant());     break;
+        case IfStartsWith:  comparisonResult = commands[0].StartsWith(commands[2], StringComparison.OrdinalIgnoreCase);     break;
+        case IfEndsWith:    comparisonResult = commands[0].EndsWith(commands[2], StringComparison.OrdinalIgnoreCase);       break;
 
         // Use integer comparison ...
         case IfGreaterThan:

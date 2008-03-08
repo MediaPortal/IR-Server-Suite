@@ -281,7 +281,7 @@ namespace InputService.Plugin
       _usbUirtHandle = UUIRTOpen();
 
       if (_usbUirtHandle == IntPtr.Zero)
-        throw new ApplicationException("Failed to initialize");
+        throw new InvalidOperationException("Failed to initialize");
 
       _isUsbUirtLoaded = true;
 

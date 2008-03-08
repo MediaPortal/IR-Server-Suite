@@ -426,12 +426,12 @@ namespace InputService.Plugin
                   Trace.WriteLine(String.Format("Usage: {0:X4}\r\n", di.HIDInfo.Usage));
 #endif
 
-                  string vidAndPid = String.Format("Vid_{0:x4}&Pid_{1:x4}", di.HIDInfo.VendorID, di.HIDInfo.ProductID);
-                  details.Name = String.Format("HID: {0}", GetFriendlyName(vidAndPid));
+                  string vidAndPid  = String.Format("Vid_{0:x4}&Pid_{1:x4}", di.HIDInfo.VendorID, di.HIDInfo.ProductID);
+                  details.Name      = String.Format("HID: {0}", GetFriendlyName(vidAndPid));
                   //details.ID = GetDeviceDesc(deviceName);
 
                   details.UsagePage = di.HIDInfo.UsagePage;
-                  details.Usage = di.HIDInfo.Usage;
+                  details.Usage     = di.HIDInfo.Usage;
 
                   devices.Add(details);
                   break;
@@ -448,11 +448,10 @@ namespace InputService.Plugin
                   Trace.WriteLine(String.Format("Total Keys: {0}\r\n", di.KeyboardInfo.NumberOfKeysTotal));
 #endif
 
-                  details.Name = "HID Keyboard";
-                  //details.ID = String.Format("{0}-{1}", di.KeyboardInfo.Type, di.KeyboardInfo.SubType);
-
+                  details.Name      = "HID Keyboard";
+                  //details.ID      = String.Format("{0}-{1}", di.KeyboardInfo.Type, di.KeyboardInfo.SubType);
                   details.UsagePage = 0x01;
-                  details.Usage = 0x06;
+                  details.Usage     = 0x06;
 
                   //devices.Add(details);
                   break;
@@ -466,10 +465,9 @@ namespace InputService.Plugin
                   Trace.WriteLine(String.Format("Sample Rate: {0}hz\r\n", di.MouseInfo.SampleRate));
 #endif
 
-                  details.Name = "HID Mouse";
-
+                  details.Name      = "HID Mouse";
                   details.UsagePage = 0x01;
-                  details.Usage = 0x02;
+                  details.Usage     = 0x02;
 
                   //devices.Add(details);
                   break;
@@ -486,7 +484,7 @@ namespace InputService.Plugin
       }
       else
       {
-        throw new ApplicationException("An error occurred while retrieving the list of devices.");
+        throw new InvalidOperationException("An error occurred while retrieving the list of devices");
       }
 
     }

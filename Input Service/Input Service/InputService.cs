@@ -68,6 +68,7 @@ namespace InputService
     bool _abstractRemoteMode;
     InputServiceMode _mode;
     string _hostComputer;
+    string _processPriority;
 
     string[] _pluginNameReceive;
     List<PluginBase> _pluginReceive;
@@ -157,6 +158,25 @@ namespace InputService
       IrssLog.Info("Starting Input Service ...");
 
       LoadSettings();
+
+      #region Process Priority Adjustment
+
+      if (!_processPriority.Equals("No Change", StringComparison.OrdinalIgnoreCase))
+      {
+        try
+        {
+          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), _processPriority);
+          Process.GetCurrentProcess().PriorityClass = priority;
+
+          IrssLog.Info("Process priority set to: {0}", _processPriority);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
+
+      #endregion Process Priority Adjustment
 
       #region Load plugin(s)
 
@@ -341,7 +361,6 @@ namespace InputService
         _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
         _abstractRemoteButtons.CaseSensitive = true;
 
-        List<string> receivers = new List<string>(_pluginReceive.Count);
         foreach (PluginBase plugin in _pluginReceive)
           if (plugin is IRemoteReceiver)
             LoadAbstractDeviceFiles(plugin.Name);
@@ -1576,6 +1595,7 @@ namespace InputService
       _abstractRemoteMode = false;
       _mode               = InputServiceMode.ServerMode;
       _hostComputer       = String.Empty;
+      _processPriority    = "No Change";
       _pluginNameReceive  = null;
       _pluginNameTransmit = String.Empty;
 
@@ -1616,6 +1636,9 @@ namespace InputService
       try { _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value; }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
+      try { _processPriority    = doc.DocumentElement.Attributes["ProcessPriority"].Value; }
+      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+
       try { _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value; }
       catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
 
@@ -1645,6 +1668,7 @@ namespace InputService
           writer.WriteAttributeString("AbstractRemoteMode", _abstractRemoteMode.ToString());
           writer.WriteAttributeString("Mode", Enum.GetName(typeof(InputServiceMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
+          writer.WriteAttributeString("ProcessPriority", _processPriority);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
 
           if (_pluginNameReceive != null)

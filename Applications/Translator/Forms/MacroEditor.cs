@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 #if TRACE
 using System.Diagnostics;
 #endif
@@ -277,7 +276,7 @@ namespace Translator
         }
         else
         {
-          throw new ApplicationException(String.Format("Unknown macro command ({0})", selected));
+          throw new IrssUtils.Exceptions.CommandStructureException(String.Format("Unknown macro command ({0})", selected));
         }
 
         if (!String.IsNullOrEmpty(newCommand))

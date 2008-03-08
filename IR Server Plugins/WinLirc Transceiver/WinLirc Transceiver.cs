@@ -93,11 +93,8 @@ namespace InputService.Plugin
     {
       LoadSettings();
 
-      if (_startServer)
-      {
-        if (!WinLircServer.StartServer(_serverPath))
-          throw new ApplicationException("Failed to start server");
-      }
+      if (_startServer && !WinLircServer.StartServer(_serverPath))
+        throw new InvalidOperationException("Failed to start server");
 
       _server = new WinLircServer(_serverIP, _serverPort, TimeSpan.FromMilliseconds(_buttonReleaseTime));
       _server.CommandEvent += new WinLircServer.CommandEventHandler(CommandHandler);

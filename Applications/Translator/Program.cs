@@ -994,7 +994,7 @@ namespace Translator
     internal static void BlastIR(string fileName, string port)
     {
       if (!_registered)
-        throw new ApplicationException("Cannot Blast, not registered to an active Input Service");
+        throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
 
       using (FileStream file = File.OpenRead(fileName))
       {

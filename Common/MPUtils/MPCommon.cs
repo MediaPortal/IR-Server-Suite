@@ -49,7 +49,7 @@ namespace MPUtils
     {
       GUIDialogNotify dlgNotify = (GUIDialogNotify)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
       if (dlgNotify == null)
-        throw new ApplicationException("Failed to create GUIDialogNotify");
+        throw new InvalidOperationException("Failed to create GUIDialogNotify");
 
       dlgNotify.Reset();
       dlgNotify.ClearAll();
