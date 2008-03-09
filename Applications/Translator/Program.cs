@@ -134,6 +134,18 @@ namespace Translator
         _config = new Configuration();
       }
 
+      foreach (ProgramSettings progSettings in _config.Programs)
+      {
+        AppProfile profile = new AppProfile();
+
+        profile.Name = progSettings.Name;
+        profile.MatchType = AppProfile.DetectionMethod.Executable;
+        profile.MatchParameters = progSettings.FileName;
+        profile.ButtonMappings.AddRange(progSettings.ButtonMappings);
+
+        AppProfile.Save(profile, "C:\\" + profile.Name + ".xml");
+      }
+
       // Setup notify icon ...
       _notifyIcon = new NotifyIcon();
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();

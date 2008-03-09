@@ -20,7 +20,10 @@ using IrssUtils;
 namespace Abstractor
 {
 
-  public partial class MainForm : Form
+  /// <summary>
+  /// Main Form.
+  /// </summary>
+  partial class MainForm : Form
   {
 
     #region Constants
@@ -100,7 +103,7 @@ namespace Abstractor
       "Page Down"
     };*/
 
-    static readonly string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
+    static readonly string AbstractRemoteMapFolder  = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
     static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
 
     #endregion Constants
@@ -118,6 +121,7 @@ namespace Abstractor
       VolumeDown,
       ChannelUp,
       ChannelDown,
+      PreviousChannel,
       Start,
       Back,
       Info,
@@ -158,6 +162,8 @@ namespace Abstractor
       TaskSwap,
       Fullscreen,
       AspectRatio,
+      Display,
+      Preview,
       Setup,
       Music,
       Pictures,
@@ -176,6 +182,8 @@ namespace Abstractor
       ScrollDown,
       PageUp,
       PageDown,
+      PictureInPicture,
+
     }
 
     #endregion Enumerations

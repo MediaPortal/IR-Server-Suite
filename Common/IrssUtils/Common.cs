@@ -122,7 +122,8 @@ namespace IrssUtils
     public const string CmdPrefixEject        = "Eject: ";
     public const string CmdPrefixSound        = "Sound: ";
     public const string CmdPrefixBeep         = "Beep: ";
-    public const string CmdPrefixDisplay      = "Display Mode: ";
+    public const string CmdPrefixDisplayMode  = "Display Mode: ";
+    public const string CmdPrefixDisplayPower = "Display Power: ";
 
     public const string CmdPrefixTranslator   = "Show Translator OSD";
     public const string CmdPrefixVirtualKB    = "Show Virtual Keyboard";
@@ -173,7 +174,8 @@ namespace IrssUtils
     public const string UITextEject           = "Eject CD";
     public const string UITextSound           = "Play Sound";
     public const string UITextBeep            = "Beep";
-    public const string UITextDisplay         = "Display Mode";
+    public const string UITextDisplayMode     = "Display Mode";
+    public const string UITextDisplayPower    = "Display Power";
 
     public const string UITextTranslator      = "Show Translator OSD";
     public const string UITextVirtualKB       = "Show Virtual Keyboard";
@@ -833,6 +835,22 @@ namespace IrssUtils
       int refresh = int.Parse(commands[3]);
 
       Display.ChangeDisplayMode(width, height, bpp, refresh);
+    }
+
+    /// <summary>
+    /// Processes the display power command.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    public static void ProcessDisplayPowerCommand(string command)
+    {
+      if (String.IsNullOrEmpty(command))
+        throw new ArgumentNullException("command");
+
+      int powerState = -1;
+      if (int.TryParse(command, out powerState))
+        Display.SetPowerState(powerState);
+      else
+        throw new Exceptions.CommandStructureException(String.Format("Display Power Command data is not a valid integer: {0}", command));
     }
 
     /// <summary>

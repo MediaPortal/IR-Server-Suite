@@ -90,7 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ttBdaDrvApi_Dll.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

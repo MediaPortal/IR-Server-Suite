@@ -77,7 +77,7 @@ namespace Translator
       comboBoxCommands.Items.Add(Common.UITextSmsKB);
       comboBoxCommands.Items.Add(Common.UITextBeep);
       comboBoxCommands.Items.Add(Common.UITextSound);
-      comboBoxCommands.Items.Add(Common.UITextDisplay);
+      comboBoxCommands.Items.Add(Common.UITextDisplayMode);
       comboBoxCommands.Items.Add(Common.UITextStandby);
       comboBoxCommands.Items.Add(Common.UITextHibernate);
       comboBoxCommands.Items.Add(Common.UITextReboot);
@@ -237,11 +237,11 @@ namespace Translator
           if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixSound + openFileDialog.FileName;
         }
-        else if (selected.Equals(Common.UITextDisplay, StringComparison.OrdinalIgnoreCase))
+        else if (selected.Equals(Common.UITextDisplayMode, StringComparison.OrdinalIgnoreCase))
         {
           DisplayModeCommand displayModeCommand = new DisplayModeCommand();
           if (displayModeCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixDisplay + displayModeCommand.CommandString;
+            newCommand = Common.CmdPrefixDisplayMode + displayModeCommand.CommandString;
         }
         else if (selected.Equals(Common.UITextStandby, StringComparison.OrdinalIgnoreCase))
         {
@@ -542,13 +542,13 @@ namespace Translator
           if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixSound + openFileDialog.FileName;
         }
-        else if (selected.StartsWith(Common.CmdPrefixDisplay, StringComparison.OrdinalIgnoreCase))
+        else if (selected.StartsWith(Common.CmdPrefixDisplayMode, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitDisplayModeCommand(selected.Substring(Common.CmdPrefixDisplay.Length));
+          string[] commands = Common.SplitDisplayModeCommand(selected.Substring(Common.CmdPrefixDisplayMode.Length));
 
           DisplayModeCommand displayModeCommand = new DisplayModeCommand(commands);
           if (displayModeCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixDisplay + displayModeCommand.CommandString;
+            newCommand = Common.CmdPrefixDisplayMode + displayModeCommand.CommandString;
         }
         else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>GBPVR</Name>
+  <MatchType>Executable</MatchType>
+  <MatchParameters>gbpvr.exe</MatchParameters>
+  <ButtonMappings>
+    <ButtonMapping KeyCode="31743" Description="0" Command="Keys: {NUM0}" />
+    <ButtonMapping KeyCode="31742" Description="1" Command="Keys: {NUM1}" />
+    <ButtonMapping KeyCode="31741" Description="2" Command="Keys: {NUM2}" />
+    <ButtonMapping KeyCode="31740" Description="3" Command="Keys: {NUM3}" />
+    <ButtonMapping KeyCode="31739" Description="4" Command="Keys: {NUM4}" />
+    <ButtonMapping KeyCode="31738" Description="5" Command="Keys: {NUM5}" />
+    <ButtonMapping KeyCode="31737" Description="6" Command="Keys: {NUM6}" />
+    <ButtonMapping KeyCode="31736" Description="7" Command="Keys: {NUM7}" />
+    <ButtonMapping KeyCode="31735" Description="8" Command="Keys: {NUM8}" />
+    <ButtonMapping KeyCode="31734" Description="9" Command="Keys: {NUM9}" />
+    <ButtonMapping KeyCode="31713" Description="UP" Command="Keys: {UP}" />
+    <ButtonMapping KeyCode="31712" Description="DOWN" Command="Keys: {DOWN}" />
+    <ButtonMapping KeyCode="31711" Description="LEFT" Command="Keys: {LEFT}" />
+    <ButtonMapping KeyCode="31710" Description="RIGHT" Command="Keys: {RIGHT}" />
+    <ButtonMapping KeyCode="31709" Description="OK" Command="Keys: {ENTER}" />
+    <ButtonMapping KeyCode="31722" Description="REW" Command="Keys: ^d" />
+    <ButtonMapping KeyCode="31723" Description="FF" Command="Keys: ^f" />
+    <ButtonMapping KeyCode="31721" Description="PLAY" Command="Keys: ^p" />
+    <ButtonMapping KeyCode="31719" Description="PAUSE" Command="Keys: ^q" />
+    <ButtonMapping KeyCode="31718" Description="STOP" Command="Keys: ^s" />
+    <ButtonMapping KeyCode="31720" Description="RECORD" Command="Keys: ^k" />
+    <ButtonMapping KeyCode="31716" Description="Track-" Command="Keys: ^{LEFT}" />
+    <ButtonMapping KeyCode="31717" Description="Track+" Command="Keys: ^{RIGHT}" />
+    <ButtonMapping KeyCode="31708" Description="Back" Command="Keys: {ESC}" />
+    <ButtonMapping KeyCode="31728" Description="Info" Command="Keys: ^b" />
+    <ButtonMapping KeyCode="31725" Description="Ch+" Command="Keys: {PGUP}" />
+    <ButtonMapping KeyCode="31724" Description="Ch-" Command="Keys: {PGDN}" />
+    <ButtonMapping KeyCode="31671" Description="Recorded TV" Command="Keys: {F8}" />
+    <ButtonMapping KeyCode="31705" Description="Guide" Command="Keys: {F1}" />
+    <ButtonMapping KeyCode="31706" Description="Live TV" Command="Keys: {F2}" />
+    <ButtonMapping KeyCode="31730" Description="Last Channel" Command="Keys: ^w" />
+    <ButtonMapping KeyCode="31714" Description="Videos" Command="Keys: {F3}" />
+    <ButtonMapping KeyCode="31715" Description="Radio" Command="Keys: {F6}" />
+    <ButtonMapping KeyCode="31732" Description="Audio" Command="Keys: {F4}" />
+    <ButtonMapping KeyCode="31731" Description="Main Menu" Command="Keys: {HOME}" />
+  </ButtonMappings>
+</AppProfile>

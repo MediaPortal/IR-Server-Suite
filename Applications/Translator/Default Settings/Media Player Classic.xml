@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Media Player Classic</Name>
+  <MatchType>Executable</MatchType>
+  <MatchParameters>mplayerc.exe</MatchParameters>
+  <ButtonMappings>
+    <ButtonMapping KeyCode="Up" Description="Up Arrow" Command="Keys: {UP}" />
+    <ButtonMapping KeyCode="Down" Description="Down Arrow" Command="Keys: {DOWN}" />
+    <ButtonMapping KeyCode="Left" Description="Left Arrow" Command="Keys: {LEFT}" />
+    <ButtonMapping KeyCode="Right" Description="Right Arrow" Command="Keys: {RIGHT}" />
+    <ButtonMapping KeyCode="OK" Description="OK" Command="Keys: {ENTER}" />
+    <ButtonMapping KeyCode="Play" Description="Play" Command="Window Message: ACTIVE|*|273|887|0" />
+    <ButtonMapping KeyCode="Pause" Description="Pause" Command="Window Message: ACTIVE|*|273|888|0" />
+    <ButtonMapping KeyCode="PlayPause" Description="Play/Pause" Command="Window Message: ACTIVE|*|157|00000|0" />
+    <ButtonMapping KeyCode="Stop" Description="Stop" Command="Window Message: ACTIVE|*|273|890|0" />
+    <ButtonMapping KeyCode="NextChapter" Description="Next" Command="Window Message: ACTIVE|*|273|165|0" />
+    <ButtonMapping KeyCode="PreviousChapter" Description="Previous" Command="Window Message: ACTIVE|*|273|164|0" />
+    <ButtonMapping KeyCode="DVD" Description="Open DVD" Command="Window Message: ACTIVE|*|273|801|0" />
+    <ButtonMapping KeyCode="Open" Description="Open File" Command="Window Message: ACTIVE|*|273|968|0" />
+    <ButtonMapping KeyCode="Fullscreen" Description="Toggle Fullscreen" Command="Window Message: ACTIVE|*|273|830|0" />
+    <ButtonMapping KeyCode="VolumeUp" Description="Volume Up" Command="Window Message: ACTIVE|*|273|907|0" />
+    <ButtonMapping KeyCode="VolumeDown" Description="Volume Down" Command="Window Message: ACTIVE|*|273|908|0" />
+    <ButtonMapping KeyCode="Mute" Description="Mute" Command="Window Message: ACTIVE|*|273|909|0" />
+    <ButtonMapping KeyCode="Info" Description="Properties" Command="Window Message: ACTIVE|*|273|814|0" />
+    <ButtonMapping KeyCode="Screenshot" Description="Capture Screenshot" Command="Window Message: ACTIVE|*|273|807|0" />
+  </ButtonMappings>
+</AppProfile>

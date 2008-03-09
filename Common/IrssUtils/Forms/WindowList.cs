@@ -19,6 +19,8 @@ namespace IrssUtils.Forms
 
     bool _listClasses;
 
+    Win32.EnumWindowsProc _ewp;
+
     #endregion Variables
 
     #region Properties
@@ -51,6 +53,8 @@ namespace IrssUtils.Forms
       else
         this.Text = "Window List";
 
+      _ewp = new Win32.EnumWindowsProc(AddWindow);
+
       PopulateList();
     }
 
@@ -58,9 +62,7 @@ namespace IrssUtils.Forms
 
     void PopulateList()
     {
-      Win32.EnumWindowsProc ewp = new Win32.EnumWindowsProc(AddWindow);
-
-      Win32.EnumerateWindows(ewp, IntPtr.Zero);
+      Win32.EnumerateWindows(_ewp, IntPtr.Zero);
     }
 
     bool AddWindow(IntPtr hWnd, IntPtr lParam)

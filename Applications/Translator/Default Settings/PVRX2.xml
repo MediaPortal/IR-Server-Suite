@@ -1,5 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>PVRX2</Name>
+  <MatchType>Executable</MatchType>
+  <MatchParameters>pvrx2.exe</MatchParameters>
   <ButtonMappings>
 	<ButtonMapping KeyCode="31743" Description="0" Command="Keys: {NUM0}" />
 	<ButtonMapping KeyCode="31742" Description="1" Command="Keys: {NUM1}" />
@@ -37,4 +40,4 @@
 	<ButtonMapping KeyCode="31732" Description="Audio" Command="Keys: {F4}" />
 	<ButtonMapping KeyCode="31731" Description="Main Menu" Command="Keys: {HOME}" />
   </ButtonMappings>
-</Configuration>
+</AppProfile>

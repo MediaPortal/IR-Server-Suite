@@ -4,8 +4,10 @@ using System.Windows.Forms;
 
 namespace Abstractor
 {
+
   static class Program
   {
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -16,5 +18,7 @@ namespace Abstractor
       Application.SetCompatibleTextRenderingDefault(false);
       Application.Run(new MainForm());
     }
+
   }
+
 }

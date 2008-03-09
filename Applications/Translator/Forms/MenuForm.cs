@@ -106,6 +106,8 @@ namespace Translator
 
     List<Menus> _menuStack;
 
+    Win32.EnumWindowsProc _ewp;
+
     #endregion Variables
 
     /// <summary>
@@ -114,6 +116,8 @@ namespace Translator
     public MenuForm()
     {
       InitializeComponent();
+
+      _ewp = new Win32.EnumWindowsProc(AddTask);
 
       CreateMainImageList();
 
@@ -753,42 +757,53 @@ namespace Translator
       if (index >= listViewMenu.Items.Count)
         return;
 
-      ListViewItem selectedItem = listViewMenu.Items[index];
-            
-      if (selectedItem.Tag == null)
+      try
       {
-        return;
-      }
-      else if (selectedItem.Tag is Menus)
-      {
-        SwitchMenu((Menus)selectedItem.Tag);
-      }
-      else if (selectedItem.Tag is IntPtr)
-      {
-        IntPtr handle = (IntPtr)selectedItem.Tag;
+        ListViewItem selectedItem = listViewMenu.Items[index];
 
-        switch (GetCurrentMenu())
+        if (selectedItem.Tag == null)
         {
-          case Menus.Tasks:           TaskSwap(handle);   break;
-          case Menus.Windows:         TaskSwap(handle);   break;
-          case Menus.WindowActivate:  TaskSwap(handle);   break;
-          case Menus.WindowClose:     Close(handle);      break;
-          case Menus.WindowMaximize:  Maximize(handle);   break;
-          case Menus.WindowMinimize:  Minimize(handle);   break;
+          return;
+        }
+        else if (selectedItem.Tag is Menus)
+        {
+          SwitchMenu((Menus)selectedItem.Tag);
+        }
+        else if (selectedItem.Tag is IntPtr)
+        {
+          IntPtr handle = (IntPtr)selectedItem.Tag;
+
+          switch (GetCurrentMenu())
+          {
+            case Menus.Tasks:           TaskSwap(handle); break;
+            case Menus.Windows:         TaskSwap(handle); break;
+            case Menus.WindowActivate:  TaskSwap(handle); break;
+            case Menus.WindowClose:     Close(handle);    break;
+            case Menus.WindowMaximize:  Maximize(handle); break;
+            case Menus.WindowMinimize:  Minimize(handle); break;
+          }
+        }
+        else if (selectedItem.Tag is string)
+        {
+          string tag = (string)selectedItem.Tag;
+
+          if (tag.StartsWith(TagLaunch, StringComparison.OrdinalIgnoreCase))
+            Launch(tag.Substring(TagLaunch.Length));
+          else if (tag.StartsWith(TagMacro, StringComparison.OrdinalIgnoreCase))
+            RunMacro(tag.Substring(TagMacro.Length));
+          else if (tag.StartsWith(TagCommand, StringComparison.OrdinalIgnoreCase))
+            Command(tag.Substring(TagCommand.Length));
+          else if (tag.StartsWith(TagEject, StringComparison.OrdinalIgnoreCase))
+            Eject(tag.Substring(TagEject.Length));
+        }
+        else
+        {
+          throw new InvalidOperationException("Unexpected selectedItem Tag data type");
         }
       }
-      else if (selectedItem.Tag is string)
+      catch (Exception ex)
       {
-        string tag = (string)selectedItem.Tag;
-
-        if (tag.StartsWith(TagLaunch, StringComparison.OrdinalIgnoreCase))
-          Launch(tag.Substring(TagLaunch.Length));
-        else if (tag.StartsWith(TagMacro, StringComparison.OrdinalIgnoreCase))
-          RunMacro(tag.Substring(TagMacro.Length));
-        else if (tag.StartsWith(TagCommand, StringComparison.OrdinalIgnoreCase))
-          Command(tag.Substring(TagCommand.Length));
-        else if (tag.StartsWith(TagEject, StringComparison.OrdinalIgnoreCase))
-          Eject(tag.Substring(TagEject.Length));
+        IrssLog.Error(ex);
       }
     }
 
@@ -849,9 +864,7 @@ namespace Translator
 
     void PopulateTaskList()
     {
-      Win32.EnumWindowsProc ewp = new Win32.EnumWindowsProc(AddTask);
-
-      Win32.EnumerateWindows(ewp, IntPtr.Zero);
+      Win32.EnumerateWindows(_ewp, IntPtr.Zero);
     }
 
     bool AddTask(IntPtr hWnd, IntPtr lParam)

@@ -91,6 +91,12 @@
     <Compile Include="Forms\CloseProgramCommand.Designer.cs">
       <DependentUpon>CloseProgramCommand.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\DisplayPowerCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DisplayPowerCommand.Designer.cs">
+      <DependentUpon>DisplayPowerCommand.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\VariablesFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -245,6 +251,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CloseProgramCommand.resx">
       <DependentUpon>CloseProgramCommand.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DisplayPowerCommand.resx">
+      <DependentUpon>DisplayPowerCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\VariablesFileDialog.resx">

@@ -1,5 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Meedio</Name>
+  <MatchType>Executable</MatchType>
+  <MatchParameters>meedio.exe</MatchParameters>
   <ButtonMappings>
 	<ButtonMapping KeyCode="Up" Description="UP" Command="Window Message: CLASS|H2-WM-COMMAND|273|1|0" />
 	<ButtonMapping KeyCode="Down" Description="DOWN" Command="Window Message: CLASS|H2-WM-COMMAND|273|2|0" />
@@ -54,4 +57,4 @@
 	<ButtonMapping KeyCode="_Radio" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
 	<ButtonMapping KeyCode="_Print" Description="" Command="Window Message: CLASS|H2-WM-COMMAND|273|4|0" />
   </ButtonMappings>
-</Configuration>
+</AppProfile>

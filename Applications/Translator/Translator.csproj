@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="ButtonMapping.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="AppProfile.cs" />
     <Compile Include="Forms\ButtonMappingForm.cs">
       <SubType>Form</SubType>
     </Compile>

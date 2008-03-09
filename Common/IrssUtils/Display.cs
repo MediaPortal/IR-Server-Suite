@@ -23,6 +23,13 @@ namespace IrssUtils
     const int DISP_CHANGE_RESTART     = 1;
     const int DISP_CHANGE_FAILED      = -1;
 
+    const int SC_MONITORPOWER         = 0xF170;
+    const int WM_SYSCOMMAND           = 0x0112;
+
+    const int MONITOR_ON              = -1;
+    const int MONITOR_STANBY          = 1;
+    const int MONITOR_OFF             = 2;
+
     #endregion Constants
 
     #region Interop
@@ -85,6 +92,10 @@ namespace IrssUtils
     
     #endregion Structures
 
+    /// <summary>
+    /// Gets the device mode.
+    /// </summary>
+    /// <returns>Current device mode.</returns>
     static DEVMODE GetDevMode()
     {
       DEVMODE devMode = new DEVMODE();
@@ -176,6 +187,19 @@ namespace IrssUtils
       int set = ChangeDisplaySettings(ref devMode, CDS_UPDATEREGISTRY);
       if (set != DISP_CHANGE_SUCCESSFUL)
         throw new InvalidOperationException(String.Format("Setting display mode failed ({0})", set));
+    }
+
+    /// <summary>
+    /// Sets the display power state.
+    /// </summary>
+    /// <param name="powerState">New display power state.</param>
+    public static void SetPowerState(int powerState)
+    {
+      IntPtr desktop = Win32.GetDesktopWindowHandle();
+      if (desktop == IntPtr.Zero)
+        throw new InvalidOperationException("Failed to get handle to dekstop");
+
+      Win32.SendWindowsMessage(desktop, WM_SYSCOMMAND, SC_MONITORPOWER, powerState);
     }
 
   }

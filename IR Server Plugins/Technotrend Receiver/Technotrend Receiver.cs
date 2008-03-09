@@ -160,7 +160,7 @@ namespace InputService.Plugin
 
     #region Delegates
 
-    delegate void PIRCBFCN(IntPtr Context, IntPtr Buf);
+    delegate void PIRCBFCN(IntPtr Context, ref int Buf);
 
     #endregion Delegates
 
@@ -188,9 +188,9 @@ namespace InputService.Plugin
     RemoteHandler _remoteButtonHandler;
 
     List<IntPtr> _handles;
-    List<PIRCBFCN> _delegates;
+    PIRCBFCN _callback;
 
-    int _lastPacketID;
+    int _lastTrigger        = -1;
     int _lastCode           = -1;
     DateTime _lastCodeTime  = DateTime.Now;
 
@@ -203,8 +203,8 @@ namespace InputService.Plugin
     /// </summary>
     public TechnotrendReceiver()
     {
-      _handles = new List<IntPtr>();
-      _delegates = new List<PIRCBFCN>();
+      _handles  = new List<IntPtr>();
+      _callback = new PIRCBFCN(OnIRCode);
     }
 
     #endregion Constructor
@@ -243,38 +243,31 @@ namespace InputService.Plugin
     /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
     public override bool Detect()
     {
-      try
+      IntPtr handle;
+      TYPE_RET_VAL error;
+
+      for (DEVICE_CAT cat = DEVICE_CAT.UNKNOWN; cat <= DEVICE_CAT.USB_2_PINNACLE; cat++)
       {
-        IntPtr handle;
-        TYPE_RET_VAL error;
-
-        for (DEVICE_CAT cat = DEVICE_CAT.UNKNOWN; cat <= DEVICE_CAT.USB_2_PINNACLE; cat++)
+        if (bdaapiEnumerate(cat) > 0)
         {
-          if (bdaapiEnumerate(cat) > 0)
+          handle = bdaapiOpen(cat, 0);
+          try
           {
-            handle = bdaapiOpen(cat, 0);
-            try
+            if ((handle != IntPtr.Zero) && (handle.ToInt32() != -1))
             {
-              if ((handle != IntPtr.Zero) && (handle.ToInt32() != -1))
-              {
-                PIRCBFCN callback = new PIRCBFCN(OnIRCode);
-                error = bdaapiOpenIR(handle, callback, new IntPtr(1));
+              error = bdaapiOpenIR(handle, _callback, IntPtr.Zero);
 
-                bdaapiClose(handle);
-
-                if (error == TYPE_RET_VAL.RET_SUCCESS)
-                  return true;
-              }
-            }
-            catch
-            {
               bdaapiClose(handle);
+
+              if (error == TYPE_RET_VAL.RET_SUCCESS)
+                return true;
             }
           }
+          catch
+          {
+            bdaapiClose(handle);
+          }
         }
-      }
-      catch
-      {
       }
 
       return false;
@@ -295,13 +288,10 @@ namespace InputService.Plugin
           handle = bdaapiOpen(cat, 0);
           if ((handle != IntPtr.Zero) && (handle.ToInt32() != -1))
           {
-            PIRCBFCN callback = new PIRCBFCN(OnIRCode);
-            error = bdaapiOpenIR(handle, callback, new IntPtr(1));
-
+            error = bdaapiOpenIR(handle, _callback, IntPtr.Zero);
             if (error == TYPE_RET_VAL.RET_SUCCESS)
             {
               _handles.Add(handle);
-              _delegates.Add(callback);
             }
             else
             {
@@ -343,7 +333,6 @@ namespace InputService.Plugin
       }
       
       _handles.Clear();
-      _delegates.Clear();
     }
 
     /// <summary>
@@ -361,29 +350,57 @@ namespace InputService.Plugin
     /// </summary>
     /// <param name="Context">The context.</param>
     /// <param name="Buf">The buffer.</param>
-    void OnIRCode(IntPtr Context, IntPtr Buf)
+    void OnIRCode(IntPtr Context, ref int Buf)
     {
-      if (Buf == IntPtr.Zero)
-        return;
+      //if (Buf == IntPtr.Zero)
+        //return;
 
-      int code = Marshal.ReadInt32(Buf);
-      int trigger = code & 0x800;
-
-      code = code & 0x3F;
-
-      DateTime now = DateTime.Now;
-      TimeSpan timeSpan = now - _lastCodeTime;
-
-      if (code != _lastCode || trigger != _lastPacketID || timeSpan.Milliseconds >= 250)
+      try
       {
-        if (_remoteButtonHandler != null)
-          _remoteButtonHandler(this.Name, code.ToString());
+        int code = Buf;
+        /*
+        try
+        {
+          code = Marshal.ReadInt32(Buf);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine("Marshal.ReadInt32(Buf) failed, trying ToInt32 method ...");
+          Console.WriteLine(ex.ToString());
+        }
 
-        _lastCodeTime = now;
+        try
+        {
+          code = Buf.ToInt32();
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine("Buf.ToInt32() method failed.");
+          Console.WriteLine(ex.ToString());
+        }
+        */
+        int trigger = code & 0x800;
+        code = code & 0x3F;
+
+        DateTime now = DateTime.Now;
+        TimeSpan timeSpan = now - _lastCodeTime;
+
+        if (code != _lastCode || trigger != _lastTrigger || timeSpan.Milliseconds >= 250)
+        {
+          if (_remoteButtonHandler != null)
+            _remoteButtonHandler(this.Name, code.ToString());
+
+          _lastCodeTime = now;
+        }
+
+        _lastCode     = code;
+        _lastTrigger  = trigger;
+
       }
-
-      _lastCode = code;
-      _lastPacketID = trigger;
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
     }
     
     #endregion Implementation
