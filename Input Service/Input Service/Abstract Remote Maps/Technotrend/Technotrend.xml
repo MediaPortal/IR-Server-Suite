@@ -36,5 +36,7 @@
   <RemoteTable RawCode="87" AbstractButton="Blue" />
   <RemoteTable RawCode="90" AbstractButton="TV" />
   <RemoteTable RawCode="98" AbstractButton="Guide" />
+  <RemoteTable RawCode="97" AbstractButton="Menu" />
+  <RemoteTable RawCode="103" AbstractButton="Setup" />
 <RemoteTable RawCode="66" AbstractButton="Refresh" />
 </DocumentElement>

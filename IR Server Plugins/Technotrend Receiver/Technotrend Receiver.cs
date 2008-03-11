@@ -17,38 +17,6 @@ namespace InputService.Plugin
   public class TechnotrendReceiver : PluginBase, IRemoteReceiver
   {
 
-    #region Debug
-
-    [STAThread]
-    static void Main()
-    {
-      try
-      {
-        TechnotrendReceiver c = new TechnotrendReceiver();
-
-        //c.Configure(null);
-
-        //c.RemoteCallback += new RemoteHandler(xRemote);
-
-        c.Start();
-
-        Console.ReadKey();
-        //System.Windows.Forms.Application.Run();
-
-        c.Stop();
-        c = null;
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-
-      Console.ReadKey();
-    }
-
-    #endregion Debug
-
-
     #region Enumerations
 
     /// <summary>
@@ -192,7 +160,6 @@ namespace InputService.Plugin
 
     RemoteHandler _remoteButtonHandler;
 
-    int _lastTrigger        = -1;
     int _lastCode           = -1;
     DateTime _lastCodeTime  = DateTime.Now;
 
@@ -294,22 +261,23 @@ namespace InputService.Plugin
       IntPtr handle;
       TYPE_RET_VAL error;
 
+      int context = 1;
+
       for (DEVICE_CAT cat = DEVICE_CAT.UNKNOWN; cat <= DEVICE_CAT.USB_2_DSS; cat++)
       {
-        if (bdaapiEnumerate(cat) > 0)
+        uint enumerate = bdaapiEnumerate(cat);
+
+        for (uint index = 0; index < enumerate; index++)
         {
-          handle = bdaapiOpen(cat, 0);
+          handle = bdaapiOpen(cat, index);
+
           if ((handle != IntPtr.Zero) && (handle.ToInt32() != -1))
           {
-            error = bdaapiOpenIR(handle, _callbackPtr, 0);
+            error = bdaapiOpenIR(handle, _callbackPtr, context++);
             if (error == TYPE_RET_VAL.RET_SUCCESS)
-            {
               _handles.Add(handle);
-            }
             else
-            {
               bdaapiClose(handle);
-            }
           }
         }
       }
@@ -367,27 +335,31 @@ namespace InputService.Plugin
     {
       try
       {
-        int code    = ((int)buffer[0]) & 0x00FF;
-        int trigger = ((int)buffer[0]) & 0x0800;
+        int code = ((int)buffer[0]) & 0x00FF;
 
         DateTime now = DateTime.Now;
         TimeSpan timeSpan = now - _lastCodeTime;
 
-        if (code != _lastCode || trigger != _lastTrigger || timeSpan.Milliseconds >= 250)
+        if (code != _lastCode || timeSpan.Milliseconds >= 250)
         {
           if (_remoteButtonHandler != null)
-            _remoteButtonHandler("Technotrend", code.ToString());
+            _remoteButtonHandler(this.Name, code.ToString());
 
           _lastCodeTime = now;
         }
 
-        _lastCode     = code;
-        _lastTrigger  = trigger;
+        _lastCode = code;
       }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
       catch
       {
-        //MessageBox.Show(ex.ToString());
       }
+#endif
     }
 
     #endregion Implementation
