@@ -158,10 +158,16 @@ namespace InputService.Plugin
     /// </returns>
     public override bool Detect()
     {
-      InitDeviceList();
+      try
+      {
+        InitDeviceList();
 
-      if (_deviceList.Count != 0)
-        return true;
+        if (_deviceList.Count != 0)
+          return true;
+      }
+      catch
+      {
+      }
 
       return false;
     }

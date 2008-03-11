@@ -7,9 +7,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-
-using Microsoft.Win32.SafeHandles;
 
 namespace InputService.Plugin
 {
@@ -22,11 +19,6 @@ namespace InputService.Plugin
 
     #region Debug
 
-    static void xRemote(string deviceName, string code)
-    {
-      Console.WriteLine("Remote: {0}", code);
-    }
-
     [STAThread]
     static void Main()
     {
@@ -36,11 +28,12 @@ namespace InputService.Plugin
 
         //c.Configure(null);
 
-        c.RemoteCallback += new RemoteHandler(xRemote);
+        //c.RemoteCallback += new RemoteHandler(xRemote);
 
         c.Start();
 
-        Application.Run();
+        Console.ReadKey();
+        //System.Windows.Forms.Application.Run();
 
         c.Stop();
         c = null;
@@ -82,7 +75,11 @@ namespace InputService.Plugin
       /// <summary>
       /// USB 2.0 Pinnacle.
       /// </summary>
-      USB_2_PINNACLE
+      USB_2_PINNACLE,
+      /// <summary>
+      /// USB 2.0 DSS.
+      /// </summary>
+      USB_2_DSS,
     }
 
     /// <summary>
@@ -153,42 +150,47 @@ namespace InputService.Plugin
       /// <summary>
       /// f operation finished with ilegal pointer.
       /// </summary>
-      RET_ERROR_POINTER
+      RET_ERROR_POINTER,
     }
 
     #endregion Enumerations
 
     #region Delegates
 
-    delegate void PIRCBFCN(IntPtr Context, ref int Buf);
+    /// <summary>
+    /// Called by the Technotrend api dll to signal a remote button has been received.
+    /// </summary>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    unsafe delegate void CallbackDef(int context, uint* buffer);
 
     #endregion Delegates
 
     #region Interop
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiEnumerate")]
-    static extern UInt32 bdaapiEnumerate(DEVICE_CAT DevType);
+    static extern UInt32 bdaapiEnumerate(DEVICE_CAT deviceType);
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiOpen")]
-    static extern IntPtr bdaapiOpen(DEVICE_CAT DevType, uint uiDevID);
+    static extern IntPtr bdaapiOpen(DEVICE_CAT deviceType, uint deviceId);
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiClose")]
-    static extern void bdaapiClose(IntPtr hOpen);
+    static extern void bdaapiClose(IntPtr handle);
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiOpenIR")]
-    static extern TYPE_RET_VAL bdaapiOpenIR(IntPtr hOpen, PIRCBFCN CallbackFcn, IntPtr Context);
+    static extern TYPE_RET_VAL bdaapiOpenIR(IntPtr handle, IntPtr callback, int context);
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiCloseIR")]
-    static extern TYPE_RET_VAL bdaapiCloseIR(IntPtr hOpen);
+    static extern TYPE_RET_VAL bdaapiCloseIR(IntPtr handle);
 
     #endregion Interop
 
     #region Variables
 
-    RemoteHandler _remoteButtonHandler;
-
     List<IntPtr> _handles;
-    PIRCBFCN _callback;
+    CallbackDef _callback;
+    IntPtr _callbackPtr;
+
+    RemoteHandler _remoteButtonHandler;
 
     int _lastTrigger        = -1;
     int _lastCode           = -1;
@@ -203,8 +205,13 @@ namespace InputService.Plugin
     /// </summary>
     public TechnotrendReceiver()
     {
-      _handles  = new List<IntPtr>();
-      _callback = new PIRCBFCN(OnIRCode);
+      _handles        = new List<IntPtr>();
+
+      unsafe
+      {
+        _callback     = new CallbackDef(OnIRCode);
+        _callbackPtr  = Marshal.GetFunctionPointerForDelegate(_callback);
+      }
     }
 
     #endregion Constructor
@@ -246,28 +253,34 @@ namespace InputService.Plugin
       IntPtr handle;
       TYPE_RET_VAL error;
 
-      for (DEVICE_CAT cat = DEVICE_CAT.UNKNOWN; cat <= DEVICE_CAT.USB_2_PINNACLE; cat++)
+      try
       {
-        if (bdaapiEnumerate(cat) > 0)
+        for (DEVICE_CAT cat = DEVICE_CAT.UNKNOWN; cat <= DEVICE_CAT.USB_2_DSS; cat++)
         {
-          handle = bdaapiOpen(cat, 0);
-          try
+          if (bdaapiEnumerate(cat) > 0)
           {
-            if ((handle != IntPtr.Zero) && (handle.ToInt32() != -1))
+            handle = bdaapiOpen(cat, 0);
+            try
             {
-              error = bdaapiOpenIR(handle, _callback, IntPtr.Zero);
+              if ((handle != IntPtr.Zero) && (handle.ToInt32() != -1))
+              {
+                error = bdaapiOpenIR(handle, _callbackPtr, 0);
 
+                bdaapiClose(handle);
+
+                if (error == TYPE_RET_VAL.RET_SUCCESS)
+                  return true;
+              }
+            }
+            catch
+            {
               bdaapiClose(handle);
-
-              if (error == TYPE_RET_VAL.RET_SUCCESS)
-                return true;
             }
           }
-          catch
-          {
-            bdaapiClose(handle);
-          }
         }
+      }
+      catch
+      {
       }
 
       return false;
@@ -281,14 +294,14 @@ namespace InputService.Plugin
       IntPtr handle;
       TYPE_RET_VAL error;
 
-      for (DEVICE_CAT cat = DEVICE_CAT.UNKNOWN; cat <= DEVICE_CAT.USB_2_PINNACLE; cat++)
+      for (DEVICE_CAT cat = DEVICE_CAT.UNKNOWN; cat <= DEVICE_CAT.USB_2_DSS; cat++)
       {
         if (bdaapiEnumerate(cat) > 0)
         {
           handle = bdaapiOpen(cat, 0);
           if ((handle != IntPtr.Zero) && (handle.ToInt32() != -1))
           {
-            error = bdaapiOpenIR(handle, _callback, IntPtr.Zero);
+            error = bdaapiOpenIR(handle, _callbackPtr, 0);
             if (error == TYPE_RET_VAL.RET_SUCCESS)
             {
               _handles.Add(handle);
@@ -331,7 +344,7 @@ namespace InputService.Plugin
         bdaapiCloseIR(handle);
         bdaapiClose(handle);
       }
-      
+
       _handles.Clear();
     }
 
@@ -346,41 +359,16 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Called when an IR Command is received.
+    /// Called when an IR code is received.
     /// </summary>
-    /// <param name="Context">The context.</param>
-    /// <param name="Buf">The buffer.</param>
-    void OnIRCode(IntPtr Context, ref int Buf)
+    /// <param name="context">The context.</param>
+    /// <param name="buffer">The code.</param>
+    unsafe void OnIRCode(int context, uint *buffer)
     {
-      //if (Buf == IntPtr.Zero)
-        //return;
-
       try
       {
-        int code = Buf;
-        /*
-        try
-        {
-          code = Marshal.ReadInt32(Buf);
-        }
-        catch (Exception ex)
-        {
-          Console.WriteLine("Marshal.ReadInt32(Buf) failed, trying ToInt32 method ...");
-          Console.WriteLine(ex.ToString());
-        }
-
-        try
-        {
-          code = Buf.ToInt32();
-        }
-        catch (Exception ex)
-        {
-          Console.WriteLine("Buf.ToInt32() method failed.");
-          Console.WriteLine(ex.ToString());
-        }
-        */
-        int trigger = code & 0x800;
-        code = code & 0x3F;
+        int code    = ((int)buffer[0]) & 0x00FF;
+        int trigger = ((int)buffer[0]) & 0x0800;
 
         DateTime now = DateTime.Now;
         TimeSpan timeSpan = now - _lastCodeTime;
@@ -388,21 +376,20 @@ namespace InputService.Plugin
         if (code != _lastCode || trigger != _lastTrigger || timeSpan.Milliseconds >= 250)
         {
           if (_remoteButtonHandler != null)
-            _remoteButtonHandler(this.Name, code.ToString());
+            _remoteButtonHandler("Technotrend", code.ToString());
 
           _lastCodeTime = now;
         }
 
         _lastCode     = code;
         _lastTrigger  = trigger;
-
       }
-      catch (Exception ex)
+      catch
       {
-        Console.WriteLine(ex.ToString());
+        //MessageBox.Show(ex.ToString());
       }
     }
-    
+
     #endregion Implementation
 
   }

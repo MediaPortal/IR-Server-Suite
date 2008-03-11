@@ -243,17 +243,21 @@ namespace InputService.Plugin
     /// </returns>
     public override bool Detect()
     {
-      LoadSettings();
+      try
+      {
+        LoadSettings();
 
-      if (Connect(_irTransServerAddress, _irTransServerPort))
-      {
-        _socket.Close();
-        return true;
+        if (Connect(_irTransServerAddress, _irTransServerPort))
+        {
+          _socket.Close();
+          return true;
+        }
       }
-      else
+      catch
       {
-        return false;
       }
+
+      return false;
     }
 
     /// <summary>

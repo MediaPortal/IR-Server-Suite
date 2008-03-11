@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 using InputService.Plugin;
@@ -210,7 +211,8 @@ namespace InputService.Configuration
 
     private void toolStripButtonDetect_Click(object sender, EventArgs e)
     {
-      Detect();
+      // TODO: Place on a seperate thread
+      Detect();      
     }
     private void toolStripButtonAdvancedSettings_Click(object sender, EventArgs e)
     {

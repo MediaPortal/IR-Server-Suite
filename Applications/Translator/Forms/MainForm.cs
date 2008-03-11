@@ -105,6 +105,9 @@ namespace Translator
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainForm"/> class.
+    /// </summary>
     public MainForm()
     {
       InitializeComponent();
@@ -361,27 +364,28 @@ namespace Translator
         {
           if (MessageBox.Show(this, String.Format("Do you want to use the default settings for {0} ({1})?", progSettings.Name, programFile), "Default settings available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           {
-            List<ButtonMapping> mappings = LoadDefaultSettings(settingsFile);
+            AppProfile appProfile = LoadDefaultSettings(settingsFile);
 
-            if (mappings != null)
+            if (appProfile != null)
             {
-              progSettings.ButtonMappings.AddRange(mappings);
+              progSettings.ButtonMappings.AddRange(appProfile.ButtonMappings);
 
               RefreshButtonList();
             }
           }
         }
         */
+
       }
     }
 
-    List<ButtonMapping> LoadDefaultSettings(string settingsFile)
+    AppProfile LoadDefaultSettings(string settingsFile)
     {
       try
       {
-        XmlSerializer reader = new XmlSerializer(typeof(List<ButtonMapping>));
+        XmlSerializer reader = new XmlSerializer(typeof(AppProfile));
         using (StreamReader file = new StreamReader(settingsFile))
-          return (List<ButtonMapping>)reader.Deserialize(file);
+          return (AppProfile)reader.Deserialize(file);
       }
       catch (Exception ex)
       {

@@ -1,0 +1,40 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="77" AbstractButton="Up" />
+  <RemoteTable RawCode="81" AbstractButton="Down" />
+  <RemoteTable RawCode="78" AbstractButton="Left" />
+  <RemoteTable RawCode="80" AbstractButton="Right" />
+  <RemoteTable RawCode="79" AbstractButton="OK" />
+  <RemoteTable RawCode="101" AbstractButton="VolumeUp" />
+  <RemoteTable RawCode="102" AbstractButton="VolumeDown" />
+  <RemoteTable RawCode="99" AbstractButton="ChannelUp" />
+  <RemoteTable RawCode="100" AbstractButton="ChannelDown" />
+  <RemoteTable RawCode="83" AbstractButton="Back" />
+  <RemoteTable RawCode="82" AbstractButton="Info" />
+  <RemoteTable RawCode="88" AbstractButton="Mute" />
+  <RemoteTable RawCode="76" AbstractButton="Number0" />
+  <RemoteTable RawCode="67" AbstractButton="Number1" />
+  <RemoteTable RawCode="68" AbstractButton="Number2" />
+  <RemoteTable RawCode="69" AbstractButton="Number3" />
+  <RemoteTable RawCode="70" AbstractButton="Number4" />
+  <RemoteTable RawCode="71" AbstractButton="Number5" />
+  <RemoteTable RawCode="72" AbstractButton="Number6" />
+  <RemoteTable RawCode="73" AbstractButton="Number7" />
+  <RemoteTable RawCode="74" AbstractButton="Number8" />
+  <RemoteTable RawCode="75" AbstractButton="Number9" />
+  <RemoteTable RawCode="123" AbstractButton="Play" />
+  <RemoteTable RawCode="126" AbstractButton="Pause" />
+  <RemoteTable RawCode="124" AbstractButton="Stop" />
+  <RemoteTable RawCode="127" AbstractButton="FastForward" />
+  <RemoteTable RawCode="125" AbstractButton="Rewind" />
+  <RemoteTable RawCode="122" AbstractButton="Record" />
+  <RemoteTable RawCode="65" AbstractButton="Power" />
+  <RemoteTable RawCode="89" AbstractButton="Teletext" />
+  <RemoteTable RawCode="84" AbstractButton="Red" />
+  <RemoteTable RawCode="85" AbstractButton="Green" />
+  <RemoteTable RawCode="86" AbstractButton="Yellow" />
+  <RemoteTable RawCode="87" AbstractButton="Blue" />
+  <RemoteTable RawCode="90" AbstractButton="TV" />
+  <RemoteTable RawCode="98" AbstractButton="Guide" />
+<RemoteTable RawCode="66" AbstractButton="Refresh" />
+</DocumentElement>

@@ -336,10 +336,10 @@ namespace Translator
       item.Tag = Menus.Power;
       listViewMenu.Items.Add(item);
 
-      //item = new ListViewItem(UITextAudio, 2);
-      //item.ToolTipText = DescAudio;
-      //item.Tag = Menus.Audio;
-      //listViewMenu.Items.Add(item);
+      item = new ListViewItem(UITextAudio, 2);
+      item.ToolTipText = DescAudio;
+      item.Tag = Menus.Audio;
+      listViewMenu.Items.Add(item);
 
       item = new ListViewItem(UITextEject, 3);
       item.ToolTipText = DescEject;

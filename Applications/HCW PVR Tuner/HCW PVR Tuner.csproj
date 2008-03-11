@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HcwPvrTuner.exe.manifest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

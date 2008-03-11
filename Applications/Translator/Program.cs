@@ -47,6 +47,7 @@ namespace Translator
     static ClientMessageSink _handleMessage;
 
     static bool _inConfiguration;
+    static bool _menuFormVisible;
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
 
@@ -79,7 +80,6 @@ namespace Translator
 
     static NotifyIcon _notifyIcon;
     static MainForm _mainForm;
-    static MenuForm _menuForm;
     static Client _client;
     static Configuration _config;
     static CopyDataWM _copyDataWM;
@@ -133,7 +133,8 @@ namespace Translator
         IrssLog.Warn(String.Format("Failed to load configuration file ({0}), creating new configuration", ConfigFile));
         _config = new Configuration();
       }
-
+      
+      /*
       foreach (ProgramSettings progSettings in _config.Programs)
       {
         AppProfile profile = new AppProfile();
@@ -145,20 +146,18 @@ namespace Translator
 
         AppProfile.Save(profile, "C:\\" + profile.Name + ".xml");
       }
+      */
+
+      // Setup the main form ...
+      _mainForm = new MainForm();
 
       // Setup notify icon ...
       _notifyIcon = new NotifyIcon();
-      _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
+      _notifyIcon.ContextMenuStrip = new ContextMenuStrip(_mainForm.Container);
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Connecting ...";
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
       _notifyIcon.Visible = false;
-
-      // Setup the Translator Menu ...
-      _menuForm = new MenuForm();
-
-      // Setup the main form ...
-      _mainForm = new MainForm();
 
       // Start server communications ...
       bool clientStarted = false;
@@ -321,7 +320,7 @@ namespace Translator
     {
       IrssLog.Info("Show OSD");
 
-      if (_menuForm.Visible)
+      if (_menuFormVisible)
       {
         IrssLog.Info("OSD already visible");
       }
@@ -337,7 +336,12 @@ namespace Translator
     {
       try
       {
-        _menuForm.ShowDialog();
+        _menuFormVisible = true;
+
+        using (MenuForm menuForm = new MenuForm())
+          menuForm.ShowDialog();
+
+        _menuFormVisible = false;
       }
       catch (Exception ex)
       {
@@ -521,26 +525,26 @@ namespace Translator
           case "Volume Up":
             // TODO: Replace with Volume Commands
             Win32.SendWindowsMessage(
-              Win32.ForegroundWindow(),
+              Win32.GetDesktopWindowHandle(),
               (int)Win32.WindowsMessage.WM_APPCOMMAND,
-              (int)Win32.AppCommand.APPCOMMAND_VOLUME_UP,
-              0);
+              0,
+              65536 * (int)Win32.AppCommand.APPCOMMAND_VOLUME_UP);
             break;
 
           case "Volume Down":
             Win32.SendWindowsMessage(
-              Win32.ForegroundWindow(),
+              Win32.GetDesktopWindowHandle(),
               (int)Win32.WindowsMessage.WM_APPCOMMAND,
-              (int)Win32.AppCommand.APPCOMMAND_VOLUME_DOWN,
-              0);
+              0,
+              65536 * (int)Win32.AppCommand.APPCOMMAND_VOLUME_DOWN);
             break;
 
           case "Volume Mute":
             Win32.SendWindowsMessage(
-              Win32.ForegroundWindow(),
+              Win32.GetDesktopWindowHandle(),
               (int)Win32.WindowsMessage.WM_APPCOMMAND,
-              (int)Win32.AppCommand.APPCOMMAND_VOLUME_MUTE,
-              0);
+              0,
+              65536 * (int)Win32.AppCommand.APPCOMMAND_VOLUME_MUTE);
             break;
 
           default:

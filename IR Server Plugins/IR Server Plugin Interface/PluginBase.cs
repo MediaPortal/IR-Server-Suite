@@ -60,6 +60,7 @@ namespace InputService.Plugin
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// This method should not throw exceptions.
     /// </summary>
     /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
     public virtual bool Detect() { return false; }
