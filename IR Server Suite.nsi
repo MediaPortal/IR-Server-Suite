@@ -304,6 +304,19 @@ Section "-Core"
   ; Use the all users context
   SetShellVarContext all
 
+  ; Create install directory
+  CreateDirectory "$DIR_INSTALL"
+
+  ; Write documentation
+!ifdef DEBUG
+  DetailPrint "Warning: Documentation is not included in debug builds"
+!else
+  SetOutPath "$DIR_INSTALL"
+  SetOverwrite ifnewer
+  File "Documentation\${PRODUCT_NAME}.chm"
+!endif
+
+  ; Create app data directories
   CreateDirectory "$APPDATA\${PRODUCT_NAME}"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Logs"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR Commands"
@@ -779,11 +792,6 @@ Section "-Complete"
 
   ; Use the all users context
   SetShellVarContext all
-
-  ; Write documentation
-  SetOutPath "$DIR_INSTALL"
-  SetOverwrite ifnewer
-  File "Documentation\${PRODUCT_NAME}.chm"
 
   ; Create website link file
   WriteIniStr "$DIR_INSTALL\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
