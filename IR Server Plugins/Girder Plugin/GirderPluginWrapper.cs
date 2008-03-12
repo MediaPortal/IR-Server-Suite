@@ -265,7 +265,7 @@ namespace InputService.Plugin
     extern static IntPtr LoadLibrary(
       string dllFileName);
 
-    [DllImport("kernel32", CharSet = CharSet.Auto)]
+    [DllImport("kernel32.dll", CharSet = CharSet.Ansi, ExactSpelling = true)]
     static extern IntPtr GetProcAddress(
       IntPtr module,
       string functionName);

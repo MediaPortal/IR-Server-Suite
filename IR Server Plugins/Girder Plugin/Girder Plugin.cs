@@ -78,6 +78,9 @@ namespace InputService.Plugin
     {
       LoadSettings();
 
+      if (String.IsNullOrEmpty(_pluginFile))
+        throw new InvalidOperationException("No girder plugin file selected");
+
       string file = Path.Combine(_pluginFolder, _pluginFile);
 
       _pluginWrapper = new GirderPluginWrapper(file);

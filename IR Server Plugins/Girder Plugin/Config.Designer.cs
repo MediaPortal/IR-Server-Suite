@@ -121,10 +121,9 @@ namespace InputService.Plugin
       this.listViewPlugins.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.listViewPlugins.CheckBoxes = true;
       this.listViewPlugins.FullRowSelect = true;
       this.listViewPlugins.GridLines = true;
-      this.listViewPlugins.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+      this.listViewPlugins.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
       this.listViewPlugins.HideSelection = false;
       this.listViewPlugins.Location = new System.Drawing.Point(8, 16);
       this.listViewPlugins.MultiSelect = false;

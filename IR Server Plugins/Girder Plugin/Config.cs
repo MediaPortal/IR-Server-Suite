@@ -80,10 +80,10 @@ namespace InputService.Plugin
       if (listViewPlugins.SelectedIndices.Count != 1)
         return;
 
-      string pluginFile = listViewPlugins.SelectedItems[0].Tag as string;
-
       try
       {
+        string pluginFile = Path.Combine(textBoxPluginFolder.Text, listViewPlugins.SelectedItems[0].Text);
+
         GirderPluginWrapper pluginWrapper = new GirderPluginWrapper(pluginFile);
 
         pluginWrapper.GirOpen();
