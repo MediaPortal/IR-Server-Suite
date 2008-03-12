@@ -20,18 +20,21 @@ namespace InputService.Plugin
 
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Girder Plugin.xml");
+    static readonly string ConfigurationFile    = Path.Combine(ConfigurationPath, "Girder Plugin.xml");
+
+    static readonly string DefaultPluginFolder  = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "girder\\plugins");
 
     static readonly string[] Ports  = new string[] { "Plugin" };
 
-    const int GIRINFO_POWERBROADCAST = 2;
-    const int PBT_APMSUSPEND = 4;
-    const int PBT_APMRESUMEAUTOMATIC = 18;
+    const int GIRINFO_POWERBROADCAST  = 2;
+    const int PBT_APMSUSPEND          = 4;
+    const int PBT_APMRESUMEAUTOMATIC  = 18;
 
     #endregion Constants
 
     #region Variables
 
+    string _pluginFolder;
     string _pluginFile;
 
     RemoteHandler _remoteButtonHandler;
@@ -61,7 +64,7 @@ namespace InputService.Plugin
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports using Girder 3.x plugins with IR Server"; } }
+    public override string Description  { get { return "Supports using Girder 3.x plugins"; } }
     /// <summary>
     /// Gets a display icon for the plugin.
     /// </summary>
@@ -75,7 +78,9 @@ namespace InputService.Plugin
     {
       LoadSettings();
 
-      _pluginWrapper = new GirderPluginWrapper(_pluginFile);
+      string file = Path.Combine(_pluginFolder, _pluginFile);
+
+      _pluginWrapper = new GirderPluginWrapper(file);
 
       _pluginWrapper.EventCallback += new PluginEventCallback(PluginCallback);
 
@@ -188,11 +193,13 @@ namespace InputService.Plugin
       LoadSettings();
 
       Config config = new Config();
-      config.PluginFolder = _pluginFile;
+      config.PluginFolder = _pluginFolder;
+      config.PluginFile   = _pluginFile;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
-        _pluginFile = config.PluginFolder;
+        _pluginFolder = config.PluginFolder;
+        _pluginFile   = config.PluginFile;
 
         SaveSettings();
       }
@@ -215,6 +222,9 @@ namespace InputService.Plugin
       try { doc.Load(ConfigurationFile); }
       catch { return; }
 
+      try { _pluginFolder = doc.DocumentElement.Attributes["PluginFolder"].Value; }
+      catch { _pluginFolder = DefaultPluginFolder; }
+
       try { _pluginFile = doc.DocumentElement.Attributes["PluginFile"].Value; }
       catch { }
     }
@@ -230,6 +240,7 @@ namespace InputService.Plugin
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
+          writer.WriteAttributeString("PluginFolder", _pluginFolder);
           writer.WriteAttributeString("PluginFile", _pluginFile);
 
           writer.WriteEndElement(); // </settings>

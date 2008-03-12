@@ -365,9 +365,10 @@ namespace IRServer
         _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
         _abstractRemoteButtons.CaseSensitive = true;
 
-        foreach (PluginBase plugin in _pluginReceive)
-          if (plugin is IRemoteReceiver)
-            LoadAbstractDeviceFiles(plugin.Name);
+        if (_pluginReceive != null)
+          foreach (PluginBase plugin in _pluginReceive)
+            if (plugin is IRemoteReceiver)
+              LoadAbstractDeviceFiles(plugin.Name);
       }
 
       #endregion Setup Abstract Remote Model processing

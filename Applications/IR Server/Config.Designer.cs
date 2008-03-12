@@ -47,7 +47,7 @@ namespace IRServer
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(360, 272);
+      this.buttonOK.Location = new System.Drawing.Point(360, 400);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 2;
@@ -59,7 +59,7 @@ namespace IRServer
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(432, 272);
+      this.buttonCancel.Location = new System.Drawing.Point(432, 400);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 3;
@@ -71,7 +71,7 @@ namespace IRServer
       // 
       this.checkBoxRunAtBoot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.checkBoxRunAtBoot.AutoSize = true;
-      this.checkBoxRunAtBoot.Location = new System.Drawing.Point(16, 272);
+      this.checkBoxRunAtBoot.Location = new System.Drawing.Point(16, 400);
       this.checkBoxRunAtBoot.Name = "checkBoxRunAtBoot";
       this.checkBoxRunAtBoot.Size = new System.Drawing.Size(165, 17);
       this.checkBoxRunAtBoot.TabIndex = 1;
@@ -87,7 +87,7 @@ namespace IRServer
       this.groupBoxTransceiver.Controls.Add(this.gridPlugins);
       this.groupBoxTransceiver.Location = new System.Drawing.Point(8, 32);
       this.groupBoxTransceiver.Name = "groupBoxTransceiver";
-      this.groupBoxTransceiver.Size = new System.Drawing.Size(488, 232);
+      this.groupBoxTransceiver.Size = new System.Drawing.Size(488, 360);
       this.groupBoxTransceiver.TabIndex = 0;
       this.groupBoxTransceiver.TabStop = false;
       this.groupBoxTransceiver.Text = "Device plugins";
@@ -103,7 +103,7 @@ namespace IRServer
       this.gridPlugins.Name = "gridPlugins";
       this.gridPlugins.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
       this.gridPlugins.SelectionMode = SourceGrid.GridSelectionMode.Row;
-      this.gridPlugins.Size = new System.Drawing.Size(472, 208);
+      this.gridPlugins.Size = new System.Drawing.Size(472, 336);
       this.gridPlugins.TabIndex = 0;
       this.gridPlugins.TabStop = true;
       this.gridPlugins.ToolTipText = "";
@@ -155,7 +155,7 @@ namespace IRServer
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(504, 304);
+      this.ClientSize = new System.Drawing.Size(504, 432);
       this.Controls.Add(this.toolStrip);
       this.Controls.Add(this.checkBoxRunAtBoot);
       this.Controls.Add(this.groupBoxTransceiver);

@@ -100,7 +100,7 @@ namespace InputService.Plugin
       // 
       // folderBrowserDialog
       // 
-      this.folderBrowserDialog.RootFolder = System.Environment.SpecialFolder.ProgramFiles;
+      this.folderBrowserDialog.Description = "Locate the Girder plugin folder";
       this.folderBrowserDialog.ShowNewFolderButton = false;
       // 
       // groupBoxPlugins
@@ -123,10 +123,13 @@ namespace InputService.Plugin
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.listViewPlugins.CheckBoxes = true;
       this.listViewPlugins.FullRowSelect = true;
+      this.listViewPlugins.GridLines = true;
       this.listViewPlugins.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
       this.listViewPlugins.HideSelection = false;
       this.listViewPlugins.Location = new System.Drawing.Point(8, 16);
+      this.listViewPlugins.MultiSelect = false;
       this.listViewPlugins.Name = "listViewPlugins";
+      this.listViewPlugins.ShowGroups = false;
       this.listViewPlugins.Size = new System.Drawing.Size(328, 136);
       this.listViewPlugins.TabIndex = 0;
       this.listViewPlugins.UseCompatibleStateImageBehavior = false;

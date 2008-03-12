@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -14,9 +15,7 @@ namespace InputService.Plugin
   public partial class Config : Form
   {
 
-    //List<string> _selectedPlugins;
-    string _pluginFolder;
-
+    #region Properties
 
     /// <summary>
     /// Gets or sets the path of the Girder plugin folder.
@@ -24,11 +23,47 @@ namespace InputService.Plugin
     /// <value>The path of the Girder plugin folder.</value>
     public string PluginFolder
     {
-      get { return _pluginFolder; }
-      set { _pluginFolder = value; }
+      get
+      {
+        return textBoxPluginFolder.Text;
+      }
+      set
+      {
+        textBoxPluginFolder.Text = value;
+
+        UpdatePluginList();
+      }
     }
 
+    /// <summary>
+    /// Gets or sets the selected plugin.
+    /// </summary>
+    /// <value>The plugin file.</value>
+    public string PluginFile
+    {
+      get
+      {
+        if (listViewPlugins.SelectedItems.Count == 0)
+          return null;
+        else
+          return listViewPlugins.SelectedItems[0].Text;
+      }
+      set
+      {
+        foreach (ListViewItem item in listViewPlugins.Items)
+        {
+          if (item.Text.Equals(value, StringComparison.OrdinalIgnoreCase))
+          {
+            item.Selected = true;
+            return;
+          }
+        }
+      }
+    }
 
+    #endregion Properties
+
+    #region Constructor
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Config"/> class.
@@ -37,6 +72,8 @@ namespace InputService.Plugin
     {
       InitializeComponent();
     }
+
+    #endregion Constructor
 
     private void buttonConfigureGirderPlugin_Click(object sender, EventArgs e)
     {
@@ -76,9 +113,9 @@ namespace InputService.Plugin
     {
       if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK)
       {
-        _pluginFolder = folderBrowserDialog.SelectedPath;
+        textBoxPluginFolder.Text = folderBrowserDialog.SelectedPath;
 
-        UpdatePluginList();
+        UpdatePluginList();        
       }
     }
 
@@ -90,7 +127,12 @@ namespace InputService.Plugin
 
     void UpdatePluginList()
     {
+      listViewPlugins.Clear();
 
+      string[] files = Directory.GetFiles(textBoxPluginFolder.Text, "*.dll", SearchOption.TopDirectoryOnly);
+      if (files.Length > 0)
+        foreach (string file in files)
+          listViewPlugins.Items.Add(Path.GetFileName(file));
     }
 
   }
