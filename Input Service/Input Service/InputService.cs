@@ -1166,12 +1166,15 @@ namespace InputService
 
                 // Check that the device maps are loaded for the forwarded device
                 bool foundDevice = false;
-                foreach (PluginBase plugin in _pluginReceive)
+                if (_pluginReceive != null)
                 {
-                  if (plugin is IRemoteReceiver && plugin.Name.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
+                  foreach (PluginBase plugin in _pluginReceive)
                   {
-                    foundDevice = true;
-                    break;
+                    if (plugin is IRemoteReceiver && plugin.Name.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
+                    {
+                      foundDevice = true;
+                      break;
+                    }
                   }
                 }
 

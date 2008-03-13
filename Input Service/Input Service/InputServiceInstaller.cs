@@ -49,6 +49,10 @@ namespace InputService
     /// </summary>
     void InputServiceInstaller_AfterInstall(object sender, InstallEventArgs e)
     {
+
+      // TODO: Set the restart options.
+
+
       // Start the service ...
       using (ServiceController serviceController = new ServiceController(Program.ServiceName))
         serviceController.Start();

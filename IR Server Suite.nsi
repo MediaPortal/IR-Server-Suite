@@ -405,8 +405,10 @@ SkipUninstallInputService:
   File "IR Server Plugins\X10 Transceiver\bin\${BuildType}\Interop.X10.dll"
   File "IR Server Plugins\XBCDRC Receiver\bin\${BuildType}\XBCDRC Receiver.*"
 
-  ; Create App Data Folder for IR Server configuration files.
+  ; Create App Data Folder for IR Server configuration files
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service"
+  
+  ; Copy Abstract Remote maps
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
   SetOverwrite ifnewer

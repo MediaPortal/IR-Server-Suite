@@ -376,8 +376,8 @@ namespace InputService.Plugin
 
     #endregion Static Methods
 
-    #region Debug
 
+    #region Debug
 #if DEBUG
 
     protected static StreamWriter _debugFile;
@@ -496,7 +496,6 @@ namespace InputService.Plugin
     }
 
 #endif
-
     #endregion Debug
 
   }

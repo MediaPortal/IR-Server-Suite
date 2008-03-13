@@ -19,6 +19,7 @@ namespace InputService.Plugin
   {
 
     #region Debug
+#if DEBUG
 
     [STAThread]
     static void Main()
@@ -45,6 +46,7 @@ namespace InputService.Plugin
       Console.WriteLine("Remote: {0}", code);
     }
 
+#endif
     #endregion Debug
 
 

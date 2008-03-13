@@ -21,6 +21,7 @@ namespace InputService.Plugin
   {
 
     #region Debug
+#if DEBUG
 
     static void Remote(string deviceName, string code)
     {
@@ -41,8 +42,8 @@ namespace InputService.Plugin
       c = null;
     }
 
+#endif
     #endregion Debug
-
 
 
     #region Interop

@@ -20,14 +20,11 @@ namespace InputService.Plugin
   {
 
     #region Debug
+#if DEBUG
 
     static void Remote(string deviceName, string code)
     {
       Console.WriteLine("Remote: {0}", code);
-    }
-    static void Keyboard(string deviceName, int button, bool up)
-    {
-      Console.WriteLine("Keyboard: {0}, {1}", button, up);
     }
     static void Mouse(string deviceName, int x, int y, int buttons)
     {
@@ -42,7 +39,6 @@ namespace InputService.Plugin
       c.Configure(null);
 
       c.RemoteCallback += new RemoteHandler(Remote);
-      //c.KeyboardCallback += new KeyboardHandler(Keyboard);
       c.MouseCallback += new MouseHandler(Mouse);
 
       c.Start();
@@ -53,6 +49,7 @@ namespace InputService.Plugin
       c = null;
     }
 
+#endif
     #endregion Debug
 
 
