@@ -148,16 +148,16 @@ namespace Translator
       }
       */
 
-      // Setup the main form ...
-      _mainForm = new MainForm();
-
       // Setup notify icon ...
       _notifyIcon = new NotifyIcon();
-      _notifyIcon.ContextMenuStrip = new ContextMenuStrip(_mainForm.Container);
+      _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Connecting ...";
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
       _notifyIcon.Visible = false;
+
+      // Setup the main form ...
+      _mainForm = new MainForm();
 
       // Start server communications ...
       bool clientStarted = false;
