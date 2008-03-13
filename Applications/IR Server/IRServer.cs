@@ -1528,7 +1528,7 @@ namespace IRServer
               IrssMessage response = new IrssMessage(MessageType.DetectedBlasters, MessageFlags.Response);
               string[] detectedBlasters = Program.DetectBlasters();
 
-              if (detectedBlasters != null)
+              if (detectedBlasters != null && detectedBlasters.Length > 0)
               {
                 StringBuilder blasters = new StringBuilder();
                 for (int index = 0; index < detectedBlasters.Length; index++)
@@ -1557,7 +1557,7 @@ namespace IRServer
               IrssMessage response = new IrssMessage(MessageType.DetectedReceivers, MessageFlags.Response);
               string[] detectedReceivers = Program.DetectReceivers();
 
-              if (detectedReceivers != null)
+              if (detectedReceivers != null && detectedReceivers.Length > 0)
               {
                 StringBuilder receivers = new StringBuilder();
                 for (int index = 0; index < detectedReceivers.Length; index++)
@@ -1762,13 +1762,13 @@ namespace IRServer
       try
       {
         string[] blasters = Program.DetectBlasters();
-        if (blasters == null)
+        if (blasters == null || blasters.Length == 0)
           _pluginNameTransmit = String.Empty;
         else
           _pluginNameTransmit = blasters[0];
 
         string[] receivers = Program.DetectReceivers();
-        if (receivers == null)
+        if (receivers == null || receivers.Length == 0)
           _pluginNameReceive = null;
         else
           _pluginNameReceive = receivers;

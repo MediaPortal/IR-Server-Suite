@@ -436,6 +436,9 @@ namespace SkinEditor
 
     void OpenFile()
     {
+      openFileDialog.Title = "Open a Virtual Remote Skin ...";
+      openFileDialog.Filter = "Xml Files|*.xml";
+
       if (openFileDialog.ShowDialog(this) == DialogResult.OK)
       {
         _fileName = openFileDialog.FileName;

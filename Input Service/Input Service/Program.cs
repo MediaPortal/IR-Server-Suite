@@ -168,6 +168,8 @@ namespace InputService
     internal static string[] DetectReceivers()
     {
       PluginBase[] plugins = AvailablePlugins();
+      if (plugins == null || plugins.Length == 0)
+        return null;
 
       List<string> receivers = new List<string>();
 
@@ -188,6 +190,8 @@ namespace InputService
     internal static string[] DetectBlasters()
     {
       PluginBase[] plugins = Program.AvailablePlugins();
+      if (plugins == null || plugins.Length == 0)
+        return null;
 
       List<string> blasters = new List<string>();
 

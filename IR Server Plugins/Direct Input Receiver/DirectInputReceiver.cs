@@ -190,7 +190,9 @@ namespace InputService.Plugin
 #if TRACE
         Trace.WriteLine("No direct input device selected in plugin configuration, using first found");
 #endif
-        DeviceInstance di = (DeviceInstance)_deviceList.Current;
+        _deviceList.Reset();                                      // Move to the position before the first in the device list.
+        _deviceList.MoveNext();                                   // Move to the first position in the device list.
+        DeviceInstance di = (DeviceInstance)_deviceList.Current;  // Retreive the first position in the device list.
         _selectedDeviceGUID = di.InstanceGuid.ToString();        
       }
 
@@ -327,6 +329,7 @@ namespace InputService.Plugin
       if (_deviceList == null)
         return false;
 
+      _deviceList.Reset();
       foreach (DeviceInstance di in _deviceList)
         if (_selectedDeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
           return _diListener.InitDevice(di.InstanceGuid);
