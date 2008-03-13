@@ -20,6 +20,7 @@ namespace Translator
     #region Variables
 
     string _serverHost;
+    string _processPriority;
 
     List<ButtonMapping> _systemWideMappings;
     List<ProgramSettings> _programSettings;
@@ -32,6 +33,7 @@ namespace Translator
     /// <summary>
     /// IR Server host.
     /// </summary>
+    /// <value>The server host.</value>
     [XmlElement]
     public string ServerHost
     {
@@ -40,8 +42,20 @@ namespace Translator
     }
 
     /// <summary>
+    /// Gets or sets the process priority.
+    /// </summary>
+    /// <value>The process priority.</value>
+    [XmlElement]
+    public string ProcessPriority
+    {
+      get { return _processPriority; }
+      set { _processPriority = value; }
+    }
+
+    /// <summary>
     /// System wide button mappings.
     /// </summary>
+    /// <value>The system wide mappings.</value>
     [XmlArray]
     public List<ButtonMapping> SystemWideMappings
     {
@@ -51,6 +65,7 @@ namespace Translator
     /// <summary>
     /// Program settings.
     /// </summary>
+    /// <value>The programs.</value>
     [XmlArray]
     public List<ProgramSettings> Programs
     {
@@ -60,6 +75,7 @@ namespace Translator
     /// <summary>
     /// Mapped events.
     /// </summary>
+    /// <value>The events.</value>
     [XmlArray]
     public List<MappedEvent> Events
     {
@@ -75,11 +91,12 @@ namespace Translator
     /// </summary>
     public Configuration()
     {
-      _serverHost = "localhost";
+      _serverHost         = "localhost";
+      _processPriority    = "No Change";
 
       _systemWideMappings = new List<ButtonMapping>();
-      _programSettings = new List<ProgramSettings>();
-      _mappedEvents = new List<MappedEvent>();
+      _programSettings    = new List<ProgramSettings>();
+      _mappedEvents       = new List<MappedEvent>();
     }
 
     #endregion Constructors

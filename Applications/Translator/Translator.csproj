@@ -69,6 +69,12 @@
     <Compile Include="ButtonMapping.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="AppProfile.cs" />
+    <Compile Include="Forms\Advanced.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Advanced.Designer.cs">
+      <DependentUpon>Advanced.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ButtonMappingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +116,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="ProgramSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\Advanced.resx">
+      <DependentUpon>Advanced.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ButtonMappingForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ButtonMappingForm.cs</DependentUpon>

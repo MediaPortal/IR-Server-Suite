@@ -127,13 +127,17 @@ namespace Translator
       // Initialize Variable List.
       _variables = new VariableList();
 
+      // Load configuration ...
       _config = Configuration.Load(ConfigFile);
       if (_config == null)
       {
         IrssLog.Warn(String.Format("Failed to load configuration file ({0}), creating new configuration", ConfigFile));
         _config = new Configuration();
       }
-      
+
+      // Adjust process priority ...
+      AdjustPriority(_config.ProcessPriority);
+
       /*
       foreach (ProgramSettings progSettings in _config.Programs)
       {
@@ -1240,6 +1244,28 @@ namespace Translator
           IrssLog.Error(ex);
         else
           throw;
+      }
+    }
+
+    /// <summary>
+    /// Adjusts the process priority.
+    /// </summary>
+    /// <param name="newPriority">The new priority.</param>
+    internal static void AdjustPriority(string newPriority)
+    {
+      if (!newPriority.Equals("No Change", StringComparison.OrdinalIgnoreCase))
+      {
+        try
+        {
+          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), newPriority);
+          Process.GetCurrentProcess().PriorityClass = priority;
+
+          IrssLog.Info("Process priority set to: {0}", newPriority);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
       }
     }
 

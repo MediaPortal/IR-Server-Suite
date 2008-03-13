@@ -1167,6 +1167,21 @@ namespace Translator
         Program.StartClient(endPoint);
       }
     }
+    private void advancedToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      Advanced advanced = new Advanced();
+      advanced.ProcessPriority = Program.Config.ProcessPriority;
+
+      if (advanced.ShowDialog(this) == DialogResult.OK)
+      {
+        if (!advanced.ProcessPriority.Equals(Program.Config.ProcessPriority, StringComparison.OrdinalIgnoreCase))
+        {
+          Program.Config.ProcessPriority = advanced.ProcessPriority;
+
+          Program.AdjustPriority(Program.Config.ProcessPriority);
+        }        
+      }
+    }
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Application.Exit();

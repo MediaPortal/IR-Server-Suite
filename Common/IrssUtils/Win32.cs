@@ -1720,13 +1720,13 @@ namespace IrssUtils
       public string szTypeName;
     };
 
-    private struct POINTAPI
+    struct POINTAPI
     {
       public int x;
       public int y;
     }
 
-    private struct RECT
+    struct RECT
     {
       public int left;
       public int top;
@@ -1734,7 +1734,7 @@ namespace IrssUtils
       public int bottom;
     }
 
-    private struct WINDOWPLACEMENT
+    struct WINDOWPLACEMENT
     {
       public int length;
       public int flags;
@@ -2158,7 +2158,7 @@ namespace IrssUtils
 
       int curThreadID = GetCurrentThreadId();
 
-      // if we don't attach successfully to the windows thread then we're out of options
+      // If we don't attach successfully to the windows thread then we're out of options
       if (!AttachThreadInput(curThreadID, fgWindowPID, true))
         return false;
 
@@ -2166,9 +2166,10 @@ namespace IrssUtils
       BringWindowToTop(hWnd);
       SetFocus(hWnd);
 
+      // Detach
       AttachThreadInput(curThreadID, fgWindowPID, false);
 
-      // we've done all that we can so base our return value on whether we have succeeded or not
+      // We've done all that we can so base our return value on whether we have succeeded or not
       return (GetForegroundWindow() == hWnd);
     }
 

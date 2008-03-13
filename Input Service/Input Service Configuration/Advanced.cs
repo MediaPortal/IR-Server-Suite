@@ -12,6 +12,9 @@ using IrssUtils;
 namespace InputService.Configuration
 {
 
+  /// <summary>
+  /// Advanced Configuration Form.
+  /// </summary>
   partial class Advanced : Form
   {
 
@@ -66,7 +69,6 @@ namespace InputService.Configuration
       {
         comboBoxPriority.SelectedItem = value;
       }
-
     }
 
     #endregion Properties
