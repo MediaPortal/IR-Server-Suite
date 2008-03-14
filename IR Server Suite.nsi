@@ -80,19 +80,34 @@ var DIR_TVSERVER
 
     ${DisableX64FSRedirection}
 
+      ; Get IR Server Suite installation directory ...
       ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
       ${If} $DIR_INSTALL == ""
         StrCpy '$DIR_INSTALL' '$PROGRAMFILES\${PRODUCT_NAME}'
       ${Endif}
 
+      ; Get MediaPortal installation directory ...
       ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
       ${If} $DIR_MEDIAPORTAL == ""
-        StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
+
+        ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\Team MediaPortal\MediaPortal" "ApplicationDir"
+
+        ${If} $DIR_MEDIAPORTAL == ""
+          StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
+        ${Endif}
+
       ${Endif}
 
+      ; Get MediaPortal TV Server installation directory ...
       ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
       ${If} $DIR_TVSERVER == ""
-        StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
+
+        ReadRegStr $DIR_TVSERVER HKLM "Software\Team MediaPortal\MediaPortal TV Server" "InstallPath"
+
+        ${If} $DIR_TVSERVER == ""
+          StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
+        ${Endif}
+
       ${Endif}
 
       ${EnableX64FSRedirection}
@@ -101,19 +116,34 @@ var DIR_TVSERVER
 
     SetRegView 32
 
+    ; Get IR Server Suite installation directory ...
     ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
     ${If} $DIR_INSTALL == ""
       StrCpy '$DIR_INSTALL' '$PROGRAMFILES\${PRODUCT_NAME}'
     ${Endif}
 
+    ; Get MediaPortal installation directory ...
     ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
     ${If} $DIR_MEDIAPORTAL == ""
-      StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
+
+      ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\Team MediaPortal\MediaPortal" "ApplicationDir"
+
+      ${If} $DIR_MEDIAPORTAL == ""
+        StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
+      ${Endif}
+
     ${Endif}
 
+    ; Get MediaPortal TV Server installation directory ...
     ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
     ${If} $DIR_TVSERVER == ""
-      StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
+
+      ReadRegStr $DIR_TVSERVER HKLM "Software\Team MediaPortal\MediaPortal TV Server" "InstallPath"
+
+      ${If} $DIR_TVSERVER == ""
+        StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
+      ${Endif}
+
     ${Endif}
 
   ${Endif}
@@ -377,6 +407,8 @@ SkipUninstallInputService:
   File "IR Server Plugins\CoolCommand Receiver\bin\${BuildType}\CoolCommand Receiver.*"
   File "IR Server Plugins\Custom HID Receiver\bin\${BuildType}\Custom HID Receiver.*"
   File "IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Direct Input Receiver.*"
+  File "IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Microsoft.DirectX.DirectInput.dll"
+  File "IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Microsoft.DirectX.dll"
   File "IR Server Plugins\FusionRemote Receiver\bin\${BuildType}\FusionRemote Receiver.*"
   File "IR Server Plugins\Girder Plugin\bin\${BuildType}\Girder Plugin.*"
   File "IR Server Plugins\HCW Receiver\bin\${BuildType}\HCW Receiver.*"

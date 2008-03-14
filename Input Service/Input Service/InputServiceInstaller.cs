@@ -54,8 +54,8 @@ namespace InputService
 
 
       // Start the service ...
-      using (ServiceController serviceController = new ServiceController(Program.ServiceName))
-        serviceController.Start();
+      //using (ServiceController serviceController = new ServiceController(Program.ServiceName))
+        //serviceController.Start();
     }
 
     /*

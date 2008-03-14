@@ -159,14 +159,12 @@ namespace InputService.Plugin
       {
         InitDeviceList();
 
-        if (_deviceList.Count != 0)
-          return true;
+        return (_deviceList.Count != 0);
       }
       catch
       {
+        return false;
       }
-
-      return false;
     }
 
     /// <summary>
