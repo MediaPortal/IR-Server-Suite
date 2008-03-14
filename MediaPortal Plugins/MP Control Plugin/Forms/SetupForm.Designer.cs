@@ -71,10 +71,10 @@ namespace MediaPortal.Plugins
       this.groupBoxStatus = new System.Windows.Forms.GroupBox();
       this.labelStatus = new System.Windows.Forms.Label();
       this.treeViewRemotes = new System.Windows.Forms.TreeView();
-      this.tabPageIR = new System.Windows.Forms.TabPage();
-      this.listViewIR = new System.Windows.Forms.ListView();
       this.tabPageMacros = new System.Windows.Forms.TabPage();
       this.listViewMacro = new System.Windows.Forms.ListView();
+      this.tabPageIR = new System.Windows.Forms.TabPage();
+      this.listViewIR = new System.Windows.Forms.ListView();
       this.tabPageMultiMapping = new System.Windows.Forms.TabPage();
       this.listBoxMappings = new System.Windows.Forms.ListBox();
       this.labelButton = new System.Windows.Forms.Label();
@@ -90,12 +90,13 @@ namespace MediaPortal.Plugins
       this.groupBoxMouseModeOptions = new System.Windows.Forms.GroupBox();
       this.labelMouseModeToggle = new System.Windows.Forms.Label();
       this.labelMouseStep = new System.Windows.Forms.Label();
+      this.checkBoxAbstractRemoteMode = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseStep)).BeginInit();
       this.tabControl.SuspendLayout();
       this.tabPageRemotes.SuspendLayout();
       this.groupBoxStatus.SuspendLayout();
-      this.tabPageIR.SuspendLayout();
       this.tabPageMacros.SuspendLayout();
+      this.tabPageIR.SuspendLayout();
       this.tabPageMultiMapping.SuspendLayout();
       this.tabPageEventMapper.SuspendLayout();
       this.tabPageMouseMode.SuspendLayout();
@@ -251,7 +252,8 @@ namespace MediaPortal.Plugins
       this.checkBoxMultiMapping.TabIndex = 0;
       this.checkBoxMultiMapping.Text = "Enable";
       this.checkBoxMultiMapping.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTips.SetToolTip(this.checkBoxMultiMapping, "Enable the multi-mapping feature, which lets you cycle through remote button mappings");
+      this.toolTips.SetToolTip(this.checkBoxMultiMapping, "Enable the multi-mapping feature, which lets you cycle through remote button mapp" +
+              "ings");
       this.checkBoxMultiMapping.UseVisualStyleBackColor = true;
       // 
       // checkBoxEventMapper
@@ -262,7 +264,8 @@ namespace MediaPortal.Plugins
       this.checkBoxEventMapper.TabIndex = 0;
       this.checkBoxEventMapper.Text = "Enable";
       this.checkBoxEventMapper.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTips.SetToolTip(this.checkBoxEventMapper, "Enable the event mapper, which lets you map plugin functions to MediaPortal internal events");
+      this.toolTips.SetToolTip(this.checkBoxEventMapper, "Enable the event mapper, which lets you map plugin functions to MediaPortal inter" +
+              "nal events");
       this.checkBoxEventMapper.UseVisualStyleBackColor = true;
       // 
       // buttonSetCommand
@@ -438,7 +441,8 @@ namespace MediaPortal.Plugins
       this.checkBoxMouseMode.TabIndex = 0;
       this.checkBoxMouseMode.Text = "Enable";
       this.checkBoxMouseMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTips.SetToolTip(this.checkBoxMouseMode, "Enable the mouse mode feature, which lets you control the on-screen mouse with your remote");
+      this.toolTips.SetToolTip(this.checkBoxMouseMode, "Enable the mouse mode feature, which lets you control the on-screen mouse with yo" +
+              "ur remote");
       this.checkBoxMouseMode.UseVisualStyleBackColor = true;
       // 
       // comboBoxMouseModeButton
@@ -483,7 +487,8 @@ namespace MediaPortal.Plugins
       this.checkBoxMouseAcceleration.Size = new System.Drawing.Size(152, 24);
       this.checkBoxMouseAcceleration.TabIndex = 4;
       this.checkBoxMouseAcceleration.Text = "Use mouse acceleration";
-      this.toolTips.SetToolTip(this.checkBoxMouseAcceleration, "Enable mouse acceleration, which makes the mouse move in larger steps when holding the remote button down");
+      this.toolTips.SetToolTip(this.checkBoxMouseAcceleration, "Enable mouse acceleration, which makes the mouse move in larger steps when holdin" +
+              "g the remote button down");
       this.checkBoxMouseAcceleration.UseVisualStyleBackColor = true;
       // 
       // buttonClearAll
@@ -542,6 +547,7 @@ namespace MediaPortal.Plugins
       // 
       // tabPageRemotes
       // 
+      this.tabPageRemotes.Controls.Add(this.checkBoxAbstractRemoteMode);
       this.tabPageRemotes.Controls.Add(this.comboBoxRemotePresets);
       this.tabPageRemotes.Controls.Add(this.buttonLoadPreset);
       this.tabPageRemotes.Controls.Add(this.buttonClearAll);
@@ -598,44 +604,11 @@ namespace MediaPortal.Plugins
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.treeViewRemotes.HideSelection = false;
-      this.treeViewRemotes.Location = new System.Drawing.Point(8, 8);
+      this.treeViewRemotes.Location = new System.Drawing.Point(8, 40);
       this.treeViewRemotes.Name = "treeViewRemotes";
-      this.treeViewRemotes.Size = new System.Drawing.Size(552, 192);
+      this.treeViewRemotes.Size = new System.Drawing.Size(552, 160);
       this.treeViewRemotes.TabIndex = 0;
       this.treeViewRemotes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeViewRemotes_KeyDown);
-      // 
-      // tabPageIR
-      // 
-      this.tabPageIR.Controls.Add(this.listViewIR);
-      this.tabPageIR.Controls.Add(this.buttonNewIR);
-      this.tabPageIR.Controls.Add(this.buttonEditIR);
-      this.tabPageIR.Controls.Add(this.buttonDeleteIR);
-      this.tabPageIR.Location = new System.Drawing.Point(4, 22);
-      this.tabPageIR.Name = "tabPageIR";
-      this.tabPageIR.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageIR.Size = new System.Drawing.Size(568, 302);
-      this.tabPageIR.TabIndex = 2;
-      this.tabPageIR.Text = "IR Commands";
-      this.tabPageIR.UseVisualStyleBackColor = true;
-      // 
-      // listViewIR
-      // 
-      this.listViewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.listViewIR.FullRowSelect = true;
-      this.listViewIR.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-      this.listViewIR.HideSelection = false;
-      this.listViewIR.LabelEdit = true;
-      this.listViewIR.Location = new System.Drawing.Point(8, 8);
-      this.listViewIR.MultiSelect = false;
-      this.listViewIR.Name = "listViewIR";
-      this.listViewIR.Size = new System.Drawing.Size(552, 256);
-      this.listViewIR.TabIndex = 0;
-      this.listViewIR.UseCompatibleStateImageBehavior = false;
-      this.listViewIR.View = System.Windows.Forms.View.List;
-      this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
-      this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
       // 
       // tabPageMacros
       // 
@@ -670,6 +643,39 @@ namespace MediaPortal.Plugins
       this.listViewMacro.View = System.Windows.Forms.View.List;
       this.listViewMacro.DoubleClick += new System.EventHandler(this.listViewMacro_DoubleClick);
       this.listViewMacro.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewMacro_AfterLabelEdit);
+      // 
+      // tabPageIR
+      // 
+      this.tabPageIR.Controls.Add(this.listViewIR);
+      this.tabPageIR.Controls.Add(this.buttonNewIR);
+      this.tabPageIR.Controls.Add(this.buttonEditIR);
+      this.tabPageIR.Controls.Add(this.buttonDeleteIR);
+      this.tabPageIR.Location = new System.Drawing.Point(4, 22);
+      this.tabPageIR.Name = "tabPageIR";
+      this.tabPageIR.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageIR.Size = new System.Drawing.Size(568, 302);
+      this.tabPageIR.TabIndex = 2;
+      this.tabPageIR.Text = "IR Commands";
+      this.tabPageIR.UseVisualStyleBackColor = true;
+      // 
+      // listViewIR
+      // 
+      this.listViewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.listViewIR.FullRowSelect = true;
+      this.listViewIR.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+      this.listViewIR.HideSelection = false;
+      this.listViewIR.LabelEdit = true;
+      this.listViewIR.Location = new System.Drawing.Point(8, 8);
+      this.listViewIR.MultiSelect = false;
+      this.listViewIR.Name = "listViewIR";
+      this.listViewIR.Size = new System.Drawing.Size(552, 256);
+      this.listViewIR.TabIndex = 0;
+      this.listViewIR.UseCompatibleStateImageBehavior = false;
+      this.listViewIR.View = System.Windows.Forms.View.List;
+      this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
+      this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
       // 
       // tabPageMultiMapping
       // 
@@ -854,6 +860,18 @@ namespace MediaPortal.Plugins
       this.labelMouseStep.Text = "Mouse step distance:";
       this.labelMouseStep.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
+      // checkBoxAbstractRemoteMode
+      // 
+      this.checkBoxAbstractRemoteMode.Enabled = false;
+      this.checkBoxAbstractRemoteMode.Location = new System.Drawing.Point(8, 8);
+      this.checkBoxAbstractRemoteMode.Name = "checkBoxAbstractRemoteMode";
+      this.checkBoxAbstractRemoteMode.Size = new System.Drawing.Size(176, 24);
+      this.checkBoxAbstractRemoteMode.TabIndex = 6;
+      this.checkBoxAbstractRemoteMode.Text = "Use Abstract Remote Model";
+      this.toolTips.SetToolTip(this.checkBoxAbstractRemoteMode, "Use the abstract remote model");
+      this.checkBoxAbstractRemoteMode.UseVisualStyleBackColor = true;
+      this.checkBoxAbstractRemoteMode.CheckedChanged += new System.EventHandler(this.checkBoxAbstractRemoteMode_CheckedChanged);
+      // 
       // SetupForm
       // 
       this.AcceptButton = this.buttonOK;
@@ -881,8 +899,8 @@ namespace MediaPortal.Plugins
       this.tabControl.ResumeLayout(false);
       this.tabPageRemotes.ResumeLayout(false);
       this.groupBoxStatus.ResumeLayout(false);
-      this.tabPageIR.ResumeLayout(false);
       this.tabPageMacros.ResumeLayout(false);
+      this.tabPageIR.ResumeLayout(false);
       this.tabPageMultiMapping.ResumeLayout(false);
       this.tabPageEventMapper.ResumeLayout(false);
       this.tabPageEventMapper.PerformLayout();
@@ -955,5 +973,6 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.GroupBox groupBoxMouseModeOptions;
     private System.Windows.Forms.ListView listViewIR;
     private System.Windows.Forms.ListView listViewMacro;
+    private System.Windows.Forms.CheckBox checkBoxAbstractRemoteMode;
   }
 }

@@ -1019,6 +1019,11 @@ namespace MediaPortal.Plugins
 
     #endregion Other Controls
 
+    private void checkBoxAbstractRemoteMode_CheckedChanged(object sender, EventArgs e)
+    {
+      // TODO: Implement proper abstract remote model handling
+    }
+
   }
 
 }

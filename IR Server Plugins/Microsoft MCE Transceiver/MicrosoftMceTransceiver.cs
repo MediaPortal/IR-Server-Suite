@@ -301,7 +301,15 @@ namespace InputService.Plugin
 
       LoadSettings();
 
-      _ignoreAutomaticButtons = CheckAutomaticButtons();
+      // Put this in a try...catch so that if the registry keys don't exist we don't throw an ugly exception.
+      try
+      {
+        _ignoreAutomaticButtons = CheckAutomaticButtons();
+      }
+      catch
+      {
+        _ignoreAutomaticButtons = false;
+      }
 
       if (_disableMceServices)
         DisableMceServices();

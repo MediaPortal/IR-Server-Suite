@@ -104,14 +104,14 @@ namespace InputService.Plugin
     /// </summary>
     public override void Suspend()
     {
-      Stop();
+      //Stop();
     }
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
     public override void Resume()
     {
-      Start();
+      //Start();
     }
     /// <summary>
     /// Stop the IR Server plugin.

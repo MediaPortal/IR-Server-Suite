@@ -104,7 +104,15 @@ namespace InputService.Plugin
     {
       InitializeComponent();
 
-      checkBoxDisableAutomaticButtons.Checked = !MicrosoftMceTransceiver.CheckAutomaticButtons();
+      // Put this in a try...catch so that if the registry keys don't exist we don't throw an ugly exception.
+      try
+      {
+        checkBoxDisableAutomaticButtons.Checked = !MicrosoftMceTransceiver.CheckAutomaticButtons();
+      }
+      catch
+      {
+        checkBoxDisableAutomaticButtons.Enabled = false;
+      }      
     }
 
     #endregion Constructor
@@ -113,29 +121,32 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      try
+      if (checkBoxDisableAutomaticButtons.Enabled)
       {
-        bool changeMade = false;
-
-        bool keysExist = MicrosoftMceTransceiver.CheckAutomaticButtons();
-
-        if (checkBoxDisableAutomaticButtons.Checked && keysExist)
+        try
         {
-          MicrosoftMceTransceiver.DisableAutomaticButtons();
-          changeMade = true;
-        }
-        else if (!checkBoxDisableAutomaticButtons.Checked && !keysExist)
-        {
-          MicrosoftMceTransceiver.EnableAutomaticButtons();
-          changeMade = true;
-        }
+          bool changeMade = false;
 
-        if (changeMade)
-          MessageBox.Show(this, "You must restart the computer for changes to automatic button handling to take effect", "Restart required", MessageBoxButtons.OK, MessageBoxIcon.Information);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(this, ex.ToString(), "Error modifiying the system registry", MessageBoxButtons.OK);
+          bool keysExist = MicrosoftMceTransceiver.CheckAutomaticButtons();
+
+          if (checkBoxDisableAutomaticButtons.Checked && keysExist)
+          {
+            MicrosoftMceTransceiver.DisableAutomaticButtons();
+            changeMade = true;
+          }
+          else if (!checkBoxDisableAutomaticButtons.Checked && !keysExist)
+          {
+            MicrosoftMceTransceiver.EnableAutomaticButtons();
+            changeMade = true;
+          }
+
+          if (changeMade)
+            MessageBox.Show(this, "You must restart the computer for changes to automatic button handling to take effect", "Restart required", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(this, ex.ToString(), "Error modifiying the system registry", MessageBoxButtons.OK);
+        }
       }
 
       this.DialogResult = DialogResult.OK;
