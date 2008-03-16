@@ -771,18 +771,20 @@ namespace InputService.Plugin
           packetBytes = new byte[bytesRead];
           Marshal.Copy(deviceBufferPtr, packetBytes, 0, bytesRead);
 
+#if DEBUG
+          DebugWriteLine("Received data:");
+          DebugDump(packetBytes);
+#endif
+
           int[] timingData = null;
 
-          if (_decodeCarry != 0 || packetBytes[0] >= 0x81 && packetBytes[0] <= 0x8F)
+          if (_decodeCarry != 0 || packetBytes[0] >= 0x81 && packetBytes[0] <= 0x9E)
           {
             timingData = GetTimingDataFromPacket(packetBytes);
           }
 #if DEBUG
           else
           {
-            DebugWriteLine("Received data:");
-            DebugDump(packetBytes);
-
             double firmware = 0.0;
 
             int indexOfFF = Array.IndexOf(packetBytes, (byte)0xFF);
