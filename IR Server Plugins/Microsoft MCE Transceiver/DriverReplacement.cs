@@ -1045,7 +1045,7 @@ namespace InputService.Plugin
             if (curByte == 0x9F)
               break;
 
-            if (curByte < 0x81 || curByte > 0x8F)
+            if (curByte < 0x81 || curByte > 0x9E)
               return null;
           }
 

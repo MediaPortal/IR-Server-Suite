@@ -89,88 +89,11 @@ namespace InputService.Plugin
 
       c.Start();
 
-      //Application.Run();
-
-      byte[] fileBytes;
-      //string fileName = @"C:\test2.IR";
-      /*
-      if (c.Learn(out fileBytes) == LearnStatus.Success)
-      {
-        using (FileStream writeFile = File.OpenWrite(fileName))
-        {
-          writeFile.Write(fileBytes, 0, fileBytes.Length);
-        }
-      }
-      */
-      Console.WriteLine("Testing IR longest length without crashing receiver");
-      /*
-      using (FileStream file = File.OpenRead(fileName))
-      {
-        if (file.Length == 0)
-          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
-
-        fileBytes = new byte[file.Length];
-        file.Read(fileBytes, 0, (int)file.Length);
-      }
-      */
-
-      fileBytes = Encoding.ASCII.GetBytes("0000 0076 005A 0000 0009 0019 0009 005D 0007 001A 0007 0062 0007 002E 0009 002C 0009 001E 0009 004A 0007 01E1 0009 0019 0009 0053 0009 0019 0009 001A 0007 001A 0009 002C 0009 001A 0007 001A 0007 0DAB 0009 0019 0009 005D 0007 001A 0009 0061 0007 002E 0007 002E 0009 001E 0009 004A 0007 01E1 0009 0019 0009 002C 0009 003F 0009 001A 0007 001A 0007 002E 0009 0019 0009 001A 0009 0AF5 0009 0019 0009 005B 0009 001A 0007 0062 0007 002E 0009 002C 0009 001E 0009 004A 0007 01E1 0007 001A 0009 002C 0009 0041 0007 0019 0009 001A 0009 002C 0009 0019 0009 001A 0007 0AF7 0007 001A 0009 005D 0007 001A 0007 0062 0007 002E 0009 002C 0009 001E 0009 0048 0009 01E1 0009 0019 0009 002C 0009 003F 0009 001A 0007 001A 0007 002E 0009 0019 0009 0019 0009 0AF7 0009 0019 0009 005B 0009 001A 0009 0061 0007 002E 0007 002E 0009 001E 0009 004A 0007 01E1 0007 001A 0009 002C 0009 003F 0009 001A 0007 001A 0009 002C 0007 001A 0009 001A 0007 0DB9");
-
-      IrCode code = IrCode.FromByteArray(fileBytes);
-      //code.Carrier = 37010;
-      //code.TimingData = new int[] { +150, -5950, +450, -1300, +450, -400, +500, -1250, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +500, -400, +450, -400, +500, -400, +450, -1300, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +450, -450, +450, -400, +500, -1250, +450, -10250, +3450, -1750, +450, -400, +500, -1250, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -1300, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -1250, +500, -400, +450, -1250, +500, -400, +500, -350, +500, -400, +500, -350, +500, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -1250, +500, -350, +500, -400, +500, -350, +500, -400, +500, -400, +450, -400, +500, -400, +450, -400, +500, -400, +450, -1250, +500, -10400 };
-      Dump(code.TimingData);
+      Console.WriteLine("Test App Started");
+      Console.WriteLine("Press a button on your remote to test ...");
 
 
-      Console.WriteLine("Press any key to begin ...");
-      Console.ReadKey();
-
-      int length = 1725000;
-      //for (int length = 700000; length < 5000000; length += 50000)
-      while (true)
-      {
-        Console.WriteLine("Blasting with approx. total time of {0}us ...", length);
-
-        List<int> newCode = new List<int>();
-
-        int total = 0;
-        int pulseTotal = 0;
-        for (int index = 0; index < code.TimingData.Length; index++)
-        {
-          int time = code.TimingData[index];
-
-          if (total + Math.Abs(time) >= length)
-          {
-            if (time > 0)
-            {
-              break;
-            }
-            else
-            {
-              time = total - length;
-            }
-          }
-
-          newCode.Add(time);
-          total += Math.Abs(time);
-          if (time > 0)
-            pulseTotal += time;
-        }
-
-        Console.WriteLine("Blasting with actual total time of {0}us ...", total);
-        Console.WriteLine("Blasting with total pulse time of {0}us ...", pulseTotal);
-
-        IrCode test = new IrCode(code.Carrier, newCode.ToArray());
-        Dump(test.TimingData);
-
-        c.Transmit("Both", test.ToByteArray());
-
-        Console.WriteLine("Blast complete, press any key to contiue ...");
-        if (Console.ReadKey().Key == ConsoleKey.Escape)
-          break;
-      }
-
-      Console.WriteLine("Done");
+      Application.Run();
 
       c.Stop();
       c = null;
