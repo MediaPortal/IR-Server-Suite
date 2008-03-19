@@ -539,8 +539,8 @@ namespace InputService
 
         #region Resume
         case PowerBroadcastStatus.ResumeAutomatic:
-        case PowerBroadcastStatus.ResumeCritical:
-        case PowerBroadcastStatus.ResumeSuspend:
+        //case PowerBroadcastStatus.ResumeCritical:
+        //case PowerBroadcastStatus.ResumeSuspend:
           IrssLog.Info("Resume from standby ...");
 
           bool resumedTransmit = false;

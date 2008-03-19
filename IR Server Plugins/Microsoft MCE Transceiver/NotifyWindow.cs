@@ -118,7 +118,10 @@ namespace InputService.Plugin
     #endregion IDisposable Members
 
     #region Methods
-    
+
+    /// <summary>
+    /// Creates the window handle.
+    /// </summary>
     internal void Create()
     {
       if (Handle != IntPtr.Zero)
@@ -130,6 +133,9 @@ namespace InputService.Plugin
       CreateHandle(Params);
     }
 
+    /// <summary>
+    /// Destroys the window handle.
+    /// </summary>
     void Destroy()
     {
       if (Handle == IntPtr.Zero)

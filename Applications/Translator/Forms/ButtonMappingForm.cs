@@ -197,12 +197,12 @@ namespace Translator
               string[] commands = Common.SplitRunCommand(suffix);
 
               tabControl.SelectTab(tabPageProgram);
-              textBoxApp.Text = commands[0];
-              textBoxAppStartFolder.Text = commands[1];
+              textBoxApp.Text                   = commands[0];
+              textBoxAppStartFolder.Text        = commands[1];
               textBoxApplicationParameters.Text = commands[2];
-              comboBoxWindowStyle.SelectedItem = commands[3];
-              checkBoxNoWindow.Checked = bool.Parse(commands[4]);
-              checkBoxShellExecute.Checked = bool.Parse(commands[5]);
+              comboBoxWindowStyle.SelectedItem  = commands[3];
+              checkBoxNoWindow.Checked          = bool.Parse(commands[4]);
+              checkBoxShellExecute.Checked      = bool.Parse(commands[5]);
               break;
             }
 
@@ -211,12 +211,12 @@ namespace Translator
               string[] commands = Common.SplitSerialCommand(suffix);
 
               tabControl.SelectTab(tabPageSerial);
-              textBoxSerialCommand.Text = commands[0];
-              comboBoxComPort.SelectedItem = commands[1];
-              numericUpDownBaudRate.Value = decimal.Parse(commands[2]);
-              comboBoxParity.SelectedItem = commands[3];
-              numericUpDownDataBits.Value = decimal.Parse(commands[4]);
-              comboBoxStopBits.SelectedItem = commands[5];
+              textBoxSerialCommand.Text       = commands[0];
+              comboBoxComPort.SelectedItem    = commands[1];
+              numericUpDownBaudRate.Value     = decimal.Parse(commands[2]);
+              comboBoxParity.SelectedItem     = commands[3];
+              numericUpDownDataBits.Value     = decimal.Parse(commands[4]);
+              comboBoxStopBits.SelectedItem   = commands[5];
               checkBoxWaitForResponse.Checked = bool.Parse(commands[6]);
               
               break;
@@ -479,14 +479,29 @@ namespace Translator
                 textBoxCommand.Text = _command = Common.CmdPrefixSmsKB;
                 break;
 
-                //comboBoxMiscCommand.Items.Add(Common.UITextTcpMsg);
-                //comboBoxMiscCommand.Items.Add(Common.UITextHttpMsg);
-
-              case Common.UITextEject:
-                textBoxCommand.Text = _command = Common.CmdPrefixEject;
+              case Common.UITextTcpMsg:
+                TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
+                if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+                  textBoxCommand.Text = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
                 break;
 
-                //comboBoxMiscCommand.Items.Add(Common.UITextPopup);
+              case Common.UITextHttpMsg:
+                HttpMessageCommand httpMessageCommand = new HttpMessageCommand();
+                if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
+                  textBoxCommand.Text = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
+                break;
+
+              case Common.UITextEject:
+                EjectCommand ejectCommand = new EjectCommand();
+                if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+                  textBoxCommand.Text = Common.CmdPrefixEject + ejectCommand.CommandString;
+                break;
+
+              case Common.UITextPopup:
+                PopupMessage popupMessage = new PopupMessage();
+                if (popupMessage.ShowDialog(this) == DialogResult.OK)
+                  textBoxCommand.Text = Common.CmdPrefixPopup + popupMessage.CommandString;
+                break;
 
               case Common.UITextStandby:
                 textBoxCommand.Text = _command = Common.CmdPrefixStandby;
@@ -504,8 +519,20 @@ namespace Translator
                 textBoxCommand.Text = _command = Common.CmdPrefixShutdown;
                 break;
 
-                //comboBoxMiscCommand.Items.Add(Common.UITextBeep);
-                //comboBoxMiscCommand.Items.Add(Common.UITextSound);
+              case Common.UITextBeep:
+                BeepCommand beepCommand = new BeepCommand();
+                if (beepCommand.ShowDialog(this) == DialogResult.OK)
+                  textBoxCommand.Text = Common.CmdPrefixBeep + beepCommand.CommandString;
+                break;
+
+              case Common.UITextSound:
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Wave Files|*.wav";
+                openFileDialog.Multiselect = false;
+
+                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+                  textBoxCommand.Text = Common.CmdPrefixSound + openFileDialog.FileName;
+                break;
             }
 
             break;

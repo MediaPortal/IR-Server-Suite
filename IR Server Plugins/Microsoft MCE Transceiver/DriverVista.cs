@@ -13,7 +13,7 @@ namespace InputService.Plugin
 {
 
   /// <summary>
-  /// Driver class for Windows Vista eHome driver.
+  /// Driver class for the Windows Vista eHome driver.
   /// </summary>
   class DriverVista : Driver
   {
@@ -622,14 +622,17 @@ namespace InputService.Plugin
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
+        throw;
+      }
 #else
       catch
       {
-#endif
         throw;
       }
+#endif
       finally
       {
+        _notifyWindow.UnregisterDeviceArrival();
         _notifyWindow.Dispose();
         _notifyWindow = null;
 
@@ -666,7 +669,7 @@ namespace InputService.Plugin
         if (String.IsNullOrEmpty(Driver.Find(_deviceGuid)))
         {
 #if DEBUG
-          DebugWriteLine("Device not available");
+          DebugWriteLine("Device not found");
 #endif
           return;
         }
@@ -681,6 +684,7 @@ namespace InputService.Plugin
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
+        throw;
       }
 #else
       catch
@@ -763,7 +767,7 @@ namespace InputService.Plugin
     public override void Send(IrCode code, int port)
     {
 #if DEBUG
-      DebugWriteLine("Send()");
+      DebugWrite("Send(): ");
       DebugDump(code.TimingData);
 #endif
 
@@ -789,6 +793,10 @@ namespace InputService.Plugin
     /// </summary>
     void InitializeDevice()
     {
+#if DEBUG
+      DebugWriteLine("InitializeDevice()");
+#endif
+
       GetDeviceCapabilities();
       GetBlasters();
     }
@@ -876,7 +884,7 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Opens the device.
+    /// Opens the device handles and registers for device removal notification.
     /// </summary>
     void OpenDevice()
     {
@@ -892,15 +900,24 @@ namespace InputService.Plugin
         return;
       }
 
+      int lastError;
+
       _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
-      int lastError = Marshal.GetLastWin32Error();
+      lastError = Marshal.GetLastWin32Error();
       if (_eHomeHandle.IsInvalid)
       {
         _eHomeHandle = null;
         throw new Win32Exception(lastError);
       }
 
-      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
+      bool success = false;
+      _eHomeHandle.DangerousAddRef(ref success);
+      if (success)
+        _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
+#if DEBUG
+      else
+        DebugWriteLine("Warning: Failed to initialize device removal notification");
+#endif
 
       Thread.Sleep(PacketTimeout); // Hopefully improves compatibility with Zalman remote which times out retrieving device capabilities. (2008-01-01)
 
@@ -908,7 +925,7 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Close all handles to the device.
+    /// Close all handles to the device and unregisters device removal notification.
     /// </summary>
     void CloseDevice()
     {
@@ -928,12 +945,17 @@ namespace InputService.Plugin
 
       _notifyWindow.UnregisterDeviceRemoval();
 
+      _eHomeHandle.DangerousRelease();
+
       CloseHandle(_eHomeHandle);
 
       _eHomeHandle.Dispose();
       _eHomeHandle = null;
     }
 
+    /// <summary>
+    /// Called when device arrival is notified.
+    /// </summary>
     void OnDeviceArrival()
     {
 #if DEBUG
@@ -946,6 +968,9 @@ namespace InputService.Plugin
       StartReceive(_receivePort, PacketTimeout);
       StartReadThread(ReadThreadMode.Receiving);
     }
+    /// <summary>
+    /// Called when device removal is notified.
+    /// </summary>
     void OnDeviceRemoval()
     {
 #if DEBUG
@@ -996,7 +1021,7 @@ namespace InputService.Plugin
             int[] timingData = GetTimingDataFromPacket(packetBytes);
 
 #if DEBUG
-            DebugWriteLine("Received:");
+            DebugWrite("Received timing:    ");
             DebugDump(timingData);
 #endif
 

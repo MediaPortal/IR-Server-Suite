@@ -235,6 +235,7 @@ namespace InputService.Plugin
 #endif
       finally
       {
+        _notifyWindow.UnregisterDeviceArrival();
         _notifyWindow.Dispose();
         _notifyWindow = null;
 
@@ -256,7 +257,12 @@ namespace InputService.Plugin
       try
       {
         if (_eHomeHandle == null)
-          throw new InvalidOperationException("Cannot suspend, device is not active");
+        {
+#if DEBUG
+          DebugWriteLine("Warning: Device is not active");
+#endif
+          return;
+        }
 
         WriteSync(StopPacket);
 
@@ -289,10 +295,17 @@ namespace InputService.Plugin
       try
       {
         if (String.IsNullOrEmpty(Driver.Find(_deviceGuid)))
-          throw new InvalidOperationException("Device not available");
+        {
+#if DEBUG
+          DebugWriteLine("Device not found");
+#endif
+          return;
+        }
 
         if (_eHomeHandle != null)
-          throw new InvalidOperationException("Cannot resume, device is active");
+          throw new InvalidOperationException("Cannot resume, device is already active");
+
+        //_notifyWindow.RegisterDeviceArrival();
 
         OpenDevice();
         StartReadThread();
@@ -381,7 +394,7 @@ namespace InputService.Plugin
     public override void Send(IrCode code, int port)
     {
 #if DEBUG
-      DebugWriteLine("Send()");
+      DebugWrite("Send(): ");
       DebugDump(code.TimingData);
 #endif
 
@@ -413,6 +426,10 @@ namespace InputService.Plugin
     /// </summary>
     void InitializeDevice()
     {
+#if DEBUG
+      DebugWriteLine("InitializeDevice()");
+#endif
+
       WriteSync(ResetPacket); // Added 18-March-2008 to see what SMK devices think of it...
       WriteSync(StartPacket);
 
@@ -650,7 +667,7 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Opens the device.
+    /// Opens the device handles and registers for device removal notification.
     /// </summary>
     void OpenDevice()
     {
@@ -676,13 +693,20 @@ namespace InputService.Plugin
         throw new Win32Exception(lastError);
       }
 
-      _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
+      bool success = false;
+      _eHomeHandle.DangerousAddRef(ref success);
+      if (success)
+        _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
+#if DEBUG
+      else
+        DebugWriteLine("Warning: Failed to initialize device removal notification");
+#endif
 
       _deviceAvailable = true;
     }
 
     /// <summary>
-    /// Close all handles to the device.
+    /// Close all handles to the device and unregisters device removal notification.
     /// </summary>
     void CloseDevice()
     {
@@ -702,12 +726,17 @@ namespace InputService.Plugin
 
       _notifyWindow.UnregisterDeviceRemoval();
 
+      _eHomeHandle.DangerousRelease();
+
       CloseHandle(_eHomeHandle);
 
       _eHomeHandle.Dispose();
       _eHomeHandle = null;
     }
 
+    /// <summary>
+    /// Called when device arrival is notified.
+    /// </summary>
     void OnDeviceArrival()
     {
 #if DEBUG
@@ -718,6 +747,9 @@ namespace InputService.Plugin
       StartReadThread();
       InitializeDevice();
     }
+    /// <summary>
+    /// Called when device removal is notified.
+    /// </summary>
     void OnDeviceRemoval()
     {
 #if DEBUG
@@ -741,15 +773,15 @@ namespace InputService.Plugin
       SafeHandle safeWaitHandle = waitHandle.SafeWaitHandle;
       WaitHandle[] waitHandles = new WaitHandle[] { waitHandle, _stopReadThread };
 
-      IntPtr deviceBufferPtr = IntPtr.Zero;
+      IntPtr deviceBufferPtr  = IntPtr.Zero;
+
+      bool success = false;
+      safeWaitHandle.DangerousAddRef(ref success);
+      if (!success)
+        throw new InvalidOperationException("Failed to initialize safe wait handle");
 
       try
       {
-        bool success = false;
-        safeWaitHandle.DangerousAddRef(ref success);
-        if (!success)
-          throw new InvalidOperationException("Failed to initialize safe wait handle");
-
         IntPtr dangerousWaitHandle = safeWaitHandle.DangerousGetHandle();
 
         DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
@@ -797,7 +829,7 @@ namespace InputService.Plugin
           Marshal.Copy(deviceBufferPtr, packetBytes, 0, bytesRead);
 
 #if DEBUG
-          DebugWriteLine("Received data:");
+          DebugWrite("Received bytes ({0}): ", bytesRead);
           DebugDump(packetBytes);
 #endif
 
@@ -953,7 +985,7 @@ namespace InputService.Plugin
     void WriteSync(byte[] data)
     {
 #if DEBUG
-      DebugWriteLine("WriteSync({0} bytes)", data.Length);
+      DebugWrite("WriteSync({0}): ", data.Length);
       DebugDump(data);
 #endif
 
@@ -1023,8 +1055,6 @@ namespace InputService.Plugin
     int[] GetTimingDataFromPacket(byte[] packet)
     {
 #if DEBUG
-      DebugWriteLine("GetTimingDataFromPacket()");
-
       // TODO: Remove this try/catch block once the IndexOutOfRangeException is corrected...
       try
 #endif
@@ -1095,7 +1125,7 @@ namespace InputService.Plugin
           timingData.Add(len * TimingResolution);
 
 #if DEBUG
-        DebugWriteLine("Received:");
+        DebugWrite("Received timing:    ");
         DebugDump(timingData.ToArray());
 #endif
 
@@ -1105,7 +1135,7 @@ namespace InputService.Plugin
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
-        DebugWriteLine("Method Input:");
+        DebugWrite("Method Input:       ");
         DebugDump(packet);
 
         return null;
