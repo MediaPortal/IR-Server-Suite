@@ -1171,15 +1171,18 @@ namespace Translator
     {
       Advanced advanced = new Advanced();
       advanced.ProcessPriority = Program.Config.ProcessPriority;
+      advanced.HideTrayIcon = Program.Config.HideTrayIcon;
 
       if (advanced.ShowDialog(this) == DialogResult.OK)
       {
         if (!advanced.ProcessPriority.Equals(Program.Config.ProcessPriority, StringComparison.OrdinalIgnoreCase))
         {
           Program.Config.ProcessPriority = advanced.ProcessPriority;
-
           Program.AdjustPriority(Program.Config.ProcessPriority);
-        }        
+        }
+
+        Program.Config.HideTrayIcon = advanced.HideTrayIcon;
+        Program.TrayIcon.Visible = !Program.Config.HideTrayIcon;
       }
     }
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)

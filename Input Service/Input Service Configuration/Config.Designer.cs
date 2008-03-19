@@ -39,6 +39,9 @@ namespace InputService.Configuration
       this.toolStripButtonDetect = new System.Windows.Forms.ToolStripButton();
       this.toolStripButtonAdvancedSettings = new System.Windows.Forms.ToolStripButton();
       this.toolStripButtonHelp = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+      this.toolStripButtonStop = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonStart = new System.Windows.Forms.ToolStripButton();
       this.groupBoxTransceiver.SuspendLayout();
       this.toolStrip.SuspendLayout();
       this.SuspendLayout();
@@ -100,7 +103,10 @@ namespace InputService.Configuration
       this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonDetect,
             this.toolStripButtonAdvancedSettings,
-            this.toolStripButtonHelp});
+            this.toolStripButtonHelp,
+            this.toolStripSeparator,
+            this.toolStripButtonStop,
+            this.toolStripButtonStart});
       this.toolStrip.Location = new System.Drawing.Point(0, 0);
       this.toolStrip.Name = "toolStrip";
       this.toolStrip.Size = new System.Drawing.Size(504, 25);
@@ -136,12 +142,36 @@ namespace InputService.Configuration
       this.toolStripButtonHelp.Text = "Help";
       this.toolStripButtonHelp.Click += new System.EventHandler(this.toolStripButtonHelp_Click);
       // 
+      // toolStripSeparator
+      // 
+      this.toolStripSeparator.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.toolStripSeparator.Name = "toolStripSeparator";
+      this.toolStripSeparator.Size = new System.Drawing.Size(6, 25);
+      // 
+      // toolStripButtonStop
+      // 
+      this.toolStripButtonStop.Enabled = false;
+      this.toolStripButtonStop.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonStop.Image")));
+      this.toolStripButtonStop.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonStop.Name = "toolStripButtonStop";
+      this.toolStripButtonStop.Size = new System.Drawing.Size(49, 22);
+      this.toolStripButtonStop.Text = "Stop";
+      this.toolStripButtonStop.ToolTipText = "Stop the Input Service";
+      // 
+      // toolStripButtonStart
+      // 
+      this.toolStripButtonStart.Enabled = false;
+      this.toolStripButtonStart.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonStart.Image")));
+      this.toolStripButtonStart.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonStart.Name = "toolStripButtonStart";
+      this.toolStripButtonStart.Size = new System.Drawing.Size(51, 22);
+      this.toolStripButtonStart.Text = "Start";
+      this.toolStripButtonStart.ToolTipText = "Start the Input Service";
+      // 
       // Config
       // 
-      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(504, 432);
       this.Controls.Add(this.toolStrip);
       this.Controls.Add(this.groupBoxTransceiver);
@@ -152,6 +182,7 @@ namespace InputService.Configuration
       this.Name = "Config";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Input Service Configuration";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Config_FormClosing);
       this.groupBoxTransceiver.ResumeLayout(false);
       this.toolStrip.ResumeLayout(false);
       this.toolStrip.PerformLayout();
@@ -171,5 +202,8 @@ namespace InputService.Configuration
     private System.Windows.Forms.ToolStripButton toolStripButtonDetect;
     private System.Windows.Forms.ToolStripButton toolStripButtonAdvancedSettings;
     private System.Windows.Forms.ToolStripButton toolStripButtonHelp;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+    private System.Windows.Forms.ToolStripButton toolStripButtonStop;
+    private System.Windows.Forms.ToolStripButton toolStripButtonStart;
   }
 }

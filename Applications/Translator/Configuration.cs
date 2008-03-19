@@ -21,6 +21,7 @@ namespace Translator
 
     string _serverHost;
     string _processPriority;
+    bool _hideTrayIcon;
 
     List<ButtonMapping> _systemWideMappings;
     List<ProgramSettings> _programSettings;
@@ -50,6 +51,17 @@ namespace Translator
     {
       get { return _processPriority; }
       set { _processPriority = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to hide the tray icon.
+    /// </summary>
+    /// <value><c>true</c> to hide the tray icon; otherwise, <c>false</c>.</value>
+    [XmlElement]
+    public bool HideTrayIcon
+    {
+      get { return _hideTrayIcon; }
+      set { _hideTrayIcon = value; }
     }
 
     /// <summary>
@@ -93,6 +105,7 @@ namespace Translator
     {
       _serverHost         = "localhost";
       _processPriority    = "No Change";
+      _hideTrayIcon       = false;
 
       _systemWideMappings = new List<ButtonMapping>();
       _programSettings    = new List<ProgramSettings>();

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -37,6 +38,8 @@ namespace InputService.Configuration
     InputServiceMode _mode    = InputServiceMode.ServerMode;
     string _hostComputer      = String.Empty;
     string _processPriority   = String.Empty;
+
+    bool _serviceMonitorActive;
 
     #endregion Variables
 
@@ -151,6 +154,12 @@ namespace InputService.Configuration
         MessageBox.Show(this, "No Input Service Plugins found!", "Input Service Configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
       else
         CreateGrid();
+
+      _serviceMonitorActive = true;
+      Thread serviceMonitor = new Thread(new ThreadStart(ServiceMonitor));
+      serviceMonitor.IsBackground = true;
+      serviceMonitor.Name = "Input Service Monitor";
+      serviceMonitor.Start();
     }
 
     #endregion Constructor
@@ -224,6 +233,62 @@ namespace InputService.Configuration
     }
 
     #endregion Controls
+
+    void ServiceMonitor()
+    {
+      try
+      {
+        ServiceController inputService = null;
+
+        ServiceController[] services = ServiceController.GetServices();
+        foreach (ServiceController service in services)
+        {
+          if (service.ServiceName.Equals(Program.ServiceName, StringComparison.OrdinalIgnoreCase))
+          {
+            inputService = service;
+            break;
+          }
+        }
+
+        if (inputService == null)
+          throw new InvalidOperationException("Unable to locate Input Service, cannot monitor status");
+
+        UpdateServiceButtonsDelegate update = new UpdateServiceButtonsDelegate(UpdateServiceButtons);
+
+        while (_serviceMonitorActive)
+        {
+          this.Invoke(update, inputService.Status);
+
+          Thread.Sleep(5000);
+        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }      
+    }
+
+    delegate void UpdateServiceButtonsDelegate(ServiceControllerStatus status);
+    void UpdateServiceButtons(ServiceControllerStatus status)
+    {
+      switch (status)
+      {
+        case ServiceControllerStatus.Running:
+          toolStripButtonStop.Enabled   = true;
+          toolStripButtonStart.Enabled  = false;
+          break;
+
+        case ServiceControllerStatus.Stopped:
+          toolStripButtonStop.Enabled   = false;
+          toolStripButtonStart.Enabled  = true;
+          break;
+        
+        default:
+          toolStripButtonStop.Enabled   = false;
+          toolStripButtonStart.Enabled  = false;
+          break;
+      }
+    }
 
     void CreateGrid()
     {
@@ -398,6 +463,11 @@ namespace InputService.Configuration
       {
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
+    }
+
+    private void Config_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      _serviceMonitorActive = false;
     }
 
   }

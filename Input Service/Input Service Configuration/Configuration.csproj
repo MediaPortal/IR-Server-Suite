@@ -112,6 +112,8 @@
     <None Include="Graphics\Detect.png" />
     <None Include="Graphics\Advanced.png" />
     <Content Include="Graphics\Help.png" />
+    <Content Include="Graphics\Start.png" />
+    <Content Include="Graphics\Stop.png" />
     <Content Include="Input Service Configuration.exe.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

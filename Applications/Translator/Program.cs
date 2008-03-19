@@ -36,6 +36,16 @@ namespace Translator
 
     #endregion Constants
 
+    #region Components
+
+    static NotifyIcon _notifyIcon;
+    static MainForm _mainForm;
+    static Client _client;
+    static Configuration _config;
+    static CopyDataWM _copyDataWM;
+
+    #endregion Components
+
     #region Variables
 
     static string _learnIRFilename;
@@ -74,17 +84,12 @@ namespace Translator
       get { return _irServerInfo; }
     }
 
+    internal static NotifyIcon TrayIcon
+    {
+      get { return _notifyIcon; }
+    }
+
     #endregion Properties
-
-    #region Components
-
-    static NotifyIcon _notifyIcon;
-    static MainForm _mainForm;
-    static Client _client;
-    static Configuration _config;
-    static CopyDataWM _copyDataWM;
-
-    #endregion Components
 
     #region Main
 
@@ -110,7 +115,10 @@ namespace Translator
 
       // Check for multiple instances.
       if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
+      {
+        CopyDataWM.SendCopyDataMessage(Common.CmdPrefixShowTrayIcon);
         return;
+      }
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
@@ -194,6 +202,8 @@ namespace Translator
         {
           IrssLog.Error("Error enabling CopyData messages: {0}", ex.ToString());
         }
+
+        _notifyIcon.Visible = !_config.HideTrayIcon;
 
         Application.Run();
 
@@ -658,7 +668,6 @@ namespace Translator
 
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Connecting ...";
-      _notifyIcon.Visible = true;
 
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
@@ -1231,6 +1240,14 @@ namespace Translator
             IrssUtils.Forms.SmsKeyboard sms = new IrssUtils.Forms.SmsKeyboard();
             if (sms.ShowDialog() == DialogResult.OK)
               Keyboard.ProcessCommand(sms.TextOutput);
+          }
+        }
+        else if (command.StartsWith(Common.CmdPrefixShowTrayIcon, StringComparison.OrdinalIgnoreCase))
+        {
+          if (!_notifyIcon.Visible)
+          {
+            _notifyIcon.Visible = true;
+            _notifyIcon.ShowBalloonTip(1000, "Translator", "Icon is now visible", ToolTipIcon.Info);
           }
         }
         else

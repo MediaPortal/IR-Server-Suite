@@ -129,6 +129,8 @@ namespace IrssUtils
     public const string CmdPrefixVirtualKB    = "Show Virtual Keyboard";
     public const string CmdPrefixSmsKB        = "Show SMS Keyboard";
 
+    public const string CmdPrefixShowTrayIcon = "Show Tray Icon";
+
     // Macro Commands ...
     public const string CmdPrefixGotoLabel    = "Goto Label: ";
     public const string CmdPrefixLabel        = "Label: ";
@@ -503,7 +505,7 @@ namespace IrssUtils
         // Give new process focus ...
         if (forceFocus && !process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
         {
-          process.WaitForInputIdle(5000);
+          process.WaitForInputIdle(15000);
 
           Thread focusForcer = new Thread(new ParameterizedThreadStart(FocusForcer));
           focusForcer.Name = String.Format("Focus Forcer: {0}", process.MainWindowTitle);
@@ -545,12 +547,12 @@ namespace IrssUtils
 
         string focusedTitle = Win32.GetWindowTitle(focused);
 
-        Trace.WriteLine(String.Format("Focused: {0}", focused.ToInt32()));
+        //Trace.WriteLine(String.Format("Focused: {0}", focused.ToInt32()));
 
         if (!title.Equals(focusedTitle, StringComparison.Ordinal) && !Win32.IsWindowChild(windowHandle, focused) && Win32.GetParentWindow(focused) != windowHandle)
         {
           Win32.SetForegroundWindow(windowHandle, true);
-          Trace.WriteLine(String.Format("Give focus to {0}", windowHandle.ToInt32()));
+          //Trace.WriteLine(String.Format("Give focus to {0}", windowHandle.ToInt32()));
         }
         
         Thread.Sleep(1500);

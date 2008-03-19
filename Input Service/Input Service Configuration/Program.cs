@@ -44,6 +44,8 @@ namespace InputService.Configuration
 
     static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Input Service\\Input Service.xml");
 
+    internal const string ServiceName = "InputService";
+
     #endregion Constants
 
     #region Variables
@@ -124,7 +126,7 @@ namespace InputService.Configuration
             SaveSettings();
 
             // Restart Input Service ...
-            RestartService("InputService");
+            RestartService(ServiceName);
           }
           else
           {

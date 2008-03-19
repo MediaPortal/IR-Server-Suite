@@ -98,6 +98,7 @@ namespace Translator
       this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -105,7 +106,6 @@ namespace Translator
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
       this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-      this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.contextMenuStripButtonMapping.SuspendLayout();
       this.tabControl.SuspendLayout();
       this.tabPagePrograms.SuspendLayout();
@@ -819,6 +819,13 @@ namespace Translator
       this.serverToolStripMenuItem.Text = "&Server ...";
       this.serverToolStripMenuItem.Click += new System.EventHandler(this.serverToolStripMenuItem_Click);
       // 
+      // advancedToolStripMenuItem
+      // 
+      this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
+      this.advancedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.advancedToolStripMenuItem.Text = "&Advanced ...";
+      this.advancedToolStripMenuItem.Click += new System.EventHandler(this.advancedToolStripMenuItem_Click);
+      // 
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -862,13 +869,6 @@ namespace Translator
       // 
       this.saveFileDialog.Filter = "XML Files|*.xml";
       this.saveFileDialog.Title = "Export settings ...";
-      // 
-      // advancedToolStripMenuItem
-      // 
-      this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-      this.advancedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.advancedToolStripMenuItem.Text = "&Advanced ...";
-      this.advancedToolStripMenuItem.Click += new System.EventHandler(this.advancedToolStripMenuItem_Click);
       // 
       // MainForm
       // 
