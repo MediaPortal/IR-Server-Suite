@@ -369,10 +369,16 @@ namespace IrFileTool
         }
 
         byte[] fileData = new byte[file.Length];
-
         file.Read(fileData, 0, (int)file.Length);
 
-        _code = IrCode.FromByteArray(fileData);
+        IrCode newCode = IrCode.FromByteArray(fileData);
+        if (newCode == null)
+        {
+          MessageBox.Show(this, "Not a valid IR code file", "Bad file", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+
+        _code = newCode;
       }
 
       _fileName = openFileDialog.FileName;
@@ -394,6 +400,102 @@ namespace IrFileTool
     }
     private void buttonAttemptDecode_Click(object sender, EventArgs e)
     {
+      /*
+      int[][] timingData = new int[][]
+      {
+       
+        new int[] {
+          +2800, -750, +550, -350, +550, -350, +500, -800, +550, -800, +1400, -800, +550, -350, +500, -400, +500, -400, +500, -350, +550, -350, +500, -400, +500, -400, +500, -350, +500, -400, +500, -8400, +900, -850, +500, -400, +500, -400, +450, -400, +500, -400, +500, -400, +950, -400, +450, -850, +950, -50800,
+        },
+
+        new int[] {
+          +2700, -850, +450, -400, +500, -400, +500, -850, +500, -850, +1350, -850, +500, -400, +450, -400, +500, -400, +500, -400, +500, -400, +450, -400, +500, -400, +500, -400, +500, -400, +450, -400, +950, -400, +500, -400, +450, -450, +450, -850, +500, -400, +450, -450, +450, -400, +500, -400, +900, -900, +450, -400, +500, -400, +4600, -31750,  
+        },
+        
+        // RC6A (RC6_24)  // no, Replay
+        new int[] {
+        3107, -887, 443, -443, 443, -443, 443, -887, 443, -887, 887, -443, 443, -443, 443, -443, 443, -443, 443, -443, 443, -443, 887, -443, 443, -887, 887, -443, 443, -443, 443, -443, 443, -443, 443, -887, 443, -443, 443, -443, 443, -443, 887, -443, 443, -443, 443, -887, 443, -443, 443, -443, 443, -75000
+        },
+
+        // RC6_MCE
+        new int[] {
+          +2750, -800, +550, -350, +500, -350, +550, -800, +500, -800, +1450, // Header
+          -800, +500, -350, +550, -350, +500, -400, +500, -350, +550, -350, +500, -400, +500, -350, +500, -400, +500, -400, +500, -350, +950, -400, +500, -400, +500, -350, +500, -850, +500, -400, +450, -400, +500, -400, +500, -400, +900, -850, +500, -400, +500, -350, +500, -400, +500, -400, +500, -350, +950, -400, +500, -850, +900, -19050, 
+        },
+        // Nothing
+        new int[] {
+          +2800, -750, +550, -350, +550, -350, +500, -800, +550, -800, +1400, // Header
+          -800, +550, -350, +500, -400, +500, -400, +500, -350, +550, -350, +500, -400, +500, -400, +500, -350, +500, -400, +500, -8400, +900, -850, +500, -400, +500, -400, +450, -400, +500, -400, +500, -400, +950, -400, +450, -850, +950, -70000,
+        },
+        // RC6_24
+        new int[] {
+          +2700, -850, +450, -400, +500, -400, +500, -850, +500, -850, +1350, // Header
+          -850, +500, -400, +450, -400, +500, -400, +500, -400, +500, -400, +450, -400, +500, -400, +500, -400, +500, -400, +450, -400, +950, -400, +500, -400, +450, -450, +450, -850, +500, -400, +450, -450, +450, -400, +500, -400, +900, -900, +450, -400, +500, -400, +4600, -61750,
+        },
+
+        new int[] {
+          +2650, -900, +450, -400, +450, -450, +450, -900, +450, -850, +1350, // Header
+          -900, +450, -400, +500, -400, +450, -450, +450, -450, +450, -400, +500, -400, +450, -450, +450, -450, +450, -400, +500, -400, +900, -450, +450, -450, +450, -400, +450, -450, +5150, -31750,
+        },
+      };
+
+      for (int index = 0; index < timingData.GetLength(0); index++)
+      {
+        IrDecoder.DecodeIR(timingData[index], new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+
+        IrCode newCode = new IrCode(timingData[index]);
+        Pronto.WriteProntoFile(String.Format("C:\\{0}.ir", index), Pronto.ConvertIrCodeToProntoRaw(newCode));
+
+      }
+       */
+      /*
+
+      byte[] data = new byte[] {
+      //0x11, 0x8A, 0x08, 0x08, 0x8A, 0x11, 0x11, 0x9B, 0x11, 0x08, 0x8A, 0x08, 0x08, 0x8A, 0x08, 0x08, 0x8A, 0x08, 0x08, 0x8B, 0x07, 0x08, 0x8A, 0x08, 0x09, 0x8A, 0x08, 0x09, 0x89, 0x12, 0x08, 0x8A, 0x08, 0x09, 0x89, 0x09, 0x12, 0x8A, 0x08, 0x08, 0x8A, 0x08, 0x08, 0x93, 0x08, 0x08, 0x8A, 0x08, 0x11, 0x89, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x5C
+        0x11, 0x89, 0x08, 0x08, 0x8A, 0x11, 0x11, 0x9C, 0x11, 0x08, 0x8A, 0x08, 0x08, 0x8A, 0x09, 0x08, 0x8A, 0x08, 0x08, 0x8A, 0x08, 0x08, 0x8A, 0x08, 0x08, 0x8A, 0x09, 0x08, 0x8A, 0x09, 0x11, 0x8B, 0x08, 0x08, 0x8A, 0x08, 0x12, 0x8A, 0x08, 0x08, 0x8A, 0x09, 0x12, 0x8A, 0x08, 0x08, 0x92, 0x12, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x5C,
+      };
+
+      List<int> timingData = new List<int>();
+
+      int len = 0;
+      byte curByte;
+      int time;
+
+      for (int j = 0; j < data.Length; j++)
+      {
+        curByte = data[j];
+
+        if ((curByte & 0x80) != 0)
+          len -= (int)(curByte & 0x7F);
+        else
+          len += (int)curByte;
+
+        if ((curByte & 0x7F) != 0x7F)
+        {
+          time = len * 50;
+
+          if (timingData.Count > 0 && ((timingData[timingData.Count - 1] > 0 && time > 0) || (timingData[timingData.Count - 1] < 0 && time < 0)))
+            timingData[timingData.Count - 1] += time;
+          else
+            timingData.Add(time);
+          
+          len = 0;
+        }
+      }
+
+      if (len != 0)
+      {
+        time = len * 50;
+        
+        if ((timingData[timingData.Count - 1] > 0 && time > 0) || (timingData[timingData.Count - 1] < 0 && time < 0))
+          timingData[timingData.Count - 1] += time;
+        else
+          timingData.Add(time);
+      }
+
+      IrDecoder.DecodeIR(timingData.ToArray(), new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+       */
+
       IrDecoder.DecodeIR(_code.TimingData, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
     }
 
@@ -446,36 +548,47 @@ namespace IrFileTool
 
     void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
     {
-      if (DialogResult.Yes == MessageBox.Show(this, String.Format("Remote: {0}, {1}\nUse this protocol's carrier frequency?", Enum.GetName(typeof(IrProtocol), codeType), keyCode), "Decode IR", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+      MessageBox.Show(this, String.Format("Protocol: {0}\nCode: {1}", Enum.GetName(typeof(IrProtocol), codeType), keyCode), "Decode IR", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+      int newCarrier;
+      switch (codeType)
       {
-        switch (codeType)
-        {
-          case IrProtocol.Daewoo:     textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.JVC:        textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.Matsushita: textBoxCarrier.Text = "56800"; break;
-          case IrProtocol.Mitsubishi: textBoxCarrier.Text = "40000"; break;
-          case IrProtocol.NEC:        textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.NRC17:      textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.Panasonic:  textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.RC5:        textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC5X:       textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC6:        textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC6A:       textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC6_MCE:    textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RC6_Foxtel: textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RCA:        textBoxCarrier.Text = "56000"; break;
-          case IrProtocol.RCMM:       textBoxCarrier.Text = "36000"; break;
-          case IrProtocol.RECS80:     textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.Sharp:      textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.SIRC:       textBoxCarrier.Text = "40000"; break;
-          case IrProtocol.Toshiba:    textBoxCarrier.Text = "38000"; break;
-          case IrProtocol.XSAT:       textBoxCarrier.Text = "38000"; break;
+        case IrProtocol.Daewoo:     newCarrier = 38000; break;
+        case IrProtocol.JVC:        newCarrier = 38000; break;
+        case IrProtocol.Matsushita: newCarrier = 56800; break;
+        case IrProtocol.Mitsubishi: newCarrier = 40000; break;
+        case IrProtocol.NEC:        newCarrier = 38000; break;
+        case IrProtocol.NRC17:      newCarrier = 38000; break;
+        case IrProtocol.Panasonic:  newCarrier = 38000; break;
+        case IrProtocol.RC5:        newCarrier = 36000; break;
+        case IrProtocol.RC5X:       newCarrier = 36000; break;
+        case IrProtocol.RC6:        newCarrier = 36000; break;
+        case IrProtocol.RC6A:       newCarrier = 36000; break;
+        case IrProtocol.RC6_MCE:    newCarrier = 36000; break;
+        case IrProtocol.RC6_16:     newCarrier = 36000; break;
+        case IrProtocol.RC6_20:     newCarrier = 36000; break;
+        case IrProtocol.RC6_24:     newCarrier = 36000; break;
+        case IrProtocol.RC6_32:     newCarrier = 36000; break;
+        case IrProtocol.RCA:        newCarrier = 56000; break;
+        case IrProtocol.RCMM:       newCarrier = 36000; break;
+        case IrProtocol.RECS80:     newCarrier = 38000; break;
+        case IrProtocol.Sharp:      newCarrier = 38000; break;
+        case IrProtocol.SIRC:       newCarrier = 40000; break;
+        case IrProtocol.Toshiba:    newCarrier = 38000; break;
+        case IrProtocol.XSAT:       newCarrier = 38000; break;
 
-          default:
-            return;
-        }
+        default:
+          return;
+      }
 
-        _code.Carrier = int.Parse(textBoxCarrier.Text);
+      if (_code.Carrier == newCarrier)
+        return;
+
+      if (DialogResult.Yes == MessageBox.Show(this, String.Format("Use this protocol's carrier frequency ({0})?", newCarrier), "Decode IR", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+      {
+        textBoxCarrier.Text = newCarrier.ToString();
+
+        _code.Carrier = newCarrier;
 
         RefreshForm();
       }

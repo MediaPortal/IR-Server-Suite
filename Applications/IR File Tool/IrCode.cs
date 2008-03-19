@@ -225,7 +225,8 @@ namespace IrFileTool
         prontoData[i] = ushort.Parse(stringData[i], System.Globalization.NumberStyles.HexNumber);
 
       IrCode newCode = Pronto.ConvertProntoDataToIrCode(prontoData);
-      newCode.FinalizeData(); // Seems some old files have excessively long delays in them .. this might fix that problem ...
+      if (newCode != null)
+        newCode.FinalizeData(); // Seems some old files have excessively long delays in them .. this might fix that problem ...
 
       return newCode;
     }

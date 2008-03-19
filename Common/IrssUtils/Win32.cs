@@ -1907,9 +1907,39 @@ namespace IrssUtils
       StringBuilder lpClassName,
       int nMaxCount);
 
+    [DllImport("user32.dll")]
+    static extern bool IsChild(
+      IntPtr hWndParent,
+      IntPtr hWndChild);
+
+    [DllImport("user32.dll")]
+    static extern IntPtr GetParent(
+      IntPtr hWnd);
+
     #endregion Interop
 
     #region Methods
+
+    /// <summary>
+    /// Gets the parent window.
+    /// </summary>
+    /// <param name="child">The child.</param>
+    /// <returns>Handle to parent window.</returns>
+    public static IntPtr GetParentWindow(IntPtr child)
+    {
+      return GetParent(child);
+    }
+
+    /// <summary>
+    /// Determines whether one window is a child of another.
+    /// </summary>
+    /// <param name="parent">The parent.</param>
+    /// <param name="child">The child.</param>
+    /// <returns><c>true</c> if the window is a child of the parent; otherwise, <c>false</c>.</returns>
+    public static bool IsWindowChild(IntPtr parent, IntPtr child)
+    {
+      return IsChild(parent, child);
+    }
 
     /// <summary>
     /// Gets the desktop window handle.

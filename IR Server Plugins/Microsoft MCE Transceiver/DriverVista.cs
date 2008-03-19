@@ -523,14 +523,23 @@ namespace InputService.Plugin
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
 
-      try
-      {
-        int lastError;
+      int lastError;
 
-        using (WaitHandle waitHandle = new ManualResetEvent(false))
+      using (WaitHandle waitHandle = new ManualResetEvent(false))
+      {
+        SafeHandle safeWaitHandle = waitHandle.SafeWaitHandle;
+
+        bool success = false;
+        safeWaitHandle.DangerousAddRef(ref success);
+        if (!success)
+          throw new InvalidOperationException("Failed to initialize safe wait handle");
+
+        try
         {
+          IntPtr dangerousWaitHandle = safeWaitHandle.DangerousGetHandle();
+
           DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
-          overlapped.ClearAndSetEvent(waitHandle.SafeWaitHandle.DangerousGetHandle());
+          overlapped.ClearAndSetEvent(dangerousWaitHandle);
 
           bool deviceIoControl = DeviceIoControl(_eHomeHandle, ioControlCode, inBuffer, inBufferSize, outBuffer, outBufferSize, out bytesReturned, overlapped.Overlapped);
           lastError = Marshal.GetLastWin32Error();
@@ -549,13 +558,17 @@ namespace InputService.Plugin
               throw new Win32Exception(lastError);
           }
         }
-      }
-      catch
-      {
-        if (_eHomeHandle != null)
-          CancelIo(_eHomeHandle);
+        catch
+        {
+          if (_eHomeHandle != null)
+            CancelIo(_eHomeHandle);
 
-        throw;
+          throw;
+        }
+        finally
+        {
+          safeWaitHandle.DangerousRelease();
+        }
       }
     }
 

@@ -53,7 +53,7 @@ namespace InputService.Plugin
       /// </summary>
       Microsoft = 0,
       /// <summary>
-      /// Device is an third party SMK or Topseed MCE transceiver.
+      /// Device is a third party SMK or Topseed MCE transceiver.
       /// </summary>
       SmkTopseed = 1,
     }
@@ -212,6 +212,9 @@ namespace InputService.Plugin
 
       try
       {
+        if (_readHandle == null)
+          throw new InvalidOperationException("Cannot stop, device is not active");
+
         _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
         _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
 
@@ -223,12 +226,14 @@ namespace InputService.Plugin
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
+        throw;
+      }
 #else
       catch
       {
-#endif
         throw;
       }
+#endif
       finally
       {
         _notifyWindow.Dispose();
@@ -249,10 +254,28 @@ namespace InputService.Plugin
       DebugWriteLine("Suspend()");
 #endif
 
-      WriteSync(StopPacket);
+      try
+      {
+        if (_readHandle == null)
+          throw new InvalidOperationException("Cannot suspend, device is not active");
 
-      StopReadThread();
-      CloseDevice();
+        WriteSync(StopPacket);
+
+        StopReadThread();
+        CloseDevice();
+      }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+        throw;
+      }
+#else
+      catch
+      {
+        throw;
+      }
+#endif
     }
 
     /// <summary>
@@ -267,12 +290,10 @@ namespace InputService.Plugin
       try
       {
         if (String.IsNullOrEmpty(Driver.Find(_deviceGuid)))
-        {
-#if DEBUG
-          DebugWriteLine("Device not available");
-#endif
-          return;
-        }
+          throw new InvalidOperationException("Device not available");
+
+        if (_readHandle != null)
+          throw new InvalidOperationException("Cannot resume, device is active");
 
         OpenDevice();
         StartReadThread();
@@ -282,6 +303,7 @@ namespace InputService.Plugin
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
+        throw;
       }
 #else
       catch
@@ -392,6 +414,7 @@ namespace InputService.Plugin
     /// </summary>
     void InitializeDevice()
     {
+      WriteSync(ResetPacket); // Added 18-March-2008 to see what SMK devices think of it...
       WriteSync(StartPacket);
 
       // Testing some commands that MCE sends, but I don't know what they mean (what do these get back?)
@@ -749,8 +772,10 @@ namespace InputService.Plugin
         if (!success)
           throw new InvalidOperationException("Failed to initialize safe wait handle");
 
+        IntPtr dangerousWaitHandle = safeWaitHandle.DangerousGetHandle();
+
         DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
-        overlapped.ClearAndSetEvent(safeWaitHandle.DangerousGetHandle());
+        overlapped.ClearAndSetEvent(dangerousWaitHandle);
 
         deviceBufferPtr = Marshal.AllocHGlobal(DeviceBufferSize);
 

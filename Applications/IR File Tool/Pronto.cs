@@ -250,20 +250,20 @@ namespace IrFileTool
 
       for (int i = 13; i > 0; i--)
       {
-        if ((rc5 & (1 << i)) != 0)  // Logic 1 (S, P)
+        if ((rc5 & (1 << i)) != 0)  // Logic 1 (Space, Pulse)
         {
           if (currentTime > 0)
           {
             timingData.Add(currentTime);
             currentTime = 0;
           }
-          
+
           currentTime -= 900;
           timingData.Add(currentTime);
-          
+
           currentTime = 900;
         }
-        else  // Logic 0 (P, S)
+        else  // Logic 0 (Pulse, Space)
         {
           if (currentTime < 0)
           {

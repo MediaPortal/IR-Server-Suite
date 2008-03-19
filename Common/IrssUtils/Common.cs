@@ -501,8 +501,16 @@ namespace IrssUtils
         process.Start();
 
         // Give new process focus ...
-        if (!process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden && forceFocus)
+        if (forceFocus && !process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
         {
+          process.WaitForInputIdle(5000);
+
+          Thread focusForcer = new Thread(new ParameterizedThreadStart(FocusForcer));
+          focusForcer.Name = String.Format("Focus Forcer: {0}", process.MainWindowTitle);
+          focusForcer.IsBackground = true;
+          focusForcer.Start(process.MainWindowTitle);
+
+          /*
           int attempt = 0;
           while (!process.HasExited && attempt++ < 50)
           {
@@ -514,10 +522,38 @@ namespace IrssUtils
 
             Thread.Sleep(500);
           }
+          */
         }
 
         if (waitForExit)
           process.WaitForExit();
+      }
+    }
+
+    static void FocusForcer(object processObj)
+    {
+      string title = processObj as string;
+
+      if (title == null)
+        throw new ArgumentException("Argument is not a string object", "processObj");
+
+      IntPtr windowHandle;
+
+      while ((windowHandle = Win32.FindWindowByTitle(title)) != IntPtr.Zero)
+      {
+        IntPtr focused = Win32.ForegroundWindow();
+
+        string focusedTitle = Win32.GetWindowTitle(focused);
+
+        Trace.WriteLine(String.Format("Focused: {0}", focused.ToInt32()));
+
+        if (!title.Equals(focusedTitle, StringComparison.Ordinal) && !Win32.IsWindowChild(windowHandle, focused) && Win32.GetParentWindow(focused) != windowHandle)
+        {
+          Win32.SetForegroundWindow(windowHandle, true);
+          Trace.WriteLine(String.Format("Give focus to {0}", windowHandle.ToInt32()));
+        }
+        
+        Thread.Sleep(1500);
       }
     }
 

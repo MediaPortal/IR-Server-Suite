@@ -73,9 +73,21 @@ namespace InputService.Plugin
     /// </summary>
     RC6_MCE,
     /// <summary>
-    /// Foxtel's protocol variation of Philips RC6. 36kHz carrier.
+    /// RC6-6-16 protocol variation of Philips RC6. 36kHz carrier.  Used by some Vista MCE remotes (I think).
     /// </summary>
-    RC6_Foxtel,
+    RC6_16,
+    /// <summary>
+    /// RC6-6-20 protocol variation of Philips RC6. 36kHz carrier.  Used by Pace Foxtel STB's.
+    /// </summary>
+    RC6_20,
+    /// <summary>
+    /// RC6-6-24 protocol variation of Philips RC6. 36kHz carrier.  RC6A.
+    /// </summary>
+    RC6_24,
+    /// <summary>
+    /// RC6-6-32 protocol variation of Philips RC6. 36kHz carrier.  Used by Microsoft MCE remote.
+    /// </summary>
+    RC6_32,
     /// <summary>
     /// RCA protocol. 56kHz carrier.
     /// </summary>
@@ -134,16 +146,16 @@ namespace InputService.Plugin
     const ushort CustomerMce    = 0x800F;
 
     const ushort ToggleBitRC5   = 0x0800;
-    const ushort ToggleMaskRC5  = 0xF7FF;
+    const ushort ToggleMaskRC5  = 0x07FF;
 
     const uint ToggleBitRC5X    = 0x00020000;
-    const ushort ToggleMaskRC5X = 0xFFFF;
+    const uint ToggleMaskRC5X   = 0x0001FFFF;
 
     const uint RC6HeaderMask    = 0xFFFFFFF0;
 
-    const uint PrefixRC6        = 0x000FC950;
-    const uint PrefixRC6A       = 0x000FCA90;
-    const uint PrefixRC6Foxtel  = 0x000FCA93; 
+    //const uint PrefixRC6        = 0x000FC950;
+    //const uint PrefixRC6A       = 0x000FCA90;
+    //const uint PrefixRC6M2X     = 0x000FCA93; 
 
     const uint MceMouse         = 1;
     const uint MceKeyboard      = 4;
@@ -998,7 +1010,7 @@ namespace InputService.Plugin
           case RemoteDetectionState.HeaderPulse:
             if (pulse)
             {
-              if (IsBetween(duration, 750, 1100))
+              if (IsBetween(duration, 700, 1100))
               {
                 RC5_Data.State = RemoteDetectionState.HeaderSpace;
                 RC5_Data.Bit = 13;
@@ -1019,7 +1031,7 @@ namespace InputService.Plugin
 
           #region HeaderSpace
           case RemoteDetectionState.HeaderSpace:
-            if (!pulse && IsBetween(duration, 750, 1000))
+            if (!pulse && IsBetween(duration, 700, 1100))
             {
               RC5_Data.State = RemoteDetectionState.Data;
               RC5_Data.HalfBit = 0;
@@ -1034,7 +1046,7 @@ namespace InputService.Plugin
             {
               if (pulse)
               {
-                if (IsBetween(duration, 750, 1100) || IsBetween(duration, 1500, 2000))
+                if (IsBetween(duration, 700, 1100) || IsBetween(duration, 1500, 2000))
                 {
                   RC5_Data.HalfBit = (byte)((duration >= 1500) ? 0 : 1);
                   RC5_Data.Bit--;
@@ -1047,7 +1059,7 @@ namespace InputService.Plugin
               }
               else
               {
-                if (IsBetween(duration, 750, 1100) || IsBetween(duration, 1500, 2000))
+                if (IsBetween(duration, 700, 1100) || IsBetween(duration, 1500, 2000))
                 {
                   RC5_Data.HalfBit = (byte)((duration >= 1500) ? 0 : 1);
                   RC5_Data.Bit--;
@@ -1064,40 +1076,28 @@ namespace InputService.Plugin
                   RC5_Data.Bit += 5;
                 }
               }
-              break;
             }
-
-            if (IsBetween(duration, 750, 1100))
+            else // RC5_Data.HalfBit != 0
             {
-              RC5_Data.HalfBit = 0;
-              ignored = false;
+              if (IsBetween(duration, 700, 1100))
+              {
+                RC5_Data.HalfBit = 0;
+                ignored = false;
 
-              if ((RC5_Data.Bit == 1) && pulse)
-                RC5_Data.State = RemoteDetectionState.KeyCode;
-            }
-            else if (RC5_Data.Bit == 7 && (IsBetween(duration, 3400, 3800) || IsBetween(duration, 4300, 4700)))
-            {
-              RC5_Data.HalfBit = (byte)((duration >= 4300) ? 0 : 1);
-              RC5_Data.Code <<= 6;
-              RC5_Data.Bit += 6;
-              ignored = false;
+                if ((RC5_Data.Bit == 1) && pulse)
+                  RC5_Data.State = RemoteDetectionState.KeyCode;
+              }
+              else if (RC5_Data.Bit == 7 && (IsBetween(duration, 3400, 3800) || IsBetween(duration, 4300, 4700)))
+              {
+                RC5_Data.HalfBit = (byte)((duration >= 4300) ? 0 : 1);
+                RC5_Data.Code <<= 6;
+                RC5_Data.Bit += 6;
+                ignored = false;
+              }
             }
 
             break;
           #endregion Data
-
-          #region Leading
-          case RemoteDetectionState.Leading:
-            if (pulse)
-              break;
-
-            if (duration > 10000)
-            {
-              RC5_Data.State = RemoteDetectionState.HeaderPulse;
-              ignored = false;
-            }
-            break;
-          #endregion Leading
 
         }
 
@@ -1156,14 +1156,14 @@ namespace InputService.Plugin
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 2600, 3300))
             {
-              RC6_Data.State = RemoteDetectionState.HeaderSpace;
-              RC6_Data.Header = 0x000FC000;
-              RC6_Data.Bit = 12;
-              RC6_Data.HalfBit = 0;
-              RC6_Data.Code = 0;
-              RC6_Data.LongPulse = false;
-              RC6_Data.LongSpace = false;
-              RC6_Data.Toggle &= 0xFE;
+              RC6_Data.State      = RemoteDetectionState.HeaderSpace;
+              RC6_Data.Header     = 0x000FC000;
+              RC6_Data.Bit        = 12;
+              RC6_Data.HalfBit    = 0;
+              RC6_Data.Code       = 0;
+              RC6_Data.LongPulse  = false;
+              RC6_Data.LongSpace  = false;
+              RC6_Data.Toggle     &= 0xFE;
               ignored = false;
             }
             break;
@@ -1240,27 +1240,8 @@ namespace InputService.Plugin
             }
 
             if (!ignored && RC6_Data.Bit == 0)
-            {
-              if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6)
-              {
-                RC6_Data.Bit = 16;
-              }
-              //else if (RC6_Data.Header == PrefixRC6Foxtel)
-              //{
-                //RC6_Data.Bit = 20;
-              //}
-              else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
-              {
-                RC6_Data.Bit = 32;
-              }
-              else
-              {
-                ignored = true;
-                break;
-              }
-
               RC6_Data.State = RemoteDetectionState.Data;
-            }
+
             break;
           #endregion PreData
 
@@ -1274,8 +1255,8 @@ namespace InputService.Plugin
                 RC6_Data.LongPulse = true;
                 RC6_Data.HalfBit++;
 
-                if (RC6_Data.Bit == 1)
-                  RC6_Data.State = RemoteDetectionState.KeyCode;
+                //if (RC6_Data.Bit == 1)
+                  //RC6_Data.State = RemoteDetectionState.KeyCode;
               }
               else if (!pulse && IsBetween(duration, 300, 600))
               {
@@ -1283,6 +1264,12 @@ namespace InputService.Plugin
                 RC6_Data.LongSpace = true;
                 RC6_Data.HalfBit++;
               }
+              else if (!pulse && duration > 4000)
+              {
+                if (RC6_Data.Bit == 16 || RC6_Data.Bit == 20 || RC6_Data.Bit == 24 || RC6_Data.Bit == 32)
+                  RC6_Data.State = RemoteDetectionState.KeyCode;
+              }
+
               break;
             }
 
@@ -1294,16 +1281,28 @@ namespace InputService.Plugin
 
               if (IsBetween(duration, 750, 1000))
               {
-                RC6_Data.Bit--;
+                RC6_Data.Bit++;
+                RC6_Data.Code = RC6_Data.Code << 1;
+                
                 RC6_Data.LongSpace = true;
                 RC6_Data.HalfBit += 2;
                 ignored = false;
               }
               else if (IsBetween(duration, 300, 600))
               {
-                RC6_Data.Bit--;
+                RC6_Data.Bit++;
+                RC6_Data.Code = RC6_Data.Code << 1;
+
                 RC6_Data.HalfBit++;
                 ignored = false;
+              }
+              else if (duration > 4000)
+              {
+                RC6_Data.Bit++;
+                RC6_Data.Code = RC6_Data.Code << 1;
+
+                if (RC6_Data.Bit == 16 || RC6_Data.Bit == 20 || RC6_Data.Bit == 24 || RC6_Data.Bit == 32)
+                  RC6_Data.State = RemoteDetectionState.KeyCode;
               }
             }
             else if (RC6_Data.LongSpace)
@@ -1313,28 +1312,38 @@ namespace InputService.Plugin
               if (!pulse)
                 break;
 
-              if (RC6_Data.Bit == 32)
-                RC6_Data.Bit = 24;
+              //if (RC6_Data.Bit == 32)
+                //RC6_Data.Bit = 24;
 
               if (IsBetween(duration, 750, 1000))
               {
-                RC6_Data.Bit--;
-                RC6_Data.Code |= (uint)1 << RC6_Data.Bit;
+                RC6_Data.Bit++;
+                RC6_Data.Code = RC6_Data.Code << 1;
+                RC6_Data.Code |= 1;
+                //RC6_Data.Code |= (uint)1 << RC6_Data.Bit;
+                
                 RC6_Data.LongPulse = true;
                 RC6_Data.HalfBit += 2;
                 ignored = false;
 
-                if (RC6_Data.Bit == 1)
-                  RC6_Data.State = RemoteDetectionState.KeyCode;
+                //if (RC6_Data.Bit == 1)
+                  //RC6_Data.State = RemoteDetectionState.KeyCode;
               }
               else if (IsBetween(duration, 300, 600))
               {
-                RC6_Data.Bit--;
-                RC6_Data.Code |= (uint)1 << RC6_Data.Bit;
+                RC6_Data.Bit++;
+                RC6_Data.Code = RC6_Data.Code << 1;
+                RC6_Data.Code |= 1;
+
                 RC6_Data.HalfBit++;
                 ignored = false;
 
-                if (RC6_Data.Bit == 0)
+                //if (RC6_Data.Bit == 0)
+                  //RC6_Data.State = RemoteDetectionState.KeyCode;
+              }
+              else if (duration > 4000)
+              {
+                if (RC6_Data.Bit == 16 || RC6_Data.Bit == 20 || RC6_Data.Bit == 24 || RC6_Data.Bit == 32)
                   RC6_Data.State = RemoteDetectionState.KeyCode;
               }
             }
@@ -1363,7 +1372,7 @@ namespace InputService.Plugin
 
             protocolVariation = IrProtocol.RC6_MCE;
           }
-          else // Standard RC6 or Non-MCE variations
+          else // Non-MCE RC6 variations
           {
             bool toggleOn = (RC6_Data.Toggle & 1) == 1;
 
@@ -1376,11 +1385,36 @@ namespace InputService.Plugin
             else
               RC6_Data.Toggle = 4;
 
-            //if (RC6_Data.Header == PrefixRC6Foxtel)
-              //protocolVariation = IrProtocol.RC6_Foxtel;
-            //else
-            if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
+            if (RC6_Data.Bit == 16)
+              protocolVariation = IrProtocol.RC6_16;
+            else if (RC6_Data.Bit == 20)
+              protocolVariation = IrProtocol.RC6_20;
+            else if (RC6_Data.Bit == 24)
+              protocolVariation = IrProtocol.RC6_24;
+            else if (RC6_Data.Bit == 32)
+              protocolVariation = IrProtocol.RC6_32;
+            else
+              break;
+
+            /*
+            if (RC6_Data.Header == PrefixRC6M2X)
+            {
+              if (RC6_Data.Bit == 16)
+                protocolVariation = IrProtocol.RC6_16;
+              else if (RC6_Data.Bit == 20)
+                protocolVariation = IrProtocol.RC6_20;
+              else if (RC6_Data.Bit == 24)
+                protocolVariation = IrProtocol.RC6_24;
+              else if (RC6_Data.Bit == 32)
+                protocolVariation = IrProtocol.RC6_32;
+              else
+                break;
+            }
+            else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
+            {
               protocolVariation = IrProtocol.RC6A;
+            }
+            */
           }
 
           remoteCallback(protocolVariation, RC6_Data.Code, first);

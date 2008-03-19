@@ -300,8 +300,14 @@ namespace InputService.Plugin
 
       if (_driver != null)
       {
-        _driver.Stop();
-        _driver = null;
+        try
+        {
+          _driver.Stop();
+        }
+        finally
+        {
+          _driver = null;
+        }
       }
     }
 
