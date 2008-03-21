@@ -1908,6 +1908,7 @@ namespace IrssUtils
       int nMaxCount);
 
     [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool IsChild(
       IntPtr hWndParent,
       IntPtr hWndChild);

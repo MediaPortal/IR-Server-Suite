@@ -24,7 +24,7 @@ namespace InputService.Plugin
     #region Interop
 
     [DllImport("winmm.dll")]
-    static extern int midiInGetNumDevs();
+    internal static extern int midiInGetNumDevs();
 
     [DllImport("winmm.dll")]
     static extern uint midiInOpen(ref int lphMidiIn, int uDeviceID, MidiInProc dwCallback, int dwInstance, Int64 dwFlags);
@@ -249,7 +249,7 @@ namespace InputService.Plugin
       Marshal.FreeHGlobal(_midiHeader.data);
 
       while ((error = midiInClose(_midiInHandle)) == MIDIERR_STILLPLAYING)
-        Thread.Sleep(5);
+        Thread.Sleep(50);
     }
 
     /// <summary>

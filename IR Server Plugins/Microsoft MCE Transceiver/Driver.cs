@@ -390,8 +390,11 @@ namespace InputService.Plugin
     {
       try
       {
+#if TEST_APPLICATION
+        string path = fileName;
+#else
         string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), String.Format("IR Server Suite\\Logs\\{0}", fileName));
-        
+#endif
         _debugFile = new StreamWriter(path, false);
         _debugFile.AutoFlush = true;
       }

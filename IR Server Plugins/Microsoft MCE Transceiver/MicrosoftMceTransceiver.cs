@@ -1,5 +1,3 @@
-//#define TEST_APPLICATION
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,6 +53,7 @@ namespace InputService.Plugin
   public class MicrosoftMceTransceiver : PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
 
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
 #if TEST_APPLICATION
 
     static MicrosoftMceTransceiver device;

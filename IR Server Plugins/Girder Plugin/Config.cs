@@ -129,7 +129,12 @@ namespace InputService.Plugin
     {
       listViewPlugins.Clear();
 
-      string[] files = Directory.GetFiles(textBoxPluginFolder.Text, "*.dll", SearchOption.TopDirectoryOnly);
+      string folder = textBoxPluginFolder.Text;
+
+      if (String.IsNullOrEmpty(folder))
+        return;
+
+      string[] files = Directory.GetFiles(folder, "*.dll", SearchOption.TopDirectoryOnly);
       if (files.Length > 0)
         foreach (string file in files)
           listViewPlugins.Items.Add(Path.GetFileName(file));

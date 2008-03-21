@@ -261,8 +261,13 @@ namespace InputService.Plugin
 
     #region Interop
 
-    [DllImport("kernel32", CharSet = CharSet.Auto)]
-    extern static IntPtr LoadLibrary(
+    [DllImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool SetDllDirectory(
+      string lpPathName);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+    static extern IntPtr LoadLibrary(
       string dllFileName);
 
     [DllImport("kernel32.dll", CharSet = CharSet.Ansi, ExactSpelling = true)]
@@ -270,9 +275,9 @@ namespace InputService.Plugin
       IntPtr module,
       string functionName);
 
-    [DllImport("kernel32")]
+    [DllImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    extern static bool FreeLibrary(
+    static extern bool FreeLibrary(
       IntPtr handle);
 
     #endregion Interop
@@ -1111,6 +1116,10 @@ typedef void * (WINAPI *t_get_script_state)         (); // call this to get the 
 
     bool LoadGirderPlugin(string girderPluginFile)
     {
+      string folder = Path.GetDirectoryName(girderPluginFile);
+      string parent = Directory.GetParent(folder).FullName;
+      SetDllDirectory(parent);
+
       _pluginDll = LoadLibrary(girderPluginFile);
       if (_pluginDll == IntPtr.Zero)
         throw new InvalidOperationException(String.Format("Failed to call LoadLibrary on girder plugin dll ({0})", girderPluginFile));

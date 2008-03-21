@@ -70,7 +70,7 @@ namespace IrFileTool
             this.serverToolStripMenuItem});
       this.menuStrip.Location = new System.Drawing.Point(0, 0);
       this.menuStrip.Name = "menuStrip";
-      this.menuStrip.Size = new System.Drawing.Size(504, 24);
+      this.menuStrip.Size = new System.Drawing.Size(512, 24);
       this.menuStrip.TabIndex = 0;
       this.menuStrip.Text = "menuStrip";
       // 
@@ -168,7 +168,7 @@ namespace IrFileTool
       this.textBoxPronto.Multiline = true;
       this.textBoxPronto.Name = "textBoxPronto";
       this.textBoxPronto.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-      this.textBoxPronto.Size = new System.Drawing.Size(312, 240);
+      this.textBoxPronto.Size = new System.Drawing.Size(320, 240);
       this.textBoxPronto.TabIndex = 1;
       // 
       // buttonSetCarrier
@@ -186,7 +186,7 @@ namespace IrFileTool
       // checkBoxStoreBinary
       // 
       this.checkBoxStoreBinary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.checkBoxStoreBinary.Location = new System.Drawing.Point(336, 248);
+      this.checkBoxStoreBinary.Location = new System.Drawing.Point(344, 248);
       this.checkBoxStoreBinary.Name = "checkBoxStoreBinary";
       this.checkBoxStoreBinary.Size = new System.Drawing.Size(160, 24);
       this.checkBoxStoreBinary.TabIndex = 6;
@@ -197,7 +197,7 @@ namespace IrFileTool
       // buttonAttemptDecode
       // 
       this.buttonAttemptDecode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonAttemptDecode.Location = new System.Drawing.Point(360, 208);
+      this.buttonAttemptDecode.Location = new System.Drawing.Point(368, 208);
       this.buttonAttemptDecode.Name = "buttonAttemptDecode";
       this.buttonAttemptDecode.Size = new System.Drawing.Size(112, 24);
       this.buttonAttemptDecode.TabIndex = 5;
@@ -222,7 +222,7 @@ namespace IrFileTool
       // 
       this.buttonLearn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonLearn.Enabled = false;
-      this.buttonLearn.Location = new System.Drawing.Point(360, 168);
+      this.buttonLearn.Location = new System.Drawing.Point(368, 168);
       this.buttonLearn.Name = "buttonLearn";
       this.buttonLearn.Size = new System.Drawing.Size(112, 24);
       this.buttonLearn.TabIndex = 4;
@@ -257,7 +257,7 @@ namespace IrFileTool
       this.groupBoxCarrier.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxCarrier.Controls.Add(this.textBoxCarrier);
       this.groupBoxCarrier.Controls.Add(this.buttonSetCarrier);
-      this.groupBoxCarrier.Location = new System.Drawing.Point(328, 32);
+      this.groupBoxCarrier.Location = new System.Drawing.Point(336, 32);
       this.groupBoxCarrier.Name = "groupBoxCarrier";
       this.groupBoxCarrier.Size = new System.Drawing.Size(168, 56);
       this.groupBoxCarrier.TabIndex = 2;
@@ -270,7 +270,7 @@ namespace IrFileTool
       this.groupBoxTestBlast.Controls.Add(this.buttonBlast);
       this.groupBoxTestBlast.Controls.Add(this.comboBoxPort);
       this.groupBoxTestBlast.Enabled = false;
-      this.groupBoxTestBlast.Location = new System.Drawing.Point(328, 96);
+      this.groupBoxTestBlast.Location = new System.Drawing.Point(336, 96);
       this.groupBoxTestBlast.Name = "groupBoxTestBlast";
       this.groupBoxTestBlast.Size = new System.Drawing.Size(168, 56);
       this.groupBoxTestBlast.TabIndex = 3;
@@ -292,9 +292,9 @@ namespace IrFileTool
       // 
       this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabelConnected});
-      this.statusStrip.Location = new System.Drawing.Point(0, 283);
+      this.statusStrip.Location = new System.Drawing.Point(0, 284);
       this.statusStrip.Name = "statusStrip";
-      this.statusStrip.Size = new System.Drawing.Size(504, 22);
+      this.statusStrip.Size = new System.Drawing.Size(512, 22);
       this.statusStrip.TabIndex = 7;
       this.statusStrip.Text = "statusStrip";
       // 
@@ -302,7 +302,7 @@ namespace IrFileTool
       // 
       this.toolStripStatusLabelConnected.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.toolStripStatusLabelConnected.Name = "toolStripStatusLabelConnected";
-      this.toolStripStatusLabelConnected.Size = new System.Drawing.Size(489, 17);
+      this.toolStripStatusLabelConnected.Size = new System.Drawing.Size(497, 17);
       this.toolStripStatusLabelConnected.Spring = true;
       this.toolStripStatusLabelConnected.Text = "Not connected";
       this.toolStripStatusLabelConnected.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -311,7 +311,7 @@ namespace IrFileTool
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(504, 305);
+      this.ClientSize = new System.Drawing.Size(512, 306);
       this.Controls.Add(this.statusStrip);
       this.Controls.Add(this.buttonLearn);
       this.Controls.Add(this.groupBoxTestBlast);
@@ -322,7 +322,7 @@ namespace IrFileTool
       this.Controls.Add(this.menuStrip);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MainMenuStrip = this.menuStrip;
-      this.MinimumSize = new System.Drawing.Size(512, 332);
+      this.MinimumSize = new System.Drawing.Size(520, 332);
       this.Name = "FormMain";
       this.Text = "IR File Tool";
       this.menuStrip.ResumeLayout(false);

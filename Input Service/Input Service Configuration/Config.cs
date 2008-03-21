@@ -182,9 +182,18 @@ namespace InputService.Configuration
       SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
       SourceGrid.Cells.Button cell = (SourceGrid.Cells.Button)context.Cell;
 
-      IConfigure plugin = cell.Row.Tag as IConfigure;
-      if (plugin != null)
-        plugin.Configure(this);
+      try
+      {
+        IConfigure plugin = cell.Row.Tag as IConfigure;
+        if (plugin != null)
+          plugin.Configure(this);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+
+        MessageBox.Show(this, ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
     private void TransmitChanged(object sender, EventArgs e)
     {
