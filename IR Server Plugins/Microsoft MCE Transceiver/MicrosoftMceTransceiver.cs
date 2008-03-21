@@ -1,3 +1,5 @@
+//#define TEST_APPLICATION
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -53,8 +55,9 @@ namespace InputService.Plugin
   public class MicrosoftMceTransceiver : PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
 
-    #region Debug
-#if DEBUG
+#if TEST_APPLICATION
+
+    static MicrosoftMceTransceiver device;
 
     static void xRemote(string deviceName, string code)
     {
@@ -79,29 +82,132 @@ namespace InputService.Plugin
     [STAThread]
     static void Main()
     {
-      MicrosoftMceTransceiver c = new MicrosoftMceTransceiver();
+      Console.WriteLine("Microsoft MCE Transceiver Test App");
+      Console.WriteLine("====================================");
+      Console.WriteLine();
 
-      //c.Configure(null);
+      SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
 
-      c.RemoteCallback += new RemoteHandler(xRemote);
-      c.KeyboardCallback += new KeyboardHandler(xKeyboard);
-      c.MouseCallback += new MouseHandler(xMouse);
+      try
+      {
+        device = new MicrosoftMceTransceiver();
 
-      c.Start();
+        Console.Write("Configure device? (y/n) ");
 
-      Console.WriteLine("Test App Started");
-      Console.WriteLine("=====================");
-      Console.WriteLine("Press a button on your remote to test ...");
-      Console.WriteLine("Press any key to quit ...");
+        if (Console.ReadKey().Key == ConsoleKey.Y)
+        {
+          Console.WriteLine();
 
-      Console.ReadKey();
+          Console.WriteLine("Configuring ...");
+          device.Configure(null);
+        }
+        else
+        {
+          Console.WriteLine();
+        }
 
-      c.Stop();
-      c = null;
+        device.RemoteCallback += new RemoteHandler(xRemote);
+        device.KeyboardCallback += new KeyboardHandler(xKeyboard);
+        device.MouseCallback += new MouseHandler(xMouse);
+
+        Console.WriteLine("Starting device access ...");
+
+        device.Start();
+
+        Console.Write("Learn IR? (y/n) ");
+
+        while (Console.ReadKey().Key == ConsoleKey.Y)
+        {
+          Console.WriteLine();
+          Console.WriteLine("Learning IR Command ...");
+
+          byte[] data;
+
+          switch (device.Learn(out data))
+          {
+            case LearnStatus.Failure:
+              Console.WriteLine("Learn process failed!");
+              break;
+
+            case LearnStatus.Success:
+              Console.WriteLine("Learn successful");
+
+              Console.Write("Blast IR back? (y/n) ");
+
+              if (Console.ReadKey().Key == ConsoleKey.Y)
+              {
+                Console.WriteLine();
+                Console.WriteLine("Blasting ...");
+
+                if (device.Transmit("Both", data))
+                {
+                  Console.WriteLine("Blasting successful");
+                }
+                else
+                {
+                  Console.WriteLine("Blasting failure!");
+                }
+              }
+              else
+              {
+                Console.WriteLine();
+              }
+              break;
+
+            case LearnStatus.Timeout:
+              Console.WriteLine("Learn process timed-out");
+              break;
+          }
+
+          Console.Write("Learn another IR? (y/n) ");
+        }
+        Console.WriteLine();
+        Console.WriteLine();
+
+        Console.WriteLine("Press a button on your remote ...");
+
+        Application.Run();
+
+        device.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error:");
+        Console.WriteLine(ex.ToString());
+        Console.WriteLine();
+        Console.WriteLine("");
+
+        Console.ReadKey();
+      }
+      finally
+      {
+        device = null;
+      }
+
+      SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
+    }
+
+    static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    {
+      Console.WriteLine("Power Event: {0}", Enum.GetName(typeof(PowerModes), e.Mode));
+
+      switch (e.Mode)
+      {
+
+        case PowerModes.Suspend:
+          if (device != null)
+            device.Suspend();
+          break;
+
+        case PowerModes.Resume:
+          if (device != null)
+            device.Resume();
+          break;
+
+      }
     }
 
 #endif
-    #endregion Debug
 
 
     #region Constants

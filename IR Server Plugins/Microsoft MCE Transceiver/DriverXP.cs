@@ -133,7 +133,7 @@ namespace InputService.Plugin
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       0xFF, 0xFF };
-    static readonly byte[] ResetPacket = { 0xFF, 0xFE };
+    static readonly byte[] ResetPacket = { 0xFF, 0xEE };
 
     // Misc Packets
     static readonly byte[] SetCarrierFreqPacket   = { 0x9F, 0x06, 0x01, 0x80 };
@@ -430,13 +430,14 @@ namespace InputService.Plugin
       DebugWriteLine("InitializeDevice()");
 #endif
 
-      WriteSync(ResetPacket); // Added 18-March-2008 to see what SMK devices think of it...
       WriteSync(StartPacket);
 
       // Testing some commands that MCE sends, but I don't know what they mean (what do these get back?)
       WriteSync(new byte[] { 0xFF, 0x0B }); // Looks like a request for Firmware version
       WriteSync(new byte[] { 0x9F, 0x05 });
       WriteSync(new byte[] { 0x9F, 0x0D });
+      WriteSync(new byte[] { 0x9F, 0x13 });
+      
       Thread.Sleep(4 * PacketTimeout);
 
       SetTimeout(PacketTimeout);
