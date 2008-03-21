@@ -141,21 +141,15 @@ namespace IrFileTool
 
     #region Constants
 
-    const ushort ToggleBitMce   = 0x8000;
-    const ushort ToggleMaskMce  = 0x7FFF;
-    const ushort CustomerMce    = 0x800F;
+    const uint ToggleBitMce     = 0x8000;
+    const uint ToggleMaskMce    = 0x7FFF;
+    const uint CustomerMce      = 0x800F;
 
-    const ushort ToggleBitRC5   = 0x0800;
-    const ushort ToggleMaskRC5  = 0x07FF;
+    const uint ToggleBitRC5     = 0x0800;
+    const uint ToggleMaskRC5    = 0x07FF;
 
     const uint ToggleBitRC5X    = 0x00020000;
     const uint ToggleMaskRC5X   = 0x0001FFFF;
-
-    const uint RC6HeaderMask    = 0xFFFFFFF0;
-
-    //const uint PrefixRC6        = 0x000FC950;
-    //const uint PrefixRC6A       = 0x000FCA90;
-    //const uint PrefixRC6M2X     = 0x000FCA93; 
 
     const uint MceMouse         = 1;
     const uint MceKeyboard      = 4;
@@ -1132,6 +1126,7 @@ namespace IrFileTool
             remoteCallback(IrProtocol.RC5, RC5_Data.Code, first);
 
           RC5_Data.State = RemoteDetectionState.HeaderPulse;
+          ignored = false;
         }
 
         if (ignored && (RC5_Data.State != RemoteDetectionState.Leading) && (RC5_Data.State != RemoteDetectionState.HeaderPulse))
@@ -1254,9 +1249,6 @@ namespace IrFileTool
                 ignored = false;
                 RC6_Data.LongPulse = true;
                 RC6_Data.HalfBit++;
-
-                //if (RC6_Data.Bit == 1)
-                  //RC6_Data.State = RemoteDetectionState.KeyCode;
               }
               else if (!pulse && IsBetween(duration, 300, 600))
               {
@@ -1276,6 +1268,7 @@ namespace IrFileTool
             if (RC6_Data.LongPulse)
             {
               RC6_Data.LongPulse = false;
+
               if (pulse)
                 break;
 
@@ -1315,19 +1308,18 @@ namespace IrFileTool
               //if (RC6_Data.Bit == 32)
                 //RC6_Data.Bit = 24;
 
+              //if (RC6_Data.Bit == 24)
+                //RC6_Data.Bit = 32;
+
               if (IsBetween(duration, 750, 1000))
               {
                 RC6_Data.Bit++;
                 RC6_Data.Code = RC6_Data.Code << 1;
                 RC6_Data.Code |= 1;
-                //RC6_Data.Code |= (uint)1 << RC6_Data.Bit;
                 
                 RC6_Data.LongPulse = true;
                 RC6_Data.HalfBit += 2;
                 ignored = false;
-
-                //if (RC6_Data.Bit == 1)
-                  //RC6_Data.State = RemoteDetectionState.KeyCode;
               }
               else if (IsBetween(duration, 300, 600))
               {
@@ -1337,9 +1329,6 @@ namespace IrFileTool
 
                 RC6_Data.HalfBit++;
                 ignored = false;
-
-                //if (RC6_Data.Bit == 0)
-                  //RC6_Data.State = RemoteDetectionState.KeyCode;
               }
               else if (duration > 4000)
               {
@@ -1395,37 +1384,17 @@ namespace IrFileTool
               protocolVariation = IrProtocol.RC6_32;
             else
               break;
-
-            /*
-            if (RC6_Data.Header == PrefixRC6M2X)
-            {
-              if (RC6_Data.Bit == 16)
-                protocolVariation = IrProtocol.RC6_16;
-              else if (RC6_Data.Bit == 20)
-                protocolVariation = IrProtocol.RC6_20;
-              else if (RC6_Data.Bit == 24)
-                protocolVariation = IrProtocol.RC6_24;
-              else if (RC6_Data.Bit == 32)
-                protocolVariation = IrProtocol.RC6_32;
-              else
-                break;
-            }
-            else if ((RC6_Data.Header & RC6HeaderMask) == PrefixRC6A)
-            {
-              protocolVariation = IrProtocol.RC6A;
-            }
-            */
           }
 
           remoteCallback(protocolVariation, RC6_Data.Code, first);
 
           RC6_Data.State = RemoteDetectionState.HeaderPulse;
+          ignored = false;
         }
 
         if (ignored && (RC6_Data.State != RemoteDetectionState.HeaderPulse))
           RC6_Data.State = RemoteDetectionState.HeaderPulse;
       }
-
     }
     static void DetectRCA(int[] timingData, RemoteCallback remoteCallback)
     {

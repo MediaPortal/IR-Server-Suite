@@ -39,9 +39,9 @@ namespace IRServer
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-      this.groupBoxAbstractRemoteModel = new System.Windows.Forms.GroupBox();
       this.buttonExclusions = new System.Windows.Forms.Button();
       this.checkBoxAbstractRemoteMode = new System.Windows.Forms.CheckBox();
+      this.groupBoxAbstractRemoteModel = new System.Windows.Forms.GroupBox();
       this.groupBoxPriority = new System.Windows.Forms.GroupBox();
       this.labelPriority = new System.Windows.Forms.Label();
       this.comboBoxPriority = new System.Windows.Forms.ComboBox();
@@ -152,19 +152,6 @@ namespace IRServer
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
       // 
-      // groupBoxAbstractRemoteModel
-      // 
-      this.groupBoxAbstractRemoteModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBoxAbstractRemoteModel.Controls.Add(this.buttonExclusions);
-      this.groupBoxAbstractRemoteModel.Controls.Add(this.checkBoxAbstractRemoteMode);
-      this.groupBoxAbstractRemoteModel.Location = new System.Drawing.Point(8, 136);
-      this.groupBoxAbstractRemoteModel.Name = "groupBoxAbstractRemoteModel";
-      this.groupBoxAbstractRemoteModel.Size = new System.Drawing.Size(384, 56);
-      this.groupBoxAbstractRemoteModel.TabIndex = 1;
-      this.groupBoxAbstractRemoteModel.TabStop = false;
-      this.groupBoxAbstractRemoteModel.Text = "Abstract Remote Model";
-      // 
       // buttonExclusions
       // 
       this.buttonExclusions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -176,6 +163,7 @@ namespace IRServer
       this.buttonExclusions.Text = "Exclusions";
       this.toolTips.SetToolTip(this.buttonExclusions, "Configure Abstract Remote Model exclusions");
       this.buttonExclusions.UseVisualStyleBackColor = true;
+      this.buttonExclusions.Visible = false;
       this.buttonExclusions.Click += new System.EventHandler(this.buttonExclusions_Click);
       // 
       // checkBoxAbstractRemoteMode
@@ -190,6 +178,19 @@ namespace IRServer
       this.toolTips.SetToolTip(this.checkBoxAbstractRemoteMode, "Enable automatic abstract remote model translation");
       this.checkBoxAbstractRemoteMode.UseVisualStyleBackColor = true;
       this.checkBoxAbstractRemoteMode.CheckedChanged += new System.EventHandler(this.checkBoxAbstractRemoteMode_CheckedChanged);
+      // 
+      // groupBoxAbstractRemoteModel
+      // 
+      this.groupBoxAbstractRemoteModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxAbstractRemoteModel.Controls.Add(this.buttonExclusions);
+      this.groupBoxAbstractRemoteModel.Controls.Add(this.checkBoxAbstractRemoteMode);
+      this.groupBoxAbstractRemoteModel.Location = new System.Drawing.Point(8, 136);
+      this.groupBoxAbstractRemoteModel.Name = "groupBoxAbstractRemoteModel";
+      this.groupBoxAbstractRemoteModel.Size = new System.Drawing.Size(384, 56);
+      this.groupBoxAbstractRemoteModel.TabIndex = 1;
+      this.groupBoxAbstractRemoteModel.TabStop = false;
+      this.groupBoxAbstractRemoteModel.Text = "Abstract Remote Model";
       // 
       // groupBoxPriority
       // 

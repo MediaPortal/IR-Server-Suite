@@ -23,7 +23,7 @@ namespace InputService.Configuration
     public bool AbstractRemoteMode
     {
       get { return checkBoxAbstractRemoteMode.Checked; }
-      set { checkBoxAbstractRemoteMode.Checked = value; }
+      set { buttonExclusions.Enabled = checkBoxAbstractRemoteMode.Checked = value; }
     }
     public InputServiceMode Mode
     {
@@ -105,15 +105,13 @@ namespace InputService.Configuration
 
     private void buttonExclusions_Click(object sender, EventArgs e)
     {
-      /*
-      Exclusions exclusions = new Exclusions(new string[] { "plugin1", "plugin2", "plugin3" });
-      exclusions.ExclusionList = new string[] { "plugin1" };
+      Exclusions exclusions = new Exclusions();
+      //exclusions.ExclusionList = new string[] { "Microsoft MCE:" };
 
       if (exclusions.ShowDialog(this) == DialogResult.OK)
       {
 
       }
-      */
     }
 
     private void radioButtonServer_CheckedChanged(object sender, EventArgs e)
@@ -131,7 +129,7 @@ namespace InputService.Configuration
 
     private void checkBoxAbstractRemoteMode_CheckedChanged(object sender, EventArgs e)
     {
-      //buttonExclusions.Enabled = checkBoxAbstractRemoteMode.Checked;
+      buttonExclusions.Enabled = checkBoxAbstractRemoteMode.Checked;
     }
 
     #endregion Controls

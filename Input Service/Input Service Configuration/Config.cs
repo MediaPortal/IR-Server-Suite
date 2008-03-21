@@ -238,26 +238,19 @@ namespace InputService.Configuration
     {
       try
       {
-        ServiceController inputService = null;
-
-        ServiceController[] services = ServiceController.GetServices();
-        foreach (ServiceController service in services)
-        {
-          if (service.ServiceName.Equals(Program.ServiceName, StringComparison.OrdinalIgnoreCase))
-          {
-            inputService = service;
-            break;
-          }
-        }
-
-        if (inputService == null)
-          throw new InvalidOperationException("Unable to locate Input Service, cannot monitor status");
-
         UpdateServiceButtonsDelegate update = new UpdateServiceButtonsDelegate(UpdateServiceButtons);
-
+        
         while (_serviceMonitorActive)
         {
-          this.Invoke(update, inputService.Status);
+          ServiceController[] services = ServiceController.GetServices();
+          foreach (ServiceController service in services)
+          {
+            if (service.ServiceName.Equals(Program.ServiceName, StringComparison.OrdinalIgnoreCase))
+            {
+              this.Invoke(update, service.Status);
+              break;
+            }
+          }
 
           Thread.Sleep(5000);
         }
@@ -468,6 +461,45 @@ namespace InputService.Configuration
     private void Config_FormClosing(object sender, FormClosingEventArgs e)
     {
       _serviceMonitorActive = false;
+    }
+
+    private void toolStripButtonStop_Click(object sender, EventArgs e)
+    {
+      ServiceController[] services = ServiceController.GetServices();
+      foreach (ServiceController service in services)
+      {
+        if (service.ServiceName.Equals(Program.ServiceName, StringComparison.OrdinalIgnoreCase))
+        {
+          if (service.Status == ServiceControllerStatus.Running)
+            service.Stop();
+
+          toolStripButtonStop.Enabled = false;
+          return;
+        }
+      }
+
+      string message = "Could not stop Input Service, service not found";
+      IrssLog.Error(message);
+      MessageBox.Show(this, message, "Input Service error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+    private void toolStripButtonStart_Click(object sender, EventArgs e)
+    {
+      ServiceController[] services = ServiceController.GetServices();
+      foreach (ServiceController service in services)
+      {
+        if (service.ServiceName.Equals(Program.ServiceName, StringComparison.OrdinalIgnoreCase))
+        {
+          if (service.Status == ServiceControllerStatus.Stopped)
+            service.Start();
+
+          toolStripButtonStart.Enabled = false;
+          return;
+        }
+      }
+
+      string message = "Could not start Input Service, service not found";
+      IrssLog.Error(message);
+      MessageBox.Show(this, message, "Input Service error", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 
   }

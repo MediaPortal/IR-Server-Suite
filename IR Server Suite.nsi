@@ -727,9 +727,9 @@ SectionEnd
 ;======================================
 
 !ifdef DEBUG
-Section "Keyboard Input Relay" SectionKeyboardInputRelay
+Section "Keyboard Relay" SectionKeyboardInputRelay
 !else
-Section /o "Keyboard Input Relay" SectionKeyboardInputRelay
+Section /o "Keyboard Relay" SectionKeyboardInputRelay
 !endif
 
   DetailPrint "Installing Keyboard Input Relay ..."

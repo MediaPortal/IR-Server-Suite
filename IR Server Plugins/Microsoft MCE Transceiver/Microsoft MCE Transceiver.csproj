@@ -5,13 +5,12 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>InputService.Plugin</RootNamespace>
     <AssemblyName>Microsoft MCE Transceiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>InputService.Plugin.MicrosoftMceTransceiver</StartupObject>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

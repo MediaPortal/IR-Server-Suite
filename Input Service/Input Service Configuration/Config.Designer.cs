@@ -157,6 +157,7 @@ namespace InputService.Configuration
       this.toolStripButtonStop.Size = new System.Drawing.Size(49, 22);
       this.toolStripButtonStop.Text = "Stop";
       this.toolStripButtonStop.ToolTipText = "Stop the Input Service";
+      this.toolStripButtonStop.Click += new System.EventHandler(this.toolStripButtonStop_Click);
       // 
       // toolStripButtonStart
       // 
@@ -167,11 +168,14 @@ namespace InputService.Configuration
       this.toolStripButtonStart.Size = new System.Drawing.Size(51, 22);
       this.toolStripButtonStart.Text = "Start";
       this.toolStripButtonStart.ToolTipText = "Start the Input Service";
+      this.toolStripButtonStart.Click += new System.EventHandler(this.toolStripButtonStart_Click);
       // 
       // Config
       // 
+      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(504, 432);
       this.Controls.Add(this.toolStrip);
       this.Controls.Add(this.groupBoxTransceiver);

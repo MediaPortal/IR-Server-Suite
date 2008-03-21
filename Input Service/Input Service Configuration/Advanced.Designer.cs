@@ -168,7 +168,6 @@ namespace InputService.Configuration
       // buttonExclusions
       // 
       this.buttonExclusions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonExclusions.Enabled = false;
       this.buttonExclusions.Location = new System.Drawing.Point(296, 24);
       this.buttonExclusions.Name = "buttonExclusions";
       this.buttonExclusions.Size = new System.Drawing.Size(80, 24);

@@ -90,10 +90,11 @@ namespace InputService.Plugin
       c.Start();
 
       Console.WriteLine("Test App Started");
+      Console.WriteLine("=====================");
       Console.WriteLine("Press a button on your remote to test ...");
+      Console.WriteLine("Press any key to quit ...");
 
-
-      Application.Run();
+      Console.ReadKey();
 
       c.Stop();
       c = null;

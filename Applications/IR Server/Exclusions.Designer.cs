@@ -1,4 +1,4 @@
-namespace InputService.Configuration
+namespace IRServer
 {
   partial class Exclusions
   {

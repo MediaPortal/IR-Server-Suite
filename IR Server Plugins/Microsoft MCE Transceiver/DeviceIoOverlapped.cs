@@ -6,7 +6,7 @@ namespace InputService.Plugin
 {
 
   /// <summary>
-  /// 32 and 64-bit compatible NativeOverlapped wrapper for DeviceIoControl calls.
+  /// 32 and 64-bit compatible NativeOverlapped wrapper.
   /// </summary>
   class DeviceIoOverlapped
   {
@@ -120,11 +120,11 @@ namespace InputService.Plugin
     /// <param name="eventHandle"></param>
     public void ClearAndSetEvent(IntPtr eventHandle)
     {
-      EventHandle   = eventHandle;
-      InternalLow   = IntPtr.Zero;
-      InternalHigh  = IntPtr.Zero;
-      OffsetLow     = 0;
-      OffsetHigh    = 0;
+      this.EventHandle  = eventHandle;
+      this.InternalLow  = IntPtr.Zero;
+      this.InternalHigh = IntPtr.Zero;
+      this.OffsetLow    = 0;
+      this.OffsetHigh   = 0;
     }
 
     #endregion Methods

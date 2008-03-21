@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 using IrssUtils;
 
-namespace InputService.Configuration
+namespace IRServer
 {
 
   partial class Exclusions : Form
