@@ -31,9 +31,6 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-#if TRACE
-        Trace.WriteLine(ex.ToString());
-#endif
         MessageBox.Show(ex.ToString(), "Error detecting duplicate processes", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
