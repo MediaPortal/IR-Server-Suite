@@ -65,7 +65,7 @@ namespace IrssUtils
     /// Write the supplied macro to a macro file provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to write (full macro file path).</param>
-    /// <param name="commands">The macro commands.</param>
+    /// <param name="commandList">The command list.</param>
     public static void WriteToFile(string fileName, string[] commandList)
     {
       using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8))
@@ -101,7 +101,7 @@ namespace IrssUtils
     /// <summary>
     /// Called to execute the supplied Macro.
     /// </summary>
-    /// <param name="commands">The macro commands.</param>
+    /// <param name="commandList">The command list.</param>
     /// <param name="variables">Variable List from calling code.</param>
     /// <param name="procCommand">Callback to the command handler from the calling code.</param>
     public static void ExecuteMacro(string[] commandList, VariableList variables, ProcessCommandCallback procCommand)
@@ -167,6 +167,7 @@ namespace IrssUtils
     /// <summary>
     /// Returns a list of Macros in the specified folder.
     /// </summary>
+    /// <param name="folder">The folder.</param>
     /// <param name="commandPrefix">Add the command prefix to each list item.</param>
     /// <returns>string[] of Macros.</returns>
     public static string[] GetMacroList(string folder, bool commandPrefix)
