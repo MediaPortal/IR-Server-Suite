@@ -61,6 +61,8 @@ SetCompressor /SOLID /FINAL lzma
 Name "${PRODUCT_NAME}"
 OutFile "${PRODUCT_NAME} - ${PRODUCT_VERSION}.exe"
 InstallDir ""
+#InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
+#InstallDirRegKey HKLM "${REG_UNINSTALL}" InstallPath
 !ifdef _DEBUG
     ShowInstDetails show
     ShowUninstDetails show
@@ -250,6 +252,8 @@ Page custom PageReinstall PageLeaveReinstall
     ${Endif}
 
   ${Endif}
+
+  StrCpy $INSTDIR "$DIR_INSTALL"
 !macroend
  
 ;======================================
@@ -771,7 +775,7 @@ ${MementoSectionEnd}
   ; remove Start Menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk"
 
-  ; Remove auto-runs
+  ; Remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
 
   ; remove files
@@ -810,7 +814,7 @@ ${MementoSectionEnd}
   ; remove Start Menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk"
 
-  ; Remove auto-runs
+  ; Remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Tray Launcher"
 
   ; remove files
@@ -952,6 +956,9 @@ ${MementoUnselectedSection} "Keyboard Relay" SectionKeyboardInputRelay
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
+
+  ; Remove auto-run
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" "" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" 0
@@ -1161,9 +1168,6 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;First removes all optional components
-  !insertmacro SectionList "RemoveSection"
-
   ; Use the all users context
   SetShellVarContext all
 
@@ -1179,6 +1183,9 @@ Section "Uninstall"
   ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
   Sleep 100
 
+  ;First removes all optional components
+  !insertmacro SectionList "RemoveSection"
+
   ; Remove files and uninstaller
   DetailPrint "Removing Set Top Box presets ..."
   RMDir /R "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
@@ -1193,10 +1200,6 @@ Section "Uninstall"
   DetailPrint "Removing registry keys ..."
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
   DeleteRegKey HKLM "Software\${PRODUCT_NAME}"
-  
-  ; Remove auto-runs
-  DetailPrint "Removing application auto-runs ..."
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
 
 !ifdef _DEBUG
   SetAutoClose false
