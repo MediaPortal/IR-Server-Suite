@@ -3,9 +3,9 @@
 ;
 ; (C) Copyright Aaron Dinnage, 2008
 ;======================================
-!define DEBUG
+!define _DEBUG
 
-!ifdef DEBUG
+!ifdef _DEBUG
     !define BuildType "Debug"
 !else
     !define BuildType "Release"
@@ -37,6 +37,8 @@
     !define VERSION "debug build ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
 !endif
 BrandingText "${PRODUCT_NAME} ${VERSION} by ${PRODUCT_PUBLISHER}"
+BrandingText "${PRODUCT_NAME} by Aaron Dinnage"
+SetCompressor /SOLID /FINAL lzma
 
 ;======================================
 
@@ -60,15 +62,13 @@ BrandingText "${PRODUCT_NAME} ${VERSION} by ${PRODUCT_PUBLISHER}"
 Name "${PRODUCT_NAME}"
 OutFile "${PRODUCT_NAME} - ${PRODUCT_VERSION}.exe"
 InstallDir ""
-!ifdef DEBUG
+!ifdef _DEBUG
     ShowInstDetails show
     ShowUninstDetails show
 !else
     ShowInstDetails hide
     ShowUninstDetails hide
 !endif
-BrandingText "${PRODUCT_NAME} by Aaron Dinnage"
-SetCompressor /SOLID /FINAL lzma
 CRCCheck On
 
 ; Variables
@@ -86,20 +86,37 @@ Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_COMPONENTS
 
 ; Main app install path
-!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowApp
-!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
+!define MUI_PAGE_HEADER_TEXT "Choose ${PRODUCT_NAME} Location"
+!define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install ${PRODUCT_NAME}."
+!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
+!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "${PRODUCT_NAME} Folder"
+!define MUI_DIRECTORYPAGE_VARIABLE "$DIR_INSTALL"
+#!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowApp
+#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
+#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
 !insertmacro MUI_PAGE_DIRECTORY
 
 ; MediaPortal install path
-!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreMP
-!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowMP
-!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveMP
+!define MUI_PAGE_HEADER_TEXT "Choose MediaPortal Location"
+!define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install MediaPortal plugins."
+!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
+!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "MediaPortal Folder"
+!define MUI_DIRECTORYPAGE_VARIABLE "$DIR_MEDIAPORTAL"
+#!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreMP
+#!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowMP
+#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveMP
 !insertmacro MUI_PAGE_DIRECTORY
 
 ; TV Server install path
-!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreTV
-!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowTV
-!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveTV
+  
+!define MUI_PAGE_HEADER_TEXT "Choose TV Server Location"
+!define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install TV Server plugins."
+!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
+!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "TV Server Folder"
+!define MUI_DIRECTORYPAGE_VARIABLE "$DIR_TVSERVER"
+#!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreTV
+#!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowTV
+#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveTV
 !insertmacro MUI_PAGE_DIRECTORY
 
 !insertmacro MUI_PAGE_INSTFILES
@@ -271,27 +288,27 @@ FunctionEnd
 
 Function DirectoryShowApp
   !insertmacro MUI_HEADER_TEXT "Choose ${PRODUCT_NAME} Location" "Choose the folder in which to install ${PRODUCT_NAME}."
-  !insertmacro MUI_INNERDIALOG_TEXT 1041 "${PRODUCT_NAME} Folder"
-  !insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_INSTALL"
-  !insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
+  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "${PRODUCT_NAME} Folder"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_INSTALL"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
 FunctionEnd
 
 ;======================================
 
 Function DirectoryShowMP
   !insertmacro MUI_HEADER_TEXT "Choose MediaPortal Location" "Choose the folder in which to install MediaPortal plugins."
-  !insertmacro MUI_INNERDIALOG_TEXT 1041 "MediaPortal Folder"
-  !insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_MEDIAPORTAL"
-  !insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
+  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "MediaPortal Folder"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_MEDIAPORTAL"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
 FunctionEnd
 
 ;======================================
 
 Function DirectoryShowTV
   !insertmacro MUI_HEADER_TEXT "Choose TV Server Location" "Choose the folder in which to install TV Server plugins."
-  !insertmacro MUI_INNERDIALOG_TEXT 1041 "TV Server Folder"
-  !insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_TVSERVER"
-  !insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
+  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "TV Server Folder"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_TVSERVER"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
 FunctionEnd
 
 ;======================================
@@ -407,7 +424,7 @@ Section "-Core"
   WriteRegStr HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir" "$DIR_TVSERVER"
 
   ; Write documentation
-!ifdef DEBUG
+!ifdef _DEBUG
   DetailPrint "Warning: Documentation is not included in debug builds"
 !else
   SetOutPath "$DIR_INSTALL"
@@ -562,7 +579,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef DEBUG
+!ifdef _DEBUG
 ${MementoSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
 !else
 ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
@@ -610,7 +627,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef DEBUG
+!ifdef _DEBUG
 ${MementoSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
 !else
 ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
@@ -704,7 +721,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef DEBUG
+!ifdef _DEBUG
 ${MementoSection} "Tray Launcher" SectionTrayLauncher
 !else
 ${MementoUnselectedSection} "Tray Launcher" SectionTrayLauncher
@@ -800,7 +817,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef DEBUG
+!ifdef _DEBUG
 ${MementoSection} "IR File Tool" SectionIRFileTool
 !else
 ${MementoUnselectedSection} "IR File Tool" SectionIRFileTool
@@ -830,7 +847,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef DEBUG
+!ifdef _DEBUG
 ${MementoSection} "Keyboard Relay" SectionKeyboardInputRelay
 !else
 ${MementoUnselectedSection} "Keyboard Relay" SectionKeyboardInputRelay
@@ -860,7 +877,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef DEBUG
+!ifdef _DEBUG
 ${MementoSection} "Dbox Tuner" SectionDboxTuner
 !else
 ${MementoUnselectedSection} "Dbox Tuner" SectionDboxTuner
@@ -887,7 +904,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef DEBUG
+!ifdef _DEBUG
 ${MementoSection} "HCW PVR Tuner" SectionHcwPvrTuner
 !else
 ${MementoUnselectedSection} "HCW PVR Tuner" SectionHcwPvrTuner
@@ -911,7 +928,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef DEBUG
+!ifdef _DEBUG
 ${MementoSection} "Debug Client" SectionDebugClient
 !else
 ${MementoUnselectedSection} "Debug Client" SectionDebugClient
@@ -985,7 +1002,7 @@ Section "-Complete"
   Call DumpLog
 
   ; Finish
-!ifdef DEBUG
+!ifdef _DEBUG
   SetAutoClose false
 !else
   SetAutoClose true
@@ -1017,7 +1034,7 @@ SectionEnd
 ;======================================
 ;======================================
 
-!ifndef DEBUG
+!ifndef _DEBUG
 Function un.onUninstSuccess
   HideWindow
   MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
@@ -1088,7 +1105,7 @@ SkipUninstallInputService:
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
 
-!ifdef DEBUG
+!ifdef _DEBUG
   SetAutoClose false
 !else
   SetAutoClose true
