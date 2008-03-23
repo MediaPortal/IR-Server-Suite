@@ -15,7 +15,7 @@
 
 !define PRODUCT_NAME "IR Server Suite"
 !define PRODUCT_VERSION "1.0.4.2"
-!define PRODUCT_PUBLISHER "and-81"
+!define PRODUCT_PUBLISHER "Aaron Dinnage (and-81)"
 !define PRODUCT_WEB_SITE "http://forum.team-mediaportal.com/mce_replacement_plugin-f165.html"
 
 !define REG_UNINSTALL         "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -37,7 +37,6 @@
     !define VERSION "debug build ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
 !endif
 BrandingText "${PRODUCT_NAME} ${VERSION} by ${PRODUCT_PUBLISHER}"
-BrandingText "${PRODUCT_NAME} by Aaron Dinnage"
 SetCompressor /SOLID /FINAL lzma
 
 ;======================================
@@ -76,10 +75,35 @@ var DIR_INSTALL
 var DIR_MEDIAPORTAL
 var DIR_TVSERVER
 
+#---------------------------------------------------------------------------
+# INSTALLER INTERFACE settings
+#---------------------------------------------------------------------------
 !define MUI_ABORTWARNING
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\win-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
 
+#!define MUI_HEADERIMAGE
+#!if ${VER_BUILD} == 0       # it's a stable release
+#    !define MUI_HEADERIMAGE_BITMAP          "images\header.bmp"
+#    !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard.bmp"
+#    !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard.bmp"
+#!else                       # it's an svn reöease
+#    !define MUI_HEADERIMAGE_BITMAP          "images\header-svn.bmp"
+#    !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard-svn.bmp"
+#    !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard-svn.bmp"
+#!endif
+#!define MUI_HEADERIMAGE_RIGHT
+
+!define MUI_COMPONENTSPAGE_SMALLDESC
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_FINISHPAGE_RUN      "$INSTDIR\SetupTV.exe"
+!define MUI_FINISHPAGE_RUN_TEXT "Input Service Configuration"
+
+!define MUI_UNFINISHPAGE_NOAUTOCLOSE
+
+#---------------------------------------------------------------------------
+# INSTALLER INTERFACE
+#---------------------------------------------------------------------------
 !insertmacro MUI_PAGE_WELCOME
 Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_LICENSE "Documentation\LICENSE.GPL"
@@ -120,6 +144,7 @@ Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_DIRECTORY
 
 !insertmacro MUI_PAGE_INSTFILES
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW FinishShow
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_WELCOME
@@ -376,6 +401,18 @@ Function DumpLog
 FunctionEnd
 
 ;======================================
+
+Function FinishShow
+    ; This function is called, after the Finish Page creation is finished
+
+    ; It checks, if the Server has been selected and only displays the run checkbox in this case
+    ${IfNot} ${SectionIsSelected} SectionInputService
+        SendMessage $mui.FinishPage.Run ${BM_CLICK} 0 0
+        ShowWindow  $mui.FinishPage.Run ${SW_HIDE}
+    ${EndIf}
+FunctionEnd
+
+;======================================
 ;======================================
 
 Section "-Prepare"
@@ -537,7 +574,18 @@ SkipUninstallInputService:
 
 ${MementoSectionEnd}
 !macro Remove_${SectionInputService}
-  DetailPrint "Attempting to remove Input Service ... !!!not implemented"
+  DetailPrint "Attempting to remove Input Service ..."
+
+  ; remove Input Service
+  ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Input Service"
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Input Service Configuration"
+  RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server Plugins"
 !macroend
 
 ;======================================
@@ -574,6 +622,7 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
 ${MementoSectionEnd}
 !macro Remove_${SectionMPControlPlugin}
   DetailPrint "Attempting to remove MediaPortal Control Plugin ..."
+
   Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\MPControlPlugin.dll"
 !macroend
 
@@ -619,9 +668,7 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
 ${MementoSectionEnd}
 !macro Remove_${SectionMPBlastZonePlugin}
   DetailPrint "Attempting to remove MediaPortal Blast Zone Plugin ..."
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\MPUtils.dll"
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\IrssComms.dll"
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\IrssUtils.dll"
+
   Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\MPBlastZonePlugin.dll"
 !macroend
 
@@ -653,6 +700,7 @@ ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
 ${MementoSectionEnd}
 !macro Remove_${SectionTV2BlasterPlugin}
   DetailPrint "Attempting to remove MediaPortal TV2 Plugin ..."
+
   Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\TV2BlasterPlugin.dll"
 !macroend
 
@@ -680,10 +728,12 @@ ${MementoUnselectedSection} "TV3 Blaster Plugin" SectionTV3BlasterPlugin
 ${MementoSectionEnd}
 !macro Remove_${SectionTV3BlasterPlugin}
   DetailPrint "Attempting to remove MediaPortal TV3 Plugin ..."
+
+  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.dll"
+
   Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.dll"
   Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssComms.dll"
   Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssUtils.dll"
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.dll"
 !macroend
 
 ;======================================
@@ -716,7 +766,16 @@ ${MementoSection} "Translator" SectionTranslator
 
 ${MementoSectionEnd}
 !macro Remove_${SectionTranslator}
-  DetailPrint "Attempting to remove Translator ... !!!not implemented"
+  DetailPrint "Attempting to remove Translator ..."
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk"
+
+  ; Remove auto-runs
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Translator"
 !macroend
 
 ;======================================
@@ -746,7 +805,16 @@ ${MementoUnselectedSection} "Tray Launcher" SectionTrayLauncher
 
 ${MementoSectionEnd}
 !macro Remove_${SectionTrayLauncher}
-  DetailPrint "Attempting to remove Tray Launcher ... !!!not implemented"
+  DetailPrint "Attempting to remove Tray Launcher ..."
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk"
+
+  ; Remove auto-runs
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Tray Launcher"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Tray Launcher"
 !macroend
 
 ;======================================
@@ -791,7 +859,16 @@ ${MementoSection} "Virtual Remote" SectionVirtualRemote
 
 ${MementoSectionEnd}
 !macro Remove_${SectionVirtualRemote}
-  DetailPrint "Attempting to remove Virtual Remote ... !!!not implemented"
+  DetailPrint "Attempting to remove Virtual Remote, Skin Editor, Smart Device versions, and Web Remote ..."
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote for Smart Devices.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Virtual Remote"
 !macroend
 
 ;======================================
@@ -812,7 +889,10 @@ ${MementoSection} "IR Blast" SectionIRBlast
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRBlast}
-  DetailPrint "Attempting to remove IR Blast ... !!!not implemented"
+  DetailPrint "Attempting to remove IR Blast ..."
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\IR Blast"
 !macroend
 
 ;======================================
@@ -842,7 +922,13 @@ ${MementoUnselectedSection} "IR File Tool" SectionIRFileTool
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRFileTool}
-  DetailPrint "Attempting to remove IR File Tool ... !!!not implemented"
+  DetailPrint "Attempting to remove IR File Tool ..."
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\IR File Tool"
 !macroend
 
 ;======================================
@@ -872,7 +958,13 @@ ${MementoUnselectedSection} "Keyboard Relay" SectionKeyboardInputRelay
 
 ${MementoSectionEnd}
 !macro Remove_${SectionKeyboardInputRelay}
-  DetailPrint "Attempting to remove Keyboard Relay ... !!!not implemented"
+  DetailPrint "Attempting to remove Keyboard Relay ..."
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Keyboard Input Relay"
 !macroend
 
 ;======================================
@@ -899,7 +991,10 @@ ${MementoUnselectedSection} "Dbox Tuner" SectionDboxTuner
 
 ${MementoSectionEnd}
 !macro Remove_${SectionDboxTuner}
-  DetailPrint "Attempting to remove Dbox Tuner ... !!!not implemented"
+  DetailPrint "Attempting to remove Dbox Tuner ..."
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Dbox Tuner"
 !macroend
 
 ;======================================
@@ -923,7 +1018,10 @@ ${MementoUnselectedSection} "HCW PVR Tuner" SectionHcwPvrTuner
 
 ${MementoSectionEnd}
 !macro Remove_${SectionHcwPvrTuner}
-  DetailPrint "Attempting to remove HCW PVR Tuner ... !!!not implemented"
+  DetailPrint "Attempting to remove HCW PVR Tuner ..."
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\HCW PVR Tuner"
 !macroend
 
 ;======================================
@@ -953,7 +1051,13 @@ ${MementoUnselectedSection} "Debug Client" SectionDebugClient
 
 ${MementoSectionEnd}
 !macro Remove_${SectionDebugClient}
-  DetailPrint "Attempting to remove Debug Client ... !!!not implemented"
+  DetailPrint "Attempting to remove Debug Client ..."
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Debug Client"
 !macroend
 
 ;======================================
@@ -1075,15 +1179,6 @@ Section "Uninstall"
   ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
   Sleep 100
 
-  ; Uninstall current Input Service ...
-  IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" UninstallInputService SkipUninstallInputService
-
-UninstallInputService:
-  ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
-
-SkipUninstallInputService:
-  Sleep 100
-
   ; Remove files and uninstaller
   DetailPrint "Removing Set Top Box presets ..."
   RMDir /R "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
@@ -1101,8 +1196,6 @@ SkipUninstallInputService:
   
   ; Remove auto-runs
   DetailPrint "Removing application auto-runs ..."
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Tray Launcher"
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
 
 !ifdef _DEBUG
