@@ -255,166 +255,6 @@ Page custom PageReinstall PageLeaveReinstall
 
   StrCpy $INSTDIR "$DIR_INSTALL"
 !macroend
- 
-;======================================
-;======================================
-
-Function .onInit
-
-!insertmacro initRegKeys
-
-; reads components status for registry
-${MementoSectionRestore}
-
-FunctionEnd
-
-;======================================
-
-Function .onInstSuccess
-
-  IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StartInputService SkipStartInputService
-
-StartInputService:
-  Exec '"$DIR_INSTALL\Input Service\Input Service.exe" /start'
-
-SkipStartInputService:
-
-FunctionEnd
-
-;======================================
-
-Function DirectoryPreMP
-  SectionGetFlags 3 $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
-
-  SectionGetFlags 4 $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
-
-  SectionGetFlags 5 $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
-
-  Abort
-
-EndDirectoryPreMP:
-FunctionEnd
-
-;======================================
-
-Function DirectoryPreTV
-  SectionGetFlags 6 $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreTV
-
-  Abort
-
-EndDirectoryPreTV:
-FunctionEnd
-
-;======================================
-
-Function DirectoryShowApp
-  !insertmacro MUI_HEADER_TEXT "Choose ${PRODUCT_NAME} Location" "Choose the folder in which to install ${PRODUCT_NAME}."
-  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "${PRODUCT_NAME} Folder"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_INSTALL"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
-FunctionEnd
-
-;======================================
-
-Function DirectoryShowMP
-  !insertmacro MUI_HEADER_TEXT "Choose MediaPortal Location" "Choose the folder in which to install MediaPortal plugins."
-  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "MediaPortal Folder"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_MEDIAPORTAL"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
-FunctionEnd
-
-;======================================
-
-Function DirectoryShowTV
-  !insertmacro MUI_HEADER_TEXT "Choose TV Server Location" "Choose the folder in which to install TV Server plugins."
-  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "TV Server Folder"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_TVSERVER"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
-FunctionEnd
-
-;======================================
-
-Function DirectoryLeaveApp
-  StrCpy $DIR_INSTALL $INSTDIR
-FunctionEnd
-
-;======================================
-
-Function DirectoryLeaveMP
-  StrCpy $DIR_MEDIAPORTAL $INSTDIR
-FunctionEnd
-
-;======================================
-
-Function DirectoryLeaveTV
-  StrCpy $DIR_TVSERVER $INSTDIR
-FunctionEnd
-
-;======================================
-
-!define LVM_GETITEMCOUNT 0x1004
-!define LVM_GETITEMTEXT 0x102D
- 
-Function DumpLog
-  Exch $5
-  Push $0
-  Push $1
-  Push $2
-  Push $3
-  Push $4
-  Push $6
- 
-  FindWindow $0 "#32770" "" $HWNDPARENT
-  GetDlgItem $0 $0 1016
-  StrCmp $0 0 exit
-  FileOpen $5 $5 "w"
-  StrCmp $5 "" exit
-    SendMessage $0 ${LVM_GETITEMCOUNT} 0 0 $6
-    System::Alloc ${NSIS_MAX_STRLEN}
-    Pop $3
-    StrCpy $2 0
-    System::Call "*(i, i, i, i, i, i, i, i, i) i \
-      (0, 0, 0, 0, 0, r3, ${NSIS_MAX_STRLEN}) .r1"
-    loop: StrCmp $2 $6 done
-      System::Call "User32::SendMessageA(i, i, i, i) i \
-        ($0, ${LVM_GETITEMTEXT}, $2, r1)"
-      System::Call "*$3(&t${NSIS_MAX_STRLEN} .r4)"
-      FileWrite $5 "$4$\r$\n"
-      IntOp $2 $2 + 1
-      Goto loop
-    done:
-      FileClose $5
-      System::Free $1
-      System::Free $3
-  exit:
-    Pop $6
-    Pop $4
-    Pop $3
-    Pop $2
-    Pop $1
-    Pop $0
-    Exch $5
-FunctionEnd
-
-;======================================
-
-Function FinishShow
-    ; This function is called, after the Finish Page creation is finished
-
-    ; It checks, if the Server has been selected and only displays the run checkbox in this case
-    ${IfNot} ${SectionIsSelected} SectionInputService
-        SendMessage $mui.FinishPage.Run ${BM_CLICK} 0 0
-        ShowWindow  $mui.FinishPage.Run ${SW_HIDE}
-    ${EndIf}
-FunctionEnd
 
 ;======================================
 ;======================================
@@ -1124,48 +964,6 @@ SectionEnd
 ;======================================
 ;======================================
 
-; Section descriptions
-!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionInputService}        "$(DESC_SectionInputService)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPControlPlugin}     "$(DESC_SectionMPControlPlugin)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPBlastZonePlugin}   "$(DESC_SectionMPBlastZonePlugin)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator}          "$(DESC_SectionTranslator)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher}        "$(DESC_SectionTrayLauncher)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote}       "$(DESC_SectionVirtualRemote)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRBlast}             "$(DESC_SectionIRBlast)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRFileTool}          "$(DESC_SectionIRFileTool)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionKeyboardInputRelay}  "$(DESC_SectionKeyboardInputRelay)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionDboxTuner}           "$(DESC_SectionDboxTuner)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionHcwPvrTuner}         "$(DESC_SectionHcwPvrTuner)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionDebugClient}         "$(DESC_SectionDebugClient)"
-!insertmacro MUI_FUNCTION_DESCRIPTION_END
-
-;======================================
-;======================================
-
-!ifndef _DEBUG
-Function un.onUninstSuccess
-  HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
-FunctionEnd
-!endif
-
-
-;======================================
-
-Function un.onInit
-
-  !insertmacro initRegKeys
-
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
-  Abort
-FunctionEnd
-
-;======================================
-;======================================
-
 Section "Uninstall"
 
   ; Use the all users context
@@ -1208,6 +1006,208 @@ Section "Uninstall"
 !endif
 
 SectionEnd
+ 
+;======================================
+;======================================
+
+Function .onInit
+
+!insertmacro initRegKeys
+
+; reads components status for registry
+${MementoSectionRestore}
+
+FunctionEnd
+
+;======================================
+
+Function .onInstSuccess
+
+  IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StartInputService SkipStartInputService
+
+StartInputService:
+  Exec '"$DIR_INSTALL\Input Service\Input Service.exe" /start'
+
+SkipStartInputService:
+
+FunctionEnd
+
+;======================================
+
+Function DirectoryPreMP
+  SectionGetFlags 3 $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
+
+  SectionGetFlags 4 $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
+
+  SectionGetFlags 5 $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
+
+  Abort
+
+EndDirectoryPreMP:
+FunctionEnd
+
+;======================================
+
+Function DirectoryPreTV
+  SectionGetFlags 6 $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreTV
+
+  Abort
+
+EndDirectoryPreTV:
+FunctionEnd
+
+;======================================
+
+Function DirectoryShowApp
+  !insertmacro MUI_HEADER_TEXT "Choose ${PRODUCT_NAME} Location" "Choose the folder in which to install ${PRODUCT_NAME}."
+  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "${PRODUCT_NAME} Folder"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_INSTALL"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
+FunctionEnd
+
+;======================================
+
+Function DirectoryShowMP
+  !insertmacro MUI_HEADER_TEXT "Choose MediaPortal Location" "Choose the folder in which to install MediaPortal plugins."
+  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "MediaPortal Folder"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_MEDIAPORTAL"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
+FunctionEnd
+
+;======================================
+
+Function DirectoryShowTV
+  !insertmacro MUI_HEADER_TEXT "Choose TV Server Location" "Choose the folder in which to install TV Server plugins."
+  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "TV Server Folder"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_TVSERVER"
+  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
+FunctionEnd
+
+;======================================
+
+Function DirectoryLeaveApp
+  StrCpy $DIR_INSTALL $INSTDIR
+FunctionEnd
+
+;======================================
+
+Function DirectoryLeaveMP
+  StrCpy $DIR_MEDIAPORTAL $INSTDIR
+FunctionEnd
+
+;======================================
+
+Function DirectoryLeaveTV
+  StrCpy $DIR_TVSERVER $INSTDIR
+FunctionEnd
+
+;======================================
+
+!define LVM_GETITEMCOUNT 0x1004
+!define LVM_GETITEMTEXT 0x102D
+ 
+Function DumpLog
+  Exch $5
+  Push $0
+  Push $1
+  Push $2
+  Push $3
+  Push $4
+  Push $6
+ 
+  FindWindow $0 "#32770" "" $HWNDPARENT
+  GetDlgItem $0 $0 1016
+  StrCmp $0 0 exit
+  FileOpen $5 $5 "w"
+  StrCmp $5 "" exit
+    SendMessage $0 ${LVM_GETITEMCOUNT} 0 0 $6
+    System::Alloc ${NSIS_MAX_STRLEN}
+    Pop $3
+    StrCpy $2 0
+    System::Call "*(i, i, i, i, i, i, i, i, i) i \
+      (0, 0, 0, 0, 0, r3, ${NSIS_MAX_STRLEN}) .r1"
+    loop: StrCmp $2 $6 done
+      System::Call "User32::SendMessageA(i, i, i, i) i \
+        ($0, ${LVM_GETITEMTEXT}, $2, r1)"
+      System::Call "*$3(&t${NSIS_MAX_STRLEN} .r4)"
+      FileWrite $5 "$4$\r$\n"
+      IntOp $2 $2 + 1
+      Goto loop
+    done:
+      FileClose $5
+      System::Free $1
+      System::Free $3
+  exit:
+    Pop $6
+    Pop $4
+    Pop $3
+    Pop $2
+    Pop $1
+    Pop $0
+    Exch $5
+FunctionEnd
+
+;======================================
+
+Function FinishShow
+    ; This function is called, after the Finish Page creation is finished
+
+    ; It checks, if the Server has been selected and only displays the run checkbox in this case
+    ${IfNot} ${SectionIsSelected} SectionInputService
+        SendMessage $mui.FinishPage.Run ${BM_CLICK} 0 0
+        ShowWindow  $mui.FinishPage.Run ${SW_HIDE}
+    ${EndIf}
+FunctionEnd
+
+;======================================
+;======================================
+
+!ifndef _DEBUG
+Function un.onUninstSuccess
+  HideWindow
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
+FunctionEnd
+!endif
+
+
+;======================================
+
+Function un.onInit
+
+  !insertmacro initRegKeys
+
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+  Abort
+FunctionEnd
+
+;======================================
+;======================================
+
+; Section descriptions
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionInputService}        "$(DESC_SectionInputService)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPControlPlugin}     "$(DESC_SectionMPControlPlugin)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPBlastZonePlugin}   "$(DESC_SectionMPBlastZonePlugin)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator}          "$(DESC_SectionTranslator)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher}        "$(DESC_SectionTrayLauncher)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote}       "$(DESC_SectionVirtualRemote)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRBlast}             "$(DESC_SectionIRBlast)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRFileTool}          "$(DESC_SectionIRFileTool)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionKeyboardInputRelay}  "$(DESC_SectionKeyboardInputRelay)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionDboxTuner}           "$(DESC_SectionDboxTuner)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionHcwPvrTuner}         "$(DESC_SectionHcwPvrTuner)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionDebugClient}         "$(DESC_SectionDebugClient)"
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;======================================
 ;======================================
