@@ -160,22 +160,27 @@ Page custom PageReinstall PageLeaveReinstall
 ;======================================
 
 !macro SectionList MacroName
-    ; This macro used to perform operation on multiple sections.
-    ; List all of your components in following manner here.
-    !insertmacro "${MacroName}" "SectionInputService"
+  ; This macro used to perform operation on multiple sections.
+  ; List all of your components in following manner here.
+  !insertmacro "${MacroName}" "SectionInputService"
+
+  !insertmacro "${MacroName}" "SectionMPCommon"
     !insertmacro "${MacroName}" "SectionMPControlPlugin"
     !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
     !insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
+
+  !insertmacro "${MacroName}" "SectionTV3Common"
     !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
-    !insertmacro "${MacroName}" "SectionTranslator"
-    !insertmacro "${MacroName}" "SectionTrayLauncher"
-    !insertmacro "${MacroName}" "SectionVirtualRemote"
-    !insertmacro "${MacroName}" "SectionIRBlast"
-    !insertmacro "${MacroName}" "SectionIRFileTool"
-    !insertmacro "${MacroName}" "SectionKeyboardInputRelay"
-    !insertmacro "${MacroName}" "SectionDboxTuner"
-    !insertmacro "${MacroName}" "SectionHcwPvrTuner"
-    !insertmacro "${MacroName}" "SectionDebugClient"
+
+  !insertmacro "${MacroName}" "SectionTranslator"
+  !insertmacro "${MacroName}" "SectionTrayLauncher"
+  !insertmacro "${MacroName}" "SectionVirtualRemote"
+  !insertmacro "${MacroName}" "SectionIRBlast"
+  !insertmacro "${MacroName}" "SectionIRFileTool"
+  !insertmacro "${MacroName}" "SectionKeyboardInputRelay"
+  !insertmacro "${MacroName}" "SectionDboxTuner"
+  !insertmacro "${MacroName}" "SectionHcwPvrTuner"
+  !insertmacro "${MacroName}" "SectionDebugClient"
 !macroend
 
 !macro initRegKeys
@@ -255,7 +260,7 @@ Page custom PageReinstall PageLeaveReinstall
 
   StrCpy $INSTDIR "$DIR_INSTALL"
 !macroend
-
+ 
 ;======================================
 ;======================================
 
@@ -434,6 +439,43 @@ ${MementoSectionEnd}
 
 ;======================================
 
+SectionGroup /e "MP plugins" SectionGroupMP
+
+Section "-commonMP" SectionMPCommon
+
+  DetailPrint "Installing common files for MP plugins ..."
+
+  ; Use the all users context
+  SetShellVarContext all
+
+  ; Write plugin dll
+  SetOutPath "$DIR_MEDIAPORTAL\Plugins\Process"
+  SetOverwrite ifnewer
+  File "Common\MPUtils\bin\${BuildType}\MPUtils.dll"
+  File "Common\IrssComms\bin\${BuildType}\IrssComms.dll"
+  File "Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
+
+  ; Write plugin dll
+  SetOutPath "$DIR_MEDIAPORTAL\Plugins\Windows"
+  SetOverwrite ifnewer
+  File "Common\MPUtils\bin\${BuildType}\MPUtils.dll"
+  File "Common\IrssComms\bin\${BuildType}\IrssComms.dll"
+  File "Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
+SectionEnd
+!macro Remove_${SectionMPCommon}
+  DetailPrint "Attempting to remove common files for MP plugins ..."
+
+  ; remove files
+  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\MPUtils.dll"
+  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\IrssComms.dll"
+  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\IrssUtils.dll"
+  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\MPUtils.dll"
+  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\IrssComms.dll"
+  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\IrssUtils.dll"
+!macroend
+
+;======================================
+
 ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
 
   DetailPrint "Installing MP Control Plugin ..."
@@ -444,9 +486,6 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   ; Write plugin dll
   SetOutPath "$DIR_MEDIAPORTAL\Plugins\Process"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPUtils.dll"
-  File "MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\IrssComms.dll"
-  File "MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\IrssUtils.dll"
   File "MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPControlPlugin.dll"
 
   ; Write input mapping
@@ -486,9 +525,6 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   ; Write plugin dll
   SetOutPath "$DIR_MEDIAPORTAL\Plugins\Windows"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPUtils.dll"
-  File "MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\IrssComms.dll"
-  File "MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\IrssUtils.dll"
   File "MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPBlastZonePlugin.dll"
 
   ; Write app data
@@ -532,9 +568,6 @@ ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
   ; Write plugin dll
   SetOutPath "$DIR_MEDIAPORTAL\Plugins\Process"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\MPUtils.dll"
-  File "MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\IrssComms.dll"
-  File "MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\IrssUtils.dll"
   File "MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\TV2BlasterPlugin.dll"
 
   ; Create folders
@@ -550,6 +583,37 @@ ${MementoSectionEnd}
 
 ;======================================
 
+SectionGroupEnd
+
+;======================================
+
+SectionGroup /e "TV3 plugins" SectionGroupTV3
+
+Section "-commonTV3" SectionTV3Common
+
+  DetailPrint "Installing common files for TV3 plugins ..."
+
+  ; Use the all users context
+  SetShellVarContext all
+
+  ; Write plugin dll
+  SetOutPath "$DIR_TVSERVER\Plugins"
+  SetOverwrite ifnewer
+  File "Common\MPUtils\bin\${BuildType}\MPUtils.dll"
+  File "Common\IrssComms\bin\${BuildType}\IrssComms.dll"
+  File "Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
+SectionEnd
+!macro Remove_${SectionTV3Common}
+  DetailPrint "Attempting to remove common files for TV3 plugins ..."
+
+  ; remove files
+  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.dll"
+  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssComms.dll"
+  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssUtils.dll"
+!macroend
+
+;======================================
+
 ${MementoUnselectedSection} "TV3 Blaster Plugin" SectionTV3BlasterPlugin
 
   DetailPrint "Installing TV3 Blaster Plugin ..."
@@ -560,9 +624,6 @@ ${MementoUnselectedSection} "TV3 Blaster Plugin" SectionTV3BlasterPlugin
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\MPUtils.dll"
-  File "MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\IrssComms.dll"
-  File "MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\IrssUtils.dll"
   File "MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\TV3BlasterPlugin.dll"
 
   ; Create folders
@@ -574,11 +635,11 @@ ${MementoSectionEnd}
   DetailPrint "Attempting to remove MediaPortal TV3 Plugin ..."
 
   Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.dll"
-
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.dll"
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssComms.dll"
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssUtils.dll"
 !macroend
+
+;======================================
+
+SectionGroupEnd
 
 ;======================================
 
@@ -1006,7 +1067,7 @@ Section "Uninstall"
 !endif
 
 SectionEnd
- 
+
 ;======================================
 ;======================================
 
@@ -1016,6 +1077,8 @@ Function .onInit
 
 ; reads components status for registry
 ${MementoSectionRestore}
+
+Call .onSelChange
 
 FunctionEnd
 
@@ -1029,6 +1092,28 @@ StartInputService:
   Exec '"$DIR_INSTALL\Input Service\Input Service.exe" /start'
 
 SkipStartInputService:
+
+FunctionEnd
+
+;======================================
+
+Function .onSelChange
+
+  ; disable/remove common files for MP plugins if all MP plugins are unselected
+  ${IfNot} ${SectionIsSelected} ${SectionMPControlPlugin}
+  ${AndIfNot} ${SectionIsSelected} ${SectionMPBlastZonePlugin}
+  ${AndIfNot} ${SectionIsSelected} ${SectionTV2BlasterPlugin}
+    !insertmacro UnselectSection ${SectionMPCommon}
+  ${Else}
+    !insertmacro SelectSection ${SectionMPCommon}
+  ${EndIf}
+
+  ; disable/remove common files for MP plugins if all MP plugins are unselected
+  ${IfNot} ${SectionIsSelected} ${SectionTV3BlasterPlugin}
+    !insertmacro UnselectSection ${SectionTV3Common}
+  ${Else}
+    !insertmacro SelectSection ${SectionTV3Common}
+  ${EndIf}
 
 FunctionEnd
 
