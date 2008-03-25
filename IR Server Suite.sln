@@ -7,12 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Application
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Server", "Applications\IR Server\IR Server.csproj", "{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tray Launcher", "Applications\Tray Launcher\Tray Launcher.csproj", "{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -283,12 +277,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC102 Receiver", "IR Server
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage Setup", "Applications\SageSetup\Sage Setup.csproj", "{905131F8-F8AC-4A65-A722-37783902D7B8}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dbox Tuner", "Applications\Dbox Tuner\Dbox Tuner.csproj", "{F8CC05AA-6306-459E-BD32-40C02489EFEC}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -308,12 +296,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR507 Receiver", "IR Server
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoolCommand Receiver", "IR Server Plugins\CoolCommand Receiver\CoolCommand Receiver.csproj", "{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abstractor", "Applications\Abstractor\Abstractor.csproj", "{66F37FF9-0398-4954-812D-065C2D153746}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -385,10 +367,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -553,10 +531,6 @@ Global
 		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -573,10 +547,6 @@ Global
 		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66F37FF9-0398-4954-812D-065C2D153746}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66F37FF9-0398-4954-812D-065C2D153746}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66F37FF9-0398-4954-812D-065C2D153746}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66F37FF9-0398-4954-812D-065C2D153746}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -628,7 +598,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{4CD051F4-F2B5-47B3-8647-F47C2E4DC131} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
@@ -638,9 +607,7 @@ Global
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{CCDBA239-8E8E-4F5F-A098-7132EED5F160} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
-		{905131F8-F8AC-4A65-A722-37783902D7B8} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{F8CC05AA-6306-459E-BD32-40C02489EFEC} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
-		{66F37FF9-0398-4954-812D-065C2D153746} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{48839540-780F-4323-8F50-68E2A2385502} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 		{3BB1C204-D08E-43E5-AC68-DCDD624404A5} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
