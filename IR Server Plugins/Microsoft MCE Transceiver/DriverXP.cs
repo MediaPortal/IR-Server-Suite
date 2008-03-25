@@ -133,7 +133,7 @@ namespace InputService.Plugin
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       0xFF, 0xFF };
-    //static readonly byte[] ResetPacket = { 0xFF, 0xEE };
+    //static readonly byte[] ResetPacket = { 0xFF, 0xFE };
 
     // Misc Packets
     static readonly byte[] SetCarrierFreqPacket   = { 0x9F, 0x06, 0x01, 0x80 };
@@ -185,6 +185,7 @@ namespace InputService.Plugin
 #if DEBUG
       DebugOpen("MicrosoftMceTransceiver_DriverXP.log");
       DebugWriteLine("Start()");
+      DebugWriteLine("Device Type: {0}", Enum.GetName(typeof(DeviceType), _deviceType));
 #endif
 
       _notifyWindow = new NotifyWindow();
@@ -437,7 +438,7 @@ namespace InputService.Plugin
       WriteSync(new byte[] { 0x9F, 0x05 });
       WriteSync(new byte[] { 0x9F, 0x0D });
       WriteSync(new byte[] { 0x9F, 0x13 });
-      
+
       Thread.Sleep(4 * PacketTimeout);
 
       SetTimeout(PacketTimeout);

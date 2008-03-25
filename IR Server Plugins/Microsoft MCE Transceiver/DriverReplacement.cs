@@ -186,6 +186,7 @@ namespace InputService.Plugin
 #if DEBUG
       DebugOpen("MicrosoftMceTransceiver_DriverReplacement.log");
       DebugWriteLine("Start()");
+      DebugWriteLine("Device Type: {0}", Enum.GetName(typeof(DeviceType), _deviceType));
 #endif
 
       _notifyWindow = new NotifyWindow();
