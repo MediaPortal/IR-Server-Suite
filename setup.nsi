@@ -109,6 +109,7 @@ var DIR_TVSERVER
 !insertmacro MUI_PAGE_WELCOME
 Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_LICENSE "Documentation\LICENSE.GPL"
+!define MUI_PAGE_CUSTOMFUNCTION_PRE ComponentsPre
 !insertmacro MUI_PAGE_COMPONENTS
 
 ; Main app install path
@@ -1115,6 +1116,25 @@ Function .onSelChange
     !insertmacro SelectSection ${SectionTV3Common}
   ${EndIf}
 
+FunctionEnd
+
+;======================================
+
+Function ComponentsPre
+  ${IfNot} ${MP023IsInstalled}
+  ${AndIfNot} ${MPIsInstalled}
+    !insertmacro DisableComponent "${SectionGroupMP}" " ($(TEXT_MP_NOT_INSTALLED))"
+    !insertmacro DisableComponent "${SectionMPCommon}" ""
+    !insertmacro DisableComponent "${SectionMPControlPlugin}" ""
+    !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
+    !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
+  ${EndIf}
+  
+  ${IfNot} ${TVServerIsInstalled}
+    !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
+    !insertmacro DisableComponent "${SectionTV3Common}" ""
+    !insertmacro DisableComponent "${SectionTV3BlasterPlugin}" ""
+  ${EndIf}
 FunctionEnd
 
 ;======================================

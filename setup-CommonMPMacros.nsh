@@ -23,10 +23,11 @@
 
 #endregion
 
+
+
 #**********************************************************************************************************#
 #
-# This original header file is taken from:           http://nsis.sourceforge.net/Add/Remove_Functionality
-#     and modified for our needs.
+# different useful macros
 #
 #**********************************************************************************************************#
 
@@ -86,6 +87,14 @@
     ;Input: section index constant name specified in Section command.
 
     !insertmacro "Remove_${${SecName}}"
+!macroend
+
+!macro DisableComponent SectionName AddText
+    !insertmacro UnselectSection "${SectionName}"
+    ; Make the unselected section read only
+    !insertmacro SetSectionFlag "${SectionName}" 16
+    SectionGetText ${SectionName} $R0
+    SectionSetText ${SectionName} "$R0${AddText}"
 !macroend
 
 
@@ -189,6 +198,14 @@
 !macroend
 
 
+
+#**********************************************************************************************************#
+#
+# common language strings
+#
+#**********************************************************************************************************#
+LangString TEXT_MP_NOT_INSTALLED                  ${LANG_ENGLISH} "MediaPortal not installed"
+LangString TEXT_TVSERVER_NOT_INSTALLED            ${LANG_ENGLISH} "TVServer not installed"
 
   /*
 ; Section flag test
