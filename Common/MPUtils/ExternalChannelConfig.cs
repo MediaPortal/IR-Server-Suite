@@ -17,12 +17,12 @@ namespace MPUtils
 
     const int DefaultCardID                 = 0;
 
-    const int DefaultPauseTime              = 250;
+    const int DefaultPauseTime              = 500;
     const bool DefaultSendSelect            = false;
     const bool DefaultDoubleChannelSelect   = false;
     const int DefaultRepeatChannelCommands  = 0;
     const int DefaultChannelDigits          = 0;
-    const int DefaultRepeatPauseTime        = 1000;
+    const int DefaultRepeatPauseTime        = 2000;
     const bool DefaultUsePreChangeCommand   = false;
 
     #endregion Constants
