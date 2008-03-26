@@ -576,7 +576,8 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
           return;
       }
 
-      if (_code.Carrier == newCarrier)
+      // If the current carrier frequency is within +- 50 hz then it's close enough.
+      if (_code.Carrier >= newCarrier - 50 && _code.Carrier <= newCarrier + 50)
         return;
 
       if (DialogResult.Yes == MessageBox.Show(this, String.Format("Use this protocol's carrier frequency ({0})?", newCarrier), "Decode IR", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
