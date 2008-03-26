@@ -129,6 +129,8 @@ namespace MediaCenterConnection
     public Tray()
     {
       ContextMenuStrip contextMenu = new ContextMenuStrip();
+      contextMenu.Items.Add(new ToolStripLabel("Media Center Connection"));
+      contextMenu.Items.Add(new ToolStripSeparator());
       contextMenu.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
       contextMenu.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
 
@@ -143,13 +145,10 @@ namespace MediaCenterConnection
 
     #region Implementation
 
-    void ms_OnMSASEvent(object state, MediaStatusEventArgs args)
+    void OnMSASEvent(object state, MediaStatusEventArgs args)
     {
       //MediaState typedState = (MediaState)state;
-
-      string strOut = String.Format("ms_OnMSASEvent: {0} {1} {2} {3}", args.Session, args.SessionID, args.Tag, args.Value);
-
-      IrssLog.Info(strOut);
+      IrssLog.Info("OnMSASEvent: {0} {1} {2} {3}", args.Session, args.SessionID, args.Tag, args.Value);
     }
 
     void TV_MediaChanged(object sender, EventArgs e)
@@ -228,7 +227,7 @@ namespace MediaCenterConnection
           _notifyIcon.Visible = true;
 
           _mediaState = new MediaState();
-          _mediaState.OnMSASEvent += new MediaState.MSASEventHandler(ms_OnMSASEvent);
+          _mediaState.OnMSASEvent += new MediaState.MSASEventHandler(OnMSASEvent);
           _mediaState.TV.MediaChanged += new EventHandler(TV_MediaChanged);
 
           _mediaState.Connect();

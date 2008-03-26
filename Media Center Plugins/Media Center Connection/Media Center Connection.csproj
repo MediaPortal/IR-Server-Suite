@@ -62,14 +62,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>References\MediaState.dll</HintPath>
     </Reference>
-    <Reference Include="MemMapFile, Version=1.0.1740.26562, Culture=neutral, PublicKeyToken=0ef790d706f73a80">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>References\MemMapFile.dll</HintPath>
-    </Reference>
-    <Reference Include="MSASState, Version=1.0.1740.26563, Culture=neutral, PublicKeyToken=a097a53b6b26c493">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>References\MSASState.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />

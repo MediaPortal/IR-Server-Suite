@@ -381,7 +381,8 @@ namespace IRServer
 
           bool detected = plugin.Detect();
 
-          IrssLog.Info("Found: {0}", plugin.Name);
+          if (detected)
+            IrssLog.Info("Found: {0}", plugin.Name);
 
           // Receive
           checkBox = gridPlugins[row, ColReceive] as SourceGrid.Cells.CheckBox;

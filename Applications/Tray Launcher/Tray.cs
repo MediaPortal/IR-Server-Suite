@@ -68,6 +68,8 @@ namespace TrayLauncher
     public Tray()
     {
       ContextMenuStrip contextMenu = new ContextMenuStrip();
+      contextMenu.Items.Add(new ToolStripLabel("Tray Launcher"));
+      contextMenu.Items.Add(new ToolStripSeparator());
       contextMenu.Items.Add(new ToolStripMenuItem("&Launch", null, new EventHandler(ClickLaunch)));
       contextMenu.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
       contextMenu.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
