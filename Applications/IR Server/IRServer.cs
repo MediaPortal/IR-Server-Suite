@@ -56,7 +56,6 @@ namespace IRServer
     static readonly string ConfigurationFile        = Path.Combine(Common.FolderAppData, "IR Server\\IR Server.xml");
 
     static readonly string AbstractRemoteMapFolder  = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
-
     static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
 
     #endregion Constants
@@ -1825,9 +1824,14 @@ namespace IRServer
       if (String.IsNullOrEmpty(device))
         return false;
 
+      IrssLog.Info("Load Abstract Device Files: {0}", device);
+
       string path = Path.Combine(AbstractRemoteMapFolder, device);
-      if (Directory.Exists(path))
+      if (!Directory.Exists(path))
+      {
+        IrssLog.Debug("No Abstract Remote Tables for \"{0}\" were found", device);
         return false;
+      }
 
       try
       {

@@ -1313,7 +1313,7 @@ namespace InputService
             if ((combo.Message.Flags & MessageFlags.Request) == MessageFlags.Request)
             {
               IrssLog.Info("Shutdown command received");
-              this.Stop();
+              Stop();
             }
             break;
           #endregion ServerShutdown
@@ -1764,9 +1764,14 @@ namespace InputService
       if (String.IsNullOrEmpty(device))
         return false;
 
+      IrssLog.Info("Load Abstract Device Files: {0}", device);
+
       string path = Path.Combine(AbstractRemoteMapFolder, device);
-      if (Directory.Exists(path))
+      if (!Directory.Exists(path))
+      {
+        IrssLog.Debug("No Abstract Remote Tables for \"{0}\" were found", device);
         return false;
+      }
 
       try
       {
