@@ -206,9 +206,8 @@ Page custom PageReinstall PageLeaveReinstall
         ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\Team MediaPortal\MediaPortal" "ApplicationDir"
 
         ${If} $DIR_MEDIAPORTAL == ""
-          #not implemented yet
-          #!insertmacro GET_MEDIAPORTAL_INSTALLPATH "$DIR_MEDIAPORTAL"
-          StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
+          !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
+          #StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
         ${Endif}
 
       ${Endif}
@@ -220,9 +219,8 @@ Page custom PageReinstall PageLeaveReinstall
         ReadRegStr $DIR_TVSERVER HKLM "Software\Team MediaPortal\MediaPortal TV Server" "InstallPath"
 
         ${If} $DIR_TVSERVER == ""
-          #not implemented yet
-          #!insertmacro GET_TVSERVER_INSTALLPATH "$DIR_TVSERVER"
-          StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
+          !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
+          #StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
         ${Endif}
 
       ${Endif}
@@ -246,9 +244,8 @@ Page custom PageReinstall PageLeaveReinstall
       ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\Team MediaPortal\MediaPortal" "ApplicationDir"
 
       ${If} $DIR_MEDIAPORTAL == ""
-          #not implemented yet
-          #!insertmacro GET_MEDIAPORTAL_INSTALLPATH "$DIR_MEDIAPORTAL"
-        StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
+        !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
+        #StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
       ${Endif}
 
     ${Endif}
@@ -260,9 +257,8 @@ Page custom PageReinstall PageLeaveReinstall
       ReadRegStr $DIR_TVSERVER HKLM "Software\Team MediaPortal\MediaPortal TV Server" "InstallPath"
 
       ${If} $DIR_TVSERVER == ""
-          #not implemented yet
-          #!insertmacro GET_TVSERVER_INSTALLPATH "$DIR_TVSERVER"
-        StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
+        !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
+        #StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
       ${Endif}
 
     ${Endif}
