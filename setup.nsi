@@ -1194,7 +1194,6 @@ Function DirectoryPreTV
 
 EndDirectoryPreTV:
 FunctionEnd
-*/
 ;======================================
 
 Function DirectoryShowApp
@@ -1239,7 +1238,7 @@ FunctionEnd
 Function DirectoryLeaveTV
   StrCpy $DIR_TVSERVER $INSTDIR
 FunctionEnd
-
+*/
 ;======================================
 
 !define LVM_GETITEMCOUNT 0x1004
