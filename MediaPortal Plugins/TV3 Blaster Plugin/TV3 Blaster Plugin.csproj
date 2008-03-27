@@ -102,7 +102,7 @@
   <ItemGroup>
     <Reference Include="Gentle.Common, Version=1.2.9.1285, Culture=neutral, PublicKeyToken=80b5de62e27be49b">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\TV Engine\TVLibrary\TvService\bin\Release\Gentle.Common.DLL</HintPath>
+      <HintPath>..\..\..\..\TV Engine\TVLibrary\TvService\bin\Release\Gentle.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Gentle.Framework, Version=1.2.9.1286, Culture=neutral, PublicKeyToken=80b5de62e27be49b">
@@ -117,7 +117,7 @@
     </Reference>
     <Reference Include="SetupControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\TV Engine\TVLibrary\TvService\bin\Release\SetupControls.dll</HintPath>
+      <HintPath>..\..\..\..\TV Engine\TVLibrary\SetupControls\bin\Release\SetupControls.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System">
