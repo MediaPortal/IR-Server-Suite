@@ -112,24 +112,13 @@ Page custom PageReinstall PageLeaveReinstall
 !define MUI_PAGE_CUSTOMFUNCTION_PRE ComponentsPre
 !insertmacro MUI_PAGE_COMPONENTS
 
-; Main app install path
-!define MUI_PAGE_HEADER_TEXT "Choose ${PRODUCT_NAME} Location"
-!define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install ${PRODUCT_NAME}."
-!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
-!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "${PRODUCT_NAME} Folder"
-!define MUI_DIRECTORYPAGE_VARIABLE "$DIR_INSTALL"
-#!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowApp
-#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
-#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
-!insertmacro MUI_PAGE_DIRECTORY
-
 ; MediaPortal install path
 !define MUI_PAGE_HEADER_TEXT "Choose MediaPortal Location"
 !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install MediaPortal plugins."
 !define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "MediaPortal Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_MEDIAPORTAL"
-#!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreMP
+!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreMP
 #!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowMP
 #!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveMP
 !insertmacro MUI_PAGE_DIRECTORY
@@ -141,9 +130,22 @@ Page custom PageReinstall PageLeaveReinstall
 !define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "TV Server Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_TVSERVER"
-#!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreTV
+!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreTV
 #!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowTV
 #!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveTV
+!insertmacro MUI_PAGE_DIRECTORY
+
+; !!!!! changed the order of the directory pages, to prevent if      no mp and no tve3 plugins were selected the page on irserversuite      shows the NEXT button but the mpand tve3 pages abort and installation starts
+;                                                                                                                                               no both pages would abort and won't be shown, and         irserver suite dir page shows the install  button    :-)
+; Main app install path
+!define MUI_PAGE_HEADER_TEXT "Choose ${PRODUCT_NAME} Location"
+!define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install ${PRODUCT_NAME}."
+!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
+!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "${PRODUCT_NAME} Folder"
+!define MUI_DIRECTORYPAGE_VARIABLE "$DIR_INSTALL"
+#!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowApp
+#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
+#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
 !insertmacro MUI_PAGE_DIRECTORY
 
 !insertmacro MUI_PAGE_INSTFILES
@@ -204,6 +206,8 @@ Page custom PageReinstall PageLeaveReinstall
         ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\Team MediaPortal\MediaPortal" "ApplicationDir"
 
         ${If} $DIR_MEDIAPORTAL == ""
+          #not implemented yet
+          #!insertmacro GET_MEDIAPORTAL_INSTALLPATH "$DIR_MEDIAPORTAL"
           StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
         ${Endif}
 
@@ -216,6 +220,8 @@ Page custom PageReinstall PageLeaveReinstall
         ReadRegStr $DIR_TVSERVER HKLM "Software\Team MediaPortal\MediaPortal TV Server" "InstallPath"
 
         ${If} $DIR_TVSERVER == ""
+          #not implemented yet
+          #!insertmacro GET_TVSERVER_INSTALLPATH "$DIR_TVSERVER"
           StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
         ${Endif}
 
@@ -240,6 +246,8 @@ Page custom PageReinstall PageLeaveReinstall
       ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\Team MediaPortal\MediaPortal" "ApplicationDir"
 
       ${If} $DIR_MEDIAPORTAL == ""
+          #not implemented yet
+          #!insertmacro GET_MEDIAPORTAL_INSTALLPATH "$DIR_MEDIAPORTAL"
         StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
       ${Endif}
 
@@ -252,6 +260,8 @@ Page custom PageReinstall PageLeaveReinstall
       ReadRegStr $DIR_TVSERVER HKLM "Software\Team MediaPortal\MediaPortal TV Server" "InstallPath"
 
       ${If} $DIR_TVSERVER == ""
+          #not implemented yet
+          #!insertmacro GET_TVSERVER_INSTALLPATH "$DIR_TVSERVER"
         StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
       ${Endif}
 
@@ -1129,7 +1139,7 @@ Function ComponentsPre
     !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
     !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
   ${EndIf}
-  
+
   ${IfNot} ${TVServerIsInstalled}
     !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
     !insertmacro DisableComponent "${SectionTV3Common}" ""
@@ -1139,6 +1149,22 @@ FunctionEnd
 
 ;======================================
 
+Function DirectoryPreMP
+  ${IfNot} ${SectionIsSelected} ${SectionGroupMP}
+    Abort
+  ${EndIf}
+FunctionEnd
+
+;======================================
+
+Function DirectoryPreTV
+  ${IfNot} ${SectionIsSelected} ${SectionGroupTV3}
+    Abort
+  ${EndIf}
+FunctionEnd
+
+;======================================
+/*
 Function DirectoryPreMP
   SectionGetFlags 3 $R0
   IntOp $R0 $R0 & ${SF_SELECTED}
@@ -1168,7 +1194,7 @@ Function DirectoryPreTV
 
 EndDirectoryPreTV:
 FunctionEnd
-
+*/
 ;======================================
 
 Function DirectoryShowApp
