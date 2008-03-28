@@ -446,11 +446,11 @@ ${MementoSectionEnd}
 
 ;======================================
 
-SectionGroup /e "MP plugins" SectionGroupMP
+SectionGroup /e "MediaPortal plugins" SectionGroupMP
 
 Section "-commonMP" SectionMPCommon
 
-  DetailPrint "Installing common files for MP plugins ..."
+  DetailPrint "Installing common files for MediaPortal plugins ..."
 
   ; Use the all users context
   SetShellVarContext all
@@ -470,7 +470,7 @@ Section "-commonMP" SectionMPCommon
   File "Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
 SectionEnd
 !macro Remove_${SectionMPCommon}
-  DetailPrint "Attempting to remove common files for MP plugins ..."
+  DetailPrint "Attempting to remove common files for MediaPortal plugins ..."
 
   ; remove files
   Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\MPUtils.dll"
@@ -594,11 +594,11 @@ SectionGroupEnd
 
 ;======================================
 
-SectionGroup /e "TV3 plugins" SectionGroupTV3
+SectionGroup /e "TV Server plugins" SectionGroupTV3
 
 Section "-commonTV3" SectionTV3Common
 
-  DetailPrint "Installing common files for TV3 plugins ..."
+  DetailPrint "Installing common files for TV Server plugins ..."
 
   ; Use the all users context
   SetShellVarContext all
@@ -611,7 +611,7 @@ Section "-commonTV3" SectionTV3Common
   File "Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
 SectionEnd
 !macro Remove_${SectionTV3Common}
-  DetailPrint "Attempting to remove common files for TV3 plugins ..."
+  DetailPrint "Attempting to remove common files for TV Server plugins ..."
 
   ; remove files
   Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.dll"
@@ -1106,7 +1106,7 @@ FunctionEnd
 
 Function .onSelChange
 
-  ; disable/remove common files for MP plugins if all MP plugins are unselected
+  ; disable/remove common files for MediaPortal plugins if all MediaPortal plugins are unselected
   ${IfNot} ${SectionIsSelected} ${SectionMPControlPlugin}
   ${AndIfNot} ${SectionIsSelected} ${SectionMPBlastZonePlugin}
   ${AndIfNot} ${SectionIsSelected} ${SectionTV2BlasterPlugin}
@@ -1115,7 +1115,7 @@ Function .onSelChange
     !insertmacro SelectSection ${SectionMPCommon}
   ${EndIf}
 
-  ; disable/remove common files for MP plugins if all MP plugins are unselected
+  ; disable/remove common files for MediaPortal plugins if all MediaPortal plugins are unselected
   ${IfNot} ${SectionIsSelected} ${SectionTV3BlasterPlugin}
     !insertmacro UnselectSection ${SectionTV3Common}
   ${Else}
