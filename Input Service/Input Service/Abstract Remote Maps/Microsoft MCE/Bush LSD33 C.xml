@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="33112" AbstractButton="OK" PhysicalName="PROGRAM" />
+  <RemoteTable RawCode="33232" AbstractButton="VolumeUp" />
+  <RemoteTable RawCode="33224" AbstractButton="VolumeDown" />
+  <RemoteTable RawCode="33088" AbstractButton="Back" PhysicalName="REPEAT/RANDOM" />
+  <RemoteTable RawCode="33240" AbstractButton="Mute" />
+  <RemoteTable RawCode="33152" AbstractButton="PlayPause" />
+  <RemoteTable RawCode="33168" AbstractButton="Stop" />
+  <RemoteTable RawCode="33160" AbstractButton="FastForward" />
+  <RemoteTable RawCode="33176" AbstractButton="Rewind" />
+  <RemoteTable RawCode="33216" AbstractButton="Power" />
+</DocumentElement>
