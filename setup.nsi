@@ -89,7 +89,7 @@ var DIR_TVSERVER
 #    !define MUI_HEADERIMAGE_BITMAP          "images\header.bmp"
 #    !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard.bmp"
 #    !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard.bmp"
-#!else                       # it's an svn reöease
+#!else                       # it's an svn release
 #    !define MUI_HEADERIMAGE_BITMAP          "images\header-svn.bmp"
 #    !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard-svn.bmp"
 #    !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard-svn.bmp"
@@ -98,8 +98,8 @@ var DIR_TVSERVER
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-!define MUI_FINISHPAGE_RUN      "$INSTDIR\Input Service Configuration\Input Service Configuration.exe"
-!define MUI_FINISHPAGE_RUN_TEXT "Input Service Configuration"
+;!define MUI_FINISHPAGE_RUN      "$INSTDIR\Input Service Configuration\Input Service Configuration.exe"
+;!define MUI_FINISHPAGE_RUN_TEXT "Input Service Configuration"
 
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
