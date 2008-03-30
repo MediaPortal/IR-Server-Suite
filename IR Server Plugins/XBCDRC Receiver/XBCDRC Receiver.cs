@@ -64,7 +64,6 @@ namespace InputService.Plugin
 
     const int DeviceBufferSize = 7;
     const string DevicePathVidPid = "vid_045e&pid_0284";
-    // const string DevicePathVidPid = "vid_1130&pid_cc00"; Asus DH Remote
 
     #endregion Constants
 

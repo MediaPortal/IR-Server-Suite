@@ -20,8 +20,8 @@ namespace InputService.Plugin
   public class KeyboardInput : PluginBase, IRemoteReceiver
   {
 
-    #region Debug
-#if DEBUG
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
 
     static void Remote(string deviceName, string code)
     {
@@ -31,19 +31,33 @@ namespace InputService.Plugin
     [STAThread]
     static void Main()
     {
-      KeyboardInput c = new KeyboardInput();
-      c.RemoteCallback += new RemoteHandler(Remote);
+      KeyboardInput c;
 
-      c.Start();
+      try
+      {
+        c = new KeyboardInput();
 
-      Application.Run();
+        c.RemoteCallback += new RemoteHandler(Remote);
 
-      c.Stop();
-      c = null;
+        c.Start();
+
+        Application.Run();
+
+        c.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+      finally
+      {
+        c = null;
+      }
+
+      Console.ReadKey();
     }
 
 #endif
-    #endregion Debug
 
 
     #region Interop

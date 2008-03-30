@@ -17,6 +17,46 @@ namespace InputService.Plugin
   public class TechnotrendReceiver : PluginBase, IRemoteReceiver
   {
 
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
+
+    static void Remote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      TechnotrendReceiver c;
+
+      try
+      {
+        c = new TechnotrendReceiver();
+
+        c.RemoteCallback += new RemoteHandler(Remote);
+
+        c.Start();
+
+        System.Windows.Forms.Application.Run();
+
+        c.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+      finally
+      {
+        c = null;
+      }
+
+      Console.ReadKey();
+    }
+
+#endif
+
+
     #region Enumerations
 
     /// <summary>

@@ -44,7 +44,7 @@
 			<code value="Left" />
 		</button>
 		<button name="Ok">
-			<code value="Ok" />
+			<code value="OK" />
 		</button>
 		<button name="Right">
 			<code value="Right" />

@@ -427,6 +427,7 @@ SkipUninstallInputService:
   File "IR Server Plugins\Serial IR Blaster\bin\${BuildType}\Serial IR Blaster.*"
   ;File "IR Server Plugins\Speech Receiver\bin\${BuildType}\Speech Receiver.*"
   File "IR Server Plugins\Technotrend Receiver\bin\${BuildType}\Technotrend Receiver.*"
+  File "IR Server Plugins\Technotrend Receiver\bin\${BuildType}\ttBdaDrvApi_Dll.dll"
   ;File "IR Server Plugins\Tira Transceiver\bin\${BuildType}\Tira Transceiver.*"
   File "IR Server Plugins\USB-UIRT Transceiver\bin\${BuildType}\USB-UIRT Transceiver.*"
   File "IR Server Plugins\Wii Remote Receiver\bin\${BuildType}\Wii Remote Receiver.*"
