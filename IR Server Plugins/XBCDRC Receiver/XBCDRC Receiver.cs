@@ -18,10 +18,53 @@ namespace InputService.Plugin
   public class XBCDRCReceiver : PluginBase, IRemoteReceiver, IDisposable
   {
 
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
+
+    static void Remote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      XBCDRCReceiver c;
+
+      try
+      {
+        c = new XBCDRCReceiver();
+
+        //c.Configure(null);
+
+        c.RemoteCallback += new RemoteHandler(Remote);
+
+        c.Start();
+
+        System.Windows.Forms.Application.Run();
+
+        c.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+      finally
+      {
+        c = null;
+      }
+
+      Console.ReadKey();
+    }
+
+#endif
+
+
     #region Constants
 
     const int DeviceBufferSize = 7;
     const string DevicePathVidPid = "vid_045e&pid_0284";
+    // const string DevicePathVidPid = "vid_1130&pid_cc00"; Asus DH Remote
 
     #endregion Constants
 

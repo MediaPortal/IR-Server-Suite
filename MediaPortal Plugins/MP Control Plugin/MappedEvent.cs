@@ -172,7 +172,7 @@ namespace MediaPortal.Plugins
       if (String.IsNullOrEmpty(commandString))
         return null;
 
-      string[] eventStringElements = eventString.Split(new char[] { ',', '=' }, StringSplitOptions.None);
+      string[] eventStringElements = eventString.Split(',', '=');
 
       if (eventStringElements.Length == 1)
       {

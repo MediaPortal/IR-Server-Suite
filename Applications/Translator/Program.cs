@@ -1274,7 +1274,7 @@ namespace Translator
       {
         try
         {
-          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), newPriority);
+          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), newPriority, true);
           Process.GetCurrentProcess().PriorityClass = priority;
 
           IrssLog.Info("Process priority set to: {0}", newPriority);

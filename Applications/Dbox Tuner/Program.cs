@@ -221,7 +221,7 @@ namespace DboxTuner
         _address  = doc.DocumentElement.Attributes["Address"].Value;
         _userName = doc.DocumentElement.Attributes["UserName"].Value;
         _password = doc.DocumentElement.Attributes["Password"].Value;
-        _boxType  = (StbBoxType)Enum.Parse(typeof(StbBoxType), doc.DocumentElement.Attributes["BoxType"].Value);
+        _boxType  = (StbBoxType)Enum.Parse(typeof(StbBoxType), doc.DocumentElement.Attributes["BoxType"].Value, true);
         _timeout  = int.Parse(doc.DocumentElement.Attributes["Timeout"].Value);
       }
       catch (FileNotFoundException)

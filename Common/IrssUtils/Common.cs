@@ -466,7 +466,7 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
 
-      string[] commands = command.Split(new char[] { '|' }, StringSplitOptions.None);
+      string[] commands = command.Split('|');
 
       if (commands.Length != elements)
         throw new Exceptions.CommandStructureException(String.Format("Command structure does not split as expected: {0}", command));
@@ -776,7 +776,7 @@ namespace IrssUtils
           {
             string subString = command.Substring(MouseMoveToPos.Length);
 
-            string[] coords = subString.Split(new char[] { ',' });
+            string[] coords = subString.Split(',');
 
             int x = int.Parse(coords[0]);
             int y = int.Parse(coords[1]);

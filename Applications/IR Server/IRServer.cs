@@ -168,7 +168,7 @@ namespace IRServer
       {
         try
         {
-          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), _processPriority);
+          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), _processPriority, true);
           Process.GetCurrentProcess().PriorityClass = priority;
 
           IrssLog.Info("Process priority set to: {0}", _processPriority);

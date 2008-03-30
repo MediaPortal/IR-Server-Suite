@@ -21,8 +21,8 @@ namespace InputService.Plugin
   public class CustomHIDReceiver : PluginBase, IConfigure, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
 
-    #region Debug
-#if DEBUG
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
 
     static void Remote(string deviceName, string code)
     {
@@ -41,27 +41,38 @@ namespace InputService.Plugin
     static void Main()
     {
       CustomHIDReceiver c = new CustomHIDReceiver();
+      
+      try
+      {
+        c.Configure(null);
 
-      c.Configure(null);
+        c.RemoteCallback += new RemoteHandler(Remote);
+        c.KeyboardCallback += new KeyboardHandler(Keyboard);
+        c.MouseCallback += new MouseHandler(Mouse);      
 
-      c.RemoteCallback += new RemoteHandler(Remote);
-      c.KeyboardCallback += new KeyboardHandler(Keyboard);
-      c.MouseCallback += new MouseHandler(Mouse);      
+        Console.WriteLine("Usage: {0}", c._device.usUsage);
+        Console.WriteLine("UsagePage: {0}", c._device.usUsagePage);
+        Console.WriteLine();
 
-      Console.WriteLine("Usage: {0}", c._device.usUsage);
-      Console.WriteLine("UsagePage: {0}", c._device.usUsagePage);
-      Console.WriteLine();
+        c.Start();
 
-      c.Start();
+        Application.Run();
 
-      Application.Run();
+        c.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+      finally
+      {
+        c = null;
+      }
 
-      c.Stop();
-      c = null;
+      Console.ReadKey();
     }
 
 #endif
-    #endregion Debug
 
 
     #region Constants

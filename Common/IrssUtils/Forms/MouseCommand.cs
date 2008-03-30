@@ -104,7 +104,7 @@ namespace IrssUtils.Forms
 
             string subString = command.Substring(Common.MouseMoveToPos.Length);
 
-            string[] coords = subString.Split(new char[] { ',' });
+            string[] coords = subString.Split(',');
 
             numericUpDownX.Value = Decimal.Parse(coords[0]);
             numericUpDownY.Value = Decimal.Parse(coords[1]);

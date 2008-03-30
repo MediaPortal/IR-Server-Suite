@@ -250,7 +250,7 @@ namespace InputService.Plugin
         doc.Load(ConfigurationFile);
 
         _serialPortName = doc.DocumentElement.Attributes["SerialPortName"].Value;
-        _blastMode = (BlastMode)Enum.Parse(typeof(BlastMode), doc.DocumentElement.Attributes["BlastMode"].Value);
+        _blastMode = (BlastMode)Enum.Parse(typeof(BlastMode), doc.DocumentElement.Attributes["BlastMode"].Value, true);
       }
 #if TRACE
       catch (Exception ex)

@@ -173,7 +173,7 @@ namespace MPUtils
     /// <param name="command">The command.</param>
     public static void ProcessSendMediaPortalAction(string[] command)
     {
-      Action.ActionType type = (Action.ActionType)Enum.Parse(typeof(Action.ActionType), command[0]);
+      Action.ActionType type = (Action.ActionType)Enum.Parse(typeof(Action.ActionType), command[0], true);
       float f1 = float.Parse(command[1]);
       float f2 = float.Parse(command[2]);
 
@@ -187,7 +187,7 @@ namespace MPUtils
     /// <param name="command">The command.</param>
     public static void ProcessSendMediaPortalMessage(string[] command)
     {
-      GUIMessage.MessageType type = (GUIMessage.MessageType)Enum.Parse(typeof(GUIMessage.MessageType), command[0]);
+      GUIMessage.MessageType type = (GUIMessage.MessageType)Enum.Parse(typeof(GUIMessage.MessageType), command[0], true);
       int windowId  = int.Parse(command[1]);
       int senderId  = int.Parse(command[2]);
       int controlId = int.Parse(command[3]);

@@ -118,7 +118,7 @@ namespace IrssUtils
       {
         string dataString = Encoding.ASCII.GetString(dataBytes);
 
-        string[] data = dataString.Split(new char[] { ',' });
+        string[] data = dataString.Split(',');
 
         IRServerInfo irServerInfo = new IRServerInfo();
         irServerInfo.CanLearn     = bool.Parse(data[0]);
