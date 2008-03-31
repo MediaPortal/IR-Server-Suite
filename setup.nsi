@@ -97,9 +97,10 @@ var DIR_TVSERVER
 #!define MUI_HEADERIMAGE_RIGHT
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
-!define MUI_FINISHPAGE_AUTOCLOSE
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+;!define MUI_FINISHPAGE_RUN_NOTCHECKED
 ;!define MUI_FINISHPAGE_RUN      "$INSTDIR\Input Service Configuration\Input Service Configuration.exe"
-;!define MUI_FINISHPAGE_RUN_TEXT "Input Service Configuration"
+;!define MUI_FINISHPAGE_RUN_TEXT "Run Input Service Configuration (generally not necessary)"
 
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
