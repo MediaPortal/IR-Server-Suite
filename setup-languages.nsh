@@ -31,19 +31,21 @@
 
 # ENGLISH
 LangString DESC_SectionInputService       ${LANG_ENGLISH} "A windows service that provides access to your IR devices."
+LangString DESC_SectionGroupMP            ${LANG_ENGLISH} "MediaPortal plugins."
 LangString DESC_SectionMPControlPlugin    ${LANG_ENGLISH} "Connects to the Input Service to control MediaPortal."
 LangString DESC_SectionMPBlastZonePlugin  ${LANG_ENGLISH} "Lets you control your IR devices from within the MediaPortal GUI."
 LangString DESC_SectionTV2BlasterPlugin   ${LANG_ENGLISH} "For tuning external channels (on Set Top Boxes) with the default MediaPortal TV engine."
+LangString DESC_SectionGroupTV3           ${LANG_ENGLISH} "MediaPortal TV Server plugins."
 LangString DESC_SectionTV3BlasterPlugin   ${LANG_ENGLISH} "For tuning external channels (on Set Top Boxes) with the MediaPortal TV server."
 LangString DESC_SectionTranslator         ${LANG_ENGLISH} "Control your whole PC."
-LangString DESC_SectionTrayLauncher       ${LANG_ENGLISH} "Simple tray application to launch an application of your choosing when a particular button is pressed."
-LangString DESC_SectionVirtualRemote      ${LANG_ENGLISH} "Simulated remote control, works as an application or as a web hosted remote control (with included Web Remote).  Also includes a Skin Editor and Smart Device versions of Virtual Remote."
+LangString DESC_SectionTrayLauncher       ${LANG_ENGLISH} "Simple program to launch an application of your choosing when a particular button is pressed."
+LangString DESC_SectionVirtualRemote      ${LANG_ENGLISH} "Simulated remote control. Includes PC application, web, and Smart Devices versions."
 LangString DESC_SectionIRBlast            ${LANG_ENGLISH} "Command line tools for blasting IR codes."
 LangString DESC_SectionIRFileTool         ${LANG_ENGLISH} "Tool for learning, modifying, testing, correcting and converting IR command files."
 LangString DESC_SectionKeyboardInputRelay ${LANG_ENGLISH} "Relays keyboard input to the Input Service to act on keypresses like remote buttons."
 LangString DESC_SectionDboxTuner          ${LANG_ENGLISH} "Command line tuner for Dreambox devices."
 LangString DESC_SectionHcwPvrTuner        ${LANG_ENGLISH} "Command line tuner for Hauppauge PVR devices."
-LangString DESC_SectionDebugClient        ${LANG_ENGLISH} "Very simple testing tool for troubleshooting input and communications problems."
+LangString DESC_SectionDebugClient        ${LANG_ENGLISH} "Simple testing tool for troubleshooting input and communications problems."
 
 
 LangString ^UninstallLink                     ${LANG_ENGLISH} "Uninstall $(^Name)"
@@ -51,7 +53,7 @@ LangString ^UninstallLink                     ${LANG_ENGLISH} "Uninstall $(^Name
 LangString TEXT_MSGBOX_REMOVE_ALL             ${LANG_ENGLISH} "Do you want to remove your User settings?$\r$\nAttention: This will remove all your customised settings including Skins and Databases."
 
 LangString TEXT_MSGBOX_ERROR_DOTNET           ${LANG_ENGLISH} "Microsoft .Net Framework Runtime is a prerequisite. Please install first."
-LangString TEXT_MSGBOX_ERROR_WIN              ${LANG_ENGLISH} "MediaPortal requires at least Windows XP. Your Windows is not supported. Installation aborted"
-LangString TEXT_MSGBOX_ERROR_IS_INSTALLED     ${LANG_ENGLISH} "MediaPortal is already installed. You need to uninstall it, before you continue with the installation.$\r$\nUninstall will be lunched when pressing OK."
+LangString TEXT_MSGBOX_ERROR_WIN              ${LANG_ENGLISH} "$(^Name) requires at least Windows XP. Your Windows is not supported. Installation aborted"
+LangString TEXT_MSGBOX_ERROR_IS_INSTALLED     ${LANG_ENGLISH} "$(^Name) is already installed. You need to uninstall it, before you continue with the installation.$\r$\nUninstall will be lunched when pressing OK."
 LangString TEXT_MSGBOX_ERROR_ON_UNINSTALL     ${LANG_ENGLISH} "An error occured while trying to uninstall old version!$\r$\nDo you still want to continue the installation?"
-LangString TEXT_MSGBOX_ERROR_REBOOT_REQUIRED  ${LANG_ENGLISH} "REBOOT IS REQUIRED. DO THAT!!!!"
+LangString TEXT_MSGBOX_ERROR_REBOOT_REQUIRED  ${LANG_ENGLISH} "You must reboot your computer to continue the installation."

@@ -495,7 +495,7 @@ namespace IrssUtils
         process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true);
         process.StartInfo.CreateNoWindow    = bool.Parse(commands[4]);
         process.StartInfo.UseShellExecute   = bool.Parse(commands[5]);
-        //process.PriorityClass = ProcessPriorityClass.
+        //process.PriorityClass               = ProcessPriorityClass.
 
         bool waitForExit  = bool.Parse(commands[6]);
         bool forceFocus   = bool.Parse(commands[7]);
@@ -505,12 +505,10 @@ namespace IrssUtils
         // Give new process focus ...
         if (forceFocus && !process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
         {
-          process.WaitForInputIdle(15000);
-
           Thread focusForcer = new Thread(new ParameterizedThreadStart(FocusForcer));
           focusForcer.Name = String.Format("Focus Forcer: {0}", process.MainWindowTitle);
           focusForcer.IsBackground = true;
-          focusForcer.Start(process.MainWindowTitle);
+          focusForcer.Start(process);
 
           /*
           int attempt = 0;
@@ -534,10 +532,14 @@ namespace IrssUtils
 
     static void FocusForcer(object processObj)
     {
-      string title = processObj as string;
+      Process process = processObj as Process;
 
-      if (title == null)
-        throw new ArgumentException("Argument is not a string object", "processObj");
+      if (process == null)
+        throw new ArgumentException("Argument is not a Process object", "processObj");
+
+      process.WaitForInputIdle(15000);
+
+      string title = process.MainWindowTitle;
 
       IntPtr windowHandle;
 
