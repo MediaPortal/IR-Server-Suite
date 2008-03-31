@@ -117,7 +117,7 @@ namespace InputService.Configuration
       this.toolStripButtonDetect.Image = global::InputService.Configuration.Properties.Resources.Detect;
       this.toolStripButtonDetect.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDetect.Name = "toolStripButtonDetect";
-      this.toolStripButtonDetect.Size = new System.Drawing.Size(59, 22);
+      this.toolStripButtonDetect.Size = new System.Drawing.Size(61, 22);
       this.toolStripButtonDetect.Text = "Detect";
       this.toolStripButtonDetect.ToolTipText = "Detect attached devices";
       this.toolStripButtonDetect.Click += new System.EventHandler(this.toolStripButtonDetect_Click);
@@ -127,7 +127,7 @@ namespace InputService.Configuration
       this.toolStripButtonAdvancedSettings.Image = global::InputService.Configuration.Properties.Resources.Advanced;
       this.toolStripButtonAdvancedSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonAdvancedSettings.Name = "toolStripButtonAdvancedSettings";
-      this.toolStripButtonAdvancedSettings.Size = new System.Drawing.Size(75, 22);
+      this.toolStripButtonAdvancedSettings.Size = new System.Drawing.Size(80, 22);
       this.toolStripButtonAdvancedSettings.Text = "Advanced";
       this.toolStripButtonAdvancedSettings.ToolTipText = "Advanced settings";
       this.toolStripButtonAdvancedSettings.Click += new System.EventHandler(this.toolStripButtonAdvancedSettings_Click);
@@ -138,7 +138,7 @@ namespace InputService.Configuration
       this.toolStripButtonHelp.Image = global::InputService.Configuration.Properties.Resources.Help;
       this.toolStripButtonHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonHelp.Name = "toolStripButtonHelp";
-      this.toolStripButtonHelp.Size = new System.Drawing.Size(48, 22);
+      this.toolStripButtonHelp.Size = new System.Drawing.Size(52, 22);
       this.toolStripButtonHelp.Text = "Help";
       this.toolStripButtonHelp.Click += new System.EventHandler(this.toolStripButtonHelp_Click);
       // 
@@ -154,7 +154,7 @@ namespace InputService.Configuration
       this.toolStripButtonStop.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonStop.Image")));
       this.toolStripButtonStop.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonStop.Name = "toolStripButtonStop";
-      this.toolStripButtonStop.Size = new System.Drawing.Size(49, 22);
+      this.toolStripButtonStop.Size = new System.Drawing.Size(51, 22);
       this.toolStripButtonStop.Text = "Stop";
       this.toolStripButtonStop.ToolTipText = "Stop the Input Service";
       this.toolStripButtonStop.Click += new System.EventHandler(this.toolStripButtonStop_Click);
@@ -187,6 +187,7 @@ namespace InputService.Configuration
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Input Service Configuration";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Config_FormClosing);
+      this.Load += new System.EventHandler(this.Config_Load);
       this.groupBoxTransceiver.ResumeLayout(false);
       this.toolStrip.ResumeLayout(false);
       this.toolStrip.PerformLayout();

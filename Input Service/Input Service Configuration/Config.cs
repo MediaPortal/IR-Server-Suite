@@ -76,7 +76,7 @@ namespace InputService.Configuration
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
           checkBox = gridPlugins[row, ColReceive] as SourceGrid.Cells.CheckBox;
-          if (checkBox != null && checkBox.Checked)
+          if (checkBox != null && checkBox.Checked == true)
             receivers.Add(gridPlugins[row, ColName].DisplayText);
         }
 
@@ -111,7 +111,7 @@ namespace InputService.Configuration
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
           checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
-          if (checkBox != null && checkBox.Checked)
+          if (checkBox != null && checkBox.Checked == true)
             return gridPlugins[row, ColName].DisplayText;
         }
 
@@ -154,12 +154,6 @@ namespace InputService.Configuration
         MessageBox.Show(this, "No Input Service Plugins found!", "Input Service Configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
       else
         CreateGrid();
-
-      _serviceMonitorActive = true;
-      Thread serviceMonitor = new Thread(new ThreadStart(ServiceMonitor));
-      serviceMonitor.IsBackground = true;
-      serviceMonitor.Name = "Input Service Monitor";
-      serviceMonitor.Start();
     }
 
     #endregion Constructor
@@ -200,7 +194,7 @@ namespace InputService.Configuration
       SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
       SourceGrid.Cells.CheckBox cell = (SourceGrid.Cells.CheckBox)context.Cell;
 
-      if (!cell.Checked)
+      if (cell.Checked != true)
         return;
 
       PluginBase plugin = cell.Row.Tag as PluginBase;
@@ -209,7 +203,7 @@ namespace InputService.Configuration
       {
         SourceGrid.Cells.CheckBox checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
 
-        if (checkBox != null && checkBox.Checked && !gridPlugins[row, ColName].DisplayText.Equals(plugin.Name, StringComparison.OrdinalIgnoreCase))
+        if (checkBox != null && checkBox.Checked == true && !gridPlugins[row, ColName].DisplayText.Equals(plugin.Name, StringComparison.OrdinalIgnoreCase))
           checkBox.Checked = false;
       }
     }
@@ -242,6 +236,16 @@ namespace InputService.Configuration
     }
 
     #endregion Controls
+
+    private void Config_Load(object sender, EventArgs e)
+    {
+      _serviceMonitorActive = true;
+
+      Thread serviceMonitor = new Thread(new ThreadStart(ServiceMonitor));
+      serviceMonitor.IsBackground = true;
+      serviceMonitor.Name = "Input Service Monitor";
+      serviceMonitor.Start();
+    }
 
     void ServiceMonitor()
     {

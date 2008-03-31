@@ -12,6 +12,11 @@
     <StartupObject>InputService.Configuration.Program</StartupObject>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <Win32Resource>
+    </Win32Resource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,8 +52,8 @@
       <HintPath>SourceGrid\DevAge.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="SourceGrid, Version=4.7.2662.1973, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>SourceGrid\SourceGrid.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -121,12 +126,12 @@
   <ItemGroup>
     <None Include="Graphics\Detect.png" />
     <None Include="Graphics\Advanced.png" />
-    <Content Include="Graphics\Help.png" />
-    <Content Include="Graphics\Start.png" />
-    <Content Include="Graphics\Stop.png" />
     <Content Include="Input Service Configuration.exe.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Help.png" />
+    <Content Include="Graphics\Start.png" />
+    <Content Include="Graphics\Stop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<Digit0>STB: SCV Digital\0</Digit0>
+	<Digit1>STB: SCV Digital\1</Digit1>
+	<Digit2>STB: SCV Digital\2</Digit2>
+	<Digit3>STB: SCV Digital\3</Digit3>
+	<Digit4>STB: SCV Digital\4</Digit4>
+	<Digit5>STB: SCV Digital\5</Digit5>
+	<Digit6>STB: SCV Digital\6</Digit6>
+	<Digit7>STB: SCV Digital\7</Digit7>
+	<Digit8>STB: SCV Digital\8</Digit8>
+	<Digit9>STB: SCV Digital\9</Digit9>
+	<SelectCommand>STB: SCV Digital\SELECT</SelectCommand>
+</config>

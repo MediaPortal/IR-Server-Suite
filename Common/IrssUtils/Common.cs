@@ -508,7 +508,7 @@ namespace IrssUtils
           Thread focusForcer = new Thread(new ParameterizedThreadStart(FocusForcer));
           focusForcer.Name = String.Format("Focus Forcer: {0}", process.MainWindowTitle);
           focusForcer.IsBackground = true;
-          focusForcer.Start(process);
+          focusForcer.Start(process.Id);
 
           /*
           int attempt = 0;
@@ -530,16 +530,27 @@ namespace IrssUtils
       }
     }
 
+
+
     static void FocusForcer(object processObj)
     {
-      Process process = processObj as Process;
+      int processId = (int)processObj;
+
+      Process process = Process.GetProcessById(processId);
 
       if (process == null)
         throw new ArgumentException("Argument is not a Process object", "processObj");
 
       process.WaitForInputIdle(15000);
 
-      string title = process.MainWindowTitle;
+      string title = String.Empty;
+      
+
+      for (int i = 0; i < 30 && String.IsNullOrEmpty(title = process.MainWindowTitle) && process != null && !process.HasExited; i++)
+        Thread.Sleep(1000);
+
+      if (String.IsNullOrEmpty(title) || process == null || process.HasExited)
+        return;
 
       IntPtr windowHandle;
 

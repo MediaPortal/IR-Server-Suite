@@ -72,7 +72,7 @@ namespace IRServer
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
           checkBox = gridPlugins[row, ColReceive] as SourceGrid.Cells.CheckBox;
-          if (checkBox != null && checkBox.Checked)
+          if (checkBox != null && checkBox.Checked == true)
             receivers.Add(gridPlugins[row, ColName].DisplayText);
         }
 
@@ -107,7 +107,7 @@ namespace IRServer
         for (int row = 1; row < gridPlugins.RowsCount; row++)
         {
           checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
-          if (checkBox != null && checkBox.Checked)
+          if (checkBox != null && checkBox.Checked == true)
             return gridPlugins[row, ColName].DisplayText;
         }
 
@@ -213,7 +213,7 @@ namespace IRServer
       SourceGrid.CellContext context = (SourceGrid.CellContext)sender;
       SourceGrid.Cells.CheckBox cell = (SourceGrid.Cells.CheckBox)context.Cell;
 
-      if (!cell.Checked)
+      if (cell.Checked != true)
         return;
 
       PluginBase plugin = cell.Row.Tag as PluginBase;
@@ -222,7 +222,7 @@ namespace IRServer
       {
         SourceGrid.Cells.CheckBox checkBox = gridPlugins[row, ColTransmit] as SourceGrid.Cells.CheckBox;
 
-        if (checkBox != null && checkBox.Checked && !gridPlugins[row, ColName].DisplayText.Equals(plugin.Name, StringComparison.OrdinalIgnoreCase))
+        if (checkBox != null && checkBox.Checked == true && !gridPlugins[row, ColName].DisplayText.Equals(plugin.Name, StringComparison.OrdinalIgnoreCase))
           checkBox.Checked = false;
       }
     }

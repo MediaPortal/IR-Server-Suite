@@ -1917,6 +1917,11 @@ namespace IrssUtils
     static extern IntPtr GetParent(
       IntPtr hWnd);
 
+    [DllImport("user32.dll")]
+    static extern uint GetWindowThreadProcessId(
+      IntPtr hWnd,
+      out uint lpdwProcessId);
+
     #endregion Interop
 
     #region Methods

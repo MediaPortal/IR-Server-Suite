@@ -76,15 +76,15 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevAge.Core, Version=4.6.2660.128, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="DevAge.Core, Version=4.10.2845.21697, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">
       <HintPath>SourceGrid\DevAge.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="DevAge.Windows.Forms, Version=4.6.2660.128, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">
+    <Reference Include="DevAge.Windows.Forms, Version=4.10.2845.21698, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>SourceGrid\DevAge.Windows.Forms.dll</HintPath>
     </Reference>
-    <Reference Include="SourceGrid, Version=4.7.2662.1973, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SourceGrid, Version=4.11.2887.1415, Culture=neutral, PublicKeyToken=df6f5e538749e85d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>SourceGrid\SourceGrid.dll</HintPath>
     </Reference>
@@ -126,12 +126,12 @@
   <ItemGroup>
     <None Include="Graphics\Advanced.png" />
     <None Include="Graphics\Detect.png" />
-    <Content Include="Graphics\Help.png" />
-    <Content Include="Icon.ico" />
-    <Content Include="Icon16.ico" />
     <Content Include="IRServer.exe.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Help.png" />
+    <Content Include="Icon.ico" />
+    <Content Include="Icon16.ico" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Advanced.resx">
