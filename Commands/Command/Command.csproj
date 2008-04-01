@@ -10,6 +10,8 @@
     <RootNamespace>Commands</RootNamespace>
     <AssemblyName>CommandBase</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

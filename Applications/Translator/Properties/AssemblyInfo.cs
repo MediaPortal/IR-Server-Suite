@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Resources;
 
 //
 // General Information about an assembly is controlled through the following 
@@ -39,3 +40,4 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(true)]
 
 [assembly: Guid("00506894-d61e-47b9-9039-879c543a73e1")]
+[assembly: NeutralResourcesLanguageAttribute("en")]

@@ -11,6 +11,8 @@
     <AssemblyName>DboxTuner</AssemblyName>
     <StartupObject>DboxTuner.Program</StartupObject>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

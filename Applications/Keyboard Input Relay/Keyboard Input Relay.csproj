@@ -11,6 +11,8 @@
     <AssemblyName>KeyboardInputRelay</AssemblyName>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <StartupObject>KeyboardInputRelay.Program</StartupObject>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

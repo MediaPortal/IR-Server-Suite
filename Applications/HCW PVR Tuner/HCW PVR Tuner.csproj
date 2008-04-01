@@ -10,6 +10,8 @@
     <RootNamespace>HcwPvrTuner</RootNamespace>
     <AssemblyName>HcwPvrTuner</AssemblyName>
     <StartupObject>HcwPvrTuner.Program</StartupObject>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
