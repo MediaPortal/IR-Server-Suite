@@ -3,6 +3,13 @@
 ;
 ; (C) Copyright Aaron Dinnage, 2008
 ;======================================
+#**********************************************************************************************************#
+#
+#   For building the installer on your own you need:
+#       1. Lastest NSIS version from http://nsis.sourceforge.net/Download
+#       2. The xml-plugin from http://nsis.sourceforge.net/XML_plug-in
+#
+#**********************************************************************************************************#
 !define _DEBUG
 
 !ifdef _DEBUG
