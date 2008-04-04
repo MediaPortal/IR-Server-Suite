@@ -358,7 +358,7 @@
         {
             "{605BE39E-5046-48BD-AEC0-63C3A46626D5}:_F00D064CDFE44D93B469317FC4F5571A"
             {
-            "SourcePath" = "8:..\\Virtual Remote (PocketPC2003)\\obj\\Debug\\VirtualRemote.exe"
+            "SourcePath" = "8:..\\Virtual Remote (PocketPC2003)\\obj\\Release\\VirtualRemote.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D5C3E2CA9AB34D82A1365B0FC89F89A8"

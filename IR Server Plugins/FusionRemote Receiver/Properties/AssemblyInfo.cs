@@ -10,7 +10,7 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("FusionREMOTE Receiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the DViCO FusionREMOTE Receiver USB device")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("FusionRemoteReceiver")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]

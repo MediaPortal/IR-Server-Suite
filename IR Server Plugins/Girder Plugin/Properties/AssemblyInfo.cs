@@ -10,7 +10,7 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("Girder Plugin")]
 [assembly: AssemblyDescription("IR Server plugin to support Girder 3.x plugins")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("Girder Plugin")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]

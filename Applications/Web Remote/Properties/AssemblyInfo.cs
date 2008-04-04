@@ -9,7 +9,7 @@ using System.Resources;
 [assembly: AssemblyTitle("Web Remote")]
 [assembly: AssemblyDescription("Web interface for Virtual Remote")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("Web Remote")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
