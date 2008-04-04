@@ -988,13 +988,10 @@ namespace InputService.Plugin
     {
       int bytesRead;
 
-      IntPtr deviceBufferPtr  = IntPtr.Zero;
       IntPtr receiveParamsPtr = IntPtr.Zero;
 
       try
       {
-        deviceBufferPtr = Marshal.AllocHGlobal(DeviceBufferSize);
-
         int receiveParamsSize = Marshal.SizeOf(typeof(ReceiveParams)) + DeviceBufferSize + 8;
         receiveParamsPtr = Marshal.AllocHGlobal(receiveParamsSize);
 
@@ -1058,9 +1055,6 @@ namespace InputService.Plugin
       }
       finally
       {
-        if (deviceBufferPtr != IntPtr.Zero)
-          Marshal.FreeHGlobal(deviceBufferPtr);
-
         if (receiveParamsPtr != IntPtr.Zero)
           Marshal.FreeHGlobal(receiveParamsPtr);
 

@@ -1167,7 +1167,7 @@ namespace InputService.Plugin
         case 0x65: return Keyboard.VKey.VK_APPS;
 
         default:
-          throw new ArgumentException(string.Format("Unknown Key Value {0}", keyCode), "keyCode");
+          throw new ArgumentException(String.Format("Unknown Key Value {0}", keyCode), "keyCode");
       }
     }
 

@@ -93,6 +93,9 @@ namespace MediaPortal.Plugins
         if (!eventType.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxEvents.Items.Add(eventType);
 
+      comboBoxEvents.Items.Add("Enter screen");
+      comboBoxEvents.Items.Add("Exit screen");
+
       comboBoxParameter.Items.Clear();
       comboBoxParameter.Items.Add("Ignore Parameters");
       comboBoxParameter.Items.Add("Label 1");

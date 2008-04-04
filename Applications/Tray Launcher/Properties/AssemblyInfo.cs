@@ -34,8 +34,8 @@ using System.Resources;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.0.4.2")]
-[assembly: AssemblyFileVersion("1.0.4.2")]
+[assembly: AssemblyVersion("1.0.4.0")]
+[assembly: AssemblyFileVersion("1.0.4.0")]
 
 [assembly: CLSCompliant(true)]
 [assembly: Guid("2011f0d4-cec8-43d2-8678-79f24cd6c517")]

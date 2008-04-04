@@ -25,15 +25,15 @@ namespace InputService.Plugin
   [Flags]
   enum KeyModifiers
   {
-    None          = 0,
-    LeftControl   = 1,
-    LeftShift     = 2,
-    LeftAlt       = 4,
-    LeftWin       = 8,
-    RightControl  = 16,
-    RightShift    = 32,
-    RightAlt      = 64,
-    RightWin      = 128,
+    None          = 0x00,
+    LeftControl   = 0x01,
+    LeftShift     = 0x02,
+    LeftAlt       = 0x04,
+    LeftWin       = 0x08,
+    RightControl  = 0x10,
+    RightShift    = 0x20,
+    RightAlt      = 0x40,
+    RightWin      = 0x80,
   }
 
   #endregion Enumerations

@@ -49,6 +49,7 @@ namespace InputService.Plugin
       this.checkBoxEnableMouse = new System.Windows.Forms.CheckBox();
       this.checkBoxUseSystemRatesRemote = new System.Windows.Forms.CheckBox();
       this.checkBoxUseSystemRatesKeyboard = new System.Windows.Forms.CheckBox();
+      this.checkBoxDisableAutomaticButtons = new System.Windows.Forms.CheckBox();
       this.labelLearnIRTimeout = new System.Windows.Forms.Label();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageBasic = new System.Windows.Forms.TabPage();
@@ -59,7 +60,6 @@ namespace InputService.Plugin
       this.labelKeyHeldDelay = new System.Windows.Forms.Label();
       this.tabPageMouse = new System.Windows.Forms.TabPage();
       this.labelMouseSensitivity = new System.Windows.Forms.Label();
-      this.checkBoxDisableAutomaticButtons = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).BeginInit();
       this.groupBoxRemoteTiming.SuspendLayout();
@@ -111,7 +111,8 @@ namespace InputService.Plugin
       this.numericUpDownButtonRepeatDelay.TabIndex = 2;
       this.numericUpDownButtonRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownButtonRepeatDelay.ThousandsSeparator = true;
-      this.toolTips.SetToolTip(this.numericUpDownButtonRepeatDelay, "When the button is held this is the time between the first press and the first repeat");
+      this.toolTips.SetToolTip(this.numericUpDownButtonRepeatDelay, "When the button is held this is the time between the first press and the first re" +
+              "peat");
       this.numericUpDownButtonRepeatDelay.Value = new decimal(new int[] {
             10000,
             0,
@@ -145,7 +146,7 @@ namespace InputService.Plugin
       // 
       // buttonOK
       // 
-      this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonOK.Location = new System.Drawing.Point(128, 240);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
@@ -156,7 +157,7 @@ namespace InputService.Plugin
       // 
       // buttonCancel
       // 
-      this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.buttonCancel.Location = new System.Drawing.Point(200, 240);
       this.buttonCancel.Name = "buttonCancel";
@@ -325,7 +326,8 @@ namespace InputService.Plugin
       this.checkBoxDisableMCEServices.Size = new System.Drawing.Size(216, 17);
       this.checkBoxDisableMCEServices.TabIndex = 2;
       this.checkBoxDisableMCEServices.Text = "Disable Windows Media Center services";
-      this.toolTips.SetToolTip(this.checkBoxDisableMCEServices, "Disable Microsoft Windows Media Center services to prevent interference with the Input Service");
+      this.toolTips.SetToolTip(this.checkBoxDisableMCEServices, "Disable Microsoft Windows Media Center services to prevent interference with the " +
+              "Input Service");
       this.checkBoxDisableMCEServices.UseVisualStyleBackColor = true;
       // 
       // checkBoxEnableRemote
@@ -391,6 +393,19 @@ namespace InputService.Plugin
       this.checkBoxUseSystemRatesKeyboard.UseVisualStyleBackColor = true;
       this.checkBoxUseSystemRatesKeyboard.CheckedChanged += new System.EventHandler(this.checkBoxUseSystemRatesKeyboard_CheckedChanged);
       // 
+      // checkBoxDisableAutomaticButtons
+      // 
+      this.checkBoxDisableAutomaticButtons.AutoSize = true;
+      this.checkBoxDisableAutomaticButtons.Checked = true;
+      this.checkBoxDisableAutomaticButtons.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxDisableAutomaticButtons.Location = new System.Drawing.Point(8, 168);
+      this.checkBoxDisableAutomaticButtons.Name = "checkBoxDisableAutomaticButtons";
+      this.checkBoxDisableAutomaticButtons.Size = new System.Drawing.Size(148, 17);
+      this.checkBoxDisableAutomaticButtons.TabIndex = 3;
+      this.checkBoxDisableAutomaticButtons.Text = "Disable automatic buttons";
+      this.toolTips.SetToolTip(this.checkBoxDisableAutomaticButtons, "Prevent the operating system from automatically handling some buttons");
+      this.checkBoxDisableAutomaticButtons.UseVisualStyleBackColor = true;
+      // 
       // labelLearnIRTimeout
       // 
       this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 72);
@@ -402,6 +417,9 @@ namespace InputService.Plugin
       // 
       // tabControl
       // 
+      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl.Controls.Add(this.tabPageBasic);
       this.tabControl.Controls.Add(this.tabPageRemote);
       this.tabControl.Controls.Add(this.tabPageKeyboard);
@@ -507,30 +525,19 @@ namespace InputService.Plugin
       this.labelMouseSensitivity.Text = "Mouse sensitivity:";
       this.labelMouseSensitivity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // checkBoxDisableAutomaticButtons
-      // 
-      this.checkBoxDisableAutomaticButtons.AutoSize = true;
-      this.checkBoxDisableAutomaticButtons.Checked = true;
-      this.checkBoxDisableAutomaticButtons.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxDisableAutomaticButtons.Location = new System.Drawing.Point(8, 168);
-      this.checkBoxDisableAutomaticButtons.Name = "checkBoxDisableAutomaticButtons";
-      this.checkBoxDisableAutomaticButtons.Size = new System.Drawing.Size(148, 17);
-      this.checkBoxDisableAutomaticButtons.TabIndex = 3;
-      this.checkBoxDisableAutomaticButtons.Text = "Disable automatic buttons";
-      this.toolTips.SetToolTip(this.checkBoxDisableAutomaticButtons, "Prevent the operating system from automatically handling some buttons");
-      this.checkBoxDisableAutomaticButtons.UseVisualStyleBackColor = true;
-      // 
       // Configure
       // 
+      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(272, 273);
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(280, 300);
+      this.MinimumSize = new System.Drawing.Size(288, 309);
       this.Name = "Configure";
       this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

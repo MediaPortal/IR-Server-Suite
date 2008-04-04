@@ -87,11 +87,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Abstract Remote Maps\Direct Input\Direct Input.xml" />
+    <Content Include="Abstract Remote Maps\FireFly\FireFly.xml" />
     <Content Include="Abstract Remote Maps\FusionREMOTE\FusionHDTV.xml" />
     <Content Include="Abstract Remote Maps\FusionREMOTE\FusionREMOTE.xml" />
+    <Content Include="Abstract Remote Maps\Hauppauge\Hauppauge34.xml" />
+    <Content Include="Abstract Remote Maps\Hauppauge\Hauppauge45.xml" />
     <Content Include="Abstract Remote Maps\IgorPlug\Microsoft MCE.xml" />
+    <Content Include="Abstract Remote Maps\IR507\RC102.xml" />
+    <Content Include="Abstract Remote Maps\Medion\Medion.xml" />
     <Content Include="Abstract Remote Maps\Microsoft MCE\Microsoft MCE.xml" />
+    <Content Include="Abstract Remote Maps\Technotrend\Technotrend.xml" />
     <Content Include="Abstract Remote Maps\USB-UIRT\Microsoft MCE.xml" />
+    <Content Include="Abstract Remote Maps\Wii Remote\WiiRemote.xml" />
     <Content Include="Abstract Remote Maps\Windows Messages\Virtual Remote.xml" />
     <Content Include="Abstract Remote Maps\XBCDRC\Xbox.xml" />
     <Content Include="Uninstall.cmd">
@@ -99,6 +106,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Abstract Remote Maps\Imon\Microsoft MCE.xml" />
+    <Content Include="Input Service.exe.manifest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="RemoteTable.xsc">
       <DependentUpon>RemoteTable.xsd</DependentUpon>
     </None>

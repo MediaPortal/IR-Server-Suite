@@ -1,7 +1,7 @@
-#region Copyright (C) 2005-2007 Team MediaPortal
+#region Copyright (C) 2005-2008 Team MediaPortal
 
 /* 
- *	Copyright (C) 2005-2007 Team MediaPortal
+ *	Copyright (C) 2005-2008 Team MediaPortal
  *	http://www.team-mediaportal.com
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -186,12 +186,12 @@ namespace MediaPortal.Plugins
       string pathCustom   = Path.Combine(MPUtils.MPCommon.CustomInputDevice, deviceXmlName + ".xml");
       string pathDefault  = Path.Combine(MPUtils.MPCommon.CustomInputDefault, deviceXmlName + ".xml");
 
-      if (File.Exists(pathCustom) && CheckXmlFile(pathCustom))
+      if (System.IO.File.Exists(pathCustom) && CheckXmlFile(pathCustom))
       {
         path = pathCustom;
         Log.Info("MAP: using custom mappings for {0}", deviceXmlName);
       }
-      else if (File.Exists(pathDefault) && CheckXmlFile(pathDefault))
+      else if (System.IO.File.Exists(pathDefault) && CheckXmlFile(pathDefault))
       {
         path = pathDefault;
         Log.Info("MAP: using default mappings for {0}", deviceXmlName);

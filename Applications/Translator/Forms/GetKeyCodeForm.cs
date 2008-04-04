@@ -23,6 +23,7 @@ namespace Translator
     #region Variables
 
     string _keyCode = String.Empty;
+    string _deviceName = String.Empty;
 
     DelegateKeyCodeSet _keyCodeSet;
 
@@ -37,6 +38,15 @@ namespace Translator
     public string KeyCode
     {
       get { return _keyCode; }
+    }
+
+    /// <summary>
+    /// Gets the name of the device that generated the key code.
+    /// </summary>
+    /// <value>The name of the device that generated the key code.</value>
+    public string DeviceName
+    {
+      get { return _deviceName; }
     }
 
     #endregion Properties
@@ -71,6 +81,8 @@ namespace Translator
         string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
         int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
         string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+
+        _deviceName = deviceName;
 
         // TODO: When Abstract Remote Model becomes on by default
         //if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase)

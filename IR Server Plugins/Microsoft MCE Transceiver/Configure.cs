@@ -112,7 +112,7 @@ namespace InputService.Plugin
       catch
       {
         checkBoxDisableAutomaticButtons.Enabled = false;
-      }      
+      }
     }
 
     #endregion Constructor

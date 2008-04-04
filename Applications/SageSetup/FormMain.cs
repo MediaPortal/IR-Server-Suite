@@ -39,6 +39,7 @@ namespace SageSetup
       }
       else
       {
+        comboBoxComputer.Items.Add("localhost");
         comboBoxComputer.Items.AddRange(networkPCs.ToArray());
       }
 

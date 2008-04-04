@@ -523,6 +523,7 @@ namespace Translator
       getKeyCode.ShowDialog(this);
 
       string keyCode = getKeyCode.KeyCode;
+      string deviceName = getKeyCode.DeviceName;
 
       if (String.IsNullOrEmpty(keyCode))
         return;
@@ -544,8 +545,15 @@ namespace Translator
       {
         string description = String.Empty;
 
-        // TODO: Get description from Abstract Remote Model ...
-        description = keyCode + " button";
+        // TODO: Implement abstract remote button descriptions.
+        if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
+        {
+          switch (keyCode.ToLowerInvariant())
+          {
+            case "Red": description = "Red teletext button"; break;
+
+          }
+        }
 
         map = new ButtonMappingForm(keyCode, description, String.Empty);
       }
