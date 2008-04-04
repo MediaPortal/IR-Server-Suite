@@ -10,39 +10,32 @@
 #       2. The xml-plugin from http://nsis.sourceforge.net/XML_plug-in
 #
 #**********************************************************************************************************#
-!define _DEBUG
 
-!ifdef _DEBUG
-    !define BuildType "Debug"
-!else
-    !define BuildType "Release"
-!endif
-
-;======================================
-
-!define PRODUCT_NAME "IR Server Suite"
-!define PRODUCT_VERSION "1.0.4.2"
-!define PRODUCT_PUBLISHER "Aaron Dinnage (and-81)"
-!define PRODUCT_WEB_SITE "http://forum.team-mediaportal.com/mce_replacement_plugin-f165.html"
+!define PRODUCT_NAME          "IR Server Suite"
+!define PRODUCT_PUBLISHER     "Aaron Dinnage (and-81)"
+!define PRODUCT_WEB_SITE      "http://forum.team-mediaportal.com/mce_replacement_plugin-f165.html"
 
 !define REG_UNINSTALL         "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define MEMENTO_REGISTRY_ROOT HKLM
 !define MEMENTO_REGISTRY_KEY  "${REG_UNINSTALL}"
 
-; i would suggest to using the last digit for the svn revision number
-; so you can also remove the debug flag becuase you could indicate it by using the VER_BUILD
-; which is set to zero for Release BUILDS
+; VER_BUILD is set to zero for Release builds
 !define VER_MAJOR       1
 !define VER_MINOR       4
 !define VER_REVISION    2
+
 !ifndef VER_BUILD
-    !define VER_BUILD   0
+  !define VER_BUILD     0
 !endif
+
 !if ${VER_BUILD} == 0       # it's a stable release
-    !define VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}"
+  !define BuildType "Release"
+  !define VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}"
 !else                       # it's an svn release
-    !define VERSION "debug build ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
+  !define BuildType "Debug"
+  !define VERSION "Debug build ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
 !endif
+
 BrandingText "${PRODUCT_NAME} ${VERSION} by ${PRODUCT_PUBLISHER}"
 SetCompressor /SOLID /FINAL lzma
 
@@ -65,17 +58,18 @@ SetCompressor /SOLID /FINAL lzma
 !insertmacro GetParent
 
 ;======================================
+
 Name "${PRODUCT_NAME}"
-OutFile "..\${PRODUCT_NAME} - ${PRODUCT_VERSION}.exe"
+OutFile "..\${PRODUCT_NAME} - ${VERSION}.exe"
 InstallDir ""
 #InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 #InstallDirRegKey HKLM "${REG_UNINSTALL}" InstallPath
-!ifdef _DEBUG
-    ShowInstDetails show
-    ShowUninstDetails show
+!if ${VER_BUILD} != 0
+  ShowInstDetails show
+  ShowUninstDetails show
 !else
-    ShowInstDetails hide
-    ShowUninstDetails hide
+  ShowInstDetails hide
+  ShowUninstDetails hide
 !endif
 CRCCheck On
 
@@ -93,13 +87,13 @@ var DIR_TVSERVER
 
 #!define MUI_HEADERIMAGE
 #!if ${VER_BUILD} == 0       # it's a stable release
-#    !define MUI_HEADERIMAGE_BITMAP          "images\header.bmp"
-#    !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard.bmp"
-#    !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard.bmp"
+#  !define MUI_HEADERIMAGE_BITMAP          "images\header.bmp"
+#  !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard.bmp"
+#  !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard.bmp"
 #!else                       # it's an svn release
-#    !define MUI_HEADERIMAGE_BITMAP          "images\header-svn.bmp"
-#    !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard-svn.bmp"
-#    !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard-svn.bmp"
+#  !define MUI_HEADERIMAGE_BITMAP          "images\header-svn.bmp"
+#  !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard-svn.bmp"
+#  !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard-svn.bmp"
 #!endif
 #!define MUI_HEADERIMAGE_RIGHT
 
@@ -143,8 +137,12 @@ Page custom PageReinstall PageLeaveReinstall
 #!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveTV
 !insertmacro MUI_PAGE_DIRECTORY
 
-; !!!!! changed the order of the directory pages, to prevent if      no mp and no tve3 plugins were selected the page on irserversuite      shows the NEXT button but the mpand tve3 pages abort and installation starts
-;                                                                                                                                               no both pages would abort and won't be shown, and         irserver suite dir page shows the install  button    :-)
+; !!!!! changed the order of the directory pages, to prevent if
+; no mp and no tve3 plugins were selected the page on irserversuite
+; shows the NEXT button but the mpand tve3 pages abort and installation starts
+; no both pages would abort and won't be shown, and
+; irserver suite dir page shows the install  button    :-)
+
 ; Main app install path
 !define MUI_PAGE_HEADER_TEXT "Choose ${PRODUCT_NAME} Location"
 !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install ${PRODUCT_NAME}."
@@ -215,7 +213,6 @@ Page custom PageReinstall PageLeaveReinstall
 
         ${If} $DIR_MEDIAPORTAL == ""
           !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
-          #StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
         ${Endif}
 
       ${Endif}
@@ -228,7 +225,6 @@ Page custom PageReinstall PageLeaveReinstall
 
         ${If} $DIR_TVSERVER == ""
           !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
-          #StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
         ${Endif}
 
       ${Endif}
@@ -253,7 +249,6 @@ Page custom PageReinstall PageLeaveReinstall
 
       ${If} $DIR_MEDIAPORTAL == ""
         !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
-        #StrCpy '$DIR_MEDIAPORTAL' '$PROGRAMFILES\Team MediaPortal\MediaPortal'
       ${Endif}
 
     ${Endif}
@@ -266,7 +261,6 @@ Page custom PageReinstall PageLeaveReinstall
 
       ${If} $DIR_TVSERVER == ""
         !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
-        #StrCpy '$DIR_TVSERVER' '$PROGRAMFILES\Team MediaPortal\MediaPortal TV Server'
       ${Endif}
 
     ${Endif}
@@ -325,7 +319,7 @@ Section "-Core"
   WriteRegStr HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir" "$DIR_TVSERVER"
 
   ; Write documentation
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
   DetailPrint "Warning: Documentation is not included in debug builds"
 !else
   SetOutPath "$DIR_INSTALL"
@@ -528,7 +522,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
 ${MementoSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
 !else
 ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
@@ -571,7 +565,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
 ${MementoSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
 !else
 ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
@@ -702,7 +696,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
 ${MementoSection} "Tray Launcher" SectionTrayLauncher
 !else
 ${MementoUnselectedSection} "Tray Launcher" SectionTrayLauncher
@@ -819,7 +813,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
 ${MementoSection} "IR File Tool" SectionIRFileTool
 !else
 ${MementoUnselectedSection} "IR File Tool" SectionIRFileTool
@@ -855,7 +849,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
 ${MementoSection} "Keyboard Relay" SectionKeyboardInputRelay
 !else
 ${MementoUnselectedSection} "Keyboard Relay" SectionKeyboardInputRelay
@@ -894,7 +888,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
 ${MementoSection} "Dbox Tuner" SectionDboxTuner
 !else
 ${MementoUnselectedSection} "Dbox Tuner" SectionDboxTuner
@@ -924,7 +918,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
 ${MementoSection} "HCW PVR Tuner" SectionHcwPvrTuner
 !else
 ${MementoUnselectedSection} "HCW PVR Tuner" SectionHcwPvrTuner
@@ -951,7 +945,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
 ${MementoSection} "Debug Client" SectionDebugClient
 !else
 ${MementoUnselectedSection} "Debug Client" SectionDebugClient
@@ -1019,7 +1013,7 @@ Section "-Complete"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayName" "${PRODUCT_NAME}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "UninstallString" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayIcon" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayVersion" "${PRODUCT_VERSION}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayVersion" "${VERSION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "Publisher" "${PRODUCT_PUBLISHER}"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "NoModify" 1
@@ -1031,7 +1025,7 @@ Section "-Complete"
   Call DumpLog
 
   ; Finish
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
   SetAutoClose false
 !else
   SetAutoClose true
@@ -1077,7 +1071,7 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
   DeleteRegKey HKLM "Software\${PRODUCT_NAME}"
 
-!ifdef _DEBUG
+!if ${VER_BUILD} != 0
   SetAutoClose false
 !else
   SetAutoClose true
@@ -1170,82 +1164,6 @@ Function DirectoryPreTV
 FunctionEnd
 
 ;======================================
-/*
-Function DirectoryPreMP
-  SectionGetFlags 3 $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
-
-  SectionGetFlags 4 $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
-
-  SectionGetFlags 5 $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreMP
-
-  Abort
-
-EndDirectoryPreMP:
-FunctionEnd
-
-;======================================
-
-Function DirectoryPreTV
-  SectionGetFlags 6 $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} EndDirectoryPreTV
-
-  Abort
-
-EndDirectoryPreTV:
-FunctionEnd
-;======================================
-
-Function DirectoryShowApp
-  !insertmacro MUI_HEADER_TEXT "Choose ${PRODUCT_NAME} Location" "Choose the folder in which to install ${PRODUCT_NAME}."
-  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "${PRODUCT_NAME} Folder"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_INSTALL"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
-FunctionEnd
-
-;======================================
-
-Function DirectoryShowMP
-  !insertmacro MUI_HEADER_TEXT "Choose MediaPortal Location" "Choose the folder in which to install MediaPortal plugins."
-  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "MediaPortal Folder"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_MEDIAPORTAL"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
-FunctionEnd
-
-;======================================
-
-Function DirectoryShowTV
-  !insertmacro MUI_HEADER_TEXT "Choose TV Server Location" "Choose the folder in which to install TV Server plugins."
-  #!insertmacro MUI_INNERDIALOG_TEXT 1041 "TV Server Folder"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1019 "$DIR_TVSERVER"
-  #!insertmacro MUI_INNERDIALOG_TEXT 1006 "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
-FunctionEnd
-
-;======================================
-
-Function DirectoryLeaveApp
-  StrCpy $DIR_INSTALL $INSTDIR
-FunctionEnd
-
-;======================================
-
-Function DirectoryLeaveMP
-  StrCpy $DIR_MEDIAPORTAL $INSTDIR
-FunctionEnd
-
-;======================================
-
-Function DirectoryLeaveTV
-  StrCpy $DIR_TVSERVER $INSTDIR
-FunctionEnd
-*/
-;======================================
 
 !define LVM_GETITEMCOUNT 0x1004
 !define LVM_GETITEMTEXT 0x102D
@@ -1306,13 +1224,10 @@ FunctionEnd
 ;======================================
 ;======================================
 
-!ifndef _DEBUG
 Function un.onUninstSuccess
   HideWindow
   MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
 FunctionEnd
-!endif
-
 
 ;======================================
 
