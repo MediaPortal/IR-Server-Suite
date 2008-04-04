@@ -1,8 +1,9 @@
 rem @ECHO OFF
 
+rem Goto advancedBuild
 
 "%ProgramFiles%\Microsoft Visual Studio 8\Common7\IDE\devenv.com" /rebuild Release "IR Server Suite.sln"
-"%ProgramFiles%\NSIS\makensis.exe" setup.nsi
+"%ProgramFiles%\NSIS\makensis.exe" setup\setup.nsi
 
 EXIT
 
