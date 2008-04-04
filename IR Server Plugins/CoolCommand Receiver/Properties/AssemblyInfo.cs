@@ -10,7 +10,7 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("CoolCommand Receiver")]
 [assembly: AssemblyDescription("IR Server Plugin for the Leadtek Winfast CoolCommand Receiver device")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("CoolCommandReceiver")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
@@ -30,8 +30,8 @@ using System.Security.Permissions;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.4.0")]
-[assembly: AssemblyFileVersion("1.0.4.0")]
+[assembly: AssemblyVersion("1.4.2.0")]
+[assembly: AssemblyFileVersion("1.4.2.0")]
 
 [assembly: CLSCompliant(true)]
 [assembly: Guid("f3d8dcef-bb5c-4ae6-aa41-d6d11c9a2114")]

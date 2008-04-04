@@ -132,7 +132,7 @@ namespace InputService.Plugin
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
-    public override string Version      { get { return "1.0.4.2"; } }
+    public override string Version      { get { return "1.4.2.0"; } }
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>

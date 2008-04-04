@@ -36,7 +36,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion           = "TV2 Blaster Plugin 1.0.4.2 for MediaPortal 0.2.3.0";
+    internal const string PluginVersion           = "TV2 Blaster Plugin 1.4.2.0 for MediaPortal 0.2.3.0";
 
     internal static readonly string FolderMacros  = Path.Combine(Common.FolderAppData, "TV2 Blaster Plugin\\Macro");
 

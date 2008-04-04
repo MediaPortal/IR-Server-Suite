@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" >
-  <assemblyIdentity name="SageSetup" version="1.0.4.2" publicKeyToken="dc0b77bf2c754d95" processorArchitecture="msil" />
+  <assemblyIdentity name="SageSetup" version="1.4.2.0" publicKeyToken="dc0b77bf2c754d95" processorArchitecture="msil" />
   <description>Setup the Sage EXE Tuner plugins for use with IR Server Suite</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>

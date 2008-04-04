@@ -56,7 +56,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion           = "MP Blast Zone Plugin 1.0.4.2 for IR Server";
+    internal const string PluginVersion           = "MP Blast Zone Plugin 1.4.2.0 for IR Server";
 
     internal static readonly string MenuFile      = Path.Combine(Common.FolderAppData, "MP Blast Zone Plugin\\Menu.xml");
 

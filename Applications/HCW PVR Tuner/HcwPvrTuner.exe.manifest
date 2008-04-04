@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" >
-  <assemblyIdentity name="HcwPvrTuner" version="1.0.4.2" publicKeyToken="dc0b77bf2c754d95" processorArchitecture="msil" />
+  <assemblyIdentity name="HcwPvrTuner" version="1.4.2.0" publicKeyToken="dc0b77bf2c754d95" processorArchitecture="msil" />
   <description>Tune channels with Hauppauge IR Blaster built in to compatible TV Cards</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>

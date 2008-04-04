@@ -39,7 +39,7 @@ namespace TvEngine
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion           = "TV3 Blaster Plugin 1.0.4.2 for TV Server";
+    internal const string PluginVersion           = "TV3 Blaster Plugin 1.4.2.0 for TV Server";
 
     internal static readonly string FolderMacros  = Path.Combine(Common.FolderAppData, "TV3 Blaster Plugin\\Macro");
 
@@ -79,7 +79,7 @@ namespace TvEngine
     /// <summary>
     /// Returns the version of the plugin.
     /// </summary>
-    public string Version { get { return "1.0.4.2"; } }
+    public string Version { get { return "1.4.2.0"; } }
     /// <summary>
     /// Returns the author of the plugin.
     /// </summary>

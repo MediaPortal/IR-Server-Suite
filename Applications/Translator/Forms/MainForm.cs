@@ -1212,7 +1212,7 @@ namespace Translator
     }
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      MessageBox.Show(this, "Translator\nVersion 1.0.4.2 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(this, "Translator\nVersion 1.4.2.0 for IR Server Suite\nBy Aaron Dinnage, 2007", "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void addProgramToolStripMenuItem_Click(object sender, EventArgs e)

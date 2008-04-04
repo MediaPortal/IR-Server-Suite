@@ -42,7 +42,7 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion                 = "MP Control Plugin 1.0.4.2 for IR Server";
+    internal const string PluginVersion                 = "MP Control Plugin 1.4.2.0 for IR Server";
 
     internal static readonly string FolderMacros        = Path.Combine(Common.FolderAppData, "MP Control Plugin\\Macro");
 
