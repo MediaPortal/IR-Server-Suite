@@ -20,7 +20,7 @@
 !define PRODUCT_WEB_SITE "http://forum.team-mediaportal.com/mce_replacement_plugin-f165.html"
 
 Name "${PRODUCT_NAME}"
-OutFile "${PRODUCT_NAME} - ${PRODUCT_VERSION}.exe"
+OutFile "..\${PRODUCT_NAME} - ${PRODUCT_VERSION}.exe"
 InstallDir ""
 !ifdef DEBUG
     ShowInstDetails show
@@ -43,7 +43,7 @@ var DIR_TVSERVER
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
 
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "Documentation\LICENSE.GPL"
+!insertmacro MUI_PAGE_LICENSE "..\Documentation\LICENSE.GPL"
 !insertmacro MUI_PAGE_COMPONENTS
 
 ; Main app install path
@@ -348,7 +348,7 @@ Section "-Core"
 !else
   SetOutPath "$DIR_INSTALL"
   SetOverwrite ifnewer
-  File "Documentation\${PRODUCT_NAME}.chm"
+  File "..\Documentation\${PRODUCT_NAME}.chm"
 !endif
 
   ; Create app data directories
@@ -360,7 +360,7 @@ Section "-Core"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
   SetOverwrite ifnewer
-  File /r /x .svn "Set Top Boxes\*.*"
+  File /r /x .svn "..\Set Top Boxes\*.*"
 
   ; Create a start menu shortcut folder
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
@@ -389,13 +389,13 @@ SkipUninstallInputService:
   CreateDirectory "$DIR_INSTALL\Input Service"
   SetOutPath "$DIR_INSTALL\Input Service"
   SetOverwrite ifnewer
-  File "Input Service\Input Service\bin\${BuildType}\*.*"
+  File "..\Input Service\Input Service\bin\${BuildType}\*.*"
 
   ; Installing Input Service Configuration
   CreateDirectory "$DIR_INSTALL\Input Service Configuration"
   SetOutPath "$DIR_INSTALL\Input Service Configuration"
   SetOverwrite ifnewer
-  File "Input Service\Input Service Configuration\bin\${BuildType}\*.*"
+  File "..\Input Service\Input Service Configuration\bin\${BuildType}\*.*"
 
   ; Install IR Server Plugins ...
   DetailPrint "Installing IR Server Plugins ..."
@@ -403,40 +403,40 @@ SkipUninstallInputService:
   SetOutPath "$DIR_INSTALL\IR Server Plugins"
   SetOverwrite ifnewer
 
-  File "IR Server Plugins\Ads Tech PTV-335 Receiver\bin\${BuildType}\Ads Tech PTV-335 Receiver.*"
-  File "IR Server Plugins\CoolCommand Receiver\bin\${BuildType}\CoolCommand Receiver.*"
-  File "IR Server Plugins\Custom HID Receiver\bin\${BuildType}\Custom HID Receiver.*"
-  File "IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Direct Input Receiver.*"
-  File "IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Microsoft.DirectX.DirectInput.dll"
-  File "IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Microsoft.DirectX.dll"
-  File "IR Server Plugins\FusionRemote Receiver\bin\${BuildType}\FusionRemote Receiver.*"
-  File "IR Server Plugins\Girder Plugin\bin\${BuildType}\Girder Plugin.*"
-  File "IR Server Plugins\HCW Receiver\bin\${BuildType}\HCW Receiver.*"
-  File "IR Server Plugins\IgorPlug Receiver\bin\${BuildType}\IgorPlug Receiver.*"
-  ;File "IR Server Plugins\IR501 Receiver\bin\${BuildType}\IR501 Receiver.*"
-  File "IR Server Plugins\IR507 Receiver\bin\${BuildType}\IR507 Receiver.*"
-  ;File "IR Server Plugins\Ira Transceiver\bin\${BuildType}\Ira Transceiver.*"
-  File "IR Server Plugins\IRMan Receiver\bin\${BuildType}\IRMan Receiver.*"
-  File "IR Server Plugins\IRTrans Transceiver\bin\${BuildType}\IRTrans Transceiver.*"
-  ;File "IR Server Plugins\Keyboard Input\bin\${BuildType}\Keyboard Input.*"
-  File "IR Server Plugins\LiveDrive Receiver\bin\${BuildType}\LiveDrive Receiver.*"
-  File "IR Server Plugins\MacMini Receiver\bin\${BuildType}\MacMini Receiver.*"
-  File "IR Server Plugins\Microsoft MCE Transceiver\bin\${BuildType}\Microsoft MCE Transceiver.*"
-  ;File "IR Server Plugins\RC102 Receiver\bin\${BuildType}\RC102 Receiver.*"
-  File "IR Server Plugins\RedEye Blaster\bin\${BuildType}\RedEye Blaster.*"
-  File "IR Server Plugins\Serial IR Blaster\bin\${BuildType}\Serial IR Blaster.*"
-  ;File "IR Server Plugins\Speech Receiver\bin\${BuildType}\Speech Receiver.*"
-  File "IR Server Plugins\Technotrend Receiver\bin\${BuildType}\Technotrend Receiver.*"
-  File "IR Server Plugins\Technotrend Receiver\bin\${BuildType}\ttBdaDrvApi_Dll.dll"
-  ;File "IR Server Plugins\Tira Transceiver\bin\${BuildType}\Tira Transceiver.*"
-  File "IR Server Plugins\USB-UIRT Transceiver\bin\${BuildType}\USB-UIRT Transceiver.*"
-  File "IR Server Plugins\Wii Remote Receiver\bin\${BuildType}\Wii Remote Receiver.*"
-  File "IR Server Plugins\WiimoteLib\bin\${BuildType}\WiimoteLib.*"
-  File "IR Server Plugins\Windows Message Receiver\bin\${BuildType}\Windows Message Receiver.*"
-  File "IR Server Plugins\WinLirc Transceiver\bin\${BuildType}\WinLirc Transceiver.*"
-  File "IR Server Plugins\X10 Transceiver\bin\${BuildType}\X10 Transceiver.*"
-  File "IR Server Plugins\X10 Transceiver\bin\${BuildType}\Interop.X10.dll"
-  File "IR Server Plugins\XBCDRC Receiver\bin\${BuildType}\XBCDRC Receiver.*"
+  File "..\IR Server Plugins\Ads Tech PTV-335 Receiver\bin\${BuildType}\Ads Tech PTV-335 Receiver.*"
+  File "..\IR Server Plugins\CoolCommand Receiver\bin\${BuildType}\CoolCommand Receiver.*"
+  File "..\IR Server Plugins\Custom HID Receiver\bin\${BuildType}\Custom HID Receiver.*"
+  File "..\IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Direct Input Receiver.*"
+  File "..\IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Microsoft.DirectX.DirectInput.dll"
+  File "..\IR Server Plugins\Direct Input Receiver\bin\${BuildType}\Microsoft.DirectX.dll"
+  File "..\IR Server Plugins\FusionRemote Receiver\bin\${BuildType}\FusionRemote Receiver.*"
+  File "..\IR Server Plugins\Girder Plugin\bin\${BuildType}\Girder Plugin.*"
+  File "..\IR Server Plugins\HCW Receiver\bin\${BuildType}\HCW Receiver.*"
+  File "..\IR Server Plugins\IgorPlug Receiver\bin\${BuildType}\IgorPlug Receiver.*"
+  ;File "..\IR Server Plugins\IR501 Receiver\bin\${BuildType}\IR501 Receiver.*"
+  File "..\IR Server Plugins\IR507 Receiver\bin\${BuildType}\IR507 Receiver.*"
+  ;File "..\IR Server Plugins\Ira Transceiver\bin\${BuildType}\Ira Transceiver.*"
+  File "..\IR Server Plugins\IRMan Receiver\bin\${BuildType}\IRMan Receiver.*"
+  File "..\IR Server Plugins\IRTrans Transceiver\bin\${BuildType}\IRTrans Transceiver.*"
+  ;File "..\IR Server Plugins\Keyboard Input\bin\${BuildType}\Keyboard Input.*"
+  File "..\IR Server Plugins\LiveDrive Receiver\bin\${BuildType}\LiveDrive Receiver.*"
+  File "..\IR Server Plugins\MacMini Receiver\bin\${BuildType}\MacMini Receiver.*"
+  File "..\IR Server Plugins\Microsoft MCE Transceiver\bin\${BuildType}\Microsoft MCE Transceiver.*"
+  ;File "..\IR Server Plugins\RC102 Receiver\bin\${BuildType}\RC102 Receiver.*"
+  File "..\IR Server Plugins\RedEye Blaster\bin\${BuildType}\RedEye Blaster.*"
+  File "..\IR Server Plugins\Serial IR Blaster\bin\${BuildType}\Serial IR Blaster.*"
+  ;File "..\IR Server Plugins\Speech Receiver\bin\${BuildType}\Speech Receiver.*"
+  File "..\IR Server Plugins\Technotrend Receiver\bin\${BuildType}\Technotrend Receiver.*"
+  File "..\IR Server Plugins\Technotrend Receiver\bin\${BuildType}\ttBdaDrvApi_Dll.dll"
+  ;File "..\IR Server Plugins\Tira Transceiver\bin\${BuildType}\Tira Transceiver.*"
+  File "..\IR Server Plugins\USB-UIRT Transceiver\bin\${BuildType}\USB-UIRT Transceiver.*"
+  File "..\IR Server Plugins\Wii Remote Receiver\bin\${BuildType}\Wii Remote Receiver.*"
+  File "..\IR Server Plugins\WiimoteLib\bin\${BuildType}\WiimoteLib.*"
+  File "..\IR Server Plugins\Windows Message Receiver\bin\${BuildType}\Windows Message Receiver.*"
+  File "..\IR Server Plugins\WinLirc Transceiver\bin\${BuildType}\WinLirc Transceiver.*"
+  File "..\IR Server Plugins\X10 Transceiver\bin\${BuildType}\X10 Transceiver.*"
+  File "..\IR Server Plugins\X10 Transceiver\bin\${BuildType}\Interop.X10.dll"
+  File "..\IR Server Plugins\XBCDRC Receiver\bin\${BuildType}\XBCDRC Receiver.*"
 
   ; Create App Data Folder for IR Server configuration files
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service"
@@ -445,8 +445,8 @@ SkipUninstallInputService:
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
   SetOverwrite ifnewer
-  File /r /x .svn "Input Service\Input Service\Abstract Remote Maps\*.*"
-  File "Input Service\Input Service\RemoteTable.xsd"
+  File /r /x .svn "..\Input Service\Input Service\Abstract Remote Maps\*.*"
+  File "..\Input Service\Input Service\RemoteTable.xsd"
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" "" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" 0
@@ -469,21 +469,21 @@ Section "MP Control Plugin" SectionMPControlPlugin
   ; Write plugin dll
   SetOutPath "$DIR_MEDIAPORTAL\Plugins\Process"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPUtils.dll"
-  File "MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\IrssComms.dll"
-  File "MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\IrssUtils.dll"
-  File "MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPControlPlugin.dll"
+  File "..\MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPUtils.dll"
+  File "..\MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\IrssComms.dll"
+  File "..\MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\IrssUtils.dll"
+  File "..\MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPControlPlugin.dll"
 
   ; Write input mapping
   SetOutPath "$DIR_MEDIAPORTAL\InputDeviceMappings\defaults"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\MP Control Plugin\InputMapping\MPControlPlugin.xml"
+  File "..\MediaPortal Plugins\MP Control Plugin\InputMapping\MPControlPlugin.xml"
 
   ; Write app data
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Control Plugin"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\MP Control Plugin"
   SetOverwrite ifnewer
-  File /r /x .svn "MediaPortal Plugins\MP Control Plugin\AppData\*.*"
+  File /r /x .svn "..\MediaPortal Plugins\MP Control Plugin\AppData\*.*"
 
   ; Create Macro folder
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Control Plugin\Macro"
@@ -506,25 +506,25 @@ Section /o "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   ; Write plugin dll
   SetOutPath "$DIR_MEDIAPORTAL\Plugins\Windows"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPUtils.dll"
-  File "MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\IrssComms.dll"
-  File "MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\IrssUtils.dll"
-  File "MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPBlastZonePlugin.dll"
+  File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPUtils.dll"
+  File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\IrssComms.dll"
+  File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\IrssUtils.dll"
+  File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPBlastZonePlugin.dll"
 
   ; Write app data
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin"
   SetOverwrite off
-  File "MediaPortal Plugins\MP Blast Zone Plugin\AppData\Menu.xml"
+  File "..\MediaPortal Plugins\MP Blast Zone Plugin\AppData\Menu.xml"
 
   ; Write skin files
   SetOutPath "$DIR_MEDIAPORTAL\Skin\BlueTwo"
   SetOverwrite on
-  File /r /x .svn "MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
+  File /r /x .svn "..\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   SetOutPath "$DIR_MEDIAPORTAL\Skin\BlueTwo wide"
   SetOverwrite on
-  File /r /x .svn "MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
+  File /r /x .svn "..\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   ; Create Macro folder
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin\Macro"
@@ -547,10 +547,10 @@ Section /o "TV2 Blaster Plugin" SectionTV2BlasterPlugin
   ; Write plugin dll
   SetOutPath "$DIR_MEDIAPORTAL\Plugins\Process"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\MPUtils.dll"
-  File "MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\IrssComms.dll"
-  File "MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\IrssUtils.dll"
-  File "MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\TV2BlasterPlugin.dll"
+  File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\MPUtils.dll"
+  File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\IrssComms.dll"
+  File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\IrssUtils.dll"
+  File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\TV2BlasterPlugin.dll"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV2 Blaster Plugin"
@@ -570,10 +570,10 @@ Section /o "TV3 Blaster Plugin" SectionTV3BlasterPlugin
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
   SetOverwrite ifnewer
-  File "MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\MPUtils.dll"
-  File "MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\IrssComms.dll"
-  File "MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\IrssUtils.dll"
-  File "MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\TV3BlasterPlugin.dll"
+  File "..\MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\MPUtils.dll"
+  File "..\MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\IrssComms.dll"
+  File "..\MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\IrssUtils.dll"
+  File "..\MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\TV3BlasterPlugin.dll"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV3 Blaster Plugin"
@@ -594,7 +594,7 @@ Section "Translator" SectionTranslator
   CreateDirectory "$DIR_INSTALL\Translator"
   SetOutPath "$DIR_INSTALL\Translator"
   SetOverwrite ifnewer
-  File "Applications\Translator\bin\${BuildType}\*.*"
+  File "..\Applications\Translator\bin\${BuildType}\*.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator"
@@ -604,7 +604,7 @@ Section "Translator" SectionTranslator
   ; Copy in default settings files  
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Translator\Default Settings"
   SetOverwrite ifnewer
-  File "Applications\Translator\Default Settings\*.xml"
+  File "..\Applications\Translator\Default Settings\*.xml"
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator\Translator.exe" "" "$DIR_INSTALL\Translator\Translator.exe" 0
@@ -628,7 +628,7 @@ Section /o "Tray Launcher" SectionTrayLauncher
   CreateDirectory "$DIR_INSTALL\Tray Launcher"
   SetOutPath "$DIR_INSTALL\Tray Launcher"
   SetOverwrite ifnewer
-  File "Applications\Tray Launcher\bin\${BuildType}\*.*"
+  File "..\Applications\Tray Launcher\bin\${BuildType}\*.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Tray Launcher"
@@ -651,23 +651,23 @@ Section "Virtual Remote" SectionVirtualRemote
   CreateDirectory "$DIR_INSTALL\Virtual Remote"
   SetOutPath "$DIR_INSTALL\Virtual Remote"
   SetOverwrite ifnewer
-  File "Applications\Virtual Remote\bin\${BuildType}\*.*"
-  File "Applications\Web Remote\bin\${BuildType}\WebRemote.*"
-  File "Applications\Virtual Remote Skin Editor\bin\${BuildType}\VirtualRemoteSkinEditor.*"
+  File "..\Applications\Virtual Remote\bin\${BuildType}\*.*"
+  File "..\Applications\Web Remote\bin\${BuildType}\WebRemote.*"
+  File "..\Applications\Virtual Remote Skin Editor\bin\${BuildType}\VirtualRemoteSkinEditor.*"
 
   ; Installing skins
   CreateDirectory "$DIR_INSTALL\Virtual Remote\Skins"
   SetOutPath "$DIR_INSTALL\Virtual Remote\Skins"
   SetOverwrite ifnewer
-  File "Applications\Virtual Remote\Skins\*.*"
+  File "..\Applications\Virtual Remote\Skins\*.*"
 
   ; Installing Virtual Remote for Smart Devices
   CreateDirectory "$DIR_INSTALL\Virtual Remote\Smart Devices"
   SetOutPath "$DIR_INSTALL\Virtual Remote\Smart Devices"
   SetOverwrite ifnewer
-  File "Applications\Virtual Remote (PocketPC2003) Installer\${BuildType}\*.cab"
-  File "Applications\Virtual Remote (Smartphone2003) Installer\${BuildType}\*.cab"
-  File "Applications\Virtual Remote (WinCE5) Installer\${BuildType}\*.cab"
+  File "..\Applications\Virtual Remote (PocketPC2003) Installer\${BuildType}\*.cab"
+  File "..\Applications\Virtual Remote (Smartphone2003) Installer\${BuildType}\*.cab"
+  File "..\Applications\Virtual Remote (WinCE5) Installer\${BuildType}\*.cab"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Virtual Remote"
@@ -693,8 +693,8 @@ Section "IR Blast" SectionIRBlast
   CreateDirectory "$DIR_INSTALL\IR Blast"
   SetOutPath "$DIR_INSTALL\IR Blast"
   SetOverwrite ifnewer
-  File "Applications\IR Blast (No Window)\bin\${BuildType}\*.*"
-  File "Applications\IR Blast\bin\${BuildType}\IRBlast.exe"
+  File "..\Applications\IR Blast (No Window)\bin\${BuildType}\*.*"
+  File "..\Applications\IR Blast\bin\${BuildType}\IRBlast.exe"
 
 SectionEnd
 
@@ -715,7 +715,7 @@ Section /o "IR File Tool" SectionIRFileTool
   CreateDirectory "$DIR_INSTALL\IR File Tool"
   SetOutPath "$DIR_INSTALL\IR File Tool"
   SetOverwrite ifnewer
-  File "Applications\IR File Tool\bin\${BuildType}\*.*"
+  File "..\Applications\IR File Tool\bin\${BuildType}\*.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR File Tool"
@@ -742,7 +742,7 @@ Section /o "Keyboard Relay" SectionKeyboardInputRelay
   CreateDirectory "$DIR_INSTALL\Keyboard Input Relay"
   SetOutPath "$DIR_INSTALL\Keyboard Input Relay"
   SetOverwrite ifnewer
-  File "Applications\Keyboard Input Relay\bin\${BuildType}\*.*"
+  File "..\Applications\Keyboard Input Relay\bin\${BuildType}\*.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
@@ -769,7 +769,7 @@ Section /o "Dbox Tuner" SectionDboxTuner
   CreateDirectory "$DIR_INSTALL\Dbox Tuner"
   SetOutPath "$DIR_INSTALL\Dbox Tuner"
   SetOverwrite ifnewer
-  File "Applications\Dbox Tuner\bin\${BuildType}\*.*"
+  File "..\Applications\Dbox Tuner\bin\${BuildType}\*.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Dbox Tuner"
@@ -793,7 +793,7 @@ Section /o "HCW PVR Tuner" SectionHcwPvrTuner
   CreateDirectory "$DIR_INSTALL\HCW PVR Tuner"
   SetOutPath "$DIR_INSTALL\HCW PVR Tuner"
   SetOverwrite ifnewer
-  File "Applications\HCW PVR Tuner\bin\${BuildType}\*.*"
+  File "..\Applications\HCW PVR Tuner\bin\${BuildType}\*.*"
 
 SectionEnd
 
@@ -814,7 +814,7 @@ Section /o "Debug Client" SectionDebugClient
   CreateDirectory "$DIR_INSTALL\Debug Client"
   SetOutPath "$DIR_INSTALL\Debug Client"
   SetOverwrite ifnewer
-  File "Applications\Debug Client\bin\${BuildType}\*.*"
+  File "..\Applications\Debug Client\bin\${BuildType}\*.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Debug Client"
