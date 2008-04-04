@@ -15,7 +15,7 @@
 !include "MUI.nsh"
 
 !define PRODUCT_NAME "IR Server Suite"
-!define PRODUCT_VERSION "1.0.4.2"
+!define PRODUCT_VERSION "1.4.2"
 !define PRODUCT_PUBLISHER "and-81"
 !define PRODUCT_WEB_SITE "http://forum.team-mediaportal.com/mce_replacement_plugin-f165.html"
 
