@@ -93,6 +93,9 @@ namespace InputService.Plugin
     const uint IOCTL_IMON_FW_VER    = 0x00222014;   // function 0x805 - read FW version (4 bytes)
     const uint IOCTL_IMON_READ2     = 0x00222034;   // function 0x80D - ??? read (8 bytes)
 
+    const uint IMON_PAD_BUTTON      = 1000;
+    const uint IMON_MCE_BUTTON      = 2000;
+
     #endregion Constants
 
     #region Enumerations
@@ -241,7 +244,9 @@ namespace InputService.Plugin
     uint _lastRemoteButtonKeyCode         = 0;
     DateTime _lastRemoteButtonTime        = DateTime.Now;
     bool _remoteButtonRepeated            = false;
-    
+
+    byte _remoteToggle                    = 0x00;
+
     bool _keyboardKeyRepeated             = false;
     DateTime _lastKeyboardKeyTime         = DateTime.Now;
 
@@ -584,6 +589,69 @@ namespace InputService.Plugin
 #endif
     }
 
+    void ProcessInput(byte[] dataBytes)
+    {
+#if DEBUG
+      DebugWrite("Data Received:   ");
+      DebugDump(dataBytes);
+#endif
+
+      if ((dataBytes[0] & 0xFC) == 0x28)  // iMon PAD remote button
+      {
+        uint keyCode = IMON_PAD_BUTTON;
+        keyCode |= (uint)((dataBytes[0] & 0x03) << 6);
+        keyCode |= (uint)(dataBytes[1] & 0x30);
+        keyCode |= (uint)((dataBytes[1] & 0x06) << 1);
+        keyCode |= (uint)((dataBytes[2] & 0x80) >> 6);
+
+        if ((dataBytes[2] & 0x40) == 0)
+        {
+          RemoteEvent(keyCode, _remoteToggle != 1);
+          _remoteToggle = 1;
+        }
+        else
+        {
+          _remoteToggle = 0;
+        }
+      }
+      else if ((dataBytes[0] & 0xFC) == 0x68)  // iMon PAD mouse move/button
+      {
+        int xSign = (((dataBytes[0] & 0x02) != 0) ? 1 : -1);
+        int ySign = (((dataBytes[0] & 0x01) != 0) ? 1 : -1);
+        int xSize = ((dataBytes[1] & 0x78) >> 3);
+        int ySize = ((dataBytes[2] & 0x78) >> 3);
+
+        bool right = ((dataBytes[1] & 0x04) != 0);
+        bool left = ((dataBytes[1] & 0x01) != 0);
+
+        MouseEvent(xSign * xSize, ySign * ySize, right, left);
+      }
+      else if (dataBytes[7] == 0xAE)  // MCE remote button
+      {
+        uint keyCode = IMON_MCE_BUTTON + dataBytes[3];
+
+        RemoteEvent(keyCode, _remoteToggle != dataBytes[2]);
+        _remoteToggle = dataBytes[2];
+      }
+      else if (dataBytes[7] == 0xBE)  // MCE Keyboard key press
+      {
+        KeyboardEvent(dataBytes[2], dataBytes[3]);
+      }
+      else if (dataBytes[7] == 0xCE)  // MCE Keyboard mouse move/button
+      {
+        int xSign = (dataBytes[2] & 0x20) == 0 ? 1 : -1;
+        int ySign = (dataBytes[1] & 0x10) == 0 ? 1 : -1;
+        
+        int xSize = (dataBytes[3] & 0x0F);
+        int ySize = (dataBytes[2] & 0x0F);
+
+        bool right = (dataBytes[3] & 0x40) != 0;
+        bool left = (dataBytes[3] & 0x20) != 0;
+
+        MouseEvent(xSign * xSize, ySign * ySize, right, left);
+      }
+    }
+
     void ReceiveThread()
     {
 #if DEBUG
@@ -607,48 +675,10 @@ namespace InputService.Plugin
             byte[] dataBytes = new byte[bytesRead];
             Marshal.Copy(deviceBufferPtr, dataBytes, 0, bytesRead);
 
-#if DEBUG
-            DebugWrite("Data Received:   ");
-            DebugDump(dataBytes);
-#endif
+            if (dataBytes[0] != 0xFF && dataBytes[0] != 0x00)
+              ProcessInput(dataBytes);
 
-            switch (dataBytes[7])
-            {
-              case 0xAE: // Remote button
-                RemoteEvent(dataBytes[3], false);
-                break;
-
-              case 0xBE: // MCE Keyboard Key
-                KeyboardEvent(dataBytes[2], dataBytes[3]);
-                break;
-
-              case 0xCE: // MCE Keyboard mouse report
-                int x = 0;
-                int y = 0;
-                bool right = false;
-                bool left = false;
-                /*
-                if ((dataBytes[2] & 0x20) != 0) x |= 1 << 7; // sign bit
-                if ((dataBytes[2] & 0x80) != 0) x |= 1 << 4;
-                if ((dataBytes[2] & 0x40) != 0) x |= 1 << 3;
-                if ((dataBytes[3] & 0x08) != 0) x |= 1 << 2;
-                if ((dataBytes[3] & 0x04) != 0) x |= 1 << 1;
-                if ((dataBytes[3] & 0x02) != 0) x |= 1;
-
-                if ((dataBytes[1] & 0x10) != 0) y |= 1 << 7; // sign bit
-                if ((dataBytes[1] & 0x20) != 0) y |= 1 << 4;
-                if ((dataBytes[2] & 0x08) != 0) y |= 1 << 3;
-                if ((dataBytes[2] & 0x04) != 0) y |= 1 << 2;
-                if ((dataBytes[2] & 0x02) != 0) y |= 1 << 1;
-                if ((dataBytes[2] & 0x01) != 0) y |= 1;
-                */
-                
-                if ((dataBytes[3] & 0x40) != 0) right = true;
-                if ((dataBytes[3] & 0x20) != 0) left = true;
-
-                MouseEvent(x, y, right, left);
-                break;
-            }
+            Thread.Sleep(50);
           }
         }
       }
@@ -777,7 +807,7 @@ namespace InputService.Plugin
     void KeyboardEvent(uint keyCode, uint modifiers)
     {
 #if DEBUG
-      DebugWriteLine("RemoteEvent: {0}, {1}", keyCode, modifiers);
+      DebugWriteLine("KeyboardEvent: {0}, {1}", keyCode, modifiers);
 #endif
 
       if (!_enableKeyboardInput)
