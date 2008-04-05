@@ -628,22 +628,23 @@ namespace InputService.Plugin
                 bool right = false;
                 bool left = false;
                 /*
-                if (dataBytes[2] & 0x20 != 0) x |= 1 << 7; // sign bit
-                if (dataBytes[2] & 0x80 != 0) x |= 1 << 4;
-                if (dataBytes[2] & 0x40 != 0) x |= 1 << 3;
-                if (dataBytes[3] & 0x08 != 0) x |= 1 << 2;
-                if (dataBytes[3] & 0x04 != 0) x |= 1 << 1;
-                if (dataBytes[3] & 0x02 != 0) x |= 1;
+                if ((dataBytes[2] & 0x20) != 0) x |= 1 << 7; // sign bit
+                if ((dataBytes[2] & 0x80) != 0) x |= 1 << 4;
+                if ((dataBytes[2] & 0x40) != 0) x |= 1 << 3;
+                if ((dataBytes[3] & 0x08) != 0) x |= 1 << 2;
+                if ((dataBytes[3] & 0x04) != 0) x |= 1 << 1;
+                if ((dataBytes[3] & 0x02) != 0) x |= 1;
 
-                if (dataBytes[1] & 0x10 != 0) y |= 1 << 7; // sign bit
-                if (dataBytes[1] & 0x20 != 0) y |= 1 << 4;
-                if (dataBytes[2] & 0x08 != 0) y |= 1 << 3;
-                if (dataBytes[2] & 0x04 != 0) y |= 1 << 2;
-                if (dataBytes[2] & 0x02 != 0) y |= 1 << 1;
-                if (dataBytes[2] & 0x01 != 0) y |= 1;
+                if ((dataBytes[1] & 0x10) != 0) y |= 1 << 7; // sign bit
+                if ((dataBytes[1] & 0x20) != 0) y |= 1 << 4;
+                if ((dataBytes[2] & 0x08) != 0) y |= 1 << 3;
+                if ((dataBytes[2] & 0x04) != 0) y |= 1 << 2;
+                if ((dataBytes[2] & 0x02) != 0) y |= 1 << 1;
+                if ((dataBytes[2] & 0x01) != 0) y |= 1;
                 */
-                //if (dataBytes[1] & 0x80 != 0) right = true;
-                //if (dataBytes[1] & 0x40 != 0) left = true;
+                
+                if ((dataBytes[3] & 0x40) != 0) right = true;
+                if ((dataBytes[3] & 0x20) != 0) left = true;
 
                 MouseEvent(x, y, right, left);
                 break;
