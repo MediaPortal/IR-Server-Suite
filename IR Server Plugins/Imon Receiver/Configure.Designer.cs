@@ -47,8 +47,10 @@ namespace InputService.Plugin
       this.checkBoxEnableMouse = new System.Windows.Forms.CheckBox();
       this.checkBoxUseSystemRatesRemote = new System.Windows.Forms.CheckBox();
       this.checkBoxUseSystemRatesKeyboard = new System.Windows.Forms.CheckBox();
+      this.comboBoxHardwareMode = new System.Windows.Forms.ComboBox();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageRemote = new System.Windows.Forms.TabPage();
+      this.labelHardwareMode = new System.Windows.Forms.Label();
       this.tabPageKeyboard = new System.Windows.Forms.TabPage();
       this.groupBoxKeypressTiming = new System.Windows.Forms.GroupBox();
       this.labelKeyRepeatDelay = new System.Windows.Forms.Label();
@@ -73,7 +75,7 @@ namespace InputService.Plugin
       this.labelButtonRepeatDelay.Location = new System.Drawing.Point(8, 24);
       this.labelButtonRepeatDelay.Name = "labelButtonRepeatDelay";
       this.labelButtonRepeatDelay.Size = new System.Drawing.Size(128, 20);
-      this.labelButtonRepeatDelay.TabIndex = 1;
+      this.labelButtonRepeatDelay.TabIndex = 0;
       this.labelButtonRepeatDelay.Text = "Button repeat delay:";
       this.labelButtonRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -82,7 +84,7 @@ namespace InputService.Plugin
       this.labelButtonHeldDelay.Location = new System.Drawing.Point(8, 56);
       this.labelButtonHeldDelay.Name = "labelButtonHeldDelay";
       this.labelButtonHeldDelay.Size = new System.Drawing.Size(128, 20);
-      this.labelButtonHeldDelay.TabIndex = 3;
+      this.labelButtonHeldDelay.TabIndex = 2;
       this.labelButtonHeldDelay.Text = "Button held delay:";
       this.labelButtonHeldDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -101,7 +103,7 @@ namespace InputService.Plugin
             0});
       this.numericUpDownButtonRepeatDelay.Name = "numericUpDownButtonRepeatDelay";
       this.numericUpDownButtonRepeatDelay.Size = new System.Drawing.Size(80, 20);
-      this.numericUpDownButtonRepeatDelay.TabIndex = 2;
+      this.numericUpDownButtonRepeatDelay.TabIndex = 1;
       this.numericUpDownButtonRepeatDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownButtonRepeatDelay.ThousandsSeparator = true;
       this.toolTips.SetToolTip(this.numericUpDownButtonRepeatDelay, "When the button is held this is the time between the first press and the first re" +
@@ -127,7 +129,7 @@ namespace InputService.Plugin
             0});
       this.numericUpDownButtonHeldDelay.Name = "numericUpDownButtonHeldDelay";
       this.numericUpDownButtonHeldDelay.Size = new System.Drawing.Size(80, 20);
-      this.numericUpDownButtonHeldDelay.TabIndex = 4;
+      this.numericUpDownButtonHeldDelay.TabIndex = 3;
       this.numericUpDownButtonHeldDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownButtonHeldDelay.ThousandsSeparator = true;
       this.toolTips.SetToolTip(this.numericUpDownButtonHeldDelay, "When the button is held this is the time between repeats");
@@ -169,7 +171,7 @@ namespace InputService.Plugin
       this.groupBoxRemoteTiming.Location = new System.Drawing.Point(8, 72);
       this.groupBoxRemoteTiming.Name = "groupBoxRemoteTiming";
       this.groupBoxRemoteTiming.Size = new System.Drawing.Size(232, 88);
-      this.groupBoxRemoteTiming.TabIndex = 1;
+      this.groupBoxRemoteTiming.TabIndex = 2;
       this.groupBoxRemoteTiming.TabStop = false;
       this.groupBoxRemoteTiming.Text = "Remote button timing (in milliseconds)";
       // 
@@ -324,7 +326,7 @@ namespace InputService.Plugin
       this.checkBoxUseSystemRatesRemote.Location = new System.Drawing.Point(8, 40);
       this.checkBoxUseSystemRatesRemote.Name = "checkBoxUseSystemRatesRemote";
       this.checkBoxUseSystemRatesRemote.Size = new System.Drawing.Size(187, 17);
-      this.checkBoxUseSystemRatesRemote.TabIndex = 0;
+      this.checkBoxUseSystemRatesRemote.TabIndex = 1;
       this.checkBoxUseSystemRatesRemote.Text = "Use system keyboard rate settings";
       this.toolTips.SetToolTip(this.checkBoxUseSystemRatesRemote, "Use the system keyboard repeat rate settings for remote button timing");
       this.checkBoxUseSystemRatesRemote.UseVisualStyleBackColor = true;
@@ -342,6 +344,16 @@ namespace InputService.Plugin
       this.checkBoxUseSystemRatesKeyboard.UseVisualStyleBackColor = true;
       this.checkBoxUseSystemRatesKeyboard.CheckedChanged += new System.EventHandler(this.checkBoxUseSystemRatesKeyboard_CheckedChanged);
       // 
+      // comboBoxHardwareMode
+      // 
+      this.comboBoxHardwareMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+      this.comboBoxHardwareMode.FormattingEnabled = true;
+      this.comboBoxHardwareMode.Location = new System.Drawing.Point(152, 168);
+      this.comboBoxHardwareMode.Name = "comboBoxHardwareMode";
+      this.comboBoxHardwareMode.Size = new System.Drawing.Size(89, 21);
+      this.comboBoxHardwareMode.TabIndex = 4;
+      this.toolTips.SetToolTip(this.comboBoxHardwareMode, "Choose between MCE and Imon remote types");
+      // 
       // tabControl
       // 
       this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -358,6 +370,8 @@ namespace InputService.Plugin
       // 
       // tabPageRemote
       // 
+      this.tabPageRemote.Controls.Add(this.comboBoxHardwareMode);
+      this.tabPageRemote.Controls.Add(this.labelHardwareMode);
       this.tabPageRemote.Controls.Add(this.checkBoxUseSystemRatesRemote);
       this.tabPageRemote.Controls.Add(this.checkBoxEnableRemote);
       this.tabPageRemote.Controls.Add(this.groupBoxRemoteTiming);
@@ -368,6 +382,15 @@ namespace InputService.Plugin
       this.tabPageRemote.TabIndex = 1;
       this.tabPageRemote.Text = "Remote";
       this.tabPageRemote.UseVisualStyleBackColor = true;
+      // 
+      // labelHardwareMode
+      // 
+      this.labelHardwareMode.Location = new System.Drawing.Point(8, 168);
+      this.labelHardwareMode.Name = "labelHardwareMode";
+      this.labelHardwareMode.Size = new System.Drawing.Size(136, 21);
+      this.labelHardwareMode.TabIndex = 3;
+      this.labelHardwareMode.Text = "Hardware mode:";
+      this.labelHardwareMode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // tabPageKeyboard
       // 
@@ -439,15 +462,17 @@ namespace InputService.Plugin
       // 
       // Configure
       // 
+      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(272, 273);
+      this.CancelButton = this.buttonCancel;
+      this.ClientSize = new System.Drawing.Size(272, 272);
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(288, 309);
+      this.MinimumSize = new System.Drawing.Size(280, 306);
       this.Name = "Configure";
       this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -498,5 +523,7 @@ namespace InputService.Plugin
     private System.Windows.Forms.CheckBox checkBoxEnableMouse;
     private System.Windows.Forms.CheckBox checkBoxUseSystemRatesRemote;
     private System.Windows.Forms.CheckBox checkBoxUseSystemRatesKeyboard;
+    private System.Windows.Forms.ComboBox comboBoxHardwareMode;
+    private System.Windows.Forms.Label labelHardwareMode;
   }
 }

@@ -96,9 +96,42 @@ namespace InputService.Plugin
     const uint IMON_PAD_BUTTON      = 1000;
     const uint IMON_MCE_BUTTON      = 2000;
 
+    static readonly byte[][] SetModeMCE = new byte[][] {
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x02 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x04 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x06 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x01, 0x00, 0x00, 0x08 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x0A }
+    };
+
+    static readonly byte[][] SetModeImon = new byte[][] {
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x02 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x04 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x06 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x08 },
+      new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x0A }
+    };
+
     #endregion Constants
 
     #region Enumerations
+
+    /// <summary>
+    /// Hardware mode (either MCE or Imon).
+    /// </summary>
+    internal enum RcMode
+    {
+      /// <summary>
+      /// Microsoft MCE Mode.
+      /// </summary>
+      Mce,
+      /// <summary>
+      /// Soundgraph Imon Mode.
+      /// </summary>
+      Imon,
+    }
 
     [Flags]
     enum KeyModifiers
@@ -219,6 +252,8 @@ namespace InputService.Plugin
     #region Variables
 
     #region Configuration
+
+    RcMode _hardwareMode          = RcMode.Mce;
 
     bool _enableRemoteInput       = true;
     bool _useSystemRatesRemote    = false;
@@ -353,6 +388,8 @@ namespace InputService.Plugin
 
       Configure config = new Configure();
 
+      config.HardwareMode         = _hardwareMode;
+
       config.EnableRemote         = _enableRemoteInput;
       config.UseSystemRatesForRemote = _useSystemRatesRemote;
       config.RemoteRepeatDelay    = _remoteFirstRepeat;
@@ -370,6 +407,8 @@ namespace InputService.Plugin
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
+        _hardwareMode           = config.HardwareMode;
+
         _enableRemoteInput      = config.EnableRemote;
         _useSystemRatesRemote   = config.UseSystemRatesForRemote;
         _remoteFirstRepeat      = config.RemoteRepeatDelay;
@@ -432,6 +471,8 @@ namespace InputService.Plugin
 
       if (_deviceHandle.IsInvalid)
         throw new Win32Exception(lastError, "Failed to open device");
+
+      SetHardwareMode(_hardwareMode);
 
       _processReceiveThread = true;
       _receiveThread = new Thread(new ThreadStart(ReceiveThread));
@@ -527,6 +568,8 @@ namespace InputService.Plugin
       try   { doc.Load(ConfigurationFile); }
       catch { return; }
 
+      try   { _hardwareMode = (RcMode)Enum.Parse(typeof(RcMode), doc.DocumentElement.Attributes["HardwareMode"].Value); } catch { }
+
       try   { _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value); } catch {}
       try   { _useSystemRatesRemote = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesRemote"].Value); } catch { }
       try   { _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value); } catch {}
@@ -558,6 +601,8 @@ namespace InputService.Plugin
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
+          writer.WriteAttributeString("HardwareMode", Enum.GetName(typeof(RcMode), _hardwareMode));
+
           writer.WriteAttributeString("EnableRemoteInput", _enableRemoteInput.ToString());
           writer.WriteAttributeString("UseSystemRatesRemote", _useSystemRatesRemote.ToString());
           writer.WriteAttributeString("RemoteFirstRepeat", _remoteFirstRepeat.ToString());
@@ -577,10 +622,10 @@ namespace InputService.Plugin
           writer.WriteEndDocument();
         }
       }
-#if TRACE
+#if DEBUG
       catch (Exception ex)
       {
-        Trace.WriteLine(ex.ToString());
+        DebugWriteLine(ex.ToString());
       }
 #else
       catch
@@ -592,7 +637,7 @@ namespace InputService.Plugin
     void ProcessInput(byte[] dataBytes)
     {
 #if DEBUG
-      DebugWrite("Data Received:   ");
+      DebugWriteLine("Data Received:");
       DebugDump(dataBytes);
 #endif
 
@@ -751,6 +796,63 @@ namespace InputService.Plugin
       }
     }
 
+    void SetHardwareMode(RcMode mode)
+    {
+#if DEBUG
+      DebugWriteLine("SetHardwareMode({0})", Enum.GetName(typeof(RcMode), mode));
+#endif
+
+      int bytesRead;
+
+      IntPtr deviceBufferPtr = IntPtr.Zero;
+
+      try
+      {
+        switch (mode)
+        {
+          case RcMode.Imon:
+            foreach (byte[] send in SetModeImon)
+            {
+              deviceBufferPtr = Marshal.AllocHGlobal(send.Length);
+
+              Marshal.Copy(send, 0, deviceBufferPtr, send.Length);
+              IoControl(IOCTL_IMON_WRITE, deviceBufferPtr, send.Length, IntPtr.Zero, 0, out bytesRead);
+
+              Marshal.FreeHGlobal(deviceBufferPtr);
+            }
+            break;
+
+          case RcMode.Mce:
+            foreach (byte[] send in SetModeMCE)
+            {
+              deviceBufferPtr = Marshal.AllocHGlobal(send.Length);
+
+              Marshal.Copy(send, 0, deviceBufferPtr, send.Length);
+              IoControl(IOCTL_IMON_WRITE, deviceBufferPtr, send.Length, IntPtr.Zero, 0, out bytesRead);
+
+              Marshal.FreeHGlobal(deviceBufferPtr);
+            }
+            break;
+        }
+      }
+#if DEBUG
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
+        if (_deviceHandle != null)
+          CancelIo(_deviceHandle);
+      }
+      finally
+      {
+        if (deviceBufferPtr != IntPtr.Zero)
+          Marshal.FreeHGlobal(deviceBufferPtr);
+      }
+    }
+
     void RemoteEvent(uint keyCode, bool firstPress)
     {
 #if DEBUG
@@ -774,16 +876,16 @@ namespace InputService.Plugin
 
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < firstRepeat)
         {
-#if TRACE
-          Trace.WriteLine("Skip First Repeat");
+#if DEBUG
+          DebugWriteLine("Skip, First Repeat");
 #endif
           return;
         }
 
         if (_remoteButtonRepeated && timeBetween.TotalMilliseconds < heldRepeats)
         {
-#if TRACE
-          Trace.WriteLine("Skip Held Repeat");
+#if DEBUG
+          DebugWriteLine("Skip, Held Repeat");
 #endif
           return;
         }

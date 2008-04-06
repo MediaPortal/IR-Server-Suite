@@ -13,6 +13,12 @@ namespace InputService.Plugin
 
     #region Properties
 
+    public ImonReceiver.RcMode HardwareMode
+    {
+      get { return (ImonReceiver.RcMode)Enum.Parse(typeof(ImonReceiver.RcMode), comboBoxHardwareMode.SelectedItem as string); }
+      set { comboBoxHardwareMode.SelectedItem = Enum.GetName(typeof(ImonReceiver.RcMode), value); }
+    }
+
     public bool EnableRemote
     {
       get { return checkBoxEnableRemote.Checked; }
@@ -86,6 +92,8 @@ namespace InputService.Plugin
     public Configure()
     {
       InitializeComponent();
+
+      comboBoxHardwareMode.Items.AddRange(Enum.GetNames(typeof(ImonReceiver.RcMode)));
     }
 
     #endregion Constructor

@@ -76,9 +76,6 @@ namespace InputService.Configuration
       }
       catch (Exception ex)
       {
-#if TRACE
-        Trace.WriteLine(ex.ToString());
-#endif
         MessageBox.Show(ex.ToString(), "Error detecting duplicate processes", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
@@ -155,23 +152,20 @@ namespace InputService.Configuration
       {
         doc.Load(ConfigurationFile);
       }
+      catch (DirectoryNotFoundException)
+      {
+        IrssLog.Error("No configuration file found ({0}), folder not found! Creating default configuration file", ConfigurationFile);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(ConfigurationFile));
+
+        CreateDefaultSettings();
+        return;
+      }
       catch (FileNotFoundException)
       {
         IrssLog.Warn("No configuration file found ({0}), creating default configuration file", ConfigurationFile);
 
-        string[] blasters = DetectBlasters();
-        if (blasters == null)
-          _pluginNameTransmit = String.Empty;
-        else
-          _pluginNameTransmit = blasters[0];
-
-        string[] receivers = DetectReceivers();
-        if (receivers == null)
-          _pluginNameReceive = null;
-        else
-          _pluginNameReceive = receivers;
-
-        SaveSettings();
+        CreateDefaultSettings();
         return;
       }
       catch (Exception ex)
@@ -253,6 +247,46 @@ namespace InputService.Configuration
       }
     }
 
+    static void CreateDefaultSettings()
+    {
+      try
+      {
+        string[] blasters = Program.DetectBlasters();
+        if (blasters == null)
+          _pluginNameTransmit = String.Empty;
+        else
+          _pluginNameTransmit = blasters[0];
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        _pluginNameTransmit = String.Empty;
+      }
+
+      try
+      {
+        string[] receivers = Program.DetectReceivers();
+        if (receivers == null)
+          _pluginNameReceive = null;
+        else
+          _pluginNameReceive = receivers;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        _pluginNameReceive = null;
+      }
+
+      try
+      {
+        SaveSettings();
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+    }
+
     static void RestartService(string serviceName)
     {
       IrssLog.Info("Restarting service ({0})", serviceName);
@@ -292,57 +326,40 @@ namespace InputService.Configuration
     /// <returns>Array of plugin instances.</returns>
     internal static PluginBase[] AvailablePlugins()
     {
-      try
+      List<PluginBase> plugins = new List<PluginBase>();
+
+      string installFolder = SystemRegistry.GetInstallFolder();
+      if (String.IsNullOrEmpty(installFolder))
+        return null;
+
+      string path = Path.Combine(installFolder, "IR Server Plugins");
+      string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+
+      // TODO: Return a Type[], don't instantiate unless required
+
+      foreach (string file in files)
       {
-        List<PluginBase> plugins = new List<PluginBase>();
-
-        string installFolder = SystemRegistry.GetInstallFolder();
-        if (String.IsNullOrEmpty(installFolder))
-          return null;
-
-        string path = Path.Combine(installFolder, "IR Server Plugins");
-        string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-
-        foreach (string file in files)
+        try
         {
-          try
+          Assembly assembly = Assembly.LoadFrom(file);
+          Type[] types = assembly.GetExportedTypes();
+
+          foreach (Type type in types)
           {
-            Assembly assembly = Assembly.LoadFrom(file);
-            Type[] types = assembly.GetExportedTypes();
-
-            foreach (Type type in types)
+            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
             {
-              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
-              {
-                PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
 
-                if (plugin != null)
-                  plugins.Add(plugin);
-              }
+              if (plugin != null)
+                plugins.Add(plugin);
             }
           }
-          catch (BadImageFormatException)
-          {
-            // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
-          }
-          catch (TypeLoadException)
-          {
-            // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
-          }
         }
+        catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
+        catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
+      }
 
-        return plugins.ToArray();
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine("Input Service Configuration: " + ex.ToString());
-#else
-      catch
-      {
-#endif
-        return null;
-      }
+      return plugins.ToArray();
     }
 
     /// <summary>
@@ -353,29 +370,27 @@ namespace InputService.Configuration
     {
       IrssLog.Info("Detect Receivers ...");
 
-      try
+      PluginBase[] plugins = AvailablePlugins();
+      if (plugins == null || plugins.Length == 0)
+        return null;
+
+      List<string> receivers = new List<string>();
+
+      foreach (PluginBase plugin in plugins)
       {
-        PluginBase[] plugins = AvailablePlugins();
-
-        List<string> receivers = new List<string>();
-
-        foreach (PluginBase plugin in plugins)
+        try
+        {
           if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
             receivers.Add(plugin.Name);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
 
-        if (receivers.Count > 0)
-          return receivers.ToArray();
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine("Input Service Configuration: " + ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
+      if (receivers.Count > 0)
+        return receivers.ToArray();
 
       return null;
     }
@@ -388,29 +403,27 @@ namespace InputService.Configuration
     {
       IrssLog.Info("Detect Blasters ...");
 
-      try
+      PluginBase[] plugins = Program.AvailablePlugins();
+      if (plugins == null || plugins.Length == 0)
+        return null;
+
+      List<string> blasters = new List<string>();
+
+      foreach (PluginBase plugin in plugins)
       {
-        PluginBase[] plugins = Program.AvailablePlugins();
-
-        List<string> blasters = new List<string>();
-
-        foreach (PluginBase plugin in plugins)
+        try
+        {
           if (plugin is ITransmitIR && plugin.Detect())
             blasters.Add(plugin.Name);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
 
-        if (blasters.Count > 0)
-          return blasters.ToArray();
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine("Input Service Configuration: " + ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
+      if (blasters.Count > 0)
+        return blasters.ToArray();
 
       return null;
     }

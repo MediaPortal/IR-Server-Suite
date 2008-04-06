@@ -1717,6 +1717,8 @@ namespace IRServer
     }
     void SaveSettings()
     {
+      IrssLog.Info("Saving settings ...");
+
       try
       {
         using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
@@ -1759,6 +1761,7 @@ namespace IRServer
         IrssLog.Error(ex);
       }
     }
+
     void CreateDefaultSettings()
     {
       try
@@ -1768,13 +1771,29 @@ namespace IRServer
           _pluginNameTransmit = String.Empty;
         else
           _pluginNameTransmit = blasters[0];
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        _pluginNameTransmit = String.Empty;
+      }
 
+      try
+      {
         string[] receivers = Program.DetectReceivers();
         if (receivers == null || receivers.Length == 0)
           _pluginNameReceive = null;
         else
           _pluginNameReceive = receivers;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        _pluginNameReceive = null;
+      }
 
+      try
+      {
         SaveSettings();
       }
       catch (Exception ex)

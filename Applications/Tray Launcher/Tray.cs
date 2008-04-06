@@ -454,26 +454,18 @@ namespace TrayLauncher
           }
         }
 
-        // Launch program
-        using (Process launch = new Process())
-        {
-          launch.StartInfo.FileName         = _programFile;
-          launch.StartInfo.WindowStyle      = ProcessWindowStyle.Normal;
-          launch.StartInfo.UseShellExecute  = true;
-          launch.Start();
+        string[] launchCommand = new string[] {
+          _programFile,
+          Path.GetDirectoryName(_programFile),
+          String.Empty,
+          Enum.GetName(typeof(ProcessWindowStyle), ProcessWindowStyle.Normal),
+          false.ToString(),
+          true.ToString(),
+          false.ToString(),
+          true.ToString()        
+        };
 
-          int attempt = 0;
-          while (!launch.HasExited && attempt++ < 50)
-          {
-            if (launch.MainWindowHandle != IntPtr.Zero)
-            {
-              Win32.SetForegroundWindow(launch.MainWindowHandle, true);
-              break;
-            }
-
-            Thread.Sleep(500);
-          }
-        }
+        Common.ProcessRunCommand(launchCommand);
       }
       catch (Exception ex)
       {

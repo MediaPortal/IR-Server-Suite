@@ -17,6 +17,9 @@ namespace IRServer
   static class Program
   {
 
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
     [STAThread]
     static void Main()
     {
@@ -83,6 +86,9 @@ namespace IRServer
 
       string path = Path.Combine(installFolder, "IR Server Plugins");
       string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+
+      // TODO: Return a Type[], don't instantiate unless required
+
       foreach (string file in files)
       {
         try
@@ -94,32 +100,15 @@ namespace IRServer
           {
             if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
             {
-              try
-              {
-                PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
 
-                if (plugin != null)
-                  plugins.Add(plugin);
-              }
-              catch
-              {
-                // Ignore this plugin ...
-              }
+              if (plugin != null)
+                plugins.Add(plugin);
             }
           }
         }
-        catch (BadImageFormatException)
-        {
-          // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
-        }
-        catch (TypeLoadException)
-        {
-          // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show(ex.ToString(), "IR Server Plugin Error");
-        }
+        catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
+        catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
       }
 
       return plugins.ToArray();
@@ -152,6 +141,8 @@ namespace IRServer
     /// <returns>String array of plugin names.</returns>
     internal static string[] DetectReceivers()
     {
+      IrssLog.Info("Detect Receivers ...");
+
       PluginBase[] plugins = AvailablePlugins();
       if (plugins == null || plugins.Length == 0)
         return null;
@@ -159,8 +150,17 @@ namespace IRServer
       List<string> receivers = new List<string>();
 
       foreach (PluginBase plugin in plugins)
-        if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
-          receivers.Add(plugin.Name);
+      {
+        try
+        {
+          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
+            receivers.Add(plugin.Name);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
 
       if (receivers.Count > 0)
         return receivers.ToArray();
@@ -174,6 +174,8 @@ namespace IRServer
     /// <returns>String array of plugin names.</returns>
     internal static string[] DetectBlasters()
     {
+      IrssLog.Info("Detect Blasters ...");
+
       PluginBase[] plugins = Program.AvailablePlugins();
       if (plugins == null || plugins.Length == 0)
         return null;
@@ -181,8 +183,17 @@ namespace IRServer
       List<string> blasters = new List<string>();
 
       foreach (PluginBase plugin in plugins)
-        if (plugin is ITransmitIR && plugin.Detect())
-          blasters.Add(plugin.Name);
+      {
+        try
+        {
+          if (plugin is ITransmitIR && plugin.Detect())
+            blasters.Add(plugin.Name);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
 
       if (blasters.Count > 0)
         return blasters.ToArray();

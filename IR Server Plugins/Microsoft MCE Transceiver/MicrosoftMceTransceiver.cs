@@ -688,7 +688,7 @@ namespace InputService.Plugin
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < firstRepeat)
         {
 #if TRACE
-          Trace.WriteLine("Skip First Repeat");
+          Trace.WriteLine("Skip, First Repeat");
 #endif
           return;
         }
@@ -696,7 +696,7 @@ namespace InputService.Plugin
         if (_remoteButtonRepeated && timeBetween.TotalMilliseconds < heldRepeats)
         {
 #if TRACE
-          Trace.WriteLine("Skip Held Repeat");
+          Trace.WriteLine("Skip, Held Repeat");
 #endif
           return;
         }

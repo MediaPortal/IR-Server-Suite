@@ -148,8 +148,17 @@ namespace InputService.Configuration
     {
       InitializeComponent();
 
-      // Add transceivers to list ...
-      _transceivers = Program.AvailablePlugins();
+      try
+      {
+        _transceivers = Program.AvailablePlugins();
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+
+        _transceivers = null;
+      }
+
       if (_transceivers == null || _transceivers.Length == 0)
         MessageBox.Show(this, "No Input Service Plugins found!", "Input Service Configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
       else

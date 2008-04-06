@@ -569,6 +569,8 @@ namespace IrssUtils
         }
         
         Thread.Sleep(1500);
+
+        title = process.MainWindowTitle;
       }
     }
 
