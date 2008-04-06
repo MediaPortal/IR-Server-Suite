@@ -290,6 +290,7 @@ Section "-Prepare"
   ExecWait '"taskkill" /F /IM IRFileTool.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
   ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
+  ExecWait '"taskkill" /F /IM "Input Service Configuration.exe"'
 
   IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StopInputService SkipStopInputService
 
