@@ -663,7 +663,7 @@ SectionGroup /e "Media Center Add-Ons" SectionGroupMCE
 !if ${VER_BUILD} != 0
 ${MementoSection} "Media Center Blaster (experimental)" SectionMCEBlaster
 !else
-${MementoUnselectedSection} "Media Center Blaster" SectionMCEBlaster
+${MementoUnselectedSection} "Media Center Blaster (experimental)" SectionMCEBlaster
 !endif
 
   DetailPrint "Installing Media Center Blaster ..."
