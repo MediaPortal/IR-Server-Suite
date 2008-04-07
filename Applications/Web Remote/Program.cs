@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -37,7 +38,8 @@ namespace WebRemote
     #endregion Constants
 
     #region Variables
-    
+
+    static Container _container;
     static NotifyIcon _notifyIcon;
 
     static bool _inConfiguration;
@@ -145,7 +147,8 @@ namespace WebRemote
         contextMenu.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
         contextMenu.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
 
-        _notifyIcon = new NotifyIcon();
+        _container = new Container();
+        _notifyIcon = new NotifyIcon(_container);
         _notifyIcon.ContextMenuStrip = contextMenu;
         _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
         _notifyIcon.Icon = Properties.Resources.Icon;

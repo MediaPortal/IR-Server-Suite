@@ -124,7 +124,7 @@ namespace Translator
           Marshal.Copy(lpData, dataBytes, 0, dataStructure.cbData);
           string strData = Encoding.Default.GetString(dataBytes);
 
-          Program.ProcessCommand(strData, true);
+          Program.ProcessCommand(strData, false);
         }
         catch (Exception ex)
         {

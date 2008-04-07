@@ -54,7 +54,8 @@ namespace MediaCenterConnection
     static string _learnIRFilename;
 
     static IRServerInfo _irServerInfo = new IRServerInfo();
-    
+
+    static Container _container;
     static NotifyIcon _notifyIcon;
     static MediaState _mediaState;
 
@@ -134,7 +135,8 @@ namespace MediaCenterConnection
       contextMenu.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
       contextMenu.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
 
-      _notifyIcon = new NotifyIcon();
+      _container = new Container();
+      _notifyIcon = new NotifyIcon(_container);
       _notifyIcon.ContextMenuStrip = contextMenu;
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
 

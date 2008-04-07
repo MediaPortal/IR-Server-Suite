@@ -42,6 +42,7 @@ namespace TrayLauncher
     bool _launchOnLoad;
     string _launchKeyCode;
 
+    Container _container;
     NotifyIcon _notifyIcon;
 
     bool _inConfiguration;
@@ -74,7 +75,9 @@ namespace TrayLauncher
       contextMenu.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
       contextMenu.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
 
-      _notifyIcon = new NotifyIcon();
+      _container = new Container();
+
+      _notifyIcon = new NotifyIcon(_container);
       _notifyIcon.ContextMenuStrip = contextMenu;
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
 

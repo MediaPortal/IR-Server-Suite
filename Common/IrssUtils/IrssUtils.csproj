@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -44,6 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -56,6 +57,7 @@
     <Compile Include="Exceptions\CommandStructureException.cs" />
     <Compile Include="Exceptions\CommandExecutionException.cs" />
     <Compile Include="Exceptions\MacroStructureException.cs" />
+    <Compile Include="FocusForcer.cs" />
     <Compile Include="Forms\BlastCommand.cs">
       <SubType>Form</SubType>
     </Compile>

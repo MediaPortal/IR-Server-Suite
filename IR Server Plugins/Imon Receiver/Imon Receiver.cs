@@ -280,7 +280,7 @@ namespace InputService.Plugin
     DateTime _lastRemoteButtonTime        = DateTime.Now;
     bool _remoteButtonRepeated            = false;
 
-    byte _remoteToggle                    = 0x00;
+    byte _remoteToggle                    = 0;
 
     bool _keyboardKeyRepeated             = false;
     DateTime _lastKeyboardKeyTime         = DateTime.Now;
@@ -644,12 +644,12 @@ namespace InputService.Plugin
       if ((dataBytes[0] & 0xFC) == 0x28)  // iMon PAD remote button
       {
         uint keyCode = IMON_PAD_BUTTON;
-        keyCode |= (uint)((dataBytes[0] & 0x03) << 6);
-        keyCode |= (uint)(dataBytes[1] & 0x30);
-        keyCode |= (uint)((dataBytes[1] & 0x06) << 1);
-        keyCode |= (uint)((dataBytes[2] & 0x80) >> 6);
+        keyCode += (uint)((dataBytes[0] & 0x03) << 6);
+        keyCode += (uint)(dataBytes[1] & 0x30);
+        keyCode += (uint)((dataBytes[1] & 0x06) << 1);
+        keyCode += (uint)((dataBytes[2] & 0xC0) >> 6);
 
-        if ((dataBytes[2] & 0x40) == 0)
+        if ((keyCode & 0x01) == 0 && (dataBytes[2] & 0x40) == 0)
         {
           RemoteEvent(keyCode, _remoteToggle != 1);
           _remoteToggle = 1;
@@ -722,8 +722,6 @@ namespace InputService.Plugin
 
             if (dataBytes[0] != 0xFF && dataBytes[0] != 0x00)
               ProcessInput(dataBytes);
-
-            Thread.Sleep(50);
           }
         }
       }

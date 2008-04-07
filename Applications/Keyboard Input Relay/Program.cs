@@ -164,6 +164,7 @@ namespace KeyboardInputRelay
 
     #region Variables
 
+    static Container _container;
     static NotifyIcon _notifyIcon;
 
     static bool _stealAppCommands = true;
@@ -411,7 +412,8 @@ namespace KeyboardInputRelay
     static void SetupNotify()
     {
       // Setup notify icon ...
-      _notifyIcon = new NotifyIcon();
+      _container = new Container();
+      _notifyIcon = new NotifyIcon(_container);
       _notifyIcon.Icon = Properties.Resources.Icon;
       _notifyIcon.Text = "Keyboard Input Relay - Connecting ...";
 

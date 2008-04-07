@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -62,6 +63,7 @@ namespace IRServer
 
     #region Variables
 
+    Container _container;
     NotifyIcon _notifyIcon;
     bool _inConfiguration;
 
@@ -96,7 +98,9 @@ namespace IRServer
     public IRServer()
     {
       // Setup taskbar icon
-      _notifyIcon = new NotifyIcon();
+      _container = new Container();
+
+      _notifyIcon = new NotifyIcon(_container);
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
 
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel("IR Server"));
@@ -140,8 +144,12 @@ namespace IRServer
         StopServer();
         StopClient();
 
+        _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
         _notifyIcon = null;
+
+        _container.Dispose();
+        _container = null;
       }
 
       // Free native resources ...

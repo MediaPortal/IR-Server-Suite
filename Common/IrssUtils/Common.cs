@@ -505,72 +505,12 @@ namespace IrssUtils
         // Give new process focus ...
         if (forceFocus && !process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
         {
-          Thread focusForcer = new Thread(new ParameterizedThreadStart(FocusForcer));
-          focusForcer.Name = String.Format("Focus Forcer: {0}", process.MainWindowTitle);
-          focusForcer.IsBackground = true;
-          focusForcer.Start(process.Id);
-
-          /*
-          int attempt = 0;
-          while (!process.HasExited && attempt++ < 50)
-          {
-            if (process.MainWindowHandle != IntPtr.Zero)
-            {
-              Win32.SetForegroundWindow(process.MainWindowHandle, true);
-              break;
-            }
-
-            Thread.Sleep(500);
-          }
-          */
+          FocusForcer forcer = new FocusForcer(process.Id);
+          forcer.Start();
         }
 
         if (waitForExit)
           process.WaitForExit();
-      }
-    }
-
-
-
-    static void FocusForcer(object processObj)
-    {
-      int processId = (int)processObj;
-
-      Process process = Process.GetProcessById(processId);
-
-      if (process == null)
-        throw new ArgumentException("Argument is not a Process object", "processObj");
-
-      process.WaitForInputIdle(15000);
-
-      string title = String.Empty;
-      
-
-      for (int i = 0; i < 30 && String.IsNullOrEmpty(title = process.MainWindowTitle) && process != null && !process.HasExited; i++)
-        Thread.Sleep(1000);
-
-      if (String.IsNullOrEmpty(title) || process == null || process.HasExited)
-        return;
-
-      IntPtr windowHandle;
-
-      while ((windowHandle = Win32.FindWindowByTitle(title)) != IntPtr.Zero)
-      {
-        IntPtr focused = Win32.ForegroundWindow();
-
-        string focusedTitle = Win32.GetWindowTitle(focused);
-
-        //Trace.WriteLine(String.Format("Focused: {0}", focused.ToInt32()));
-
-        if (!title.Equals(focusedTitle, StringComparison.Ordinal) && !Win32.IsWindowChild(windowHandle, focused) && Win32.GetParentWindow(focused) != windowHandle)
-        {
-          Win32.SetForegroundWindow(windowHandle, true);
-          //Trace.WriteLine(String.Format("Give focus to {0}", windowHandle.ToInt32()));
-        }
-        
-        Thread.Sleep(1500);
-
-        title = process.MainWindowTitle;
       }
     }
 

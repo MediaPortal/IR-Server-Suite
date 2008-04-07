@@ -38,6 +38,7 @@ namespace Translator
 
     #region Components
 
+    static Container _container;
     static NotifyIcon _notifyIcon;
     static MainForm _mainForm;
     static Client _client;
@@ -161,7 +162,8 @@ namespace Translator
       */
 
       // Setup notify icon ...
-      _notifyIcon = new NotifyIcon();
+      _container = new Container();
+      _notifyIcon = new NotifyIcon(_container);
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Connecting ...";
@@ -228,8 +230,15 @@ namespace Translator
 
         _inConfiguration = false;
       }
-      
+
+      // Dispose NotifyIcon ...
       _notifyIcon.Visible = false;
+      _notifyIcon.Dispose();
+      _notifyIcon = null;
+
+      // Dispose Container ...
+      _container.Dispose();
+      _container = null;
 
       Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
 
@@ -388,7 +397,6 @@ namespace Translator
           MapEvent(MappingEvent.PC_Shutdown);
           break;
       }
-
     }
 
     internal static void UpdateNotifyMenu()
@@ -1247,7 +1255,7 @@ namespace Translator
           if (!_notifyIcon.Visible)
           {
             _notifyIcon.Visible = true;
-            _notifyIcon.ShowBalloonTip(1000, "Translator", "Icon is now visible", ToolTipIcon.Info);
+            _notifyIcon.ShowBalloonTip(2000, "Translator", "Icon is now visible", ToolTipIcon.Info);
           }
         }
         else
