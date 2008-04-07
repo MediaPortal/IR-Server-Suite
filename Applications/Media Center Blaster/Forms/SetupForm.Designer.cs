@@ -167,11 +167,11 @@ namespace MediaCenterBlaster
       // checkBoxLogVerbose
       // 
       this.checkBoxLogVerbose.AutoSize = true;
-      this.checkBoxLogVerbose.Location = new System.Drawing.Point(8, 8);
+      this.checkBoxLogVerbose.Location = new System.Drawing.Point(8, 16);
       this.checkBoxLogVerbose.Name = "checkBoxLogVerbose";
-      this.checkBoxLogVerbose.Size = new System.Drawing.Size(108, 17);
+      this.checkBoxLogVerbose.Size = new System.Drawing.Size(143, 17);
       this.checkBoxLogVerbose.TabIndex = 0;
-      this.checkBoxLogVerbose.Text = "Extended logging";
+      this.checkBoxLogVerbose.Text = "Enable extended logging";
       this.toolTips.SetToolTip(this.checkBoxLogVerbose, "Enable more detailed logging of plugin operations");
       this.checkBoxLogVerbose.UseVisualStyleBackColor = true;
       // 
@@ -193,7 +193,7 @@ namespace MediaCenterBlaster
       this.buttonChangeServer.Location = new System.Drawing.Point(8, 184);
       this.buttonChangeServer.Name = "buttonChangeServer";
       this.buttonChangeServer.Size = new System.Drawing.Size(96, 24);
-      this.buttonChangeServer.TabIndex = 1;
+      this.buttonChangeServer.TabIndex = 2;
       this.buttonChangeServer.Text = "Change Server";
       this.toolTips.SetToolTip(this.buttonChangeServer, "Change the IR Server host");
       this.buttonChangeServer.UseVisualStyleBackColor = true;
@@ -201,12 +201,12 @@ namespace MediaCenterBlaster
       // 
       // buttonHelp
       // 
-      this.buttonHelp.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.buttonHelp.Location = new System.Drawing.Point(168, 184);
+      this.buttonHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonHelp.Location = new System.Drawing.Point(8, 256);
       this.buttonHelp.Name = "buttonHelp";
       this.buttonHelp.Size = new System.Drawing.Size(56, 24);
-      this.buttonHelp.TabIndex = 2;
-      this.buttonHelp.Text = "Help";
+      this.buttonHelp.TabIndex = 1;
+      this.buttonHelp.Text = "&Help";
       this.toolTips.SetToolTip(this.buttonHelp, "Click here for help");
       this.buttonHelp.UseVisualStyleBackColor = true;
       this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
@@ -228,7 +228,7 @@ namespace MediaCenterBlaster
       // 
       // tabPageOptions
       // 
-      this.tabPageOptions.Controls.Add(this.buttonHelp);
+      this.tabPageOptions.Controls.Add(this.checkBoxAutoRun);
       this.tabPageOptions.Controls.Add(this.checkBoxLogVerbose);
       this.tabPageOptions.Controls.Add(this.buttonChangeServer);
       this.tabPageOptions.Controls.Add(this.buttonExtChannels);
@@ -309,25 +309,22 @@ namespace MediaCenterBlaster
       // 
       // checkBoxAutoRun
       // 
-      this.checkBoxAutoRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.checkBoxAutoRun.AutoSize = true;
-      this.checkBoxAutoRun.Location = new System.Drawing.Point(8, 264);
+      this.checkBoxAutoRun.Location = new System.Drawing.Point(8, 48);
       this.checkBoxAutoRun.Name = "checkBoxAutoRun";
-      this.checkBoxAutoRun.Size = new System.Drawing.Size(178, 17);
+      this.checkBoxAutoRun.Size = new System.Drawing.Size(218, 17);
       this.checkBoxAutoRun.TabIndex = 1;
-      this.checkBoxAutoRun.Text = "&Start MCE Blaster with Windows";
+      this.checkBoxAutoRun.Text = "Start Media Center Blaster with Windows";
       this.checkBoxAutoRun.UseVisualStyleBackColor = true;
       this.checkBoxAutoRun.CheckedChanged += new System.EventHandler(this.checkBoxAutoRun_CheckedChanged);
       // 
       // SetupForm
       // 
-      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(392, 289);
-      this.Controls.Add(this.checkBoxAutoRun);
       this.Controls.Add(this.tabControl);
+      this.Controls.Add(this.buttonHelp);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -344,7 +341,6 @@ namespace MediaCenterBlaster
       this.tabPageMacros.ResumeLayout(false);
       this.tabPageIR.ResumeLayout(false);
       this.ResumeLayout(false);
-      this.PerformLayout();
 
     }
 

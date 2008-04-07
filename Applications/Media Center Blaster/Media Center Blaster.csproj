@@ -4,7 +4,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A1D30F1A-25AF-47EC-8E94-F92385012FC3}</ProjectGuid>
+    <ProjectGuid>{349D0A5D-BF1F-4E3E-AF92-5A3D54AD1EB4}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MediaCenterBlaster</RootNamespace>
