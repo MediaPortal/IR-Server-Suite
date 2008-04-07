@@ -440,9 +440,7 @@ namespace TrayLauncher
           {
             if (Path.GetFileName(process.MainModule.ModuleName).Equals(Path.GetFileName(_programFile), StringComparison.OrdinalIgnoreCase))
             {
-              IrssLog.Info("Program already running, attempting to give focus.");
-
-              Win32.SetForegroundWindow(process.MainWindowHandle, true);
+              IrssLog.Info("Program already running.");
               return;
             }
           }

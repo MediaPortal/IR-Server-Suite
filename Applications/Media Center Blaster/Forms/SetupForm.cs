@@ -13,7 +13,7 @@ using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 
-namespace MediaCenterConnection
+namespace MediaCenterBlaster
 {
 
   partial class SetupForm : Form
@@ -160,7 +160,7 @@ namespace MediaCenterConnection
       try
       {
         string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this, file, HelpNavigator.Topic, "Media Center Connection\\index.html");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "Media Center Blaster\\index.html");
       }
       catch (Exception ex)
       {
@@ -389,6 +389,15 @@ namespace MediaCenterConnection
         IrssLog.Error(ex);
         MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
+    }
+
+    private void checkBoxAutoRun_CheckedChanged(object sender, EventArgs e)
+    {
+      if (checkBoxAutoRun.Checked)
+        SystemRegistry.SetAutoRun("Media Center Blaster", Application.ExecutablePath);
+      else
+        SystemRegistry.RemoveAutoRun("Media Center Blaster");
+
     }
 
     #endregion Other Controls

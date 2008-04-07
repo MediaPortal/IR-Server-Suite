@@ -189,35 +189,18 @@ namespace IrssUtils.Forms
 
       try
       {
-        using (Process process = new Process())
-        {
-          process.StartInfo.FileName          = textBoxProgram.Text;
-          process.StartInfo.WorkingDirectory  = textBoxStartup.Text;
-          process.StartInfo.Arguments         = textBoxParameters.Text;
-          process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true);
-          process.StartInfo.CreateNoWindow    = checkBoxNoWindow.Checked;
-          process.StartInfo.UseShellExecute   = checkBoxShellExecute.Checked;
+        string[] launchCommand = new string[] {
+          textBoxProgram.Text,
+          textBoxStartup.Text,
+          textBoxParameters.Text,
+          comboBoxWindowStyle.SelectedItem as string,
+          checkBoxNoWindow.Checked.ToString(),
+          checkBoxShellExecute.Checked.ToString(),
+          false.ToString(),
+          checkBoxForceFocus.Checked.ToString()        
+        };
 
-          process.Start();
-
-          // Give new process focus ...
-          if (!process.StartInfo.CreateNoWindow &&
-            process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden &&
-            checkBoxForceFocus.Checked)
-          {
-            int attempt = 0;
-            while (!process.HasExited && attempt++ < 50)
-            {
-              if (process.MainWindowHandle != IntPtr.Zero)
-              {
-                Win32.SetForegroundWindow(process.MainWindowHandle, true);
-                break;
-              }
-
-              Thread.Sleep(500);
-            }
-          }
-        }
+        Common.ProcessRunCommand(launchCommand);
       }
       catch (Exception ex)
       {

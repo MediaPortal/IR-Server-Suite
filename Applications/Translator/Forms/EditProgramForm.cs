@@ -119,34 +119,18 @@ namespace Translator
     {
       try
       {
-        using (Process process = new Process())
-        {
-          process.StartInfo.FileName          = Filename;
-          process.StartInfo.WorkingDirectory  = StartupFolder;
-          process.StartInfo.Arguments         = Parameters;
-          process.StartInfo.WindowStyle       = StartState;
-          process.StartInfo.UseShellExecute   = UseShellExecute;
+        string[] launchCommand = new string[] {
+          Filename,
+          StartupFolder,
+          Parameters,
+          Enum.GetName(typeof(ProcessWindowStyle), StartState),
+          false.ToString(),
+          UseShellExecute.ToString(),
+          false.ToString(),
+          ForceWindowFocus.ToString()        
+        };
 
-          IrssLog.Info("Launching program {0}", DisplayName);
-
-          process.Start();
-
-          // Give new process focus ...
-          if (StartState != ProcessWindowStyle.Hidden && ForceWindowFocus)
-          {
-            int attempt = 0;
-            while (!process.HasExited && attempt++ < 50)
-            {
-              if (process.MainWindowHandle != IntPtr.Zero)
-              {
-                Win32.SetForegroundWindow(process.MainWindowHandle, true);
-                break;
-              }
-
-              Thread.Sleep(500);
-            }
-          }
-        }
+        Common.ProcessRunCommand(launchCommand);
       }
       catch (Exception ex)
       {

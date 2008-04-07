@@ -9,11 +9,11 @@ using System.Resources;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("Media Center Connection")]
+[assembly: AssemblyTitle("Media Center Blaster")]
 [assembly: AssemblyDescription("Runs in the system tray and listens to Media Center events")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
-[assembly: AssemblyProduct("MediaCenterConnection")]
+[assembly: AssemblyProduct("MediaCenterBlaster")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

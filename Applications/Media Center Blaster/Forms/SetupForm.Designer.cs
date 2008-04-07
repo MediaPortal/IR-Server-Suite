@@ -1,4 +1,4 @@
-namespace MediaCenterConnection
+namespace MediaCenterBlaster
 {
   partial class SetupForm
   {
@@ -50,6 +50,7 @@ namespace MediaCenterConnection
       this.listViewMacro = new System.Windows.Forms.ListView();
       this.tabPageIR = new System.Windows.Forms.TabPage();
       this.listViewIR = new System.Windows.Forms.ListView();
+      this.checkBoxAutoRun = new System.Windows.Forms.CheckBox();
       this.tabControl.SuspendLayout();
       this.tabPageOptions.SuspendLayout();
       this.tabPageMacros.SuspendLayout();
@@ -62,7 +63,7 @@ namespace MediaCenterConnection
       this.buttonOK.Location = new System.Drawing.Point(264, 256);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
-      this.buttonOK.TabIndex = 1;
+      this.buttonOK.TabIndex = 2;
       this.buttonOK.Text = "&OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -158,7 +159,7 @@ namespace MediaCenterConnection
       this.buttonCancel.Location = new System.Drawing.Point(328, 256);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
-      this.buttonCancel.TabIndex = 2;
+      this.buttonCancel.TabIndex = 3;
       this.buttonCancel.Text = "&Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -306,6 +307,18 @@ namespace MediaCenterConnection
       this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
       this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
       // 
+      // checkBoxAutoRun
+      // 
+      this.checkBoxAutoRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.checkBoxAutoRun.AutoSize = true;
+      this.checkBoxAutoRun.Location = new System.Drawing.Point(8, 264);
+      this.checkBoxAutoRun.Name = "checkBoxAutoRun";
+      this.checkBoxAutoRun.Size = new System.Drawing.Size(178, 17);
+      this.checkBoxAutoRun.TabIndex = 1;
+      this.checkBoxAutoRun.Text = "&Start MCE Blaster with Windows";
+      this.checkBoxAutoRun.UseVisualStyleBackColor = true;
+      this.checkBoxAutoRun.CheckedChanged += new System.EventHandler(this.checkBoxAutoRun_CheckedChanged);
+      // 
       // SetupForm
       // 
       this.AcceptButton = this.buttonOK;
@@ -313,6 +326,7 @@ namespace MediaCenterConnection
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(392, 289);
+      this.Controls.Add(this.checkBoxAutoRun);
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
@@ -321,7 +335,7 @@ namespace MediaCenterConnection
       this.MinimumSize = new System.Drawing.Size(400, 323);
       this.Name = "SetupForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-      this.Text = "Media Center Connection - Setup";
+      this.Text = "Media Center Blaster - Setup";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SetupForm_FormClosing);
       this.Load += new System.EventHandler(this.SetupForm_Load);
       this.tabControl.ResumeLayout(false);
@@ -330,6 +344,7 @@ namespace MediaCenterConnection
       this.tabPageMacros.ResumeLayout(false);
       this.tabPageIR.ResumeLayout(false);
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
@@ -355,5 +370,6 @@ namespace MediaCenterConnection
     private System.Windows.Forms.Button buttonHelp;
     private System.Windows.Forms.ListView listViewIR;
     private System.Windows.Forms.ListView listViewMacro;
+    private System.Windows.Forms.CheckBox checkBoxAutoRun;
   }
 }

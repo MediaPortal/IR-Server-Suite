@@ -2177,11 +2177,12 @@ namespace IrssUtils
     {
       IntPtr fgWindow = GetForegroundWindow();
 
-      if (hWnd == fgWindow || SetForegroundWindow(hWnd))
+      if (hWnd == fgWindow)
         return true;
 
+      bool setResult = SetForegroundWindow(hWnd);
       if (!force)
-        return false;
+        return setResult;
 
       if (fgWindow == IntPtr.Zero)
         return false;

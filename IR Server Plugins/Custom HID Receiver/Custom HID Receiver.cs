@@ -24,15 +24,15 @@ namespace InputService.Plugin
     // #define TEST_APPLICATION in the project properties when creating the console test app ...
 #if TEST_APPLICATION
 
-    static void Remote(string deviceName, string code)
+    static void xRemote(string deviceName, string code)
     {
       Console.WriteLine("Remote: {0}", code);
     }
-    static void Keyboard(string deviceName, int button, bool up)
+    static void xKeyboard(string deviceName, int button, bool up)
     {
       Console.WriteLine("Keyboard: {0}, {1}", button, up);
     }
-    static void Mouse(string deviceName, int x, int y, int buttons)
+    static void xMouse(string deviceName, int x, int y, int buttons)
     {
       Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
     }
@@ -40,25 +40,25 @@ namespace InputService.Plugin
     [STAThread]
     static void Main()
     {
-      CustomHIDReceiver c = new CustomHIDReceiver();
+      CustomHIDReceiver device = new CustomHIDReceiver();
       
       try
       {
-        c.Configure(null);
+        device.Configure(null);
 
-        c.RemoteCallback += new RemoteHandler(Remote);
-        c.KeyboardCallback += new KeyboardHandler(Keyboard);
-        c.MouseCallback += new MouseHandler(Mouse);      
+        device.RemoteCallback += new RemoteHandler(xRemote);
+        device.KeyboardCallback += new KeyboardHandler(xKeyboard);
+        device.MouseCallback += new MouseHandler(xMouse);      
 
-        Console.WriteLine("Usage: {0}", c._device.usUsage);
-        Console.WriteLine("UsagePage: {0}", c._device.usUsagePage);
+        Console.WriteLine("Usage: {0}", device._device.usUsage);
+        Console.WriteLine("UsagePage: {0}", device._device.usUsagePage);
         Console.WriteLine();
 
-        c.Start();
+        device.Start();
 
         Application.Run();
 
-        c.Stop();
+        device.Stop();
       }
       catch (Exception ex)
       {
@@ -66,7 +66,7 @@ namespace InputService.Plugin
       }
       finally
       {
-        c = null;
+        device = null;
       }
 
       Console.ReadKey();

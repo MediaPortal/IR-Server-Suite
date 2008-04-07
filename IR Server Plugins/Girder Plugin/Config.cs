@@ -12,7 +12,7 @@ namespace InputService.Plugin
   /// <summary>
   /// Config form for selecting and configuring a Girder plugin.
   /// </summary>
-  public partial class Config : Form
+  partial class Config : Form
   {
 
     #region Properties

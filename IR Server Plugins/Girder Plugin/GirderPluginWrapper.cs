@@ -17,7 +17,7 @@ namespace InputService.Plugin
   /// Girder Command structure.
   /// </summary>
   [StructLayout(LayoutKind.Sequential)]
-  public struct GirCommand
+  struct GirCommand
   {
     
     #region Variables
@@ -194,20 +194,20 @@ namespace InputService.Plugin
   /// <param name="payload">Additional data.</param>
   /// <param name="len">Length of additional data.</param>
   /// <param name="device">Device ID, to uniquely identify this plugin.</param>
-  public delegate void PluginEventCallback(string eventstring, IntPtr payload, int len, int device);
+  delegate void PluginEventCallback(string eventstring, IntPtr payload, int len, int device);
 
   /// <summary>
   /// Callback for when the plugin sets the command it is editing.
   /// </summary>
   /// <param name="command">Command structure.</param>
-  public delegate void PluginCommandSetCallback(GirCommand command);
+  delegate void PluginCommandSetCallback(GirCommand command);
 
   #endregion Delegates
 
   /// <summary>
   /// Wrapper class to work with Girder 3.x plugins.
   /// </summary>
-  public class GirderPluginWrapper : IDisposable
+  class GirderPluginWrapper : IDisposable
   {
 
     #region Constants

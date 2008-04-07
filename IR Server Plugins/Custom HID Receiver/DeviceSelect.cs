@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace InputService.Plugin
 {
   
-  internal partial class DeviceSelect : Form
+  partial class DeviceSelect : Form
   {
 
     #region Variables

@@ -13,12 +13,12 @@ namespace InputService.Plugin
   /// <summary>
   /// Callback for remote button press events.
   /// </summary>
-  public delegate void ButtonReceived(int buttonCode);
+  delegate void ButtonReceived(int buttonCode);
 
   /// <summary>
   /// Wrapper class for irremote.dll
   /// </summary>
-  public class IrRemoteWrapper
+  class IrRemoteWrapper
   {
 
     #region Interop

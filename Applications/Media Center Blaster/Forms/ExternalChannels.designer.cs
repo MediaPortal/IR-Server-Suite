@@ -1,4 +1,4 @@
-namespace MediaCenterConnection
+namespace MediaCenterBlaster
 {
   partial class ExternalChannels
   {

@@ -11,7 +11,7 @@ namespace InputService.Plugin
   /// <summary>
   /// Configure the HCW Transceiver plugin.
   /// </summary>
-  public partial class Configure : Form
+  partial class Configure : Form
   {
 
     #region Properties

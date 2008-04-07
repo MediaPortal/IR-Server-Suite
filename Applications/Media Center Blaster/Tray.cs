@@ -15,22 +15,22 @@ using Microsoft.MediaCenter.Samples.MediaState;
 using IrssComms;
 using IrssUtils;
 
-namespace MediaCenterConnection
+namespace MediaCenterBlaster
 {
 
   /// <summary>
-  /// Media Center Connection main class.
+  /// Media Center Blaster main class.
   /// </summary>
   class Tray
   {
 
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Media Center Connection\\Media Center Connection.xml");
+    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Media Center Blaster\\Media Center Blaster.xml");
 
-    internal static readonly string FolderMacros = Path.Combine(Common.FolderAppData, "Media Center Connection\\Macro");
+    internal static readonly string FolderMacros = Path.Combine(Common.FolderAppData, "Media Center Blaster\\Macro");
 
-    internal static readonly string ExtCfgFolder = Path.Combine(Common.FolderAppData, "Media Center Connection");
+    internal static readonly string ExtCfgFolder = Path.Combine(Common.FolderAppData, "Media Center Blaster");
 
     const string ProcessCommandThreadName = "ProcessCommand";
 
@@ -130,7 +130,7 @@ namespace MediaCenterConnection
     public Tray()
     {
       ContextMenuStrip contextMenu = new ContextMenuStrip();
-      contextMenu.Items.Add(new ToolStripLabel("Media Center Connection"));
+      contextMenu.Items.Add(new ToolStripLabel("Media Center Blaster"));
       contextMenu.Items.Add(new ToolStripSeparator());
       contextMenu.Items.Add(new ToolStripMenuItem("&Setup", null, new EventHandler(ClickSetup)));
       contextMenu.Items.Add(new ToolStripMenuItem("&Quit", null, new EventHandler(ClickQuit)));
@@ -140,7 +140,7 @@ namespace MediaCenterConnection
       _notifyIcon.ContextMenuStrip = contextMenu;
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
 
-      UpdateTrayIcon("Media Center Connection - Connecting ...", Resources.Icon16Connecting);
+      UpdateTrayIcon("Media Center Blaster - Connecting ...", Resources.Icon16Connecting);
     }
 
     #endregion Constructor
@@ -220,7 +220,7 @@ namespace MediaCenterConnection
         catch (Exception ex)
         {
           IrssLog.Error(ex);
-          MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Media Center Connection - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Media Center Blaster - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
           clientStarted = false;
         }
 
@@ -280,7 +280,7 @@ namespace MediaCenterConnection
     {
       try
       {
-        _autoRun = SystemRegistry.GetAutoRun("Media Center Connection");
+        _autoRun = SystemRegistry.GetAutoRun("Media Center Blaster");
       }
       catch (Exception ex)
       {
@@ -315,9 +315,9 @@ namespace MediaCenterConnection
       try
       {
         if (_autoRun)
-          SystemRegistry.SetAutoRun("Media Center Connection", Application.ExecutablePath);
+          SystemRegistry.SetAutoRun("Media Center Blaster", Application.ExecutablePath);
         else
-          SystemRegistry.RemoveAutoRun("Media Center Connection");
+          SystemRegistry.RemoveAutoRun("Media Center Blaster");
       }
       catch (Exception ex)
       {
@@ -831,13 +831,13 @@ namespace MediaCenterConnection
 
       StopClient();
 
-      MessageBox.Show("Please report this error.", "Media Center Connection - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show("Please report this error.", "Media Center Blaster - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
     static void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
-      UpdateTrayIcon("Media Center Connection", Resources.Icon16);
+      UpdateTrayIcon("Media Center Blaster", Resources.Icon16);
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
@@ -846,7 +846,7 @@ namespace MediaCenterConnection
     {
       IrssLog.Warn("Communications with server has been lost");
 
-      UpdateTrayIcon("Media Center Connection - Re-Connecting ...", Resources.Icon16Connecting);
+      UpdateTrayIcon("Media Center Blaster - Re-Connecting ...", Resources.Icon16Connecting);
 
       Thread.Sleep(1000);
     }
@@ -953,7 +953,7 @@ namespace MediaCenterConnection
             break;
 
           case MessageType.ServerShutdown:
-            IrssLog.Warn("Input Service Shutdown - Media Center Connection disabled until Input Service returns");
+            IrssLog.Warn("Input Service Shutdown - Media Center Blaster disabled until Input Service returns");
             _registered = false;
             break;
 

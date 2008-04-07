@@ -7,9 +7,9 @@
     <ProjectGuid>{A1D30F1A-25AF-47EC-8E94-F92385012FC3}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MediaCenterConnection</RootNamespace>
-    <AssemblyName>MediaCenterConnection</AssemblyName>
-    <StartupObject>MediaCenterConnection.Program</StartupObject>
+    <RootNamespace>MediaCenterBlaster</RootNamespace>
+    <AssemblyName>MediaCenterBlaster</AssemblyName>
+    <StartupObject>MediaCenterBlaster.Program</StartupObject>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <SignAssembly>false</SignAssembly>

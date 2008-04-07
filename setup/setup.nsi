@@ -174,12 +174,14 @@ Page custom PageReinstall PageLeaveReinstall
   !insertmacro "${MacroName}" "SectionInputService"
 
   !insertmacro "${MacroName}" "SectionMPCommon"
-    !insertmacro "${MacroName}" "SectionMPControlPlugin"
-    !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
-    !insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
+  !insertmacro "${MacroName}" "SectionMPControlPlugin"
+  !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
+  !insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
 
   !insertmacro "${MacroName}" "SectionTV3Common"
-    !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
+  !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
+
+  !insertmacro "${MacroName}" "SectionMCEBlaster"
 
   !insertmacro "${MacroName}" "SectionTranslator"
   !insertmacro "${MacroName}" "SectionTrayLauncher"
@@ -290,6 +292,7 @@ Section "-Prepare"
   ExecWait '"taskkill" /F /IM IRFileTool.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
   ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
+  ExecWait '"taskkill" /F /IM MediaCenterBlaster.exe'
   ExecWait '"taskkill" /F /IM "Input Service Configuration.exe"'
 
   IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StopInputService SkipStopInputService
@@ -647,6 +650,52 @@ ${MementoSectionEnd}
   DetailPrint "Attempting to remove MediaPortal TV3 Plugin ..."
 
   Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.dll"
+!macroend
+
+;======================================
+
+SectionGroupEnd
+
+;======================================
+
+SectionGroup /e "Media Center Add-Ons" SectionGroupMCE
+
+!if ${VER_BUILD} != 0
+${MementoSection} "Media Center Blaster" SectionMCEBlaster
+!else
+${MementoUnselectedSection} "Media Center Blaster (experimental)" SectionMCEBlaster
+!endif
+
+  DetailPrint "Installing Media Center Blaster ..."
+
+  ; Use the all users context
+  SetShellVarContext all
+
+  ; Installing Translator
+  CreateDirectory "$DIR_INSTALL\Media Center Blaster"
+  SetOutPath "$DIR_INSTALL\Media Center Blaster"
+  SetOverwrite ifnewer
+  File "..\Applications\Media Center Blaster\bin\${BuildType}\*.*"
+
+  ; Create folders
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Media Center Blaster"
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Media Center Blaster\Macro"
+
+  ; Create start menu shortcut
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Media Center Blaster.lnk" "$DIR_INSTALL\Media Center Blaster\MediaCenterBlaster.exe" "" "$DIR_INSTALL\Media Center Blaster\MediaCenterBlaster.exe" 0
+
+${MementoSectionEnd}
+!macro Remove_${SectionMCEBlaster}
+  DetailPrint "Attempting to remove Media Center Blaster ..."
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Media Center Blaster.lnk"
+
+  ; Remove auto-run
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Media Center Blaster"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Media Center Blaster"
 !macroend
 
 ;======================================
@@ -1052,6 +1101,8 @@ Section "Uninstall"
   ExecWait '"taskkill" /F /IM IRFileTool.exe'
   ExecWait '"taskkill" /F /IM DebugClient.exe'
   ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
+  ExecWait '"taskkill" /F /IM MediaCenterBlaster.exe'
+  ExecWait '"taskkill" /F /IM "Input Service Configuration.exe"'
   Sleep 100
 
   ;First removes all optional components
@@ -1252,6 +1303,8 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupTV3}            "$(DESC_SectionGroupTV3)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMCE}            "$(DESC_SectionGroupMCE)"
+    !insertmacro MUI_DESCRIPTION_TEXT ${SectionMCEBlaster}          "$(DESC_SectionMCEBlaster)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator}          "$(DESC_SectionTranslator)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher}        "$(DESC_SectionTrayLauncher)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote}       "$(DESC_SectionVirtualRemote)"

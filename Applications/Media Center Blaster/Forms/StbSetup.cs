@@ -10,7 +10,7 @@ using System.Xml;
 using IrssUtils;
 using IrssUtils.Forms;
 
-namespace MediaCenterConnection
+namespace MediaCenterBlaster
 {
 
   partial class StbSetup : UserControl

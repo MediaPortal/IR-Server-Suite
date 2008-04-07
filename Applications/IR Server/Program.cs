@@ -107,8 +107,9 @@ namespace IRServer
             }
           }
         }
-        catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
-        catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
+        catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
+        catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
+        catch (FileNotFoundException) { }   // Ignore File Not Found Exceptions, just keep checking for IR Server Plugins
       }
 
       return plugins.ToArray();

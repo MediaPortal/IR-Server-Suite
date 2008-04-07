@@ -18,22 +18,27 @@ namespace InputService.Plugin
   public class IR507Receiver : PluginBase, IRemoteReceiver
   {
 
-    #region Debug
-#if DEBUG
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
+
+    static void xRemote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
 
     [STAThread]
     static void Main()
     {
       try
       {
-        IR507Receiver c = new IR507Receiver();
+        IR507Receiver device = new IR507Receiver();
 
-        c.RemoteCallback += new RemoteHandler(Remote);
-        c.Start();
+        device.RemoteCallback += new RemoteHandler(xRemote);
+        device.Start();
 
         Application.Run();
 
-        c.Stop();
+        device.Stop();
       }
       catch (Exception ex)
       {
@@ -41,13 +46,7 @@ namespace InputService.Plugin
       }
     }
 
-    static void Remote(string deviceName, string code)
-    {
-      Console.WriteLine("Remote: {0}", code);
-    }
-
 #endif
-    #endregion Debug
 
 
     #region Interop

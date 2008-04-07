@@ -14,7 +14,7 @@ using System.Xml;
 
 using IrssUtils;
 
-namespace MediaCenterConnection
+namespace MediaCenterBlaster
 {
 
   partial class ExternalChannels : Form

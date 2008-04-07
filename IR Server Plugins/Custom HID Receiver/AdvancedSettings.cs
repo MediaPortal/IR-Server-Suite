@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace InputService.Plugin
 {
 
-  internal partial class AdvancedSettings : Form
+  partial class AdvancedSettings : Form
   {
 
     public int InputByte

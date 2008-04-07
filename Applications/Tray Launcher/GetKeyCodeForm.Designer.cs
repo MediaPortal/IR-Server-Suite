@@ -29,6 +29,7 @@ namespace TrayLauncher
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GetKeyCodeForm));
       this.labelStatus = new System.Windows.Forms.Label();
       this.timer = new System.Windows.Forms.Timer(this.components);
       this.SuspendLayout();
@@ -36,6 +37,7 @@ namespace TrayLauncher
       // labelStatus
       // 
       this.labelStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.labelStatus.Location = new System.Drawing.Point(0, 0);
       this.labelStatus.Name = "labelStatus";
       this.labelStatus.Size = new System.Drawing.Size(288, 57);
@@ -53,14 +55,17 @@ namespace TrayLauncher
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(288, 57);
-      this.ControlBox = false;
       this.Controls.Add(this.labelStatus);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "GetKeyCodeForm";
-      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+      this.ShowInTaskbar = false;
+      this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "New Remote Button";
+      this.TopMost = true;
       this.Load += new System.EventHandler(this.GetKeyCodeForm_Load);
       this.ResumeLayout(false);
 

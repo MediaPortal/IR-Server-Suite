@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 using IrssUtils;
 
-namespace MediaCenterConnection
+namespace MediaCenterBlaster
 {
 
   static class Program
@@ -29,7 +29,7 @@ namespace MediaCenterConnection
 #else
       IrssLog.LogLevel = IrssLog.Level.Info;
 #endif
-      IrssLog.Open("Media Center Connection.log");
+      IrssLog.Open("Media Center Blaster.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 

@@ -37,6 +37,8 @@ LangString DESC_SectionMPBlastZonePlugin  ${LANG_ENGLISH} "Lets you control your
 LangString DESC_SectionTV2BlasterPlugin   ${LANG_ENGLISH} "For tuning external channels (on Set Top Boxes) with the default MediaPortal TV engine."
 LangString DESC_SectionGroupTV3           ${LANG_ENGLISH} "MediaPortal TV Server plugins."
 LangString DESC_SectionTV3BlasterPlugin   ${LANG_ENGLISH} "For tuning external channels (on Set Top Boxes) with the MediaPortal TV server."
+LangString DESC_SectionGroupMCE           ${LANG_ENGLISH} "Windows Media Center Add-Ons."
+LangString DESC_SectionMCEBlaster         ${LANG_ENGLISH} "For tuning external channels (on Set Top Boxes) with Windows Media Center."
 LangString DESC_SectionTranslator         ${LANG_ENGLISH} "Control your whole PC."
 LangString DESC_SectionTrayLauncher       ${LANG_ENGLISH} "Simple program to launch an application of your choosing when a particular button is pressed."
 LangString DESC_SectionVirtualRemote      ${LANG_ENGLISH} "Simulated remote control. Includes PC application, web, and Smart Devices versions."
