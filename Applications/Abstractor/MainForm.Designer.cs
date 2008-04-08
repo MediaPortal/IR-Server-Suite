@@ -28,6 +28,7 @@ namespace Abstractor
     /// </summary>
     private void InitializeComponent()
     {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       this.groupBoxSetup = new System.Windows.Forms.GroupBox();
       this.comboBoxComputer = new System.Windows.Forms.ComboBox();
       this.labelServerAddress = new System.Windows.Forms.Label();
@@ -276,6 +277,7 @@ namespace Abstractor
       this.Controls.Add(this.groupBoxMapAbstract);
       this.Controls.Add(this.groupBoxSetup);
       this.Controls.Add(this.groupBoxStatus);
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "MainForm";
       this.Text = "Abstract Remote Map Creator";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);

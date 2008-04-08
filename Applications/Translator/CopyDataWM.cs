@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using IrssUtils;
+using IrssUtils.Exceptions;
 
 namespace Translator
 {
@@ -156,7 +157,7 @@ namespace Translator
       if (windowHandle != IntPtr.Zero)
         Win32.SendWindowsMessage(windowHandle, (int)Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero, Win32.VarPtr(copyData));
       else
-        MessageBox.Show("Couldn't find target");
+        throw new CommandExecutionException("Could not find running Translator instance to send message to");
     }
 
   }

@@ -114,6 +114,23 @@ namespace Translator
 
     #endregion Constructors
 
+    #region Implementation
+
+    /// <summary>
+    /// Imports the specified configuration into this configuration.
+    /// </summary>
+    /// <param name="config">The configuration to merge in.</param>
+    public void Import(Configuration config)
+    {
+      // TODO: Improve import logic ...
+
+      _mappedEvents.AddRange(config.Events);
+      _programSettings.AddRange(config.Programs);
+      _systemWideMappings.AddRange(config.SystemWideMappings);
+    }
+
+    #endregion Implementation
+
     #region Static Methods
 
     /// <summary>
@@ -122,7 +139,7 @@ namespace Translator
     /// <param name="config">Configuration to save.</param>
     /// <param name="fileName">File to save to.</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    internal static bool Save(Configuration config, string fileName)
+    public static bool Save(Configuration config, string fileName)
     {
       try
       {
@@ -144,7 +161,7 @@ namespace Translator
     /// </summary>
     /// <param name="fileName">File to load from.</param>
     /// <returns>Loaded Configuration.</returns>
-    internal static Configuration Load(string fileName)
+    public static Configuration Load(string fileName)
     {
       try
       {

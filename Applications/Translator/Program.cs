@@ -17,6 +17,7 @@ using Microsoft.Win32;
 
 using IrssComms;
 using IrssUtils;
+using IrssUtils.Exceptions;
 
 namespace Translator
 {
@@ -26,7 +27,7 @@ namespace Translator
 
     #region Constants
 
-    internal static readonly string ConfigFile            = Path.Combine(Common.FolderAppData, "Translator\\Translator.xml");
+    static readonly string DefaultConfigFile              = Path.Combine(Common.FolderAppData, "Translator\\Translator.xml");
 
     internal static readonly string FolderMacros          = Path.Combine(Common.FolderAppData, "Translator\\Macro");
 
@@ -49,6 +50,8 @@ namespace Translator
 
     #region Variables
 
+    static string _configFile;
+
     static string _learnIRFilename;
 
     static bool _registered;
@@ -67,6 +70,12 @@ namespace Translator
     #endregion Variables
 
     #region Properties
+
+    internal static string ConfigFile
+    {
+      get { return _configFile; }
+      set { _configFile = value; }
+    }
 
     internal static Configuration Config
     {
@@ -100,18 +109,27 @@ namespace Translator
     [STAThread]
     static void Main(string[] args)
     {
+      _configFile = DefaultConfigFile;
+
       if (args.Length > 0)
       {
         try
         {
-          ProcessCommandLine(args);
+          if (ProcessCommandLine(args))
+            return;
+        }
+        catch (CommandExecutionException ex)
+        {
+          MessageBox.Show(ex.Message, "Translator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        catch (CommandStructureException ex)
+        {
+          MessageBox.Show(ex.Message, "Translator", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         catch (Exception ex)
         {
           MessageBox.Show(ex.ToString(), "Translator - Error processing command line", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-
-        return;
       }
 
       // Check for multiple instances.
@@ -137,10 +155,10 @@ namespace Translator
       _variables = new VariableList();
 
       // Load configuration ...
-      _config = Configuration.Load(ConfigFile);
+      _config = Configuration.Load(_configFile);
       if (_config == null)
       {
-        IrssLog.Warn(String.Format("Failed to load configuration file ({0}), creating new configuration", ConfigFile));
+        IrssLog.Warn("Failed to load configuration file ({0}), creating new configuration", _configFile);
         _config = new Configuration();
       }
 
@@ -259,8 +277,10 @@ namespace Translator
       IrssLog.Error(e.Exception);
     }
 
-    static void ProcessCommandLine(string[] args)
+    static bool ProcessCommandLine(string[] args)
     {
+      bool dontRun = true;
+
       for (int index = 0; index < args.Length; index++)
       {
         string command = args[index].ToUpperInvariant();
@@ -271,21 +291,21 @@ namespace Translator
             if (args.Length > index + 2)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + args[++index] + '|' + args[++index]);
             else
-              Console.WriteLine("Blast command requires two parameters.");
+              throw new CommandStructureException("Blast command requires two parameters (IR file, Port)");
             continue;
 
           case "-MACRO":
             if (args.Length > index + 1)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixMacro + args[++index]);
             else
-              Console.WriteLine("Macro command requires a parameter.");
+              throw new CommandStructureException("Macro command requires a parameter (Macro file)");
             continue;
 
           case "-EJECT":
             if (args.Length > index + 1)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixEject + args[++index]);
             else
-              Console.WriteLine("Eject command requires a parameter.");
+              throw new CommandStructureException("Eject command requires a parameter (Drive)");
             continue;
 
           case "-SHUTDOWN":
@@ -328,15 +348,28 @@ namespace Translator
               }
               else
               {
-                Console.WriteLine("Channel command requires three parameters.");
+                throw new CommandStructureException("Channel command requires three parameters (Channel, Padding, Port)");
               }
 
               continue;
             }
 
+          case "-CONFIG":
+            if (args.Length > index + 1)
+              _configFile = args[++index];
+            else
+              throw new CommandStructureException("Config command requires a parameter (Config file path)");
+
+            dontRun = false;
+            continue;
+
+
           //TODO: Add more command line options.
+
         }
       }
+
+      return dontRun;
     }
 
     static void ShowOSD()

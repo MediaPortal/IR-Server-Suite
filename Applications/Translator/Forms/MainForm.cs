@@ -1137,15 +1137,10 @@ namespace Translator
       if (openFileDialog.ShowDialog(this) == DialogResult.OK)
       {
         Configuration newConfig = Configuration.Load(openFileDialog.FileName);
-
         if (newConfig == null)
           return;
 
-        // TODO: Improve import logic ...
-
-        Program.Config.Events.AddRange(newConfig.Events);
-        Program.Config.Programs.AddRange(newConfig.Programs);
-        Program.Config.SystemWideMappings.AddRange(newConfig.SystemWideMappings);
+        Program.Config.Import(newConfig);
 
         RefreshProgramList();
         RefreshButtonList();

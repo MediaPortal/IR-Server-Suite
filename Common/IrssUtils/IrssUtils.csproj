@@ -373,4 +373,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>CALL "%25VS80COMNTOOLS%25vsvars32.bat"
+gacutil.exe /i $(TargetFileName)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
