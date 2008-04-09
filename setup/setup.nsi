@@ -1183,20 +1183,20 @@ FunctionEnd
 ;======================================
 
 Function ComponentsPre
-  ${IfNot} ${MP023IsInstalled}
-  ${AndIfNot} ${MPIsInstalled}
-    !insertmacro DisableComponent "${SectionGroupMP}" " ($(TEXT_MP_NOT_INSTALLED))"
-    !insertmacro DisableComponent "${SectionMPCommon}" ""
-    !insertmacro DisableComponent "${SectionMPControlPlugin}" ""
-    !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
-    !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
-  ${EndIf}
+;  ${IfNot} ${MP023IsInstalled}
+;  ${AndIfNot} ${MPIsInstalled}
+;    !insertmacro DisableComponent "${SectionGroupMP}" " ($(TEXT_MP_NOT_INSTALLED))"
+;    !insertmacro DisableComponent "${SectionMPCommon}" ""
+;    !insertmacro DisableComponent "${SectionMPControlPlugin}" ""
+;    !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
+;    !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
+;  ${EndIf}
 
-  ${IfNot} ${TVServerIsInstalled}
-    !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
-    !insertmacro DisableComponent "${SectionTV3Common}" ""
-    !insertmacro DisableComponent "${SectionTV3BlasterPlugin}" ""
-  ${EndIf}
+;  ${IfNot} ${TVServerIsInstalled}
+;    !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
+;    !insertmacro DisableComponent "${SectionTV3Common}" ""
+;    !insertmacro DisableComponent "${SectionTV3BlasterPlugin}" ""
+;  ${EndIf}
 FunctionEnd
 
 ;======================================
