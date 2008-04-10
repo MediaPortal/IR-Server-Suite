@@ -24,18 +24,51 @@ namespace IrssUtils
 
     #region Constants
 
-    // String comparisons ...
+    #region String comparisons
+
+    /// <summary>
+    /// Equals.
+    /// </summary>
     public const string IfEquals              = "==";
+    /// <summary>
+    /// Does Not Equal.
+    /// </summary>
     public const string IfNotEqual            = "!=";
+    /// <summary>
+    /// Contains.
+    /// </summary>
     public const string IfContains            = "CONTAINS";
+    /// <summary>
+    /// Starts With.
+    /// </summary>
     public const string IfStartsWith          = "STARTS WITH";
+    /// <summary>
+    /// Ends With.
+    /// </summary>
     public const string IfEndsWith            = "ENDS WITH";
 
-    // Integer comparisons ...
+    #endregion String comparisons
+
+    #region Integer comparisons
+
+    /// <summary>
+    /// Greater Than.
+    /// </summary>
     public const string IfGreaterThan         = ">";
+    /// <summary>
+    /// Less Than.
+    /// </summary>
     public const string IfLessThan            = "<";
+    /// <summary>
+    /// Greater Than or Equal To.
+    /// </summary>
     public const string IfGreaterThanOrEqual  = ">=";
+    /// <summary>
+    /// Less Than or Equal To.
+    /// </summary>
     public const string IfLessThanOrEqual     = "<=";
+
+    #endregion Integer comparisons
 
     #endregion Constants
 
@@ -190,7 +223,7 @@ namespace IrssUtils
     /// <summary>
     /// Gets the position of label within the macro.
     /// </summary>
-    /// <param name="commands">The macro commands.</param>
+    /// <param name="commandList">The command list.</param>
     /// <param name="label">The label to find.</param>
     /// <returns>The label position.</returns>
     static int GetLabelPosition(string[] commandList, string label)

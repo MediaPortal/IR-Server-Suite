@@ -33,10 +33,10 @@
   !define VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}"
 !else                       # it's an svn release
   !define BuildType "Debug"
-  !define VERSION "Debug build ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
+  !define VERSION "Test Build ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
 !endif
 
-BrandingText "${PRODUCT_NAME} ${VERSION} by ${PRODUCT_PUBLISHER}"
+BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 SetCompressor /SOLID /FINAL lzma
 
 ;======================================
@@ -62,21 +62,18 @@ SetCompressor /SOLID /FINAL lzma
 Name "${PRODUCT_NAME}"
 OutFile "..\${PRODUCT_NAME} - ${VERSION}.exe"
 InstallDir ""
-#InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
-#InstallDirRegKey HKLM "${REG_UNINSTALL}" InstallPath
-!if ${VER_BUILD} != 0
-  ShowInstDetails show
-  ShowUninstDetails show
-!else
-  ShowInstDetails hide
-  ShowUninstDetails hide
-!endif
+
+ShowInstDetails show
+ShowUninstDetails show
 CRCCheck On
 
 ; Variables
 var DIR_INSTALL
 var DIR_MEDIAPORTAL
 var DIR_TVSERVER
+
+var MP_INSTALLED
+var TVSERVER_INSTALLED
 
 #---------------------------------------------------------------------------
 # INSTALLER INTERFACE settings
@@ -85,23 +82,22 @@ var DIR_TVSERVER
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\win-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
 
-#!define MUI_HEADERIMAGE
-#!if ${VER_BUILD} == 0       # it's a stable release
-#  !define MUI_HEADERIMAGE_BITMAP          "images\header.bmp"
-#  !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard.bmp"
-#  !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard.bmp"
-#!else                       # it's an svn release
-#  !define MUI_HEADERIMAGE_BITMAP          "images\header-svn.bmp"
-#  !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard-svn.bmp"
-#  !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard-svn.bmp"
-#!endif
-#!define MUI_HEADERIMAGE_RIGHT
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP            "images\header.bmp"
+!if ${VER_BUILD} == 0
+  !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard.bmp"
+  !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard.bmp"
+!else
+  !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard-svn.bmp"
+  !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard-svn.bmp"
+!endif
+!define MUI_HEADERIMAGE_RIGHT
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 ;!define MUI_FINISHPAGE_RUN_NOTCHECKED
-;!define MUI_FINISHPAGE_RUN      "$INSTDIR\Input Service Configuration\Input Service Configuration.exe"
-;!define MUI_FINISHPAGE_RUN_TEXT "Run Input Service Configuration (generally not necessary)"
+;!define MUI_FINISHPAGE_RUN      "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe"
+;!define MUI_FINISHPAGE_RUN_TEXT "Run Input Service Configuration"
 
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
@@ -117,41 +113,27 @@ Page custom PageReinstall PageLeaveReinstall
 ; MediaPortal install path
 !define MUI_PAGE_HEADER_TEXT "Choose MediaPortal Location"
 !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install MediaPortal plugins."
-!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
+!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "MediaPortal Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_MEDIAPORTAL"
 !define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreMP
-#!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowMP
-#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveMP
 !insertmacro MUI_PAGE_DIRECTORY
 
 ; TV Server install path
-  
 !define MUI_PAGE_HEADER_TEXT "Choose TV Server Location"
 !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install TV Server plugins."
-!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
+!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "TV Server Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_TVSERVER"
 !define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreTV
-#!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowTV
-#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveTV
 !insertmacro MUI_PAGE_DIRECTORY
-
-; !!!!! changed the order of the directory pages, to prevent if
-; no mp and no tve3 plugins were selected the page on irserversuite
-; shows the NEXT button but the mpand tve3 pages abort and installation starts
-; no both pages would abort and won't be shown, and
-; irserver suite dir page shows the install  button    :-)
 
 ; Main app install path
 !define MUI_PAGE_HEADER_TEXT "Choose ${PRODUCT_NAME} Location"
 !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install ${PRODUCT_NAME}."
-!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
+!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "${PRODUCT_NAME} Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_INSTALL"
-#!define MUI_PAGE_CUSTOMFUNCTION_SHOW DirectoryShowApp
-#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
-#!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveApp
 !insertmacro MUI_PAGE_DIRECTORY
 
 !insertmacro MUI_PAGE_INSTFILES
@@ -194,84 +176,45 @@ Page custom PageReinstall PageLeaveReinstall
   !insertmacro "${MacroName}" "SectionDebugClient"
 !macroend
 
-!macro initRegKeys
+;======================================
+
+!macro Initialize
+
   ${If} ${RunningX64}
-
     SetRegView 64
-
-    ${DisableX64FSRedirection}
-
-      ; Get IR Server Suite installation directory ...
-      ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
-      ${If} $DIR_INSTALL == ""
-        StrCpy '$DIR_INSTALL' '$PROGRAMFILES\${PRODUCT_NAME}'
-      ${Endif}
-
-      ; Get MediaPortal installation directory ...
-      ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
-      ${If} $DIR_MEDIAPORTAL == ""
-
-        ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\Team MediaPortal\MediaPortal" "ApplicationDir"
-
-        ${If} $DIR_MEDIAPORTAL == ""
-          !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
-        ${Endif}
-
-      ${Endif}
-
-      ; Get MediaPortal TV Server installation directory ...
-      ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
-      ${If} $DIR_TVSERVER == ""
-
-        ReadRegStr $DIR_TVSERVER HKLM "Software\Team MediaPortal\MediaPortal TV Server" "InstallPath"
-
-        ${If} $DIR_TVSERVER == ""
-          !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
-        ${Endif}
-
-      ${Endif}
-
-      ${EnableX64FSRedirection}
-
-  ${Else}
-
-    SetRegView 32
-
-    ; Get IR Server Suite installation directory ...
-    ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
-    ${If} $DIR_INSTALL == ""
-      StrCpy '$DIR_INSTALL' '$PROGRAMFILES\${PRODUCT_NAME}'
-    ${Endif}
-
-    ; Get MediaPortal installation directory ...
-    ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
-    ${If} $DIR_MEDIAPORTAL == ""
-
-      ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\Team MediaPortal\MediaPortal" "ApplicationDir"
-
-      ${If} $DIR_MEDIAPORTAL == ""
-        !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
-      ${Endif}
-
-    ${Endif}
-
-    ; Get MediaPortal TV Server installation directory ...
-    ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
-    ${If} $DIR_TVSERVER == ""
-
-      ReadRegStr $DIR_TVSERVER HKLM "Software\Team MediaPortal\MediaPortal TV Server" "InstallPath"
-
-      ${If} $DIR_TVSERVER == ""
-        !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
-      ${Endif}
-
-    ${Endif}
-
   ${Endif}
 
-  StrCpy $INSTDIR "$DIR_INSTALL"
+  ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
+  ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
+  ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
+
+  ${If} ${RunningX64}
+    SetRegView 32
+    ${EnableX64FSRedirection}
+  ${Endif}
+
+  ; Get MediaPortal installation directory ...
+  ${If} $DIR_MEDIAPORTAL == ""
+    !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
+  ${Endif}
+
+  ; Get MediaPortal TV Server installation directory ...
+  ${If} $DIR_TVSERVER == ""
+    !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
+  ${Endif}
+
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
+
+  ; Get IR Server Suite installation directory ...
+  ${If} $DIR_INSTALL == ""
+    StrCpy '$DIR_INSTALL' '$PROGRAMFILES\${PRODUCT_NAME}'
+  ${Endif}
+
 !macroend
- 
+
 ;======================================
 ;======================================
 
@@ -658,7 +601,7 @@ SectionGroupEnd
 
 ;======================================
 
-SectionGroup /e "Media Center Add-Ons" SectionGroupMCE
+SectionGroup /e "Media Center add-ons" SectionGroupMCE
 
 !if ${VER_BUILD} != 0
 ${MementoSection} "Media Center Blaster (experimental)" SectionMCEBlaster
@@ -688,11 +631,11 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMCEBlaster}
   DetailPrint "Attempting to remove Media Center Blaster ..."
 
-  ; remove Start Menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Media Center Blaster.lnk"
-
   ; Remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Media Center Blaster"
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Media Center Blaster.lnk"
 
   ; remove files
   RMDir /R /REBOOTOK "$DIR_INSTALL\Media Center Blaster"
@@ -734,11 +677,11 @@ ${MementoSectionEnd}
 !macro Remove_${SectionTranslator}
   DetailPrint "Attempting to remove Translator ..."
 
-  ; remove Start Menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk"
-
   ; Remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk"
 
   ; remove files
   RMDir /R /REBOOTOK "$DIR_INSTALL\Translator"
@@ -773,11 +716,11 @@ ${MementoSectionEnd}
 !macro Remove_${SectionTrayLauncher}
   DetailPrint "Attempting to remove Tray Launcher ..."
 
-  ; remove Start Menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk"
-
   ; Remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Tray Launcher"
+
+  ; remove Start Menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk"
 
   ; remove files
   RMDir /R /REBOOTOK "$DIR_INSTALL\Tray Launcher"
@@ -919,15 +862,15 @@ ${MementoUnselectedSection} "Keyboard Relay" SectionKeyboardInputRelay
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
 
-  ; Remove auto-run
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
-
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" "" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionKeyboardInputRelay}
   DetailPrint "Attempting to remove Keyboard Relay ..."
+
+  ; Remove auto-run
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
 
   ; remove Start Menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk"
@@ -1054,7 +997,9 @@ Section "-Complete"
   WriteUninstaller "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
 
   ; Create start menu shortcuts
+!if ${VER_BUILD} == 0
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Documentation.lnk" "$DIR_INSTALL\${PRODUCT_NAME}.chm"
+!endif
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Website.lnk" "$DIR_INSTALL\${PRODUCT_NAME}.url"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Log Files.lnk" "$APPDATA\${PRODUCT_NAME}\Logs"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe" "" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
@@ -1136,12 +1081,25 @@ SectionEnd
 
 Function .onInit
 
-!insertmacro initRegKeys
+  ${IfNot} ${MP023IsInstalled}
+  ${AndIfNot} ${MPIsInstalled}
+    StrCpy '$MP_INSTALLED' 'FALSE'
+  ${Else}
+    StrCpy '$MP_INSTALLED' 'TRUE'
+  ${EndIf}
 
-; reads components status for registry
-${MementoSectionRestore}
+  ${IfNot} ${TVServerIsInstalled}
+    StrCpy '$TVSERVER_INSTALLED' 'FALSE'
+  ${Else}
+    StrCpy '$TVSERVER_INSTALLED' 'TRUE'
+  ${EndIf}
 
-Call .onSelChange
+  !insertmacro Initialize
+
+  ; reads components status for registry
+  ${MementoSectionRestore}
+
+  Call .onSelChange
 
 FunctionEnd
 
@@ -1183,20 +1141,21 @@ FunctionEnd
 ;======================================
 
 Function ComponentsPre
-;  ${IfNot} ${MP023IsInstalled}
-;  ${AndIfNot} ${MPIsInstalled}
-;    !insertmacro DisableComponent "${SectionGroupMP}" " ($(TEXT_MP_NOT_INSTALLED))"
-;    !insertmacro DisableComponent "${SectionMPCommon}" ""
-;    !insertmacro DisableComponent "${SectionMPControlPlugin}" ""
-;    !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
-;    !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
-;  ${EndIf}
 
-;  ${IfNot} ${TVServerIsInstalled}
-;    !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
-;    !insertmacro DisableComponent "${SectionTV3Common}" ""
-;    !insertmacro DisableComponent "${SectionTV3BlasterPlugin}" ""
-;  ${EndIf}
+  ${If} $MP_INSTALLED == "FALSE"
+    !insertmacro DisableComponent "${SectionGroupMP}" " ($(TEXT_MP_NOT_INSTALLED))"
+    !insertmacro DisableComponent "${SectionMPCommon}" ""
+    !insertmacro DisableComponent "${SectionMPControlPlugin}" ""
+    !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
+    !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
+  ${Endif}
+
+  ${If} $TVSERVER_INSTALLED == "FALSE"
+    !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
+    !insertmacro DisableComponent "${SectionTV3Common}" ""
+    !insertmacro DisableComponent "${SectionTV3BlasterPlugin}" ""
+  ${Endif}
+
 FunctionEnd
 
 ;======================================
@@ -1264,13 +1223,13 @@ FunctionEnd
 ;======================================
 
 Function FinishShow
-    ; This function is called, after the Finish Page creation is finished
+  ; This function is called, after the Finish Page creation is finished
 
-    ; It checks, if the Server has been selected and only displays the run checkbox in this case
-    ${IfNot} ${SectionIsSelected} SectionInputService
-        SendMessage $mui.FinishPage.Run ${BM_CLICK} 0 0
-        ShowWindow  $mui.FinishPage.Run ${SW_HIDE}
-    ${EndIf}
+  ; It checks, if the Server has been selected and only displays the run checkbox in this case
+  ${IfNot} ${SectionIsSelected} SectionInputService
+      SendMessage $mui.FinishPage.Run ${BM_CLICK} 0 0
+      ShowWindow  $mui.FinishPage.Run ${SW_HIDE}
+  ${EndIf}
 FunctionEnd
 
 ;======================================
@@ -1285,7 +1244,7 @@ FunctionEnd
 
 Function un.onInit
 
-  !insertmacro initRegKeys
+  !insertmacro Initialize
 
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
   Abort

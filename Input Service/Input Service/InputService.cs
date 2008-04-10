@@ -144,15 +144,6 @@ namespace InputService
     /// <param name="args">The arguments.</param>
     protected override void OnStart(string[] args)
     {
-#if DEBUG
-      IrssLog.LogLevel = IrssLog.Level.Debug;
-#else
-      IrssLog.LogLevel = IrssLog.Level.Info;
-#endif
-      IrssLog.Open("Input Service.log");
-
-      IrssLog.Info("Install folder: {0}", SystemRegistry.GetInstallFolder());
-
       IrssLog.Info("Starting Input Service ...");
 
       LoadSettings();
@@ -468,8 +459,6 @@ namespace InputService
       {
         IrssLog.Error(ex);
       }
-      
-      IrssLog.Close();
     }
 
     /// <summary>

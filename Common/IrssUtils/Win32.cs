@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+#if TRACE
+using System.Diagnostics;
+#endif
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -1846,7 +1849,7 @@ namespace IrssUtils
     //[return: MarshalAs(UnmanagedType.Bool)]
     //static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool AttachThreadInput(
       int threadId,
@@ -1917,10 +1920,15 @@ namespace IrssUtils
     static extern IntPtr GetParent(
       IntPtr hWnd);
 
-    [DllImport("user32.dll")]
-    static extern uint GetWindowThreadProcessId(
+    /*
+    [DllImport("User32.dll", CharSet = CharSet.Auto)]
+    static extern bool PeekMessage(
+      out System.Windows.Forms.Message msg,
       IntPtr hWnd,
-      out uint lpdwProcessId);
+      uint messageFilterMin,
+      uint messageFilterMax,
+      uint flags);
+    */
 
     #endregion Interop
 
@@ -2175,29 +2183,58 @@ namespace IrssUtils
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool SetForegroundWindow(IntPtr hWnd, bool force)
     {
+#if TRACE
+      Trace.WriteLine(String.Format("SetForegroundWindow({0}, {1})", hWnd, force));
+#endif
+      
       IntPtr fgWindow = GetForegroundWindow();
 
       if (hWnd == fgWindow)
+      {
+#if TRACE
+        Trace.WriteLine("SetForegroundWindow: hWnd == fgWindow");
+#endif
         return true;
+      }
 
-      bool setResult = SetForegroundWindow(hWnd);
-      if (!force)
-        return setResult;
+      bool setAttempt = SetForegroundWindow(hWnd);
+#if TRACE
+      Trace.WriteLine(String.Format("SetForegroundWindow: setAttempt == {0}", setAttempt));
+#endif
+      if (!force || setAttempt)
+        return setAttempt;
 
       if (fgWindow == IntPtr.Zero)
+      {
+#if TRACE
+        Trace.WriteLine("SetForegroundWindow: fgWindow == IntPtr.Zero");
+#endif
         return false;
+      }
 
       int fgWindowPID = -1;
       GetWindowThreadProcessId(fgWindow, out fgWindowPID);
 
       if (fgWindowPID == -1)
+      {
+#if TRACE
+        Trace.WriteLine("SetForegroundWindow: fgWindowPID == -1");
+#endif
         return false;
-
-      int curThreadID = GetCurrentThreadId();
+      }
 
       // If we don't attach successfully to the windows thread then we're out of options
-      if (!AttachThreadInput(curThreadID, fgWindowPID, true))
+      int curThreadID = GetCurrentThreadId();
+      bool attached = AttachThreadInput(curThreadID, fgWindowPID, true);
+      int lastError = Marshal.GetLastWin32Error();
+      
+      if (!attached)
+      {
+#if TRACE
+        Trace.WriteLine(String.Format("SetForegroundWindow: !AttachThreadInput, LastError = {0}", lastError));
+#endif
         return false;
+      }
 
       SetForegroundWindow(hWnd);
       BringWindowToTop(hWnd);
@@ -2205,6 +2242,11 @@ namespace IrssUtils
 
       // Detach
       AttachThreadInput(curThreadID, fgWindowPID, false);
+
+#if TRACE
+      Trace.WriteLine("SetForegroundWindow: Done");
+#endif
+
 
       // We've done all that we can so base our return value on whether we have succeeded or not
       return (GetForegroundWindow() == hWnd);

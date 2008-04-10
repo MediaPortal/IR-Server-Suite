@@ -25,9 +25,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>bin\Debug\IrssUtils.XML</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -57,7 +57,8 @@
     <Compile Include="Exceptions\CommandStructureException.cs" />
     <Compile Include="Exceptions\CommandExecutionException.cs" />
     <Compile Include="Exceptions\MacroStructureException.cs" />
-    <Compile Include="FocusForcer.cs" />
+    <Compile Include="FocusForcer.cs">
+    </Compile>
     <Compile Include="Forms\BlastCommand.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -374,7 +375,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>CALL "%25VS80COMNTOOLS%25vsvars32.bat"
-gacutil.exe /i $(TargetFileName)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

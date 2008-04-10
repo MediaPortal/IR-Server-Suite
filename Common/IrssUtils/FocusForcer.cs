@@ -14,8 +14,10 @@ namespace IrssUtils
     #region Variables
 
     int _processId;
-    Thread _forcerThread;
+    //Thread _forcerThread;
     IntPtr _windowHandle;
+
+    EventWaitHandle _waitHandle;
 
     #endregion Variables
 
@@ -32,19 +34,72 @@ namespace IrssUtils
 
     #endregion Constructor
 
+    #region Public Methods
 
-    public void Start()
+    /// <summary>
+    /// Forces the process into focus (once).
+    /// </summary>
+    /// <returns></returns>
+    public bool Force()
+    {
+      Process process = Process.GetProcessById(_processId);
+      if (process == null || process.HasExited)
+        throw new InvalidOperationException("Cannot force focus, process is not running");
+
+      //if (_forcerThread != null)
+        //throw new InvalidOperationException("Cannot force focus, Forcer thread already running");
+
+      _waitHandle = new AutoResetEvent(false);
+
+      try
+      {
+        Win32.EnumWindowsProc ewc = new Win32.EnumWindowsProc(CheckWindow);
+
+        while (!process.HasExited)
+        {
+          int focusedId = Win32.GetForegroundWindowPID();
+          if (focusedId != _processId)
+          {
+            _windowHandle = IntPtr.Zero;
+            Win32.EnumerateWindows(ewc, IntPtr.Zero);
+
+            bool waitResult = _waitHandle.WaitOne(5000, false);
+
+            if (_windowHandle != IntPtr.Zero)
+              return Win32.SetForegroundWindow(_windowHandle, true);
+          }
+
+          Thread.Sleep(5000);
+        }
+      }
+      finally
+      {
+        _waitHandle.Close();
+        _waitHandle = null;
+      }
+
+      return false;
+    }
+
+    /*
+    /// <summary>
+    /// Starts the forcer thread.
+    /// </summary>
+    public void StartThread()
     {
       if (_forcerThread != null)
         throw new InvalidOperationException("Focus Forcer is already running");
 
       _forcerThread = new Thread(new ThreadStart(ForcerThread));
-      _forcerThread.Name = "Focus Forcer";
+      _forcerThread.Name = "Focus Forcer Thread";
       _forcerThread.IsBackground = true;
       _forcerThread.Start();
     }
-    
-    public void Stop()
+
+    /// <summary>
+    /// Stops the forcer thread.
+    /// </summary>
+    public void StopThread()
     {
       if (_forcerThread == null)
         return;
@@ -52,45 +107,85 @@ namespace IrssUtils
       _forcerThread.Abort();
       _forcerThread = null;
     }
+    */
 
+    #endregion Public Methods
+
+    #region Implementation
+
+    /*
     void ForcerThread()
     {
       Process process = Process.GetProcessById(_processId);
-
-      if (process == null || process.HasExited)
+      if (process == null)
         return;
 
-      Win32.EnumWindowsProc ewc = new Win32.EnumWindowsProc(CheckWindow);            
+      _waitHandle = new AutoResetEvent(false);
 
-      while (!process.HasExited)
+      try
       {
-        int focused = Win32.GetForegroundWindowPID();
-        if (focused != _processId)
-          Win32.EnumerateWindows(ewc, IntPtr.Zero);
+        Win32.EnumWindowsProc ewc = new Win32.EnumWindowsProc(CheckWindow);
 
-        Thread.Sleep(5000);
+        while (!process.HasExited)
+        {
+          int focusedId = Win32.GetForegroundWindowPID();
+          if (focusedId != _processId)
+          {
+            _windowHandle = IntPtr.Zero;
+            Win32.EnumerateWindows(ewc, IntPtr.Zero);
+
+            bool waitResult = _waitHandle.WaitOne(5000, false);
+
+#if TRACE
+            Trace.WriteLine(String.Format("ForcerThread: waitResult = {0}", waitResult));
+#endif
+
+            if (_windowHandle != IntPtr.Zero)
+            {
+              bool result = Win32.SetForegroundWindow(_windowHandle, true);
+#if TRACE
+              Trace.WriteLine(String.Format("ForcerThread: SetForegroundWindow returned {0}", result));
+#endif
+            }
+          }
+
+          Thread.Sleep(5000);
+        }
+      }
+      finally
+      {
+        _waitHandle.Close();
+        _waitHandle = null;
       }
     }
+    */
 
     bool CheckWindow(IntPtr hWnd, IntPtr lParam)
     {
       if (hWnd == IntPtr.Zero)
       {
         _windowHandle = IntPtr.Zero;
+#if TRACE
+        Trace.WriteLine("CheckWindow: hWnd == IntPtr.Zero, _waitHandle.Set();");
+#endif
+        _waitHandle.Set();
         return false;
       }
 
       if (Win32.GetWindowPID(hWnd) == _processId)
       {
-        bool result = Win32.SetForegroundWindow(hWnd, true);
+        _windowHandle = hWnd;
 #if TRACE
-        Trace.WriteLine(String.Format("SetForegroundWindow: {0}", result));
+        Trace.WriteLine("CheckWindow: Win32.GetWindowPID(hWnd) == _processId, _waitHandle.Set();");
 #endif
+        _waitHandle.Set();
         return false;
       }
 
       return true;
     }
+
+    #endregion Implementation
 
   }
 

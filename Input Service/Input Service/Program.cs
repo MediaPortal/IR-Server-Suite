@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration.Install;
 #if TRACE
 using System.Diagnostics;
@@ -35,57 +36,111 @@ namespace InputService
     /// <param name="args">Command line parameters.</param>
     static void Main(string[] args)
     {
-      if (args.Length == 1)
+#if DEBUG
+      IrssLog.LogLevel = IrssLog.Level.Debug;
+#else
+      IrssLog.LogLevel = IrssLog.Level.Info;
+#endif
+
+      try
       {
-        TransactedInstaller transactedInstaller = new TransactedInstaller();
-        InputServiceInstaller inputServiceInstaller = new InputServiceInstaller();
-        transactedInstaller.Installers.Add(inputServiceInstaller);
+        if (args.Length == 0)
+        {
+          IrssLog.Open("Input Service.log");
 
-        string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
-        string[] cmdline = { path };
+          InputService inputService = new InputService();
+          ServiceBase.Run(inputService);
+        }
+        else
+        {
+          IrssLog.Open("Input Service - Command Line.log");
 
-        InstallContext installContext = new InstallContext(String.Empty, cmdline);
-        transactedInstaller.Context = installContext;
-
-        if (args[0].Equals("/install", StringComparison.OrdinalIgnoreCase))
-        {
-          transactedInstaller.Install(new Hashtable());
-        }
-        else if (args[0].Equals("/uninstall", StringComparison.OrdinalIgnoreCase))
-        {
-          transactedInstaller.Uninstall(null);
-        }
-        else if (args[0].Equals("/start", StringComparison.OrdinalIgnoreCase))
-        {
-          using (ServiceController serviceController = new ServiceController(ServiceName))
-            if (serviceController.Status == ServiceControllerStatus.Stopped)
-              serviceController.Start();
-        }
-        else if (args[0].Equals("/stop", StringComparison.OrdinalIgnoreCase))
-        {
-          using (ServiceController serviceController = new ServiceController(ServiceName))
-            if (serviceController.Status == ServiceControllerStatus.Running)
-              serviceController.Stop();
-        }
-        else if (args[0].Equals("/restart", StringComparison.OrdinalIgnoreCase))
-        {
-          using (ServiceController serviceController = new ServiceController(ServiceName))
+          foreach (string parameter in args)
           {
-            if (serviceController.Status == ServiceControllerStatus.Running)
-              serviceController.Stop();
+            switch (parameter.ToUpperInvariant())
+            {
+              case "/INSTALL":
+                IrssLog.Info("Installing Input Service ...");
+                using (TransactedInstaller transactedInstaller = new TransactedInstaller())
+                {
+                  using (InputServiceInstaller inputServiceInstaller = new InputServiceInstaller())
+                  {
+                    transactedInstaller.Installers.Add(inputServiceInstaller);
 
-            serviceController.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
+                    string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
+                    string[] cmdline = { path };
 
-            if (serviceController.Status == ServiceControllerStatus.Stopped)
-              serviceController.Start();
+                    InstallContext installContext = new InstallContext(String.Empty, cmdline);
+                    transactedInstaller.Context = installContext;
+
+                    transactedInstaller.Install(new Hashtable());
+                  }
+                }
+                break;
+
+              case "/UNINSTALL":
+                IrssLog.Info("Uninstalling Input Service ...");
+                using (TransactedInstaller transactedInstaller = new TransactedInstaller())
+                {
+                  using (InputServiceInstaller inputServiceInstaller = new InputServiceInstaller())
+                  {
+                    transactedInstaller.Installers.Add(inputServiceInstaller);
+
+                    string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
+                    string[] cmdline = { path };
+
+                    InstallContext installContext = new InstallContext(String.Empty, cmdline);
+                    transactedInstaller.Context = installContext;
+
+                    transactedInstaller.Uninstall(null);
+                  }
+                }
+                break;
+
+              case "/START":
+                IrssLog.Info("Starting Input Service ...");
+                using (ServiceController serviceController = new ServiceController(ServiceName))
+                  if (serviceController.Status == ServiceControllerStatus.Stopped)
+                    serviceController.Start();
+                break;
+
+              case "/STOP":
+                IrssLog.Info("Stopping Input Service ...");
+                using (ServiceController serviceController = new ServiceController(ServiceName))
+                  if (serviceController.Status == ServiceControllerStatus.Running)
+                    serviceController.Stop();
+                break;
+
+              case "/RESTART":
+                IrssLog.Info("Restarting Input Service ...");
+                using (ServiceController serviceController = new ServiceController(ServiceName))
+                {
+                  if (serviceController.Status == ServiceControllerStatus.Running)
+                    serviceController.Stop();
+
+                  serviceController.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
+
+                  if (serviceController.Status == ServiceControllerStatus.Stopped)
+                    serviceController.Start();
+                }
+                break;
+
+              default:
+                throw new InvalidOperationException(String.Format("Unknown command line parameter \"{0}\"", parameter));
+            }
           }
+
+          IrssLog.Info("Done.");
         }
-
-        return;
       }
-
-      InputService inputService = new InputService();
-      ServiceBase.Run(inputService);
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+      finally
+      {
+        IrssLog.Close();
+      }
     }
 
     /// <summary>

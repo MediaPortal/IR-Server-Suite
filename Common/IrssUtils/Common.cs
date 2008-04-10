@@ -506,7 +506,8 @@ namespace IrssUtils
         if (forceFocus && !process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
         {
           FocusForcer forcer = new FocusForcer(process.Id);
-          forcer.Start();
+          //forcer.Start();
+          forcer.Force();
         }
 
         if (waitForExit)
@@ -892,11 +893,11 @@ namespace IrssUtils
 
     #region Misc
 
+    /*
     /// <summary>
     /// Get a list of commands found in the Command Libraries.
     /// </summary>
     /// <returns>Available commands.</returns>
-    /*
     public static Type[] GetLibraryCommands()
     {
       try
