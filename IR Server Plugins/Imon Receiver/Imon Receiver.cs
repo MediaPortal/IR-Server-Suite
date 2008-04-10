@@ -95,6 +95,9 @@ namespace InputService.Plugin
 
     const uint IMON_PAD_BUTTON      = 1000;
     const uint IMON_MCE_BUTTON      = 2000;
+    const uint IMON_PANEL_BUTTON    = 3000;
+    const uint IMON_VOLUME_UP       = 4001;
+    const uint IMON_VOLUME_DOWN     = 4002;
 
     static readonly byte[][] SetModeMCE = new byte[][] {
       new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00 },
@@ -438,7 +441,8 @@ namespace InputService.Plugin
     {
       try
       {
-        SafeFileHandle deviceHandle = CreateFile(DevicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.Read | CreateFileShares.Write, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+        //SafeFileHandle deviceHandle = CreateFile(DevicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.Read | CreateFileShares.Write, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+        SafeFileHandle deviceHandle = CreateFile(DevicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.Read | CreateFileShares.Write, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Normal, IntPtr.Zero);
         int lastError = Marshal.GetLastWin32Error();
 
         if (deviceHandle.IsInvalid)
@@ -466,7 +470,8 @@ namespace InputService.Plugin
 
       LoadSettings();
 
-      _deviceHandle = CreateFile(DevicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.Read | CreateFileShares.Write, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      //_deviceHandle = CreateFile(DevicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.Read | CreateFileShares.Write, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      _deviceHandle = CreateFile(DevicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.Read | CreateFileShares.Write, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Normal, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
 
       if (_deviceHandle.IsInvalid)
@@ -695,6 +700,20 @@ namespace InputService.Plugin
 
         MouseEvent(xSign * xSize, ySign * ySize, right, left);
       }
+      else if (dataBytes[7] == 0xEE)  // Front panel buttons/volume knob
+      {
+        if (dataBytes[3] != 0x01)
+        {
+          uint keyCode = IMON_PANEL_BUTTON + dataBytes[3];
+          RemoteEvent(keyCode, _remoteToggle != dataBytes[3]);
+        }
+        _remoteToggle = dataBytes[3];
+
+        if (dataBytes[0] == 0x01)
+          RemoteEvent(IMON_VOLUME_DOWN, true);
+        if (dataBytes[1] == 0x01)
+          RemoteEvent(IMON_VOLUME_UP, true);
+      }
     }
 
     void ReceiveThread()
@@ -720,7 +739,12 @@ namespace InputService.Plugin
             byte[] dataBytes = new byte[bytesRead];
             Marshal.Copy(deviceBufferPtr, dataBytes, 0, bytesRead);
 
-            if (dataBytes[0] != 0xFF && dataBytes[0] != 0x00)
+            // Rubbish data:
+            // FF, FF, FF, FF, FF, FF, 9F, FF, 
+            // 00, 00, 00, 00, 00, 00, 00, F0, 
+
+            if (dataBytes[0] != 0xFF && dataBytes[1] != 0xFF && dataBytes[2] != 0xFF && dataBytes[3] != 0xFF &&
+                dataBytes[0] != 0x00 && dataBytes[1] != 0x00 && dataBytes[2] != 0x00 && dataBytes[3] != 0x00)
               ProcessInput(dataBytes);
           }
         }
@@ -744,6 +768,21 @@ namespace InputService.Plugin
     }
 
     void IoControl(uint ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
+    {
+      try
+      {
+        DeviceIoControl(_deviceHandle, ioControlCode, inBuffer, inBufferSize, outBuffer, outBufferSize, out bytesReturned, IntPtr.Zero);
+      }
+      catch
+      {
+        if (_deviceHandle != null)
+          CancelIo(_deviceHandle);
+
+        throw;
+      }
+    }
+
+    void IoControlOverlapped(uint ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
     {
       int lastError;
 

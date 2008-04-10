@@ -324,7 +324,7 @@ namespace MediaPortal.Plugins
       Log.Info("{0} / {1} / {2} / {3}", map.Condition, map.ConProperty, map.Command, map.CmdProperty);
 #endif
       Action action;
-      if (map.Sound != string.Empty)
+      if (map.Sound != string.Empty) // && !g_Player.Playing)
         MediaPortal.Util.Utils.PlaySound(map.Sound, false, true);
       if (map.Focus && !GUIGraphicsContext.HasFocus)
       {

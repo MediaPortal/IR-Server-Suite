@@ -1,9 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
 <DocumentElement>
-  <RemoteTable RawCode="?1" AbstractButton="Up" />
-  <RemoteTable RawCode="?2" AbstractButton="Down" />
-  <RemoteTable RawCode="?3" AbstractButton="Left" />
-  <RemoteTable RawCode="?4" AbstractButton="Right" />
   <RemoteTable RawCode="1148" AbstractButton="OK" />
   <RemoteTable RawCode="1038" AbstractButton="VolumeUp" />
   <RemoteTable RawCode="1042" AbstractButton="VolumeDown" />
@@ -11,7 +7,6 @@
   <RemoteTable RawCode="1014" AbstractButton="ChannelDown" />
   <RemoteTable RawCode="1178" AbstractButton="Start" />
   <RemoteTable RawCode="1032" AbstractButton="Back" />
-  <RemoteTable RawCode="?5" AbstractButton="Info" />
   <RemoteTable RawCode="1218" AbstractButton="Mute" />
   <RemoteTable RawCode="1234" AbstractButton="Number0" />
   <RemoteTable RawCode="1058" AbstractButton="Number1" />
@@ -33,11 +28,6 @@
   <RemoteTable RawCode="1208" AbstractButton="PreviousChapter" />
   <RemoteTable RawCode="1002" AbstractButton="Power" />
   <RemoteTable RawCode="1016" AbstractButton="Power2" />
-  <RemoteTable RawCode="?6" AbstractButton="Teletext" />
-  <RemoteTable RawCode="?7" AbstractButton="Red" />
-  <RemoteTable RawCode="?8" AbstractButton="Green" />
-  <RemoteTable RawCode="?9" AbstractButton="Yellow" />
-  <RemoteTable RawCode="?10" AbstractButton="Blue" />
   <RemoteTable RawCode="1252" AbstractButton="Clear" />
   <RemoteTable RawCode="1034" AbstractButton="Enter" />
   <RemoteTable RawCode="1096" AbstractButton="Hash" />
@@ -47,12 +37,8 @@
   <RemoteTable RawCode="1200" AbstractButton="Videos" />
   <RemoteTable RawCode="1102" AbstractButton="DVD" />
   <RemoteTable RawCode="1040" AbstractButton="TV" />
-  <RemoteTable RawCode="?11" AbstractButton="Guide" />
-  <RemoteTable RawCode="?12" AbstractButton="LiveTV" />
-  <RemoteTable RawCode="?13" AbstractButton="Radio" />
-  <RemoteTable RawCode="?14" AbstractButton="Print" />
-  <RemoteTable RawCode="?15" AbstractButton="RecordedTV" />
   <RemoteTable RawCode="1106" AbstractButton="AspectRatio" />
-  <RemoteTable RawCode="?16" AbstractButton="Print" />
-  <RemoteTable RawCode="?17" AbstractButton="Messenger" />
+  <RemoteTable RawCode="1114" AbstractButton="Eject" />
+  <RemoteTable RawCode="1002" AbstractButton="Close" />
+  <RemoteTable RawCode="1166" AbstractButton="Fullscreen" />
 </DocumentElement>
