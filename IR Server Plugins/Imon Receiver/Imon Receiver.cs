@@ -181,6 +181,7 @@ namespace InputService.Plugin
     [Flags]
     enum CreateFileAttributes : uint
     {
+      None              = 0x00000000,
       Readonly          = 0x00000001,
       Hidden            = 0x00000002,
       System            = 0x00000004,
@@ -245,7 +246,7 @@ namespace InputService.Plugin
     static extern bool CancelIo(
       SafeFileHandle handle);
 
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool CloseHandle(
       SafeFileHandle handle);
@@ -433,10 +434,9 @@ namespace InputService.Plugin
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// This method should not throw exceptions.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
+    /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
     public override bool Detect()
     {
       try
@@ -762,9 +762,11 @@ namespace InputService.Plugin
             // FF, FF, FF, FF, FF, FF, 9F, FF, 
             // 00, 00, 00, 00, 00, 00, 00, F0, 
 
-            if (dataBytes[0] != 0xFF && dataBytes[1] != 0xFF && dataBytes[2] != 0xFF && dataBytes[3] != 0xFF && dataBytes[4] != 0xFF && dataBytes[5] != 0xFF &&
-                dataBytes[0] != 0x00 && dataBytes[1] != 0x00 && dataBytes[2] != 0x00 && dataBytes[3] != 0x00 && dataBytes[4] != 0x00 && dataBytes[5] != 0x00)
+            if ((dataBytes[0] != 0xFF || dataBytes[1] != 0xFF || dataBytes[2] != 0xFF || dataBytes[3] != 0xFF || dataBytes[4] != 0xFF || dataBytes[5] != 0xFF) &&
+                (dataBytes[0] != 0x00 || dataBytes[1] != 0x00 || dataBytes[2] != 0x00 || dataBytes[3] != 0x00 || dataBytes[4] != 0x00 || dataBytes[5] != 0x00))
+            {
               ProcessInput(dataBytes);
+            }
           }
         }
       }

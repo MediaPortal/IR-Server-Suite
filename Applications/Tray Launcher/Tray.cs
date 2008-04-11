@@ -66,6 +66,9 @@ namespace TrayLauncher
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Tray"/> class.
+    /// </summary>
     public Tray()
     {
       ContextMenuStrip contextMenu = new ContextMenuStrip();

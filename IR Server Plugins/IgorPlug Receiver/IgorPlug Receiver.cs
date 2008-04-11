@@ -21,7 +21,63 @@ namespace InputService.Plugin
   public class IgorPlugReceiver : PluginBase, IRemoteReceiver
   {
 
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
+
+    static void xRemote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+    static void xKeyboard(string deviceName, int button, bool up)
+    {
+      Console.WriteLine("Keyboard: {0}, {1}", button, up);
+    }
+    static void xMouse(string deviceName, int x, int y, int buttons)
+    {
+      Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      IgorPlugReceiver device;
+
+      try
+      {
+        device = new IgorPlugReceiver();
+
+        //device.Configure(null);
+
+        device.RemoteCallback += new RemoteHandler(xRemote);
+        //device.KeyboardCallback += new KeyboardHandler(xKeyboard);
+        //device.MouseCallback += new MouseHandler(xMouse);
+
+        device.Start();
+
+        Console.WriteLine("Press a button on your remote ...");
+
+        System.Windows.Forms.Application.Run();
+
+        device.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+      finally
+      {
+        device = null;
+      }
+
+      Console.ReadKey();
+    }
+
+#endif
+
+
     #region Constants
+
+    const string DevicePath = @"\\.\IgorPlugUSB_0";
 
     const int NO_ERROR            = 0;
     const int DEVICE_NOT_PRESENT  = 1;
@@ -103,6 +159,16 @@ namespace InputService.Plugin
 
     #region Interop
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool DeviceIoControl(
+      SafeFileHandle handle,
+      uint ioControlCode,
+      byte[] inBuffer, int inBufferSize,
+      byte[] outBuffer, int outBufferSize,
+      out int bytesReturned,
+      IntPtr overlapped);
+
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     static extern SafeFileHandle CreateFile(
       [MarshalAs(UnmanagedType.LPTStr)] string fileName,
@@ -117,15 +183,6 @@ namespace InputService.Plugin
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool CloseHandle(
       SafeFileHandle handle);
-
-    [DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    static extern bool DeviceIoControl(
-      SafeFileHandle handle,
-      uint ioControlCode,
-      byte[] inBuffer, int inBufferSize,
-      byte[] outBuffer, int outBufferSize,
-      out int bytesReturned,
-      IntPtr overlapped);
 
     #endregion Interop
 
@@ -176,11 +233,40 @@ namespace InputService.Plugin
     public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
 
     /// <summary>
+    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// This method should not throw exceptions.
+    /// </summary>
+    /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
+    public override bool Detect()
+    {
+      try
+      {
+        SafeFileHandle deviceHandle = CreateFile(DevicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.Read | CreateFileShares.Write, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Normal, IntPtr.Zero);
+        int lastError = Marshal.GetLastWin32Error();
+
+        if (deviceHandle.IsInvalid)
+          throw new Win32Exception(lastError, "Failed to open device");
+
+        CloseHandle(deviceHandle);
+
+        return true;
+      }
+      catch
+      {
+        return false;
+      }
+    }
+
+    /// <summary>
     /// Start the IR Server plugin.
     /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public override void Start()
     {
+#if DEBUG
+      DebugOpen("IgorPlug Receiver.log");
+      DebugWriteLine("Start()");
+#endif
+
       ThreadStart readThreadStart = new ThreadStart(ReadThread);
       _readThread = new Thread(readThreadStart);
       _readThread.IsBackground = true;
@@ -191,6 +277,10 @@ namespace InputService.Plugin
     /// </summary>
     public override void Suspend()
     {
+#if DEBUG
+      DebugWriteLine("Suspend()");
+#endif
+
       Stop();
     }
     /// <summary>
@@ -198,6 +288,10 @@ namespace InputService.Plugin
     /// </summary>
     public override void Resume()
     {
+#if DEBUG
+      DebugWriteLine("Resume()");
+#endif
+
       Start();
     }
     /// <summary>
@@ -205,10 +299,18 @@ namespace InputService.Plugin
     /// </summary>
     public override void Stop()
     {
+#if DEBUG
+      DebugWriteLine("Stop()");
+#endif
+
       _readThread.Abort();
 
       if (_readThread.IsAlive)
         _readThread.Join();
+
+#if DEBUG
+      DebugClose();
+#endif
     }
 
     /// <summary>
@@ -237,6 +339,15 @@ namespace InputService.Plugin
           switch (returnCode)
           {
             case NO_ERROR:
+              byte[] data = new byte[codeLength];
+              Array.Copy(timingCode, data, codeLength);
+
+              int[] timingData = GetTimingData(data);
+
+              IrDecoder.DecodeIR(timingData, new RemoteCallback(RemoteEvent), null, null);
+
+              Thread.Sleep(100);
+              DoSetInfraBufferEmpty(); 
               break;
 
             case NO_DATA_AVAILABLE:
@@ -254,27 +365,18 @@ namespace InputService.Plugin
             default:
               throw new IOException(String.Format("Unknown error ({0})", returnCode));
           }
-
-          byte[] data = new byte[codeLength];
-          Array.Copy(timingCode, data, codeLength);
-
-          int[] timingData = GetTimingData(data);
-
-          IrDecoder.DecodeIR(timingData, new RemoteCallback(RemoteEvent), null, null);
-
-          Thread.Sleep(100);
-          DoSetInfraBufferEmpty();
         }
       }
 #if TRACE
-      catch (Exception ex) // (ThreadAbortException ex)
+      catch (ThreadAbortException ex)
       {
         Trace.WriteLine(ex.ToString());
-#else
-      catch // (ThreadAbortException)
-      {
-#endif
       }
+#else
+      catch (ThreadAbortException)
+      {
+      }
+#endif
     }
 
     void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
@@ -290,7 +392,7 @@ namespace InputService.Plugin
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < _remoteFirstRepeat)
         {
 #if TRACE
-          Trace.WriteLine("Skip First Repeat");
+          Trace.WriteLine("Skip, First Repeat");
 #endif
           return;
         }
@@ -298,7 +400,7 @@ namespace InputService.Plugin
         if (_remoteButtonRepeated && timeBetween.TotalMilliseconds < _remoteHeldRepeats)
         {
 #if TRACE
-          Trace.WriteLine("Skip Held Repeat");
+          Trace.WriteLine("Skip, Held Repeat");
 #endif
           return;
         }
@@ -341,16 +443,11 @@ namespace InputService.Plugin
     {
       bool Result = false;
 
-      SafeFileHandle handle = CreateFile(@"\\.\IgorPlugUSB_0",
-        CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite,
-        CreateFileShares.Read | CreateFileShares.Write,
-        IntPtr.Zero,
-        CreateFileDisposition.OpenExisting,
-        CreateFileAttributes.None,
-        IntPtr.Zero);
+      SafeFileHandle handle = CreateFile(DevicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.Read | CreateFileShares.Write, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.None, IntPtr.Zero);
+      int lastError = Marshal.GetLastWin32Error();
 
       if (handle.IsInvalid)
-        throw new Exception("Cannot Open IgorUSB Driver!");
+        throw new Win32Exception(lastError, "Failed to open device");
 
       try
       {
@@ -416,7 +513,7 @@ namespace InputService.Plugin
       DiagramLength = 0;
       OutLength = 3;
       if (!SendToDriver(FNCNumberDoGetInfraCode, 0, 0, ref OutputData, ref OutLength))
-        return DEVICE_NOT_PRESENT;   //dev not present
+        return DEVICE_NOT_PRESENT;
 
       BytesToRead = OutputData[0];
       if ((LastReadedCode == OutputData[1]) || (OutLength <= 1) || (BytesToRead == 0))
@@ -445,14 +542,142 @@ namespace InputService.Plugin
       k = 0;
       for (i = j; i < BytesToRead; i++)
         TimeCodeDiagram[k++] = OutputData[i];
+
       for (i = 0; i < j; i++)
         TimeCodeDiagram[k++] = OutputData[i];
+
       DiagramLength = BytesToRead;
       DoSetInfraBufferEmpty();
+      
       return NO_ERROR;
     }
 
     #endregion Implementation
+
+
+    #region Debug
+#if DEBUG
+
+    static StreamWriter _debugFile;
+
+    /// <summary>
+    /// Opens a debug output file.
+    /// </summary>
+    /// <param name="fileName">Name of the file.</param>
+    static void DebugOpen(string fileName)
+    {
+      try
+      {
+#if TEST_APPLICATION
+        string path = fileName;
+#else
+        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), String.Format("IR Server Suite\\Logs\\{0}", fileName));
+#endif
+        _debugFile = new StreamWriter(path, false);
+        _debugFile.AutoFlush = true;
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
+        _debugFile = null;
+      }
+    }
+
+    /// <summary>
+    /// Closes the debug output file.
+    /// </summary>
+    static void DebugClose()
+    {
+      if (_debugFile != null)
+      {
+        _debugFile.Close();
+        _debugFile.Dispose();
+        _debugFile = null;
+      }
+    }
+
+    /// <summary>
+    /// Writes a line to the debug output file.
+    /// </summary>
+    /// <param name="line">The line.</param>
+    /// <param name="args">Formatting arguments.</param>
+    static void DebugWriteLine(string line, params object[] args)
+    {
+      if (_debugFile != null)
+      {
+        _debugFile.Write("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
+        _debugFile.WriteLine(line, args);
+      }
+#if TRACE
+      else
+      {
+        Trace.WriteLine(String.Format(line, args));
+      }
+#endif
+    }
+
+    /// <summary>
+    /// Writes a string to the debug output file.
+    /// </summary>
+    /// <param name="text">The string to write.</param>
+    /// <param name="args">Formatting arguments.</param>
+    static void DebugWrite(string text, params object[] args)
+    {
+      if (_debugFile != null)
+      {
+        _debugFile.Write(text, args);
+      }
+#if TRACE
+      else
+      {
+        Trace.Write(String.Format(text, args));
+      }
+#endif
+    }
+
+    /// <summary>
+    /// Writes a new line to the debug output file.
+    /// </summary>
+    static void DebugWriteNewLine()
+    {
+      if (_debugFile != null)
+      {
+        _debugFile.WriteLine();
+      }
+#if TRACE
+      else
+      {
+        Trace.WriteLine(String.Empty);
+      }
+#endif
+    }
+
+    /// <summary>
+    /// Dumps an Array to the debug output file.
+    /// </summary>
+    /// <param name="array">The array.</param>
+    static void DebugDump(Array array)
+    {
+      foreach (object item in array)
+      {
+        if (item is byte)         DebugWrite("{0:X2}", (byte)   item);
+        else if (item is ushort)  DebugWrite("{0:X4}", (ushort) item);
+        else if (item is int)     DebugWrite("{1}{0}", (int)    item, (int)item > 0 ? "+" : String.Empty);
+        else                      DebugWrite("{0}",             item);
+
+        DebugWrite(", ");
+      }
+
+      DebugWriteNewLine();
+    }
+
+#endif
+    #endregion Debug
 
   }
 
