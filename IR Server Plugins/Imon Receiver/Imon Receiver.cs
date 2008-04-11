@@ -646,8 +646,11 @@ namespace InputService.Plugin
       DebugDump(dataBytes);
 #endif
 
-      if ((dataBytes[0] & 0xFC) == 0x28)  // iMon PAD remote button
+      if ((dataBytes[0] & 0xFC) == 0x28)
       {
+#if DEBUG
+        DebugWriteLine("iMon PAD remote button");
+#endif
         uint keyCode = IMON_PAD_BUTTON;
         keyCode += (uint)((dataBytes[0] & 0x03) << 6);
         keyCode += (uint)(dataBytes[1] & 0x30);
@@ -664,8 +667,11 @@ namespace InputService.Plugin
           _remoteToggle = 0;
         }
       }
-      else if ((dataBytes[0] & 0xFC) == 0x68)  // iMon PAD mouse move/button
+      else if ((dataBytes[0] & 0xFC) == 0x68)
       {
+#if DEBUG
+        DebugWriteLine("iMon PAD mouse move/button");
+#endif
         int xSign = (((dataBytes[0] & 0x02) != 0) ? 1 : -1);
         int ySign = (((dataBytes[0] & 0x01) != 0) ? 1 : -1);
         int xSize = ((dataBytes[1] & 0x78) >> 3);
@@ -676,19 +682,28 @@ namespace InputService.Plugin
 
         MouseEvent(xSign * xSize, ySign * ySize, right, left);
       }
-      else if (dataBytes[7] == 0xAE)  // MCE remote button
+      else if (dataBytes[7] == 0xAE) 
       {
+#if DEBUG
+        DebugWriteLine("MCE remote button");
+#endif
         uint keyCode = IMON_MCE_BUTTON + dataBytes[3];
 
         RemoteEvent(keyCode, _remoteToggle != dataBytes[2]);
         _remoteToggle = dataBytes[2];
       }
-      else if (dataBytes[7] == 0xBE)  // MCE Keyboard key press
+      else if (dataBytes[7] == 0xBE)
       {
+#if DEBUG
+        DebugWriteLine("MCE Keyboard key press");
+#endif
         KeyboardEvent(dataBytes[2], dataBytes[3]);
       }
-      else if (dataBytes[7] == 0xCE)  // MCE Keyboard mouse move/button
+      else if (dataBytes[7] == 0xCE)
       {
+#if DEBUG
+        DebugWriteLine("MCE Keyboard mouse move/button");
+#endif
         int xSign = (dataBytes[2] & 0x20) == 0 ? 1 : -1;
         int ySign = (dataBytes[1] & 0x10) == 0 ? 1 : -1;
         
@@ -700,19 +715,23 @@ namespace InputService.Plugin
 
         MouseEvent(xSign * xSize, ySign * ySize, right, left);
       }
-      else if (dataBytes[7] == 0xEE)  // Front panel buttons/volume knob
+      else if (dataBytes[7] == 0xEE)
       {
-        if (dataBytes[3] != 0x01)
+#if DEBUG
+        DebugWriteLine("Front panel buttons/volume knob");
+#endif
+        if (dataBytes[3] > 0x01)
         {
           uint keyCode = IMON_PANEL_BUTTON + dataBytes[3];
           RemoteEvent(keyCode, _remoteToggle != dataBytes[3]);
         }
         _remoteToggle = dataBytes[3];
 
-        if (dataBytes[0] == 0x01)
-          RemoteEvent(IMON_VOLUME_DOWN, true);
-        if (dataBytes[1] == 0x01)
-          RemoteEvent(IMON_VOLUME_UP, true);
+        if (dataBytes[0] == 0x01 && _remoteHandler != null)
+          _remoteHandler(this.Name, IMON_VOLUME_DOWN.ToString());
+
+        if (dataBytes[1] == 0x01 && _remoteHandler != null)
+          _remoteHandler(this.Name, IMON_VOLUME_UP.ToString());
       }
     }
 
@@ -743,8 +762,8 @@ namespace InputService.Plugin
             // FF, FF, FF, FF, FF, FF, 9F, FF, 
             // 00, 00, 00, 00, 00, 00, 00, F0, 
 
-            if (dataBytes[0] != 0xFF && dataBytes[1] != 0xFF && dataBytes[2] != 0xFF && dataBytes[3] != 0xFF &&
-                dataBytes[0] != 0x00 && dataBytes[1] != 0x00 && dataBytes[2] != 0x00 && dataBytes[3] != 0x00)
+            if (dataBytes[0] != 0xFF && dataBytes[1] != 0xFF && dataBytes[2] != 0xFF && dataBytes[3] != 0xFF && dataBytes[4] != 0xFF && dataBytes[5] != 0xFF &&
+                dataBytes[0] != 0x00 && dataBytes[1] != 0x00 && dataBytes[2] != 0x00 && dataBytes[3] != 0x00 && dataBytes[4] != 0x00 && dataBytes[5] != 0x00)
               ProcessInput(dataBytes);
           }
         }
