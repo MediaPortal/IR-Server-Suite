@@ -1690,7 +1690,7 @@ namespace IrssUtils
       /// <summary>
       /// Data.
       /// </summary>
-      public int lpData;
+      public IntPtr lpData;
     }
 
     /// <summary>
@@ -1723,12 +1723,14 @@ namespace IrssUtils
       public string szTypeName;
     };
 
+    [StructLayout(LayoutKind.Sequential)]
     struct POINTAPI
     {
       public int x;
       public int y;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     struct RECT
     {
       public int left;
@@ -1737,6 +1739,7 @@ namespace IrssUtils
       public int bottom;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     struct WINDOWPLACEMENT
     {
       public int length;

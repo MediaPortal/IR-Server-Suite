@@ -635,7 +635,8 @@ namespace InputService.Plugin
       if (_ignoreAutomaticButtons && codeType == IrProtocol.RC6_MCE)
       {
         // Always ignore these buttones ...
-        if (keyCode == 0x7bdc ||  // Back
+        if (
+          //keyCode == 0x7bdc ||  // Back (removed 12-April-2008)
             keyCode == 0x7bdd ||  // OK
             keyCode == 0x7bde ||  // Right
             keyCode == 0x7bdf ||  // Left

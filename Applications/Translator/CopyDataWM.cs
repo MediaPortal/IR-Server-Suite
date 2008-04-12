@@ -9,6 +9,9 @@ using IrssUtils.Exceptions;
 namespace Translator
 {
 
+  /// <summary>
+  /// Used for sending and receiving Copy Data Windows Messages.
+  /// </summary>
   class CopyDataWM : NativeWindow, IDisposable
   {
 
@@ -79,6 +82,10 @@ namespace Translator
 
     #region Methods
 
+    /// <summary>
+    /// Starts this instance.
+    /// </summary>
+    /// <returns></returns>
     public bool Start()
     {
       if (Handle != IntPtr.Zero)
@@ -94,6 +101,9 @@ namespace Translator
       return (Handle != IntPtr.Zero);
     }
 
+    /// <summary>
+    /// Stops this instance.
+    /// </summary>
     public void Stop()
     {
       if (Handle != IntPtr.Zero)
@@ -104,6 +114,10 @@ namespace Translator
 
     #region Overrides
 
+    /// <summary>
+    /// Invokes the default window procedure associated with this window.
+    /// </summary>
+    /// <param name="m">A <see cref="T:System.Windows.Forms.Message"></see> that is associated with the current Windows message.</param>
     protected override void WndProc(ref Message m)
     {
       if (m.Msg == (int)Win32.WindowsMessage.WM_COPYDATA)
@@ -121,9 +135,8 @@ namespace Translator
           }
 
           byte[] dataBytes = new byte[dataStructure.cbData];
-          IntPtr lpData = new IntPtr(dataStructure.lpData);
-          Marshal.Copy(lpData, dataBytes, 0, dataStructure.cbData);
-          string strData = Encoding.Default.GetString(dataBytes);
+          Marshal.Copy(dataStructure.lpData, dataBytes, 0, dataStructure.cbData);
+          string strData = Encoding.ASCII.GetString(dataBytes);
 
           Program.ProcessCommand(strData, false);
         }
@@ -146,10 +159,10 @@ namespace Translator
     {
       Win32.COPYDATASTRUCT copyData;
 
-      byte[] dataBytes = Encoding.Default.GetBytes(data);
+      byte[] dataBytes = Encoding.ASCII.GetBytes(data);
 
       copyData.dwData = CopyDataID;
-      copyData.lpData = Win32.VarPtr(dataBytes).ToInt32();
+      copyData.lpData = Win32.VarPtr(dataBytes);
       copyData.cbData = dataBytes.Length;
 
       IntPtr windowHandle = Win32.FindWindowByTitle(CopyDataTarget);
