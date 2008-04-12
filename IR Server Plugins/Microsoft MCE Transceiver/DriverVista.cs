@@ -584,6 +584,8 @@ namespace InputService.Plugin
 #if DEBUG
       DebugOpen("MicrosoftMceTransceiver_DriverVista.log");
       DebugWriteLine("Start()");
+      DebugWriteLine("Device Guid: {0}", _deviceGuid);
+      DebugWriteLine("Device Path: {0}", _devicePath);
 #endif
 
       _notifyWindow = new NotifyWindow();
