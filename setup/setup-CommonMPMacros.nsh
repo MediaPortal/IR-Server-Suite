@@ -77,35 +77,35 @@
 */
 
 !macro FinishSection SecName
-    ;This macro reads section flag set by user and removes the section
-    ;if it is not selected.
-    ;Then it writes component installed flag to registry
-    ;Input: section index constant name specified in Section command.
+  ;This macro reads section flag set by user and removes the section
+  ;if it is not selected.
+  ;Then it writes component installed flag to registry
+  ;Input: section index constant name specified in Section command.
 
-    ${IfNot} ${SectionIsSelected} "${${SecName}}"
-        ClearErrors
-        ReadRegDWORD $R0 ${MEMENTO_REGISTRY_ROOT} '${MEMENTO_REGISTRY_KEY}' 'MementoSection_${SecName}'
+  ${IfNot} ${SectionIsSelected} "${${SecName}}"
+    ClearErrors
+    ReadRegDWORD $R0 ${MEMENTO_REGISTRY_ROOT} '${MEMENTO_REGISTRY_KEY}' 'MementoSection_${SecName}'
 
-        ${If} $R0 = 1
-            !insertmacro "Remove_${${SecName}}"
-        ${EndIf}
+    ${If} $R0 = 1
+      !insertmacro "Remove_${${SecName}}"
     ${EndIf}
+  ${EndIf}
 !macroend
 
 !macro RemoveSection SecName
-    ;This macro is used to call section's Remove_... macro
-    ;from the uninstaller.
-    ;Input: section index constant name specified in Section command.
+  ;This macro is used to call section's Remove_... macro
+  ;from the uninstaller.
+  ;Input: section index constant name specified in Section command.
 
-    !insertmacro "Remove_${${SecName}}"
+  !insertmacro "Remove_${${SecName}}"
 !macroend
 
 !macro DisableComponent SectionName AddText
-    !insertmacro UnselectSection "${SectionName}"
-    ; Make the unselected section read only
-    !insertmacro SetSectionFlag "${SectionName}" 16
-    SectionGetText ${SectionName} $R0
-    SectionSetText ${SectionName} "$R0${AddText}"
+  !insertmacro UnselectSection "${SectionName}"
+  ; Make the unselected section read only
+  !insertmacro SetSectionFlag "${SectionName}" 16
+  SectionGetText ${SectionName} $R0
+  SectionSetText ${SectionName} "$R0${AddText}"
 !macroend
 
 
@@ -130,6 +130,8 @@
 
 # old installations < 0.2.3.0 RC 3
 !macro _MP022IsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
   ClearErrors
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{87819CFA-1786-484D-B0DE-10B5FBF2625D}" "UninstallString"
@@ -138,6 +140,8 @@
 !define MP022IsInstalled `"" MP022IsInstalled ""`
 
 !macro _MP023RC3IsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal 0.2.3.0 RC3" "UninstallString"
 
@@ -146,6 +150,8 @@
 !define MP023RC3IsInstalled `"" MP023RC3IsInstalled ""`
 
 !macro _MP023IsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal 0.2.3.0" "UninstallString"
 
@@ -156,6 +162,8 @@
 ;======================================   OLD TVServer/TVClient INSTALLATION TESTs
 
 !macro _MSI_TVServerIsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
   ClearErrors
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4B738773-EE07-413D-AFB7-BB0AB04A5488}" "UninstallString"
@@ -164,6 +172,8 @@
 !define MSI_TVServerIsInstalled `"" MSI_TVServerIsInstalled ""`
 
 !macro _MSI_TVClientIsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
   ClearErrors
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{F7444E89-5BC0-497E-9650-E50539860DE0}" "UninstallString"
@@ -176,6 +186,8 @@
 ;======================================
 
 !macro _MPIsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
   ReadRegStr $_LOGICLIB_TEMP HKLM "${MP_REG_UNINSTALL}" "UninstallString"
 
@@ -184,6 +196,8 @@
 !define MPIsInstalled `"" MPIsInstalled ""`
 
 !macro _TVServerIsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
   ReadRegStr $_LOGICLIB_TEMP HKLM "${TV3_REG_UNINSTALL}" "UninstallString"
 
@@ -195,6 +209,8 @@
 !define TVServerIsInstalled `"" TVServerIsInstalled ""`
 
 !macro _TVClientIsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
   ReadRegStr $_LOGICLIB_TEMP HKLM "${TV3_REG_UNINSTALL}" "UninstallString"
 
@@ -208,15 +224,36 @@
 ;======================================   3rd PARTY APPLICATION TESTs
 
 !macro _VCRedistIsInstalled _a _b _t _f
-  !insertmacro _LOGICLIB_TEMP
+
   ClearErrors
-  ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7299052b-02a4-4627-81f2-1818da5d550d}" "DisplayVersion"
-  IfErrors `${_f}` 0
-  StrCmp $_LOGICLIB_TEMP "8.0.56336" `${_t}` `${_f}`
+  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+  IfErrors `${_f}`
+
+  StrCpy $R1 $R0 3
+ 
+  StrCmp $R1 '5.1' lbl_winnt_XP
+  StrCmp $R1 '5.2' lbl_winnt_2003
+  StrCmp $R1 '6.0' lbl_winnt_vista `${_f}`
+
+
+  lbl_winnt_vista:
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc80.crt_1fc8b3b9a1e18e3b_8.0.50727.762_none_10b2f55f9bffb8f8.manifest" 0 `${_f}`
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc80.mfc_1fc8b3b9a1e18e3b_8.0.50727.762_none_0c178a139ee2a7ed.manifest" 0 `${_f}`
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc80.atl_1fc8b3b9a1e18e3b_8.0.50727.762_none_11ecb0ab9b2caf3c.manifest" 0 `${_f}`
+  Goto `${_t}`
+
+  lbl_winnt_2003:
+  lbl_winnt_XP:
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC80.CRT_1fc8b3b9a1e18e3b_8.0.50727.762_x-ww_6b128700.manifest" 0 `${_f}`
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC80.MFC_1fc8b3b9a1e18e3b_8.0.50727.762_x-ww_3bf8fa05.manifest" 0 `${_f}`
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC80.ATL_1fc8b3b9a1e18e3b_8.0.50727.762_x-ww_cbb27474.manifest" 0 `${_f}`
+  Goto `${_t}`
 !macroend
 !define VCRedistIsInstalled `"" VCRedistIsInstalled ""`
 
 !macro _dotNetIsInstalled _a _b _t _f
+  SetRegView 32
+
   !insertmacro _LOGICLIB_TEMP
 
   ReadRegStr $4 HKLM "Software\Microsoft\.NETFramework" "InstallRoot"
@@ -250,6 +287,7 @@
 #**********************************************************************************************************#
 # Get MP infos
 !macro MP_GET_INSTALL_DIR _var
+  SetRegView 32
 
   ${If} ${MP023IsInstalled}
     ReadRegStr ${_var} HKLM "SOFTWARE\Team MediaPortal\MediaPortal" "ApplicationDir"
@@ -262,6 +300,7 @@
 !macroend
 
 !macro TVSERVER_GET_INSTALL_DIR _var
+  SetRegView 32
 
   ${If} ${TVServerIsInstalled}
     ReadRegStr ${_var} HKLM "${TV3_REG_UNINSTALL}" "InstallPath"
@@ -302,12 +341,77 @@ LangString TEXT_MSGBOX_INSTALLATION_CANCELD       ${LANG_ENGLISH} "Installation 
 LangString TEXT_MSGBOX_MORE_INFO                  ${LANG_ENGLISH} "Do you want to get more information about it?"
 
 LangString TEXT_MSGBOX_ERROR_WIN                  ${LANG_ENGLISH} "Your operating system is not supported by $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+LangString TEXT_MSGBOX_ERROR_ADMIN                ${LANG_ENGLISH} "You need administration rights to install $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)"
 LangString TEXT_MSGBOX_ERROR_VCREDIST             ${LANG_ENGLISH} "Microsoft Visual C++ 2005 SP1 Redistributable Package (x86) is not installed.$\r$\nIt is a requirement for $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
 LangString TEXT_MSGBOX_ERROR_DOTNET               ${LANG_ENGLISH} "Microsoft .Net Framework 2 is not installed.$\r$\nIt is a requirement for $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
 
 LangString TEXT_MSGBOX_ERROR_IS_INSTALLED         ${LANG_ENGLISH} "$(^Name) is already installed. You need to uninstall it, before you continue with the installation.$\r$\nUninstall will be lunched when pressing OK."
 LangString TEXT_MSGBOX_ERROR_ON_UNINSTALL         ${LANG_ENGLISH} "An error occured while trying to uninstall old version!$\r$\nDo you still want to continue the installation?"
 LangString TEXT_MSGBOX_ERROR_REBOOT_REQUIRED      ${LANG_ENGLISH} "A reboot is required after a previous action. Reboot you system and try it again."
+
+
+
+#**********************************************************************************************************#
+#
+# logging system
+#
+#**********************************************************************************************************#
+
+!ifdef INSTALL_LOG_FILE
+Var LogFile
+!endif
+
+!define prefixERROR "[ERROR     !!!]   "
+!define prefixDEBUG "[    DEBUG    ]   "
+!define prefixINFO  "[         INFO]   "
+
+!define LOG_OPEN `!insertmacro LOG_OPEN`
+!macro LOG_OPEN
+!ifdef INSTALL_LOG_FILE
+
+#!ifdef logfile_isopen
+#  !error "log is already opened"
+#!else
+  FileOpen $LogFile "${INSTALL_LOG_FILE}" w
+  #!define logfile_isopen
+#!endif
+
+!endif
+!macroend
+
+!define LOG_CLOSE `!insertmacro LOG_CLOSE`
+!macro LOG_CLOSE
+!ifdef INSTALL_LOG_FILE
+
+#!ifdef logfile_isopen
+  FileClose $LogFile
+  #!undef logfile_isopen
+#!else
+#  !error "log is not opened yet"
+#!endif
+
+!endif
+!macroend
+
+!define LOG_TEXT `!insertmacro LOG_TEXT`
+!macro LOG_TEXT LEVEL TEXT
+!ifdef INSTALL_LOG_FILE
+
+  !if "${LEVEL}" == "DEBUG"
+    FileWrite $LogFile "${prefixDEBUG}${TEXT}$\r$\n"
+  !else if "${LEVEL}" == "ERROR"
+    FileWrite $LogFile "${prefixERROR}${TEXT}$\r$\n"
+  !else if "${LEVEL}" == "INFO"
+    FileWrite $LogFile "${prefixINFO}${TEXT}$\r$\n"
+  !else
+    !error "$\r$\n$\r$\nYou call macro LOG_TEXT with wrong LogLevel. Only 'DEBUG', 'ERROR' and 'INFO' are valid!$\r$\n$\r$\n"
+  !endif
+
+!endif
+!macroend
+
+
+
 
   /*
 ; Section flag test
@@ -373,7 +477,7 @@ Var MPdir.BurnerSupport
 
   ${xml::GotoPath} "/Config" $0
   ${If} $0 != 0
-  #  MessageBox MB_OK "error: xml::GotoPath /Config"
+    ${LOG_TEXT} "ERROR" "xml::GotoPath /Config"
     Goto error
   ${EndIf}
 
@@ -381,15 +485,14 @@ Var MPdir.BurnerSupport
 
   ${xml::FindNextElement} "Dir" $0 $1
   ${If} $1 != 0
-  #  MessageBox MB_OK "error: xml::FindNextElement >/Dir< >$0<"
+    ${LOG_TEXT} "ERROR" "xml::FindNextElement >/Dir< >$0<"
     Goto error
   ${EndIf}
-  ;MessageBox MB_OK "xml::FindNextElement$\n$$0=$0$\n$$1=$1"
 
   ${xml::ElementPath} $0
   ${xml::GetAttribute} "id" $0 $1
   ${If} $1 != 0
-  #  MessageBox MB_OK "error: xml::GetAttribute >id< >$0<"
+    ${LOG_TEXT} "ERROR" "xml::GetAttribute >id< >$0<"
     Goto error
   ${EndIf}
   ${IfThen} $0 == $R0  ${|} Goto foundDir ${|}
@@ -401,7 +504,7 @@ Var MPdir.BurnerSupport
   ${xml::ElementPath} $0
   ${xml::GotoPath} "$0/Path" $1
   ${If} $1 != 0
-  #  MessageBox MB_OK "error: xml::GotoPath >$0/Path<"
+    ${LOG_TEXT} "ERROR" "xml::GotoPath >$0/Path<"
     Goto error
   ${EndIf}
 
@@ -433,12 +536,14 @@ FunctionEnd
 #***************************
 
 !macro ReadMPdir UNINSTALL_PREFIX DIR
+  ${LOG_TEXT} "DEBUG" "macro: ReadMPdir | DIR: ${DIR}"
 
   Push "${DIR}"
   Call ${UNINSTALL_PREFIX}GET_PATH_TEXT
   Pop $0
   ${IfThen} $0 == -1 ${|} Goto error ${|}
 
+  ${LOG_TEXT} "DEBUG" "macro: ReadMPdir | text found in xml: '$0'"
   ${${UNINSTALL_PREFIX}WordReplace} "$0" "%APPDATA%" "$UserAppData" "+" $0
   ${${UNINSTALL_PREFIX}WordReplace} "$0" "%PROGRAMDATA%" "$CommonAppData" "+" $0
 
@@ -448,12 +553,12 @@ FunctionEnd
 
   ; TRIM    \    AT THE END
   StrLen $1 "$0"
-      #MessageBox MB_OK "1 $1$\r$\n2 $2$\r$\n3 $3"
+    #${DEBUG_MSG} "1 $1$\r$\n2 $2$\r$\n3 $3"
   IntOp $2 $1 - 1
-      #MessageBox MB_OK "1 $1$\r$\n2 $2$\r$\n3 $3"
+    #${DEBUG_MSG} "1 $1$\r$\n2 $2$\r$\n3 $3"
   StrCpy $3 $0 1 $2
-      #MessageBox MB_OK "1 $1$\r$\n2 $2$\r$\n3 $3"
-  
+    #${DEBUG_MSG} "1 $1$\r$\n2 $2$\r$\n3 $3"
+
   ${If} $3 == "\"
     StrCpy $MPdir.${DIR} $0 $2
   ${Else}
@@ -465,12 +570,10 @@ FunctionEnd
 #***************************
 #***************************
 
-!macro ReadConfig UNINSTALL_PREFIX
+!macro ReadConfig UNINSTALL_PREFIX PATH_TO_XML
+  ${LOG_TEXT} "DEBUG" "macro: ReadConfig | UNINSTALL_PREFIX: ${UNINSTALL_PREFIX} | PATH_TO_XML: ${PATH_TO_XML}"
 
-  #MessageBox MB_OK "${UNINSTALL_PREFIX}"
-
-  Pop $0
-  IfFileExists "$0\MediaPortalDirs.xml" 0 error
+  IfFileExists "${PATH_TO_XML}\MediaPortalDirs.xml" 0 error
 
   
   #${xml::LoadFile} "$EXEDIR\MediaPortalDirsXP.xml" $0
@@ -503,10 +606,14 @@ FunctionEnd
 
 !macroend
 Function ReadConfig
-  !insertmacro ReadConfig ""
+  Pop $0
+
+  !insertmacro ReadConfig "" "$0"
 FunctionEnd
 Function un.ReadConfig
-  !insertmacro ReadConfig "un."
+  Pop $0
+
+  !insertmacro ReadConfig "un." "$0"
 FunctionEnd
 
 #***************************
@@ -536,7 +643,7 @@ FunctionEnd
 !define ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirs ""`
 !define un.ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirs "un."`
 !macro ReadMediaPortalDirs UNINSTALL_PREFIX INSTDIR
-  #MessageBox MB_OK "${UNINSTALL_PREFIX}"
+  ${LOG_TEXT} "DEBUG" "macro ReadMediaPortalDirs"
 
   StrCpy $MPdir.Base "${INSTDIR}"
   SetShellVarContext current
@@ -552,34 +659,37 @@ FunctionEnd
   Call ${UNINSTALL_PREFIX}ReadConfig
   Pop $0
   ${If} $0 != 0   ; an error occured
-    #MessageBox MB_OK "error: read mpdirs.xml in $MyDocs\Team MediaPortal"
+    ${LOG_TEXT} "ERROR" "could not read '$MyDocs\Team MediaPortal\MediaPortalDirs.xml'"
 
     Push "$MPdir.Base"
     Call ${UNINSTALL_PREFIX}ReadConfig
     Pop $0
     ${If} $0 != 0   ; an error occured
-      #MessageBox MB_OK "error: read mpdirs.xml in $MPdir.Base"
+      ${LOG_TEXT} "ERROR" "could not read '$MPdir.Base\MediaPortalDirs.xml'"
 
+      ${LOG_TEXT} "INFO" "no MediaPortalDirs.xml read. using LoadDefaultDirs"
       !insertmacro LoadDefaultDirs
 
+    ${Else}
+      ${LOG_TEXT} "INFO" "read '$MPdir.Base\MediaPortalDirs.xml' successfully"
     ${EndIf}
 
+  ${Else}
+    ${LOG_TEXT} "INFO" "read '$MyDocs\Team MediaPortal\MediaPortalDirs.xml' successfully"
   ${EndIf}
-/*
-      MessageBox MB_ICONINFORMATION|MB_OK "Found the following Entries: \
-      $\r$\nBase:  $MPdir.Base$\r$\n \
-      $\r$\nConfig:  $MPdir.Config \
-      $\r$\nPlugins: $MPdir.Plugins \
-      $\r$\nLog: $MPdir.Log \
-      $\r$\nCustomInputDevice: $MPdir.CustomInputDevice \
-      $\r$\nCustomInputDefault: $MPdir.CustomInputDefault \
-      $\r$\nSkin: $MPdir.Skin \
-      $\r$\nLanguage: $MPdir.Language \
-      $\r$\nDatabase: $MPdir.Database \
-      $\r$\nThumbs: $MPdir.Thumbs \
-      $\r$\nWeather: $MPdir.Weather \
-      $\r$\nCache: $MPdir.Cache \
-      $\r$\nBurnerSupport: $MPdir.BurnerSupport \
-      "
-*/
+
+  ${LOG_TEXT} "INFO" "Installer will use the following directories:$\r$\n"
+  ${LOG_TEXT} "INFO" "          Base:  $MPdir.Base"
+  ${LOG_TEXT} "INFO" "          Config:  $MPdir.Config"
+  ${LOG_TEXT} "INFO" "          Plugins: $MPdir.Plugins"
+  ${LOG_TEXT} "INFO" "          Log: $MPdir.Log"
+  ${LOG_TEXT} "INFO" "          CustomInputDevice: $MPdir.CustomInputDevice"
+  ${LOG_TEXT} "INFO" "          CustomInputDefault: $MPdir.CustomInputDefault"
+  ${LOG_TEXT} "INFO" "          Skin: $MPdir.Skin"
+  ${LOG_TEXT} "INFO" "          Language: $MPdir.Language"
+  ${LOG_TEXT} "INFO" "          Database: $MPdir.Database"
+  ${LOG_TEXT} "INFO" "          Thumbs: $MPdir.Thumbs"
+  ${LOG_TEXT} "INFO" "          Weather: $MPdir.Weather"
+  ${LOG_TEXT} "INFO" "          Cache: $MPdir.Cache"
+  ${LOG_TEXT} "INFO" "          BurnerSupport: $MPdir.BurnerSupport"
 !macroend
