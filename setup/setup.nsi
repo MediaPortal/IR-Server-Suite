@@ -109,7 +109,7 @@ var TVSERVER_INSTALLED
 !insertmacro MUI_PAGE_WELCOME
 Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_LICENSE "..\Documentation\LICENSE.GPL"
-!define MUI_PAGE_CUSTOMFUNCTION_PRE ComponentsPre
+#!define MUI_PAGE_CUSTOMFUNCTION_PRE ComponentsPre
 !insertmacro MUI_PAGE_COMPONENTS
 
 ; MediaPortal install path
@@ -1084,25 +1084,47 @@ SectionEnd
 Function .onInit
   ${LOG_OPEN}
 
+
+  #!insertmacro Initialize
+
+
+  ${If} ${RunningX64}
+    SetRegView 32
+    ${EnableX64FSRedirection}
+  ${Endif}
+
   ${IfNot} ${MP023IsInstalled}
   ${AndIfNot} ${MPIsInstalled}
-    StrCpy '$MP_INSTALLED' 'FALSE'
+    #StrCpy '$MP_INSTALLED' 'FALSE'
+    !insertmacro DisableComponent "${SectionGroupMP}" " ($(TEXT_MP_NOT_INSTALLED))"
+    !insertmacro DisableComponent "${SectionMPCommon}" ""
+    !insertmacro DisableComponent "${SectionMPControlPlugin}" ""
+    !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
+    !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
   ${Else}
-    StrCpy '$MP_INSTALLED' 'TRUE'
+    #StrCpy '$MP_INSTALLED' 'TRUE'
+    !insertmacro MP_GET_INSTALL_DIR $MPdir.Base
+    ${ReadMediaPortalDirs} $MPdir.Base
   ${EndIf}
 
   ${IfNot} ${TVServerIsInstalled}
-    StrCpy '$TVSERVER_INSTALLED' 'FALSE'
+    #StrCpy '$TVSERVER_INSTALLED' 'FALSE'
+    !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
+    !insertmacro DisableComponent "${SectionTV3Common}" ""
+    !insertmacro DisableComponent "${SectionTV3BlasterPlugin}" ""
   ${Else}
-    StrCpy '$TVSERVER_INSTALLED' 'TRUE'
+    #StrCpy '$TVSERVER_INSTALLED' 'TRUE'
+    !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
   ${EndIf}
+  
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
 
-  !insertmacro Initialize
 
   ; reads components status for registry
   ${MementoSectionRestore}
-
-  Call .onSelChange
 
 FunctionEnd
 
@@ -1149,7 +1171,7 @@ Function .onSelChange
 FunctionEnd
 
 ;======================================
-
+/*
 Function ComponentsPre
 
   ${If} $MP_INSTALLED == "FALSE"
@@ -1167,7 +1189,7 @@ Function ComponentsPre
   ${Endif}
 
 FunctionEnd
-
+*/
 ;======================================
 
 Function DirectoryPreMP
@@ -1254,7 +1276,33 @@ FunctionEnd
 
 Function un.onInit
 
-  !insertmacro Initialize
+  #!insertmacro Initialize
+
+
+  ${If} ${RunningX64}
+    SetRegView 32
+    ${EnableX64FSRedirection}
+  ${Endif}
+
+  ${IfNot} ${MP023IsInstalled}
+  ${AndIfNot} ${MPIsInstalled}
+    Sleep 1
+  ${Else}
+    !insertmacro MP_GET_INSTALL_DIR $MPdir.Base
+    ${un.ReadMediaPortalDirs} $MPdir.Base
+  ${EndIf}
+
+  ${IfNot} ${TVServerIsInstalled}
+    Sleep 1
+  ${Else}
+    !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
+  ${EndIf}
+  
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
+
 
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
   Abort
