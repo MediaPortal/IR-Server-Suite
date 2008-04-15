@@ -39,6 +39,8 @@
 BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 SetCompressor /SOLID /FINAL lzma
 
+#!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
+
 ;======================================
 
 !include "x64.nsh"
@@ -1080,6 +1082,7 @@ SectionEnd
 ;======================================
 
 Function .onInit
+  ${LOG_OPEN}
 
   ${IfNot} ${MP023IsInstalled}
   ${AndIfNot} ${MPIsInstalled}
@@ -1105,6 +1108,12 @@ FunctionEnd
 
 ;======================================
 
+Function .onInstFailed
+  ${LOG_CLOSE}
+FunctionEnd
+
+;======================================
+
 Function .onInstSuccess
 
   IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StartInputService SkipStartInputService
@@ -1114,6 +1123,7 @@ StartInputService:
 
 SkipStartInputService:
 
+  ${LOG_CLOSE}
 FunctionEnd
 
 ;======================================
