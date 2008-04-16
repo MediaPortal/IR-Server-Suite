@@ -229,16 +229,16 @@ Section "-Prepare"
 
   ; Kill running Programs
   DetailPrint "Terminating processes ..."
-  ExecWait '"taskkill" /F /IM Translator.exe'
-  ExecWait '"taskkill" /F /IM TrayLauncher.exe'
-  ExecWait '"taskkill" /F /IM WebRemote.exe'
-  ExecWait '"taskkill" /F /IM VirtualRemote.exe'
-  ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
-  ExecWait '"taskkill" /F /IM IRFileTool.exe'
-  ExecWait '"taskkill" /F /IM DebugClient.exe'
-  ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
-  ExecWait '"taskkill" /F /IM MediaCenterBlaster.exe'
-  ExecWait '"taskkill" /F /IM "Input Service Configuration.exe"'
+  ${KILLPROCESS} "Translator.exe"
+  ${KILLPROCESS} "TrayLauncher.exe"
+  ${KILLPROCESS} "WebRemote.exe"
+  ${KILLPROCESS} "VirtualRemote.exe"
+  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
+  ${KILLPROCESS} "IRFileTool.exe"
+  ${KILLPROCESS} "DebugClient.exe"
+  ${KILLPROCESS} "KeyboardInputRelay.exe"
+  ${KILLPROCESS} "MediaCenterBlaster.exe"
+  ${KILLPROCESS} "Input Service Configuration.exe"
 
   IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StopInputService SkipStopInputService
 
@@ -1040,17 +1040,16 @@ Section "Uninstall"
 
   ; Kill running Programs
   DetailPrint "Terminating processes ..."
-  ExecWait '"taskkill" /F /IM Translator.exe'
-  ExecWait '"taskkill" /F /IM TrayLauncher.exe'
-  ExecWait '"taskkill" /F /IM WebRemote.exe'
-  ExecWait '"taskkill" /F /IM VirtualRemote.exe'
-  ExecWait '"taskkill" /F /IM VirtualRemoteSkinEditor.exe'
-  ExecWait '"taskkill" /F /IM IRFileTool.exe'
-  ExecWait '"taskkill" /F /IM DebugClient.exe'
-  ExecWait '"taskkill" /F /IM KeyboardInputRelay.exe'
-  ExecWait '"taskkill" /F /IM MediaCenterBlaster.exe'
-  ExecWait '"taskkill" /F /IM "Input Service Configuration.exe"'
-  Sleep 100
+  ${KILLPROCESS} "Translator.exe"
+  ${KILLPROCESS} "TrayLauncher.exe"
+  ${KILLPROCESS} "WebRemote.exe"
+  ${KILLPROCESS} "VirtualRemote.exe"
+  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
+  ${KILLPROCESS} "IRFileTool.exe"
+  ${KILLPROCESS} "DebugClient.exe"
+  ${KILLPROCESS} "KeyboardInputRelay.exe"
+  ${KILLPROCESS} "MediaCenterBlaster.exe"
+  ${KILLPROCESS} "Input Service Configuration.exe"
 
   ;First removes all optional components
   !insertmacro SectionList "RemoveSection"
