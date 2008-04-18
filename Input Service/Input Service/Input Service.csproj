@@ -108,7 +108,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Abstract Remote Maps\Imon\Imon Front Panel.xml" />
     <Content Include="Abstract Remote Maps\Imon\Imon PAD.xml" />
+    <Content Include="Abstract Remote Maps\Imon\Imon Volume Knob.xml" />
     <Content Include="Abstract Remote Maps\Imon\Microsoft MCE.xml" />
     <Content Include="Input Service.exe.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -165,7 +165,7 @@ Page custom PageReinstall PageLeaveReinstall
   !insertmacro "${MacroName}" "SectionTV3Common"
   !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
 
-  !insertmacro "${MacroName}" "SectionMCEBlaster"
+;  !insertmacro "${MacroName}" "SectionMCEBlaster"
 
   !insertmacro "${MacroName}" "SectionTranslator"
   !insertmacro "${MacroName}" "SectionTrayLauncher"
@@ -228,7 +228,7 @@ Section "-Prepare"
   SetShellVarContext all
 
   ; Kill running Programs
-  DetailPrint "Terminating processes ..."
+  DetailPrint "Attempting to terminate running processes ..."
   ${KILLPROCESS} "Translator.exe"
   ${KILLPROCESS} "TrayLauncher.exe"
   ${KILLPROCESS} "WebRemote.exe"
@@ -602,7 +602,7 @@ ${MementoSectionEnd}
 SectionGroupEnd
 
 ;======================================
-
+/*
 SectionGroup /e "Media Center add-ons" SectionGroupMCE
 
 !if ${VER_BUILD} != 0
@@ -646,7 +646,7 @@ ${MementoSectionEnd}
 ;======================================
 
 SectionGroupEnd
-
+*/
 ;======================================
 
 ${MementoSection} "Translator" SectionTranslator
@@ -1319,8 +1319,8 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupTV3}            "$(DESC_SectionGroupTV3)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMCE}            "$(DESC_SectionGroupMCE)"
-    !insertmacro MUI_DESCRIPTION_TEXT ${SectionMCEBlaster}          "$(DESC_SectionMCEBlaster)"
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMCE}            "$(DESC_SectionGroupMCE)"
+;    !insertmacro MUI_DESCRIPTION_TEXT ${SectionMCEBlaster}          "$(DESC_SectionMCEBlaster)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator}          "$(DESC_SectionTranslator)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher}        "$(DESC_SectionTrayLauncher)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote}       "$(DESC_SectionVirtualRemote)"

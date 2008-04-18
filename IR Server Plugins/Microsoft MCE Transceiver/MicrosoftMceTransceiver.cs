@@ -64,7 +64,9 @@ namespace InputService.Plugin
     }
     static void xKeyboard(string deviceName, int button, bool up)
     {
-      Console.WriteLine("Keyboard: {0}, {1}", button, up);
+      char chr = Keyboard.GetCharFromVKey((Keyboard.VKey)button);
+
+      Console.WriteLine("Keyboard: {0}, {1} - \"{2}\"", button, up, chr);
     }
     static void xMouse(string deviceName, int x, int y, int buttons)
     {
@@ -90,6 +92,8 @@ namespace InputService.Plugin
       try
       {
         device = new MicrosoftMceTransceiver();
+
+        //Keyboard.LoadLayout(Keyboard.German_DE);
 
         Console.Write("Configure device? (y/n) ");
 
@@ -1024,6 +1028,10 @@ namespace InputService.Plugin
 
     static void DisableMceServices()
     {
+      // "HKLM\SYSTEM\CurrentControlSet\Services\<service name>\Start"
+      // 2 for automatic, 3 manual , 4 disabled
+
+      
       // Vista ...
       // Stop Microsoft MCE ehRecvr, mcrdsvc and ehSched processes (if they exist)
       try
