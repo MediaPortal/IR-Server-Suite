@@ -23,8 +23,8 @@ namespace InputService
     /// </summary>
     public InputServiceInstaller()
     {
-      //this.Committing += new InstallEventHandler(InputServiceInstaller_Committing);
-      this.AfterInstall += new InstallEventHandler(InputServiceInstaller_AfterInstall);
+      this.Committing += new InstallEventHandler(InputServiceInstaller_Committing);
+      //this.AfterInstall += new InstallEventHandler(InputServiceInstaller_AfterInstall);
 
       ServiceProcessInstaller serviceProcessInstaller = new ServiceProcessInstaller();
       ServiceInstaller serviceInstaller = new ServiceInstaller();
@@ -49,23 +49,20 @@ namespace InputService
     /// </summary>
     void InputServiceInstaller_AfterInstall(object sender, InstallEventArgs e)
     {
-
-      // TODO: Set the restart options.
-
-
+      // TODO: Set the restart options here.
+      
       // Start the service ...
       //using (ServiceController serviceController = new ServiceController(Program.ServiceName))
         //serviceController.Start();
     }
 
-    /*
     /// <summary>
     /// Used to set the "Allow service to interact with the desktop" setting.
     /// </summary>
     void InputServiceInstaller_Committing(object sender, InstallEventArgs e)
     {
-      ManagementBaseObject InParam  = null;
-      ManagementBaseObject OutParam = null;
+      ManagementBaseObject inParam  = null;
+      ManagementBaseObject outParam = null;
 
       try
       {
@@ -79,9 +76,9 @@ namespace InputService
 
         using (ManagementObject wmiService = new ManagementObject(path))
         {
-          InParam = wmiService.GetMethodParameters("Change");
-          InParam["DesktopInteract"] = true;
-          OutParam = wmiService.InvokeMethod("Change", InParam, null);
+          inParam = wmiService.GetMethodParameters("Change");
+          inParam["DesktopInteract"] = true;
+          outParam = wmiService.InvokeMethod("Change", inParam, null);
         }
       }
       catch
@@ -90,14 +87,14 @@ namespace InputService
       }
       finally
       {
-        if (InParam != null)
-          InParam.Dispose();
+        if (inParam != null)
+          inParam.Dispose();
         
-        if (OutParam != null)
-          OutParam.Dispose();
+        if (outParam != null)
+          outParam.Dispose();
       }
     }
-    */
+
   }
 
 }
