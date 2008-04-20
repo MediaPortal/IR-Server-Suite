@@ -39,7 +39,7 @@
 BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 SetCompressor /SOLID /FINAL lzma
 
-#!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
+!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
 
 ;======================================
 
@@ -184,12 +184,14 @@ Page custom PageReinstall PageLeaveReinstall
 
   ${If} ${RunningX64}
     SetRegView 64
+    ${DisableX64FSRedirection}
   ${Endif}
 
   ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
   ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
   ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
 
+  /*
   ${If} ${RunningX64}
     SetRegView 32
     ${EnableX64FSRedirection}
@@ -209,6 +211,7 @@ Page custom PageReinstall PageLeaveReinstall
     SetRegView 64
     ${DisableX64FSRedirection}
   ${Endif}
+  */
 
   ; Get IR Server Suite installation directory ...
   ${If} $DIR_INSTALL == ""
@@ -409,14 +412,14 @@ Section "-commonMP" SectionMPCommon
   SetShellVarContext all
 
   ; Write plugin dll
-  SetOutPath "$DIR_MEDIAPORTAL\Plugins\Process"
+  SetOutPath "$MPdir.Plugins\Process"
   SetOverwrite ifnewer
   File "..\Common\MPUtils\bin\${BuildType}\MPUtils.dll"
   File "..\Common\IrssComms\bin\${BuildType}\IrssComms.dll"
   File "..\Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
 
   ; Write plugin dll
-  SetOutPath "$DIR_MEDIAPORTAL\Plugins\Windows"
+  SetOutPath "$MPdir.Plugins\Windows"
   SetOverwrite ifnewer
   File "..\Common\MPUtils\bin\${BuildType}\MPUtils.dll"
   File "..\Common\IrssComms\bin\${BuildType}\IrssComms.dll"
@@ -426,12 +429,12 @@ SectionEnd
   DetailPrint "Attempting to remove common files for MediaPortal plugins ..."
 
   ; remove files
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\MPUtils.dll"
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\IrssComms.dll"
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\IrssUtils.dll"
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\MPUtils.dll"
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\IrssComms.dll"
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\IrssUtils.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\MPUtils.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\IrssComms.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\IrssUtils.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Windows\MPUtils.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Windows\IrssComms.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Windows\IrssUtils.dll"
 !macroend
 
 ;======================================
@@ -444,12 +447,12 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   SetShellVarContext all
 
   ; Write plugin dll
-  SetOutPath "$DIR_MEDIAPORTAL\Plugins\Process"
+  SetOutPath "$MPdir.Plugins\Process"
   SetOverwrite ifnewer
   File "..\MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPControlPlugin.dll"
 
   ; Write input mapping
-  SetOutPath "$DIR_MEDIAPORTAL\InputDeviceMappings\defaults"
+  SetOutPath "$MPdir.CustomInputDefault"
   SetOverwrite ifnewer
   File "..\MediaPortal Plugins\MP Control Plugin\InputMapping\MPControlPlugin.xml"
 
@@ -466,7 +469,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMPControlPlugin}
   DetailPrint "Attempting to remove MediaPortal Control Plugin ..."
 
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\MPControlPlugin.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\MPControlPlugin.dll"
 !macroend
 
 ;======================================
@@ -483,7 +486,7 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   SetShellVarContext all
 
   ; Write plugin dll
-  SetOutPath "$DIR_MEDIAPORTAL\Plugins\Windows"
+  SetOutPath "$MPdir.Plugins\Windows"
   SetOverwrite ifnewer
   File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPBlastZonePlugin.dll"
 
@@ -494,11 +497,11 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   File "..\MediaPortal Plugins\MP Blast Zone Plugin\AppData\Menu.xml"
 
   ; Write skin files
-  SetOutPath "$DIR_MEDIAPORTAL\Skin\BlueTwo"
+  SetOutPath "$MPdir.Skin\BlueTwo"
   SetOverwrite on
   File /r /x .svn "..\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
-  SetOutPath "$DIR_MEDIAPORTAL\Skin\BlueTwo wide"
+  SetOutPath "$MPdir.Skin\BlueTwo wide"
   SetOverwrite on
   File /r /x .svn "..\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
@@ -509,7 +512,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMPBlastZonePlugin}
   DetailPrint "Attempting to remove MediaPortal Blast Zone Plugin ..."
 
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Windows\MPBlastZonePlugin.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Windows\MPBlastZonePlugin.dll"
 !macroend
 
 ;======================================
@@ -526,7 +529,7 @@ ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
   SetShellVarContext all
 
   ; Write plugin dll
-  SetOutPath "$DIR_MEDIAPORTAL\Plugins\Process"
+  SetOutPath "$MPdir.Plugins\Process"
   SetOverwrite ifnewer
   File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\TV2BlasterPlugin.dll"
 
@@ -538,7 +541,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionTV2BlasterPlugin}
   DetailPrint "Attempting to remove MediaPortal TV2 Plugin ..."
 
-  Delete /REBOOTOK "$DIR_MEDIAPORTAL\Plugins\Process\TV2BlasterPlugin.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\TV2BlasterPlugin.dll"
 !macroend
 
 ;======================================
@@ -1083,9 +1086,7 @@ SectionEnd
 Function .onInit
   ${LOG_OPEN}
 
-
-  #!insertmacro Initialize
-
+  !insertmacro Initialize
 
   ${If} ${RunningX64}
     SetRegView 32
@@ -1275,8 +1276,7 @@ FunctionEnd
 
 Function un.onInit
 
-  #!insertmacro Initialize
-
+  !insertmacro Initialize
 
   ${If} ${RunningX64}
     SetRegView 32
