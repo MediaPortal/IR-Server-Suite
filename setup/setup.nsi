@@ -1088,6 +1088,12 @@ Function .onInit
 
   !insertmacro Initialize
 
+  ; first read the old installation status
+  ${MementoSectionRestore}
+
+  ; now check which applications are installed
+  ; if app is not found, disable the related plugins
+  ; so if a plugin was installed before, but the application is not found now, it is disabled now
   ${If} ${RunningX64}
     SetRegView 32
     ${EnableX64FSRedirection}
@@ -1122,9 +1128,8 @@ Function .onInit
     ${DisableX64FSRedirection}
   ${Endif}
 
-
-  ; reads components status for registry
-  ${MementoSectionRestore}
+  ; after components were preSelected, we need to update the common components if their plugins are not installed
+  Call .onSelChange
 
 FunctionEnd
 
