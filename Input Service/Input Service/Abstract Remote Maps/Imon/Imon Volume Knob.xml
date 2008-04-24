@@ -1,5 +1,0 @@
-<?xml version="1.0" standalone="yes"?>
-<DocumentElement>
-  <RemoteTable RawCode="4001" AbstractButton="VolumeUp" />
-  <RemoteTable RawCode="4002" AbstractButton="VolumeDown" />
-</DocumentElement>
