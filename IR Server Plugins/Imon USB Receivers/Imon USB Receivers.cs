@@ -1027,7 +1027,7 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name { get { return "iMon USB Receivers"; } }
+    public override string Name { get { return "iMon"; } }
 
     /// <summary>
     /// IR Server plugin version.
