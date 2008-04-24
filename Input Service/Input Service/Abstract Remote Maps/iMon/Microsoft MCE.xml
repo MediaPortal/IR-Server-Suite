@@ -53,6 +53,5 @@
   <RemoteTable RawCode="2078" AbstractButton="Print" />
   <RemoteTable RawCode="2072" AbstractButton="RecordedTV" />
   <RemoteTable RawCode="2039" AbstractButton="AspectRatio" />
-  <RemoteTable RawCode="2078" AbstractButton="Print" />
   <RemoteTable RawCode="2105" AbstractButton="Messenger" />
 </DocumentElement>
