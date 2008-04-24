@@ -244,6 +244,7 @@ namespace InputService.Plugin
     int _keyboardFirstRepeat      = 350;
     int _keyboardHeldRepeats      = 0;
     bool _handleKeyboardLocally   = true;
+    bool _useQwertzLayout         = false;
 
     bool _enableMouseInput        = false;
     bool _handleMouseLocally      = true;
@@ -444,6 +445,7 @@ namespace InputService.Plugin
       config.KeyboardRepeatDelay  = _keyboardFirstRepeat;
       config.KeyboardHeldDelay    = _keyboardHeldRepeats;
       config.HandleKeyboardLocal  = _handleKeyboardLocally;
+      config.UseQwertzLayout      = _useQwertzLayout;
 
       config.EnableMouse          = _enableMouseInput;
       config.HandleMouseLocal     = _handleMouseLocally;
@@ -575,6 +577,7 @@ namespace InputService.Plugin
       try   { _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value); } catch {}
       try   { _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value); } catch {}
       try   { _handleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value); } catch {}
+      try   { _useQwertzLayout = bool.Parse(doc.DocumentElement.Attributes["UseQwertzLayout"].Value); } catch {}
 
       try   { _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value); } catch {}
       try   { _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); } catch {}
@@ -606,6 +609,7 @@ namespace InputService.Plugin
           writer.WriteAttributeString("KeyboardFirstRepeat", _keyboardFirstRepeat.ToString());
           writer.WriteAttributeString("KeyboardHeldRepeats", _keyboardHeldRepeats.ToString());
           writer.WriteAttributeString("HandleKeyboardLocally", _handleKeyboardLocally.ToString());
+          writer.WriteAttributeString("UseQwertzLayout", _useQwertzLayout.ToString());
 
           writer.WriteAttributeString("EnableMouseInput", _enableMouseInput.ToString());
           writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
@@ -1089,7 +1093,7 @@ namespace InputService.Plugin
     }
 
     // TODO: Convert this function to a lookup from an XML file, then provide multiple files and a way to fine-tune...
-    static Keyboard.VKey ConvertMceKeyCodeToVKey(uint keyCode)
+    Keyboard.VKey ConvertMceKeyCodeToVKey(uint keyCode)
     {
       switch (keyCode)
       {
@@ -1117,8 +1121,8 @@ namespace InputService.Plugin
         case 0x19: return Keyboard.VKey.VK_V;
         case 0x1A: return Keyboard.VKey.VK_W;
         case 0x1B: return Keyboard.VKey.VK_X;
-        case 0x1C: return Keyboard.VKey.VK_Y;
-        case 0x1D: return Keyboard.VKey.VK_Z;
+        case 0x1C: return _useQwertzLayout ? Keyboard.VKey.VK_Z : Keyboard.VKey.VK_Y;
+        case 0x1D: return _useQwertzLayout ? Keyboard.VKey.VK_Y : Keyboard.VKey.VK_Z;
         case 0x1E: return Keyboard.VKey.VK_1;
         case 0x1F: return Keyboard.VKey.VK_2;
         case 0x20: return Keyboard.VKey.VK_3;
@@ -1180,7 +1184,7 @@ namespace InputService.Plugin
       }
     }
 
-    static void KeyUp(uint keyCode, uint modifiers)
+    void KeyUp(uint keyCode, uint modifiers)
     {
       if (keyCode != 0)
       {
@@ -1209,7 +1213,7 @@ namespace InputService.Plugin
           Keyboard.KeyUp(Keyboard.VKey.VK_RWIN);
       }
     }
-    static void KeyDown(uint keyCode, uint modifiers)
+    void KeyDown(uint keyCode, uint modifiers)
     {
       if (modifiers != 0)
       {

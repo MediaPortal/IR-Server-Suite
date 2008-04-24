@@ -73,7 +73,6 @@ namespace MediaPortal.Plugins
       comboBoxCommands.Items.Add(Common.UITextEject);
       comboBoxCommands.Items.Add(Common.UITextPopup);
       comboBoxCommands.Items.Add(Common.UITextGotoScreen);
-      comboBoxCommands.Items.Add(Common.UITextInputLayer);
       //comboBoxCommands.Items.Add(Common.UITextWindowState);
       comboBoxCommands.Items.Add(Common.UITextFocus);
       comboBoxCommands.Items.Add(Common.UITextExit);
@@ -224,10 +223,6 @@ namespace MediaPortal.Plugins
           GoToScreen goToScreen = new GoToScreen();
           if (goToScreen.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
-        }
-        else if (selected.Equals(Common.UITextInputLayer, StringComparison.OrdinalIgnoreCase))
-        {
-          newCommand = Common.CmdPrefixInputLayer;
         }
         /*
         else if (selected.Equals(Common.UITextWindowState, StringComparison.OrdinalIgnoreCase))

@@ -76,6 +76,11 @@ namespace InputService.Plugin
       get { return checkBoxHandleKeyboardLocal.Checked; }
       set { checkBoxHandleKeyboardLocal.Checked = value; }
     }
+    public bool UseQwertzLayout
+    {
+      get { return checkBoxKeyboardQwertz.Checked; }
+      set { checkBoxKeyboardQwertz.Checked = value; }
+    }
 
     public bool EnableMouse
     {

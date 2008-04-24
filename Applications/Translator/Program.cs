@@ -186,7 +186,7 @@ namespace Translator
       _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Connecting ...";
       _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
-      _notifyIcon.Visible = false;
+      _notifyIcon.Visible = !_config.HideTrayIcon;
 
       // Setup the main form ...
       _mainForm = new MainForm();
@@ -222,8 +222,6 @@ namespace Translator
         {
           IrssLog.Error("Error enabling CopyData messages: {0}", ex.ToString());
         }
-
-        _notifyIcon.Visible = !_config.HideTrayIcon;
 
         Application.Run();
 

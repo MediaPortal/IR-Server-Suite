@@ -1359,6 +1359,27 @@ namespace MediaPortal.Plugins
           else
             MPCommon.ProcessSendMediaPortalMessage(commands);
         }
+        else if (command.StartsWith(Common.CmdPrefixInputLayer, StringComparison.OrdinalIgnoreCase))
+        {
+          if (_inConfiguration)
+          {
+            MessageBox.Show("Cannot toggle the input handler layer while in configuration", Common.UITextInputLayer, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
+          else
+          {
+            InputHandler inputHandler;
+
+            if (_multiMappingEnabled)
+              inputHandler = _multiInputHandlers[_multiMappingSet];
+            else
+              inputHandler = _defaultInputHandler;
+
+            if (inputHandler.CurrentLayer == 1)
+              inputHandler.CurrentLayer = 2;
+            else
+              inputHandler.CurrentLayer = 1;
+          }
+        }
         else if (command.StartsWith(Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
