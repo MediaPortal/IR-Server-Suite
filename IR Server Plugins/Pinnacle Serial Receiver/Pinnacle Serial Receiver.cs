@@ -15,16 +15,16 @@ namespace InputService.Plugin
 {
 
   /// <summary>
-  /// IR Server Plugin for IRMan Receiver device.
+  /// IR Server Plugin for Pinnacle Serial Receiver device.
   /// </summary>
-  public class IRManReceiver : PluginBase, IConfigure, IRemoteReceiver
+  public class PinnacleSerialReceiver : PluginBase, IConfigure, IRemoteReceiver
   {
 
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "IRMan Receiver.xml");
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Pinnacle Serial Receiver.xml");
 
-    const int DeviceBufferSize = 6;
+    const int DeviceBufferSize = 3;
 
     #endregion Constants
 
@@ -51,7 +51,7 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "IRMan"; } }
+    public override string Name         { get { return "Pinnacle Serial"; } }
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
@@ -66,7 +66,7 @@ namespace InputService.Plugin
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Receiver support for the Serial IRMan device"; } }
+    public override string Description  { get { return "Receiver support for the Pinnacle Serial device"; } }
     /// <summary>
     /// Gets the plugin icon.
     /// </summary>
@@ -82,9 +82,9 @@ namespace InputService.Plugin
 
       _deviceBuffer = new byte[DeviceBufferSize];
 
-      _serialPort                 = new SerialPort(_serialPortName, 9600, Parity.None, 8, StopBits.One);
+      _serialPort                 = new SerialPort(_serialPortName, 1200, Parity.None, 8, StopBits.One);
       _serialPort.Handshake       = Handshake.None;
-      _serialPort.DtrEnable       = true;
+      _serialPort.DtrEnable       = false;
       _serialPort.RtsEnable       = true;
       _serialPort.ReadBufferSize  = DeviceBufferSize;
       _serialPort.ReadTimeout     = 1000;
@@ -93,22 +93,8 @@ namespace InputService.Plugin
       Thread.Sleep(100);
       _serialPort.DiscardInBuffer();
 
-      _serialPort.Write("I");
-      Thread.Sleep(100);
-      _serialPort.Write("R");
-      Thread.Sleep(100);
-
-      _serialPort.Read(_deviceBuffer, 0, 2);
-
-      if (_deviceBuffer[0] == 'O' && _deviceBuffer[1] == 'K')
-      {
-        _serialPort.ReceivedBytesThreshold = DeviceBufferSize;
-        _serialPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
-      }
-      else
-      {
-        throw new IOException("Failed to initialize device");
-      }
+      _serialPort.ReceivedBytesThreshold = DeviceBufferSize;
+      _serialPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
     }
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.

@@ -39,6 +39,5 @@
   <RemoteTable RawCode="1040" AbstractButton="TV" />
   <RemoteTable RawCode="1106" AbstractButton="AspectRatio" />
   <RemoteTable RawCode="1114" AbstractButton="Eject" />
-  <RemoteTable RawCode="1002" AbstractButton="Close" />
   <RemoteTable RawCode="1166" AbstractButton="Fullscreen" />
 </DocumentElement>

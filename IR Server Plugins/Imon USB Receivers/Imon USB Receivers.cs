@@ -921,12 +921,15 @@ namespace InputService.Plugin
 
       IntPtr deviceBufferPtr = IntPtr.Zero;
 
-      try
+      switch (mode)
       {
-        switch (mode)
+
+        #region iMon
+        case RcMode.iMon:
         {
-          case RcMode.iMon:
-            foreach (byte[] send in SetModeiMon)
+          foreach (byte[] send in SetModeiMon)
+          {
+            try
             {
               deviceBufferPtr = Marshal.AllocHGlobal(send.Length);
 
@@ -934,37 +937,61 @@ namespace InputService.Plugin
               IoControl(IOCTL_IMON_WRITE, deviceBufferPtr, send.Length, IntPtr.Zero, 0, out bytesRead);
 
               Marshal.FreeHGlobal(deviceBufferPtr);
+              deviceBufferPtr = IntPtr.Zero;
             }
-            break;
-
-          case RcMode.Mce:
-            foreach (byte[] send in SetModeMCE)
-            {
-              deviceBufferPtr = Marshal.AllocHGlobal(send.Length);
-
-              Marshal.Copy(send, 0, deviceBufferPtr, send.Length);
-              IoControl(IOCTL_IMON_WRITE, deviceBufferPtr, send.Length, IntPtr.Zero, 0, out bytesRead);
-
-              Marshal.FreeHGlobal(deviceBufferPtr);
-            }
-            break;
-        }
-      }
 #if DEBUG
-      catch (Exception ex)
-      {
-        DebugWriteLine(ex.ToString());
+            catch (Exception ex)
+            {
+              DebugWriteLine(ex.ToString());
 #else
-      catch
-      {
+            catch
+            {
 #endif
-        if (_deviceHandle != null)
-          CancelIo(_deviceHandle);
-      }
-      finally
-      {
-        if (deviceBufferPtr != IntPtr.Zero)
-          Marshal.FreeHGlobal(deviceBufferPtr);
+              if (_deviceHandle != null)
+                CancelIo(_deviceHandle);
+
+              if (deviceBufferPtr != IntPtr.Zero)
+                Marshal.FreeHGlobal(deviceBufferPtr);
+            }
+          }
+          break;
+        }
+        #endregion iMon
+
+        #region Mce
+        case RcMode.Mce:
+        {
+          foreach (byte[] send in SetModeMCE)
+          {
+            try
+            {
+              deviceBufferPtr = Marshal.AllocHGlobal(send.Length);
+
+              Marshal.Copy(send, 0, deviceBufferPtr, send.Length);
+              IoControl(IOCTL_IMON_WRITE, deviceBufferPtr, send.Length, IntPtr.Zero, 0, out bytesRead);
+
+              Marshal.FreeHGlobal(deviceBufferPtr);
+              deviceBufferPtr = IntPtr.Zero;
+            }
+#if DEBUG
+            catch (Exception ex)
+            {
+              DebugWriteLine(ex.ToString());
+#else
+            catch
+            {
+#endif
+              if (_deviceHandle != null)
+                CancelIo(_deviceHandle);
+
+              if (deviceBufferPtr != IntPtr.Zero)
+                Marshal.FreeHGlobal(deviceBufferPtr);
+            }
+          }
+          break;
+        }
+        #endregion Mce
+
       }
     }
 

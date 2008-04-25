@@ -352,6 +352,7 @@ SkipUninstallInputService:
   File "..\IR Server Plugins\LiveDrive Receiver\bin\${BuildType}\LiveDrive Receiver.*"
   File "..\IR Server Plugins\MacMini Receiver\bin\${BuildType}\MacMini Receiver.*"
   File "..\IR Server Plugins\Microsoft MCE Transceiver\bin\${BuildType}\Microsoft MCE Transceiver.*"
+  File "..\IR Server Plugins\Pinnacle Serial Receiver\bin\${BuildType}\Pinnacle Serial Receiver.*"
   ;File "..\IR Server Plugins\RC102 Receiver\bin\${BuildType}\RC102 Receiver.*"
   File "..\IR Server Plugins\RedEye Blaster\bin\${BuildType}\RedEye Blaster.*"
   File "..\IR Server Plugins\Serial IR Blaster\bin\${BuildType}\Serial IR Blaster.*"

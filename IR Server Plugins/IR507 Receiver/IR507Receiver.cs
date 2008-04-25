@@ -314,7 +314,6 @@ namespace InputService.Plugin
       {
         Marshal.FreeHGlobal(buffer);
       }
-
     }
 
     static string FindDevice(Guid classGuid)
