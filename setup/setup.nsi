@@ -18,6 +18,7 @@
 !define REG_UNINSTALL         "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define MEMENTO_REGISTRY_ROOT HKLM
 !define MEMENTO_REGISTRY_KEY  "${REG_UNINSTALL}"
+!define COMMON_APPDATA        "$APPDATA\${PRODUCT_NAME}"
 
 ; VER_BUILD is set to zero for Release builds
 !define VER_MAJOR       1
@@ -39,7 +40,13 @@
 BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 SetCompressor /SOLID /FINAL lzma
 
-!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
+; enable logging
+!define INSTALL_LOG
+
+; to use default path to logfile, COMMON_APPDATA has to be defined
+; default logfile is: "${COMMON_APPDATA}\log\install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}.log"
+; if you want to set custom path to logfile, uncomment the following line
+#!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
 
 ;======================================
 
@@ -70,12 +77,12 @@ ShowUninstDetails show
 CRCCheck On
 
 ; Variables
-var DIR_INSTALL
-var DIR_MEDIAPORTAL
-var DIR_TVSERVER
+Var DIR_INSTALL
+Var DIR_MEDIAPORTAL
+Var DIR_TVSERVER
 
-var MP_INSTALLED
-var TVSERVER_INSTALLED
+Var MP_INSTALLED
+Var TVSERVER_INSTALLED
 
 #---------------------------------------------------------------------------
 # INSTALLER INTERFACE settings
