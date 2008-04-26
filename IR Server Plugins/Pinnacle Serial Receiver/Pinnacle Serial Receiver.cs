@@ -1,3 +1,5 @@
+//#define TEST_APPLICATION
+
 using System;
 using System.Collections.Generic;
 #if TRACE
@@ -20,11 +22,87 @@ namespace InputService.Plugin
   public class PinnacleSerialReceiver : PluginBase, IConfigure, IRemoteReceiver
   {
 
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
+
+    static PinnacleSerialReceiver device;
+
+    static void xRemote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+
+    static void Dump(int[] timingData)
+    {
+      foreach (int time in timingData)
+        Console.Write("{0}, ", time);
+      Console.WriteLine();
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      Console.WriteLine("PinnacleSerialReceiver Test App");
+      Console.WriteLine("====================================");
+      Console.WriteLine();
+
+      try
+      {
+        device = new PinnacleSerialReceiver();
+
+        //Keyboard.LoadLayout(Keyboard.German_DE);
+
+        Console.Write("Configure device? (y/n) ");
+
+        if (Console.ReadKey().Key == ConsoleKey.Y)
+        {
+          Console.WriteLine();
+
+          Console.WriteLine("Configuring ...");
+          device.Configure(null);
+        }
+        else
+        {
+          Console.WriteLine();
+        }
+
+        device.RemoteCallback += new RemoteHandler(xRemote);
+        //device.KeyboardCallback += new KeyboardHandler(xKeyboard);
+        //device.MouseCallback += new MouseHandler(xMouse);
+
+        Console.WriteLine("Starting device access ...");
+
+        device.Start();
+
+        Console.WriteLine("Press a button on your remote ...");
+
+        Application.Run();
+
+        device.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("Error:");
+        Console.WriteLine(ex.ToString());
+        Console.WriteLine();
+        Console.WriteLine("");
+
+        Console.ReadKey();
+      }
+      finally
+      {
+        device = null;
+      }
+    }
+
+#endif
+
+
     #region Constants
 
     static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Pinnacle Serial Receiver.xml");
 
-    const int DeviceBufferSize = 3;
+    const int DeviceBufferSize = 255; // 3;
 
     #endregion Constants
 
@@ -86,14 +164,14 @@ namespace InputService.Plugin
       _serialPort.Handshake       = Handshake.None;
       _serialPort.DtrEnable       = false;
       _serialPort.RtsEnable       = true;
-      _serialPort.ReadBufferSize  = DeviceBufferSize;
-      _serialPort.ReadTimeout     = 1000;
+      //_serialPort.ReadBufferSize  = DeviceBufferSize;
+      //_serialPort.ReadTimeout     = 1000;
 
       _serialPort.Open();
       Thread.Sleep(100);
       _serialPort.DiscardInBuffer();
 
-      _serialPort.ReceivedBytesThreshold = DeviceBufferSize;
+      //_serialPort.ReceivedBytesThreshold = DeviceBufferSize;
       _serialPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
     }
     /// <summary>
@@ -178,15 +256,32 @@ namespace InputService.Plugin
     {
       try
       {
-        _serialPort.Read(_deviceBuffer, 0, DeviceBufferSize);
+        int bytes = _serialPort.BytesToRead;
+        if (bytes == 0)
+          return;
+
+        _serialPort.Read(_deviceBuffer, 0, bytes);
 
         TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
 
-        StringBuilder keyCode = new StringBuilder(2 * DeviceBufferSize);
-        for (int index = 0; index < DeviceBufferSize; index++)
-          keyCode.Append(_deviceBuffer[index].ToString("X2"));
+        string thisCode = String.Empty;
 
-        string thisCode = keyCode.ToString();
+        if (bytes == 3)
+        {
+          int code = _deviceBuffer[2] & 0x3F;
+          thisCode = code.ToString();
+        }
+        else
+        {
+          StringBuilder keyCode = new StringBuilder(2 * bytes);
+          for (int index = 0; index < bytes; index++)
+            keyCode.Append(_deviceBuffer[index].ToString("X2"));
+        
+          thisCode = keyCode.ToString();
+        }
+
+        if (String.IsNullOrEmpty(thisCode))
+          return;
 
         if (thisCode.Equals(_lastCode, StringComparison.Ordinal)) // Repeated button
         {
@@ -259,7 +354,7 @@ namespace InputService.Plugin
       {
 #endif
 
-        _repeatDelay    = 500;
+        _repeatDelay    = 400;
         _serialPortName = "COM1";
       }
     }

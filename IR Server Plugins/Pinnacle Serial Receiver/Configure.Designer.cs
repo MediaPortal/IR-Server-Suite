@@ -118,6 +118,7 @@ namespace InputService.Plugin
       this.comboBoxPort.Name = "comboBoxPort";
       this.comboBoxPort.Size = new System.Drawing.Size(88, 21);
       this.comboBoxPort.TabIndex = 3;
+      this.toolTips.SetToolTip(this.comboBoxPort, "Select the serial port the device is attached to");
       // 
       // Configure
       // 
@@ -125,7 +126,7 @@ namespace InputService.Plugin
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(224, 104);
+      this.ClientSize = new System.Drawing.Size(226, 106);
       this.Controls.Add(this.labelButtonRepeatDelay);
       this.Controls.Add(this.comboBoxPort);
       this.Controls.Add(this.numericUpDownButtonRepeatDelay);
@@ -140,7 +141,7 @@ namespace InputService.Plugin
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-      this.Text = "IRMan Receiver Configuration";
+      this.Text = "Pinnacle Configuration";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).EndInit();
       this.ResumeLayout(false);
 

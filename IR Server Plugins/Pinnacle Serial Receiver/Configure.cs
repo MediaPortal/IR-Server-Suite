@@ -44,7 +44,7 @@ namespace InputService.Plugin
       _ports = SerialPort.GetPortNames();
       if (_ports == null || _ports.Length == 0)
       {
-        MessageBox.Show(this, "No available serial ports found!", "IRMan Receiver", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "No available serial ports found!", "Pinnacle Serial Receiver", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
 
