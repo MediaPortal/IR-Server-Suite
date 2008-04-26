@@ -93,8 +93,9 @@ namespace MediaPortal.Plugins
         if (!eventType.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxEvents.Items.Add(eventType);
 
-      comboBoxEvents.Items.Add("Enter screen");
-      comboBoxEvents.Items.Add("Exit screen");
+      // TODO: Add Enter/Exit screen events.
+      //comboBoxEvents.Items.Add("Enter screen");
+      //comboBoxEvents.Items.Add("Exit screen");
 
       comboBoxParameter.Items.Clear();
       comboBoxParameter.Items.Add("Ignore Parameters");
@@ -148,7 +149,11 @@ namespace MediaPortal.Plugins
         int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
         string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
 
-        this.Invoke(_addNode, new Object[] { String.Format("{0} ({1])", deviceName, keyCode) });
+        // TODO: Activate this code for 1.4.3
+        //if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
+          this.Invoke(_addNode, new Object[] { keyCode });
+        //else
+        //  this.Invoke(_addNode, new Object[] { String.Format("{0} ({1})", deviceName, keyCode) });
       }
       else if (_learnIR != null && received.Type == MessageType.LearnIR)
       {
