@@ -1151,8 +1151,13 @@ Function DirectoryPreMP
 FunctionEnd
 
 Function DirectoryLeaveMP
-  ; you can add directory verfication here
-
+  /*
+  ; verify if the dir is valid
+  ${IfNot} ${FileExists} "$DIR_MEDIAPORTAL\MediaPortal.exe"
+    MessageBox MB_OK|MB_ICONEXCLAMATION "MediaPortal is not found in this directory. Please specify the correct path to MediaPortal."
+    Abort
+  ${EndIf}
+  */
 
   ; refresh MP subdirs, if it user has changed the path again
   ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
@@ -1167,9 +1172,13 @@ Function DirectoryPreTV
 FunctionEnd
 
 Function DirectoryLeaveTV
-  ; you can add directory verfication here
-
-
+  /*
+  ; verify if the dir is valid
+  ${IfNot} ${FileExists} "$DIR_MEDIAPORTAL\MediaPortal.exe"
+    MessageBox MB_OK|MB_ICONEXCLAMATION "MediaPortal is not found in this directory. Please specify the correct path to MediaPortal."
+    Abort
+  ${EndIf}
+  */
 FunctionEnd
 
 ;======================================
