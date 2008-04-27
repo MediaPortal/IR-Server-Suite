@@ -113,7 +113,6 @@ Var DIR_TVSERVER
 !insertmacro MUI_PAGE_WELCOME
 Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_LICENSE "..\Documentation\LICENSE.GPL"
-!define MUI_PAGE_CUSTOMFUNCTION_PRE ComponentsPre
 !insertmacro MUI_PAGE_COMPONENTS
 
 ; MediaPortal install path
