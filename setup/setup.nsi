@@ -81,9 +81,6 @@ Var DIR_INSTALL
 Var DIR_MEDIAPORTAL
 Var DIR_TVSERVER
 
-Var MP_INSTALLED
-Var TVSERVER_INSTALLED
-
 #---------------------------------------------------------------------------
 # INSTALLER INTERFACE settings
 #---------------------------------------------------------------------------
@@ -116,7 +113,7 @@ Var TVSERVER_INSTALLED
 !insertmacro MUI_PAGE_WELCOME
 Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_LICENSE "..\Documentation\LICENSE.GPL"
-#!define MUI_PAGE_CUSTOMFUNCTION_PRE ComponentsPre
+!define MUI_PAGE_CUSTOMFUNCTION_PRE ComponentsPre
 !insertmacro MUI_PAGE_COMPONENTS
 
 ; MediaPortal install path
@@ -126,6 +123,7 @@ Page custom PageReinstall PageLeaveReinstall
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "MediaPortal Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_MEDIAPORTAL"
 !define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreMP
+!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveMP
 !insertmacro MUI_PAGE_DIRECTORY
 
 ; TV Server install path
@@ -135,6 +133,7 @@ Page custom PageReinstall PageLeaveReinstall
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "TV Server Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_TVSERVER"
 !define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreTV
+!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveTV
 !insertmacro MUI_PAGE_DIRECTORY
 
 ; Main app install path
@@ -198,7 +197,6 @@ Page custom PageReinstall PageLeaveReinstall
   ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
   ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
 
-  /*
   ${If} ${RunningX64}
     SetRegView 32
     ${EnableX64FSRedirection}
@@ -218,7 +216,6 @@ Page custom PageReinstall PageLeaveReinstall
     SetRegView 64
     ${DisableX64FSRedirection}
   ${Endif}
-  */
 
   ; Get IR Server Suite installation directory ...
   ${If} $DIR_INSTALL == ""
@@ -1096,48 +1093,10 @@ Function .onInit
   ${LOG_OPEN}
 
   !insertmacro Initialize
+  ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
 
   ; first read the old installation status
   ${MementoSectionRestore}
-
-  ; now check which applications are installed
-  ; if app is not found, disable the related plugins
-  ; so if a plugin was installed before, but the application is not found now, it is disabled now
-  ${If} ${RunningX64}
-    SetRegView 32
-    ${EnableX64FSRedirection}
-  ${Endif}
-
-  ${IfNot} ${MP023IsInstalled}
-  ${AndIfNot} ${MPIsInstalled}
-    #StrCpy '$MP_INSTALLED' 'FALSE'
-    !insertmacro DisableComponent "${SectionGroupMP}" " ($(TEXT_MP_NOT_INSTALLED))"
-    !insertmacro DisableComponent "${SectionMPCommon}" ""
-    !insertmacro DisableComponent "${SectionMPControlPlugin}" ""
-    !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
-    !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
-  ${Else}
-    #StrCpy '$MP_INSTALLED' 'TRUE'
-    !insertmacro MP_GET_INSTALL_DIR $MPdir.Base
-    ${ReadMediaPortalDirs} $MPdir.Base
-  ${EndIf}
-
-  ${IfNot} ${TVServerIsInstalled}
-    #StrCpy '$TVSERVER_INSTALLED' 'FALSE'
-    !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
-    !insertmacro DisableComponent "${SectionTV3Common}" ""
-    !insertmacro DisableComponent "${SectionTV3BlasterPlugin}" ""
-  ${Else}
-    #StrCpy '$TVSERVER_INSTALLED' 'TRUE'
-    !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
-  ${EndIf}
-  
-  ${If} ${RunningX64}
-    SetRegView 64
-    ${DisableX64FSRedirection}
-  ${Endif}
-
-  ; after components were preSelected, we need to update the common components if their plugins are not installed
   Call .onSelChange
 
 FunctionEnd
@@ -1185,31 +1144,19 @@ Function .onSelChange
 FunctionEnd
 
 ;======================================
-/*
-Function ComponentsPre
-
-  ${If} $MP_INSTALLED == "FALSE"
-    !insertmacro DisableComponent "${SectionGroupMP}" " ($(TEXT_MP_NOT_INSTALLED))"
-    !insertmacro DisableComponent "${SectionMPCommon}" ""
-    !insertmacro DisableComponent "${SectionMPControlPlugin}" ""
-    !insertmacro DisableComponent "${SectionMPBlastZonePlugin}" ""
-    !insertmacro DisableComponent "${SectionTV2BlasterPlugin}" ""
-  ${Endif}
-
-  ${If} $TVSERVER_INSTALLED == "FALSE"
-    !insertmacro DisableComponent "${SectionGroupTV3}" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
-    !insertmacro DisableComponent "${SectionTV3Common}" ""
-    !insertmacro DisableComponent "${SectionTV3BlasterPlugin}" ""
-  ${Endif}
-
-FunctionEnd
-*/
-;======================================
 
 Function DirectoryPreMP
   ${IfNot} ${SectionIsSelected} ${SectionGroupMP}
     Abort
   ${EndIf}
+FunctionEnd
+
+Function DirectoryLeaveMP
+  ; you can add directory verfication here
+
+
+  ; refresh MP subdirs, if it user has changed the path again
+  ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
 FunctionEnd
 
 ;======================================
@@ -1218,6 +1165,12 @@ Function DirectoryPreTV
   ${IfNot} ${SectionIsSelected} ${SectionGroupTV3}
     Abort
   ${EndIf}
+FunctionEnd
+
+Function DirectoryLeaveTV
+  ; you can add directory verfication here
+
+
 FunctionEnd
 
 ;======================================
@@ -1291,31 +1244,7 @@ FunctionEnd
 Function un.onInit
 
   !insertmacro Initialize
-
-  ${If} ${RunningX64}
-    SetRegView 32
-    ${EnableX64FSRedirection}
-  ${Endif}
-
-  ${IfNot} ${MP023IsInstalled}
-  ${AndIfNot} ${MPIsInstalled}
-    Sleep 1
-  ${Else}
-    !insertmacro MP_GET_INSTALL_DIR $MPdir.Base
-    ${un.ReadMediaPortalDirs} $MPdir.Base
-  ${EndIf}
-
-  ${IfNot} ${TVServerIsInstalled}
-    Sleep 1
-  ${Else}
-    !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
-  ${EndIf}
-  
-  ${If} ${RunningX64}
-    SetRegView 64
-    ${DisableX64FSRedirection}
-  ${Endif}
-
+  ${un.ReadMediaPortalDirs} $DIR_MEDIAPORTAL
 
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
   Abort
