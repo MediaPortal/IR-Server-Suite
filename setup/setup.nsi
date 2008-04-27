@@ -423,27 +423,27 @@ Section "-commonMP" SectionMPCommon
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
   SetOverwrite ifnewer
-  File "..\Common\MPUtils\bin\${BuildType}\MPUtils.dll"
-  File "..\Common\IrssComms\bin\${BuildType}\IrssComms.dll"
-  File "..\Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
+  File "..\Common\MPUtils\bin\${BuildType}\MPUtils.*"
+  File "..\Common\IrssComms\bin\${BuildType}\IrssComms.*"
+  File "..\Common\IrssUtils\bin\${BuildType}\IrssUtils.*"
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Windows"
   SetOverwrite ifnewer
-  File "..\Common\MPUtils\bin\${BuildType}\MPUtils.dll"
-  File "..\Common\IrssComms\bin\${BuildType}\IrssComms.dll"
-  File "..\Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
+  File "..\Common\MPUtils\bin\${BuildType}\MPUtils.*"
+  File "..\Common\IrssComms\bin\${BuildType}\IrssComms.*"
+  File "..\Common\IrssUtils\bin\${BuildType}\IrssUtils.*"
 SectionEnd
 !macro Remove_${SectionMPCommon}
   DetailPrint "Attempting to remove common files for MediaPortal plugins ..."
 
   ; remove files
-  Delete /REBOOTOK "$MPdir.Plugins\Process\MPUtils.dll"
-  Delete /REBOOTOK "$MPdir.Plugins\Process\IrssComms.dll"
-  Delete /REBOOTOK "$MPdir.Plugins\Process\IrssUtils.dll"
-  Delete /REBOOTOK "$MPdir.Plugins\Windows\MPUtils.dll"
-  Delete /REBOOTOK "$MPdir.Plugins\Windows\IrssComms.dll"
-  Delete /REBOOTOK "$MPdir.Plugins\Windows\IrssUtils.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\MPUtils.*"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\IrssComms.*"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\IrssUtils.*"
+  Delete /REBOOTOK "$MPdir.Plugins\Windows\MPUtils.*"
+  Delete /REBOOTOK "$MPdir.Plugins\Windows\IrssComms.*"
+  Delete /REBOOTOK "$MPdir.Plugins\Windows\IrssUtils.*"
 !macroend
 
 ;======================================
@@ -458,7 +458,7 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
   SetOverwrite ifnewer
-  File "..\MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPControlPlugin.dll"
+  File "..\MediaPortal Plugins\MP Control Plugin\bin\${BuildType}\MPControlPlugin.*"
 
   ; Write input mapping
   SetOutPath "$MPdir.CustomInputDefault"
@@ -478,7 +478,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMPControlPlugin}
   DetailPrint "Attempting to remove MediaPortal Control Plugin ..."
 
-  Delete /REBOOTOK "$MPdir.Plugins\Process\MPControlPlugin.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\MPControlPlugin.*"
 !macroend
 
 ;======================================
@@ -497,7 +497,7 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Windows"
   SetOverwrite ifnewer
-  File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPBlastZonePlugin.dll"
+  File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${BuildType}\MPBlastZonePlugin.*"
 
   ; Write app data
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin"
@@ -521,7 +521,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMPBlastZonePlugin}
   DetailPrint "Attempting to remove MediaPortal Blast Zone Plugin ..."
 
-  Delete /REBOOTOK "$MPdir.Plugins\Windows\MPBlastZonePlugin.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Windows\MPBlastZonePlugin.*"
 !macroend
 
 ;======================================
@@ -540,7 +540,7 @@ ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
   SetOverwrite ifnewer
-  File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\TV2BlasterPlugin.dll"
+  File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${BuildType}\TV2BlasterPlugin.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV2 Blaster Plugin"
@@ -550,7 +550,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionTV2BlasterPlugin}
   DetailPrint "Attempting to remove MediaPortal TV2 Plugin ..."
 
-  Delete /REBOOTOK "$MPdir.Plugins\Process\TV2BlasterPlugin.dll"
+  Delete /REBOOTOK "$MPdir.Plugins\Process\TV2BlasterPlugin.*"
 !macroend
 
 ;======================================
@@ -571,17 +571,17 @@ Section "-commonTV3" SectionTV3Common
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
   SetOverwrite ifnewer
-  File "..\Common\MPUtils\bin\${BuildType}\MPUtils.dll"
-  File "..\Common\IrssComms\bin\${BuildType}\IrssComms.dll"
-  File "..\Common\IrssUtils\bin\${BuildType}\IrssUtils.dll"
+  File "..\Common\MPUtils\bin\${BuildType}\MPUtils.*"
+  File "..\Common\IrssComms\bin\${BuildType}\IrssComms.*"
+  File "..\Common\IrssUtils\bin\${BuildType}\IrssUtils.*"
 SectionEnd
 !macro Remove_${SectionTV3Common}
   DetailPrint "Attempting to remove common files for TV Server plugins ..."
 
   ; remove files
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.dll"
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssComms.dll"
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssUtils.dll"
+  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.*"
+  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssComms.*"
+  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssUtils.*"
 !macroend
 
 ;======================================
@@ -596,7 +596,7 @@ ${MementoUnselectedSection} "TV3 Blaster Plugin" SectionTV3BlasterPlugin
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
   SetOverwrite ifnewer
-  File "..\MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\TV3BlasterPlugin.dll"
+  File "..\MediaPortal Plugins\TV3 Blaster Plugin\bin\${BuildType}\TV3BlasterPlugin.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV3 Blaster Plugin"
@@ -606,7 +606,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionTV3BlasterPlugin}
   DetailPrint "Attempting to remove MediaPortal TV3 Plugin ..."
 
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.dll"
+  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.*"
 !macroend
 
 ;======================================
