@@ -646,9 +646,11 @@ namespace InputService.Plugin
       try
       {
         _readThreadMode = ReadThreadMode.Stop;
+        _stopReadThread.Set();
+        if (Thread.CurrentThread != _readThread)
+          _readThread.Join(PacketTimeout * 2);
 
-        if (!_stopReadThread.Set() || !_readThread.Join(PacketTimeout * 2))
-          _readThread.Abort();
+        //_readThread.Abort();
       }
 #if DEBUG
       catch (Exception ex)
@@ -731,8 +733,6 @@ namespace InputService.Plugin
       _notifyWindow.UnregisterDeviceRemoval();
 
       _eHomeHandle.DangerousRelease();
-
-      CloseHandle(_eHomeHandle);
 
       _eHomeHandle.Dispose();
       _eHomeHandle = null;

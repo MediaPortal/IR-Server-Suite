@@ -179,11 +179,6 @@ namespace InputService.Plugin
       [MarshalAs(UnmanagedType.U4)] CreateFileAttributes flags,
       IntPtr templateFile);
 
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CloseHandle(
-      SafeFileHandle handle);
-
     #endregion Interop
 
     #region Variables
@@ -247,7 +242,7 @@ namespace InputService.Plugin
         if (deviceHandle.IsInvalid)
           throw new Win32Exception(lastError, "Failed to open device");
 
-        CloseHandle(deviceHandle);
+        deviceHandle.Dispose();
 
         return true;
       }
@@ -267,8 +262,11 @@ namespace InputService.Plugin
       DebugWriteLine("Start()");
 #endif
 
-      ThreadStart readThreadStart = new ThreadStart(ReadThread);
-      _readThread = new Thread(readThreadStart);
+      if (!Detect())
+        throw new InvalidOperationException("IgorPlug not found");
+
+      _readThread = new Thread(new ThreadStart(ReadThread));
+      _readThread.Name = "IgorPlug.ReadThread";
       _readThread.IsBackground = true;
       _readThread.Start();
     }
@@ -482,7 +480,7 @@ namespace InputService.Plugin
       }
       finally
       {
-        CloseHandle(handle);
+        handle.Dispose();
       }
 
       return Result;

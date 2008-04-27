@@ -63,6 +63,7 @@ namespace WebRemote
         _runningThread.Abort();
 
       _runningThread = new Thread(new ThreadStart(RunThread));
+      _runningThread.Name = "WebRemote Server";
       _runningThread.IsBackground = true;
       _runningThread.Start();
     }

@@ -43,13 +43,13 @@ namespace InputService.Plugin
 
     #region Variables
 
-    public delegate void CommandEventHandler(Command cmd);
+    public delegate void CommandEventHandler(WinLircCommand cmd);
     public event CommandEventHandler CommandEvent;
     Socket _socket;                   // Socket for WinLIRC communication
     TimeSpan _buttonReleaseTime;      // Time span in which multiple receptions of the same command are ignored
     AsyncCallback _dataCallback;      // Callback function receiving data from WinLIRC
     IAsyncResult _dataCallbackResult; // Result of the callback function
-    Command _lastCommand;      // Last command actually sent to InputHandler
+    WinLircCommand _lastCommand;      // Last command actually sent to InputHandler
 
     #endregion Variables
 
@@ -58,7 +58,7 @@ namespace InputService.Plugin
     public WinLircServer(IPAddress ip, int port, TimeSpan buttonReleaseTime)
     {
       _buttonReleaseTime = buttonReleaseTime;
-      _lastCommand = new Command();
+      _lastCommand = new WinLircCommand();
 
       _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
       _socket.Connect(ip, port); // Connect; error handling is done in SetupDataCallback()
@@ -76,9 +76,8 @@ namespace InputService.Plugin
         if (_dataCallback == null)
           _dataCallback = new AsyncCallback(OnDataReceived);
 
-        SocketInfo info = new SocketInfo();
-        info._socket = _socket;
-        _dataCallbackResult = _socket.BeginReceive(info._dataBuffer, 0, info._dataBuffer.Length, SocketFlags.None, _dataCallback, info);
+        SocketInfo info = new SocketInfo(_socket);
+        _dataCallbackResult = _socket.BeginReceive(info.DataBuffer, 0, info.DataBuffer.Length, SocketFlags.None, _dataCallback, info);
       }
       catch (SocketException se)
       {
@@ -90,10 +89,12 @@ namespace InputService.Plugin
 
     #region Public Methods
 
-    public static bool StartServer(String path)
+    public static bool StartServer(string path)
     {
       if (IsServerRunning())
+      {
         Trace.WriteLine("WLirc: WinLIRC server was not started (already running)");
+      }
       else
       {
         Trace.WriteLine("WLirc: Starting WinLIRC server...");
@@ -134,16 +135,16 @@ namespace InputService.Plugin
       try
       {
         SocketInfo info = (SocketInfo)async.AsyncState;
-        int receivedBytesCount = info._socket.EndReceive(async);
+        int receivedBytesCount = info.Sock.EndReceive(async);
 
         // Convert received bytes to string
         char[] chars = new char[receivedBytesCount + 1];
-        System.Text.Decoder decoder = Encoding.UTF8.GetDecoder();
-        decoder.GetChars(info._dataBuffer, 0, receivedBytesCount, chars, 0);
-        System.String data = new System.String(chars);
+        Decoder decoder = Encoding.UTF8.GetDecoder();
+        decoder.GetChars(info.DataBuffer, 0, receivedBytesCount, chars, 0);
+        string data = new string(chars);
 
-        String[] commands = data.Split(new char[] { '\n', '\r', '\0' }, StringSplitOptions.RemoveEmptyEntries);
-        foreach (String cmd in commands)
+        string[] commands = data.Split(new char[] { '\n', '\r', '\0' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string cmd in commands)
           ProcessData(cmd);
 
         SetupDataCallback(); // Listen to new signals again
@@ -161,7 +162,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Process received data, i.e. send event to event handlers
     /// </summary>
-    private void ProcessData(String data)
+    private void ProcessData(string data)
     {
       // Ignore commands we do not need (like the startup message)
       if (data.Equals("BEGIN", StringComparison.OrdinalIgnoreCase)  ||
@@ -169,16 +170,20 @@ namespace InputService.Plugin
           data.Equals("SIGHUP", StringComparison.OrdinalIgnoreCase))
         return;
 
-      Command command = new Command(data);
+      WinLircCommand command = new WinLircCommand(data);
 
       #region Time-based repeat filter
+      
       if (_lastCommand.IsSameCommand(command))
+      {
         if ((command.Time - _lastCommand.Time) < _buttonReleaseTime)
         {
           Trace.WriteLine(String.Format("WLirc: Command '{0}' ignored because of repeat filter", command.Button));
           return;
         }
-      #endregion
+      }
+
+      #endregion Time-based repeat filter
 
       Trace.WriteLine(String.Format("WLirc: Command '{0}' accepted", command.Button));
       _lastCommand = command;
@@ -188,53 +193,6 @@ namespace InputService.Plugin
     }
 
     #endregion Private Methods
-
-    #region Helper classes
-
-    /// <summary>
-    /// Class containing information for the data callback function
-    /// </summary>
-    private class SocketInfo
-    {
-      public Socket _socket;
-      public byte[] _dataBuffer = new byte[512];
-    }
-
-    /// <summary>
-    /// Class containing information on a WinLIRC command
-    /// </summary>
-    public class Command
-    {
-      String _remote;
-      String _button;
-      DateTime _time;
-
-      public Command()
-      {
-        _time = DateTime.Now;
-      }
-
-      public Command(string data)
-      {
-        String[] dataElements = data.Split(' ');
-        _button = dataElements[2];
-        _remote = dataElements[3];
-        _time = DateTime.Now;
-      }
-
-      public bool IsSameCommand(Command second)
-      {
-        if ((_button == second._button) && (_remote == second._remote))
-          return true;
-        return false;
-      }
-
-      public String Button { get { return _button; } }
-      public String Remote { get { return _remote; } }
-      public DateTime Time { get { return _time; } }
-    }
-
-    #endregion Helper classes
 
   }
 

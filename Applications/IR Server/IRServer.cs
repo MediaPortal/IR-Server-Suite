@@ -1360,7 +1360,7 @@ namespace IRServer
             if ((combo.Message.Flags & MessageFlags.Request) == MessageFlags.Request)
             {
               IrssLog.Info("Shutdown command received");
-              Stop();
+              //Stop();
               Application.Exit();
             }
             break;
@@ -1656,7 +1656,7 @@ namespace IRServer
 
       IrssLog.Info("Quit");
 
-      Stop();
+      //Stop();
       Application.Exit();
     }
 

@@ -255,6 +255,7 @@ namespace InputService.Plugin
       isListening = true;
 
       inputListener = new Thread(new ThreadStart(this.ThreadFunction));
+      inputListener.Name = "DirectInputListener";
       inputListener.IsBackground = true;
       inputListener.Start();
     }

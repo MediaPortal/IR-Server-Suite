@@ -877,10 +877,13 @@ namespace InputService.Plugin
 
       _readThreadMode = ReadThreadMode.Stop;
 
-      _readThread.Abort();
+      //_readThread.Abort();
 
-      if (Thread.CurrentThread != _readThread)
-        _readThread.Join();
+      if (_eHomeHandle != null)
+        CancelIo(_eHomeHandle);
+
+      //if (Thread.CurrentThread != _readThread)
+        //_readThread.Join();
 
       _readThread = null;
     }
@@ -948,8 +951,6 @@ namespace InputService.Plugin
       _notifyWindow.UnregisterDeviceRemoval();
 
       _eHomeHandle.DangerousRelease();
-
-      CloseHandle(_eHomeHandle);
 
       _eHomeHandle.Dispose();
       _eHomeHandle = null;

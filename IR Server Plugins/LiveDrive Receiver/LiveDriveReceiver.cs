@@ -27,7 +27,7 @@ namespace InputService.Plugin
     internal static extern int midiInGetNumDevs();
 
     [DllImport("winmm.dll")]
-    static extern uint midiInOpen(ref int lphMidiIn, int uDeviceID, MidiInProc dwCallback, int dwInstance, Int64 dwFlags);
+    static extern uint midiInOpen(ref int lphMidiIn, int uDeviceID, MidiInProc dwCallback, int dwInstance, int dwFlags);
 
     [DllImport("winmm.dll")]
     static extern uint midiInStart(int hMidiIn);
@@ -89,7 +89,7 @@ namespace InputService.Plugin
 		const int MM_ERROR      = 0x3C5;
 		const int MM_LONGERROR  = 0x3C6;
 
-		const Int64 CALLBACK_FUNCTION   = 0x00030000L;
+		const int CALLBACK_FUNCTION     = 0x30000;
 
 		const int MMSYSERR_NOERROR      = 0;
 		const int MMSYSERR_BASE         = 0;

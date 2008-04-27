@@ -545,11 +545,6 @@ namespace InputService.Plugin
     static extern bool CancelIo(
       SafeFileHandle handle);
 
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CloseHandle(
-      SafeFileHandle handle);
-
     #endregion DosDevice Interop
 
     #region HID Device Support variables
@@ -1162,13 +1157,9 @@ namespace InputService.Plugin
       DebugWriteLine("Suspend()");
 #endif
       if (_DriverMode == DeviceType.HID)
-      {
         Stop_HID();
-      }
       else
-      {
         Stop_DOS();
-      }
     }
 
     /// <summary>
@@ -1180,13 +1171,9 @@ namespace InputService.Plugin
       DebugWriteLine("Resume()");
 #endif
       if (_DriverMode == DeviceType.HID)
-      {
         Start_HID();
-      }
       else
-      {
         Start_DOS();
-      }
     }
 
     /// <summary>
@@ -1738,8 +1725,10 @@ namespace InputService.Plugin
 
       _receiveThread = null;
 
-      if (_deviceHandle != null && !_deviceHandle.IsClosed)
-        CloseHandle(_deviceHandle);
+      if (_deviceHandle != null)
+        _deviceHandle.Dispose();
+
+      _deviceHandle = null;
 
 #if DEBUG
       DebugClose();
@@ -1788,7 +1777,6 @@ namespace InputService.Plugin
         if (deviceHandle.IsInvalid)
           throw new Win32Exception(lastError, "Failed to open device");
 
-        CloseHandle(deviceHandle);
         deviceHandle.Dispose();
 #if DEBUG
         DebugWriteLine("Detect_DOS(): completed - found device.");

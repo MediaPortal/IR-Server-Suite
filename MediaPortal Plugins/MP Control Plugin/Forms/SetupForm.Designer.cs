@@ -90,7 +90,6 @@ namespace MediaPortal.Plugins
       this.groupBoxMouseModeOptions = new System.Windows.Forms.GroupBox();
       this.labelMouseModeToggle = new System.Windows.Forms.Label();
       this.labelMouseStep = new System.Windows.Forms.Label();
-      this.checkBoxAbstractRemoteMode = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseStep)).BeginInit();
       this.tabControl.SuspendLayout();
       this.tabPageRemotes.SuspendLayout();
@@ -547,7 +546,6 @@ namespace MediaPortal.Plugins
       // 
       // tabPageRemotes
       // 
-      this.tabPageRemotes.Controls.Add(this.checkBoxAbstractRemoteMode);
       this.tabPageRemotes.Controls.Add(this.comboBoxRemotePresets);
       this.tabPageRemotes.Controls.Add(this.buttonLoadPreset);
       this.tabPageRemotes.Controls.Add(this.buttonClearAll);
@@ -604,9 +602,9 @@ namespace MediaPortal.Plugins
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
       this.treeViewRemotes.HideSelection = false;
-      this.treeViewRemotes.Location = new System.Drawing.Point(8, 40);
+      this.treeViewRemotes.Location = new System.Drawing.Point(8, 8);
       this.treeViewRemotes.Name = "treeViewRemotes";
-      this.treeViewRemotes.Size = new System.Drawing.Size(552, 160);
+      this.treeViewRemotes.Size = new System.Drawing.Size(552, 192);
       this.treeViewRemotes.TabIndex = 0;
       this.treeViewRemotes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeViewRemotes_KeyDown);
       // 
@@ -860,18 +858,6 @@ namespace MediaPortal.Plugins
       this.labelMouseStep.Text = "Mouse step distance:";
       this.labelMouseStep.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // checkBoxAbstractRemoteMode
-      // 
-      this.checkBoxAbstractRemoteMode.Enabled = false;
-      this.checkBoxAbstractRemoteMode.Location = new System.Drawing.Point(8, 8);
-      this.checkBoxAbstractRemoteMode.Name = "checkBoxAbstractRemoteMode";
-      this.checkBoxAbstractRemoteMode.Size = new System.Drawing.Size(176, 24);
-      this.checkBoxAbstractRemoteMode.TabIndex = 6;
-      this.checkBoxAbstractRemoteMode.Text = "Use Abstract Remote Model";
-      this.toolTips.SetToolTip(this.checkBoxAbstractRemoteMode, "Use the abstract remote model");
-      this.checkBoxAbstractRemoteMode.UseVisualStyleBackColor = true;
-      this.checkBoxAbstractRemoteMode.CheckedChanged += new System.EventHandler(this.checkBoxAbstractRemoteMode_CheckedChanged);
-      // 
       // SetupForm
       // 
       this.AcceptButton = this.buttonOK;
@@ -973,6 +959,5 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.GroupBox groupBoxMouseModeOptions;
     private System.Windows.Forms.ListView listViewIR;
     private System.Windows.Forms.ListView listViewMacro;
-    private System.Windows.Forms.CheckBox checkBoxAbstractRemoteMode;
   }
 }

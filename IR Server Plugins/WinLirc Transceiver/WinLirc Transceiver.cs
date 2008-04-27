@@ -268,7 +268,7 @@ namespace InputService.Plugin
     /// Handles commands.
     /// </summary>
     /// <param name="cmd">The Command.</param>
-    void CommandHandler(WinLircServer.Command cmd)
+    void CommandHandler(WinLircCommand cmd)
     {
       if (_remoteButtonHandler == null)
         return;

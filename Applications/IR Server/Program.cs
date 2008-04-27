@@ -54,7 +54,10 @@ namespace IRServer
       using (IRServer irServer = new IRServer())
       {
         if (irServer.Start())
+        {
           Application.Run();
+          irServer.Stop();
+        }
       }
 
       Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
@@ -72,47 +75,55 @@ namespace IRServer
       IrssLog.Error(e.Exception);
     }
 
+    static PluginBase[] _plugins = null;
+
     /// <summary>
     /// Retreives a list of available IR Server plugins.
     /// </summary>
     /// <returns>Array of plugin instances.</returns>
     internal static PluginBase[] AvailablePlugins()
     {
-      List<PluginBase> plugins = new List<PluginBase>();
-
-      string installFolder = SystemRegistry.GetInstallFolder();
-      if (String.IsNullOrEmpty(installFolder))
-        return null;
-
-      string path = Path.Combine(installFolder, "IR Server Plugins");
-      string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-
-      // TODO: Return a Type[], don't instantiate unless required
-
-      foreach (string file in files)
+      if (_plugins == null)
       {
-        try
+        List<PluginBase> plugins = new List<PluginBase>();
+
+        string installFolder = SystemRegistry.GetInstallFolder();
+        if (String.IsNullOrEmpty(installFolder))
+          return null;
+
+        string path = Path.Combine(installFolder, "IR Server Plugins");
+        string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+
+        // TODO: Return a Type[], don't instantiate unless required
+
+        foreach (string file in files)
         {
-          Assembly assembly = Assembly.LoadFrom(file);
-          Type[] types = assembly.GetExportedTypes();
-
-          foreach (Type type in types)
+          try
           {
-            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
-            {
-              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+            Assembly assembly = Assembly.LoadFrom(file);
+            Type[] types = assembly.GetExportedTypes();
 
-              if (plugin != null)
-                plugins.Add(plugin);
+            foreach (Type type in types)
+            {
+              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
+              {
+                PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+
+                if (plugin != null)
+                  plugins.Add(plugin);
+              }
             }
           }
+          catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
+          catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
+          catch (FileNotFoundException) { }   // Ignore File Not Found Exceptions, just keep checking for IR Server Plugins
         }
-        catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
-        catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
-        catch (FileNotFoundException) { }   // Ignore File Not Found Exceptions, just keep checking for IR Server Plugins
+
+        _plugins = plugins.ToArray();
       }
 
-      return plugins.ToArray();
+      return _plugins;
+//      return plugins.ToArray();
     }
 
     /// <summary>

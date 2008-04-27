@@ -177,11 +177,6 @@ namespace InputService.Plugin
     protected static extern bool CancelIo(
       SafeFileHandle handle);
 
-    [DllImport("kernel32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    protected static extern bool CloseHandle(
-      SafeFileHandle handle);
-
     [DllImport("setupapi.dll", CharSet = CharSet.Auto)]
     static extern IntPtr SetupDiGetClassDevs(
       ref Guid classGuid,

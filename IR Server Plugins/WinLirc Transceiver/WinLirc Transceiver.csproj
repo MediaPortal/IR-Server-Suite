@@ -61,7 +61,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SocketInfo.cs" />
     <Compile Include="WinLirc Transceiver.cs" />
+    <Compile Include="WinLircCommand.cs" />
     <Compile Include="WinLircServer.cs" />
   </ItemGroup>
   <ItemGroup>

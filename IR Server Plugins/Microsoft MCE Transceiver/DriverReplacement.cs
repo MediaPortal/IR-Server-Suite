@@ -647,9 +647,11 @@ namespace InputService.Plugin
       try
       {
         _readThreadMode = ReadThreadMode.Stop;
+        _stopReadThread.Set();
+        if (Thread.CurrentThread != _readThread)
+          _readThread.Join(PacketTimeout * 2);
 
-        if (!_stopReadThread.Set() || !_readThread.Join(PacketTimeout * 2))
-          _readThread.Abort();
+        //_readThread.Abort();
       }
 #if DEBUG
       catch (Exception ex)
@@ -703,7 +705,6 @@ namespace InputService.Plugin
       if (_writeHandle.IsInvalid)
       {
         _writeHandle = null;
-        CloseHandle(_readHandle);
         _readHandle.Dispose();
         throw new Win32Exception(lastError);
       }
@@ -745,16 +746,12 @@ namespace InputService.Plugin
 
         _readHandle.DangerousRelease();
 
-        CloseHandle(_readHandle);
-
         _readHandle.Dispose();
         _readHandle = null;
       }
 
       if (_writeHandle != null)
       {
-        CloseHandle(_writeHandle);
-
         _writeHandle.Dispose();
         _writeHandle = null;
       }
