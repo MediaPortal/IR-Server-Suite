@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<Digit0>STB: Strong 8700\0</Digit0>
+	<Digit1>STB: Strong 8700\1</Digit1>
+	<Digit2>STB: Strong 8700\2</Digit2>
+	<Digit3>STB: Strong 8700\3</Digit3>
+	<Digit4>STB: Strong 8700\4</Digit4>
+	<Digit5>STB: Strong 8700\5</Digit5>
+	<Digit6>STB: Strong 8700\6</Digit6>
+	<Digit7>STB: Strong 8700\7</Digit7>
+	<Digit8>STB: Strong 8700\8</Digit8>
+	<Digit9>STB: Strong 8700\9</Digit9>
+	<SelectCommand>STB: Strong 8700\ENTER</SelectCommand>
+</config>
