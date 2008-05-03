@@ -64,11 +64,13 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string value0 = variables.VariableGet(Parameters[0]);
-      string value1 = variables.VariableGet(Parameters[1]);
+      string[] processed = ProcessParameters(variables, Parameters);
 
-      variables.VariableSet(Parameters[0], value1);
-      variables.VariableSet(Parameters[1], value0);
+      string value0 = variables.VariableGet(processed[0]);
+      string value1 = variables.VariableGet(processed[1]);
+
+      variables.VariableSet(processed[0], value1);
+      variables.VariableSet(processed[1], value0);
     }
 
     #endregion Implementation

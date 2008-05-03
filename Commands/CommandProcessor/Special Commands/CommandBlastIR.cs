@@ -86,10 +86,11 @@ namespace Commands
     /// <summary>
     /// Execute this command.
     /// </summary>
-    /// <param name="blastIrDelegate">The blast ir delegate.</param>
-    public void Execute(BlastIrDelegate blastIrDelegate)
+    /// <param name="commandProcessor">The command processor.</param>
+    public void Execute(Processor commandProcessor)
     {
-      blastIrDelegate(Parameters[0], Parameters[1]);
+      string[] processed = ProcessParameters(commandProcessor.Variables, Parameters);
+      commandProcessor.BlastIr(processed[0], processed[1]);
     }
 
     #endregion Implementation

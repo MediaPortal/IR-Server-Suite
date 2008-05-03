@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -94,7 +95,7 @@ namespace Commands
     public const string CategorySpecial     = "Special Commands";
 
 
-    //const string ProcessCommandThreadName = "ProcessCommand";
+    const string ProcessCommandThreadName = "ProcessCommand";
 
     #endregion Constants
 
@@ -172,7 +173,7 @@ namespace Commands
       if (async)
       {
         Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
-        //newThread.Name = ProcessCommandThreadName;
+        newThread.Name = ProcessCommandThreadName;
         newThread.IsBackground = true;
         newThread.Start(command);
       }
@@ -190,7 +191,7 @@ namespace Commands
         throw new ArgumentException("Argument is not a valid Command object", "commandObj");
 
       if (command is CommandBlastIR)
-        (command as CommandBlastIR).Execute(_blastIrDelegate);
+        (command as CommandBlastIR).Execute(this);
       else if (command is CommandCallMacro)
         (command as CommandCallMacro).Execute(this);
       else
@@ -469,7 +470,7 @@ namespace Commands
       if (specialCommands != null)
         allCommands.AddRange(specialCommands);
 
-      Type[] libraryCommands = IrssUtils.Common.GetLibraryCommands();
+      Type[] libraryCommands = GetLibraryCommands();
       if (libraryCommands != null)
         allCommands.AddRange(libraryCommands);
 
@@ -531,6 +532,62 @@ namespace Commands
       specialCommands.Add(typeof(CommandCallMacro));
 
       return specialCommands.ToArray();
+    }
+
+    /// <summary>
+    /// Get a list of commands found in the Command Libraries.
+    /// </summary>
+    /// <returns>Available commands.</returns>
+    public static Type[] GetLibraryCommands()
+    {
+      try
+      {
+        List<Type> commands = new List<Type>();
+
+        string installFolder = IrssUtils.SystemRegistry.GetInstallFolder();
+        if (String.IsNullOrEmpty(installFolder))
+          return null;
+
+        string folder = Path.Combine(installFolder, "Commands");
+        string[] files = Directory.GetFiles(folder, "*.dll", SearchOption.TopDirectoryOnly);
+
+        foreach (string file in files)
+        {
+          try
+          {
+            Assembly assembly = Assembly.LoadFrom(file);
+            Type[] types = assembly.GetExportedTypes();
+
+            foreach (Type type in types)
+              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Commands.Command)))
+                commands.Add(type);
+          }
+          catch (BadImageFormatException)
+          {
+            // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
+          }
+          catch (TypeLoadException)
+          {
+            // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
+          }
+          catch (Exception ex)
+          {
+            MessageBox.Show(ex.ToString(), "Command Error");
+          }
+        }
+
+        return commands.ToArray();
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+#else
+      catch
+      {
+#endif
+        return null;
+      }
     }
 
     #endregion Static Methods

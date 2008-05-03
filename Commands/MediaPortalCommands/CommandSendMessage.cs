@@ -49,17 +49,14 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string messageType = Parameters[0];
-      if (messageType.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        messageType = variables.VariableGet(messageType.Substring(VariableList.VariablePrefix.Length));
-      messageType = IrssUtils.Common.ReplaceSpecial(messageType);
+      string[] processed = ProcessParameters(variables, Parameters);
 
-      GUIMessage.MessageType type = (GUIMessage.MessageType)Enum.Parse(typeof(GUIMessage.MessageType), messageType);
-      int windowId  = int.Parse(Parameters[1]);
-      int senderId  = int.Parse(Parameters[2]);
-      int controlId = int.Parse(Parameters[3]);
-      int param1    = int.Parse(Parameters[4]);
-      int param2    = int.Parse(Parameters[5]);
+      GUIMessage.MessageType type = (GUIMessage.MessageType)Enum.Parse(typeof(GUIMessage.MessageType), processed[0]);
+      int windowId  = int.Parse(processed[1]);
+      int senderId  = int.Parse(processed[2]);
+      int controlId = int.Parse(processed[3]);
+      int param1    = int.Parse(processed[4]);
+      int param2    = int.Parse(processed[5]);
 
       GUIMessage message = new GUIMessage(type, windowId, senderId, controlId, param1, param2, null);
 

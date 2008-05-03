@@ -63,13 +63,8 @@ namespace Commands
     /// </summary>
     public override void Execute(VariableList variables)
     {
-      string value = Parameters[0];
-
-      if (value.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        value = variables.VariableGet(value.Substring(VariableList.VariablePrefix.Length));
-      value = IrssUtils.Common.ReplaceSpecial(value);
-
-      variables.StackPush(value);
+      string[] processed = ProcessParameters(variables, Parameters);
+      variables.StackPush(processed[0]);
     }
 
     #endregion Implementation

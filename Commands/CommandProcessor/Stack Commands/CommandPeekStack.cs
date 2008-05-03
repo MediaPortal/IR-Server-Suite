@@ -63,7 +63,8 @@ namespace Commands
     /// </summary>
     public override void Execute(VariableList variables)
     {
-      variables.StackPeek(Parameters[0]);
+      string[] processed = ProcessParameters(variables, Parameters);
+      variables.StackPeek(processed[0]);
     }
 
     #endregion Implementation

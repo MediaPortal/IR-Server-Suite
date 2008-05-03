@@ -91,7 +91,7 @@ namespace Commands.General
       this.numericUpDownTimeout.TabIndex = 5;
       this.numericUpDownTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.numericUpDownTimeout.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
             0});
@@ -164,7 +164,7 @@ namespace Commands.General
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
       // 
-      // PopupMessage
+      // EditPopup
       // 
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -177,7 +177,7 @@ namespace Commands.General
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(296, 186);
-      this.Name = "PopupMessage";
+      this.Name = "EditPopup";
       this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Popup Message Command";

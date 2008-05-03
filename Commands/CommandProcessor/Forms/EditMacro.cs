@@ -132,7 +132,7 @@ namespace Commands
       Type[] specialCommands = Processor.GetBuiltInCommands();
       allCommands.AddRange(specialCommands);
 
-      Type[] libCommands = Common.GetLibraryCommands();
+      Type[] libCommands = Processor.GetLibraryCommands();
       if (libCommands != null)
         allCommands.AddRange(libCommands);
 

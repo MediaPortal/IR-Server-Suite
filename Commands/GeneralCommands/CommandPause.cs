@@ -1,31 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
-
-using IrssUtils;
 
 namespace Commands.General
 {
 
   /// <summary>
-  /// Keystrokes general command.
+  /// Pause command.
   /// </summary>
-  public class CommandKeystrokes : Command
+  public class CommandPause : Command
   {
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandKeystrokes"/> class.
+    /// Initializes a new instance of the <see cref="CommandPause"/> class.
     /// </summary>
-    public CommandKeystrokes() { InitParameters(1); }
+    public CommandPause() { InitParameters(1); }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandKeystrokes"/> class.
+    /// Initializes a new instance of the <see cref="CommandPause"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandKeystrokes(string[] parameters) : base(parameters) { }
+    public CommandPause(string[] parameters) : base(parameters) { }
 
     #endregion Constructors
 
@@ -41,15 +40,17 @@ namespace Commands.General
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Keystrokes"; }
+    public override string GetUserInterfaceText() { return "Pause"; }
 
     /// <summary>
-    /// Gets the user display text.
+    /// Execute this command.
     /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
+    /// <param name="variables">The variable list of the calling code.</param>
+    public override void Execute(VariableList variables)
     {
-      return String.Format("{0} ({1})", GetUserInterfaceText(), String.Join(", ", Parameters));
+      string[] processed = ProcessParameters(variables, Parameters);
+      int timeout = int.Parse(processed[0]);
+      Thread.Sleep(timeout);
     }
 
     /// <summary>
@@ -59,24 +60,14 @@ namespace Commands.General
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
     public override bool Edit(IWin32Window parent)
     {
-      EditKeystrokes edit = new EditKeystrokes(Parameters[0]);
+      EditPause edit = new EditPause(Parameters);
       if (edit.ShowDialog(parent) == DialogResult.OK)
       {
-        Parameters[0] = edit.CommandString;
+        Parameters = edit.Parameters;
         return true;
       }
 
       return false;
-    }
-
-    /// <summary>
-    /// Execute this command.
-    /// </summary>
-    /// <param name="variables">The variable list of the calling code.</param>
-    public override void Execute(VariableList variables)
-    {
-      string[] processed = ProcessParameters(variables, Parameters);
-      Keyboard.ProcessCommand(processed[0]);
     }
 
     #endregion Public Methods

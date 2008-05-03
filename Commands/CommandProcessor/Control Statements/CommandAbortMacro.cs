@@ -75,10 +75,12 @@ namespace Commands
     /// </summary>
     public override void Execute(VariableList variables)
     {
-      if (String.IsNullOrEmpty(Parameters[0]))
-        throw new MacroExecutionException("Abort Macro Command");
+      string[] processed = ProcessParameters(variables, Parameters);
+
+      if (String.IsNullOrEmpty(processed[0]))
+        throw new MacroExecutionException(GetUserInterfaceText());
       else
-        throw new MacroExecutionException("Abort Macro Command: " + Parameters[0]);
+        throw new MacroExecutionException(String.Format("{0}: {1}", GetUserInterfaceText(), processed[0]));
     }
 
     #endregion Implementation

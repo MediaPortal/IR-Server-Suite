@@ -46,35 +46,43 @@
   <ItemGroup>
     <Compile Include="CommandHibernate.cs" />
     <Compile Include="CommandKeystrokes.cs" />
+    <Compile Include="CommandPause.cs" />
     <Compile Include="CommandPopup.cs" />
     <Compile Include="CommandReboot.cs" />
     <Compile Include="CommandShutdown.cs" />
     <Compile Include="CommandStandBy.cs" />
     <Compile Include="CommandLogOff.cs" />
     <Compile Include="CommandSendWOL.cs" />
-    <Compile Include="EditPopup.cs">
+    <Compile Include="CommandRun.cs" />
+    <Compile Include="Forms\EditPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditPopup.Designer.cs">
+    <Compile Include="Forms\EditPopup.Designer.cs">
       <DependentUpon>EditPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditSendWOL.cs">
+    <Compile Include="Forms\EditSendWOL.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditSendWOL.Designer.cs">
+    <Compile Include="Forms\EditSendWOL.Designer.cs">
       <DependentUpon>EditSendWOL.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditKeystrokes.cs">
+    <Compile Include="Forms\EditKeystrokes.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditKeystrokes.Designer.cs">
+    <Compile Include="Forms\EditKeystrokes.Designer.cs">
       <DependentUpon>EditKeystrokes.cs</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PopupMessage.cs">
+    <Compile Include="Forms\EditPause.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PopupMessage.Designer.cs">
+    <Compile Include="Forms\EditPause.Designer.cs">
+      <DependentUpon>EditPause.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Forms\PopupMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PopupMessage.Designer.cs">
       <DependentUpon>PopupMessage.cs</DependentUpon>
     </Compile>
     <Compile Include="Win32.cs" />
@@ -97,19 +105,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="EditPopup.resx">
+    <EmbeddedResource Include="Forms\EditPopup.resx">
       <DependentUpon>EditPopup.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditSendWOL.resx">
+    <EmbeddedResource Include="Forms\EditSendWOL.resx">
       <DependentUpon>EditSendWOL.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditKeystrokes.resx">
+    <EmbeddedResource Include="Forms\EditKeystrokes.resx">
       <DependentUpon>EditKeystrokes.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="PopupMessage.resx">
+    <EmbeddedResource Include="Forms\EditPause.resx">
+      <DependentUpon>EditPause.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PopupMessage.resx">
       <DependentUpon>PopupMessage.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

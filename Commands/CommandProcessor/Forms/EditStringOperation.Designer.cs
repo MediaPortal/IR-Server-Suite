@@ -135,8 +135,10 @@ namespace Commands
       // 
       // EditStringOperation
       // 
+      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(392, 137);
       this.Controls.Add(this.labelVarPrefix);
       this.Controls.Add(this.labelOutput);

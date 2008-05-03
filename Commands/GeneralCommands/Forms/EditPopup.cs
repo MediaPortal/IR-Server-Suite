@@ -53,7 +53,9 @@ namespace Commands.General
     {
       textBoxHeading.Text = commands[0];
       textBoxText.Text = commands[1];
-      numericUpDownTimeout.Value = Convert.ToDecimal(commands[2]);
+      
+      if (!String.IsNullOrEmpty(commands[2]))
+        numericUpDownTimeout.Value = Convert.ToDecimal(commands[2]);
     }
 
     #endregion Constructors

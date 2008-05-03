@@ -107,26 +107,18 @@ namespace Commands
 
           if (command is CommandIf)
           {
-            string value1     = command.Parameters[0];
-            string comparison = command.Parameters[1];
-            string value2     = command.Parameters[2];
+            string[] processed = Command.ProcessParameters(commandProcessor.Variables, command.Parameters);
 
-            if (value1.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-              value1 = commandProcessor.Variables.VariableGet(value1.Substring(VariableList.VariablePrefix.Length));
-            value1 = Common.ReplaceSpecial(value1);
-
-            if (value2.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-              value2 = commandProcessor.Variables.VariableGet(value2.Substring(VariableList.VariablePrefix.Length));
-            value2 = Common.ReplaceSpecial(value2);
-
-            if (CommandIf.Evaluate(value1, comparison, value2))
-              position = FindLabel(command.Parameters[3]);
-            else if (!String.IsNullOrEmpty(command.Parameters[4]))
-              position = FindLabel(command.Parameters[4]);
+            if (CommandIf.Evaluate(processed[0], processed[1], processed[2]))
+              position = FindLabel(processed[3]);
+            else if (!String.IsNullOrEmpty(processed[4]))
+              position = FindLabel(processed[4]);
           }
           else if (command is CommandGotoLabel)
           {
-            position = FindLabel(command.Parameters[0]);
+            string[] processed = Command.ProcessParameters(commandProcessor.Variables, command.Parameters);
+
+            position = FindLabel(processed[0]);
           }
           else
           {

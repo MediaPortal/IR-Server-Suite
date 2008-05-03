@@ -11,8 +11,7 @@ namespace Commands.General
   /// <summary>
   /// Win32 native method class.
   /// </summary>
-  [CLSCompliant(false)]
-  public static class Win32
+  static class Win32
   {
 
     #region Constants

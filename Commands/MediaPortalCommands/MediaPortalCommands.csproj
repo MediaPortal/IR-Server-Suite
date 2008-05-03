@@ -69,28 +69,28 @@
     <Compile Include="CommandSendMessage.cs" />
     <Compile Include="CommandPopup.cs" />
     <Compile Include="CommandGetFocus.cs" />
-    <Compile Include="EditSendMessage.cs">
+    <Compile Include="Forms\EditSendMessage.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditSendMessage.Designer.cs">
+    <Compile Include="Forms\EditSendMessage.Designer.cs">
       <DependentUpon>EditSendMessage.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditGotoScreen.cs">
+    <Compile Include="Forms\EditGotoScreen.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditGotoScreen.Designer.cs">
+    <Compile Include="Forms\EditGotoScreen.Designer.cs">
       <DependentUpon>EditGotoScreen.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditSendAction.cs">
+    <Compile Include="Forms\EditSendAction.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditSendAction.Designer.cs">
+    <Compile Include="Forms\EditSendAction.Designer.cs">
       <DependentUpon>EditSendAction.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditPopup.cs">
+    <Compile Include="Forms\EditPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditPopup.Designer.cs">
+    <Compile Include="Forms\EditPopup.Designer.cs">
       <DependentUpon>EditPopup.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -113,19 +113,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="EditSendMessage.resx">
+    <EmbeddedResource Include="Forms\EditSendMessage.resx">
       <DependentUpon>EditSendMessage.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditGotoScreen.resx">
+    <EmbeddedResource Include="Forms\EditGotoScreen.resx">
       <DependentUpon>EditGotoScreen.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditSendAction.resx">
+    <EmbeddedResource Include="Forms\EditSendAction.resx">
       <DependentUpon>EditSendAction.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditPopup.resx">
+    <EmbeddedResource Include="Forms\EditPopup.resx">
       <DependentUpon>EditPopup.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

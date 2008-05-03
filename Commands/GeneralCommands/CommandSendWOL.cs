@@ -69,25 +69,9 @@ namespace Commands.General
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string mac = Parameters[0];
-      if (mac.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        mac = variables.VariableGet(mac.Substring(VariableList.VariablePrefix.Length));
-      mac = Common.ReplaceSpecial(mac);
-
-      string port = Parameters[1];
-      if (port.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        port = variables.VariableGet(port.Substring(VariableList.VariablePrefix.Length));
-      port = Common.ReplaceSpecial(port);
-
-      string password = Parameters[2];
-      if (!String.IsNullOrEmpty(password))
-      {
-        if (password.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-          password = variables.VariableGet(password.Substring(VariableList.VariablePrefix.Length));
-        password = Common.ReplaceSpecial(password);
-      }
-
-      SendWOL(mac, int.Parse(port), password);
+      string[] processed = ProcessParameters(variables, Parameters);
+      int port = int.Parse(processed[1]);
+      SendWOL(processed[0], port, processed[2]);
     }
 
     /// <summary>

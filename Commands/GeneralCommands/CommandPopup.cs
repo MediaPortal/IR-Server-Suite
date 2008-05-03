@@ -48,24 +48,11 @@ namespace Commands.General
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string heading = Parameters[0];
-      if (heading.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        heading = variables.VariableGet(heading.Substring(VariableList.VariablePrefix.Length));
-      heading = IrssUtils.Common.ReplaceSpecial(heading);
+      string[] processed = ProcessParameters(variables, Parameters);
 
-      string text = Parameters[1];
-      if (text.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        text = variables.VariableGet(text.Substring(VariableList.VariablePrefix.Length));
-      text = IrssUtils.Common.ReplaceSpecial(text);
+      int timeout = int.Parse(processed[2]);
 
-      string timeoutString = Parameters[2];
-      if (timeoutString.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        timeoutString = variables.VariableGet(timeoutString.Substring(VariableList.VariablePrefix.Length));
-      timeoutString = IrssUtils.Common.ReplaceSpecial(timeoutString);
-
-      int timeout = int.Parse(timeoutString);
-
-      PopupMessage popup = new PopupMessage(heading, text, timeout);
+      PopupMessage popup = new PopupMessage(processed[0], processed[1], timeout);
       popup.ShowDialog();
     }
 

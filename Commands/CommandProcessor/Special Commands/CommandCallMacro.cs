@@ -70,7 +70,8 @@ namespace Commands
     /// <param name="commandProcessor">The command processor.</param>
     public void Execute(Processor commandProcessor)
     {
-      Macro macro = new Macro(Parameters[0]);
+      string[] processed = ProcessParameters(commandProcessor.Variables, Parameters);
+      Macro macro = new Macro(processed[0]);
       macro.Execute(commandProcessor);
     }
 

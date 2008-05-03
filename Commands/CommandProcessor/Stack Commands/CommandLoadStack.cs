@@ -64,7 +64,8 @@ namespace Commands
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      variables.StackLoad(Parameters[0]);
+      string[] processed = ProcessParameters(variables, Parameters);
+      variables.StackLoad(processed[0]);
     }
 
     #endregion Implementation

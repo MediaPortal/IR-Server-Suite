@@ -37,20 +37,20 @@ namespace Commands
       this.textBoxDefaultCase = new System.Windows.Forms.TextBox();
       this.labelVarPrefix = new System.Windows.Forms.Label();
       this.listViewCases = new System.Windows.Forms.ListView();
-      this.groupBoxSwitchVariable = new System.Windows.Forms.GroupBox();
-      this.groupBoxCases = new System.Windows.Forms.GroupBox();
-      this.groupBoxDefaultCaseGoto = new System.Windows.Forms.GroupBox();
       this.columnHeaderCase = new System.Windows.Forms.ColumnHeader();
       this.columnHeaderGoto = new System.Windows.Forms.ColumnHeader();
+      this.groupBoxSwitchVariable = new System.Windows.Forms.GroupBox();
+      this.groupBoxCases = new System.Windows.Forms.GroupBox();
       this.toolStripCases = new System.Windows.Forms.ToolStrip();
       this.toolStripButtonAdd = new System.Windows.Forms.ToolStripButton();
       this.toolStripButtonEdit = new System.Windows.Forms.ToolStripButton();
       this.toolStripButtonDelete = new System.Windows.Forms.ToolStripButton();
       this.toolStripButtonDeleteAll = new System.Windows.Forms.ToolStripButton();
+      this.groupBoxDefaultCaseGoto = new System.Windows.Forms.GroupBox();
       this.groupBoxSwitchVariable.SuspendLayout();
       this.groupBoxCases.SuspendLayout();
-      this.groupBoxDefaultCaseGoto.SuspendLayout();
       this.toolStripCases.SuspendLayout();
+      this.groupBoxDefaultCaseGoto.SuspendLayout();
       this.SuspendLayout();
       // 
       // buttonOK
@@ -118,6 +118,16 @@ namespace Commands
       this.listViewCases.UseCompatibleStateImageBehavior = false;
       this.listViewCases.View = System.Windows.Forms.View.Details;
       // 
+      // columnHeaderCase
+      // 
+      this.columnHeaderCase.Text = "Case";
+      this.columnHeaderCase.Width = 128;
+      // 
+      // columnHeaderGoto
+      // 
+      this.columnHeaderGoto.Text = "Goto";
+      this.columnHeaderGoto.Width = 128;
+      // 
       // groupBoxSwitchVariable
       // 
       this.groupBoxSwitchVariable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -144,28 +154,6 @@ namespace Commands
       this.groupBoxCases.TabIndex = 1;
       this.groupBoxCases.TabStop = false;
       this.groupBoxCases.Text = "Cases";
-      // 
-      // groupBoxDefaultCaseGoto
-      // 
-      this.groupBoxDefaultCaseGoto.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBoxDefaultCaseGoto.Controls.Add(this.textBoxDefaultCase);
-      this.groupBoxDefaultCaseGoto.Location = new System.Drawing.Point(8, 288);
-      this.groupBoxDefaultCaseGoto.Name = "groupBoxDefaultCaseGoto";
-      this.groupBoxDefaultCaseGoto.Size = new System.Drawing.Size(280, 48);
-      this.groupBoxDefaultCaseGoto.TabIndex = 2;
-      this.groupBoxDefaultCaseGoto.TabStop = false;
-      this.groupBoxDefaultCaseGoto.Text = "Default Case Goto";
-      // 
-      // columnHeaderCase
-      // 
-      this.columnHeaderCase.Text = "Case";
-      this.columnHeaderCase.Width = 128;
-      // 
-      // columnHeaderGoto
-      // 
-      this.columnHeaderGoto.Text = "Goto";
-      this.columnHeaderGoto.Width = 128;
       // 
       // toolStripCases
       // 
@@ -222,10 +210,24 @@ namespace Commands
       this.toolStripButtonDeleteAll.Text = "Delete All";
       this.toolStripButtonDeleteAll.Click += new System.EventHandler(this.toolStripButtonDeleteAll_Click);
       // 
+      // groupBoxDefaultCaseGoto
+      // 
+      this.groupBoxDefaultCaseGoto.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxDefaultCaseGoto.Controls.Add(this.textBoxDefaultCase);
+      this.groupBoxDefaultCaseGoto.Location = new System.Drawing.Point(8, 288);
+      this.groupBoxDefaultCaseGoto.Name = "groupBoxDefaultCaseGoto";
+      this.groupBoxDefaultCaseGoto.Size = new System.Drawing.Size(280, 48);
+      this.groupBoxDefaultCaseGoto.TabIndex = 2;
+      this.groupBoxDefaultCaseGoto.TabStop = false;
+      this.groupBoxDefaultCaseGoto.Text = "Default Case Goto";
+      // 
       // EditSwitch
       // 
+      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(296, 377);
       this.Controls.Add(this.groupBoxDefaultCaseGoto);
       this.Controls.Add(this.groupBoxCases);
@@ -244,10 +246,10 @@ namespace Commands
       this.groupBoxSwitchVariable.PerformLayout();
       this.groupBoxCases.ResumeLayout(false);
       this.groupBoxCases.PerformLayout();
-      this.groupBoxDefaultCaseGoto.ResumeLayout(false);
-      this.groupBoxDefaultCaseGoto.PerformLayout();
       this.toolStripCases.ResumeLayout(false);
       this.toolStripCases.PerformLayout();
+      this.groupBoxDefaultCaseGoto.ResumeLayout(false);
+      this.groupBoxDefaultCaseGoto.PerformLayout();
       this.ResumeLayout(false);
 
     }

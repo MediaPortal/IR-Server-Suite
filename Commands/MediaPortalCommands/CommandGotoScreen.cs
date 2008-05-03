@@ -49,10 +49,9 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string windowID = Parameters[0];
-      if (windowID.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        windowID = variables.VariableGet(windowID.Substring(VariableList.VariablePrefix.Length));
-      windowID = IrssUtils.Common.ReplaceSpecial(windowID);
+      string[] processed = ProcessParameters(variables, Parameters);
+
+      string windowID = processed[0];
 
       int window = (int)GUIWindow.Window.WINDOW_INVALID;
 

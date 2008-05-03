@@ -54,27 +54,14 @@ namespace Commands.MediaPortal
       if (dlgNotify == null)
         throw new CommandExecutionException("Failed to create GUIDialogNotify");
 
-      string heading = Parameters[0];
-      if (heading.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        heading = variables.VariableGet(heading.Substring(VariableList.VariablePrefix.Length));
-      heading = IrssUtils.Common.ReplaceSpecial(heading);
+      string[] processed = ProcessParameters(variables, Parameters);
 
-      string text = Parameters[1];
-      if (text.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        text = variables.VariableGet(text.Substring(VariableList.VariablePrefix.Length));
-      text = IrssUtils.Common.ReplaceSpecial(text);
-
-      string timeoutString = Parameters[2];
-      if (timeoutString.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        timeoutString = variables.VariableGet(timeoutString.Substring(VariableList.VariablePrefix.Length));
-      timeoutString = IrssUtils.Common.ReplaceSpecial(timeoutString);
-
-      int timeout = int.Parse(timeoutString);
+      int timeout = int.Parse(processed[2]);
 
       dlgNotify.Reset();
       dlgNotify.ClearAll();
-      dlgNotify.SetHeading(heading);
-      dlgNotify.SetText(text);
+      dlgNotify.SetHeading(processed[0]);
+      dlgNotify.SetText(processed[1]);
       dlgNotify.TimeOut = timeout;
 
       dlgNotify.DoModal(GUIWindowManager.ActiveWindow);

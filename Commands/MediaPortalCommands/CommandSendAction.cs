@@ -49,14 +49,11 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string actionType = Parameters[0];
-      if (actionType.StartsWith(VariableList.VariablePrefix, StringComparison.OrdinalIgnoreCase))
-        actionType = variables.VariableGet(actionType.Substring(VariableList.VariablePrefix.Length));
-      actionType = IrssUtils.Common.ReplaceSpecial(actionType);
+      string[] processed = ProcessParameters(variables, Parameters);
 
-      Action.ActionType type = (Action.ActionType)Enum.Parse(typeof(Action.ActionType), actionType);
-      float f1 = float.Parse(Parameters[1]);
-      float f2 = float.Parse(Parameters[2]);
+      Action.ActionType type = (Action.ActionType)Enum.Parse(typeof(Action.ActionType), processed[0]);
+      float f1 = float.Parse(processed[1]);
+      float f2 = float.Parse(processed[2]);
 
       Action action = new Action(type, f1, f2);
       GUIGraphicsContext.OnAction(action);

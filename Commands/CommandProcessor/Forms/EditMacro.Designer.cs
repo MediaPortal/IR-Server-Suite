@@ -301,8 +301,10 @@ namespace Commands
       // 
       // EditMacro
       // 
+      this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(520, 337);
       this.Controls.Add(this.groupBoxMacroName);
       this.Controls.Add(this.buttonTest);
