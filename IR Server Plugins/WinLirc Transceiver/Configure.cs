@@ -40,6 +40,13 @@ namespace InputService.Plugin
       set { numericUpDownButtonReleaseTime.Value = new Decimal(value); }
     }
 
+      public int RepeatDelay
+      {
+          get { return Decimal.ToInt32(numericUpDownRepeatDelay.Value); }
+          set { numericUpDownRepeatDelay.Value = new Decimal(value); }
+      }
+
+
     #endregion Properties
 
     #region Constructor

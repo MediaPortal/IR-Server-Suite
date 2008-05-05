@@ -37,6 +37,7 @@ namespace InputService.Plugin
     bool _startServer;
     string _serverPath;
     int _buttonReleaseTime;
+    int _repeatDelay;
 
     #endregion Variables
 
@@ -56,7 +57,7 @@ namespace InputService.Plugin
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81, original code for MediaPortal by Sven"; } }
+    public override string Author       { get { return "and-81, original code for MediaPortal by Sven, with contributions by zaphman"; } }
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
@@ -96,7 +97,7 @@ namespace InputService.Plugin
       if (_startServer && !WinLircServer.StartServer(_serverPath))
         throw new InvalidOperationException("Failed to start server");
 
-      _server = new WinLircServer(_serverIP, _serverPort, TimeSpan.FromMilliseconds(_buttonReleaseTime));
+    _server = new WinLircServer(_serverIP, _serverPort, TimeSpan.FromMilliseconds(_buttonReleaseTime), _repeatDelay);
       _server.CommandEvent += new WinLircServer.CommandEventHandler(CommandHandler);
     }
     /// <summary>
@@ -149,6 +150,7 @@ namespace InputService.Plugin
       config.StartServer        = _startServer;
       config.ServerPath         = _serverPath;
       config.ButtonReleaseTime  = _buttonReleaseTime;
+      config.RepeatDelay        = _repeatDelay;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
@@ -157,7 +159,7 @@ namespace InputService.Plugin
         _startServer        = config.StartServer;
         _serverPath         = config.ServerPath;
         _buttonReleaseTime  = config.ButtonReleaseTime;
-
+        _repeatDelay        = config.RepeatDelay;
         SaveSettings();
       }
     }
@@ -183,10 +185,10 @@ namespace InputService.Plugin
         XmlDocument doc = new XmlDocument();
         doc.Load(memoryStream);
 
-        password = doc.DocumentElement.Attributes["Password"].Value;
-        remoteName = doc.DocumentElement.Attributes["RemoteName"].Value;
-        buttonName = doc.DocumentElement.Attributes["ButtonName"].Value;
-        repeats = doc.DocumentElement.Attributes["Repeats"].Value;
+        password    = doc.DocumentElement.Attributes["Password"].Value;
+        remoteName  = doc.DocumentElement.Attributes["RemoteName"].Value;
+        buttonName  = doc.DocumentElement.Attributes["ButtonName"].Value;
+        repeats     = doc.DocumentElement.Attributes["Repeats"].Value;
 
         string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
         _server.Transmit(output);
@@ -209,7 +211,12 @@ namespace InputService.Plugin
         _serverPort         = int.Parse(doc.DocumentElement.Attributes["ServerPort"].Value);
         _startServer        = bool.Parse(doc.DocumentElement.Attributes["StartServer"].Value);
         _serverPath         = doc.DocumentElement.Attributes["ServerPath"].Value;
-        _buttonReleaseTime  = int.Parse(doc.DocumentElement.Attributes["ButtonReleaseTime"].Value);
+        
+        if (!int.TryParse(doc.DocumentElement.Attributes["ButtonReleaseTime"].Value, out _buttonReleaseTime))
+            _buttonReleaseTime = 200;
+        
+        if (!int.TryParse(doc.DocumentElement.Attributes["RepeatDelay"].Value, out _repeatDelay))
+            _repeatDelay = 1;
       }
 #if TRACE
       catch (Exception ex)
@@ -225,6 +232,7 @@ namespace InputService.Plugin
         _startServer        = false;
         _serverPath         = "winlirc.exe";
         _buttonReleaseTime  = 200;
+        _repeatDelay        = 1;
       }
     }
     /// <summary>
@@ -247,6 +255,7 @@ namespace InputService.Plugin
           writer.WriteAttributeString("StartServer", _startServer.ToString());
           writer.WriteAttributeString("ServerPath", _serverPath);
           writer.WriteAttributeString("ButtonReleaseTime", _buttonReleaseTime.ToString());
+          writer.WriteAttributeString("RepeatDelay", _repeatDelay.ToString());
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();

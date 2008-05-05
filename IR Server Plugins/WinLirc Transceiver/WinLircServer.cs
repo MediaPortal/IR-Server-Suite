@@ -45,8 +45,10 @@ namespace InputService.Plugin
 
     public delegate void CommandEventHandler(WinLircCommand cmd);
     public event CommandEventHandler CommandEvent;
+    
     Socket _socket;                   // Socket for WinLIRC communication
     TimeSpan _buttonReleaseTime;      // Time span in which multiple receptions of the same command are ignored
+    int _repeatDelay;                 // Number of repeats to ignore before repeating
     AsyncCallback _dataCallback;      // Callback function receiving data from WinLIRC
     IAsyncResult _dataCallbackResult; // Result of the callback function
     WinLircCommand _lastCommand;      // Last command actually sent to InputHandler
@@ -55,9 +57,17 @@ namespace InputService.Plugin
 
     #region Constructors + Initialization
 
-    public WinLircServer(IPAddress ip, int port, TimeSpan buttonReleaseTime)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WinLircServer"/> class.
+    /// </summary>
+    /// <param name="ip">The ip address.</param>
+    /// <param name="port">The port.</param>
+    /// <param name="buttonReleaseTime">The button release time.</param>
+    /// <param name="repeatDelay">The repeat delay.</param>
+    public WinLircServer(IPAddress ip, int port, TimeSpan buttonReleaseTime, int repeatDelay)
     {
       _buttonReleaseTime = buttonReleaseTime;
+      _repeatDelay = repeatDelay;
       _lastCommand = new WinLircCommand();
 
       _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -89,6 +99,11 @@ namespace InputService.Plugin
 
     #region Public Methods
 
+    /// <summary>
+    /// Starts the server application.
+    /// </summary>
+    /// <param name="path">The path to the server application.</param>
+    /// <returns><c>true</c> if successful; otherwise <c>false</c>.</returns>
     public static bool StartServer(string path)
     {
       if (IsServerRunning())
@@ -112,12 +127,20 @@ namespace InputService.Plugin
       return true;
     }
 
+    /// <summary>
+    /// Determines whether the server application is running.
+    /// </summary>
+    /// <returns><c>true</c> if the server is running; otherwise, <c>false</c>.</returns>
     public static bool IsServerRunning()
     {
       Process[] processes = Process.GetProcessesByName("winlirc");
       return (processes.Length > 0);
     }
 
+    /// <summary>
+    /// Transmits the specified data to the winlirc server.
+    /// </summary>
+    /// <param name="transmit">The data to transmit.</param>
     public void Transmit(string transmit)
     {
       _socket.Send(Encoding.ASCII.GetBytes(transmit));
@@ -176,6 +199,12 @@ namespace InputService.Plugin
       
       if (_lastCommand.IsSameCommand(command))
       {
+          if (_repeatDelay > 0 && command.Repeats > 0
+               && command.Repeats < _repeatDelay)
+          {
+              Trace.WriteLine(String.Format("WLirc: Command '{0}' ignored because of repeat delay filter", command.Button));
+              return;
+          }
         if ((command.Time - _lastCommand.Time) < _buttonReleaseTime)
         {
           Trace.WriteLine(String.Format("WLirc: Command '{0}' ignored because of repeat filter", command.Button));

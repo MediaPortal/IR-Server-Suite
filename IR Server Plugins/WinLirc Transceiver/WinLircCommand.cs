@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace InputService.Plugin
 {
@@ -13,6 +14,7 @@ namespace InputService.Plugin
 
     string _remote;
     string _button;
+    int _repeats;
     DateTime _time;
 
     #endregion Variables
@@ -30,6 +32,11 @@ namespace InputService.Plugin
     /// <value>The remote.</value>
     public string Remote { get { return _remote; } }
     /// <summary>
+    /// Gets the repeats reported by LIRC.
+    /// </summary>
+    /// <value>The repeat count.</value>
+    public int Repeats { get { return _repeats; } }
+    /// <summary>
     /// Gets the time.
     /// </summary>
     /// <value>The time.</value>
@@ -44,7 +51,10 @@ namespace InputService.Plugin
     /// </summary>
     public WinLircCommand()
     {
-      _time = DateTime.Now;
+      _time     = DateTime.Now;
+      _remote   = String.Empty;
+      _repeats  = 0;
+      _button   = String.Empty;
     }
 
     /// <summary>
@@ -54,8 +64,10 @@ namespace InputService.Plugin
     public WinLircCommand(string data) : this()
     {
       string[] dataElements = data.Split(' ');
-      _button = dataElements[2];
-      _remote = dataElements[3];
+      
+      _repeats  = Int32.Parse(dataElements[1], NumberStyles.HexNumber);
+      _button   = dataElements[2];
+      _remote   = dataElements[3];
     }
 
     #endregion Constructors
@@ -67,6 +79,9 @@ namespace InputService.Plugin
     /// <returns><c>true</c> if this command is the same as the specified second; otherwise, <c>false</c>.</returns>
     public bool IsSameCommand(WinLircCommand second)
     {
+      if (second == null)
+          return false;
+
       return (_button.Equals(second.Button, StringComparison.Ordinal) && _remote.Equals(second.Remote, StringComparison.Ordinal));
     }
 
