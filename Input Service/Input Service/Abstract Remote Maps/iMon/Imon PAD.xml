@@ -38,6 +38,15 @@
   <RemoteTable RawCode="1102" AbstractButton="DVD" />
   <RemoteTable RawCode="1040" AbstractButton="TV" />
   <RemoteTable RawCode="1106" AbstractButton="AspectRatio" />
+  <RemoteTable RawCode="1086" AbstractButton="Eject" />
+  <RemoteTable RawCode="1166" AbstractButton="Fullscreen" /> 
+  <RemoteTable RawCode="1250" AbstractButton="Up" />
+  <RemoteTable RawCode="1248" AbstractButton="Down" />
+  <RemoteTable RawCode="1246" AbstractButton="Left" />
+  <RemoteTable RawCode="1244" AbstractButton="Right" />
+  <RemoteTable RawCode="1230" AbstractButton="Menu" />
+  <RemoteTable RawCode="1124" AbstractButton="Teletext" />
+  <RemoteTable RawCode="1198" AbstractButton="Guide" />
   <RemoteTable RawCode="1114" AbstractButton="Eject" />
-  <RemoteTable RawCode="1166" AbstractButton="Fullscreen" />
+  <RemoteTable RawCode="1150" AbstractButton="Home" />
 </DocumentElement>
