@@ -133,7 +133,7 @@ namespace Commands
     #region Static Methods
 
     /// <summary>
-    /// Processes an array of strings to derefrence variables and replace special characters and strings.
+    /// Processes an array of strings to dereference variables and replace special characters and strings.
     /// </summary>
     /// <param name="variables">The variable list.</param>
     /// <param name="parameters">Array of parameter strings.</param>

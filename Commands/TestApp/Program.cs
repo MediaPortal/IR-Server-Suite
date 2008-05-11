@@ -17,6 +17,9 @@ namespace Commands
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
+      CommandEditDialog dialog = new CommandEditDialog(new ControlLabel());
+      dialog.ShowDialog();
+
       Processor commandProcessor = new Processor(new BlastIrDelegate(BlastIr), new string[] { "Default", "Port 1" });
 
       string[] categories = new string[]
