@@ -7,6 +7,9 @@ namespace DebugClient
   static class Program
   {
 
+    /// <summary>
+    /// Main method.
+    /// </summary>
     [STAThread]
     static void Main()
     {

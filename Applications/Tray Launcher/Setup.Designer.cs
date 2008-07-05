@@ -39,6 +39,8 @@ namespace TrayLauncher
       this.buttonCancel = new System.Windows.Forms.Button();
       this.checkBoxLaunchOnLoad = new System.Windows.Forms.CheckBox();
       this.groupBoxOptions = new System.Windows.Forms.GroupBox();
+      this.checkBoxRepeatsFocus = new System.Windows.Forms.CheckBox();
+      this.checkBoxOneInstance = new System.Windows.Forms.CheckBox();
       this.toolTip = new System.Windows.Forms.ToolTip(this.components);
       this.buttonRemoteButton = new System.Windows.Forms.Button();
       this.groupBoxServerHost = new System.Windows.Forms.GroupBox();
@@ -96,7 +98,7 @@ namespace TrayLauncher
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(152, 192);
+      this.buttonOK.Location = new System.Drawing.Point(152, 224);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
       this.buttonOK.TabIndex = 4;
@@ -108,7 +110,7 @@ namespace TrayLauncher
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(216, 192);
+      this.buttonCancel.Location = new System.Drawing.Point(216, 224);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
       this.buttonCancel.TabIndex = 5;
@@ -130,19 +132,46 @@ namespace TrayLauncher
       // 
       this.groupBoxOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxOptions.Controls.Add(this.checkBoxRepeatsFocus);
+      this.groupBoxOptions.Controls.Add(this.checkBoxOneInstance);
       this.groupBoxOptions.Controls.Add(this.checkBoxAuto);
       this.groupBoxOptions.Controls.Add(this.checkBoxLaunchOnLoad);
       this.groupBoxOptions.Location = new System.Drawing.Point(8, 136);
       this.groupBoxOptions.Name = "groupBoxOptions";
-      this.groupBoxOptions.Size = new System.Drawing.Size(264, 48);
+      this.groupBoxOptions.Size = new System.Drawing.Size(264, 80);
       this.groupBoxOptions.TabIndex = 2;
       this.groupBoxOptions.TabStop = false;
       this.groupBoxOptions.Text = "Options";
       // 
+      // checkBoxRepeatsFocus
+      // 
+      this.checkBoxRepeatsFocus.Enabled = false;
+      this.checkBoxRepeatsFocus.Location = new System.Drawing.Point(136, 48);
+      this.checkBoxRepeatsFocus.Name = "checkBoxRepeatsFocus";
+      this.checkBoxRepeatsFocus.Size = new System.Drawing.Size(120, 24);
+      this.checkBoxRepeatsFocus.TabIndex = 3;
+      this.checkBoxRepeatsFocus.Text = "Repeats focus";
+      this.toolTip.SetToolTip(this.checkBoxRepeatsFocus, "With the target application running if the trigger button is pressed then give it" +
+              " focus");
+      this.checkBoxRepeatsFocus.UseVisualStyleBackColor = true;
+      // 
+      // checkBoxOneInstance
+      // 
+      this.checkBoxOneInstance.Checked = true;
+      this.checkBoxOneInstance.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.checkBoxOneInstance.Location = new System.Drawing.Point(8, 48);
+      this.checkBoxOneInstance.Name = "checkBoxOneInstance";
+      this.checkBoxOneInstance.Size = new System.Drawing.Size(120, 24);
+      this.checkBoxOneInstance.TabIndex = 2;
+      this.checkBoxOneInstance.Text = "One instance only";
+      this.toolTip.SetToolTip(this.checkBoxOneInstance, "Don\'t start more than one instance of the target application");
+      this.checkBoxOneInstance.UseVisualStyleBackColor = true;
+      this.checkBoxOneInstance.CheckedChanged += new System.EventHandler(this.checkBoxOneInstance_CheckedChanged);
+      // 
       // buttonRemoteButton
       // 
       this.buttonRemoteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonRemoteButton.Location = new System.Drawing.Point(8, 192);
+      this.buttonRemoteButton.Location = new System.Drawing.Point(8, 224);
       this.buttonRemoteButton.Name = "buttonRemoteButton";
       this.buttonRemoteButton.Size = new System.Drawing.Size(96, 24);
       this.buttonRemoteButton.TabIndex = 3;
@@ -181,7 +210,7 @@ namespace TrayLauncher
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(280, 224);
+      this.ClientSize = new System.Drawing.Size(280, 256);
       this.Controls.Add(this.buttonRemoteButton);
       this.Controls.Add(this.groupBoxServerHost);
       this.Controls.Add(this.groupBoxOptions);
@@ -217,5 +246,7 @@ namespace TrayLauncher
     private System.Windows.Forms.GroupBox groupBoxServerHost;
     private System.Windows.Forms.Button buttonRemoteButton;
     private System.Windows.Forms.ComboBox comboBoxComputer;
+    private System.Windows.Forms.CheckBox checkBoxOneInstance;
+    private System.Windows.Forms.CheckBox checkBoxRepeatsFocus;
   }
 }

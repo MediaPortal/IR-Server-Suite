@@ -65,7 +65,7 @@ namespace Translator
     }
 
     /// <summary>
-    /// System wide button mappings.
+    /// Gets system wide button mappings.
     /// </summary>
     /// <value>The system wide mappings.</value>
     [XmlArray]
@@ -75,7 +75,7 @@ namespace Translator
     }
 
     /// <summary>
-    /// Program settings.
+    /// Gets program settings.
     /// </summary>
     /// <value>The programs.</value>
     [XmlArray]
@@ -85,7 +85,7 @@ namespace Translator
     }
 
     /// <summary>
-    /// Mapped events.
+    /// Gets mapped events.
     /// </summary>
     /// <value>The events.</value>
     [XmlArray]

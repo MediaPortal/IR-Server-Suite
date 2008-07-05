@@ -60,7 +60,6 @@ namespace IrFileTool
 
     #endregion Constructor
 
-
     void RefreshForm()
     {
       if (String.IsNullOrEmpty(_fileName))
@@ -653,7 +652,7 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
 
       string port = comboBoxPort.Text;
       byte[] codeBytes = _code.ToByteArray();
-
+ 
       byte[] outData = new byte[4 + port.Length + codeBytes.Length];
 
       BitConverter.GetBytes(port.Length).CopyTo(outData, 0);

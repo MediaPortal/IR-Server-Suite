@@ -28,7 +28,7 @@ namespace IRBlast
 
     static string _blastPort = "Default";
 
-    static int _delay = 50;
+    static int _delay = 250;
 
     static bool _treatAsChannelNumber;
     static int _padChannelNumber;
@@ -59,25 +59,29 @@ namespace IRBlast
 
           for (int index = 0; index < args.Length; index++)
           {
-            switch (args[index].ToUpperInvariant())
+            string parameter = args[index].ToUpperInvariant();
+            if (parameter.StartsWith("-", StringComparison.Ordinal) || parameter.StartsWith("/", StringComparison.Ordinal))
+              parameter = parameter.Substring(1);
+
+            switch (parameter)
             {
-              case "-HOST":
+              case "HOST":
                 _serverHost = args[++index];
                 continue;
 
-              case "-PORT":
+              case "PORT":
                 _blastPort = args[++index];
                 continue;
 
-              case "-DELAY":
+              case "DELAY":
                 _delay = int.Parse(args[++index]);
                 continue;
 
-              case "-CHANNEL":
+              case "CHANNEL":
                 _treatAsChannelNumber = true;
                 continue;
 
-              case "-PAD":
+              case "PAD":
                 _padChannelNumber = int.Parse(args[++index]);
                 continue;
 
@@ -201,15 +205,17 @@ namespace IRBlast
     {
       IrssLog.Debug("Show Help");
 
-      Console.WriteLine("IRBlast [-host x] [-port x] [-speed x] [-pad x] [-channel] <commands>");
+      Console.WriteLine("IRBlast [-host x] [-port x] [-delay x] [-pad x] [-channel] <commands>");
       Console.WriteLine("");
-      Console.WriteLine("Use -host to specify the computer that is hosting the IR Server.");
+      Console.WriteLine("Use -host to specify the computer that is hosting the IR Server (Optional,");
+      Console.WriteLine("  defaults to localhost).");
       Console.WriteLine("Use -port to blast to a particular blaster port (Optional).");
-      Console.WriteLine("Use -speed to set the blaster speed (Optional).");
       Console.WriteLine("Use -channel to tell IR Blast to break apart the following IR Command and");
-      Console.WriteLine(" use each digit for a separate IR blast (Optional).");
+      Console.WriteLine("  use each digit for a separate IR blast (Optional).");
+      Console.WriteLine("Use -delay to specify a time to delay between each command or digit in a");
+      Console.WriteLine("  channel number (Optional).");
       Console.WriteLine("Use -pad to tell IR Blast to pad channel numbers to a certain length");
-      Console.WriteLine(" (Optional, Requires -channel).");
+      Console.WriteLine("  (Optional, Requires -channel).");
       Console.WriteLine("Use a tilde ~ between commands to insert half second pauses.");
       Console.WriteLine("");
       Console.WriteLine("");

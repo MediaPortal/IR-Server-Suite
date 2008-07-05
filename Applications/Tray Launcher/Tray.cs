@@ -26,6 +26,8 @@ namespace TrayLauncher
 
     static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Tray Launcher\\Tray Launcher.xml");
 
+    const string ProcessCommandThreadName = "ProcessCommand";
+
     #endregion Constants
 
     #region Variables
@@ -40,6 +42,8 @@ namespace TrayLauncher
     string _programFile;
     bool _autoRun;
     bool _launchOnLoad;
+    bool _oneInstanceOnly;
+    bool _repeatsFocus;
     string _launchKeyCode;
 
     Container _container;
@@ -139,7 +143,7 @@ namespace TrayLauncher
           _notifyIcon.Visible = true;
 
           if (!didSetup && _launchOnLoad)
-            ClickLaunch(null, null);
+            Launch();
 
           return true;
         }
@@ -188,28 +192,33 @@ namespace TrayLauncher
         _autoRun = false;
       }
 
+      XmlDocument doc = new XmlDocument();
+
       try
       {
-        XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
-
-        _serverHost     = doc.DocumentElement.Attributes["ServerHost"].Value;
-        _programFile    = doc.DocumentElement.Attributes["ProgramFile"].Value;
-        _launchOnLoad   = bool.Parse(doc.DocumentElement.Attributes["LaunchOnLoad"].Value);
-        _launchKeyCode  = doc.DocumentElement.Attributes["LaunchKeyCode"].Value;
       }
       catch (FileNotFoundException)
       {
         IrssLog.Warn("Configuration file not found, using defaults");
 
         CreateDefaultSettings();
+        return;
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
         CreateDefaultSettings();
+        return;
       }
+
+      try { _serverHost       = doc.DocumentElement.Attributes["ServerHost"].Value; }                   catch { _serverHost = "localhost"; }
+      try { _programFile      = doc.DocumentElement.Attributes["ProgramFile"].Value; }                  catch { _programFile = String.Empty; }
+      try { _launchOnLoad     = bool.Parse(doc.DocumentElement.Attributes["LaunchOnLoad"].Value); }     catch { _launchOnLoad = false; }
+      try { _oneInstanceOnly  = bool.Parse(doc.DocumentElement.Attributes["OneInstanceOnly"].Value); }  catch { _oneInstanceOnly = true; }
+      try { _repeatsFocus     = bool.Parse(doc.DocumentElement.Attributes["RepeatsFocus"].Value); }     catch { _repeatsFocus = true; }
+      try { _launchKeyCode    = doc.DocumentElement.Attributes["LaunchKeyCode"].Value; }                catch { _launchKeyCode = "Start"; }
     }
     void SaveSettings()
     {
@@ -235,10 +244,12 @@ namespace TrayLauncher
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
-          writer.WriteAttributeString("ServerHost", _serverHost);
-          writer.WriteAttributeString("ProgramFile", _programFile);
-          writer.WriteAttributeString("LaunchOnLoad", _launchOnLoad.ToString());
-          writer.WriteAttributeString("LaunchKeyCode", _launchKeyCode);
+          writer.WriteAttributeString("ServerHost",       _serverHost);
+          writer.WriteAttributeString("ProgramFile",      _programFile);
+          writer.WriteAttributeString("LaunchOnLoad",     _launchOnLoad.ToString());
+          writer.WriteAttributeString("OneInstanceOnly",  _oneInstanceOnly.ToString());
+          writer.WriteAttributeString("RepeatsFocus",     _repeatsFocus.ToString());          
+          writer.WriteAttributeString("LaunchKeyCode",    _launchKeyCode);
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
@@ -251,10 +262,12 @@ namespace TrayLauncher
     }
     void CreateDefaultSettings()
     {
-      _serverHost     = "localhost";
-      _programFile    = String.Empty;
-      _launchOnLoad   = false;
-      _launchKeyCode  = "Start";
+      _serverHost       = "localhost";
+      _programFile      = String.Empty;
+      _launchOnLoad     = false;
+      _oneInstanceOnly  = true;
+      _repeatsFocus     = true;
+      _launchKeyCode    = "Start";
 
       SaveSettings();
     }
@@ -380,7 +393,7 @@ namespace TrayLauncher
       IrssLog.Info("Remote Event: {0}", keyCode);
 
       if (keyCode.Equals(_launchKeyCode, StringComparison.Ordinal))
-        ClickLaunch(null, null);
+        Launch();
     }
 
     bool Configure()
@@ -428,54 +441,7 @@ namespace TrayLauncher
     {
       IrssLog.Info("Launch");
 
-      if (_inConfiguration)
-      {
-        IrssLog.Info("In Configuration");
-        return;
-      }
-
-      try
-      {
-        // Check for multiple instances
-        foreach (Process process in Process.GetProcesses())
-        {
-          try
-          {
-            if (Path.GetFileName(process.MainModule.ModuleName).Equals(Path.GetFileName(_programFile), StringComparison.OrdinalIgnoreCase))
-            {
-              IrssLog.Info("Program already running.");
-              return;
-            }
-          }
-          catch (Win32Exception ex)
-          {
-            if (ex.ErrorCode != -2147467259) // Ignore "Unable to enumerate the process modules" errors.
-              IrssLog.Error(ex);
-          }
-          catch (Exception ex)
-          {
-            IrssLog.Error(ex);
-          }
-        }
-
-        string[] launchCommand = new string[] {
-          _programFile,
-          Path.GetDirectoryName(_programFile),
-          String.Empty,
-          Enum.GetName(typeof(ProcessWindowStyle), ProcessWindowStyle.Normal),
-          false.ToString(),
-          true.ToString(),
-          false.ToString(),
-          true.ToString()        
-        };
-
-        Common.ProcessRunCommand(launchCommand);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Tray Launcher", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
+      Launch();
     }
     void ClickQuit(object sender, EventArgs e)
     {
@@ -490,6 +456,71 @@ namespace TrayLauncher
       Stop();
 
       Application.Exit();
+    }
+
+    void Launch()
+    {
+      if (_inConfiguration)
+      {
+        IrssLog.Info("Can't launch target application, in Configuration");
+        return;
+      }
+
+      try
+      {
+        // Check for multiple instances
+        if (_oneInstanceOnly)
+        {
+          foreach (Process process in Process.GetProcesses())
+          {
+            try
+            {
+              if (Path.GetFileName(process.MainModule.ModuleName).Equals(Path.GetFileName(_programFile), StringComparison.OrdinalIgnoreCase))
+              {
+                IrssLog.Info("Can't launch target application, program already running");
+                if (_repeatsFocus)
+                {
+                  IrssLog.Info("Attempting to give focus to target application ...");
+
+                  FocusForcer forcer = new FocusForcer(process.Id);
+                  forcer.ForceOnce();
+                }
+                return;
+              }
+            }
+            catch (Win32Exception ex)
+            {
+              if (ex.ErrorCode != -2147467259) // Ignore "Unable to enumerate the process modules" errors.
+                IrssLog.Error(ex);
+            }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex);
+            }
+          }
+        }
+
+        IrssLog.Info("Launching \"{0}\" ...", _programFile);
+
+        string[] launchCommand = new string[]
+        {
+          _programFile,
+          Path.GetDirectoryName(_programFile),
+          String.Empty,
+          Enum.GetName(typeof(ProcessWindowStyle), ProcessWindowStyle.Normal),
+          false.ToString(),
+          true.ToString(),
+          false.ToString(),
+          true.ToString()
+        };
+
+        Common.ProcessRunCommand(launchCommand);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Tray Launcher", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     #endregion Implementation

@@ -110,9 +110,7 @@ namespace Translator
       find.Description = "Please specify the starting folder for the application";
       find.ShowNewFolderButton = true;
       if (find.ShowDialog(this) == DialogResult.OK)
-      {
         textBoxAppStartFolder.Text = find.SelectedPath;
-      }
     }
 
     private void buttonTest_Click(object sender, EventArgs e)

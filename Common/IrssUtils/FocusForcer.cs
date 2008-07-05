@@ -36,6 +36,38 @@ namespace IrssUtils
 
     #region Public Methods
 
+    public bool ForceOnce()
+    {
+      Process process = Process.GetProcessById(_processId);
+      if (process == null || process.HasExited)
+        throw new InvalidOperationException("Cannot force focus, process is not running");
+
+      _waitHandle = new AutoResetEvent(false);
+
+      try
+      {
+        Win32.EnumWindowsProc ewc = new Win32.EnumWindowsProc(CheckWindow);
+
+        int focusedId = Win32.GetForegroundWindowPID();
+        if (focusedId != _processId)
+        {
+          _windowHandle = IntPtr.Zero;
+          Win32.EnumerateWindows(ewc, IntPtr.Zero);
+
+          bool waitResult = _waitHandle.WaitOne(5000, false);
+          if (waitResult && _windowHandle != IntPtr.Zero)
+            return Win32.SetForegroundWindow(_windowHandle, true);
+        }
+      }
+      finally
+      {
+        _waitHandle.Close();
+        _waitHandle = null;
+      }
+
+      return false;
+    }
+
     /// <summary>
     /// Forces the process into focus (once).
     /// </summary>
@@ -64,8 +96,7 @@ namespace IrssUtils
             Win32.EnumerateWindows(ewc, IntPtr.Zero);
 
             bool waitResult = _waitHandle.WaitOne(5000, false);
-
-            if (_windowHandle != IntPtr.Zero)
+            if (waitResult && _windowHandle != IntPtr.Zero)
               return Win32.SetForegroundWindow(_windowHandle, true);
           }
 

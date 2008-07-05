@@ -8,6 +8,9 @@ using IrssUtils;
 namespace TrayLauncher
 {
 
+  /// <summary>
+  /// Tray Launcher Program class.
+  /// </summary>
   static class Program
   {
 

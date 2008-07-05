@@ -85,7 +85,7 @@ namespace Translator
     /// <summary>
     /// Starts this instance.
     /// </summary>
-    /// <returns></returns>
+    /// <returns><c>true</c> if successful; otherwise, <c>false</c>.</returns>
     public bool Start()
     {
       if (Handle != IntPtr.Zero)

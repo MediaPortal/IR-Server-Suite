@@ -45,6 +45,16 @@ namespace TrayLauncher
       get { return checkBoxLaunchOnLoad.Checked; }
       set { checkBoxLaunchOnLoad.Checked = value; }
     }
+    public bool OneInstanceOnly
+    {
+      get { return checkBoxOneInstance.Checked; }
+      set { checkBoxOneInstance.Checked = value; }
+    }
+    public bool RepeatsFocus
+    {
+      get { return checkBoxRepeatsFocus.Checked; }
+      set { checkBoxRepeatsFocus.Checked = value; }
+    }    
     public string LaunchKeyCode
     {
       get { return _launchKeyCode; }
@@ -112,6 +122,11 @@ namespace TrayLauncher
         return;
 
       _launchKeyCode = keyCode;
+    }
+
+    private void checkBoxOneInstance_CheckedChanged(object sender, EventArgs e)
+    {
+      checkBoxRepeatsFocus.Enabled = checkBoxOneInstance.Checked;
     }
 
   }

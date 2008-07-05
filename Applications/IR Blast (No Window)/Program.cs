@@ -29,7 +29,7 @@ namespace IRBlast
 
     static string _blastPort = "Default";
 
-    static int _delay = 50;
+    static int _delay = 250;
 
     static bool _treatAsChannelNumber;
     static int _padChannelNumber;
@@ -58,25 +58,29 @@ namespace IRBlast
 
           for (int index = 0; index < args.Length; index++)
           {
-            switch (args[index].ToUpperInvariant())
+            string parameter = args[index].ToUpperInvariant();
+            if (parameter.StartsWith("-", StringComparison.Ordinal) || parameter.StartsWith("/", StringComparison.Ordinal))
+              parameter = parameter.Substring(1);
+
+            switch (parameter)
             {
-              case "-HOST":
+              case "HOST":
                 _serverHost = args[++index];
                 continue;
 
-              case "-PORT":
+              case "PORT":
                 _blastPort = args[++index];
                 continue;
 
-              case "-DELAY":
+              case "DELAY":
                 _delay = int.Parse(args[++index]);
                 continue;
 
-              case "-CHANNEL":
+              case "CHANNEL":
                 _treatAsChannelNumber = true;
                 continue;
 
-              case "-PAD":
+              case "PAD":
                 _padChannelNumber = int.Parse(args[++index]);
                 continue;
 

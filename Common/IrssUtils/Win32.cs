@@ -2250,7 +2250,6 @@ namespace IrssUtils
       Trace.WriteLine("SetForegroundWindow: Done");
 #endif
 
-
       // We've done all that we can so base our return value on whether we have succeeded or not
       return (GetForegroundWindow() == hWnd);
     }

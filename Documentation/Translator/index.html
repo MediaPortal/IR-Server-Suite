@@ -19,7 +19,7 @@ Request an IR command be blast to the specified port.</LI>
 Execute the given macro.</LI>
 <BR>
 <LI>-eject [Drive]<BR>
-Eject the supplied optical drive.</LI>
+Eject the optical drive specified.</LI>
 <BR>
 <LI>-shutdown<BR>
 Request a system shutdown.</LI>
@@ -39,12 +39,16 @@ Request a user log off.</LI>
 <LI>-osd<BR>
 Display the Translator On-Screen Display.</LI>
 <BR>
-<LI>-channel [Number] [Padding] [Port]<BR>
+<LI>-channel [Number] [Padding] [Port] [Delay]<BR>
 Blast a series of IR Commands contained within the given channel number.<BR>
 Use the padding value to specify the minimum size of the channel number.<BR>
+You can specify a delay (in milliseconds) between each channel digit.<BR>
 All blasting will be performed on the specified port.</LI>
+<BR>
+<LI>-config [Config File]<BR>
+Use a specific configuration file.</LI>
 </UL>
-Translator must already be running for command line parameters to be acted on.</P>
+Translator must already be running for command line parameters to be acted on (except -config).</P>
 
 <IMG SRC="programs.png">
 

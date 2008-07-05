@@ -107,7 +107,7 @@ namespace VirtualRemote
 
       if (args.Length > 0) // Command Line Start ...
       {
-        List<String> virtualButtons = new List<string>();
+        List<string> virtualButtons = new List<string>();
         
         try
         {
@@ -148,7 +148,7 @@ namespace VirtualRemote
 
           if (_registered)
           {
-            foreach (String button in virtualButtons)
+            foreach (string button in virtualButtons)
             {
               if (button.StartsWith("~", StringComparison.OrdinalIgnoreCase))
               {

@@ -165,19 +165,19 @@ namespace Translator
       // Adjust process priority ...
       AdjustPriority(_config.ProcessPriority);
 
-      /*
-      foreach (ProgramSettings progSettings in _config.Programs)
-      {
-        AppProfile profile = new AppProfile();
+      
+      //foreach (ProgramSettings progSettings in _config.Programs)
+      //{
+      //  AppProfile profile = new AppProfile();
 
-        profile.Name = progSettings.Name;
-        profile.MatchType = AppProfile.DetectionMethod.Executable;
-        profile.MatchParameters = progSettings.FileName;
-        profile.ButtonMappings.AddRange(progSettings.ButtonMappings);
+      //  profile.Name = progSettings.Name;
+      //  profile.MatchType = AppProfile.DetectionMethod.Executable;
+      //  profile.MatchParameters = progSettings.FileName;
+      //  profile.ButtonMappings.AddRange(progSettings.ButtonMappings);
 
-        AppProfile.Save(profile, "C:\\" + profile.Name + ".xml");
-      }
-      */
+      //  AppProfile.Save(profile, "C:\\" + profile.Name + ".xml");
+      //}
+      
 
       // Setup notify icon ...
       _container = new Container();
@@ -282,88 +282,95 @@ namespace Translator
       for (int index = 0; index < args.Length; index++)
       {
         string command = args[index].ToUpperInvariant();
+        if (command.StartsWith("-") || command.StartsWith("/"))
+          command = command.Substring(1);
 
         switch (command)
         {
-          case "-BLAST":
+          case "BLAST":
             if (args.Length > index + 2)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + args[++index] + '|' + args[++index]);
             else
               throw new CommandStructureException("Blast command requires two parameters (IR file, Port)");
-            continue;
+            break;
 
-          case "-MACRO":
+          case "MACRO":
             if (args.Length > index + 1)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixMacro + args[++index]);
             else
               throw new CommandStructureException("Macro command requires a parameter (Macro file)");
-            continue;
+            break;
 
-          case "-EJECT":
+          case "EJECT":
             if (args.Length > index + 1)
               CopyDataWM.SendCopyDataMessage(Common.CmdPrefixEject + args[++index]);
             else
               throw new CommandStructureException("Eject command requires a parameter (Drive)");
-            continue;
+            break;
 
-          case "-SHUTDOWN":
+          case "SHUTDOWN":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixShutdown);
-            continue;
+            break;
 
-          case "-REBOOT":
+          case "REBOOT":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixReboot);
-            continue;
+            break;
 
-          case "-STANDBY":
+          case "STANDBY":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixStandby);
-            continue;
+            break;
 
-          case "-HIBERNATE":
+          case "HIBERNATE":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixHibernate);
-            continue;
+            break;
 
-          case "-LOGOFF":
+          case "LOGOFF":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixLogOff);
-            continue;
+            break;
 
-          case "-OSD":
+          case "OSD":
             CopyDataWM.SendCopyDataMessage(Common.CmdPrefixTranslator);
-            continue;
+            break;
 
-          case "-CHANNEL":
+          case "CHANNEL":
+            if (args.Length > index + 4)
             {
-              if (args.Length > index + 3)
+              string channel = args[++index];
+              int padding = int.Parse(args[++index]);
+              string port = args[++index];
+              int delay = int.Parse(args[++index]);
+
+              while (channel.Length < padding)
+                channel = '0' + channel;
+
+              foreach (char digit in channel)
               {
-                string channel = args[++index];
-                int padding = int.Parse(args[++index]);
-                string port = args[++index];
-
-                while (channel.Length < padding)
-                  channel = '0' + channel;
-
-                foreach (char digit in channel)
-                  CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + digit + '|' + port);
+                CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + digit + '|' + port);
+                if (delay > 0)
+                  Thread.Sleep(delay);
               }
-              else
-              {
-                throw new CommandStructureException("Channel command requires three parameters (Channel, Padding, Port)");
-              }
-
-              continue;
             }
+            else
+            {
+              throw new CommandStructureException("Channel command requires three parameters (Channel, Padding, Port, Delay)");
+            }
+            break;
 
-          case "-CONFIG":
+          case "CONFIG":
             if (args.Length > index + 1)
               _configFile = args[++index];
             else
               throw new CommandStructureException("Config command requires a parameter (Config file path)");
 
             dontRun = false;
-            continue;
+            break;
 
 
-          //TODO: Add more command line options.
+          // TODO: Add more command line options.
 
+
+          default:
+            throw new CommandStructureException(String.Format("Unrecognised command line parameter \"{0}\"", args[index]));
         }
       }
 
@@ -447,18 +454,16 @@ namespace Translator
         _notifyIcon.ContextMenuStrip.Items.Add(launch);
       }
       
-      /*
-      string[] irList = Common.GetIRList(false);
-      if (irList.Length > 0)
-      {
-        ToolStripMenuItem irCommands = new ToolStripMenuItem("&IR Commands");
+      //string[] irList = Common.GetIRList(false);
+      //if (irList.Length > 0)
+      //{
+      //  ToolStripMenuItem irCommands = new ToolStripMenuItem("&IR Commands");
 
-        foreach (string irCommand in irList)
-          irCommands.DropDownItems.Add(irCommand, null, new EventHandler(ClickIrCommand));
+      //  foreach (string irCommand in irList)
+      //    irCommands.DropDownItems.Add(irCommand, null, new EventHandler(ClickIrCommand));
 
-        _notifyIcon.ContextMenuStrip.Items.Add(irCommands);
-      }
-      */
+      //  _notifyIcon.ContextMenuStrip.Items.Add(irCommands);
+      //}
 
       string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
       if (macroList.Length > 0)
@@ -853,7 +858,7 @@ namespace Translator
         int pid = Win32.GetForegroundWindowPID();
         if (pid == -1)
         {
-          IrssLog.Debug("Failed to retreive foreground window process ID");
+          IrssLog.Debug("Failed to retrieve foreground window process ID");
           return null;
         }
 
