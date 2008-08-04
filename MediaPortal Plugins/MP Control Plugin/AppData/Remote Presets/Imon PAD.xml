@@ -1,0 +1,189 @@
+<?xml version="1.0" standalone="yes"?>
+<remotes>
+	<remote name="iMon Pad">
+
+		<button name="PowerTV">
+			<code value="1002"/>
+		</button>
+		<button name="Power2">
+			<code value="1016"/>
+		</button>
+		<button name="Record">
+			<code value="1064"/>
+		</button>
+		<button name="Play">
+			<code value="1128"/>
+		</button>
+		<button name="Open">
+			<code value="1114"/>
+		</button>
+		<button name="Rewind">
+			<code value="1130"/>
+		</button>
+		<button name="Pause">
+			<code value="1144"/>
+		</button>
+		<button name="Forward">
+			<code value="1192"/>
+		</button>
+		<button name="Replay">
+			<code value="1208"/>
+		</button>
+		<button name="Stop">
+			<code value="1220"/>
+		</button>
+		<button name="Skip">
+			<code value="1066"/>
+		</button>
+
+		<button name="Back">
+			<code value="1032"/>
+		</button>
+		<button name="Ok">
+			<code value="1148"/>
+		</button>
+		<button name="WinStart">
+			<code value="1194"/>
+		</button>
+		<button name="WinMenu">
+			<code value="1060"/>
+		</button>
+
+		<button name="LeftClick">
+			<code value="1226"/>
+		</button>
+		<button name="RightClick">
+			<code value="1228"/>
+		</button>
+
+		<button name="Enter">
+			<code value="1034"/>
+		</button>
+		<button name="Esc">
+			<code value="1252"/>
+		</button>
+		<button name="Eject">
+			<code value="1086"/>
+		</button>
+		<button name="AppLauncher">
+			<code value="1124"/>
+		</button>
+		<button name="Start">
+			<code value="1178"/>
+		</button>
+		<button name="TaskSwitcher">
+			<code value="1150"/>
+		</button>
+
+		<button name="Mute">
+			<code value="1218"/>
+		</button>
+		<button name="VolumeUp">
+			<code value="1038"/>
+		</button>
+		<button name="ChannelUp">
+			<code value="1022"/>
+		</button>
+		<button name="Timer">
+			<code value="1198"/>
+		</button>
+		<button name="VolumeDown">
+			<code value="1042"/>
+		</button>
+		<button name="ChannelDown">
+			<code value="1014"/>
+		</button>
+
+		<button name="NumPad1">
+			<code value="1058"/>
+		</button>
+		<button name="NumPad2">
+			<code value="1242"/>
+		</button>
+		<button name="NumPad3">
+			<code value="1050"/>
+		</button>
+		<button name="NumPad4">
+			<code value="1138"/>
+		</button>
+		<button name="NumPad5">
+			<code value="1090"/>
+		</button>
+		<button name="NumPad6">
+			<code value="1170"/>
+		</button>
+		<button name="NumPad7">
+			<code value="1214"/>
+		</button>
+		<button name="NumPad8">
+			<code value="1136"/>
+		</button>
+		<button name="NumPad9">
+			<code value="1160"/>
+		</button>
+		<button name="ShiftTab">
+			<code value="1096"/>
+		</button>
+		<button name="NumPad0">
+			<code value="1234"/>
+		</button>
+		<button name="Tab">
+			<code value="1056"/>
+		</button>
+
+		<button name="MyVideos">
+			<code value="1200"/>
+		</button>
+		<!-- TeleText Red !-->
+		<button name="MyMusic">
+			<code value="1082"/>
+		</button>
+		<!-- TeleText Green !-->
+		<button name="MyPictures">
+			<code value="1224"/>
+		</button>
+		<!-- TeleText Blue !-->
+		<button name="MyTV">
+			<code value="1040"/>
+		</button>
+		<!-- TeleText Yellow !-->
+		<button name="Bookmark">
+			<code value="1008"/>
+		</button>
+		<button name="Thumbnail">
+			<code value="1188"/>
+		</button>
+		<button name="AspectRatio">
+			<code value="1106"/>
+		</button>
+		<button name="FullScreen">
+			<code value="1166"/>
+		</button>
+		<button name="MyDVD">
+			<code value="1102"/>
+		</button>
+		<button name="Menu">
+			<code value="1230"/>
+		</button>
+		<button name="Caption">
+			<code value="1074"/>
+		</button>
+		<button name="Language">
+			<code value="1202"/>
+		</button>
+
+		<button name="Up">
+			<code value="1250"/>
+		</button>
+		<button name="Down">
+			<code value="1248"/>
+		</button>
+		<button name="Left">
+			<code value="1246"/>
+		</button>
+		<button name="Right">
+			<code value="1244"/>
+		</button>
+
+	</remote>
+</remotes>

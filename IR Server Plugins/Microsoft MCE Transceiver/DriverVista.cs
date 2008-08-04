@@ -581,26 +581,36 @@ namespace InputService.Plugin
     /// </summary>
     public override void Start()
     {
+      try
+      {
 #if DEBUG
-      DebugOpen("MicrosoftMceTransceiver_DriverVista.log");
-      DebugWriteLine("Start()");
-      DebugWriteLine("Device Guid: {0}", _deviceGuid);
-      DebugWriteLine("Device Path: {0}", _devicePath);
+        DebugOpen("MicrosoftMceTransceiver_DriverVista.log");
+        DebugWriteLine("Start()");
+        DebugWriteLine("Device Guid: {0}", _deviceGuid);
+        DebugWriteLine("Device Path: {0}", _devicePath);
 #endif
 
-      _notifyWindow = new NotifyWindow();
-      _notifyWindow.Create();
-      _notifyWindow.Class = _deviceGuid;
-      _notifyWindow.RegisterDeviceArrival();
+        _notifyWindow = new NotifyWindow();
+        _notifyWindow.Create();
+        _notifyWindow.Class = _deviceGuid;
+        //_notifyWindow.RegisterDeviceArrival();
 
-      OpenDevice();
-      InitializeDevice();
+        OpenDevice();
+        InitializeDevice();
 
-      StartReceive(_receivePort, PacketTimeout);
-      StartReadThread(ReadThreadMode.Receiving);
+        StartReceive(_receivePort, PacketTimeout);
+        StartReadThread(ReadThreadMode.Receiving);
 
-      _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
-      _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
+        _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
+        _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
+      }
+      catch
+      {
+#if DEBUG
+        DebugClose();
+#endif
+        throw;
+      }
     }
 
     /// <summary>
@@ -875,15 +885,18 @@ namespace InputService.Plugin
         return;
       }
 
+      //if (_eHomeHandle != null)
+      //  CancelIo(_eHomeHandle);
+
+      if (_readThread.IsAlive)
+      {
+        _readThread.Abort();
+
+        if (Thread.CurrentThread != _readThread)
+          _readThread.Join();
+      }
+
       _readThreadMode = ReadThreadMode.Stop;
-
-      //_readThread.Abort();
-
-      if (_eHomeHandle != null)
-        CancelIo(_eHomeHandle);
-
-      //if (Thread.CurrentThread != _readThread)
-        //_readThread.Join();
 
       _readThread = null;
     }
@@ -918,10 +931,15 @@ namespace InputService.Plugin
       bool success = false;
       _eHomeHandle.DangerousAddRef(ref success);
       if (success)
+      {
+        //_notifyWindow.UnregisterDeviceArrival();  // If the device is present then we don't want to monitor arrival.
         _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
+      }
 #if DEBUG
       else
+      {
         DebugWriteLine("Warning: Failed to initialize device removal notification");
+      }
 #endif
 
       Thread.Sleep(PacketTimeout); // Hopefully improves compatibility with Zalman remote which times out retrieving device capabilities. (2008-01-01)
@@ -1061,7 +1079,22 @@ namespace InputService.Plugin
         if (receiveParamsPtr != IntPtr.Zero)
           Marshal.FreeHGlobal(receiveParamsPtr);
 
-        StopReceive();
+        try
+        {
+          if (_eHomeHandle != null)
+            StopReceive();
+        }
+#if DEBUG
+        catch (Exception ex)
+        {
+          DebugWriteLine(ex.ToString());
+        }
+#else
+        catch
+        {
+          // Ignore this exception, we're closing it down anyway.
+        }
+#endif
       }
 
 #if DEBUG

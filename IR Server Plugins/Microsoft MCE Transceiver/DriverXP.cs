@@ -183,6 +183,8 @@ namespace InputService.Plugin
     public override void Start()
     {
 #if DEBUG
+      try
+      {
       DebugOpen("MicrosoftMceTransceiver_DriverXP.log");
       DebugWriteLine("Start()");
       DebugWriteLine("Device Guid: {0}", _deviceGuid);
@@ -201,6 +203,14 @@ namespace InputService.Plugin
 
       _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
       _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
+#if DEBUG
+      }
+      catch
+      {
+        DebugClose();
+        throw;
+      }
+#endif
     }
 
     /// <summary>

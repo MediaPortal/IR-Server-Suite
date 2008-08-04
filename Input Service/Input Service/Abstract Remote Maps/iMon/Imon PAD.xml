@@ -51,4 +51,8 @@
   <RemoteTable RawCode="1124" AbstractButton="Teletext" />
   <RemoteTable RawCode="1198" AbstractButton="Guide" />
   <RemoteTable RawCode="1150" AbstractButton="Home" />
+
+	<RemoteTable RawCode="1226" AbstractButton="LeftClick" />
+	<RemoteTable RawCode="1228" AbstractButton="RightClick" />
+
 </DocumentElement>
