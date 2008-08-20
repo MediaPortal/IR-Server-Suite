@@ -483,6 +483,7 @@ namespace InputService
 
         #region Suspend
         case PowerBroadcastStatus.Suspend:
+          // TODO: if anyone has any trouble with on-suspend commands then try changing this to QuerySuspend.
           IrssLog.Info("Entering standby ...");
 
           bool suspendedTransmit = false;

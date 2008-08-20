@@ -415,11 +415,11 @@ namespace Translator
       switch (e.Mode)
       {
         case PowerModes.Resume:
-          MapEvent(MappingEvent.PC_Resume);
+          MapEvent(MappingEvent.PC_Resume, true);
           break;
 
         case PowerModes.Suspend:
-          MapEvent(MappingEvent.PC_Suspend);
+          MapEvent(MappingEvent.PC_Suspend, false);
           break;
       }
     }
@@ -428,11 +428,11 @@ namespace Translator
       switch (e.Reason)
       {
         case SessionEndReasons.Logoff:
-          MapEvent(MappingEvent.PC_Logoff);
+          MapEvent(MappingEvent.PC_Logoff, false);
           break;
 
         case SessionEndReasons.SystemShutdown:
-          MapEvent(MappingEvent.PC_Shutdown);
+          MapEvent(MappingEvent.PC_Shutdown, false);
           break;
       }
     }
@@ -658,7 +658,7 @@ namespace Translator
         return;
       }
 
-      MapEvent(MappingEvent.Translator_Quit);
+      MapEvent(MappingEvent.Translator_Quit, false);
 
       Application.Exit();
     }
@@ -692,7 +692,7 @@ namespace Translator
       if (_firstConnection)
       {
         _firstConnection = false;
-        MapEvent(MappingEvent.Translator_Start);
+        MapEvent(MappingEvent.Translator_Start, true);
       }
     }
     static void Disconnected(object obj)
@@ -978,7 +978,7 @@ namespace Translator
         Mouse.Button((Mouse.MouseEvents)buttons);
     }
 
-    static void MapEvent(MappingEvent theEvent)
+    static void MapEvent(MappingEvent theEvent, bool async)
     {
       if (_inConfiguration)
         return;
@@ -1006,7 +1006,7 @@ namespace Translator
             try
             {
               IrssLog.Info("Event mapped: {0}, {1}", eventName, mappedEvent.Command);
-              ProcessCommand(mappedEvent.Command, true);
+              ProcessCommand(mappedEvent.Command, async);
             }
             catch (Exception ex)
             {
