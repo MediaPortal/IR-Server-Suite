@@ -24,34 +24,36 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// WinLIRC server class implementing communication with WinLIRC.
   /// All remotes are supported as long as WinLIRC supports them.
   /// </summary>
-  class WinLircServer
+  internal class WinLircServer
   {
-
     #region Variables
 
+    #region Delegates
+
     public delegate void CommandEventHandler(WinLircCommand cmd);
+
+    #endregion
+
+    private readonly TimeSpan _buttonReleaseTime;
+    // Time span in which multiple receptions of the same command are ignored
+
+    private readonly int _repeatDelay; // Number of repeats to ignore before repeating
+    private readonly Socket _socket; // Socket for WinLIRC communication
+    private AsyncCallback _dataCallback; // Callback function receiving data from WinLIRC
+    private IAsyncResult _dataCallbackResult; // Result of the callback function
+    private WinLircCommand _lastCommand; // Last command actually sent to InputHandler
     public event CommandEventHandler CommandEvent;
-    
-    Socket _socket;                   // Socket for WinLIRC communication
-    TimeSpan _buttonReleaseTime;      // Time span in which multiple receptions of the same command are ignored
-    int _repeatDelay;                 // Number of repeats to ignore before repeating
-    AsyncCallback _dataCallback;      // Callback function receiving data from WinLIRC
-    IAsyncResult _dataCallbackResult; // Result of the callback function
-    WinLircCommand _lastCommand;      // Last command actually sent to InputHandler
 
     #endregion Variables
 
@@ -84,10 +86,11 @@ namespace InputService.Plugin
       try
       {
         if (_dataCallback == null)
-          _dataCallback = new AsyncCallback(OnDataReceived);
+          _dataCallback = OnDataReceived;
 
         SocketInfo info = new SocketInfo(_socket);
-        _dataCallbackResult = _socket.BeginReceive(info.DataBuffer, 0, info.DataBuffer.Length, SocketFlags.None, _dataCallback, info);
+        _dataCallbackResult = _socket.BeginReceive(info.DataBuffer, 0, info.DataBuffer.Length, SocketFlags.None,
+                                                   _dataCallback, info);
       }
       catch (SocketException se)
       {
@@ -157,7 +160,7 @@ namespace InputService.Plugin
     {
       try
       {
-        SocketInfo info = (SocketInfo)async.AsyncState;
+        SocketInfo info = (SocketInfo) async.AsyncState;
         int receivedBytesCount = info.Sock.EndReceive(async);
 
         // Convert received bytes to string
@@ -166,7 +169,7 @@ namespace InputService.Plugin
         decoder.GetChars(info.DataBuffer, 0, receivedBytesCount, chars, 0);
         string data = new string(chars);
 
-        string[] commands = data.Split(new char[] { '\n', '\r', '\0' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] commands = data.Split(new char[] {'\n', '\r', '\0'}, StringSplitOptions.RemoveEmptyEntries);
         foreach (string cmd in commands)
           ProcessData(cmd);
 
@@ -188,23 +191,23 @@ namespace InputService.Plugin
     private void ProcessData(string data)
     {
       // Ignore commands we do not need (like the startup message)
-      if (data.Equals("BEGIN", StringComparison.OrdinalIgnoreCase)  ||
-          data.Equals("END", StringComparison.OrdinalIgnoreCase)    ||
+      if (data.Equals("BEGIN", StringComparison.OrdinalIgnoreCase) ||
+          data.Equals("END", StringComparison.OrdinalIgnoreCase) ||
           data.Equals("SIGHUP", StringComparison.OrdinalIgnoreCase))
         return;
 
       WinLircCommand command = new WinLircCommand(data);
 
       #region Time-based repeat filter
-      
+
       if (_lastCommand.IsSameCommand(command))
       {
-          if (_repeatDelay > 0 && command.Repeats > 0
-               && command.Repeats < _repeatDelay)
-          {
-              Trace.WriteLine(String.Format("WLirc: Command '{0}' ignored because of repeat delay filter", command.Button));
-              return;
-          }
+        if (_repeatDelay > 0 && command.Repeats > 0
+            && command.Repeats < _repeatDelay)
+        {
+          Trace.WriteLine(String.Format("WLirc: Command '{0}' ignored because of repeat delay filter", command.Button));
+          return;
+        }
         if ((command.Time - _lastCommand.Time) < _buttonReleaseTime)
         {
           Trace.WriteLine(String.Format("WLirc: Command '{0}' ignored because of repeat filter", command.Button));
@@ -222,7 +225,5 @@ namespace InputService.Plugin
     }
 
     #endregion Private Methods
-
   }
-
 }

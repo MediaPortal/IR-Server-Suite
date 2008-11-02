@@ -1,5 +1,3 @@
-using System;
-
 namespace InputService.Plugin
 {
 
@@ -31,14 +29,11 @@ namespace InputService.Plugin
   /// </summary>
   public interface ILearnIR
   {
-
     /// <summary>
     /// Learn an infrared command.
     /// </summary>
     /// <param name="data">New infrared command.</param>
     /// <returns>Tells the calling code if the learn was Successful, Failed or Timed Out.</returns>
     LearnStatus Learn(out byte[] data);
-
   }
-
 }

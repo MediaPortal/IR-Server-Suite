@@ -1,25 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Window or Class List form.
   /// </summary>
   public partial class WindowList : Form
   {
-
     #region Variables
 
-    bool _listClasses;
-
-    Win32.EnumWindowsProc _ewp;
+    private readonly Win32.EnumWindowsProc _ewp;
+    private readonly bool _listClasses;
 
     #endregion Variables
 
@@ -49,23 +41,23 @@ namespace IrssUtils.Forms
       InitializeComponent();
 
       if (listClasses)
-        this.Text = "Class List";
+        Text = "Class List";
       else
-        this.Text = "Window List";
+        Text = "Window List";
 
-      _ewp = new Win32.EnumWindowsProc(AddWindow);
+      _ewp = AddWindow;
 
       PopulateList();
     }
 
     #endregion Constructor
 
-    void PopulateList()
+    private void PopulateList()
     {
       Win32.EnumerateWindows(_ewp, IntPtr.Zero);
     }
 
-    bool AddWindow(IntPtr hWnd, IntPtr lParam)
+    private bool AddWindow(IntPtr hWnd, IntPtr lParam)
     {
       string windowTitle = Win32.GetWindowTitle(hWnd);
 
@@ -84,19 +76,17 @@ namespace IrssUtils.Forms
 
     private void listBoxWindows_DoubleClick(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void listBoxWindows_KeyPress(object sender, KeyPressEventArgs e)
     {
       if (e.KeyChar == 27)
       {
-        this.DialogResult = DialogResult.Cancel;
-        this.Close();
+        DialogResult = DialogResult.Cancel;
+        Close();
       }
     }
-
   }
-
 }

@@ -1,21 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace Translator
 {
-
-  partial class EditProgramForm : Form
+  internal partial class EditProgramForm : Form
   {
-
     #region Properties
 
     public string DisplayName
@@ -23,36 +15,47 @@ namespace Translator
       get { return textBoxDisplayName.Text; }
       set { textBoxDisplayName.Text = value; }
     }
+
     public string Filename
     {
       get { return textBoxApp.Text; }
       set { textBoxApp.Text = value; }
     }
+
     public string StartupFolder
     {
       get { return textBoxAppStartFolder.Text; }
       set { textBoxAppStartFolder.Text = value; }
     }
+
     public string Parameters
     {
       get { return textBoxApplicationParameters.Text; }
       set { textBoxApplicationParameters.Text = value; }
     }
+
     public ProcessWindowStyle StartState
     {
-      get { return (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true); }
-      set { comboBoxWindowStyle.SelectedItem = Enum.GetName(typeof(ProcessWindowStyle), value); }
+      get
+      {
+        return
+          (ProcessWindowStyle) Enum.Parse(typeof (ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true);
+      }
+      set { comboBoxWindowStyle.SelectedItem = Enum.GetName(typeof (ProcessWindowStyle), value); }
     }
+
     public bool UseShellExecute
     {
       get { return checkBoxShellExecute.Checked; }
       set { checkBoxShellExecute.Checked = value; }
     }
+
     public bool ForceWindowFocus
     {
       get { return checkBoxForceFocus.Checked; }
       set { checkBoxForceFocus.Checked = value; }
     }
+
     public bool IgnoreSystemWide
     {
       get { return checkBoxIgnoreSystemWide.Checked; }
@@ -67,18 +70,18 @@ namespace Translator
     {
       InitializeComponent();
 
-      comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof(ProcessWindowStyle)));
+      comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof (ProcessWindowStyle)));
 
       if (progSettings != null)
       {
-        DisplayName       = progSettings.Name;
-        Filename          = progSettings.FileName;
-        StartupFolder     = progSettings.Folder;
-        Parameters        = progSettings.Arguments;
-        StartState        = progSettings.WindowState;
-        UseShellExecute   = progSettings.UseShellExecute;
-        ForceWindowFocus  = progSettings.ForceWindowFocus;
-        IgnoreSystemWide  = progSettings.IgnoreSystemWide;
+        DisplayName = progSettings.Name;
+        Filename = progSettings.FileName;
+        StartupFolder = progSettings.Folder;
+        Parameters = progSettings.Arguments;
+        StartState = progSettings.WindowState;
+        UseShellExecute = progSettings.UseShellExecute;
+        ForceWindowFocus = progSettings.ForceWindowFocus;
+        IgnoreSystemWide = progSettings.IgnoreSystemWide;
       }
     }
 
@@ -99,7 +102,8 @@ namespace Translator
         if (String.IsNullOrEmpty(textBoxAppStartFolder.Text))
           textBoxAppStartFolder.Text = Path.GetDirectoryName(find.FileName);
 
-        if (String.IsNullOrEmpty(textBoxDisplayName.Text) || textBoxDisplayName.Text.Equals(ProgramSettings.NewProgramName, StringComparison.Ordinal))
+        if (String.IsNullOrEmpty(textBoxDisplayName.Text) ||
+            textBoxDisplayName.Text.Equals(ProgramSettings.NewProgramName, StringComparison.Ordinal))
           textBoxDisplayName.Text = Path.GetFileNameWithoutExtension(find.FileName);
       }
     }
@@ -117,16 +121,17 @@ namespace Translator
     {
       try
       {
-        string[] launchCommand = new string[] {
-          Filename,
-          StartupFolder,
-          Parameters,
-          Enum.GetName(typeof(ProcessWindowStyle), StartState),
-          false.ToString(),
-          UseShellExecute.ToString(),
-          false.ToString(),
-          ForceWindowFocus.ToString()        
-        };
+        string[] launchCommand = new string[]
+                                   {
+                                     Filename,
+                                     StartupFolder,
+                                     Parameters,
+                                     Enum.GetName(typeof (ProcessWindowStyle), StartState),
+                                     false.ToString(),
+                                     UseShellExecute.ToString(),
+                                     false.ToString(),
+                                     ForceWindowFocus.ToString()
+                                   };
 
         Common.ProcessRunCommand(launchCommand);
       }
@@ -138,18 +143,16 @@ namespace Translator
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

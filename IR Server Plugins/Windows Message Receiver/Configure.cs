@@ -1,16 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
-  partial class Configure : Form
+  internal partial class Configure : Form
   {
-
     #region Properties
 
     public int MessageType
@@ -18,6 +12,7 @@ namespace InputService.Plugin
       get { return Decimal.ToInt32(numericUpDownMessageType.Value); }
       set { numericUpDownMessageType.Value = new Decimal(value); }
     }
+
     public int WParam
     {
       get { return Decimal.ToInt32(numericUpDownWParam.Value); }
@@ -39,13 +34,14 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
@@ -56,7 +52,5 @@ namespace InputService.Plugin
         "To send windows messages to this receiver target the following window title:\r\n\r\n{0}",
         WindowsMessageReceiver.WindowTitle);
     }
-
   }
-
 }

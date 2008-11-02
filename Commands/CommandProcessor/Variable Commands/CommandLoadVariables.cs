@@ -1,29 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Load Variables macro command.
   /// </summary>
   public class CommandLoadVariables : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandLoadVariables"/> class.
     /// </summary>
-    public CommandLoadVariables() { InitParameters(1); }
+    public CommandLoadVariables()
+    {
+      InitParameters(1);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandLoadVariables"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandLoadVariables(string[] parameters) : base(parameters) { }
+    public CommandLoadVariables(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +33,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryVariable; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryVariable;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Load Variables"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Load Variables";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -69,7 +75,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

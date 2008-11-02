@@ -1,27 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Text;
 using System.Windows.Forms;
-
-using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 
 namespace Translator
 {
-
-  partial class ButtonMappingForm : Form
+  internal partial class ButtonMappingForm : Form
   {
-
     #region Constants
 
-    const string Parameters = 
-@"\a = Alert (ascii 7)
+    private const string Parameters =
+      @"\a = Alert (ascii 7)
 \b = Backspace (ascii 8)
 \f = Form Feed (ascii 12)
 \n = Line Feed (ascii 10)
@@ -35,11 +28,11 @@ namespace Translator
 
     #region Variables
 
-    string _keyCode;
-    string _description;
-    string _command;
+    private readonly string _keyCode;
+    private string _command;
+    private string _description;
 
-    LearnIR _learnIR;
+    private LearnIR _learnIR;
 
     #endregion Variables
 
@@ -49,10 +42,12 @@ namespace Translator
     {
       get { return _keyCode; }
     }
+
     internal string Description
     {
       get { return _description; }
     }
+
     internal string Command
     {
       get { return _command; }
@@ -65,15 +60,15 @@ namespace Translator
     public ButtonMappingForm(string keyCode, string description, string command)
     {
       InitializeComponent();
-      
-      _keyCode      = keyCode;
-      _description  = description;
-      _command      = command;
+
+      _keyCode = keyCode;
+      _description = description;
+      _command = command;
     }
 
     #endregion Constructors
 
-    void SetupIRList()
+    private void SetupIRList()
     {
       comboBoxIRCode.Items.Clear();
 
@@ -84,7 +79,8 @@ namespace Translator
         comboBoxIRCode.SelectedIndex = 0;
       }
     }
-    void SetupMacroList()
+
+    private void SetupMacroList()
     {
       comboBoxMacro.Items.Clear();
 
@@ -96,27 +92,28 @@ namespace Translator
       }
     }
 
-    void InsertKeystroke(char key)
+    private void InsertKeystroke(char key)
     {
       textBoxKeys.Paste(key.ToString());
     }
-    void InsertKeystroke(string keystroke)
+
+    private void InsertKeystroke(string keystroke)
     {
       textBoxKeys.Paste(keystroke);
     }
 
     private void ButtonMappingForm_Load(object sender, EventArgs e)
     {
-      textBoxKeyCode.Text     = _keyCode;
-      textBoxButtonDesc.Text  = _description;
-      textBoxCommand.Text     = _command;
+      textBoxKeyCode.Text = _keyCode;
+      textBoxButtonDesc.Text = _description;
+      textBoxCommand.Text = _command;
 
       // Setup IR Blast tab
       SetupIRList();
-      
+
       // Setup macro tab
       SetupMacroList();
-      
+
       comboBoxPort.Items.Clear();
       comboBoxPort.Items.AddRange(Program.TransceiverInformation.Ports);
       if (comboBoxPort.Items.Count > 0)
@@ -129,16 +126,16 @@ namespace Translator
         comboBoxComPort.SelectedIndex = 0;
 
       comboBoxParity.Items.Clear();
-      comboBoxParity.Items.AddRange(Enum.GetNames(typeof(Parity)));
+      comboBoxParity.Items.AddRange(Enum.GetNames(typeof (Parity)));
       comboBoxParity.SelectedIndex = 0;
 
       comboBoxStopBits.Items.Clear();
-      comboBoxStopBits.Items.AddRange(Enum.GetNames(typeof(StopBits)));
+      comboBoxStopBits.Items.AddRange(Enum.GetNames(typeof (StopBits)));
       comboBoxStopBits.SelectedIndex = 1;
 
       // Setup Run tab
       comboBoxWindowStyle.Items.Clear();
-      comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof(ProcessWindowStyle)));
+      comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof (ProcessWindowStyle)));
       comboBoxWindowStyle.SelectedIndex = 0;
 
       // Setup Windows Message tab
@@ -178,7 +175,7 @@ namespace Translator
           case Common.CmdPrefixBlast:
             {
               string[] commands = Common.SplitBlastCommand(suffix);
-              
+
               tabControl.SelectTab(tabPageBlastIR);
               comboBoxIRCode.SelectedItem = commands[0];
               comboBoxPort.SelectedItem = commands[1];
@@ -197,12 +194,12 @@ namespace Translator
               string[] commands = Common.SplitRunCommand(suffix);
 
               tabControl.SelectTab(tabPageProgram);
-              textBoxApp.Text                   = commands[0];
-              textBoxAppStartFolder.Text        = commands[1];
+              textBoxApp.Text = commands[0];
+              textBoxAppStartFolder.Text = commands[1];
               textBoxApplicationParameters.Text = commands[2];
-              comboBoxWindowStyle.SelectedItem  = commands[3];
-              checkBoxNoWindow.Checked          = bool.Parse(commands[4]);
-              checkBoxShellExecute.Checked      = bool.Parse(commands[5]);
+              comboBoxWindowStyle.SelectedItem = commands[3];
+              checkBoxNoWindow.Checked = bool.Parse(commands[4]);
+              checkBoxShellExecute.Checked = bool.Parse(commands[5]);
               break;
             }
 
@@ -211,14 +208,14 @@ namespace Translator
               string[] commands = Common.SplitSerialCommand(suffix);
 
               tabControl.SelectTab(tabPageSerial);
-              textBoxSerialCommand.Text       = commands[0];
-              comboBoxComPort.SelectedItem    = commands[1];
-              numericUpDownBaudRate.Value     = decimal.Parse(commands[2]);
-              comboBoxParity.SelectedItem     = commands[3];
-              numericUpDownDataBits.Value     = decimal.Parse(commands[4]);
-              comboBoxStopBits.SelectedItem   = commands[5];
+              textBoxSerialCommand.Text = commands[0];
+              comboBoxComPort.SelectedItem = commands[1];
+              numericUpDownBaudRate.Value = decimal.Parse(commands[2]);
+              comboBoxParity.SelectedItem = commands[3];
+              numericUpDownDataBits.Value = decimal.Parse(commands[4]);
+              comboBoxStopBits.SelectedItem = commands[5];
               checkBoxWaitForResponse.Checked = bool.Parse(commands[6]);
-              
+
               break;
             }
 
@@ -229,14 +226,22 @@ namespace Translator
               tabControl.SelectTab(tabPageMessage);
               switch (commands[0].ToUpperInvariant())
               {
-                case Common.TargetActive:       radioButtonActiveWindow.Checked = true;   break;
-                case Common.TargetApplication:  radioButtonApplication.Checked = true;    break;
-                case Common.TargetClass:        radioButtonClass.Checked = true;          break;
-                case Common.TargetWindow:       radioButtonWindowTitle.Checked = true;    break;
+                case Common.TargetActive:
+                  radioButtonActiveWindow.Checked = true;
+                  break;
+                case Common.TargetApplication:
+                  radioButtonApplication.Checked = true;
+                  break;
+                case Common.TargetClass:
+                  radioButtonClass.Checked = true;
+                  break;
+                case Common.TargetWindow:
+                  radioButtonWindowTitle.Checked = true;
+                  break;
               }
 
-              textBoxMsgTarget.Text     = commands[1];
-              numericUpDownMsg.Value    = decimal.Parse(commands[2]);
+              textBoxMsgTarget.Text = commands[1];
+              numericUpDownMsg.Value = decimal.Parse(commands[2]);
               numericUpDownWParam.Value = decimal.Parse(commands[3]);
               numericUpDownLParam.Value = decimal.Parse(commands[4]);
               break;
@@ -254,17 +259,31 @@ namespace Translator
               tabControl.SelectTab(tabPageMouse);
               switch (suffix)
               {
-                case Common.MouseClickLeft:   checkBoxMouseClickLeft.Checked = true;    break;
-                case Common.MouseClickMiddle: checkBoxMouseClickMiddle.Checked = true;  break;
-                case Common.MouseClickRight:  checkBoxMouseClickRight.Checked = true;   break;
-                case Common.MouseScrollDown:  checkBoxMouseScrollDown.Checked = true;   break;
-                case Common.MouseScrollUp:    checkBoxMouseScrollUp.Checked = true;     break;
+                case Common.MouseClickLeft:
+                  checkBoxMouseClickLeft.Checked = true;
+                  break;
+                case Common.MouseClickMiddle:
+                  checkBoxMouseClickMiddle.Checked = true;
+                  break;
+                case Common.MouseClickRight:
+                  checkBoxMouseClickRight.Checked = true;
+                  break;
+                case Common.MouseScrollDown:
+                  checkBoxMouseScrollDown.Checked = true;
+                  break;
+                case Common.MouseScrollUp:
+                  checkBoxMouseScrollUp.Checked = true;
+                  break;
 
                 default:
-                  if (suffix.StartsWith(Common.MouseMoveDown, StringComparison.OrdinalIgnoreCase))        checkBoxMouseMoveDown.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveLeft, StringComparison.OrdinalIgnoreCase))   checkBoxMouseMoveLeft.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveRight, StringComparison.OrdinalIgnoreCase))  checkBoxMouseMoveRight.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveUp, StringComparison.OrdinalIgnoreCase))     checkBoxMouseMoveUp.Checked = true;
+                  if (suffix.StartsWith(Common.MouseMoveDown, StringComparison.OrdinalIgnoreCase))
+                    checkBoxMouseMoveDown.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveLeft, StringComparison.OrdinalIgnoreCase))
+                    checkBoxMouseMoveLeft.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveRight, StringComparison.OrdinalIgnoreCase))
+                    checkBoxMouseMoveRight.Checked = true;
+                  else if (suffix.StartsWith(Common.MouseMoveUp, StringComparison.OrdinalIgnoreCase))
+                    checkBoxMouseMoveUp.Checked = true;
 
                   numericUpDownMouseMove.Value = Decimal.Parse(suffix.Substring(suffix.IndexOf(' ')));
                   break;
@@ -314,7 +333,6 @@ namespace Translator
             }
         }
       }
-
     }
 
     #region Controls
@@ -323,25 +341,28 @@ namespace Translator
     {
       if (String.IsNullOrEmpty(_keyCode))
       {
-        MessageBox.Show(this, "You must provide a valid button key code to create a button mapping", "KeyCode Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "You must provide a valid button key code to create a button mapping", "KeyCode Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
         textBoxKeyCode.Focus();
         return;
       }
 
       if (String.IsNullOrEmpty(_command))
       {
-        MessageBox.Show(this, "You must click SET to confirm the command you want to assign to this button mapping", "Command Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "You must click SET to confirm the command you want to assign to this button mapping",
+                        "Command Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         buttonSet.Focus();
         return;
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonParamQuestion_Click(object sender, EventArgs e)
@@ -356,46 +377,46 @@ namespace Translator
         case "tabPageBlastIR":
           {
             textBoxCommand.Text = _command =
-              String.Format("{0}{1}|{2}",
-                Common.CmdPrefixBlast,
-                comboBoxIRCode.SelectedItem as string,
-                comboBoxPort.SelectedItem as string);
+                                  String.Format("{0}{1}|{2}",
+                                                Common.CmdPrefixBlast,
+                                                comboBoxIRCode.SelectedItem as string,
+                                                comboBoxPort.SelectedItem as string);
             break;
           }
 
         case "tabPageMacro":
           {
-            textBoxCommand.Text = _command = Common.CmdPrefixMacro + comboBoxMacro.SelectedItem as string;
+            textBoxCommand.Text = _command = Common.CmdPrefixMacro + comboBoxMacro.SelectedItem;
             break;
           }
 
         case "tabPageSerial":
           {
             textBoxCommand.Text = _command =
-              String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|{7}",
-                Common.CmdPrefixSerial,
-                textBoxSerialCommand.Text,
-                comboBoxComPort.SelectedItem as string,
-                numericUpDownBaudRate.Value.ToString(),
-                comboBoxParity.SelectedItem as string,
-                numericUpDownDataBits.Value.ToString(),
-                comboBoxStopBits.SelectedItem as string,
-                checkBoxWaitForResponse.Checked.ToString());
+                                  String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|{7}",
+                                                Common.CmdPrefixSerial,
+                                                textBoxSerialCommand.Text,
+                                                comboBoxComPort.SelectedItem as string,
+                                                numericUpDownBaudRate.Value,
+                                                comboBoxParity.SelectedItem as string,
+                                                numericUpDownDataBits.Value,
+                                                comboBoxStopBits.SelectedItem as string,
+                                                checkBoxWaitForResponse.Checked);
             break;
           }
 
         case "tabPageProgram":
           {
             textBoxCommand.Text = _command =
-              String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|False|{7}",
-                Common.CmdPrefixRun,
-                textBoxApp.Text,
-                textBoxAppStartFolder.Text,
-                textBoxApplicationParameters.Text,
-                comboBoxWindowStyle.SelectedItem as string,
-                checkBoxNoWindow.Checked.ToString(),
-                checkBoxShellExecute.Checked.ToString(),
-                checkBoxForceFocus.Checked.ToString());
+                                  String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|False|{7}",
+                                                Common.CmdPrefixRun,
+                                                textBoxApp.Text,
+                                                textBoxAppStartFolder.Text,
+                                                textBoxApplicationParameters.Text,
+                                                comboBoxWindowStyle.SelectedItem as string,
+                                                checkBoxNoWindow.Checked,
+                                                checkBoxShellExecute.Checked,
+                                                checkBoxForceFocus.Checked);
             break;
           }
 
@@ -422,13 +443,13 @@ namespace Translator
             }
 
             textBoxCommand.Text = _command =
-              String.Format("{0}{1}|{2}|{3}|{4}|{5}",
-                Common.CmdPrefixWindowMsg,
-                target,
-                textBoxMsgTarget.Text,
-                numericUpDownMsg.Value.ToString(),
-                numericUpDownWParam.Value.ToString(),
-                numericUpDownLParam.Value.ToString());
+                                  String.Format("{0}{1}|{2}|{3}|{4}|{5}",
+                                                Common.CmdPrefixWindowMsg,
+                                                target,
+                                                textBoxMsgTarget.Text,
+                                                numericUpDownMsg.Value,
+                                                numericUpDownWParam.Value,
+                                                numericUpDownLParam.Value);
             break;
           }
 
@@ -443,22 +464,22 @@ namespace Translator
             StringBuilder newCommand = new StringBuilder();
             newCommand.Append(Common.CmdPrefixMouse);
 
-            if (checkBoxMouseClickLeft.Checked)         newCommand.Append(Common.MouseClickLeft);
-            else if (checkBoxMouseClickRight.Checked)   newCommand.Append(Common.MouseClickRight);
-            else if (checkBoxMouseClickMiddle.Checked)  newCommand.Append(Common.MouseClickMiddle);
-            else if (checkBoxMouseScrollUp.Checked)     newCommand.Append(Common.MouseScrollUp);
-            else if (checkBoxMouseScrollDown.Checked)   newCommand.Append(Common.MouseScrollDown);
+            if (checkBoxMouseClickLeft.Checked) newCommand.Append(Common.MouseClickLeft);
+            else if (checkBoxMouseClickRight.Checked) newCommand.Append(Common.MouseClickRight);
+            else if (checkBoxMouseClickMiddle.Checked) newCommand.Append(Common.MouseClickMiddle);
+            else if (checkBoxMouseScrollUp.Checked) newCommand.Append(Common.MouseScrollUp);
+            else if (checkBoxMouseScrollDown.Checked) newCommand.Append(Common.MouseScrollDown);
             else
             {
-              if (checkBoxMouseMoveUp.Checked)          newCommand.Append(Common.MouseMoveUp);
-              else if (checkBoxMouseMoveDown.Checked)   newCommand.Append(Common.MouseMoveDown);
-              else if (checkBoxMouseMoveLeft.Checked)   newCommand.Append(Common.MouseMoveLeft);
-              else if (checkBoxMouseMoveRight.Checked)  newCommand.Append(Common.MouseMoveRight);
+              if (checkBoxMouseMoveUp.Checked) newCommand.Append(Common.MouseMoveUp);
+              else if (checkBoxMouseMoveDown.Checked) newCommand.Append(Common.MouseMoveDown);
+              else if (checkBoxMouseMoveLeft.Checked) newCommand.Append(Common.MouseMoveLeft);
+              else if (checkBoxMouseMoveRight.Checked) newCommand.Append(Common.MouseMoveRight);
               else break;
 
               newCommand.Append(numericUpDownMouseMove.Value.ToString());
             }
-            
+
             textBoxCommand.Text = _command = newCommand.ToString();
             break;
           }
@@ -544,14 +565,16 @@ namespace Translator
     {
       if (String.IsNullOrEmpty(_command))
       {
-        MessageBox.Show(this, "You must Set the command before you can Test it", "No command Set", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must Set the command before you can Test it", "No command Set", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
         buttonSet.Focus();
         return;
       }
 
       if (_command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
       {
-        MessageBox.Show(this, "Keystroke commands cannot be tested here", "Cannot test Keystroke command", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        MessageBox.Show(this, "Keystroke commands cannot be tested here", "Cannot test Keystroke command",
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
       }
       else
       {
@@ -597,16 +620,19 @@ namespace Translator
       buttonFindMsgTarget.Enabled = false;
       textBoxMsgTarget.Enabled = false;
     }
+
     private void radioButtonApplication_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindMsgTarget.Enabled = true;
       textBoxMsgTarget.Enabled = true;
     }
+
     private void radioButtonClass_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindMsgTarget.Enabled = true;
       textBoxMsgTarget.Enabled = true;
     }
+
     private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindMsgTarget.Enabled = true;
@@ -640,8 +666,8 @@ namespace Translator
     private void buttonLearnIR_Click(object sender, EventArgs e)
     {
       _learnIR = new LearnIR(
-        new LearnIrDelegate(Program.LearnIR),
-        new BlastIrDelegate(Program.BlastIR),
+        Program.LearnIR,
+        Program.BlastIR,
         Program.TransceiverInformation.Ports);
 
       _learnIR.ShowDialog(this);
@@ -680,20 +706,20 @@ namespace Translator
 
     private void checkBoxMouse_CheckedChanged(object sender, EventArgs e)
     {
-      CheckBox origin = (CheckBox)sender;
+      CheckBox origin = (CheckBox) sender;
 
       if (!origin.Checked)
         return;
-      
-      if (origin != checkBoxMouseClickLeft)   checkBoxMouseClickLeft.Checked    = false;
-      if (origin != checkBoxMouseClickRight)  checkBoxMouseClickRight.Checked   = false;
-      if (origin != checkBoxMouseClickMiddle) checkBoxMouseClickMiddle.Checked  = false;
-      if (origin != checkBoxMouseMoveUp)      checkBoxMouseMoveUp.Checked       = false;
-      if (origin != checkBoxMouseMoveDown)    checkBoxMouseMoveDown.Checked     = false;
-      if (origin != checkBoxMouseMoveLeft)    checkBoxMouseMoveLeft.Checked     = false;
-      if (origin != checkBoxMouseMoveRight)   checkBoxMouseMoveRight.Checked    = false;
-      if (origin != checkBoxMouseScrollUp)    checkBoxMouseScrollUp.Checked     = false;
-      if (origin != checkBoxMouseScrollDown)  checkBoxMouseScrollDown.Checked   = false;
+
+      if (origin != checkBoxMouseClickLeft) checkBoxMouseClickLeft.Checked = false;
+      if (origin != checkBoxMouseClickRight) checkBoxMouseClickRight.Checked = false;
+      if (origin != checkBoxMouseClickMiddle) checkBoxMouseClickMiddle.Checked = false;
+      if (origin != checkBoxMouseMoveUp) checkBoxMouseMoveUp.Checked = false;
+      if (origin != checkBoxMouseMoveDown) checkBoxMouseMoveDown.Checked = false;
+      if (origin != checkBoxMouseMoveLeft) checkBoxMouseMoveLeft.Checked = false;
+      if (origin != checkBoxMouseMoveRight) checkBoxMouseMoveRight.Checked = false;
+      if (origin != checkBoxMouseScrollUp) checkBoxMouseScrollUp.Checked = false;
+      if (origin != checkBoxMouseScrollDown) checkBoxMouseScrollDown.Checked = false;
     }
 
     private void KeystrokeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -705,55 +731,143 @@ namespace Translator
 
       switch (origin.Name)
       {
-        case "upToolStripMenuItem":         InsertKeystroke("{UP}"); break;
-        case "downToolStripMenuItem":       InsertKeystroke("{DOWN}"); break;
-        case "leftToolStripMenuItem":       InsertKeystroke("{LEFT}"); break;
-        case "rightToolStripMenuItem":      InsertKeystroke("{RIGHT}"); break;
+        case "upToolStripMenuItem":
+          InsertKeystroke("{UP}");
+          break;
+        case "downToolStripMenuItem":
+          InsertKeystroke("{DOWN}");
+          break;
+        case "leftToolStripMenuItem":
+          InsertKeystroke("{LEFT}");
+          break;
+        case "rightToolStripMenuItem":
+          InsertKeystroke("{RIGHT}");
+          break;
 
-        case "f1ToolStripMenuItem":         InsertKeystroke("{F1}"); break;
-        case "f2ToolStripMenuItem":         InsertKeystroke("{F2}"); break;
-        case "f3ToolStripMenuItem":         InsertKeystroke("{F3}"); break;
-        case "f4ToolStripMenuItem":         InsertKeystroke("{F4}"); break;
-        case "f5ToolStripMenuItem":         InsertKeystroke("{F5}"); break;
-        case "f6ToolStripMenuItem":         InsertKeystroke("{F6}"); break;
-        case "f7ToolStripMenuItem":         InsertKeystroke("{F7}"); break;
-        case "f8ToolStripMenuItem":         InsertKeystroke("{F8}"); break;
-        case "f9ToolStripMenuItem":         InsertKeystroke("{F9}"); break;
-        case "f10ToolStripMenuItem":        InsertKeystroke("{F10}"); break;
-        case "f11ToolStripMenuItem":        InsertKeystroke("{F11}"); break;
-        case "f12ToolStripMenuItem":        InsertKeystroke("{F12}"); break;
-        case "f13ToolStripMenuItem":        InsertKeystroke("{F13}"); break;
-        case "f14ToolStripMenuItem":        InsertKeystroke("{F14}"); break;
-        case "f15ToolStripMenuItem":        InsertKeystroke("{F15}"); break;
-        case "f16ToolStripMenuItem":        InsertKeystroke("{F16}"); break;
+        case "f1ToolStripMenuItem":
+          InsertKeystroke("{F1}");
+          break;
+        case "f2ToolStripMenuItem":
+          InsertKeystroke("{F2}");
+          break;
+        case "f3ToolStripMenuItem":
+          InsertKeystroke("{F3}");
+          break;
+        case "f4ToolStripMenuItem":
+          InsertKeystroke("{F4}");
+          break;
+        case "f5ToolStripMenuItem":
+          InsertKeystroke("{F5}");
+          break;
+        case "f6ToolStripMenuItem":
+          InsertKeystroke("{F6}");
+          break;
+        case "f7ToolStripMenuItem":
+          InsertKeystroke("{F7}");
+          break;
+        case "f8ToolStripMenuItem":
+          InsertKeystroke("{F8}");
+          break;
+        case "f9ToolStripMenuItem":
+          InsertKeystroke("{F9}");
+          break;
+        case "f10ToolStripMenuItem":
+          InsertKeystroke("{F10}");
+          break;
+        case "f11ToolStripMenuItem":
+          InsertKeystroke("{F11}");
+          break;
+        case "f12ToolStripMenuItem":
+          InsertKeystroke("{F12}");
+          break;
+        case "f13ToolStripMenuItem":
+          InsertKeystroke("{F13}");
+          break;
+        case "f14ToolStripMenuItem":
+          InsertKeystroke("{F14}");
+          break;
+        case "f15ToolStripMenuItem":
+          InsertKeystroke("{F15}");
+          break;
+        case "f16ToolStripMenuItem":
+          InsertKeystroke("{F16}");
+          break;
 
-        case "addToolStripMenuItem":        InsertKeystroke("{ADD}"); break;
-        case "subtractToolStripMenuItem":   InsertKeystroke("{SUBTRACT}"); break;
-        case "multiplyToolStripMenuItem":   InsertKeystroke("{MULTIPLY}"); break;
-        case "divideToolStripMenuItem":     InsertKeystroke("{DIVIDE}"); break;
+        case "addToolStripMenuItem":
+          InsertKeystroke("{ADD}");
+          break;
+        case "subtractToolStripMenuItem":
+          InsertKeystroke("{SUBTRACT}");
+          break;
+        case "multiplyToolStripMenuItem":
+          InsertKeystroke("{MULTIPLY}");
+          break;
+        case "divideToolStripMenuItem":
+          InsertKeystroke("{DIVIDE}");
+          break;
 
-        case "altToolStripMenuItem":        InsertKeystroke(Keyboard.ModifierAlt); break;
-        case "controlToolStripMenuItem":    InsertKeystroke(Keyboard.ModifierControl); break;
-        case "shiftToolStripMenuItem":      InsertKeystroke(Keyboard.ModifierShift); break;
-        case "windowsToolStripMenuItem":    InsertKeystroke(Keyboard.ModifierWinKey); break;
+        case "altToolStripMenuItem":
+          InsertKeystroke(Keyboard.ModifierAlt);
+          break;
+        case "controlToolStripMenuItem":
+          InsertKeystroke(Keyboard.ModifierControl);
+          break;
+        case "shiftToolStripMenuItem":
+          InsertKeystroke(Keyboard.ModifierShift);
+          break;
+        case "windowsToolStripMenuItem":
+          InsertKeystroke(Keyboard.ModifierWinKey);
+          break;
 
-        case "backspaceToolStripMenuItem":  InsertKeystroke("{BACKSPACE}"); break;
-        case "breakToolStripMenuItem":      InsertKeystroke("{BREAK}"); break;
-        case "capsLockToolStripMenuItem":   InsertKeystroke("{CAPSLOCK}"); break;
-        case "delToolStripMenuItem":        InsertKeystroke("{DEL}"); break;
+        case "backspaceToolStripMenuItem":
+          InsertKeystroke("{BACKSPACE}");
+          break;
+        case "breakToolStripMenuItem":
+          InsertKeystroke("{BREAK}");
+          break;
+        case "capsLockToolStripMenuItem":
+          InsertKeystroke("{CAPSLOCK}");
+          break;
+        case "delToolStripMenuItem":
+          InsertKeystroke("{DEL}");
+          break;
 
-        case "endToolStripMenuItem":        InsertKeystroke("{END}"); break;
-        case "enterToolStripMenuItem":      InsertKeystroke("{ENTER}"); break;
-        case "escapeToolStripMenuItem":     InsertKeystroke("{ESC}"); break;
-        case "helpToolStripMenuItem":       InsertKeystroke("{HELP}"); break;
-        case "homeToolStripMenuItem":       InsertKeystroke("{HOME}"); break;
-        case "insToolStripMenuItem":        InsertKeystroke("{INS}"); break;
-        case "numLockToolStripMenuItem":    InsertKeystroke("{NUMLOCK}"); break;
-        case "pageDownToolStripMenuItem":   InsertKeystroke("{PGDN}"); break;
-        case "pageUpToolStripMenuItem":     InsertKeystroke("{PGUP}"); break;
-        case "scrollLockToolStripMenuItem": InsertKeystroke("{SCROLLLOCK}"); break;
-        case "tabToolStripMenuItem":        InsertKeystroke("{TAB}"); break;
-        case "windowsKeyToolStripMenuItem": InsertKeystroke("{WIN}"); break;
+        case "endToolStripMenuItem":
+          InsertKeystroke("{END}");
+          break;
+        case "enterToolStripMenuItem":
+          InsertKeystroke("{ENTER}");
+          break;
+        case "escapeToolStripMenuItem":
+          InsertKeystroke("{ESC}");
+          break;
+        case "helpToolStripMenuItem":
+          InsertKeystroke("{HELP}");
+          break;
+        case "homeToolStripMenuItem":
+          InsertKeystroke("{HOME}");
+          break;
+        case "insToolStripMenuItem":
+          InsertKeystroke("{INS}");
+          break;
+        case "numLockToolStripMenuItem":
+          InsertKeystroke("{NUMLOCK}");
+          break;
+        case "pageDownToolStripMenuItem":
+          InsertKeystroke("{PGDN}");
+          break;
+        case "pageUpToolStripMenuItem":
+          InsertKeystroke("{PGUP}");
+          break;
+        case "scrollLockToolStripMenuItem":
+          InsertKeystroke("{SCROLLLOCK}");
+          break;
+        case "tabToolStripMenuItem":
+          InsertKeystroke("{TAB}");
+          break;
+        case "windowsKeyToolStripMenuItem":
+          InsertKeystroke("{WIN}");
+          break;
       }
     }
 
@@ -761,25 +875,27 @@ namespace Translator
     {
       textBoxKeys.Cut();
     }
+
     private void copyToolStripMenuItem_Click(object sender, EventArgs e)
     {
       textBoxKeys.Copy();
     }
+
     private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
     {
       textBoxKeys.Paste();
     }
+
     private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
     {
       textBoxKeys.SelectAll();
     }
+
     private void selectNoneToolStripMenuItem_Click(object sender, EventArgs e)
     {
       textBoxKeys.SelectionLength = 0;
     }
 
     #endregion Controls
-
   }
-
 }

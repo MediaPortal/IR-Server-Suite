@@ -1,37 +1,28 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
-using MediaPortal.GUI.Library;
-using MediaPortal.Util;
-
 using IrssUtils;
+using IrssUtils.Exceptions;
 using IrssUtils.Forms;
+using MediaPortal.GUI.Library;
 using MPUtils;
-using MPUtils.Forms;
 
 namespace MediaPortal.Plugins
 {
-
-  partial class StbSetup : UserControl
+  internal partial class StbSetup : UserControl
   {
-
     #region Constants
 
-    const string ParameterInfo =
-@"%1 = Current channel number digit (-1 for Select/Pre-Change)
+    private const string ParameterInfo =
+      @"%1 = Current channel number digit (-1 for Select/Pre-Change)
 %2 = Full channel number string";
 
     #endregion Constants
 
     #region Variables
 
-    int _cardId;
+    private readonly int _cardId;
 
     #endregion Variables
 
@@ -46,18 +37,22 @@ namespace MediaPortal.Plugins
     {
       get { return Decimal.ToInt32(numericUpDownPauseTime.Value); }
     }
+
     public bool SendSelect
     {
       get { return checkBoxSendSelect.Checked; }
     }
+
     public bool DoubleChannelSelect
     {
       get { return checkBoxDoubleSelect.Checked; }
     }
+
     public int RepeatChannelCommands
     {
       get { return Decimal.ToInt32(numericUpDownRepeat.Value); }
     }
+
     public int ChannelDigits
     {
       get
@@ -68,10 +63,12 @@ namespace MediaPortal.Plugins
         return chDigits;
       }
     }
+
     public int RepeatPauseTime
     {
       get { return Decimal.ToInt32(numericUpDownRepeatDelay.Value); }
     }
+
     public bool UsePreChangeCommand
     {
       get { return checkBoxUsePreChange.Checked; }
@@ -84,13 +81,15 @@ namespace MediaPortal.Plugins
         string[] _digits = new string[10];
         for (int i = 0; i < 10; i++)
           _digits[i] = listViewExternalCommands.Items[i].SubItems[1].Text;
-        return _digits; 
+        return _digits;
       }
     }
+
     public string SelectCommand
     {
       get { return listViewExternalCommands.Items[10].SubItems[1].Text; }
     }
+
     public string PreChangeCommand
     {
       get { return listViewExternalCommands.Items[11].SubItems[1].Text; }
@@ -126,7 +125,7 @@ namespace MediaPortal.Plugins
       string[] subItems = new string[2];
       for (int i = 0; i < 10; i++)
       {
-        subItems[0] = "Digit " + i.ToString();
+        subItems[0] = "Digit " + i;
         subItems[1] = String.Empty;
         item = new ListViewItem(subItems);
         listViewExternalCommands.Items.Add(item);
@@ -154,32 +153,33 @@ namespace MediaPortal.Plugins
       ExternalChannelConfig config = TV2BlasterPlugin.GetExternalChannelConfig(cardId);
       if (config == null)
       {
-        MessageBox.Show(this, "You must save your card configurations before copying between card setups", "No saved configration to copy from", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show(this, "You must save your card configurations before copying between card setups",
+                        "No saved configration to copy from", MessageBoxButtons.OK, MessageBoxIcon.Information);
         return;
       }
 
       // Setup command list.
       for (int i = 0; i < 10; i++)
-        listViewExternalCommands.Items[i].SubItems[1].Text  = config.Digits[i];
+        listViewExternalCommands.Items[i].SubItems[1].Text = config.Digits[i];
 
-      listViewExternalCommands.Items[10].SubItems[1].Text   = config.SelectCommand;
-      listViewExternalCommands.Items[11].SubItems[1].Text   = config.PreChangeCommand;
+      listViewExternalCommands.Items[10].SubItems[1].Text = config.SelectCommand;
+      listViewExternalCommands.Items[11].SubItems[1].Text = config.PreChangeCommand;
 
       // Setup options.
-      numericUpDownPauseTime.Value  = config.PauseTime;
-      checkBoxSendSelect.Checked    = config.SendSelect;
-      checkBoxDoubleSelect.Checked  = config.DoubleChannelSelect;
-      numericUpDownRepeat.Value     = config.RepeatChannelCommands;
+      numericUpDownPauseTime.Value = config.PauseTime;
+      checkBoxSendSelect.Checked = config.SendSelect;
+      checkBoxDoubleSelect.Checked = config.DoubleChannelSelect;
+      numericUpDownRepeat.Value = config.RepeatChannelCommands;
 
-      checkBoxDoubleSelect.Enabled  = checkBoxSendSelect.Checked;
+      checkBoxDoubleSelect.Enabled = checkBoxSendSelect.Checked;
 
       int channelDigitsSelect = config.ChannelDigits;
       if (channelDigitsSelect > 0)
         channelDigitsSelect--;
-      comboBoxChDigits.SelectedIndex  = channelDigitsSelect;
+      comboBoxChDigits.SelectedIndex = channelDigitsSelect;
 
-      checkBoxUsePreChange.Checked    = config.UsePreChangeCommand;
-      numericUpDownRepeatDelay.Value  = new Decimal(config.RepeatPauseTime);
+      checkBoxUsePreChange.Checked = config.UsePreChangeCommand;
+      numericUpDownRepeatDelay.Value = new Decimal(config.RepeatPauseTime);
     }
 
     public void SetToConfig(int cardId)
@@ -235,11 +235,11 @@ namespace MediaPortal.Plugins
       for (int i = 0; i < 12; i++)
       {
         if (i == 10)
-          command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
+          command = XML.GetString(nodeList, "SelectCommand", String.Empty);
         else if (i == 11)
-          command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
+          command = XML.GetString(nodeList, "PreChangeCommand", String.Empty);
         else
-          command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
+          command = XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
         if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
           blastCommandCount++;
@@ -248,16 +248,16 @@ namespace MediaPortal.Plugins
       for (int i = 0; i < 12; i++)
       {
         if (i == 10)
-          command = IrssUtils.XML.GetString(nodeList, "SelectCommand", String.Empty);
+          command = XML.GetString(nodeList, "SelectCommand", String.Empty);
         else if (i == 11)
-          command = IrssUtils.XML.GetString(nodeList, "PreChangeCommand", String.Empty);
+          command = XML.GetString(nodeList, "PreChangeCommand", String.Empty);
         else
-          command = IrssUtils.XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
+          command = XML.GetString(nodeList, String.Format("Digit{0}", i), String.Empty);
 
         if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
         {
           blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            TV2BlasterPlugin.BlastIR,
             Common.FolderSTB,
             TV2BlasterPlugin.TransceiverInformation.Ports,
             command.Substring(Common.CmdPrefixSTB.Length),
@@ -282,7 +282,7 @@ namespace MediaPortal.Plugins
             else
             {
               blastCommand = new BlastCommand(
-                new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+                TV2BlasterPlugin.BlastIR,
                 Common.FolderSTB,
                 TV2BlasterPlugin.TransceiverInformation.Ports,
                 command.Substring(Common.CmdPrefixSTB.Length));
@@ -297,17 +297,20 @@ namespace MediaPortal.Plugins
         }
       }
 
-      numericUpDownPauseTime.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "PauseTime", Decimal.ToInt32(numericUpDownPauseTime.Value)));
-      checkBoxUsePreChange.Checked = IrssUtils.XML.GetBool(nodeList, "UsePreChangeCommand", checkBoxUsePreChange.Checked);
-      checkBoxSendSelect.Checked = IrssUtils.XML.GetBool(nodeList, "SendSelect", checkBoxSendSelect.Checked);
-      checkBoxDoubleSelect.Checked = IrssUtils.XML.GetBool(nodeList, "DoubleChannelSelect", checkBoxDoubleSelect.Checked);
-      numericUpDownRepeat.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatChannelCommands", Decimal.ToInt32(numericUpDownRepeat.Value)));
-      numericUpDownRepeatDelay.Value = new Decimal(IrssUtils.XML.GetInt(nodeList, "RepeatDelay", Decimal.ToInt32(numericUpDownRepeatDelay.Value)));
+      numericUpDownPauseTime.Value =
+        new Decimal(XML.GetInt(nodeList, "PauseTime", Decimal.ToInt32(numericUpDownPauseTime.Value)));
+      checkBoxUsePreChange.Checked = XML.GetBool(nodeList, "UsePreChangeCommand", checkBoxUsePreChange.Checked);
+      checkBoxSendSelect.Checked = XML.GetBool(nodeList, "SendSelect", checkBoxSendSelect.Checked);
+      checkBoxDoubleSelect.Checked = XML.GetBool(nodeList, "DoubleChannelSelect", checkBoxDoubleSelect.Checked);
+      numericUpDownRepeat.Value =
+        new Decimal(XML.GetInt(nodeList, "RepeatChannelCommands", Decimal.ToInt32(numericUpDownRepeat.Value)));
+      numericUpDownRepeatDelay.Value =
+        new Decimal(XML.GetInt(nodeList, "RepeatDelay", Decimal.ToInt32(numericUpDownRepeatDelay.Value)));
 
       int digitsWas = comboBoxChDigits.SelectedIndex;
       if (digitsWas > 0)
         digitsWas--;
-      int digits = IrssUtils.XML.GetInt(nodeList, "ChannelDigits", digitsWas);
+      int digits = XML.GetInt(nodeList, "ChannelDigits", digitsWas);
       if (digits > 0)
         digits++;
       comboBoxChDigits.SelectedIndex = digits;
@@ -349,7 +352,7 @@ namespace MediaPortal.Plugins
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            TV2BlasterPlugin.BlastIR,
             Common.FolderIRCommands,
             TV2BlasterPlugin.TransceiverInformation.Ports,
             commands);
@@ -362,7 +365,7 @@ namespace MediaPortal.Plugins
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixSTB.Length));
 
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            TV2BlasterPlugin.BlastIR,
             Common.FolderSTB,
             TV2BlasterPlugin.TransceiverInformation.Ports,
             commands);
@@ -373,7 +376,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
-          
+
           ExternalProgram executeProgram = new ExternalProgram(commands, ParameterInfo);
           if (executeProgram.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
@@ -381,7 +384,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
-          
+
           SerialCommand serialCommand = new SerialCommand(commands, ParameterInfo);
           if (serialCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
@@ -389,7 +392,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
-          
+
           MessageCommand messageCommand = new MessageCommand(commands);
           if (messageCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
@@ -413,7 +416,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
           KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
-          
+
           if (keysCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
         }
@@ -491,7 +494,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            TV2BlasterPlugin.BlastIR,
             Common.FolderIRCommands,
             TV2BlasterPlugin.TransceiverInformation.Ports,
             selected.Substring(Common.CmdPrefixBlast.Length));
@@ -505,7 +508,7 @@ namespace MediaPortal.Plugins
         }
         else
         {
-          throw new IrssUtils.Exceptions.CommandStructureException(String.Format("Invalid command in STB Setup: {0}", selected));
+          throw new CommandStructureException(String.Format("Invalid command in STB Setup: {0}", selected));
         }
 
         if (!String.IsNullOrEmpty(newCommand))
@@ -520,7 +523,5 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Private Methods
-
   }
-
 }

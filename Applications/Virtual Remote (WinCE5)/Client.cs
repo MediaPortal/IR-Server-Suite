@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 namespace VirtualRemote
@@ -13,29 +12,26 @@ namespace VirtualRemote
   /// Message handling delegate for client.
   /// </summary>
   /// <param name="message">Message received.</param>
-  delegate void ClientMessageSink(IrssMessage message);
+  internal delegate void ClientMessageSink(IrssMessage message);
 
   #endregion Delegates
 
   /// <summary>
   /// TCP communications client class.
   /// </summary>
-  class Client : IDisposable
+  internal class Client : IDisposable
   {
-
     #region Variables
 
-    IPEndPoint _serverEndpoint;
-    Socket _serverSocket;
+    private readonly ClientMessageSink _messageSink;
+    private readonly IPEndPoint _serverEndpoint;
+    private WaitCallback _commsFailureCallback;
 
-    volatile bool _processConnectionThread = false;
-    volatile bool _connected = false;
-
-    ClientMessageSink _messageSink;
-    
-    WaitCallback _connectCallback;
-    WaitCallback _disconnectCallback;
-    WaitCallback _commsFailureCallback;
+    private WaitCallback _connectCallback;
+    private volatile bool _connected;
+    private WaitCallback _disconnectCallback;
+    private volatile bool _processConnectionThread;
+    private Socket _serverSocket;
 
     #endregion Variables
 
@@ -88,7 +84,7 @@ namespace VirtualRemote
     public Client(IPEndPoint serverEndPoint, ClientMessageSink messageSink)
     {
       _serverEndpoint = serverEndPoint;
-      
+
       _messageSink = messageSink;
     }
 
@@ -118,7 +114,6 @@ namespace VirtualRemote
       }
 
       // Free native resources ...
-
     }
 
     #endregion IDisposable
@@ -139,7 +134,7 @@ namespace VirtualRemote
 
       try
       {
-        Thread connectionThread = new Thread(new ThreadStart(ConnectionThread));
+        Thread connectionThread = new Thread(ConnectionThread);
         connectionThread.Name = "IrssComms.Client.ConnectionThread";
         connectionThread.IsBackground = true;
         connectionThread.Start();
@@ -181,7 +176,7 @@ namespace VirtualRemote
 
       if (_serverSocket == null)
         return false;
-      
+
       byte[] data = message.ToBytes();
 
       int dataLength = IPAddress.HostToNetworkOrder(data.Length);
@@ -195,7 +190,7 @@ namespace VirtualRemote
 
         // Send packet ...
         _serverSocket.Send(data);
-        
+
         return true;
       }
       catch (SocketException)
@@ -204,12 +199,12 @@ namespace VirtualRemote
       }
     }
 
-    void QueueMessageSink(IrssMessage message)
+    private void QueueMessageSink(IrssMessage message)
     {
       _messageSink(message);
     }
 
-    void ConnectionThread()
+    private void ConnectionThread()
     {
       // Outer loop is for reconnection attempts ...
       while (_processConnectionThread)
@@ -298,7 +293,6 @@ namespace VirtualRemote
 
           if (_disconnectCallback != null)
             _disconnectCallback(null);
-
         }
         catch (SocketException socketException)
         {
@@ -330,12 +324,9 @@ namespace VirtualRemote
         }
 
         #endregion Read from socket
-
       }
     }
 
     #endregion Implementation
-
   }
-
 }

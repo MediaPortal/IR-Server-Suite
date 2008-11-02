@@ -1,29 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Save Variables macro command.
   /// </summary>
   public class CommandSaveVariables : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSaveVariables"/> class.
     /// </summary>
-    public CommandSaveVariables() { InitParameters(1); }
+    public CommandSaveVariables()
+    {
+      InitParameters(1);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSaveVariables"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSaveVariables(string[] parameters) : base(parameters) { }
+    public CommandSaveVariables(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +33,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryVariable; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryVariable;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Save Variables"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Save Variables";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -69,7 +75,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

@@ -1,24 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Text;
-using System.Threading;
+using System.IO;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// External Program Command form.
   /// </summary>
   public partial class ExternalProgram : Form
   {
-
     #region Variables
 
-    string _parametersMessage = String.Empty;
+    private readonly string _parametersMessage = String.Empty;
 
     #endregion Variables
 
@@ -33,14 +27,14 @@ namespace IrssUtils.Forms
       get
       {
         return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
-          textBoxProgram.Text,
-          textBoxStartup.Text,
-          textBoxParameters.Text,
-          comboBoxWindowStyle.SelectedItem as string,
-          checkBoxNoWindow.Checked.ToString(),
-          checkBoxShellExecute.Checked.ToString(),
-          checkBoxWaitForExit.Checked.ToString(),
-          checkBoxForceFocus.Checked.ToString());
+                             textBoxProgram.Text,
+                             textBoxStartup.Text,
+                             textBoxParameters.Text,
+                             comboBoxWindowStyle.SelectedItem as string,
+                             checkBoxNoWindow.Checked,
+                             checkBoxShellExecute.Checked,
+                             checkBoxWaitForExit.Checked,
+                             checkBoxForceFocus.Checked);
       }
     }
 
@@ -51,34 +45,52 @@ namespace IrssUtils.Forms
     /// <summary>
     /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
     /// </summary>
-    public ExternalProgram() : this(null, String.Empty, true) { }
+    public ExternalProgram() : this(null, String.Empty, true)
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
     /// </summary>
     /// <param name="canWait">Enable the "Wait for program to finish" option.</param>
-    public ExternalProgram(bool canWait) : this(null, String.Empty, canWait) { }
+    public ExternalProgram(bool canWait) : this(null, String.Empty, canWait)
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
     /// </summary>
     /// <param name="parametersMessage">The optional parameters message.</param>
-    public ExternalProgram(string parametersMessage) : this(null, parametersMessage, true) { }
+    public ExternalProgram(string parametersMessage) : this(null, parametersMessage, true)
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
     /// </summary>
     /// <param name="commands">The command elements.</param>
-    public ExternalProgram(string[] commands) : this(commands, String.Empty, true) { }
+    public ExternalProgram(string[] commands) : this(commands, String.Empty, true)
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
     /// </summary>
     /// <param name="commands">The command elements.</param>
     /// <param name="canWait">Enable the "Wait for program to finish" option.</param>
-    public ExternalProgram(string[] commands, bool canWait) : this(commands, String.Empty, canWait) { }
+    public ExternalProgram(string[] commands, bool canWait) : this(commands, String.Empty, canWait)
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
     /// </summary>
     /// <param name="commands">The command elements.</param>
     /// <param name="parametersMessage">The optional parameters message.</param>
-    public ExternalProgram(string[] commands, string parametersMessage) : this(commands, parametersMessage, true) { }
+    public ExternalProgram(string[] commands, string parametersMessage) : this(commands, parametersMessage, true)
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExternalProgram"/> class.
     /// </summary>
@@ -104,20 +116,21 @@ namespace IrssUtils.Forms
       _parametersMessage = parametersMessage;
 
       comboBoxWindowStyle.Items.Clear();
-      comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof(ProcessWindowStyle)));
+      comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof (ProcessWindowStyle)));
 
       if (commands != null)
       {
-        textBoxProgram.Text           = commands[0];
-        textBoxStartup.Text           = commands[1];
-        textBoxParameters.Text        = commands[2];
+        textBoxProgram.Text = commands[0];
+        textBoxStartup.Text = commands[1];
+        textBoxParameters.Text = commands[2];
 
-        checkBoxNoWindow.Checked      = bool.Parse(commands[4]);
-        checkBoxShellExecute.Checked  = bool.Parse(commands[5]);
-        checkBoxWaitForExit.Checked   = bool.Parse(commands[6]);
-        checkBoxForceFocus.Checked    = bool.Parse(commands[7]);
+        checkBoxNoWindow.Checked = bool.Parse(commands[4]);
+        checkBoxShellExecute.Checked = bool.Parse(commands[5]);
+        checkBoxWaitForExit.Checked = bool.Parse(commands[6]);
+        checkBoxForceFocus.Checked = bool.Parse(commands[7]);
 
-        comboBoxWindowStyle.SelectedItem  = ((ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true)).ToString();
+        comboBoxWindowStyle.SelectedItem =
+          ((ProcessWindowStyle) Enum.Parse(typeof (ProcessWindowStyle), commands[3], true)).ToString();
       }
       else
       {
@@ -143,7 +156,7 @@ namespace IrssUtils.Forms
 
         if (textBoxStartup.Text.Trim().Length == 0)
         {
-          textBoxStartup.Text = System.IO.Path.GetDirectoryName(openFileDialog.FileName);
+          textBoxStartup.Text = Path.GetDirectoryName(openFileDialog.FileName);
         }
       }
     }
@@ -160,18 +173,19 @@ namespace IrssUtils.Forms
     {
       if (textBoxProgram.Text.Trim().Length == 0)
       {
-        MessageBox.Show(this, "You must specify a program to run", "Missing program path", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must specify a program to run", "Missing program path", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         return;
       }
-      
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonParamQuestion_Click(object sender, EventArgs e)
@@ -183,22 +197,24 @@ namespace IrssUtils.Forms
     {
       if (textBoxProgram.Text.Trim().Length == 0)
       {
-        MessageBox.Show(this, "You must specify a program to run", "Missing program path", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must specify a program to run", "Missing program path", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         return;
       }
 
       try
       {
-        string[] launchCommand = new string[] {
-          textBoxProgram.Text,
-          textBoxStartup.Text,
-          textBoxParameters.Text,
-          comboBoxWindowStyle.SelectedItem as string,
-          checkBoxNoWindow.Checked.ToString(),
-          checkBoxShellExecute.Checked.ToString(),
-          false.ToString(),
-          checkBoxForceFocus.Checked.ToString()        
-        };
+        string[] launchCommand = new string[]
+                                   {
+                                     textBoxProgram.Text,
+                                     textBoxStartup.Text,
+                                     textBoxParameters.Text,
+                                     comboBoxWindowStyle.SelectedItem as string,
+                                     checkBoxNoWindow.Checked.ToString(),
+                                     checkBoxShellExecute.Checked.ToString(),
+                                     false.ToString(),
+                                     checkBoxForceFocus.Checked.ToString()
+                                   };
 
         Common.ProcessRunCommand(launchCommand);
       }
@@ -209,7 +225,5 @@ namespace IrssUtils.Forms
     }
 
     #endregion Buttons
-
   }
-
 }

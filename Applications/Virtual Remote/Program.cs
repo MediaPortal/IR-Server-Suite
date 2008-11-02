@@ -1,49 +1,40 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 
 namespace VirtualRemote
 {
-
-  static class Program
+  internal static class Program
   {
-
     #region Constants
 
-    const string DefaultSkin = "MCE";
+    private const string DefaultSkin = "MCE";
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Virtual Remote\\Virtual Remote.xml");
+    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
+                                                                    "Virtual Remote\\Virtual Remote.xml");
 
     #endregion Constants
 
     #region Variables
 
-    static Client _client;
+    private static RemoteButton[] _buttons;
+    private static Client _client;
+    private static string _device;
 
-    static bool _registered;
+    private static bool _registered;
+    private static string _remoteSkin;
 
-    static string _serverHost;
+    private static string _serverHost;
 
-    static string _skinsFolder;
-
-    static string _remoteSkin;
-
-    static string _device;
-
-    static RemoteButton[] _buttons;
+    private static string _skinsFolder;
 
     #endregion Variables
 
@@ -89,7 +80,7 @@ namespace VirtualRemote
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
@@ -101,14 +92,14 @@ namespace VirtualRemote
 #endif
       IrssLog.Open("Virtual Remote.log");
 
-      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException += Application_ThreadException;
 
       LoadSettings();
 
       if (args.Length > 0) // Command Line Start ...
       {
         List<string> virtualButtons = new List<string>();
-        
+
         try
         {
           for (int index = 0; index < args.Length; index++)
@@ -130,7 +121,7 @@ namespace VirtualRemote
         }
 
         IPAddress serverIP = Client.GetIPFromName(_serverHost);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         if (virtualButtons.Count != 0 && StartClient(endPoint))
         {
@@ -152,7 +143,7 @@ namespace VirtualRemote
             {
               if (button.StartsWith("~", StringComparison.OrdinalIgnoreCase))
               {
-                Thread.Sleep(button.Length * 500);
+                Thread.Sleep(button.Length*500);
               }
               else
               {
@@ -165,10 +156,9 @@ namespace VirtualRemote
           }
           else
           {
-            IrssLog.Warn("Failed to register with server host \"{0}\", custom message(s) not sent", Program.ServerHost);
+            IrssLog.Warn("Failed to register with server host \"{0}\", custom message(s) not sent", ServerHost);
           }
         }
-
       }
       else // GUI Start ...
       {
@@ -183,7 +173,7 @@ namespace VirtualRemote
         bool clientStarted = false;
 
         IPAddress serverIP = Client.GetIPFromName(_serverHost);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         try
         {
@@ -203,7 +193,7 @@ namespace VirtualRemote
 
       StopClient();
 
-      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException -= Application_ThreadException;
 
       IrssLog.Close();
     }
@@ -218,7 +208,7 @@ namespace VirtualRemote
       IrssLog.Error(e.Exception);
     }
 
-    static void LoadSettings()
+    private static void LoadSettings()
     {
       try
       {
@@ -255,10 +245,25 @@ namespace VirtualRemote
         return;
       }
 
-      try { _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value; } catch { _serverHost = "localhost"; }
-      try { _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value; } catch { _remoteSkin = DefaultSkin; }
+      try
+      {
+        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+      }
+      catch
+      {
+        _serverHost = "localhost";
+      }
+      try
+      {
+        _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value;
+      }
+      catch
+      {
+        _remoteSkin = DefaultSkin;
+      }
     }
-    static void SaveSettings()
+
+    private static void SaveSettings()
     {
       try
       {
@@ -266,7 +271,7 @@ namespace VirtualRemote
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -282,7 +287,8 @@ namespace VirtualRemote
         IrssLog.Error(ex);
       }
     }
-    static void CreateDefaultSettings()
+
+    private static void CreateDefaultSettings()
     {
       _serverHost = "localhost";
       _remoteSkin = DefaultSkin;
@@ -291,10 +297,10 @@ namespace VirtualRemote
     }
 
 
-    static void CommsFailure(object obj)
+    private static void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
-      
+
       if (ex != null)
         IrssLog.Error("Communications failure: {0}", ex.Message);
       else
@@ -302,16 +308,19 @@ namespace VirtualRemote
 
       StopClient();
 
-      MessageBox.Show("Please report this error.", "Virtual Remote - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show("Please report this error.", "Virtual Remote - Communications failure", MessageBoxButtons.OK,
+                      MessageBoxIcon.Error);
     }
-    static void Connected(object obj)
+
+    private static void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    static void Disconnected(object obj)
+
+    private static void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
@@ -323,13 +332,13 @@ namespace VirtualRemote
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
+
       if (_client.Start())
       {
         return true;
@@ -340,6 +349,7 @@ namespace VirtualRemote
         return false;
       }
     }
+
     internal static void StopClient()
     {
       if (_client == null)
@@ -390,7 +400,7 @@ namespace VirtualRemote
       SendMessage(message);
     }
 
-    static void SendMessage(IrssMessage message)
+    private static void SendMessage(IrssMessage message)
     {
       if (message == null)
         throw new ArgumentNullException("message");
@@ -399,7 +409,7 @@ namespace VirtualRemote
         _client.Send(message);
     }
 
-    static void ReceivedMessage(IrssMessage received)
+    private static void ReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
@@ -437,7 +447,5 @@ namespace VirtualRemote
         IrssLog.Error(ex);
       }
     }
-
   }
-
 }

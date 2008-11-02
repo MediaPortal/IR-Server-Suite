@@ -1,25 +1,19 @@
 using System;
 using System.Collections.Generic;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-
 using Microsoft.Win32;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Device Details used to register for raw input.
   /// </summary>
   internal class DeviceDetails
   {
-    string _name;
-    string _id;
-    ushort _usagePage;
-    ushort _usage;
+    private string _id;
+    private string _name;
+    private ushort _usage;
+    private ushort _usagePage;
 
     /// <summary>
     /// Gets or sets the name.
@@ -30,6 +24,7 @@ namespace InputService.Plugin
       get { return _name; }
       set { _name = value; }
     }
+
     /// <summary>
     /// Gets or sets the ID.
     /// </summary>
@@ -39,6 +34,7 @@ namespace InputService.Plugin
       get { return _id; }
       set { _id = value; }
     }
+
     /// <summary>
     /// Gets or sets the usage page.
     /// </summary>
@@ -48,6 +44,7 @@ namespace InputService.Plugin
       get { return _usagePage; }
       set { _usagePage = value; }
     }
+
     /// <summary>
     /// Gets or sets the usage.
     /// </summary>
@@ -58,10 +55,9 @@ namespace InputService.Plugin
       set { _usage = value; }
     }
   }
-  
+
   internal static class RawInput
   {
-
     #region Interop
 
     [DllImport("User32.dll")]
@@ -94,81 +90,41 @@ namespace InputService.Plugin
     [DllImport("User32.dll")]
     internal static extern uint GetRawInputDeviceInfo(
       IntPtr deviceHandle,
-      uint uiCommand, 
-      ref DeviceInfo data, 
+      uint uiCommand,
+      ref DeviceInfo data,
       ref uint dataSize);
 
     #endregion Interop
 
     #region Constants
 
-    public const int WM_KEYDOWN     = 0x0100;
-    public const int WM_KEYUP       = 0x0101;
-    public const int WM_APPCOMMAND  = 0x0319;
-    public const int WM_INPUT       = 0x00FF;
-    public const int WM_SYSKEYDOWN  = 0x0104;
-
-    public const int RIDI_PREPARSEDDATA = 0x20000005;
-    public const int RIDI_DEVICENAME    = 0x20000007;
-    public const int RIDI_DEVICEINFO    = 0x2000000B;
-    
     public const int KEYBOARD_OVERRUN_MAKE_CODE = 0x00FF;
+    public const int RIDI_DEVICEINFO = 0x2000000B;
+    public const int RIDI_DEVICENAME = 0x20000007;
+    public const int RIDI_PREPARSEDDATA = 0x20000005;
+    public const int WM_APPCOMMAND = 0x0319;
+    public const int WM_INPUT = 0x00FF;
+    public const int WM_KEYDOWN = 0x0100;
+    public const int WM_KEYUP = 0x0101;
+    public const int WM_SYSKEYDOWN = 0x0104;
 
     #endregion Constants
 
     #region Enumerations
 
-    public enum RawInputType
-    {
-      Mouse     = 0,
-      Keyboard  = 1,
-      HID       = 2
-    }
-
-    [Flags()]
-    public enum RawMouseFlags : ushort
-    {
-      MoveRelative      = 0,
-      MoveAbsolute      = 1,
-      VirtualDesktop    = 2,
-      AttributesChanged = 4
-    }
-
-    [Flags()]
-    public enum RawMouseButtons : ushort
-    {
-      None        = 0,
-      LeftDown    = 0x0001,
-      LeftUp      = 0x0002,
-      RightDown   = 0x0004,
-      RightUp     = 0x0008,
-      MiddleDown  = 0x0010,
-      MiddleUp    = 0x0020,
-      Button4Down = 0x0040,
-      Button4Up   = 0x0080,
-      Button5Down = 0x0100,
-      Button5Up   = 0x0200,
-      MouseWheel  = 0x0400
-    }
-
-    [Flags()]
-    public enum RawKeyboardFlags : ushort
-    {
-      KeyMake               = 0x00,
-      KeyBreak              = 0x01,
-      KeyE0                 = 0x02,
-      KeyE1                 = 0x04,
-      TerminalServerSetLED  = 0x08,
-      TerminalServerShadow  = 0x10
-    }
+    #region RawInputCommand enum
 
     public enum RawInputCommand
     {
-      Input   = 0x10000003,
-      Header  = 0x10000005,
+      Input = 0x10000003,
+      Header = 0x10000005,
     }
 
-    [Flags()]
+    #endregion
+
+    #region RawInputDeviceFlags enum
+
+    [Flags]
     public enum RawInputDeviceFlags
     {
       /// <summary>No flags.</summary>
@@ -191,130 +147,126 @@ namespace InputService.Plugin
       AppKeys = 0x00000400
     }
 
+    #endregion
+
+    #region RawInputType enum
+
+    public enum RawInputType
+    {
+      Mouse = 0,
+      Keyboard = 1,
+      HID = 2
+    }
+
+    #endregion
+
+    #region RawKeyboardFlags enum
+
+    [Flags]
+    public enum RawKeyboardFlags : ushort
+    {
+      KeyMake = 0x00,
+      KeyBreak = 0x01,
+      KeyE0 = 0x02,
+      KeyE1 = 0x04,
+      TerminalServerSetLED = 0x08,
+      TerminalServerShadow = 0x10
+    }
+
+    #endregion
+
+    #region RawMouseButtons enum
+
+    [Flags]
+    public enum RawMouseButtons : ushort
+    {
+      None = 0,
+      LeftDown = 0x0001,
+      LeftUp = 0x0002,
+      RightDown = 0x0004,
+      RightUp = 0x0008,
+      MiddleDown = 0x0010,
+      MiddleUp = 0x0020,
+      Button4Down = 0x0040,
+      Button4Up = 0x0080,
+      Button5Down = 0x0100,
+      Button5Up = 0x0200,
+      MouseWheel = 0x0400
+    }
+
+    #endregion
+
+    #region RawMouseFlags enum
+
+    [Flags]
+    public enum RawMouseFlags : ushort
+    {
+      MoveRelative = 0,
+      MoveAbsolute = 1,
+      VirtualDesktop = 2,
+      AttributesChanged = 4
+    }
+
+    #endregion
+
     #endregion Enumerations
 
     #region Structures
 
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RAWINPUTDEVICELIST
-    {
-      public IntPtr hDevice;
-      [MarshalAs(UnmanagedType.U4)]
-      public RawInputType dwType;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    public struct RAWINPUT
-    {
-      [FieldOffset(0)]
-      public RAWINPUTHEADER header;
-      [FieldOffset(16)]
-      public RAWMOUSE mouse;
-      [FieldOffset(16)]
-      public RAWKEYBOARD keyboard;
-      [FieldOffset(16)]
-      public RAWHID hid;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RAWINPUTHEADER
-    {
-      [MarshalAs(UnmanagedType.U4)]
-      public RawInputType dwType;
-      [MarshalAs(UnmanagedType.U4)]
-      public int dwSize;
-      public IntPtr hDevice;
-      [MarshalAs(UnmanagedType.U4)]
-      public int wParam;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RAWHID
-    {
-      [MarshalAs(UnmanagedType.U4)]
-      public int dwSizeHid;
-      [MarshalAs(UnmanagedType.U4)]
-      public int dwCount;
-
-      //public IntPtr bRawData;
-    }
+    #region Nested type: BUTTONSSTR
 
     [StructLayout(LayoutKind.Sequential)]
     public struct BUTTONSSTR
     {
-      [MarshalAs(UnmanagedType.U2)]
-      public ushort usButtonFlags;
-      [MarshalAs(UnmanagedType.U2)]
-      public ushort usButtonData;
+      [MarshalAs(UnmanagedType.U2)] public ushort usButtonFlags;
+      [MarshalAs(UnmanagedType.U2)] public ushort usButtonData;
     }
 
-    [StructLayout(LayoutKind.Explicit)]
-    public struct RAWMOUSE
-    {
-      [MarshalAs(UnmanagedType.U2)]
-      [FieldOffset(0)]
-      public ushort usFlags;
-      [MarshalAs(UnmanagedType.U4)]
-      [FieldOffset(4)]
-      public uint ulButtons;
-      [FieldOffset(4)]
-      public BUTTONSSTR buttonsStr;
-      [MarshalAs(UnmanagedType.U4)]
-      [FieldOffset(8)]
-      public uint ulRawButtons;
-      [FieldOffset(12)]
-      public int lLastX;
-      [FieldOffset(16)]
-      public int lLastY;
-      [MarshalAs(UnmanagedType.U4)]
-      [FieldOffset(20)]
-      public uint ulExtraInformation;
-    }
+    #endregion
 
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RAWKEYBOARD
-    {
-      [MarshalAs(UnmanagedType.U2)]
-      public ushort MakeCode;
-      [MarshalAs(UnmanagedType.U2)]
-      public RawKeyboardFlags Flags;
-      [MarshalAs(UnmanagedType.U2)]
-      public ushort Reserved;
-      [MarshalAs(UnmanagedType.U2)]
-      public ushort VKey;
-      [MarshalAs(UnmanagedType.U4)]
-      public uint Message;
-      [MarshalAs(UnmanagedType.U4)]
-      public uint ExtraInformation;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RAWINPUTDEVICE
-    {
-      [MarshalAs(UnmanagedType.U2)]
-      public ushort usUsagePage;
-      [MarshalAs(UnmanagedType.U2)]
-      public ushort usUsage;
-      [MarshalAs(UnmanagedType.U4)]
-      public RawInputDeviceFlags dwFlags;
-      public IntPtr hwndTarget;
-    }
+    #region Nested type: DeviceInfo
 
     [StructLayout(LayoutKind.Explicit)]
     public struct DeviceInfo
     {
-      [FieldOffset(0)]
-      public int Size;
-      [FieldOffset(4)]
-      public RawInputType Type;
+      [FieldOffset(0)] public int Size;
+      [FieldOffset(4)] public RawInputType Type;
 
-      [FieldOffset(8)]
-      public DeviceInfoMouse MouseInfo;
-      [FieldOffset(8)]
-      public DeviceInfoKeyboard KeyboardInfo;
-      [FieldOffset(8)]
-      public DeviceInfoHID HIDInfo;
+      [FieldOffset(8)] public DeviceInfoMouse MouseInfo;
+      [FieldOffset(8)] public DeviceInfoKeyboard KeyboardInfo;
+      [FieldOffset(8)] public DeviceInfoHID HIDInfo;
     }
+
+    #endregion
+
+    #region Nested type: DeviceInfoHID
+
+    public struct DeviceInfoHID
+    {
+      public uint ProductID;
+      public ushort Usage;
+      public ushort UsagePage;
+      public uint VendorID;
+      public uint VersionNumber;
+    }
+
+    #endregion
+
+    #region Nested type: DeviceInfoKeyboard
+
+    public struct DeviceInfoKeyboard
+    {
+      public uint KeyboardMode;
+      public uint NumberOfFunctionKeys;
+      public uint NumberOfIndicators;
+      public uint NumberOfKeysTotal;
+      public uint SubType;
+      public uint Type;
+    }
+
+    #endregion
+
+    #region Nested type: DeviceInfoMouse
 
     public struct DeviceInfoMouse
     {
@@ -323,41 +275,117 @@ namespace InputService.Plugin
       public uint SampleRate;
     }
 
-    public struct DeviceInfoKeyboard
+    #endregion
+
+    #region Nested type: RAWHID
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RAWHID
     {
-      public uint Type;
-      public uint SubType;
-      public uint KeyboardMode;
-      public uint NumberOfFunctionKeys;
-      public uint NumberOfIndicators;
-      public uint NumberOfKeysTotal;
+      [MarshalAs(UnmanagedType.U4)] public int dwSizeHid;
+      [MarshalAs(UnmanagedType.U4)] public int dwCount;
+
+      //public IntPtr bRawData;
     }
 
-    public struct DeviceInfoHID
+    #endregion
+
+    #region Nested type: RAWINPUT
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct RAWINPUT
     {
-      public uint VendorID;
-      public uint ProductID;
-      public uint VersionNumber;
-      public ushort UsagePage;
-      public ushort Usage;
+      [FieldOffset(0)] public RAWINPUTHEADER header;
+      [FieldOffset(16)] public RAWMOUSE mouse;
+      [FieldOffset(16)] public RAWKEYBOARD keyboard;
+      [FieldOffset(16)] public RAWHID hid;
     }
- 
+
+    #endregion
+
+    #region Nested type: RAWINPUTDEVICE
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RAWINPUTDEVICE
+    {
+      [MarshalAs(UnmanagedType.U2)] public ushort usUsagePage;
+      [MarshalAs(UnmanagedType.U2)] public ushort usUsage;
+      [MarshalAs(UnmanagedType.U4)] public RawInputDeviceFlags dwFlags;
+      public IntPtr hwndTarget;
+    }
+
+    #endregion
+
+    #region Nested type: RAWINPUTDEVICELIST
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RAWINPUTDEVICELIST
+    {
+      public IntPtr hDevice;
+      [MarshalAs(UnmanagedType.U4)] public RawInputType dwType;
+    }
+
+    #endregion
+
+    #region Nested type: RAWINPUTHEADER
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RAWINPUTHEADER
+    {
+      [MarshalAs(UnmanagedType.U4)] public RawInputType dwType;
+      [MarshalAs(UnmanagedType.U4)] public int dwSize;
+      public IntPtr hDevice;
+      [MarshalAs(UnmanagedType.U4)] public int wParam;
+    }
+
+    #endregion
+
+    #region Nested type: RAWKEYBOARD
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RAWKEYBOARD
+    {
+      [MarshalAs(UnmanagedType.U2)] public ushort MakeCode;
+      [MarshalAs(UnmanagedType.U2)] public RawKeyboardFlags Flags;
+      [MarshalAs(UnmanagedType.U2)] public ushort Reserved;
+      [MarshalAs(UnmanagedType.U2)] public ushort VKey;
+      [MarshalAs(UnmanagedType.U4)] public uint Message;
+      [MarshalAs(UnmanagedType.U4)] public uint ExtraInformation;
+    }
+
+    #endregion
+
+    #region Nested type: RAWMOUSE
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct RAWMOUSE
+    {
+      [MarshalAs(UnmanagedType.U2)] [FieldOffset(0)] public ushort usFlags;
+      [MarshalAs(UnmanagedType.U4)] [FieldOffset(4)] public uint ulButtons;
+      [FieldOffset(4)] public BUTTONSSTR buttonsStr;
+      [MarshalAs(UnmanagedType.U4)] [FieldOffset(8)] public uint ulRawButtons;
+      [FieldOffset(12)] public int lLastX;
+      [FieldOffset(16)] public int lLastY;
+      [MarshalAs(UnmanagedType.U4)] [FieldOffset(20)] public uint ulExtraInformation;
+    }
+
+    #endregion
+
     #endregion Structures
-
 
     public static List<DeviceDetails> EnumerateDevices()
     {
       uint deviceCount = 0;
-      int dwSize = Marshal.SizeOf(typeof(RAWINPUTDEVICELIST));
+      int dwSize = Marshal.SizeOf(typeof (RAWINPUTDEVICELIST));
 
       // Get the number of raw input devices in the list,
       // then allocate sufficient memory and get the entire list
-      if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, (uint)dwSize) == 0)
+      if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, (uint) dwSize) == 0)
       {
-        IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int)(dwSize * deviceCount));
-        GetRawInputDeviceList(pRawInputDeviceList, ref deviceCount, (uint)dwSize);
+        IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int) (dwSize*deviceCount));
+        GetRawInputDeviceList(pRawInputDeviceList, ref deviceCount, (uint) dwSize);
 
-        List<DeviceDetails> devices = new List<DeviceDetails>((int)deviceCount);
+        List<DeviceDetails> devices = new List<DeviceDetails>((int) deviceCount);
 
         // Iterate through the list, discarding undesired items
         // and retrieving further information on keyboard devices
@@ -369,22 +397,22 @@ namespace InputService.Plugin
           RAWINPUTDEVICELIST rid;
 
           IntPtr location;
-          int offset = dwSize * i;
+          int offset = dwSize*i;
 
           if (IntPtr.Size == 4)
             location = new IntPtr(pRawInputDeviceList.ToInt32() + offset);
           else
             location = new IntPtr(pRawInputDeviceList.ToInt64() + offset);
 
-          rid = (RAWINPUTDEVICELIST)Marshal.PtrToStructure(location, typeof(RAWINPUTDEVICELIST));
+          rid = (RAWINPUTDEVICELIST) Marshal.PtrToStructure(location, typeof (RAWINPUTDEVICELIST));
 
           GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICENAME, IntPtr.Zero, ref pcbSize);
 
           if (pcbSize > 0)
           {
-            IntPtr pData = Marshal.AllocHGlobal((int)pcbSize);
+            IntPtr pData = Marshal.AllocHGlobal((int) pcbSize);
             GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICENAME, pData, ref pcbSize);
-            deviceName = (string)Marshal.PtrToStringAnsi(pData);
+            deviceName = Marshal.PtrToStringAnsi(pData);
 
             // Drop the "root" keyboard and mouse devices used for Terminal Services and the Remote Desktop
             /*
@@ -402,13 +430,13 @@ namespace InputService.Plugin
 #endif
 
             // Get Detailed Info ...
-            uint size = (uint)Marshal.SizeOf(typeof(DeviceInfo));
+            uint size = (uint) Marshal.SizeOf(typeof (DeviceInfo));
             DeviceInfo di = new DeviceInfo();
-            di.Size = Marshal.SizeOf(typeof(DeviceInfo));
+            di.Size = Marshal.SizeOf(typeof (DeviceInfo));
             GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICEINFO, ref di, ref size);
 
             di = new DeviceInfo();
-            di.Size = Marshal.SizeOf(typeof(DeviceInfo));
+            di.Size = Marshal.SizeOf(typeof (DeviceInfo));
             GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICEINFO, ref di, ref size);
 
             DeviceDetails details = new DeviceDetails();
@@ -432,7 +460,7 @@ namespace InputService.Plugin
                   //details.ID = GetDeviceDesc(deviceName);
 
                   details.UsagePage = di.HIDInfo.UsagePage;
-                  details.Usage     = di.HIDInfo.Usage;
+                  details.Usage = di.HIDInfo.Usage;
 
                   devices.Add(details);
                   break;
@@ -453,7 +481,7 @@ namespace InputService.Plugin
                   //details.ID = String.Format("{0}-{1}", di.KeyboardInfo.Type, di.KeyboardInfo.SubType);
 
                   details.UsagePage = 0x01;
-                  details.Usage     = 0x06;
+                  details.Usage = 0x06;
 
                   devices.Add(details);
                   break;
@@ -470,7 +498,7 @@ namespace InputService.Plugin
                   details.Name = "HID Mouse";
 
                   details.UsagePage = 0x01;
-                  details.Usage     = 0x02;
+                  details.Usage = 0x02;
 
                   devices.Add(details);
                   break;
@@ -489,10 +517,9 @@ namespace InputService.Plugin
       {
         throw new InvalidOperationException("An error occurred while retrieving the list of devices");
       }
-
     }
 
-    static string GetFriendlyName(string vidAndPid)
+    private static string GetFriendlyName(string vidAndPid)
     {
       try
       {
@@ -522,8 +549,5 @@ namespace InputService.Plugin
 
       return null;
     }
-
-
   }
-
 }

@@ -1,50 +1,42 @@
-using System;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
+using InputService.Plugin.Properties;
 using WiimoteLib;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// IR Server Plugin for the Wii Remote.
   /// </summary>
   public class WiiRemoteReceiver : PluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Wii Remote Receiver.xml");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Wii Remote Receiver.xml");
 
-    readonly int ScreenWidth = Screen.PrimaryScreen.WorkingArea.Width;
-    readonly int ScreenHeight = Screen.PrimaryScreen.WorkingArea.Height;
+    private readonly int ScreenHeight = Screen.PrimaryScreen.WorkingArea.Height;
+    private readonly int ScreenWidth = Screen.PrimaryScreen.WorkingArea.Width;
 
     #endregion Constants
 
     #region Variables
 
-    RemoteHandler _remoteButtonHandler;
-    MouseHandler _mouseHandler;
+    private bool _handleMouseLocally = true;
 
-    bool _handleMouseLocally = true;
-    bool _useNunchukAsMouse = false;
-    double _mouseSensitivity = 1.5;
+    private bool _led1;
+    private bool _led2 = true;
+    private bool _led3 = true;
+    private bool _led4;
+    private MouseHandler _mouseHandler;
+    private double _mouseSensitivity = 1.5;
 
-    bool _led1 = false;
-    bool _led2 = true;
-    bool _led3 = true;
-    bool _led4 = false;
-
-    Wiimote _wiimote;
-
-    WiimoteState _previousState;
+    private WiimoteState _previousState;
+    private RemoteHandler _remoteButtonHandler;
+    private bool _useNunchukAsMouse;
+    private Wiimote _wiimote;
 
     #endregion Variables
 
@@ -54,27 +46,110 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "Wii Remote"; } }
+    public override string Name
+    {
+      get { return "Wii Remote"; }
+    }
+
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.4.2.0"; } }
+    public override string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81, using the WiimoteLib by Brian Peek"; } }
+    public override string Author
+    {
+      get { return "and-81, using the WiimoteLib by Brian Peek"; }
+    }
+
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports the Nintendo Wii Remote"; } }
+    public override string Description
+    {
+      get { return "Supports the Nintendo Wii Remote"; }
+    }
+
     /// <summary>
     /// Gets a display icon for the plugin.
     /// </summary>
     /// <value>The icon.</value>
-    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
+    public override Icon DeviceIcon
+    {
+      get { return Resources.Icon; }
+    }
+
+    #region IConfigure Members
+
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
+    /// <param name="owner">The owner window to use for creating modal dialogs.</param>
+    public void Configure(IWin32Window owner)
+    {
+      LoadSettings();
+
+      Setup setup = new Setup();
+
+      setup.HandleMouseLocal = _handleMouseLocally;
+      setup.UseNunchukAsMouse = _useNunchukAsMouse;
+      setup.MouseSensitivity = _mouseSensitivity;
+      setup.LED1 = _led1;
+      setup.LED2 = _led2;
+      setup.LED3 = _led3;
+      setup.LED4 = _led4;
+
+      if (setup.ShowDialog(owner) == DialogResult.OK)
+      {
+        _handleMouseLocally = setup.HandleMouseLocal;
+        _useNunchukAsMouse = setup.UseNunchukAsMouse;
+        _mouseSensitivity = setup.MouseSensitivity;
+        _led1 = setup.LED1;
+        _led2 = setup.LED2;
+        _led3 = setup.LED3;
+        _led4 = setup.LED4;
+
+        SaveSettings();
+      }
+    }
+
+    #endregion
+
+    #region IMouseReceiver Members
+
+    /// <summary>
+    /// Callback for mouse events.
+    /// </summary>
+    /// <value>The mouse callback.</value>
+    public MouseHandler MouseCallback
+    {
+      get { return _mouseHandler; }
+      set { _mouseHandler = value; }
+    }
+
+    #endregion
+
+    #region IRemoteReceiver Members
+
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
+    public RemoteHandler RemoteCallback
+    {
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
+    }
+
+    #endregion
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
@@ -98,8 +173,8 @@ namespace InputService.Plugin
 
       try
       {
-        _wiimote.WiimoteChanged += new WiimoteChangedEventHandler(WiimoteChanged);
-        _wiimote.WiimoteExtensionChanged += new WiimoteExtensionChangedEventHandler(WiimoteExtensionChanged);
+        _wiimote.WiimoteChanged += WiimoteChanged;
+        _wiimote.WiimoteExtensionChanged += WiimoteExtensionChanged;
 
         _wiimote.Connect();
         _wiimote.SetReportType(Wiimote.InputReport.IRAccel, true);
@@ -116,18 +191,21 @@ namespace InputService.Plugin
         _wiimote = null;
       }
     }
+
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
     public override void Suspend()
     {
     }
+
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
     public override void Resume()
     {
     }
+
     /// <summary>
     /// Stop the IR Server plugin.
     /// </summary>
@@ -141,84 +219,74 @@ namespace InputService.Plugin
       _wiimote.Disconnect();
     }
 
-    /// <summary>
-    /// Configure the IR Server plugin.
-    /// </summary>
-    /// <param name="owner">The owner window to use for creating modal dialogs.</param>
-    public void Configure(IWin32Window owner)
-    {
-      LoadSettings();
-
-      Setup setup = new Setup();
-
-      setup.HandleMouseLocal  = _handleMouseLocally;
-      setup.UseNunchukAsMouse = _useNunchukAsMouse;
-      setup.MouseSensitivity  = _mouseSensitivity;
-      setup.LED1 = _led1;
-      setup.LED2 = _led2;
-      setup.LED3 = _led3;
-      setup.LED4 = _led4;
-
-      if (setup.ShowDialog(owner) == DialogResult.OK)
-      {
-        _handleMouseLocally   = setup.HandleMouseLocal;
-        _useNunchukAsMouse    = setup.UseNunchukAsMouse;
-        _mouseSensitivity     = setup.MouseSensitivity;
-        _led1 = setup.LED1;
-        _led2 = setup.LED2;
-        _led3 = setup.LED3;
-        _led4 = setup.LED4;
-
-        SaveSettings();
-      }
-    }
-
-    /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    /// <value>The remote callback.</value>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
-    }
-
-    /// <summary>
-    /// Callback for mouse events.
-    /// </summary>
-    /// <value>The mouse callback.</value>
-    public MouseHandler MouseCallback
-    {
-      get { return _mouseHandler; }
-      set { _mouseHandler = value; }
-    }
-
-    void LoadSettings()
+    private void LoadSettings()
     {
       XmlDocument doc = new XmlDocument();
 
-      try { doc.Load(ConfigurationFile); }
-      catch { return; }
+      try
+      {
+        doc.Load(ConfigurationFile);
+      }
+      catch
+      {
+        return;
+      }
 
-      try { _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value); }
-      catch { }
+      try
+      {
+        _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value);
+      }
+      catch
+      {
+      }
 
-      try { _useNunchukAsMouse = bool.Parse(doc.DocumentElement.Attributes["UseNunchukAsMouse"].Value); }
-      catch { }
+      try
+      {
+        _useNunchukAsMouse = bool.Parse(doc.DocumentElement.Attributes["UseNunchukAsMouse"].Value);
+      }
+      catch
+      {
+      }
 
-      try { _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value); }
-      catch { }
+      try
+      {
+        _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value);
+      }
+      catch
+      {
+      }
 
-      try { _led1 = bool.Parse(doc.DocumentElement.Attributes["LED1"].Value); }
-      catch { }
-      try { _led2 = bool.Parse(doc.DocumentElement.Attributes["LED2"].Value); }
-      catch { }
-      try { _led3 = bool.Parse(doc.DocumentElement.Attributes["LED3"].Value); }
-      catch { }
-      try { _led4 = bool.Parse(doc.DocumentElement.Attributes["LED4"].Value); }
-      catch { }
+      try
+      {
+        _led1 = bool.Parse(doc.DocumentElement.Attributes["LED1"].Value);
+      }
+      catch
+      {
+      }
+      try
+      {
+        _led2 = bool.Parse(doc.DocumentElement.Attributes["LED2"].Value);
+      }
+      catch
+      {
+      }
+      try
+      {
+        _led3 = bool.Parse(doc.DocumentElement.Attributes["LED3"].Value);
+      }
+      catch
+      {
+      }
+      try
+      {
+        _led4 = bool.Parse(doc.DocumentElement.Attributes["LED4"].Value);
+      }
+      catch
+      {
+      }
     }
-    void SaveSettings()
+
+    private void SaveSettings()
     {
       try
       {
@@ -226,7 +294,7 @@ namespace InputService.Plugin
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -255,24 +323,24 @@ namespace InputService.Plugin
 #endif
     }
 
-    void WiimoteChanged(object sender, WiimoteChangedEventArgs args)
+    private void WiimoteChanged(object sender, WiimoteChangedEventArgs args)
     {
       WiimoteState ws = args.WiimoteState;
 
       if (_previousState != null)
       {
-        if (ws.ButtonState.A && !_previousState.ButtonState.A)          RemoteCallback(this.Name, "Wiimote_Button:A");
-        if (ws.ButtonState.B && !_previousState.ButtonState.B)          RemoteCallback(this.Name, "Wiimote_Button:B");
-        if (ws.ButtonState.Home && !_previousState.ButtonState.Home)    RemoteCallback(this.Name, "Wiimote_Button:Home");
-        if (ws.ButtonState.Minus && !_previousState.ButtonState.Minus)  RemoteCallback(this.Name, "Wiimote_Button:Minus");
-        if (ws.ButtonState.One && !_previousState.ButtonState.One)      RemoteCallback(this.Name, "Wiimote_Button:One");
-        if (ws.ButtonState.Plus && !_previousState.ButtonState.Plus)    RemoteCallback(this.Name, "Wiimote_Button:Plus");
-        if (ws.ButtonState.Two && !_previousState.ButtonState.Two)      RemoteCallback(this.Name, "Wiimote_Button:Two");
+        if (ws.ButtonState.A && !_previousState.ButtonState.A) RemoteCallback(Name, "Wiimote_Button:A");
+        if (ws.ButtonState.B && !_previousState.ButtonState.B) RemoteCallback(Name, "Wiimote_Button:B");
+        if (ws.ButtonState.Home && !_previousState.ButtonState.Home) RemoteCallback(Name, "Wiimote_Button:Home");
+        if (ws.ButtonState.Minus && !_previousState.ButtonState.Minus) RemoteCallback(Name, "Wiimote_Button:Minus");
+        if (ws.ButtonState.One && !_previousState.ButtonState.One) RemoteCallback(Name, "Wiimote_Button:One");
+        if (ws.ButtonState.Plus && !_previousState.ButtonState.Plus) RemoteCallback(Name, "Wiimote_Button:Plus");
+        if (ws.ButtonState.Two && !_previousState.ButtonState.Two) RemoteCallback(Name, "Wiimote_Button:Two");
 
-        if (ws.ButtonState.Down && !_previousState.ButtonState.Down)    RemoteCallback(this.Name, "Wiimote_Pad:Down");
-        if (ws.ButtonState.Left && !_previousState.ButtonState.Left)    RemoteCallback(this.Name, "Wiimote_Pad:Left");
-        if (ws.ButtonState.Right && !_previousState.ButtonState.Right)  RemoteCallback(this.Name, "Wiimote_Pad:Right");
-        if (ws.ButtonState.Up && !_previousState.ButtonState.Up)        RemoteCallback(this.Name, "Wiimote_Pad:Up");
+        if (ws.ButtonState.Down && !_previousState.ButtonState.Down) RemoteCallback(Name, "Wiimote_Pad:Down");
+        if (ws.ButtonState.Left && !_previousState.ButtonState.Left) RemoteCallback(Name, "Wiimote_Pad:Left");
+        if (ws.ButtonState.Right && !_previousState.ButtonState.Right) RemoteCallback(Name, "Wiimote_Pad:Right");
+        if (ws.ButtonState.Up && !_previousState.ButtonState.Up) RemoteCallback(Name, "Wiimote_Pad:Up");
 
         if (ws.ExtensionType == ExtensionType.Nunchuk)
         {
@@ -286,8 +354,8 @@ namespace InputService.Plugin
             if (ws.NunchukState.Z != _previousState.NunchukState.Z)
               mouseButtons |= ws.NunchukState.Z ? Mouse.MouseEvents.LeftDown : Mouse.MouseEvents.LeftUp;
 
-            int deltaX = (int)(ws.NunchukState.X * 10 * _mouseSensitivity);
-            int deltaY = (int)(ws.NunchukState.Y * -10 * _mouseSensitivity);
+            int deltaX = (int) (ws.NunchukState.X*10*_mouseSensitivity);
+            int deltaY = (int) (ws.NunchukState.Y*-10*_mouseSensitivity);
 
             if (_handleMouseLocally)
             {
@@ -300,40 +368,57 @@ namespace InputService.Plugin
             else
             {
               if (deltaX != 0 || deltaY != 0 || mouseButtons != Mouse.MouseEvents.None)
-                MouseCallback(this.Name, deltaX, deltaY, (int)mouseButtons);
+                MouseCallback(Name, deltaX, deltaY, (int) mouseButtons);
             }
           }
           else
           {
-            if (ws.NunchukState.C && !_previousState.NunchukState.C) RemoteCallback(this.Name, "WiimoteNunchuk_Button:C");
-            if (ws.NunchukState.Z && !_previousState.NunchukState.Z) RemoteCallback(this.Name, "WiimoteNunchuk_Button:Z");
+            if (ws.NunchukState.C && !_previousState.NunchukState.C) RemoteCallback(Name, "WiimoteNunchuk_Button:C");
+            if (ws.NunchukState.Z && !_previousState.NunchukState.Z) RemoteCallback(Name, "WiimoteNunchuk_Button:Z");
           }
         }
 
         if (ws.ExtensionType == ExtensionType.ClassicController)
         {
-          if (ws.ClassicControllerState.ButtonState.A && !_previousState.ClassicControllerState.ButtonState.A)                RemoteCallback(this.Name, "WiimoteClassic_Button:A");
-          if (ws.ClassicControllerState.ButtonState.B && !_previousState.ClassicControllerState.ButtonState.B)                RemoteCallback(this.Name, "WiimoteClassic_Button:B");
-          if (ws.ClassicControllerState.ButtonState.Home && !_previousState.ClassicControllerState.ButtonState.Home)          RemoteCallback(this.Name, "WiimoteClassic_Button:Home");
-          if (ws.ClassicControllerState.ButtonState.Minus && !_previousState.ClassicControllerState.ButtonState.Minus)        RemoteCallback(this.Name, "WiimoteClassic_Button:Minus");
-          if (ws.ClassicControllerState.ButtonState.Plus && !_previousState.ClassicControllerState.ButtonState.Plus)          RemoteCallback(this.Name, "WiimoteClassic_Button:Plus");
-          if (ws.ClassicControllerState.ButtonState.X && !_previousState.ClassicControllerState.ButtonState.X)                RemoteCallback(this.Name, "WiimoteClassic_Button:X");
-          if (ws.ClassicControllerState.ButtonState.Y && !_previousState.ClassicControllerState.ButtonState.Y)                RemoteCallback(this.Name, "WiimoteClassic_Button:Y");
-          if (ws.ClassicControllerState.ButtonState.TriggerL && !_previousState.ClassicControllerState.ButtonState.TriggerL)  RemoteCallback(this.Name, "WiimoteClassic_Button:TriggerL");
-          if (ws.ClassicControllerState.ButtonState.TriggerR && !_previousState.ClassicControllerState.ButtonState.TriggerR)  RemoteCallback(this.Name, "WiimoteClassic_Button:TriggerR");
-          if (ws.ClassicControllerState.ButtonState.ZL && !_previousState.ClassicControllerState.ButtonState.ZL)              RemoteCallback(this.Name, "WiimoteClassic_Button:ZL");
-          if (ws.ClassicControllerState.ButtonState.ZR && !_previousState.ClassicControllerState.ButtonState.ZR)              RemoteCallback(this.Name, "WiimoteClassic_Button:ZR");
+          if (ws.ClassicControllerState.ButtonState.A && !_previousState.ClassicControllerState.ButtonState.A)
+            RemoteCallback(Name, "WiimoteClassic_Button:A");
+          if (ws.ClassicControllerState.ButtonState.B && !_previousState.ClassicControllerState.ButtonState.B)
+            RemoteCallback(Name, "WiimoteClassic_Button:B");
+          if (ws.ClassicControllerState.ButtonState.Home && !_previousState.ClassicControllerState.ButtonState.Home)
+            RemoteCallback(Name, "WiimoteClassic_Button:Home");
+          if (ws.ClassicControllerState.ButtonState.Minus && !_previousState.ClassicControllerState.ButtonState.Minus)
+            RemoteCallback(Name, "WiimoteClassic_Button:Minus");
+          if (ws.ClassicControllerState.ButtonState.Plus && !_previousState.ClassicControllerState.ButtonState.Plus)
+            RemoteCallback(Name, "WiimoteClassic_Button:Plus");
+          if (ws.ClassicControllerState.ButtonState.X && !_previousState.ClassicControllerState.ButtonState.X)
+            RemoteCallback(Name, "WiimoteClassic_Button:X");
+          if (ws.ClassicControllerState.ButtonState.Y && !_previousState.ClassicControllerState.ButtonState.Y)
+            RemoteCallback(Name, "WiimoteClassic_Button:Y");
+          if (ws.ClassicControllerState.ButtonState.TriggerL &&
+              !_previousState.ClassicControllerState.ButtonState.TriggerL)
+            RemoteCallback(Name, "WiimoteClassic_Button:TriggerL");
+          if (ws.ClassicControllerState.ButtonState.TriggerR &&
+              !_previousState.ClassicControllerState.ButtonState.TriggerR)
+            RemoteCallback(Name, "WiimoteClassic_Button:TriggerR");
+          if (ws.ClassicControllerState.ButtonState.ZL && !_previousState.ClassicControllerState.ButtonState.ZL)
+            RemoteCallback(Name, "WiimoteClassic_Button:ZL");
+          if (ws.ClassicControllerState.ButtonState.ZR && !_previousState.ClassicControllerState.ButtonState.ZR)
+            RemoteCallback(Name, "WiimoteClassic_Button:ZR");
 
-          if (ws.ClassicControllerState.ButtonState.Down && !_previousState.ClassicControllerState.ButtonState.Down)          RemoteCallback(this.Name, "WiimoteClassic_Pad:Down");
-          if (ws.ClassicControllerState.ButtonState.Left && !_previousState.ClassicControllerState.ButtonState.Left)          RemoteCallback(this.Name, "WiimoteClassic_Pad:Left");
-          if (ws.ClassicControllerState.ButtonState.Right && !_previousState.ClassicControllerState.ButtonState.Right)        RemoteCallback(this.Name, "WiimoteClassic_Pad:Right");
-          if (ws.ClassicControllerState.ButtonState.Up && !_previousState.ClassicControllerState.ButtonState.Up)              RemoteCallback(this.Name, "WiimoteClassic_Pad:Up");
+          if (ws.ClassicControllerState.ButtonState.Down && !_previousState.ClassicControllerState.ButtonState.Down)
+            RemoteCallback(Name, "WiimoteClassic_Pad:Down");
+          if (ws.ClassicControllerState.ButtonState.Left && !_previousState.ClassicControllerState.ButtonState.Left)
+            RemoteCallback(Name, "WiimoteClassic_Pad:Left");
+          if (ws.ClassicControllerState.ButtonState.Right && !_previousState.ClassicControllerState.ButtonState.Right)
+            RemoteCallback(Name, "WiimoteClassic_Pad:Right");
+          if (ws.ClassicControllerState.ButtonState.Up && !_previousState.ClassicControllerState.ButtonState.Up)
+            RemoteCallback(Name, "WiimoteClassic_Pad:Up");
         }
 
         if (ws.IRState.Found1 && ws.IRState.Found2)
         {
-          int x = (int)(ScreenWidth - (ws.IRState.X1 + ws.IRState.X2) / 2 * ScreenWidth);
-          int y = (int)((ws.IRState.Y1 + ws.IRState.Y2) / 2 * ScreenHeight);
+          int x = (int) (ScreenWidth - (ws.IRState.X1 + ws.IRState.X2)/2*ScreenWidth);
+          int y = (int) ((ws.IRState.Y1 + ws.IRState.Y2)/2*ScreenHeight);
 
           if (_handleMouseLocally)
           {
@@ -341,19 +426,19 @@ namespace InputService.Plugin
           }
           else
           {
-            int prevX = (int)(ScreenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * ScreenWidth);
-            int prevY = (int)((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * ScreenHeight);
+            int prevX = (int) (ScreenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2)/2*ScreenWidth);
+            int prevY = (int) ((_previousState.IRState.Y1 + _previousState.IRState.Y2)/2*ScreenHeight);
 
             int deltaX = x - prevX;
             int deltaY = y - prevY;
 
-            MouseCallback(this.Name, deltaX, deltaY, 0);
+            MouseCallback(Name, deltaX, deltaY, 0);
           }
         }
       }
       else
         _previousState = new WiimoteState();
-      
+
       //_previousState.AccelCalibrationInfo.X0 = ws.AccelCalibrationInfo.X0;
       //_previousState.AccelCalibrationInfo.XG = ws.AccelCalibrationInfo.XG;
       //_previousState.AccelCalibrationInfo.Y0 = ws.AccelCalibrationInfo.Y0;
@@ -384,7 +469,7 @@ namespace InputService.Plugin
 
       _previousState.Extension = ws.Extension;
       _previousState.ExtensionType = ws.ExtensionType;
-      
+
       _previousState.IRState.Found1 = ws.IRState.Found1;
       _previousState.IRState.Found2 = ws.IRState.Found2;
       _previousState.IRState.MidX = ws.IRState.MidX;
@@ -407,7 +492,7 @@ namespace InputService.Plugin
       _previousState.NunchukState.Z = ws.NunchukState.Z;
     }
 
-    void WiimoteExtensionChanged(object sender, WiimoteExtensionChangedEventArgs args)
+    private void WiimoteExtensionChanged(object sender, WiimoteExtensionChangedEventArgs args)
     {
       if (args.Inserted)
         _wiimote.SetReportType(Wiimote.InputReport.IRExtensionAccel, true);
@@ -416,7 +501,5 @@ namespace InputService.Plugin
     }
 
     #endregion Implementation
-
   }
-
 }

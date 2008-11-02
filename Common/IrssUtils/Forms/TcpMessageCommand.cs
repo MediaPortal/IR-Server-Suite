@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// TCP Message Command form.
   /// </summary>
   public partial class TcpMessageCommand : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -25,9 +19,9 @@ namespace IrssUtils.Forms
       get
       {
         return String.Format("{0}|{1}|{2}",
-          textBoxIP.Text,
-          numericUpDownPort.Value.ToString(),
-          textBoxText.Text);
+                             textBoxIP.Text,
+                             numericUpDownPort.Value,
+                             textBoxText.Text);
       }
     }
 
@@ -42,6 +36,7 @@ namespace IrssUtils.Forms
     {
       InitializeComponent();
     }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="TcpMessageCommand"/> class.
     /// </summary>
@@ -52,9 +47,9 @@ namespace IrssUtils.Forms
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      textBoxIP.Text          = commands[0];
+      textBoxIP.Text = commands[0];
       numericUpDownPort.Value = Convert.ToDecimal(commands[1]);
-      textBoxText.Text        = commands[2];
+      textBoxText.Text = commands[2];
     }
 
     #endregion Constructors
@@ -63,17 +58,16 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

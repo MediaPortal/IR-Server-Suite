@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace Translator
@@ -55,11 +53,10 @@ namespace Translator
   /// </summary>
   public class MappedEvent
   {
-
     #region Variables
 
-    MappingEvent _eventType;
-    string _command;
+    private string _command;
+    private MappingEvent _eventType;
 
     //EventSchedule _schedule;
 
@@ -86,7 +83,7 @@ namespace Translator
       get { return _command; }
       set { _command = value; }
     }
-    
+
     #endregion Properties
 
     #region Constructors
@@ -94,7 +91,9 @@ namespace Translator
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public MappedEvent() : this(MappingEvent.None, String.Empty) { }
+    public MappedEvent() : this(MappingEvent.None, String.Empty)
+    {
+    }
 
     /// <summary>
     /// Used to run the Event Mapper.
@@ -103,12 +102,10 @@ namespace Translator
     /// <param name="command">Command to execute when event occurs.</param>
     public MappedEvent(MappingEvent eventType, string command)
     {
-      _eventType  = eventType;
-      _command    = command;
+      _eventType = eventType;
+      _command = command;
     }
 
     #endregion Constructors
-
   }
-
 }

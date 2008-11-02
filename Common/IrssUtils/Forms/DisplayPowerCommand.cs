@@ -1,20 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Display Power Command form.
   /// </summary>
   public partial class DisplayPowerCommand : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -23,10 +16,7 @@ namespace IrssUtils.Forms
     /// <value>The command string.</value>
     public string CommandString
     {
-      get
-      {
-        return comboBoxState.SelectedItem as string;
-      }
+      get { return comboBoxState.SelectedItem as string; }
     }
 
     #endregion Properties
@@ -43,7 +33,7 @@ namespace IrssUtils.Forms
       comboBoxState.Items.Add("On");
       comboBoxState.Items.Add("Off");
       comboBoxState.Items.Add("Standby");
-      
+
       comboBoxState.SelectedIndex = 0;
     }
 
@@ -62,18 +52,16 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

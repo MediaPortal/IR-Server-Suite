@@ -5,7 +5,7 @@ namespace InputService.Plugin
 
   #region Enumerations
 
-  enum MceKeyboardDetectState
+  internal enum MceKeyboardDetectState
   {
     Header,
     CodeType,
@@ -23,51 +23,48 @@ namespace InputService.Plugin
   }
 
   [Flags]
-  enum KeyModifiers
+  internal enum KeyModifiers
   {
-    None          = 0x00,
-    LeftControl   = 0x01,
-    LeftShift     = 0x02,
-    LeftAlt       = 0x04,
-    LeftWin       = 0x08,
-    RightControl  = 0x10,
-    RightShift    = 0x20,
-    RightAlt      = 0x40,
-    RightWin      = 0x80,
+    None = 0x00,
+    LeftControl = 0x01,
+    LeftShift = 0x02,
+    LeftAlt = 0x04,
+    LeftWin = 0x08,
+    RightControl = 0x10,
+    RightShift = 0x20,
+    RightAlt = 0x40,
+    RightWin = 0x80,
   }
 
   #endregion Enumerations
 
-  class MceDetectionData
+  internal class MceDetectionData
   {
-
     #region Members
 
-    MceKeyboardDetectState _state = MceKeyboardDetectState.Header;
-    uint _type;
+    private int _bit;
+    private int _deltaX;
+    private int _deltaY;
+    private int _halfBit;
+    private uint _keyCode;
+    private bool _left;
+    private uint _modifiers;
 
-    uint _keyCode;
-    uint _modifiers;
+    private bool _right;
+    private MceKeyboardDetectState _state = MceKeyboardDetectState.Header;
+    private uint _type;
+    private uint _working;
 
-    int _deltaY;
-    int _deltaX;
-    bool _right;
-    bool _left;
-
-    int _bit;
-
-    int _halfBit;
-    uint _working;
-    
     #endregion Members
 
     #region Properties
-    
+
     public MceKeyboardDetectState State
     {
       get { return _state; }
       set { _state = value; }
     }
+
     public uint Type
     {
       get { return _type; }
@@ -79,6 +76,7 @@ namespace InputService.Plugin
       get { return _keyCode; }
       set { _keyCode = value; }
     }
+
     public uint Modifiers
     {
       get { return _modifiers; }
@@ -90,16 +88,19 @@ namespace InputService.Plugin
       get { return _deltaY; }
       set { _deltaY = value; }
     }
+
     public int DeltaX
     {
       get { return _deltaX; }
       set { _deltaX = value; }
     }
+
     public bool Right
     {
       get { return _right; }
       set { _right = value; }
     }
+
     public bool Left
     {
       get { return _left; }
@@ -111,11 +112,13 @@ namespace InputService.Plugin
       get { return _bit; }
       set { _bit = value; }
     }
+
     public int HalfBit
     {
       get { return _halfBit; }
       set { _halfBit = value; }
     }
+
     public uint Working
     {
       get { return _working; }
@@ -126,11 +129,15 @@ namespace InputService.Plugin
 
     #region Constructors
 
-    public MceDetectionData() : this(MceKeyboardDetectState.Header) { }
-    public MceDetectionData(MceKeyboardDetectState state) { _state = state; }
+    public MceDetectionData() : this(MceKeyboardDetectState.Header)
+    {
+    }
+
+    public MceDetectionData(MceKeyboardDetectState state)
+    {
+      _state = state;
+    }
 
     #endregion Constructors
-
   }
-
 }

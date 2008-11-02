@@ -4,23 +4,20 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-
 using Microsoft.Win32;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Callback for remote button press events.
   /// </summary>
-  delegate void ButtonReceived(int buttonCode);
+  internal delegate void ButtonReceived(int buttonCode);
 
   /// <summary>
   /// Wrapper class for irremote.dll
   /// </summary>
-  class IrRemoteWrapper
+  internal class IrRemoteWrapper
   {
-
     #region Interop
 
     /// <summary>
@@ -30,7 +27,7 @@ namespace InputService.Plugin
     /// <param name="PathName">Pointer to a null-terminated string that specifies the directory to be added to the search path.</param>
     /// <returns></returns>
     [DllImport("kernel32.dll")]
-    static extern bool SetDllDirectory(
+    private static extern bool SetDllDirectory(
       string PathName);
 
     /// <summary>
@@ -42,7 +39,7 @@ namespace InputService.Plugin
     /// <param name="IRPort"></param>
     /// <returns></returns>
     [DllImport("irremote.dll")]
-    static extern bool IR_Open(
+    private static extern bool IR_Open(
       IntPtr WindowHandle,
       uint Msg,
       bool Verbose,
@@ -56,7 +53,7 @@ namespace InputService.Plugin
     /// <param name="KeyCode"></param>
     /// <returns></returns>
     [DllImport("irremote.dll")]
-    static extern bool IR_GetSystemKeyCode(
+    private static extern bool IR_GetSystemKeyCode(
       out int RepeatCount,
       out int RemoteCode,
       out int KeyCode);
@@ -68,7 +65,7 @@ namespace InputService.Plugin
     /// <param name="Msg"></param>
     /// <returns></returns>
     [DllImport("irremote.dll")]
-    static extern bool IR_Close(
+    private static extern bool IR_Close(
       IntPtr WindowHandle,
       uint Msg);
 
@@ -81,19 +78,18 @@ namespace InputService.Plugin
     /// </summary>
     public const string CurrentVersion = "2.49.23332";
 
-    const int HCWPVR2     = 0x001E;   // 45-Button Remote
-    const int HCWPVR      = 0x001F;   // 34-Button Remote
-    const int HCWCLASSIC  = 0x0000;   // 21-Button Remote
+    private const int HCWCLASSIC = 0x0000; // 21-Button Remote
+    private const int HCWPVR = 0x001F; // 34-Button Remote
+    private const int HCWPVR2 = 0x001E; // 45-Button Remote
 
-    const int WM_TIMER    = 0x0113;
+    private const int WM_TIMER = 0x0113;
 
     #endregion Constants
 
     #region Variables
 
-    ButtonReceived _buttonReceived;
-
-    ReceiverWindow _window;
+    private readonly ReceiverWindow _window;
+    private ButtonReceived _buttonReceived;
 
     #endregion Variables
 
@@ -125,7 +121,7 @@ namespace InputService.Plugin
       SetDllDirectory(dllPath);
 
       _window = new ReceiverWindow();
-      _window.ProcMsg = new ProcessMessage(WndProc);
+      _window.ProcMsg = WndProc;
     }
 
     #endregion Constructor
@@ -181,11 +177,14 @@ namespace InputService.Plugin
 
     #endregion Public Methods
 
-    static string GetHCWPath()
+    private static string GetHCWPath()
     {
       string dllPath = null;
 
-      using (RegistryKey rkey = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hauppauge WinTV Infrared Remote"))
+      using (
+        RegistryKey rkey =
+          Registry.LocalMachine.OpenSubKey(
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hauppauge WinTV Infrared Remote"))
       {
         if (rkey != null)
         {
@@ -200,7 +199,7 @@ namespace InputService.Plugin
       return dllPath;
     }
 
-    static string GetDllPath()
+    private static string GetDllPath()
     {
       string dllPath = GetHCWPath();
       if (!File.Exists(dllPath + "irremote.DLL"))
@@ -209,23 +208,29 @@ namespace InputService.Plugin
       return dllPath;
     }
 
-    void WndProc(ref Message m)
+    private void WndProc(ref Message m)
     {
       if (m.Msg != WM_TIMER)
         return;
 
       int repeatCount = 0;
-      int remoteCode  = 0;
-      int keyCode     = 0;
+      int remoteCode = 0;
+      int keyCode = 0;
       if (!IR_GetSystemKeyCode(out repeatCount, out remoteCode, out keyCode))
         return;
 
       int buttonCode = keyCode;
       switch (remoteCode)
       {
-        case HCWCLASSIC:  buttonCode = keyCode;         break;
-        case HCWPVR:      buttonCode = keyCode + 1000;  break;
-        case HCWPVR2:     buttonCode = keyCode + 2000;  break;
+        case HCWCLASSIC:
+          buttonCode = keyCode;
+          break;
+        case HCWPVR:
+          buttonCode = keyCode + 1000;
+          break;
+        case HCWPVR2:
+          buttonCode = keyCode + 2000;
+          break;
 #if TRACE
         default:
           Trace.WriteLine("IrRemoteWrapper - Unknown Remote Code: " + remoteCode);
@@ -236,7 +241,5 @@ namespace InputService.Plugin
       if (_buttonReceived != null)
         _buttonReceived(buttonCode);
     }
-
   }
-
 }

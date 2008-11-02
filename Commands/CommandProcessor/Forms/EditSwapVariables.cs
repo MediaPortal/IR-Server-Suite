@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Swap Variables Command form.
   /// </summary>
-  partial class EditSwapVariables : Form
+  internal partial class EditSwapVariables : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -24,9 +18,11 @@ namespace Commands
     {
       get
       {
-        return new string[] {
-          textBoxVariable1.Text.Trim(),
-          textBoxVariable2.Text };
+        return new string[]
+                 {
+                   textBoxVariable1.Text.Trim(),
+                   textBoxVariable2.Text
+                 };
       }
     }
 
@@ -54,27 +50,26 @@ namespace Commands
       textBoxVariable1.Text = parameters[0];
       textBoxVariable2.Text = parameters[1];
     }
-    
+
     #endregion Constructors
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
       if (String.IsNullOrEmpty(textBoxVariable1.Text.Trim()) || String.IsNullOrEmpty(textBoxVariable2.Text.Trim()))
       {
-        MessageBox.Show(this, "You must include variable names", "Missing variable name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must include variable names", "Missing variable name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
         return;
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

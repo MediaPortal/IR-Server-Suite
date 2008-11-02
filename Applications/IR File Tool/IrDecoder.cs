@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Text;
 
 namespace IrFileTool
 {
@@ -13,7 +8,7 @@ namespace IrFileTool
   /// <summary>
   /// Protocol of IR Code.
   /// </summary>
-  enum IrProtocol
+  internal enum IrProtocol
   {
     /// <summary>
     /// No protocol.
@@ -127,52 +122,51 @@ namespace IrFileTool
 
   #region Delegates
 
-  delegate void RemoteCallback(IrProtocol codeType, uint keyCode, bool firstPress);
-  delegate void KeyboardCallback(uint keyCode, uint modifiers);
-  delegate void MouseCallback(int deltaX, int deltaY, bool rightButton, bool leftButton);
+  internal delegate void RemoteCallback(IrProtocol codeType, uint keyCode, bool firstPress);
+
+  internal delegate void KeyboardCallback(uint keyCode, uint modifiers);
+
+  internal delegate void MouseCallback(int deltaX, int deltaY, bool rightButton, bool leftButton);
 
   #endregion Delegates
 
   /// <summary>
   /// Used for decoding received IR Codes.
   /// </summary>
-  static class IrDecoder
+  internal static class IrDecoder
   {
-
     #region Constants
 
-    const uint ToggleBitMce     = 0x8000;
-    const uint ToggleMaskMce    = 0x7FFF;
-    const uint CustomerMce      = 0x800F;
+    private const uint CustomerMce = 0x800F;
+    private const uint MceKeyboard = 4;
+    private const uint MceMouse = 1;
+    private const uint ToggleBitMce = 0x8000;
 
-    const uint ToggleBitRC5     = 0x0800;
-    const uint ToggleMaskRC5    = 0x07FF;
+    private const uint ToggleBitRC5 = 0x0800;
 
-    const uint ToggleBitRC5X    = 0x00020000;
-    const uint ToggleMaskRC5X   = 0x0001FFFF;
-
-    const uint MceMouse         = 1;
-    const uint MceKeyboard      = 4;
+    private const uint ToggleBitRC5X = 0x00020000;
+    private const uint ToggleMaskMce = 0x7FFF;
+    private const uint ToggleMaskRC5 = 0x07FF;
+    private const uint ToggleMaskRC5X = 0x0001FFFF;
 
     #endregion Constants
 
     #region Detection Data
 
-    static RemoteDetectionData Daewoo_Data      = new RemoteDetectionData();
-    static RemoteDetectionData JVC_Data         = new RemoteDetectionData();
-    static RemoteDetectionData Matsushita_Data  = new RemoteDetectionData();
-    static RemoteDetectionData Mitsubishi_Data  = new RemoteDetectionData();
-    static RemoteDetectionData NEC_Data         = new RemoteDetectionData();
-    static RemoteDetectionData NRC17_Data       = new RemoteDetectionData();
-    static RemoteDetectionData Panasonic_Data   = new RemoteDetectionData();
-    static RemoteDetectionData RC5_Data         = new RemoteDetectionData();
-    static RemoteDetectionData RC6_Data         = new RemoteDetectionData();
-    static RemoteDetectionData RCA_Data         = new RemoteDetectionData();
-    static RemoteDetectionData RECS80_Data      = new RemoteDetectionData();
-    static RemoteDetectionData SIRC_Data        = new RemoteDetectionData();
-    static RemoteDetectionData Toshiba_Data     = new RemoteDetectionData();
-
-    static MceDetectionData MCE_Data            = new MceDetectionData();
+    private static RemoteDetectionData Daewoo_Data = new RemoteDetectionData();
+    private static RemoteDetectionData JVC_Data = new RemoteDetectionData();
+    private static RemoteDetectionData Matsushita_Data = new RemoteDetectionData();
+    private static MceDetectionData MCE_Data = new MceDetectionData();
+    private static RemoteDetectionData Mitsubishi_Data = new RemoteDetectionData();
+    private static RemoteDetectionData NEC_Data = new RemoteDetectionData();
+    private static RemoteDetectionData NRC17_Data = new RemoteDetectionData();
+    private static RemoteDetectionData Panasonic_Data = new RemoteDetectionData();
+    private static RemoteDetectionData RC5_Data = new RemoteDetectionData();
+    private static RemoteDetectionData RC6_Data = new RemoteDetectionData();
+    private static RemoteDetectionData RCA_Data = new RemoteDetectionData();
+    private static RemoteDetectionData RECS80_Data = new RemoteDetectionData();
+    private static RemoteDetectionData SIRC_Data = new RemoteDetectionData();
+    private static RemoteDetectionData Toshiba_Data = new RemoteDetectionData();
 
     #endregion Detection Data
 
@@ -185,7 +179,8 @@ namespace IrFileTool
     /// <param name="remoteCallback">Method to call when Remote button decoded.</param>
     /// <param name="keyboardCallback">Method to call when Keyboard event decoded.</param>
     /// <param name="mouseCallback">Method to call when Mouse event decoded.</param>
-    public static void DecodeIR(int[] timingData, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
+    public static void DecodeIR(int[] timingData, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback,
+                                MouseCallback mouseCallback)
     {
       if (timingData == null)
         return;
@@ -221,25 +216,25 @@ namespace IrFileTool
       catch
       {
 #endif
-        Daewoo_Data     = new RemoteDetectionData();
-        JVC_Data        = new RemoteDetectionData();
+        Daewoo_Data = new RemoteDetectionData();
+        JVC_Data = new RemoteDetectionData();
         Matsushita_Data = new RemoteDetectionData();
         Mitsubishi_Data = new RemoteDetectionData();
-        NEC_Data        = new RemoteDetectionData();
-        NRC17_Data      = new RemoteDetectionData();
-        Panasonic_Data  = new RemoteDetectionData();
-        RC5_Data        = new RemoteDetectionData();
-        RC6_Data        = new RemoteDetectionData();
-        RCA_Data        = new RemoteDetectionData();
-        RECS80_Data     = new RemoteDetectionData();
-        SIRC_Data       = new RemoteDetectionData();
-        Toshiba_Data    = new RemoteDetectionData();
+        NEC_Data = new RemoteDetectionData();
+        NRC17_Data = new RemoteDetectionData();
+        Panasonic_Data = new RemoteDetectionData();
+        RC5_Data = new RemoteDetectionData();
+        RC6_Data = new RemoteDetectionData();
+        RCA_Data = new RemoteDetectionData();
+        RECS80_Data = new RemoteDetectionData();
+        SIRC_Data = new RemoteDetectionData();
+        Toshiba_Data = new RemoteDetectionData();
 
-        MCE_Data        = new MceDetectionData();
+        MCE_Data = new MceDetectionData();
       }
     }
 
-    static void DetectDaewoo(int[] timingData, RemoteCallback remoteCallback)
+    private static void DetectDaewoo(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -251,8 +246,8 @@ namespace IrFileTool
 
         switch (Daewoo_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 7800, 8200))
             {
@@ -260,11 +255,13 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
-            if (!pulse && IsBetween(duration, 3800 , 4200))
+            if (!pulse && IsBetween(duration, 3800, 4200))
             {
               Daewoo_Data.State = RemoteDetectionState.Data;
               Daewoo_Data.HalfBit = 0;
@@ -272,7 +269,7 @@ namespace IrFileTool
               Daewoo_Data.Code = 0;
               ignored = false;
             }
-            else if (!pulse && IsBetween(duration, 10000 , 40000)) // For Repeats
+            else if (!pulse && IsBetween(duration, 10000, 40000)) // For Repeats
             {
               Daewoo_Data.State = RemoteDetectionState.Data;
               Daewoo_Data.HalfBit = 0;
@@ -281,9 +278,11 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 350, 750))
             {
@@ -316,9 +315,11 @@ namespace IrFileTool
               Daewoo_Data.State = RemoteDetectionState.Leading;
             }
             break;
-          #endregion Data
 
-          #region Leading
+            #endregion Data
+
+            #region Leading
+
           case RemoteDetectionState.Leading:
             if (pulse && IsBetween(duration, 350, 750))
             {
@@ -326,15 +327,16 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion Leading
 
+            #endregion Leading
         }
 
         if (ignored && (Daewoo_Data.State != RemoteDetectionState.HeaderPulse))
           Daewoo_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    static void DetectJVC(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectJVC(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -346,8 +348,8 @@ namespace IrFileTool
 
         switch (JVC_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 8300, 8500))
             {
@@ -355,9 +357,11 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 4100, 4300))
             {
@@ -370,9 +374,11 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 450, 650))
             {
@@ -405,7 +411,7 @@ namespace IrFileTool
                 remoteCallback(IrProtocol.JVC, JVC_Data.Code, first);
                 ignored = false;
 
-                JVC_Data.Toggle = (int)JVC_Data.Code;
+                JVC_Data.Toggle = (int) JVC_Data.Code;
 
                 if (duration > 25000)
                   JVC_Data.State = RemoteDetectionState.HeaderPulse;
@@ -424,7 +430,6 @@ namespace IrFileTool
               {
                 //Trace.WriteLine("JVC Error");
               }
- 
             }
             else
             {
@@ -432,15 +437,16 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (ignored && (JVC_Data.State != RemoteDetectionState.HeaderPulse))
           JVC_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    static void DetectMatsushita(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectMatsushita(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -452,8 +458,8 @@ namespace IrFileTool
 
         switch (Matsushita_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 3300, 3700))
             {
@@ -461,12 +467,14 @@ namespace IrFileTool
               ignored = false;
             }
             //else
-              //Trace.WriteLine("HeaderPulse fall through");
+            //Trace.WriteLine("HeaderPulse fall through");
 
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 3300, 3700))
             {
@@ -477,12 +485,14 @@ namespace IrFileTool
               ignored = false;
             }
             //else
-              //Trace.WriteLine("HeaderSpace fell through");
+            //Trace.WriteLine("HeaderSpace fell through");
 
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 650, 1050))
             {
@@ -521,8 +531,8 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (ignored && (Matsushita_Data.State != RemoteDetectionState.HeaderPulse))
@@ -532,7 +542,8 @@ namespace IrFileTool
         }
       }
     }
-    static void DetectMitsubishi(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectMitsubishi(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -544,8 +555,8 @@ namespace IrFileTool
 
         switch (Mitsubishi_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 7800, 8200))
             {
@@ -554,9 +565,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 3800, 4200))
             {
@@ -568,9 +581,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 350, 650))
             {
@@ -606,8 +621,8 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (ignored && (Mitsubishi_Data.State != RemoteDetectionState.HeaderPulse))
@@ -617,7 +632,8 @@ namespace IrFileTool
         }
       }
     }
-    static void DetectNEC(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectNEC(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -629,8 +645,8 @@ namespace IrFileTool
 
         switch (NEC_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 8800, 9200))
             {
@@ -639,9 +655,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 4300, 4700))
             {
@@ -672,9 +690,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 350, 750))
             {
@@ -708,11 +728,11 @@ namespace IrFileTool
                 break;
               }
 
-              uint address     = (NEC_Data.Code >> 24) & 0xFF;
-              uint notAddress  = (NEC_Data.Code >> 16) & 0xFF;
+              uint address = (NEC_Data.Code >> 24) & 0xFF;
+              uint notAddress = (NEC_Data.Code >> 16) & 0xFF;
 
-              uint command     = (NEC_Data.Code >> 8) & 0xFF;
-              uint notCommand  = NEC_Data.Code & 0xFF;
+              uint command = (NEC_Data.Code >> 8) & 0xFF;
+              uint notCommand = NEC_Data.Code & 0xFF;
 
               if ((address + notAddress == 0xFF) && (command + notCommand == 0xFF))
               {
@@ -729,9 +749,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Data
 
-          #region Leading
+            #endregion Data
+
+            #region Leading
+
           case RemoteDetectionState.Leading:
             if (pulse && IsBetween(duration, 400, 800))
             {
@@ -744,15 +766,16 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Leading
 
+            #endregion Leading
         }
 
         if (ignored && (NEC_Data.State != RemoteDetectionState.HeaderPulse))
           NEC_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    static void DetectNRC17(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectNRC17(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -764,8 +787,8 @@ namespace IrFileTool
 
         switch (NRC17_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
 
             if (pulse && IsBetween(duration, 400, 650))
@@ -774,14 +797,16 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
 
             if (!pulse &&
-              (IsBetween(duration, 2350, 2600)  ||  // Normal battery
-               IsBetween(duration, 3350, 3600)))    // Low battery              
+                (IsBetween(duration, 2350, 2600) || // Normal battery
+                 IsBetween(duration, 3350, 3600))) // Low battery              
             {
               NRC17_Data.State = RemoteDetectionState.Data;
               NRC17_Data.HalfBit = 0;
@@ -791,9 +816,11 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (NRC17_Data.HalfBit == 0)
             {
@@ -801,7 +828,7 @@ namespace IrFileTool
               {
                 // Logic 1
                 NRC17_Data.HalfBit = 1;
-                NRC17_Data.Code |= (uint)(1 << NRC17_Data.Bit--);
+                NRC17_Data.Code |= (uint) (1 << NRC17_Data.Bit--);
                 ignored = false;
               }
               else if (!pulse && IsBetween(duration, 300, 700))
@@ -833,29 +860,30 @@ namespace IrFileTool
               else if (pulse && IsBetween(duration, 800, 1200))
               {
                 NRC17_Data.HalfBit = 1;
-                NRC17_Data.Code |= (uint)(1 << NRC17_Data.Bit--);
+                NRC17_Data.Code |= (uint) (1 << NRC17_Data.Bit--);
                 ignored = false;
               }
             }
 
             if (NRC17_Data.Bit == 0)
             {
-              NRC17_Data.Code &= 0xFFFF;  // 16-bits (Ignore leading bit which is always 1)
+              NRC17_Data.Code &= 0xFFFF; // 16-bits (Ignore leading bit which is always 1)
               remoteCallback(IrProtocol.NRC17, NRC17_Data.Code, false);
 
               NRC17_Data.State = RemoteDetectionState.HeaderPulse;
             }
 
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (ignored && (NRC17_Data.State != RemoteDetectionState.HeaderPulse))
           NRC17_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    static void DetectPanasonic(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectPanasonic(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -865,8 +893,8 @@ namespace IrFileTool
 
         switch (Panasonic_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 3150, 3900))
             {
@@ -875,9 +903,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 3150, 3900))
             {
@@ -908,9 +938,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 600, 1150))
             {
@@ -958,9 +990,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Data
 
-          #region Leading
+            #endregion Data
+
+            #region Leading
+
           case RemoteDetectionState.Leading:
             if (pulse && IsBetween(duration, 400, 800))
             {
@@ -978,8 +1012,8 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Leading
 
+            #endregion Leading
         }
 
         if (ignored && (Panasonic_Data.State != RemoteDetectionState.HeaderPulse))
@@ -989,7 +1023,8 @@ namespace IrFileTool
         }
       }
     }
-    static void DetectRC5(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectRC5(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -999,8 +1034,8 @@ namespace IrFileTool
 
         switch (RC5_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse)
             {
@@ -1008,22 +1043,24 @@ namespace IrFileTool
               {
                 RC5_Data.State = RemoteDetectionState.HeaderSpace;
                 RC5_Data.Bit = 13;
-                RC5_Data.Code = (uint)1 << RC5_Data.Bit;
+                RC5_Data.Code = (uint) 1 << RC5_Data.Bit;
                 ignored = false;
               }
               else if (IsBetween(duration, 1500, 2000))
               {
                 RC5_Data.State = RemoteDetectionState.Data;
                 RC5_Data.Bit = 13;
-                RC5_Data.Code = (uint)1 << RC5_Data.Bit;
+                RC5_Data.Code = (uint) 1 << RC5_Data.Bit;
                 RC5_Data.HalfBit = 0;
                 ignored = false;
               }
             }
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 700, 1100))
             {
@@ -1032,9 +1069,11 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (RC5_Data.HalfBit == 0)
             {
@@ -1042,9 +1081,9 @@ namespace IrFileTool
               {
                 if (IsBetween(duration, 700, 1100) || IsBetween(duration, 1500, 2000))
                 {
-                  RC5_Data.HalfBit = (byte)((duration >= 1500) ? 0 : 1);
+                  RC5_Data.HalfBit = (byte) ((duration >= 1500) ? 0 : 1);
                   RC5_Data.Bit--;
-                  RC5_Data.Code |= (uint)1 << RC5_Data.Bit;
+                  RC5_Data.Code |= (uint) 1 << RC5_Data.Bit;
                   ignored = false;
 
                   if (RC5_Data.Bit == 0 || (RC5_Data.Bit == 1 && duration >= 1500))
@@ -1055,7 +1094,7 @@ namespace IrFileTool
               {
                 if (IsBetween(duration, 700, 1100) || IsBetween(duration, 1500, 2000))
                 {
-                  RC5_Data.HalfBit = (byte)((duration >= 1500) ? 0 : 1);
+                  RC5_Data.HalfBit = (byte) ((duration >= 1500) ? 0 : 1);
                   RC5_Data.Bit--;
                   ignored = false;
 
@@ -1065,7 +1104,7 @@ namespace IrFileTool
                 else if (RC5_Data.Bit == 7 && (IsBetween(duration, 4300, 4700) || IsBetween(duration, 5200, 5600)))
                 {
                   ignored = false;
-                  RC5_Data.HalfBit = (byte)((duration >= 5200) ? 0 : 1);
+                  RC5_Data.HalfBit = (byte) ((duration >= 5200) ? 0 : 1);
                   RC5_Data.Code <<= 6;
                   RC5_Data.Bit += 5;
                 }
@@ -1083,7 +1122,7 @@ namespace IrFileTool
               }
               else if (RC5_Data.Bit == 7 && (IsBetween(duration, 3400, 3800) || IsBetween(duration, 4300, 4700)))
               {
-                RC5_Data.HalfBit = (byte)((duration >= 4300) ? 0 : 1);
+                RC5_Data.HalfBit = (byte) ((duration >= 4300) ? 0 : 1);
                 RC5_Data.Code <<= 6;
                 RC5_Data.Bit += 6;
                 ignored = false;
@@ -1091,14 +1130,14 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (RC5_Data.State == RemoteDetectionState.KeyCode)
         {
           bool toggleOn;
-          
+
           bool first = true;
           bool RC5X;
 
@@ -1129,12 +1168,13 @@ namespace IrFileTool
           ignored = false;
         }
 
-        if (ignored && (RC5_Data.State != RemoteDetectionState.Leading) && (RC5_Data.State != RemoteDetectionState.HeaderPulse))
+        if (ignored && (RC5_Data.State != RemoteDetectionState.Leading) &&
+            (RC5_Data.State != RemoteDetectionState.HeaderPulse))
           RC5_Data.State = RemoteDetectionState.HeaderPulse;
       }
-
     }
-    static void DetectRC6(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectRC6(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -1146,25 +1186,27 @@ namespace IrFileTool
 
         switch (RC6_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 2600, 3300))
             {
-              RC6_Data.State      = RemoteDetectionState.HeaderSpace;
-              RC6_Data.Header     = 0x000FC000;
-              RC6_Data.Bit        = 12;
-              RC6_Data.HalfBit    = 0;
-              RC6_Data.Code       = 0;
-              RC6_Data.LongPulse  = false;
-              RC6_Data.LongSpace  = false;
-              RC6_Data.Toggle     &= 0xFE;
+              RC6_Data.State = RemoteDetectionState.HeaderSpace;
+              RC6_Data.Header = 0x000FC000;
+              RC6_Data.Bit = 12;
+              RC6_Data.HalfBit = 0;
+              RC6_Data.Code = 0;
+              RC6_Data.LongPulse = false;
+              RC6_Data.LongSpace = false;
+              RC6_Data.Toggle &= 0xFE;
               ignored = false;
             }
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 750, 1000))
             {
@@ -1172,29 +1214,31 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderSpace
 
-          #region PreData
+            #endregion HeaderSpace
+
+            #region PreData
+
           case RemoteDetectionState.PreData:
             if (pulse)
             {
               if (IsBetween(duration, 300, 600))
               {
                 ignored = false;
-                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint)(1 << --RC6_Data.Bit);
+                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint) (1 << --RC6_Data.Bit);
               }
               else if (IsBetween(duration, 750, 1000))
               {
                 ignored = false;
-                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint)(1 << --RC6_Data.Bit);
-                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint)(1 << --RC6_Data.Bit);
+                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint) (1 << --RC6_Data.Bit);
+                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint) (1 << --RC6_Data.Bit);
               }
               else if (IsBetween(duration, 1200, 1600))
               {
                 ignored = false;
-                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint)(1 << --RC6_Data.Bit);
-                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint)(1 << --RC6_Data.Bit);
-                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint)(1 << --RC6_Data.Bit);
+                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint) (1 << --RC6_Data.Bit);
+                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint) (1 << --RC6_Data.Bit);
+                if (RC6_Data.Bit != 0) RC6_Data.Header |= (uint) (1 << --RC6_Data.Bit);
                 else
                 {
                   RC6_Data.HalfBit = 1;
@@ -1238,11 +1282,13 @@ namespace IrFileTool
               RC6_Data.State = RemoteDetectionState.Data;
 
             break;
-          #endregion PreData
 
-          #region Data
+            #endregion PreData
+
+            #region Data
+
           case RemoteDetectionState.Data:
-            if ((RC6_Data.HalfBit % 2) == 0)
+            if ((RC6_Data.HalfBit%2) == 0)
             {
               if (pulse && IsBetween(duration, 300, 600))
               {
@@ -1276,7 +1322,7 @@ namespace IrFileTool
               {
                 RC6_Data.Bit++;
                 RC6_Data.Code = RC6_Data.Code << 1;
-                
+
                 RC6_Data.LongSpace = true;
                 RC6_Data.HalfBit += 2;
                 ignored = false;
@@ -1306,17 +1352,17 @@ namespace IrFileTool
                 break;
 
               //if (RC6_Data.Bit == 32)
-                //RC6_Data.Bit = 24;
+              //RC6_Data.Bit = 24;
 
               //if (RC6_Data.Bit == 24)
-                //RC6_Data.Bit = 32;
+              //RC6_Data.Bit = 32;
 
               if (IsBetween(duration, 750, 1000))
               {
                 RC6_Data.Bit++;
                 RC6_Data.Code = RC6_Data.Code << 1;
                 RC6_Data.Code |= 1;
-                
+
                 RC6_Data.LongPulse = true;
                 RC6_Data.HalfBit += 2;
                 ignored = false;
@@ -1337,8 +1383,8 @@ namespace IrFileTool
               }
             }
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (RC6_Data.State == RemoteDetectionState.KeyCode)
@@ -1396,7 +1442,8 @@ namespace IrFileTool
           RC6_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    static void DetectRCA(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectRCA(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -1406,8 +1453,8 @@ namespace IrFileTool
 
         switch (RCA_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 3800, 4200))
             {
@@ -1415,9 +1462,11 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 3800, 4200))
             {
@@ -1428,9 +1477,11 @@ namespace IrFileTool
               ignored = false;
             }
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 300, 700))
             {
@@ -1459,15 +1510,16 @@ namespace IrFileTool
               RCA_Data.State = RemoteDetectionState.HeaderPulse;
             }
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (ignored && (RCA_Data.State != RemoteDetectionState.HeaderPulse))
           RCA_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    static void DetectRECS80(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectRECS80(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -1477,8 +1529,8 @@ namespace IrFileTool
 
         switch (RECS80_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 3300, 4100))
             {
@@ -1487,9 +1539,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 1400, 1800))
             {
@@ -1502,11 +1556,13 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
-            if ((RECS80_Data.HalfBit % 2) == 0)
+            if ((RECS80_Data.HalfBit%2) == 0)
             {
               if (!pulse)
                 break;
@@ -1522,7 +1578,7 @@ namespace IrFileTool
             }
             else
             {
-              if (pulse) 
+              if (pulse)
                 break;
 
               if (IsBetween(duration, 300, 750))
@@ -1534,9 +1590,9 @@ namespace IrFileTool
               {
                 RECS80_Data.HalfBit = 0;
                 if (RECS80_Data.Bit > 15)
-                  RECS80_Data.Header |= (uint)(1 << (RECS80_Data.Bit - 16));
+                  RECS80_Data.Header |= (uint) (1 << (RECS80_Data.Bit - 16));
                 else
-                  RECS80_Data.Code |= (uint)(1 << RECS80_Data.Bit);
+                  RECS80_Data.Code |= (uint) (1 << RECS80_Data.Bit);
                 ignored = false;
               }
               else
@@ -1554,15 +1610,16 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (ignored && (RECS80_Data.State != RemoteDetectionState.HeaderPulse))
           RECS80_Data.State = RemoteDetectionState.HeaderPulse;
       }
     }
-    static void DetectSIRC(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectSIRC(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -1572,8 +1629,8 @@ namespace IrFileTool
 
         switch (SIRC_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 2100, 2700))
             {
@@ -1582,9 +1639,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 400, 800))
             {
@@ -1595,9 +1654,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 400, 800))
             {
@@ -1624,19 +1685,19 @@ namespace IrFileTool
                 SIRC_Data.State = RemoteDetectionState.HeaderPulse;
                 ignored = false;
               }
-           }
+            }
 
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (ignored && (SIRC_Data.State != RemoteDetectionState.HeaderPulse))
           SIRC_Data.State = RemoteDetectionState.HeaderPulse;
       }
-
     }
-    static void DetectToshiba(int[] timingData, RemoteCallback remoteCallback)
+
+    private static void DetectToshiba(int[] timingData, RemoteCallback remoteCallback)
     {
       for (int i = 0; i < timingData.Length; i++)
       {
@@ -1646,8 +1707,8 @@ namespace IrFileTool
 
         switch (Toshiba_Data.State)
         {
+            #region HeaderPulse
 
-          #region HeaderPulse
           case RemoteDetectionState.HeaderPulse:
             if (pulse && IsBetween(duration, 4300, 4700))
             {
@@ -1656,9 +1717,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderPulse
 
-          #region HeaderSpace
+            #endregion HeaderPulse
+
+            #region HeaderSpace
+
           case RemoteDetectionState.HeaderSpace:
             if (!pulse && IsBetween(duration, 4300, 4700))
             {
@@ -1670,9 +1733,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion HeaderSpace
 
-          #region Data
+            #endregion HeaderSpace
+
+            #region Data
+
           case RemoteDetectionState.Data:
             if (pulse && IsBetween(duration, 350, 750))
             {
@@ -1696,11 +1761,11 @@ namespace IrFileTool
             }
             else if (!pulse && duration >= 6100 && Toshiba_Data.HalfBit == 1 && Toshiba_Data.Bit == 32)
             {
-              uint custom       = (Toshiba_Data.Code >> 24) & 0xFF;
+              uint custom = (Toshiba_Data.Code >> 24) & 0xFF;
               uint repeatCustom = (Toshiba_Data.Code >> 16) & 0xFF;
 
-              uint data         = (Toshiba_Data.Code >> 8) & 0xFF;
-              uint notData      = Toshiba_Data.Code & 0xFF;
+              uint data = (Toshiba_Data.Code >> 8) & 0xFF;
+              uint notData = Toshiba_Data.Code & 0xFF;
 
               if (custom == repeatCustom && (data + notData == 0xFF))
               {
@@ -1712,8 +1777,8 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Data
 
+            #endregion Data
         }
 
         if (ignored && (Toshiba_Data.State != RemoteDetectionState.HeaderPulse))
@@ -1721,7 +1786,7 @@ namespace IrFileTool
       }
     }
 
-    static void DetectMCE(int[] timingData, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
+    private static void DetectMCE(int[] timingData, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
     {
       // Mouse:    0 0001 xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
       // Keyboard: 0 0100 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1736,12 +1801,13 @@ namespace IrFileTool
         bool pulse = (timingData[i] > 0);
 
         #region Working data ...
+
         if (MCE_Data.State != MceKeyboardDetectState.Header)
         {
           switch (MCE_Data.HalfBit)
           {
+              #region HalfBit_None
 
-            #region HalfBit_None
             case HalfBit_None:
               if (IsBetween(duration, 100, 450))
               {
@@ -1762,9 +1828,11 @@ namespace IrFileTool
                 MCE_Data.Bit--;
               }
               break;
-            #endregion HalfBit_None
 
-            #region HalfBit_Zero
+              #endregion HalfBit_None
+
+              #region HalfBit_Zero
+
             case HalfBit_Zero:
               if (IsBetween(duration, 100, 450))
               {
@@ -1814,9 +1882,11 @@ namespace IrFileTool
                 //return;
               }
               break;
-            #endregion HalfBit_Zero
 
-            #region HalfBit_One
+              #endregion HalfBit_Zero
+
+              #region HalfBit_One
+
             case HalfBit_One:
               if (IsBetween(duration, 100, 450))
               {
@@ -1868,16 +1938,17 @@ namespace IrFileTool
                 }
               }
               break;
-            #endregion HalfBit_One
 
+              #endregion HalfBit_One
           }
         }
+
         #endregion Working data ...
 
         switch (MCE_Data.State)
         {
+            #region Header
 
-          #region Header
           case MceKeyboardDetectState.Header:
             if (pulse && IsBetween(duration, 2600, 3300))
             {
@@ -1888,9 +1959,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Header
 
-          #region CodeType
+            #endregion Header
+
+            #region CodeType
+
           case MceKeyboardDetectState.CodeType:
             if (MCE_Data.Bit == 0)
             {
@@ -1916,12 +1989,13 @@ namespace IrFileTool
             }
 
             break;
-          #endregion CodeType
 
+            #endregion CodeType
 
-          #region Keyboard
+            #region Keyboard
 
-          #region KeyboardIgnore
+            #region KeyboardIgnore
+
           case MceKeyboardDetectState.KeyboardIgnore:
             if (MCE_Data.Bit == 0)
             {
@@ -1931,9 +2005,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion KeyboardIgnore
 
-          #region KeyCode
+            #endregion KeyboardIgnore
+
+            #region KeyCode
+
           case MceKeyboardDetectState.KeyCode:
             if (MCE_Data.Bit == 0)
             {
@@ -1945,27 +2021,31 @@ namespace IrFileTool
             }
 
             break;
-          #endregion KeyCode
 
-          #region Modifiers
+            #endregion KeyCode
+
+            #region Modifiers
+
           case MceKeyboardDetectState.Modifiers:
             if (MCE_Data.Bit == 0)
             {
               MCE_Data.Modifiers = MCE_Data.Working;
-              
+
               keyboardCallback(MCE_Data.KeyCode, MCE_Data.Modifiers);
-              
+
               MCE_Data = new MceDetectionData();
             }
 
             break;
-          #endregion Modifiers
 
-          #endregion Keyboard
+            #endregion Modifiers
 
-          #region Mouse
+            #endregion Keyboard
 
-          #region MouseIgnore
+            #region Mouse
+
+            #region MouseIgnore
+
           case MceKeyboardDetectState.MouseIgnore:
             if (MCE_Data.Bit == 0)
             {
@@ -1975,13 +2055,15 @@ namespace IrFileTool
             }
 
             break;
-          #endregion MouseIgnore
 
-          #region DeltaY
+            #endregion MouseIgnore
+
+            #region DeltaY
+
           case MceKeyboardDetectState.DeltaY:
             if (MCE_Data.Bit == 0)
             {
-              MCE_Data.DeltaY = ScaleMouseDelta((int)MCE_Data.Working);
+              MCE_Data.DeltaY = ScaleMouseDelta((int) MCE_Data.Working);
 
               MCE_Data.State = MceKeyboardDetectState.DeltaX;
               MCE_Data.Bit = 7;
@@ -1989,13 +2071,15 @@ namespace IrFileTool
             }
 
             break;
-          #endregion DeltaY
 
-          #region DeltaX
+            #endregion DeltaY
+
+            #region DeltaX
+
           case MceKeyboardDetectState.DeltaX:
             if (MCE_Data.Bit == 0)
             {
-              MCE_Data.DeltaX = ScaleMouseDelta((int)MCE_Data.Working);
+              MCE_Data.DeltaX = ScaleMouseDelta((int) MCE_Data.Working);
 
               MCE_Data.State = MceKeyboardDetectState.Right;
               MCE_Data.Bit = 1;
@@ -2003,9 +2087,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion DeltaX
 
-          #region Right
+            #endregion DeltaX
+
+            #region Right
+
           case MceKeyboardDetectState.Right:
             if (MCE_Data.Bit == 0)
             {
@@ -2017,9 +2103,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Right
 
-          #region Left
+            #endregion Right
+
+            #region Left
+
           case MceKeyboardDetectState.Left:
             if (MCE_Data.Bit == 0)
             {
@@ -2031,9 +2119,11 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Left
 
-          #region Checksum
+            #endregion Left
+
+            #region Checksum
+
           case MceKeyboardDetectState.Checksum:
             if (MCE_Data.Bit == 0)
             {
@@ -2043,19 +2133,18 @@ namespace IrFileTool
             }
 
             break;
-          #endregion Checksum
 
-          #endregion Mouse
+            #endregion Checksum
 
+            #endregion Mouse
         }
 
         if (MCE_Data.Bit < 0)
           MCE_Data = new MceDetectionData();
-
       }
     }
 
-    static int ScaleMouseDelta(int delta)
+    private static int ScaleMouseDelta(int delta)
     {
       int scaledDelta = delta;
       if (delta >= 0x62)
@@ -2064,13 +2153,11 @@ namespace IrFileTool
       return scaledDelta;
     }
 
-    static bool IsBetween(int test, int minValue, int maxValue)
+    private static bool IsBetween(int test, int minValue, int maxValue)
     {
       return ((test >= minValue) && (test <= maxValue));
     }
 
     #endregion Methods
-
   }
-
 }

@@ -1,29 +1,30 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// String Join macro command.
   /// </summary>
   public class CommandStringJoin : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStringJoin"/> class.
     /// </summary>
-    public CommandStringJoin() { InitParameters(3); }
+    public CommandStringJoin()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStringJoin"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandStringJoin(string[] parameters) : base(parameters) { }
+    public CommandStringJoin(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +34,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryString; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryString;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "String Join"; }
+    public override string GetUserInterfaceText()
+    {
+      return "String Join";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -72,7 +79,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

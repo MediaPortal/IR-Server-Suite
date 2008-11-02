@@ -1,31 +1,86 @@
 using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-
 using IrssComms;
-using IrssUtils;
 
 namespace TrayLauncher
 {
-
-  partial class GetKeyCodeForm : Form
+  internal partial class GetKeyCodeForm : Form
   {
+    private void GetKeyCodeForm_Load(object sender, EventArgs e)
+    {
+      labelStatus.Text = "Press the remote button you want to map";
+      labelStatus.ForeColor = Color.Blue;
 
-    #region Delegates
+      _keyCodeSet = KeyCodeSet;
 
-    delegate void DelegateKeyCodeSet();
+      Tray.HandleMessage += MessageReceiver;
 
-    #endregion Delegates
+      timer.Start();
+    }
+
+    private void MessageReceiver(IrssMessage received)
+    {
+      if (received.Type == MessageType.RemoteEvent)
+      {
+        byte[] data = received.GetDataAsBytes();
+        int deviceNameSize = BitConverter.ToInt32(data, 0);
+        string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
+        int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
+        string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+
+        _deviceName = deviceName;
+
+        // TODO: When Abstract Remote Model becomes on by default
+        //if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase)
+        _keyCode = keyCode;
+        //else
+        //  _keyCode = String.Format("{0} ({1})", deviceName, keyCode);
+
+        Invoke(_keyCodeSet);
+      }
+    }
+
+    private void KeyCodeSet()
+    {
+      timer.Stop();
+      Tray.HandleMessage -= MessageReceiver;
+
+      labelStatus.Text = String.Format("Received: {0}", _keyCode);
+      labelStatus.ForeColor = Color.Green;
+      labelStatus.Update();
+
+      Thread.Sleep(1000);
+      Close();
+    }
+
+    private void timer_Tick(object sender, EventArgs e)
+    {
+      timer.Stop();
+      Tray.HandleMessage -= MessageReceiver;
+
+      labelStatus.Text = "Timed out";
+      labelStatus.ForeColor = Color.Red;
+      labelStatus.Update();
+
+      Thread.Sleep(2000);
+      Close();
+    }
+
+    #region Nested type: DelegateKeyCodeSet
+
+    private delegate void DelegateKeyCodeSet();
+
+    #endregion
 
     #region Variables
 
-    string _keyCode = String.Empty;
-    string _deviceName = String.Empty;
+    private string _deviceName = String.Empty;
+    private string _keyCode = String.Empty;
 
-    DelegateKeyCodeSet _keyCodeSet;
+    private DelegateKeyCodeSet _keyCodeSet;
 
     #endregion Variables
 
@@ -59,67 +114,5 @@ namespace TrayLauncher
     }
 
     #endregion Constructor
-
-    private void GetKeyCodeForm_Load(object sender, EventArgs e)
-    {
-      labelStatus.Text = "Press the remote button you want to map";
-      labelStatus.ForeColor = Color.Blue;
-
-      _keyCodeSet = new DelegateKeyCodeSet(KeyCodeSet);
-
-      Tray.HandleMessage += new ClientMessageSink(MessageReceiver);
-
-      timer.Start();
-    }
-
-    void MessageReceiver(IrssMessage received)
-    {
-      if (received.Type == MessageType.RemoteEvent)
-      {
-        byte[] data = received.GetDataAsBytes();
-        int deviceNameSize = BitConverter.ToInt32(data, 0);
-        string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
-        int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
-        string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
-
-        _deviceName = deviceName;
-
-        // TODO: When Abstract Remote Model becomes on by default
-        //if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase)
-          _keyCode = keyCode;
-        //else
-        //  _keyCode = String.Format("{0} ({1})", deviceName, keyCode);
-
-        this.Invoke(_keyCodeSet);
-      }
-    }
-
-    void KeyCodeSet()
-    {
-      timer.Stop();
-      Tray.HandleMessage -= new ClientMessageSink(MessageReceiver);
-
-      labelStatus.Text = String.Format("Received: {0}", _keyCode);
-      labelStatus.ForeColor = Color.Green;
-      labelStatus.Update();
-
-      Thread.Sleep(1000);
-      this.Close();
-    }
-
-    private void timer_Tick(object sender, EventArgs e)
-    {
-      timer.Stop();
-      Tray.HandleMessage -= new ClientMessageSink(MessageReceiver);
-
-      labelStatus.Text = "Timed out";
-      labelStatus.ForeColor = Color.Red;
-      labelStatus.Update();
-
-      Thread.Sleep(2000);
-      this.Close();
-    }
-
   }
-
 }

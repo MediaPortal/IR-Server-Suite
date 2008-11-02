@@ -1,16 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace VirtualRemote
 {
-
   /// <summary>
   /// Server Address form.
   /// </summary>
-  partial class ServerAddress : Form
+  internal partial class ServerAddress : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -54,12 +51,10 @@ namespace VirtualRemote
     {
       inputPanel.Enabled = false;
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     #endregion Implementation
-
   }
-
 }

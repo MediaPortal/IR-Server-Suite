@@ -1,30 +1,19 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
-using System.Xml;
-
-using MediaPortal.GUI.Library;
-using MediaPortal.Util;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using MediaPortal.GUI.Library;
 
 namespace MediaPortal.Plugins
 {
-
-  partial class SetupForm : Form
+  internal partial class SetupForm : Form
   {
-
     #region Variables
 
-    LearnIR _learnIR;
+    private LearnIR _learnIR;
 
     #endregion Variables
 
@@ -48,27 +37,28 @@ namespace MediaPortal.Plugins
       }
 
       IPAddress serverIP = Client.GetIPFromName(TV2BlasterPlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!TV2BlasterPlugin.StartClient(endPoint))
-        MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "TV2 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.",
+                        "TV2 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       checkBoxLogVerbose.Checked = TV2BlasterPlugin.LogVerbose;
 
       RefreshIRList();
       RefreshMacroList();
 
-      TV2BlasterPlugin.HandleMessage += new ClientMessageSink(ReceivedMessage);
+      TV2BlasterPlugin.HandleMessage += ReceivedMessage;
     }
 
     private void SetupForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-      TV2BlasterPlugin.HandleMessage -= new ClientMessageSink(ReceivedMessage);
+      TV2BlasterPlugin.HandleMessage -= ReceivedMessage;
     }
 
     #region Local Methods
 
-    void ReceivedMessage(IrssMessage received)
+    private void ReceivedMessage(IrssMessage received)
     {
       if (_learnIR != null && received.Type == MessageType.LearnIR)
       {
@@ -87,7 +77,7 @@ namespace MediaPortal.Plugins
       }
     }
 
-    void RefreshIRList()
+    private void RefreshIRList()
     {
       listViewIR.Items.Clear();
 
@@ -96,7 +86,8 @@ namespace MediaPortal.Plugins
         foreach (string irFile in irList)
           listViewIR.Items.Add(irFile);
     }
-    void RefreshMacroList()
+
+    private void RefreshMacroList()
     {
       listViewMacro.Items.Clear();
 
@@ -106,7 +97,7 @@ namespace MediaPortal.Plugins
           listViewMacro.Items.Add(macroFile);
     }
 
-    void EditIR()
+    private void EditIR()
     {
       if (listViewIR.SelectedItems.Count != 1)
         return;
@@ -119,8 +110,8 @@ namespace MediaPortal.Plugins
         if (File.Exists(fileName))
         {
           _learnIR = new LearnIR(
-            new LearnIrDelegate(TV2BlasterPlugin.LearnIR),
-            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            TV2BlasterPlugin.LearnIR,
+            TV2BlasterPlugin.BlastIR,
             TV2BlasterPlugin.TransceiverInformation.Ports,
             command);
 
@@ -141,7 +132,8 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-    void EditMacro()
+
+    private void EditMacro()
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -191,8 +183,8 @@ namespace MediaPortal.Plugins
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
       _learnIR = new LearnIR(
-        new LearnIrDelegate(TV2BlasterPlugin.LearnIR),
-        new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+        TV2BlasterPlugin.LearnIR,
+        TV2BlasterPlugin.BlastIR,
         TV2BlasterPlugin.TransceiverInformation.Ports);
 
       _learnIR.ShowDialog(this);
@@ -201,10 +193,12 @@ namespace MediaPortal.Plugins
 
       RefreshIRList();
     }
+
     private void buttonEditIR_Click(object sender, EventArgs e)
     {
       EditIR();
     }
+
     private void buttonDeleteIR_Click(object sender, EventArgs e)
     {
       if (listViewIR.SelectedItems.Count != 1)
@@ -214,12 +208,15 @@ namespace MediaPortal.Plugins
       string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (
+          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
       {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
       }
 
       RefreshIRList();
@@ -232,10 +229,12 @@ namespace MediaPortal.Plugins
 
       RefreshMacroList();
     }
+
     private void buttonEditMacro_Click(object sender, EventArgs e)
     {
       EditMacro();
     }
+
     private void buttonDeleteMacro_Click(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
@@ -245,16 +244,20 @@ namespace MediaPortal.Plugins
       string fileName = Path.Combine(TV2BlasterPlugin.FolderMacros, file + Common.FileExtensionMacro);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (
+          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
       {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
       }
 
       RefreshMacroList();
     }
+
     private void buttonTestMacro_Click(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
@@ -270,17 +273,19 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+
     private void buttonOK_Click(object sender, EventArgs e)
     {
       TV2BlasterPlugin.LogVerbose = checkBoxLogVerbose.Checked;
-      
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonChangeServer_Click(object sender, EventArgs e)
@@ -293,7 +298,7 @@ namespace MediaPortal.Plugins
       TV2BlasterPlugin.ServerHost = serverAddress.ServerHost;
 
       IPAddress serverIP = Client.GetIPFromName(TV2BlasterPlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       TV2BlasterPlugin.StartClient(endPoint);
     }
@@ -312,6 +317,7 @@ namespace MediaPortal.Plugins
     {
       EditIR();
     }
+
     private void listViewMacro_DoubleClick(object sender, EventArgs e)
     {
       EditMacro();
@@ -337,7 +343,8 @@ namespace MediaPortal.Plugins
       string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
       if (!File.Exists(oldFileName))
       {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -346,7 +353,8 @@ namespace MediaPortal.Plugins
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -363,6 +371,7 @@ namespace MediaPortal.Plugins
         MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+
     private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
     {
       ListView origin = sender as ListView;
@@ -383,7 +392,8 @@ namespace MediaPortal.Plugins
       string oldFileName = Path.Combine(TV2BlasterPlugin.FolderMacros, originItem.Text + Common.FileExtensionMacro);
       if (!File.Exists(oldFileName))
       {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -392,7 +402,8 @@ namespace MediaPortal.Plugins
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -411,7 +422,5 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Other Controls
-
   }
-
 }

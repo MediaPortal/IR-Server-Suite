@@ -1,31 +1,27 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// If Statement macro command.
   /// </summary>
   public class CommandIf : Command
   {
-
     #region Comparisons
 
     // String comparisons ...
-    internal const string IfEquals              = "==";
-    internal const string IfNotEqual            = "!=";
-    internal const string IfContains            = "CONTAINS";
-    internal const string IfStartsWith          = "STARTS WITH";
-    internal const string IfEndsWith            = "ENDS WITH";
+    internal const string IfContains = "CONTAINS";
+    internal const string IfEndsWith = "ENDS WITH";
+    internal const string IfEquals = "==";
 
     // Integer comparisons ...
-    internal const string IfGreaterThan         = ">";
-    internal const string IfLessThan            = "<";
-    internal const string IfGreaterThanOrEqual  = ">=";
-    internal const string IfLessThanOrEqual     = "<=";
+    internal const string IfGreaterThan = ">";
+    internal const string IfGreaterThanOrEqual = ">=";
+    internal const string IfLessThan = "<";
+    internal const string IfLessThanOrEqual = "<=";
+    internal const string IfNotEqual = "!=";
+    internal const string IfStartsWith = "STARTS WITH";
 
     #endregion Comparisons
 
@@ -34,13 +30,18 @@ namespace Commands
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandIf"/> class.
     /// </summary>
-    public CommandIf() { InitParameters(5); }
+    public CommandIf()
+    {
+      InitParameters(5);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandIf"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandIf(string[] parameters) : base(parameters) { }
+    public CommandIf(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -50,13 +51,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryControl; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryControl;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "If Statement"; }
+    public override string GetUserInterfaceText()
+    {
+      return "If Statement";
+    }
 
     /// <summary>
     /// Gets the user display text.
@@ -65,9 +72,11 @@ namespace Commands
     public override string GetUserDisplayText()
     {
       if (String.IsNullOrEmpty(Parameters[4]))
-        return String.Format("If ({0} {1} {2}) then goto \"{3}\"", Parameters[0], Parameters[1], Parameters[2], Parameters[3]);
+        return String.Format("If ({0} {1} {2}) then goto \"{3}\"", Parameters[0], Parameters[1], Parameters[2],
+                             Parameters[3]);
       else
-        return String.Format("If ({0} {1} {2}) then goto \"{3}\" else goto \"{4}\"", Parameters[0], Parameters[1], Parameters[2], Parameters[3], Parameters[4]);
+        return String.Format("If ({0} {1} {2}) then goto \"{3}\" else goto \"{4}\"", Parameters[0], Parameters[1],
+                             Parameters[2], Parameters[3], Parameters[4]);
     }
 
     /// <summary>
@@ -109,29 +118,39 @@ namespace Commands
       bool comparisonResult = false;
       switch (comparison.ToUpperInvariant())
       {
-        // Use string comparison ...
-        case IfEquals:      comparisonResult = value1.Equals(value2, StringComparison.OrdinalIgnoreCase);         break;
-        case IfNotEqual:    comparisonResult = !value1.Equals(value2, StringComparison.OrdinalIgnoreCase);        break;
-        case IfContains:    comparisonResult = value1.ToUpperInvariant().Contains(value2.ToUpperInvariant());     break;
-        case IfStartsWith:  comparisonResult = value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase);     break;
-        case IfEndsWith:    comparisonResult = value1.EndsWith(value2, StringComparison.OrdinalIgnoreCase);       break;
+          // Use string comparison ...
+        case IfEquals:
+          comparisonResult = value1.Equals(value2, StringComparison.OrdinalIgnoreCase);
+          break;
+        case IfNotEqual:
+          comparisonResult = !value1.Equals(value2, StringComparison.OrdinalIgnoreCase);
+          break;
+        case IfContains:
+          comparisonResult = value1.ToUpperInvariant().Contains(value2.ToUpperInvariant());
+          break;
+        case IfStartsWith:
+          comparisonResult = value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase);
+          break;
+        case IfEndsWith:
+          comparisonResult = value1.EndsWith(value2, StringComparison.OrdinalIgnoreCase);
+          break;
 
-        // Use integer comparison ...
+          // Use integer comparison ...
         case IfGreaterThan:
           if (value1IsInt && value2IsInt)
             comparisonResult = (value1AsInt > value2AsInt);
           break;
-        
+
         case IfLessThan:
           if (value1IsInt && value2IsInt)
             comparisonResult = (value1AsInt < value2AsInt);
           break;
-        
+
         case IfGreaterThanOrEqual:
           if (value1IsInt && value2IsInt)
             comparisonResult = (value1AsInt >= value2AsInt);
           break;
-        
+
         case IfLessThanOrEqual:
           if (value1IsInt && value2IsInt)
             comparisonResult = (value1AsInt <= value2AsInt);
@@ -145,7 +164,5 @@ namespace Commands
     }
 
     #endregion Static Methods
-
   }
-
 }

@@ -1,31 +1,20 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml;
-
 using IrssUtils;
-using MPUtils;
+using MediaPortal.TV.Database;
 
 namespace MediaPortal.Plugins
 {
-
-  partial class ExternalChannels : Form
+  internal partial class ExternalChannels : Form
   {
-
     #region Variables
 
-    TabPage[] _tvCardTabs;
-    StbSetup[] _tvCardStbSetups;
-    
+    private StbSetup[] _tvCardStbSetups;
+    private TabPage[] _tvCardTabs;
+
     #endregion Variables
 
     #region Constructor
@@ -40,7 +29,7 @@ namespace MediaPortal.Plugins
     private void ExternalChannels_Load(object sender, EventArgs e)
     {
       ArrayList cards = new ArrayList();
-      MediaPortal.TV.Database.TVDatabase.GetCards(ref cards);
+      TVDatabase.GetCards(ref cards);
 
       if (cards.Count == 0)
         cards.Add(0);
@@ -64,8 +53,8 @@ namespace MediaPortal.Plugins
         _tvCardTabs[index] = new TabPage(cardName);
         _tvCardTabs[index].Controls.Add(_tvCardStbSetups[index]);
 
-        this.tabControlTVCards.TabPages.Add(_tvCardTabs[index]);
-        
+        tabControlTVCards.TabPages.Add(_tvCardTabs[index]);
+
         index++;
       }
 
@@ -79,7 +68,8 @@ namespace MediaPortal.Plugins
       comboBoxQuickSetup.Items.Add("Clear all");
     }
 
-    static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit, string fullChannelString)
+    private static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit,
+                                                      string fullChannelString)
     {
       string[] commands = Common.SplitRunCommand(runCommand);
 
@@ -89,7 +79,7 @@ namespace MediaPortal.Plugins
       Common.ProcessRunCommand(commands);
     }
 
-    static void ProcessSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
+    private static void ProcessSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
     {
       string[] commands = Common.SplitSerialCommand(serialCommand);
 
@@ -113,11 +103,12 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.ToString(), "Failed to save external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to save external channel setup", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonTest_Click(object sender, EventArgs e)
@@ -162,7 +153,7 @@ namespace MediaPortal.Plugins
             if (setup.PauseTime > 0)
               Thread.Sleep(setup.PauseTime);
           }
-          
+
           foreach (char digit in channel)
           {
             charVal = digit - 48;
@@ -210,7 +201,8 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.ToString(), "Failed to quick-set external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to quick-set external channel setup", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
     }
 
@@ -222,18 +214,17 @@ namespace MediaPortal.Plugins
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.ToString(), "Failed to copy external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to copy external channel setup", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

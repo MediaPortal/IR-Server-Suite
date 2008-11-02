@@ -3,19 +3,17 @@ using System.Globalization;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Class containing information on a WinLIRC command
   /// </summary>
-  class WinLircCommand
+  internal class WinLircCommand
   {
-
     #region Variables
 
-    string _remote;
-    string _button;
-    int _repeats;
-    DateTime _time;
+    private readonly string _button;
+    private readonly string _remote;
+    private readonly int _repeats;
+    private readonly DateTime _time;
 
     #endregion Variables
 
@@ -25,22 +23,37 @@ namespace InputService.Plugin
     /// Gets the button.
     /// </summary>
     /// <value>The button.</value>
-    public string Button { get { return _button; } }
+    public string Button
+    {
+      get { return _button; }
+    }
+
     /// <summary>
     /// Gets the remote.
     /// </summary>
     /// <value>The remote.</value>
-    public string Remote { get { return _remote; } }
+    public string Remote
+    {
+      get { return _remote; }
+    }
+
     /// <summary>
     /// Gets the repeats reported by LIRC.
     /// </summary>
     /// <value>The repeat count.</value>
-    public int Repeats { get { return _repeats; } }
+    public int Repeats
+    {
+      get { return _repeats; }
+    }
+
     /// <summary>
     /// Gets the time.
     /// </summary>
     /// <value>The time.</value>
-    public DateTime Time { get { return _time; } }
+    public DateTime Time
+    {
+      get { return _time; }
+    }
 
     #endregion Properties
 
@@ -51,10 +64,10 @@ namespace InputService.Plugin
     /// </summary>
     public WinLircCommand()
     {
-      _time     = DateTime.Now;
-      _remote   = String.Empty;
-      _repeats  = 0;
-      _button   = String.Empty;
+      _time = DateTime.Now;
+      _remote = String.Empty;
+      _repeats = 0;
+      _button = String.Empty;
     }
 
     /// <summary>
@@ -64,10 +77,10 @@ namespace InputService.Plugin
     public WinLircCommand(string data) : this()
     {
       string[] dataElements = data.Split(' ');
-      
-      _repeats  = Int32.Parse(dataElements[1], NumberStyles.HexNumber);
-      _button   = dataElements[2];
-      _remote   = dataElements[3];
+
+      _repeats = Int32.Parse(dataElements[1], NumberStyles.HexNumber);
+      _button = dataElements[2];
+      _remote = dataElements[3];
     }
 
     #endregion Constructors
@@ -80,11 +93,10 @@ namespace InputService.Plugin
     public bool IsSameCommand(WinLircCommand second)
     {
       if (second == null)
-          return false;
+        return false;
 
-      return (_button.Equals(second.Button, StringComparison.Ordinal) && _remote.Equals(second.Remote, StringComparison.Ordinal));
+      return (_button.Equals(second.Button, StringComparison.Ordinal) &&
+              _remote.Equals(second.Remote, StringComparison.Ordinal));
     }
-
   }
-
 }

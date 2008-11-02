@@ -1,16 +1,19 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MediaPortal.Plugins
 {
-
-  partial class MultiMapNameBox : Form
+  internal partial class MultiMapNameBox : Form
   {
+    public MultiMapNameBox()
+    {
+      InitializeComponent();
+    }
 
+    public MultiMapNameBox(string mapName)
+    {
+      textBoxName.Text = mapName;
+    }
 
     public string MapName
     {
@@ -18,27 +21,16 @@ namespace MediaPortal.Plugins
     }
 
 
-    public MultiMapNameBox()
-    {
-      InitializeComponent();
-    }
-
-    public MultiMapNameBox(string mapName) : base()
-    {
-      textBoxName.Text = mapName;
-    }
-
-
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void textBoxName_KeyDown(object sender, KeyEventArgs e)
@@ -46,12 +38,9 @@ namespace MediaPortal.Plugins
       if (e.KeyCode == Keys.Return)
       {
         e.SuppressKeyPress = true;
-        this.DialogResult = DialogResult.OK;
-        this.Close();
+        DialogResult = DialogResult.OK;
+        Close();
       }
     }
-
-
   }
-
 }

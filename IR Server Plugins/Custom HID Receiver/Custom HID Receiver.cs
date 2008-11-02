@@ -1,25 +1,49 @@
 using System;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
-using Microsoft.Win32.SafeHandles;
+using InputService.Plugin.Properties;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// IR Server plugin to support HID USB devices.
   /// </summary>
   public class CustomHIDReceiver : PluginBase, IConfigure, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver
   {
+    #region Constants
+
+    private const int DeviceBufferSize = 255;
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Custom HID Receiver.xml");
+
+    #endregion Constants
+
+    #region Variables
+
+    #region Configuration
+
+    private byte _byteMask;
+    private RawInput.RAWINPUTDEVICE _device;
+
+    private int _inputByte;
+
+    private int _repeatDelay;
+    private bool _useAllBytes;
+
+    #endregion Configuration
+
+    private KeyboardHandler _keyboardHandler;
+    private DateTime _lastCodeTime = DateTime.Now;
+    private string _lastKeyCode = String.Empty;
+    private MouseHandler _mouseHandler;
+    private ReceiverWindow _receiverWindow;
+
+    private RemoteHandler _remoteHandler;
+
+    #endregion Variables
 
     // #define TEST_APPLICATION in the project properties when creating the console test app ...
 #if TEST_APPLICATION
@@ -74,108 +98,52 @@ namespace InputService.Plugin
 
 #endif
 
-
-    #region Constants
-
-    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Custom HID Receiver.xml");
-
-    const int DeviceBufferSize = 255;
-
-    #endregion Constants
-
-    #region Variables
-
-    #region Configuration
-
-    RawInput.RAWINPUTDEVICE _device;
-
-    int _inputByte;
-    byte _byteMask;
-    bool _useAllBytes;
-
-    int _repeatDelay;
-
-    #endregion Configuration
-
-    ReceiverWindow _receiverWindow;
-
-    RemoteHandler _remoteHandler;
-    KeyboardHandler _keyboardHandler;
-    MouseHandler _mouseHandler;
-
-    string _lastKeyCode = String.Empty;
-    DateTime _lastCodeTime = DateTime.Now;
-
-    #endregion Variables
-
     /// <summary>
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "Custom HID"; } }
+    public override string Name
+    {
+      get { return "Custom HID"; }
+    }
+
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.4.2.0"; } }
+    public override string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81"; } }
+    public override string Author
+    {
+      get { return "and-81"; }
+    }
+
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports HID USB devices"; } }
+    public override string Description
+    {
+      get { return "Supports HID USB devices"; }
+    }
+
     /// <summary>
     /// Gets a display icon for the plugin.
     /// </summary>
     /// <value>The icon.</value>
-    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
-
-    /// <summary>
-    /// Start the IR Server plugin.
-    /// </summary>
-    public override void Start()
+    public override Icon DeviceIcon
     {
-      LoadSettings();
-
-      _receiverWindow = new ReceiverWindow("Custom HID Receiver");
-      _receiverWindow.ProcMsg += new ProcessMessage(ProcMessage);
-
-      _device.dwFlags = RawInput.RawInputDeviceFlags.InputSink;      
-      _device.hwndTarget = _receiverWindow.Handle;
-
-      if (!RegisterForRawInput(_device))
-        throw new InvalidOperationException("Failed to register for HID Raw input");
+      get { return Resources.Icon; }
     }
-    /// <summary>
-    /// Suspend the IR Server plugin when computer enters standby.
-    /// </summary>
-    public override void Suspend()
-    {
-      Stop();
-    }
-    /// <summary>
-    /// Resume the IR Server plugin when the computer returns from standby.
-    /// </summary>
-    public override void Resume()
-    {
-      Start();
-    }
-    /// <summary>
-    /// Stop the IR Server plugin.
-    /// </summary>
-    public override void Stop()
-    {
-      _device.dwFlags |= RawInput.RawInputDeviceFlags.Remove;
-      RegisterForRawInput(_device);
 
-      _receiverWindow.ProcMsg -= new ProcessMessage(ProcMessage);
-      _receiverWindow.DestroyHandle();
-      _receiverWindow = null;
-    }
+    #region IConfigure Members
 
     /// <summary>
     /// Configure the IR Server plugin.
@@ -184,33 +152,29 @@ namespace InputService.Plugin
     {
       LoadSettings();
 
-      DeviceSelect deviceSelect   = new DeviceSelect();
+      DeviceSelect deviceSelect = new DeviceSelect();
       deviceSelect.SelectedDevice = _device;
-      deviceSelect.InputByte      = _inputByte;
-      deviceSelect.ByteMask       = _byteMask;
-      deviceSelect.UseAllBytes    = _useAllBytes;
-      deviceSelect.RepeatDelay    = _repeatDelay;
+      deviceSelect.InputByte = _inputByte;
+      deviceSelect.ByteMask = _byteMask;
+      deviceSelect.UseAllBytes = _useAllBytes;
+      deviceSelect.RepeatDelay = _repeatDelay;
 
       if (deviceSelect.ShowDialog(owner) == DialogResult.OK)
       {
-        _device       = deviceSelect.SelectedDevice;
-        _inputByte    = deviceSelect.InputByte;
-        _byteMask     = deviceSelect.ByteMask;
-        _useAllBytes  = deviceSelect.UseAllBytes;
-        _repeatDelay  = deviceSelect.RepeatDelay;
+        _device = deviceSelect.SelectedDevice;
+        _inputByte = deviceSelect.InputByte;
+        _byteMask = deviceSelect.ByteMask;
+        _useAllBytes = deviceSelect.UseAllBytes;
+        _repeatDelay = deviceSelect.RepeatDelay;
 
         SaveSettings();
       }
     }
-    
-    /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteHandler; }
-      set { _remoteHandler = value; }
-    }
+
+    #endregion
+
+    #region IKeyboardReceiver Members
+
     /// <summary>
     /// Callback for keyboard presses.
     /// </summary>
@@ -219,6 +183,11 @@ namespace InputService.Plugin
       get { return _keyboardHandler; }
       set { _keyboardHandler = value; }
     }
+
+    #endregion
+
+    #region IMouseReceiver Members
+
     /// <summary>
     /// Callback for mouse events.
     /// </summary>
@@ -228,10 +197,71 @@ namespace InputService.Plugin
       set { _mouseHandler = value; }
     }
 
+    #endregion
+
+    #region IRemoteReceiver Members
+
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    public RemoteHandler RemoteCallback
+    {
+      get { return _remoteHandler; }
+      set { _remoteHandler = value; }
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    public override void Start()
+    {
+      LoadSettings();
+
+      _receiverWindow = new ReceiverWindow("Custom HID Receiver");
+      _receiverWindow.ProcMsg += ProcMessage;
+
+      _device.dwFlags = RawInput.RawInputDeviceFlags.InputSink;
+      _device.hwndTarget = _receiverWindow.Handle;
+
+      if (!RegisterForRawInput(_device))
+        throw new InvalidOperationException("Failed to register for HID Raw input");
+    }
+
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
+    public override void Suspend()
+    {
+      Stop();
+    }
+
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
+    public override void Resume()
+    {
+      Start();
+    }
+
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
+    public override void Stop()
+    {
+      _device.dwFlags |= RawInput.RawInputDeviceFlags.Remove;
+      RegisterForRawInput(_device);
+
+      _receiverWindow.ProcMsg -= ProcMessage;
+      _receiverWindow.DestroyHandle();
+      _receiverWindow = null;
+    }
+
     /// <summary>
     /// Loads the settings.
     /// </summary>
-    void LoadSettings()
+    private void LoadSettings()
     {
       try
       {
@@ -241,10 +271,10 @@ namespace InputService.Plugin
         _device.usUsage = ushort.Parse(doc.DocumentElement.Attributes["DeviceUsage"].Value);
         _device.usUsagePage = ushort.Parse(doc.DocumentElement.Attributes["DeviceUsagePage"].Value);
 
-        _inputByte    = int.Parse(doc.DocumentElement.Attributes["InputByte"].Value);
-        _byteMask     = byte.Parse(doc.DocumentElement.Attributes["ByteMask"].Value);
-        _useAllBytes  = bool.Parse(doc.DocumentElement.Attributes["UseAllBytes"].Value);
-        _repeatDelay  = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
+        _inputByte = int.Parse(doc.DocumentElement.Attributes["InputByte"].Value);
+        _byteMask = byte.Parse(doc.DocumentElement.Attributes["ByteMask"].Value);
+        _useAllBytes = bool.Parse(doc.DocumentElement.Attributes["UseAllBytes"].Value);
+        _repeatDelay = int.Parse(doc.DocumentElement.Attributes["RepeatDelay"].Value);
       }
 #if TRACE
       catch (Exception ex)
@@ -255,26 +285,27 @@ namespace InputService.Plugin
       {
 #endif
 
-        _device.usUsage     = 0x00;
-        _device.usUsagePage = 0x00;        
-        
-        _inputByte    = 3;
-        _byteMask     = 0x7F;
-        _useAllBytes  = true;
-        _repeatDelay  = 250;
+        _device.usUsage = 0x00;
+        _device.usUsagePage = 0x00;
+
+        _inputByte = 3;
+        _byteMask = 0x7F;
+        _useAllBytes = true;
+        _repeatDelay = 250;
       }
     }
+
     /// <summary>
     /// Saves the settings.
     /// </summary>
-    void SaveSettings()
+    private void SaveSettings()
     {
       try
       {
         XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("settings"); // <settings>
 
@@ -302,19 +333,20 @@ namespace InputService.Plugin
 #endif
     }
 
-    bool RegisterForRawInput(RawInput.RAWINPUTDEVICE device)
+    private bool RegisterForRawInput(RawInput.RAWINPUTDEVICE device)
     {
       RawInput.RAWINPUTDEVICE[] devices = new RawInput.RAWINPUTDEVICE[1];
       devices[0] = device;
 
       return RegisterForRawInput(devices);
     }
-    bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
+
+    private bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
     {
-      return RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(devices[0]));
+      return RawInput.RegisterRawInputDevices(devices, (uint) devices.Length, (uint) Marshal.SizeOf(devices[0]));
     }
 
-    void ProcMessage(ref Message m)
+    private void ProcMessage(ref Message m)
     {
       switch (m.Msg)
       {
@@ -335,56 +367,59 @@ namespace InputService.Plugin
           break;
       }
     }
-    
-    void ProcessKeyDown(int param)
+
+    private void ProcessKeyDown(int param)
     {
 #if TRACE
       Trace.WriteLine(String.Format("KeyDown - Param: {0}", param));
 #endif
 
       if (_keyboardHandler != null)
-        _keyboardHandler(this.Name, param, false);
+        _keyboardHandler(Name, param, false);
     }
 
-    void ProcessKeyUp(int param)
+    private void ProcessKeyUp(int param)
     {
 #if TRACE
       Trace.WriteLine(String.Format("KeyUp - Param: {0}", param));
 #endif
 
       if (_keyboardHandler != null)
-        _keyboardHandler(this.Name, param, true);
+        _keyboardHandler(Name, param, true);
     }
 
-    void ProcessAppCommand(int param)
+    private void ProcessAppCommand(int param)
     {
 #if TRACE
       Trace.WriteLine(String.Format("AppCommand - Param: {0}", param));
 #endif
     }
 
-    void ProcessInputCommand(ref Message message)
+    private void ProcessInputCommand(ref Message message)
     {
       uint dwSize = 0;
 
-      RawInput.GetRawInputData(message.LParam, RawInput.RawInputCommand.Input, IntPtr.Zero, ref dwSize, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)));
+      RawInput.GetRawInputData(message.LParam, RawInput.RawInputCommand.Input, IntPtr.Zero, ref dwSize,
+                               (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)));
 
-      IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
+      IntPtr buffer = Marshal.AllocHGlobal((int) dwSize);
       try
       {
         if (buffer == IntPtr.Zero)
           return;
 
-        if (RawInput.GetRawInputData(message.LParam, RawInput.RawInputCommand.Input, buffer, ref dwSize, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER))) != dwSize)
+        if (
+          RawInput.GetRawInputData(message.LParam, RawInput.RawInputCommand.Input, buffer, ref dwSize,
+                                   (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER))) != dwSize)
           return;
 
-        RawInput.RAWINPUT raw = (RawInput.RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RawInput.RAWINPUT));
+        RawInput.RAWINPUT raw = (RawInput.RAWINPUT) Marshal.PtrToStructure(buffer, typeof (RawInput.RAWINPUT));
 
         switch (raw.header.dwType)
         {
           case RawInput.RawInputType.HID:
             {
-              int offset = Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof(RawInput.RAWHID));
+              int offset = Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof (RawInput.RAWHID));
 
               byte[] bRawData = new byte[offset + raw.hid.dwSizeHid];
               Marshal.Copy(buffer, bRawData, 0, bRawData.Length);
@@ -405,7 +440,7 @@ namespace InputService.Plugin
 #endif
 
               if (_remoteHandler != null)
-                _remoteHandler(this.Name, code);
+                _remoteHandler(Name, code);
 
               break;
             }
@@ -424,7 +459,7 @@ namespace InputService.Plugin
               Trace.WriteLine(String.Format("Last Y: {0}", raw.mouse.lLastY));
 #endif
               if (_mouseHandler != null)
-                _mouseHandler(this.Name, raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
+                _mouseHandler(Name, raw.mouse.lLastX, raw.mouse.lLastY, (int) raw.mouse.ulButtons);
 
               break;
             }
@@ -434,7 +469,7 @@ namespace InputService.Plugin
 #if TRACE
               Trace.WriteLine("Keyboard Event");
 #endif
-              
+
               switch (raw.keyboard.Flags)
               {
                 case RawInput.RawKeyboardFlags.KeyBreak:
@@ -443,7 +478,7 @@ namespace InputService.Plugin
 #endif
 
                   if (_keyboardHandler != null)
-                    _keyboardHandler(this.Name, raw.keyboard.VKey, true);
+                    _keyboardHandler(Name, raw.keyboard.VKey, true);
 
                   break;
 
@@ -471,7 +506,7 @@ namespace InputService.Plugin
 #endif
 
                   if (_keyboardHandler != null)
-                    _keyboardHandler(this.Name, raw.keyboard.VKey, false);
+                    _keyboardHandler(Name, raw.keyboard.VKey, false);
 
                   break;
 
@@ -496,9 +531,6 @@ namespace InputService.Plugin
       {
         Marshal.FreeHGlobal(buffer);
       }
-
     }
-
   }
-
 }

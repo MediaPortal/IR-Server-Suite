@@ -1,42 +1,36 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
+using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// SMS style virtual keyboard.
   /// </summary>
   public partial class SmsKeyboard : Form
   {
-
     #region Constants
 
-    const string NumPad1Keys = "!@#$%^&*()_+-=`~[]{}\\|,.<>/?;:'\"/";
-    const string NumPad2Keys = "ABC";
-    const string NumPad3Keys = "DEF";
-    const string NumPad4Keys = "GHI";
-    const string NumPad5Keys = "JKL";
-    const string NumPad6Keys = "MNO";
-    const string NumPad7Keys = "PQRS";
-    const string NumPad8Keys = "TUV";
-    const string NumPad9Keys = "WXYZ";
+    private const string NumPad1Keys = "!@#$%^&*()_+-=`~[]{}\\|,.<>/?;:'\"/";
+    private const string NumPad2Keys = "ABC";
+    private const string NumPad3Keys = "DEF";
+    private const string NumPad4Keys = "GHI";
+    private const string NumPad5Keys = "JKL";
+    private const string NumPad6Keys = "MNO";
+    private const string NumPad7Keys = "PQRS";
+    private const string NumPad8Keys = "TUV";
+    private const string NumPad9Keys = "WXYZ";
 
     #endregion Constants
 
     #region Variables
 
-    bool _shift;
+    private readonly Timer _timer;
 
-    Timer _timer;
-
-    Keys _lastKey = Keys.None;
-    int _repeated;
+    private Keys _lastKey = Keys.None;
+    private int _repeated;
+    private bool _shift;
 
     #endregion Variables
 
@@ -65,13 +59,13 @@ namespace IrssUtils.Forms
 
       _timer = new Timer();
       _timer.Interval = 2000;
-      _timer.Tick += new EventHandler(Timeout);
+      _timer.Tick += Timeout;
       _timer.Enabled = true;
     }
 
     #endregion Constructor
 
-    void Timeout(object sender, EventArgs e)
+    private void Timeout(object sender, EventArgs e)
     {
       if (textBoxKeys.SelectionLength == 1)
       {
@@ -83,9 +77,9 @@ namespace IrssUtils.Forms
       _lastKey = Keys.None;
     }
 
-    bool HandleKeyPress(Keys key)
+    private bool HandleKeyPress(Keys key)
     {
-      System.Diagnostics.Trace.WriteLine("Key: " + key.ToString());
+      Trace.WriteLine("Key: " + key);
 
       if (_lastKey == key)
       {
@@ -155,16 +149,16 @@ namespace IrssUtils.Forms
 
         case Keys.Enter:
           if (String.IsNullOrEmpty(textBoxKeys.Text))
-            this.DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.Cancel;
           else
-            this.DialogResult = DialogResult.OK;
+            DialogResult = DialogResult.OK;
 
-          this.Close();
+          Close();
           return true;
 
         case Keys.Escape:
-          this.DialogResult = DialogResult.Cancel;
-          this.Close();
+          DialogResult = DialogResult.Cancel;
+          Close();
           return true;
 
         case Keys.Left:
@@ -178,7 +172,7 @@ namespace IrssUtils.Forms
       return false;
     }
 
-    void GetChar(string keys)
+    private void GetChar(string keys)
     {
       _timer.Stop();
 
@@ -192,14 +186,14 @@ namespace IrssUtils.Forms
         _repeated = 0;
       }
 
-      int chrIdx = _repeated % keys.Length;
+      int chrIdx = _repeated%keys.Length;
 
       string chr = keys[chrIdx].ToString();
 
       PutChar(chr);
     }
 
-    void PutChar(string chr)
+    private void PutChar(string chr)
     {
       if (_shift)
         chr = chr.ToUpper(CultureInfo.CurrentCulture);
@@ -214,7 +208,7 @@ namespace IrssUtils.Forms
 
       _timer.Start();
     }
-    
+
     private void SmsKeyboard_FormClosed(object sender, FormClosedEventArgs e)
     {
       _timer.Stop();
@@ -294,13 +288,11 @@ namespace IrssUtils.Forms
     private void buttonHash_Click(object sender, EventArgs e)
     {
       if (String.IsNullOrEmpty(textBoxKeys.Text))
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
       else
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
 
-      this.Close();
+      Close();
     }
-
   }
-
 }

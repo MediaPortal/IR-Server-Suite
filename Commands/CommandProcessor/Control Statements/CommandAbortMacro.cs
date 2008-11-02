@@ -1,29 +1,30 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Abort special command.
   /// </summary>
   public class CommandAbortMacro : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandAbortMacro"/> class.
     /// </summary>
-    public CommandAbortMacro() { InitParameters(1); }
+    public CommandAbortMacro()
+    {
+      InitParameters(1);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandAbortMacro"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandAbortMacro(string[] parameters) : base(parameters) { }
+    public CommandAbortMacro(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +34,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryControl; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryControl;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Abort Macro"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Abort Macro";
+    }
 
     /// <summary>
     /// Gets the user display text.
@@ -84,7 +91,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

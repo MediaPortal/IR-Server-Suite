@@ -44,7 +44,7 @@ SetCompressor /SOLID /FINAL lzma
 !define INSTALL_LOG
 
 ; to use default path to logfile, COMMON_APPDATA has to be defined
-; default logfile is: "${COMMON_APPDATA}\log\install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}.log"
+; default logfile is: "${COMMON_APPDATA}\Logs\install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}.log"
 ; if you want to set custom path to logfile, uncomment the following line
 #!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
 
@@ -479,11 +479,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!if ${VER_BUILD} != 0
-${MementoSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
-!else
 ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
-!endif
 
   DetailPrint "Installing MP Blast Zone Plugin ..."
 
@@ -522,11 +518,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!if ${VER_BUILD} != 0
-${MementoSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
-!else
 ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
-!endif
 
   DetailPrint "Installing TV2 Blaster Plugin ..."
 
@@ -582,7 +574,7 @@ SectionEnd
 
 ;======================================
 
-${MementoUnselectedSection} "TV3 Blaster Plugin" SectionTV3BlasterPlugin
+${MementoSection} "TV3 Blaster Plugin" SectionTV3BlasterPlugin
 
   DetailPrint "Installing TV3 Blaster Plugin ..."
 
@@ -613,11 +605,7 @@ SectionGroupEnd
 /*
 SectionGroup /e "Media Center add-ons" SectionGroupMCE
 
-!if ${VER_BUILD} != 0
-${MementoSection} "Media Center Blaster (experimental)" SectionMCEBlaster
-!else
 ${MementoUnselectedSection} "Media Center Blaster (experimental)" SectionMCEBlaster
-!endif
 
   DetailPrint "Installing Media Center Blaster ..."
 

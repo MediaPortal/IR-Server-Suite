@@ -1,29 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// String To Lower macro command.
   /// </summary>
   public class CommandStringToLower : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStringToLower"/> class.
     /// </summary>
-    public CommandStringToLower() { InitParameters(2); }
+    public CommandStringToLower()
+    {
+      InitParameters(2);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStringToLower"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandStringToLower(string[] parameters) : base(parameters) { }
+    public CommandStringToLower(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +34,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryString; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryString;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "String To Lower"; }
+    public override string GetUserInterfaceText()
+    {
+      return "String To Lower";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -66,13 +73,11 @@ namespace Commands
     {
       string[] processed = ProcessParameters(variables, Parameters);
 
-      string output = processed[0].ToLower(System.Globalization.CultureInfo.CurrentCulture);
+      string output = processed[0].ToLower(CultureInfo.CurrentCulture);
 
       variables.VariableSet(processed[1], output);
     }
 
     #endregion Implementation
-
   }
-
 }

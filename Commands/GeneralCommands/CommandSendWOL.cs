@@ -1,27 +1,23 @@
 using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 
-using IrssUtils;
-
 namespace Commands.General
 {
-
   /// <summary>
   /// Send WakeOnLan general command.
   /// </summary>
   public class CommandSendWOL : Command
   {
-
     #region Constants
 
     /// <summary>
     /// WakeOnLan packet header.
     /// </summary>
-    static readonly byte[] Header = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+    private static readonly byte[] Header = new byte[] {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
     #endregion Constants
 
@@ -30,13 +26,18 @@ namespace Commands.General
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSendWOL"/> class.
     /// </summary>
-    public CommandSendWOL() { InitParameters(3); }
+    public CommandSendWOL()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSendWOL"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSendWOL(string[] parameters) : base(parameters) { }
+    public CommandSendWOL(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -46,13 +47,19 @@ namespace Commands.General
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return "General Commands"; }
+    public override string GetCategory()
+    {
+      return "General Commands";
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Send WakeOnLan"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Send WakeOnLan";
+    }
 
     /// <summary>
     /// Gets the user display text.
@@ -99,26 +106,26 @@ namespace Commands.General
     /// <param name="mac">The mac address.</param>
     /// <param name="port">The destination port.</param>
     /// <param name="password">Optional password. Must be null, 4 or 6 bytes.</param>
-    static void SendWOL(string mac, int port, string password)
+    private static void SendWOL(string mac, int port, string password)
     {
       // Convert mac address to byte[]
-      string[] macParts = mac.Split(new char[] { ':', '-', '.', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+      string[] macParts = mac.Split(new char[] {':', '-', '.', ' '}, StringSplitOptions.RemoveEmptyEntries);
       if (macParts.Length != 6)
         throw new ArgumentException("Not a valid mac address", "mac");
 
       byte[] macAddress = new byte[macParts.Length];
       for (int index = 0; index < macAddress.Length; index++)
-        macAddress[index] = byte.Parse(macParts[5 - index], System.Globalization.NumberStyles.HexNumber);
+        macAddress[index] = byte.Parse(macParts[5 - index], NumberStyles.HexNumber);
 
       // Convert password to byte[]
       byte[] pass = null;
       if (!String.IsNullOrEmpty(password))
         pass = Encoding.ASCII.GetBytes(password);
-      
+
       if (pass != null && pass.Length != 4 && pass.Length != 6)
         throw new ArgumentException("Not a valid password (must be null, 4 or 6 bytes)", "password");
 
-      int packetLength = Header.Length + (16 * macAddress.Length);
+      int packetLength = Header.Length + (16*macAddress.Length);
       if (pass != null)
         packetLength += pass.Length;
 
@@ -146,7 +153,5 @@ namespace Commands.General
       // Send ...
       client.Send(packet, packet.Length);
     }
-
   }
-
 }

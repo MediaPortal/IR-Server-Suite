@@ -1,18 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace Translator
 {
- 
   /// <summary>
   /// Holds settings for a program that is mapped in Translator.
   /// </summary>
   public class ProgramSettings
   {
-
     #region Constants
 
     /// <summary>
@@ -24,15 +21,15 @@ namespace Translator
 
     #region Variables
 
-    string _name;
-    string _fileName;
-    string _folder;
-    string _arguments;
-    bool _useShellExecute;
-    bool _forceWindowFocus;
-    bool _ignoreSystemWide;
-    ProcessWindowStyle _windowState;
-    List<ButtonMapping> _buttonMappings;
+    private readonly List<ButtonMapping> _buttonMappings;
+    private string _arguments;
+    private string _fileName;
+    private string _folder;
+    private bool _forceWindowFocus;
+    private bool _ignoreSystemWide;
+    private string _name;
+    private bool _useShellExecute;
+    private ProcessWindowStyle _windowState;
 
     #endregion Variables
 
@@ -47,11 +44,11 @@ namespace Translator
       get { return _name; }
       set { _name = value; }
     }
-    
+
     /// <summary>
     /// Program file name.
     /// </summary>
-    [XmlAttribute]  
+    [XmlAttribute]
     public string FileName
     {
       get { return _fileName; }
@@ -117,11 +114,11 @@ namespace Translator
       get { return _windowState; }
       set { _windowState = value; }
     }
-    
+
     /// <summary>
     /// Gets a list of button mappings associated with this program.
     /// </summary>
-    [XmlArray]      
+    [XmlArray]
     public List<ButtonMapping> ButtonMappings
     {
       get { return _buttonMappings; }
@@ -138,14 +135,14 @@ namespace Translator
       get
       {
         return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
-          _fileName,
-          _folder,
-          _arguments,
-          _windowState.ToString(),
-          false,
-          _useShellExecute,
-          false,
-          _forceWindowFocus);
+                             _fileName,
+                             _folder,
+                             _arguments,
+                             _windowState,
+                             false,
+                             _useShellExecute,
+                             false,
+                             _forceWindowFocus);
       }
     }
 
@@ -158,19 +155,17 @@ namespace Translator
     /// </summary>
     public ProgramSettings()
     {
-      _name             = NewProgramName;
-      _fileName         = String.Empty;
-      _folder           = String.Empty;
-      _arguments        = String.Empty;
-      _useShellExecute  = false;
+      _name = NewProgramName;
+      _fileName = String.Empty;
+      _folder = String.Empty;
+      _arguments = String.Empty;
+      _useShellExecute = false;
       _forceWindowFocus = false;
       _ignoreSystemWide = false;
-      _windowState      = ProcessWindowStyle.Normal;
-      _buttonMappings   = new List<ButtonMapping>();
+      _windowState = ProcessWindowStyle.Normal;
+      _buttonMappings = new List<ButtonMapping>();
     }
-    
+
     #endregion Constructors
-
   }
-
 }

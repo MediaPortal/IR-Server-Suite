@@ -1,50 +1,43 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 
 namespace SkinEditor
 {
-
   /// <summary>
   /// Virtual Remote Skin Editor Main Form.
   /// </summary>
-  partial class MainForm : Form
+  internal partial class MainForm : Form
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Virtual Remote\\Virtual Remote Skin Editor.xml");
+    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
+                                                                    "Virtual Remote\\Virtual Remote Skin Editor.xml");
 
     #endregion Constants
 
     #region Variables
 
-    Client _client;
+    private readonly Label _currentButton;
+    private Client _client;
+    private string _fileName = String.Empty;
+    private bool _isMouseDown;
+    private Point _mouseOffset;
 
-    bool _registered;
+    private bool _registered;
 
-    string _serverHost = String.Empty;
+    private string _serverHost = String.Empty;
 
-    bool _unsavedChanges;
+    private bool _unsavedChanges;
     //bool _fileOpen;
-    string _fileName = String.Empty;
-
-    Label _currentButton;
-
-    Point _mouseOffset;
-    bool _isMouseDown;
 
     #endregion Variables
 
@@ -60,7 +53,7 @@ namespace SkinEditor
       LoadSettings();
 
       _currentButton = new Label();
-      _currentButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left));
+      _currentButton.Anchor = ((AnchorStyles.Top | AnchorStyles.Left));
       _currentButton.BorderStyle = BorderStyle.FixedSingle;
       _currentButton.BackColor = Color.Transparent;
       _currentButton.Cursor = Cursors.Cross;
@@ -70,12 +63,12 @@ namespace SkinEditor
       _currentButton.Visible = false;
       _currentButton.AutoSize = false;
 
-      _currentButton.Location = new System.Drawing.Point(0, 0);
-      _currentButton.Size     = new System.Drawing.Size(0, 0);
+      _currentButton.Location = new Point(0, 0);
+      _currentButton.Size = new Size(0, 0);
 
-      _currentButton.MouseDown  += new MouseEventHandler(Button_MouseDown);
-      _currentButton.MouseUp    += new MouseEventHandler(Button_MouseUp);
-      _currentButton.MouseMove  += new MouseEventHandler(Button_MouseMove);
+      _currentButton.MouseDown += Button_MouseDown;
+      _currentButton.MouseUp += Button_MouseUp;
+      _currentButton.MouseMove += Button_MouseMove;
 
       pictureBoxRemote.Controls.Add(_currentButton);
 
@@ -84,7 +77,7 @@ namespace SkinEditor
 
     #endregion Constructor
 
-    void Button_MouseDown(object sender, MouseEventArgs e)
+    private void Button_MouseDown(object sender, MouseEventArgs e)
     {
       if (e.Button == MouseButtons.Left)
       {
@@ -92,7 +85,8 @@ namespace SkinEditor
         _isMouseDown = true;
       }
     }
-    void Button_MouseUp(object sender, MouseEventArgs e)
+
+    private void Button_MouseUp(object sender, MouseEventArgs e)
     {
       if (e.Button == MouseButtons.Left)
       {
@@ -101,11 +95,12 @@ namespace SkinEditor
         UpdateWindowTitle();
       }
     }
-    void Button_MouseMove(object sender, MouseEventArgs e)
+
+    private void Button_MouseMove(object sender, MouseEventArgs e)
     {
       if (_isMouseDown)
       {
-        Point mousePos = Control.MousePosition;
+        Point mousePos = MousePosition;
         mousePos.Offset(_mouseOffset.X, _mouseOffset.Y);
         _currentButton.Location = mousePos;
         listViewButtons.SelectedItems[0].SubItems[3].Text = mousePos.Y.ToString();
@@ -120,7 +115,7 @@ namespace SkinEditor
       UpdateWindowTitle();
 
       comboBoxShortcut.Items.Clear();
-      comboBoxShortcut.Items.AddRange(Enum.GetNames(typeof(Keys)));
+      comboBoxShortcut.Items.AddRange(Enum.GetNames(typeof (Keys)));
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -143,7 +138,7 @@ namespace SkinEditor
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-    
+
     private void buttonLoadImage_Click(object sender, EventArgs e)
     {
       if (openFileDialog.ShowDialog(this) == DialogResult.OK)
@@ -159,28 +154,35 @@ namespace SkinEditor
     {
       if (_unsavedChanges)
       {
-        if (MessageBox.Show(this, "Are you sure you want to start a new file?", "Unsaved file in memory", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+        if (
+          MessageBox.Show(this, "Are you sure you want to start a new file?", "Unsaved file in memory",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
           return;
       }
 
       NewFile();
     }
+
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (_unsavedChanges)
       {
-        if (MessageBox.Show(this, "Are you sure you want to close this file and open another?", "Unsaved file in memory", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+        if (
+          MessageBox.Show(this, "Are you sure you want to close this file and open another?", "Unsaved file in memory",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
           return;
       }
 
       OpenFile();
     }
+
     private void saveToolStripMenuItem_Click(object sender, EventArgs e)
     {
       SaveSkinFile(_fileName);
       _unsavedChanges = false;
       UpdateWindowTitle();
     }
+
     private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (saveFileDialog.ShowDialog(this) != DialogResult.OK)
@@ -192,21 +194,27 @@ namespace SkinEditor
       _unsavedChanges = false;
       UpdateWindowTitle();
     }
+
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (_unsavedChanges)
       {
-        if (MessageBox.Show(this, "Are you sure you want to close this file?", "Unsaved file in memory", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+        if (
+          MessageBox.Show(this, "Are you sure you want to close this file?", "Unsaved file in memory",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
           return;
       }
 
       NewFile();
     }
+
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (_unsavedChanges)
       {
-        if (MessageBox.Show(this, "Are you sure you want to quit?", "Unsaved file in memory", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+        if (
+          MessageBox.Show(this, "Are you sure you want to quit?", "Unsaved file in memory", MessageBoxButtons.YesNo,
+                          MessageBoxIcon.Warning) == DialogResult.No)
           return;
       }
 
@@ -257,7 +265,7 @@ namespace SkinEditor
           }
           e.SuppressKeyPress = true;
           break;
-        
+
         case Keys.S:
           val = int.Parse(listViewButtons.SelectedItems[0].SubItems[5].Text);
           if (val < 1024)
@@ -294,22 +302,25 @@ namespace SkinEditor
           e.SuppressKeyPress = true;
           break;
       }
-      
     }
 
     private void buttonAddButton_Click(object sender, EventArgs e)
     {
-      listViewButtons.Items.Add(new ListViewItem(new string[] {
-        "Button", "X", "None", "0", "0", "10", "10" }));
+      listViewButtons.Items.Add(new ListViewItem(new string[]
+                                                   {
+                                                     "Button", "X", "None", "0", "0", "10", "10"
+                                                   }));
 
       _unsavedChanges = true;
       UpdateWindowTitle();
     }
+
     private void buttonSetCode_Click(object sender, EventArgs e)
     {
       if (listViewButtons.SelectedItems.Count == 1)
         listViewButtons.SelectedItems[0].SubItems[1].Text = textBoxCode.Text;
     }
+
     private void buttonSetShortcut_Click(object sender, EventArgs e)
     {
       if (listViewButtons.SelectedItems.Count == 1)
@@ -319,10 +330,11 @@ namespace SkinEditor
     private void connectToolStripMenuItem_Click(object sender, EventArgs e)
     {
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);
     }
+
     private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (_registered)
@@ -335,11 +347,12 @@ namespace SkinEditor
 
       StopClient();
     }
+
     private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
     {
       ServerAddress serverAddress = new ServerAddress(_serverHost);
       serverAddress.ShowDialog(this);
-      
+
       _serverHost = serverAddress.ServerHost;
 
       SaveSettings();
@@ -349,25 +362,25 @@ namespace SkinEditor
 
     #region Implementation
 
-    void UpdateWindowTitle()
+    private void UpdateWindowTitle()
     {
-      if (String.IsNullOrEmpty(_fileName))      
+      if (String.IsNullOrEmpty(_fileName))
       {
-        this.Text = ProductName;
+        Text = ProductName;
       }
       else
       {
         if (_unsavedChanges)
-          this.Text = String.Format("{0} - {1} *", ProductName, Path.GetFileName(_fileName));
+          Text = String.Format("{0} - {1} *", ProductName, Path.GetFileName(_fileName));
         else
-          this.Text = String.Format("{0} - {1}", ProductName, Path.GetFileName(_fileName));
+          Text = String.Format("{0} - {1}", ProductName, Path.GetFileName(_fileName));
       }
     }
 
-    void LoadSkinFile(string fileName)
+    private void LoadSkinFile(string fileName)
     {
       IrssLog.Info("Loading Skin: {0}", fileName);
-      
+
       XmlDocument doc = new XmlDocument();
       doc.Load(fileName);
 
@@ -378,20 +391,21 @@ namespace SkinEditor
       {
         ListViewItem temp = new ListViewItem();
         temp.Text = item.Attributes["name"].Value;
-        
+
         temp.SubItems.Add(item.Attributes["code"].Value);
         temp.SubItems.Add(item.Attributes["shortcut"].Value);
         temp.SubItems.Add(item.Attributes["top"].Value);
         temp.SubItems.Add(item.Attributes["left"].Value);
         temp.SubItems.Add(item.Attributes["height"].Value);
         temp.SubItems.Add(item.Attributes["width"].Value);
-        
+
         listViewButtons.Items.Add(temp);
       }
 
       IrssLog.Info("Loaded Skin: {0}", fileName);
     }
-    void SaveSkinFile(string fileName)
+
+    private void SaveSkinFile(string fileName)
     {
       IrssLog.Info("Saving Skin: {0}", fileName);
 
@@ -399,7 +413,7 @@ namespace SkinEditor
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("skin"); // <skin>
 
@@ -422,7 +436,7 @@ namespace SkinEditor
       IrssLog.Info("Saved Skin: {0}", fileName);
     }
 
-    void LoadImage(string fileName)
+    private void LoadImage(string fileName)
     {
       IrssLog.Info("Loading Image: {0}", fileName);
 
@@ -434,7 +448,7 @@ namespace SkinEditor
       IrssLog.Info("Loaded Image: {0}", fileName);
     }
 
-    void OpenFile()
+    private void OpenFile()
     {
       openFileDialog.Title = "Open a Virtual Remote Skin ...";
       openFileDialog.Filter = "Xml Files|*.xml";
@@ -457,7 +471,8 @@ namespace SkinEditor
         UpdateWindowTitle();
       }
     }
-    void NewFile()
+
+    private void NewFile()
     {
       _fileName = String.Empty;
       _currentButton.Visible = false;
@@ -469,20 +484,20 @@ namespace SkinEditor
       UpdateWindowTitle();
     }
 
-    void HighlightSelectedButton(ListViewItem item)
+    private void HighlightSelectedButton(ListViewItem item)
     {
       int Top = int.Parse(item.SubItems[3].Text);
       int Left = int.Parse(item.SubItems[4].Text);
       int Height = int.Parse(item.SubItems[5].Text);
       int Width = int.Parse(item.SubItems[6].Text);
 
-      _currentButton.Location = new System.Drawing.Point(Left, Top);
-      _currentButton.Size = new System.Drawing.Size(Width, Height);
+      _currentButton.Location = new Point(Left, Top);
+      _currentButton.Size = new Size(Width, Height);
       _currentButton.BackColor = Color.Yellow;
       _currentButton.Visible = true;
     }
 
-    void LoadSettings()
+    private void LoadSettings()
     {
       try
       {
@@ -504,7 +519,8 @@ namespace SkinEditor
         CreateDefaultSettings();
       }
     }
-    void SaveSettings()
+
+    private void SaveSettings()
     {
       try
       {
@@ -512,7 +528,7 @@ namespace SkinEditor
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -527,14 +543,15 @@ namespace SkinEditor
         IrssLog.Error(ex);
       }
     }
-    void CreateDefaultSettings()
+
+    private void CreateDefaultSettings()
     {
       _serverHost = "localhost";
 
       SaveSettings();
     }
 
-    void CommsFailure(object obj)
+    private void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
 
@@ -545,34 +562,37 @@ namespace SkinEditor
 
       StopClient();
 
-      MessageBox.Show(this, "Please report this error.", "Virtual Remote Skin Editor - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show(this, "Please report this error.", "Virtual Remote Skin Editor - Communications failure",
+                      MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
-    void Connected(object obj)
+
+    private void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    void Disconnected(object obj)
+
+    private void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
       Thread.Sleep(1000);
     }
 
-    bool StartClient(IPEndPoint endPoint)
+    private bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
+
       if (_client.Start())
       {
         return true;
@@ -583,7 +603,8 @@ namespace SkinEditor
         return false;
       }
     }
-    void StopClient()
+
+    private void StopClient()
     {
       if (_client == null)
         return;
@@ -594,7 +615,7 @@ namespace SkinEditor
       _registered = false;
     }
 
-    void ReceivedMessage(IrssMessage received)
+    private void ReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
@@ -623,16 +644,19 @@ namespace SkinEditor
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              MessageBox.Show(this, "Failed to register with server", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+              MessageBox.Show(this, "Failed to register with server", "Virtual Remote Skin Editor Error",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return;
 
           case MessageType.ServerShutdown:
-            MessageBox.Show(this, "Server has been shut down", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, "Server has been shut down", "Virtual Remote Skin Editor Error", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
             return;
 
           case MessageType.Error:
-            MessageBox.Show(this, received.GetDataAsString(), "Virtual Remote Skin Editor Error from Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, received.GetDataAsString(), "Virtual Remote Skin Editor Error from Server",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
       }
@@ -644,7 +668,5 @@ namespace SkinEditor
     }
 
     #endregion Implementation
-
   }
-
 }

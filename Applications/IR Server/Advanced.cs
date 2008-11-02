@@ -1,23 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace IRServer
 {
-
   /// <summary>
   /// Advanced Configuration Form.
   /// </summary>
-  partial class Advanced : Form
+  internal partial class Advanced : Form
   {
-
     #region Properties
 
     public bool AbstractRemoteMode
@@ -25,6 +18,7 @@ namespace IRServer
       get { return checkBoxAbstractRemoteMode.Checked; }
       set { buttonExclusions.Enabled = checkBoxAbstractRemoteMode.Checked = value; }
     }
+
     public IRServerMode Mode
     {
       get
@@ -54,21 +48,17 @@ namespace IRServer
         }
       }
     }
+
     public string HostComputer
     {
       get { return comboBoxComputer.Text; }
       set { comboBoxComputer.Text = value; }
     }
+
     public string ProcessPriority
     {
-      get
-      {
-        return comboBoxPriority.SelectedItem as string;
-      }
-      set
-      {
-        comboBoxPriority.SelectedItem = value;
-      }
+      get { return comboBoxPriority.SelectedItem as string; }
+      set { comboBoxPriority.SelectedItem = value; }
     }
 
     #endregion Properties
@@ -84,7 +74,7 @@ namespace IRServer
         comboBoxComputer.Items.AddRange(networkPCs.ToArray());
 
       comboBoxPriority.Items.Add("No Change");
-      comboBoxPriority.Items.AddRange(Enum.GetNames(typeof(ProcessPriorityClass)));
+      comboBoxPriority.Items.AddRange(Enum.GetNames(typeof (ProcessPriorityClass)));
       comboBoxPriority.SelectedIndex = 0;
     }
 
@@ -94,13 +84,14 @@ namespace IRServer
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonExclusions_Click(object sender, EventArgs e)
@@ -110,7 +101,6 @@ namespace IRServer
 
       if (exclusions.ShowDialog(this) == DialogResult.OK)
       {
-
       }
     }
 
@@ -118,10 +108,12 @@ namespace IRServer
     {
       comboBoxComputer.Enabled = false;
     }
+
     private void radioButtonRelay_CheckedChanged(object sender, EventArgs e)
     {
       comboBoxComputer.Enabled = true;
     }
+
     private void radioButtonRepeater_CheckedChanged(object sender, EventArgs e)
     {
       comboBoxComputer.Enabled = true;
@@ -133,7 +125,5 @@ namespace IRServer
     }
 
     #endregion Controls
-
   }
-
 }

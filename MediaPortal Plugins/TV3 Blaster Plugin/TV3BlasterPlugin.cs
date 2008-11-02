@@ -1,93 +1,62 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.IO;
-using System.IO.Ports;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using System.Xml;
-
-using TvLibrary.Log;
-using TvControl;
-using SetupTv;
-using TvEngine.Events;
-using TvLibrary.Interfaces;
-using TvLibrary.Implementations;
-using TvDatabase;
-
 using IrssComms;
 using IrssUtils;
 using MPUtils;
+using SetupTv;
+using SetupTv.Sections;
+using TvControl;
+using TvDatabase;
+using TvEngine.Events;
+using TvLibrary.Implementations;
+using TvLibrary.Interfaces;
+using TvLibrary.Log;
+using Server=IrssComms.Server;
 
 namespace TvEngine
 {
-
   /// <summary>
   /// MediaPortal TV3 Blaster Plugin for IR Server.
   /// </summary>
   public class TV3BlasterPlugin : ITvServerPlugin
   {
-
     #region Constants
 
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion           = "TV3 Blaster Plugin 1.4.2.0 for TV Server";
+    internal const string PluginVersion = "TV3 Blaster Plugin 1.4.2.0 for TV Server";
 
-    internal static readonly string FolderMacros  = Path.Combine(Common.FolderAppData, "TV3 Blaster Plugin\\Macro");
-
-    internal static readonly string ExtCfgFolder  = Path.Combine(Common.FolderAppData, "TV3 Blaster Plugin");
-
-    const string ProcessCommandThreadName         = "ProcessCommand";
+    private const string ProcessCommandThreadName = "ProcessCommand";
+    internal static readonly string ExtCfgFolder = Path.Combine(Common.FolderAppData, "TV3 Blaster Plugin");
+    internal static readonly string FolderMacros = Path.Combine(Common.FolderAppData, "TV3 Blaster Plugin\\Macro");
 
     #endregion Constants
 
     #region Variables
 
-    static Client _client;
+    private static Client _client;
 
-    static string _serverHost;
-    static string _learnIRFilename;
+    private static ExternalChannelConfig[] _externalChannelConfigs;
 
-    static bool _registered;
+    private static ClientMessageSink _handleMessage;
 
-    static bool _logVerbose;
+    private static bool _inConfiguration;
 
-    static ExternalChannelConfig[] _externalChannelConfigs;
-
-    static ClientMessageSink _handleMessage;
-
-    static bool _inConfiguration;
-
-    static IRServerInfo _irServerInfo = new IRServerInfo();
+    private static IRServerInfo _irServerInfo = new IRServerInfo();
+    private static string _learnIRFilename;
+    private static bool _logVerbose;
+    private static bool _registered;
+    private static string _serverHost;
 
     #endregion Variables
 
     #region Properties
-
-    /// <summary>
-    /// Returns the name of the plugin.
-    /// </summary>
-    public string Name { get { return "TV3 Blaster Plugin for IR Server"; } }
-    /// <summary>
-    /// Returns the version of the plugin.
-    /// </summary>
-    public string Version { get { return "1.4.2.0"; } }
-    /// <summary>
-    /// Returns the author of the plugin.
-    /// </summary>
-    public string Author { get { return "and-81"; } }
-    /// <summary>
-    /// Returns if the plugin should only run on the master server or also on slave servers.
-    /// </summary>
-    public bool MasterOnly { get { return false; } }
 
     internal static string ServerHost
     {
@@ -126,6 +95,38 @@ namespace TvEngine
       get { return _irServerInfo; }
     }
 
+    /// <summary>
+    /// Returns the name of the plugin.
+    /// </summary>
+    public string Name
+    {
+      get { return "TV3 Blaster Plugin for IR Server"; }
+    }
+
+    /// <summary>
+    /// Returns the version of the plugin.
+    /// </summary>
+    public string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
+    /// <summary>
+    /// Returns the author of the plugin.
+    /// </summary>
+    public string Author
+    {
+      get { return "and-81"; }
+    }
+
+    /// <summary>
+    /// Returns if the plugin should only run on the master server or also on slave servers.
+    /// </summary>
+    public bool MasterOnly
+    {
+      get { return false; }
+    }
+
     #endregion Properties
 
     #region ITvServerPlugin methods
@@ -146,10 +147,10 @@ namespace TvEngine
       LoadExternalConfigs();
 
       ITvServerEvent events = GlobalServiceProvider.Instance.Get<ITvServerEvent>();
-      events.OnTvServerEvent += new TvServerEventHandler(events_OnTvServerEvent);
+      events.OnTvServerEvent += events_OnTvServerEvent;
 
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!StartClient(endPoint))
         Log.Error("TV3BlasterPlugin: Failed to start local comms, IR blasting is disabled for this session");
@@ -157,13 +158,14 @@ namespace TvEngine
       if (LogVerbose)
         Log.Info("TV3BlasterPlugin: Started");
     }
+
     /// <summary>
     /// Stops this instance.
     /// </summary>
     public void Stop()
     {
       ITvServerEvent events = GlobalServiceProvider.Instance.Get<ITvServerEvent>();
-      events.OnTvServerEvent -= new TvServerEventHandler(events_OnTvServerEvent);
+      events.OnTvServerEvent -= events_OnTvServerEvent;
 
       StopClient();
 
@@ -176,22 +178,19 @@ namespace TvEngine
     /// </summary>
     /// <value>The setup form control.</value>
     [CLSCompliant(false)]
-    public SetupTv.SectionSettings Setup
+    public SectionSettings Setup
     {
-      get
-      {
-        return new SetupTv.Sections.PluginSetup();
-      }
+      get { return new PluginSetup(); }
     }
 
     #endregion ITvServerPlugin methods
 
     #region Implementation
 
-    static void CommsFailure(object obj)
+    private static void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
-      
+
       if (ex != null)
         Log.Error("TV3BlasterPlugin: Communications failure: {0}", ex.ToString());
       else
@@ -202,18 +201,20 @@ namespace TvEngine
       Log.Info("TV3BlasterPlugin: Attempting communications restart ...");
 
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);
     }
-    static void Connected(object obj)
+
+    private static void Connected(object obj)
     {
       Log.Info("TV3BlasterPlugin: Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    static void Disconnected(object obj)
+
+    private static void Disconnected(object obj)
     {
       Log.Info("TV3BlasterPlugin: Communications with server has been lost");
 
@@ -225,23 +226,20 @@ namespace TvEngine
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
 
       if (_client.Start())
-      {
         return true;
-      }
-      else
-      {
-        _client = null;
-        return false;
-      }
+
+      _client = null;
+      return false;
     }
+
     internal static void StopClient()
     {
       if (_client != null)
@@ -251,7 +249,7 @@ namespace TvEngine
       }
     }
 
-    static void ReceivedMessage(IrssMessage received)
+    private static void ReceivedMessage(IrssMessage received)
     {
       if (LogVerbose)
         Log.Debug("TV3BlasterPlugin: Received Message \"{0}\"", received.Type);
@@ -337,14 +335,15 @@ namespace TvEngine
     /// </summary>
     /// <param name="sender">Sender.</param>
     /// <param name="eventArgs">Event arguments.</param>
-    void events_OnTvServerEvent(object sender, EventArgs eventArgs)
+    private void events_OnTvServerEvent(object sender, EventArgs eventArgs)
     {
       try
       {
-        TvServerEventArgs tvEvent = (TvServerEventArgs)eventArgs;
+        TvServerEventArgs tvEvent = (TvServerEventArgs) eventArgs;
 
 #if DEBUG
-        Log.Debug("TV3BlasterPlugin: Received TV Server Event \"{0}\"", Enum.GetName(typeof(TvServerEventType), tvEvent.EventType));
+        Log.Debug("TV3BlasterPlugin: Received TV Server Event \"{0}\"",
+                  Enum.GetName(typeof (TvServerEventType), tvEvent.EventType));
 #endif
 
         if (tvEvent.EventType != TvServerEventType.StartZapChannel)
@@ -355,22 +354,24 @@ namespace TvEngine
           return;
 
 #if DEBUG
-        Log.Debug("TV3BlasterPlugin: Analog channel input source \"{0}\"", Enum.GetName(typeof(AnalogChannel.VideoInputType), analogChannel.VideoSource));
+        Log.Debug("TV3BlasterPlugin: Analog channel input source \"{0}\"",
+                  Enum.GetName(typeof (AnalogChannel.VideoInputType), analogChannel.VideoSource));
 #endif
 
         //if (analogChannel.VideoSource == AnalogChannel.VideoInputType.Tuner)
-          //return;
+        //return;
 
-        Log.Info("TV3BlasterPlugin: Tune request - Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id, analogChannel.ChannelNumber, analogChannel.Name);
+        Log.Info("TV3BlasterPlugin: Tune request - Card: {0}, Channel: {1}, {2}", tvEvent.Card.Id,
+                 analogChannel.ChannelNumber, analogChannel.Name);
 
         if (_externalChannelConfigs == null)
           throw new InvalidOperationException("Cannot process tune request, no STB settings are loaded");
 
-        Thread newThread = new Thread(new ParameterizedThreadStart(ProcessExternalChannel));
+        Thread newThread = new Thread(ProcessExternalChannel);
         newThread.Name = "ProcessExternalChannel";
         newThread.Priority = ThreadPriority.AboveNormal;
         newThread.IsBackground = true;
-        newThread.Start(new int[] { analogChannel.ChannelNumber, tvEvent.Card.Id });
+        newThread.Start(new int[] {analogChannel.ChannelNumber, tvEvent.Card.Id});
       }
       catch (Exception ex)
       {
@@ -383,20 +384,21 @@ namespace TvEngine
     /// </summary>
     internal static void LoadExternalConfigs()
     {
-      IList cards = TvDatabase.Card.ListAll();
+      IList cards = Card.ListAll();
 
       if (cards.Count == 0)
       {
         Log.Info("Cannot load external channel configurations, there are no TV cards registered");
 
-        TvDatabase.Card dummyCard = new TvDatabase.Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0, false, 0, "timeshifting folder", 0, 0);
+        Card dummyCard = new Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0,
+                                  false, 0, "timeshifting folder", 0, 0);
         cards.Add(dummyCard);
       }
 
       _externalChannelConfigs = new ExternalChannelConfig[cards.Count];
 
       int index = 0;
-      foreach (TvDatabase.Card card in cards)
+      foreach (Card card in cards)
       {
         string fileName = Path.Combine(ExtCfgFolder, String.Format("ExternalChannelConfig{0}.xml", card.IdCard));
         try
@@ -435,7 +437,7 @@ namespace TvEngine
     /// Processes the external channel.
     /// </summary>
     /// <param name="args">Integer array of parameters.</param>
-    static void ProcessExternalChannel(object args)
+    private static void ProcessExternalChannel(object args)
     {
       try
       {
@@ -445,7 +447,8 @@ namespace TvEngine
 
         ExternalChannelConfig config = GetExternalChannelConfig(data[1]);
         if (config == null)
-          throw new InvalidOperationException(String.Format("External channel config for card \"{0}\" not found", data[1]));
+          throw new InvalidOperationException(String.Format("External channel config for card \"{0}\" not found",
+                                                            data[1]));
 
         // Clean up the "data[0]" string into "channel".
         StringBuilder channel = new StringBuilder();
@@ -459,11 +462,11 @@ namespace TvEngine
 
         // Process the channel and blast the relevant IR Commands.
         string channelString = channel.ToString();
-        string command;
-        int charVal;
 
         for (int repeatCount = 0; repeatCount <= config.RepeatChannelCommands; repeatCount++)
         {
+          string command;
+
           if (repeatCount > 0 && config.RepeatPauseTime > 0)
             Thread.Sleep(config.RepeatPauseTime);
 
@@ -481,7 +484,7 @@ namespace TvEngine
 
           foreach (char digit in channelString)
           {
-            charVal = digit - 48;
+            int charVal = digit - 48;
 
             command = config.Digits[charVal];
             if (!String.IsNullOrEmpty(command))
@@ -644,14 +647,15 @@ namespace TvEngine
       using (FileStream file = File.OpenRead(fileName))
       {
         if (file.Length == 0)
-          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure",
+                                              fileName));
 
         byte[] outData = new byte[4 + port.Length + file.Length];
 
         BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
         Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-        file.Read(outData, 4 + port.Length, (int)file.Length);
+        file.Read(outData, 4 + port.Length, (int) file.Length);
 
         IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
         _client.Send(message);
@@ -670,7 +674,7 @@ namespace TvEngine
       {
         try
         {
-          Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+          Thread newThread = new Thread(ProcCommand);
           newThread.Name = ProcessCommandThreadName;
           newThread.IsBackground = true;
           newThread.Start(command);
@@ -691,7 +695,7 @@ namespace TvEngine
     /// Can be called Synchronously or as a Parameterized Thread.
     /// </summary>
     /// <param name="commandObj">Command string to process.</param>
-    static void ProcCommand(object commandObj)
+    private static void ProcCommand(object commandObj)
     {
       try
       {
@@ -705,7 +709,8 @@ namespace TvEngine
 
         if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
-          string fileName = Path.Combine(FolderMacros, command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
+          string fileName = Path.Combine(FolderMacros,
+                                         command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
           ProcMacro(fileName);
         }
         else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
@@ -755,12 +760,14 @@ namespace TvEngine
         }
         else
         {
-          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
+                                      "commandObj");
         }
       }
       catch (Exception ex)
       {
-        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) && Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
+            Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
           Log.Error(ex.ToString());
         else
           throw;
@@ -771,7 +778,7 @@ namespace TvEngine
     /// Called by ProcCommand to process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
-    static void ProcMacro(string fileName)
+    private static void ProcMacro(string fileName)
     {
       XmlDocument doc = new XmlDocument();
       doc.Load(fileName);
@@ -838,7 +845,7 @@ namespace TvEngine
     /// <summary>
     /// Loads the settings.
     /// </summary>
-    static void LoadSettings()
+    private static void LoadSettings()
     {
       TvBusinessLayer layer = new TvBusinessLayer();
       ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", "localhost").Value;
@@ -846,7 +853,5 @@ namespace TvEngine
     }
 
     #endregion Implementation
-
   }
-
 }

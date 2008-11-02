@@ -1,31 +1,31 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
-
 using MediaPortal.GUI.Library;
 
 namespace Commands.MediaPortal
 {
-
   /// <summary>
   /// Goto Screen MediaPortal command.
   /// </summary>
   public class CommandGotoScreen : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandGotoScreen"/> class.
     /// </summary>
-    public CommandGotoScreen() { InitParameters(1); }
+    public CommandGotoScreen()
+    {
+      InitParameters(1);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandGotoScreen"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandGotoScreen(string[] parameters) : base(parameters) { }
+    public CommandGotoScreen(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -35,13 +35,19 @@ namespace Commands.MediaPortal
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return "MediaPortal Commands"; }
+    public override string GetCategory()
+    {
+      return "MediaPortal Commands";
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Goto Screen"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Goto Screen";
+    }
 
     /// <summary>
     /// Execute this command.
@@ -53,25 +59,27 @@ namespace Commands.MediaPortal
 
       string windowID = processed[0];
 
-      int window = (int)GUIWindow.Window.WINDOW_INVALID;
+      int window = (int) GUIWindow.Window.WINDOW_INVALID;
 
       try
       {
-        window = (int)Enum.Parse(typeof(GUIWindow.Window), "WINDOW_" + windowID, true);
+        window = (int) Enum.Parse(typeof (GUIWindow.Window), "WINDOW_" + windowID, true);
       }
       catch (ArgumentException)
       {
         // Parsing the window id as a GUIWindow.Window failed, so parse it as an int
       }
 
-      if (window == (int)GUIWindow.Window.WINDOW_INVALID)
+      if (window == (int) GUIWindow.Window.WINDOW_INVALID)
         int.TryParse(windowID, out window);
 
-      if (window == (int)GUIWindow.Window.WINDOW_INVALID)
-        throw new CommandStructureException(String.Format("Failed to parse Goto screen command window id \"{0}\"", windowID));
+      if (window == (int) GUIWindow.Window.WINDOW_INVALID)
+        throw new CommandStructureException(String.Format("Failed to parse Goto screen command window id \"{0}\"",
+                                                          windowID));
 
       GUIGraphicsContext.ResetLastActivity();
-      GUIWindowManager.SendThreadMessage(new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, window, 0, null));
+      GUIWindowManager.SendThreadMessage(new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, window, 0,
+                                                        null));
     }
 
     /// <summary>
@@ -92,7 +100,5 @@ namespace Commands.MediaPortal
     }
 
     #endregion Public Methods
-
   }
-
 }

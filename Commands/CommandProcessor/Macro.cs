@@ -1,25 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Windows.Forms;
 using System.Xml;
-using System.Xml.Serialization;
-
-using IrssUtils;
 
 namespace Commands
 {
-
   /// <summary>
   /// Macro
   /// </summary>
   public class Macro
   {
-
     #region Variables
 
-    List<Command> _commands;
+    private readonly List<Command> _commands;
 
     #endregion Variables
 
@@ -137,7 +130,7 @@ namespace Commands
     /// </summary>
     /// <param name="label">The label to find.</param>
     /// <returns>The label position.</returns>
-    int FindLabel(string label)
+    private int FindLabel(string label)
     {
       for (int position = 0; position < _commands.Count; position++)
       {
@@ -155,7 +148,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

@@ -1,25 +1,19 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-
-using Microsoft.Win32;
 using IrssUtils;
+using Microsoft.Win32;
 
 namespace SageSetup
 {
-
   /// <summary>
   /// Main Sage Setup form.
   /// </summary>
   public partial class FormMain : Form
   {
+    private string _irBlastLocation;
 
-    string _irBlastLocation = null;
-    
     /// <summary>
     /// Initializes a new instance of the <see cref="FormMain"/> class.
     /// </summary>
@@ -47,7 +41,8 @@ namespace SageSetup
 
       if (String.IsNullOrEmpty(_irBlastLocation))
       {
-        MessageBox.Show(this, "IR Server Suite install location not found, please re-install IR Server Suite", "Application Location Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "IR Server Suite install location not found, please re-install IR Server Suite",
+                        "Application Location Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         Application.Exit();
         return;
       }
@@ -66,7 +61,8 @@ namespace SageSetup
 
       if (String.IsNullOrEmpty(hostComputer))
       {
-        MessageBox.Show(this, "You must specify an IR Server host computer", "No Server Host", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must specify an IR Server host computer", "No Server Host", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
         return;
       }
 
@@ -114,7 +110,5 @@ namespace SageSetup
           mainKey.Close();
       }
     }
-
   }
-
 }

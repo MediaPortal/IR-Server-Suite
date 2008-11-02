@@ -4,51 +4,46 @@ using System.Runtime.InteropServices;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// Used to interogate and modify display settings.
   /// </summary>
   public static class Display
   {
-
     #region Constants
 
-    const int ENUM_CURRENT_SETTINGS   = -1;
-    
-    const int CDS_UPDATEREGISTRY      = 1;
-    const int CDS_TEST                = 2;
-    const int CDS_FULLSCREEN          = 4;
-    
-    const int DISP_CHANGE_SUCCESSFUL  = 0;
-    const int DISP_CHANGE_RESTART     = 1;
-    const int DISP_CHANGE_FAILED      = -1;
+    private const int CDS_FULLSCREEN = 4;
+    private const int CDS_TEST = 2;
+    private const int CDS_UPDATEREGISTRY = 1;
 
-    const int SC_MONITORPOWER         = 0xF170;
-    const int WM_SYSCOMMAND           = 0x0112;
+    private const int DISP_CHANGE_FAILED = -1;
+    private const int DISP_CHANGE_RESTART = 1;
+    private const int DISP_CHANGE_SUCCESSFUL = 0;
+    private const int ENUM_CURRENT_SETTINGS = -1;
+    private const int MONITOR_OFF = 2;
 
-    const int MONITOR_ON              = -1;
-    const int MONITOR_STANBY          = 1;
-    const int MONITOR_OFF             = 2;
+    private const int MONITOR_ON = -1;
+    private const int MONITOR_STANBY = 1;
+    private const int SC_MONITORPOWER = 0xF170;
+    private const int WM_SYSCOMMAND = 0x0112;
 
     #endregion Constants
 
     #region Interop
 
     [DllImport("user32.dll")]
-    static extern int EnumDisplaySettings(string deviceName, int modeNum, ref DEVMODE devMode);
-    
+    private static extern int EnumDisplaySettings(string deviceName, int modeNum, ref DEVMODE devMode);
+
     [DllImport("user32.dll")]
-    static extern int ChangeDisplaySettings(ref DEVMODE devMode, int flags);
+    private static extern int ChangeDisplaySettings(ref DEVMODE devMode, int flags);
 
     #endregion Interop
 
     #region Structures
 
     [StructLayout(LayoutKind.Sequential)]
-    struct DEVMODE
+    private struct DEVMODE
     {
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-      public string dmDeviceName;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmDeviceName;
       public short dmSpecVersion;
       public short dmDriverVersion;
       public short dmSize;
@@ -69,8 +64,7 @@ namespace IrssUtils
       public short dmYResolution;
       public short dmTTOption;
       public short dmCollate;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-      public string dmFormName;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmFormName;
       public short dmLogPixels;
       public short dmBitsPerPel;
       public int dmPelsWidth;
@@ -89,19 +83,19 @@ namespace IrssUtils
       public int dmPanningWidth;
       public int dmPanningHeight;
     }
-    
+
     #endregion Structures
 
     /// <summary>
     /// Gets the device mode.
     /// </summary>
     /// <returns>Current device mode.</returns>
-    static DEVMODE GetDevMode()
+    private static DEVMODE GetDevMode()
     {
       DEVMODE devMode = new DEVMODE();
-      devMode.dmDeviceName  = new String(new char[32]);
-      devMode.dmFormName    = new String(new char[32]);
-      devMode.dmSize        = (short)Marshal.SizeOf(typeof(DEVMODE));
+      devMode.dmDeviceName = new String(new char[32]);
+      devMode.dmFormName = new String(new char[32]);
+      devMode.dmSize = (short) Marshal.SizeOf(typeof (DEVMODE));
 
       if (EnumDisplaySettings(null, ENUM_CURRENT_SETTINGS, ref devMode) == 0)
         throw new InvalidOperationException("Failed to enumerate display settings");
@@ -174,11 +168,11 @@ namespace IrssUtils
     {
       DEVMODE devMode = GetDevMode();
 
-      devMode.dmPelsWidth   = width;
-      devMode.dmPelsHeight  = height;
+      devMode.dmPelsWidth = width;
+      devMode.dmPelsHeight = height;
 
-      if (bpp != -1)          devMode.dmBitsPerPel = bpp;
-      if (refreshRate != -1)  devMode.dmDisplayFrequency = refreshRate;
+      if (bpp != -1) devMode.dmBitsPerPel = bpp;
+      if (refreshRate != -1) devMode.dmDisplayFrequency = refreshRate;
 
       int test = ChangeDisplaySettings(ref devMode, CDS_TEST);
       if (test != DISP_CHANGE_SUCCESSFUL)
@@ -201,7 +195,5 @@ namespace IrssUtils
 
       Win32.SendWindowsMessage(desktop, WM_SYSCOMMAND, SC_MONITORPOWER, powerState);
     }
-
   }
-
 }

@@ -1,14 +1,10 @@
-using System;
-
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Plugins that implement this interface can transmit IR commands.
   /// </summary>
   public interface ITransmitIR
   {
-
     /// <summary>
     /// Lists the available blaster ports.
     /// </summary>
@@ -22,7 +18,5 @@ namespace InputService.Plugin
     /// <param name="data">Data to transmit.</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     bool Transmit(string port, byte[] data);
-
   }
-
 }

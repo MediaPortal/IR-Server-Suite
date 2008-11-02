@@ -1,31 +1,31 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
-
 using MediaPortal.GUI.Library;
 
 namespace Commands.MediaPortal
 {
-
   /// <summary>
   /// Send Action MediaPortal command.
   /// </summary>
   public class CommandSendAction : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSendAction"/> class.
     /// </summary>
-    public CommandSendAction() { InitParameters(3); }
+    public CommandSendAction()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSendAction"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSendAction(string[] parameters) : base(parameters) { }
+    public CommandSendAction(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -35,13 +35,19 @@ namespace Commands.MediaPortal
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return "MediaPortal Commands"; }
+    public override string GetCategory()
+    {
+      return "MediaPortal Commands";
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Send Action"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Send Action";
+    }
 
     /// <summary>
     /// Execute this command.
@@ -51,7 +57,7 @@ namespace Commands.MediaPortal
     {
       string[] processed = ProcessParameters(variables, Parameters);
 
-      Action.ActionType type = (Action.ActionType)Enum.Parse(typeof(Action.ActionType), processed[0]);
+      Action.ActionType type = (Action.ActionType) Enum.Parse(typeof (Action.ActionType), processed[0]);
       float f1 = float.Parse(processed[1]);
       float f2 = float.Parse(processed[2]);
 
@@ -77,7 +83,5 @@ namespace Commands.MediaPortal
     }
 
     #endregion Public Methods
-
   }
-
 }

@@ -1,91 +1,67 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
 using System.IO;
-using System.IO.Ports;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
-using MediaPortal.Configuration;
-using MediaPortal.Dialogs;
-using MediaPortal.GUI.Library;
-using MediaPortal.Player;
-using MediaPortal.Util;
-
 using IrssComms;
 using IrssUtils;
+using IrssUtils.Forms;
+using MediaPortal.GUI.Library;
+using MediaPortal.Profile;
 using MPUtils;
 
 namespace MediaPortal.Plugins
 {
-
   /// <summary>
   /// MediaPortal Blast Zone Plugin for IR Server.
   /// </summary>
   public class MPBlastZonePlugin : GUIWindow, ISetupForm
   {
-
     #region Skin Elements
+
+    /// <summary>
+    /// Main GUI Facade View.
+    /// </summary>
+    [SkinControl(50)] protected GUIFacadeControl facadeView;
 
     /// <summary>
     /// Main GUI label.
     /// </summary>
-    [SkinControlAttribute(2)]
-    protected GUILabelControl mainLabel;
-    
-    /// <summary>
-    /// Main GUI Facade View.
-    /// </summary>
-    [SkinControlAttribute(50)]
-    protected GUIFacadeControl facadeView;
+    [SkinControl(2)] protected GUILabelControl mainLabel;
 
     #endregion Skin Elements
 
     #region Constants
 
-    const int WindowID = 248101;
-
     /// <summary>
     /// The plugin version string.
     /// </summary>
-    internal const string PluginVersion           = "MP Blast Zone Plugin 1.4.2.0 for IR Server";
+    internal const string PluginVersion = "MP Blast Zone Plugin 1.4.2.0 for IR Server";
 
-    internal static readonly string MenuFile      = Path.Combine(Common.FolderAppData, "MP Blast Zone Plugin\\Menu.xml");
-
-    internal static readonly string FolderMacros  = Path.Combine(Common.FolderAppData, "MP Blast Zone Plugin\\Macro");
-
-    const string ProcessCommandThreadName         = "ProcessCommand";
+    private const string ProcessCommandThreadName = "ProcessCommand";
+    private const int WindowID = 248101;
+    internal static readonly string FolderMacros = Path.Combine(Common.FolderAppData, "MP Blast Zone Plugin\\Macro");
+    internal static readonly string MenuFile = Path.Combine(Common.FolderAppData, "MP Blast Zone Plugin\\Menu.xml");
 
     #endregion Constants
 
     #region Variables
 
-    static Client _client;
+    private static Client _client;
 
-    static MenuRoot _menu;
+    private static ClientMessageSink _handleMessage;
 
-    static string _serverHost;
-    static string _learnIRFilename;
+    private static bool _inConfiguration;
 
-    static bool _registered;
-
-    static bool _logVerbose;
-
-    static ClientMessageSink _handleMessage;
-
-    static bool _inConfiguration;
-
-    static bool _mpBasicHome;
-
-    static IRServerInfo _irServerInfo = new IRServerInfo();
+    private static IRServerInfo _irServerInfo = new IRServerInfo();
+    private static string _learnIRFilename;
+    private static bool _logVerbose;
+    private static MenuRoot _menu;
+    private static bool _mpBasicHome;
+    private static bool _registered;
+    private static string _serverHost;
 
     #endregion Variables
 
@@ -173,39 +149,66 @@ namespace MediaPortal.Plugins
     /// <returns>
     /// <c>true</c> if this plugin can be enabled; otherwise, <c>false</c>.
     /// </returns>
-    public bool CanEnable()       { return true; }
+    public bool CanEnable()
+    {
+      return true;
+    }
+
     /// <summary>
     /// Determines whether this plugin has setup.
     /// </summary>
     /// <returns>
     /// <c>true</c> if this plugin has setup; otherwise, <c>false</c>.
     /// </returns>
-    public bool HasSetup()        { return true; }
+    public bool HasSetup()
+    {
+      return true;
+    }
+
     /// <summary>
     /// Gets the plugin name.
     /// </summary>
     /// <returns>The plugin name.</returns>
-    public string PluginName()    { return "MP Blast Zone Plugin for IR Server"; }
+    public string PluginName()
+    {
+      return "MP Blast Zone Plugin for IR Server";
+    }
+
     /// <summary>
     /// Defaults enabled.
     /// </summary>
     /// <returns>true if this plugin is enabled by default, otherwise false.</returns>
-    public bool DefaultEnabled()  { return true; }
+    public bool DefaultEnabled()
+    {
+      return true;
+    }
+
     /// <summary>
     /// Gets the window id.
     /// </summary>
     /// <returns>The window id.</returns>
-    public int GetWindowId()      { return WindowID; }
+    public int GetWindowId()
+    {
+      return WindowID;
+    }
+
     /// <summary>
     /// Gets the plugin author.
     /// </summary>
     /// <returns>The plugin author.</returns>
-    public string Author()        { return "and-81"; }
+    public string Author()
+    {
+      return "and-81";
+    }
+
     /// <summary>
     /// Gets the description of the plugin.
     /// </summary>
     /// <returns>The plugin description.</returns>
-    public string Description()   { return "This is a window plugin that uses the IR Server to control various pieces of equipment"; }
+    public string Description()
+    {
+      return "This is a window plugin that uses the IR Server to control various pieces of equipment";
+    }
 
     /// <summary>
     /// Shows the plugin configuration.
@@ -242,18 +245,17 @@ namespace MediaPortal.Plugins
     /// <param name="strButtonImageFocus">The button image focus.</param>
     /// <param name="strPictureImage">The picture image.</param>
     /// <returns>true if the plugin can be seen, otherwise false.</returns>
-    public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus, out string strPictureImage)
+    public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus,
+                        out string strPictureImage)
     {
-      strButtonText       = "Blast Zone";
-      strButtonImage      = String.Empty;
+      strButtonText = "Blast Zone";
+      strButtonImage = String.Empty;
       strButtonImageFocus = String.Empty;
-      strPictureImage     = "hover_blastzone.png";
+      strPictureImage = "hover_blastzone.png";
       return true;
     }
 
     #endregion ISetupForm methods
-
-    #region GUIWindow Members
 
     /// <summary>
     /// Gets the GUI Window ID.
@@ -275,8 +277,8 @@ namespace MediaPortal.Plugins
 
       Log.Info("MPBlastZonePlugin: Starting ({0})", PluginVersion);
 
-      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPAddress serverIP = Client.GetIPFromName(ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!StartClient(endPoint))
         Log.Error("MPBlastZonePlugin: Failed to start local comms, IR blasting is disabled for this session");
@@ -290,11 +292,9 @@ namespace MediaPortal.Plugins
 
         return true;
       }
-      else
-      {
-        Log.Error("MPBlastZonePlugin: Failed to load skin file.");
-        return false;
-      }
+
+      Log.Error("MPBlastZonePlugin: Failed to load skin file.");
+      return false;
     }
 
     /// <summary>
@@ -364,11 +364,9 @@ namespace MediaPortal.Plugins
       base.OnAction(action);
     }
 
-    #endregion GUIWindow Members
-
     #region Implementation
 
-    static string GetCommand(string path, string name)
+    private static string GetCommand(string path, string name)
     {
       foreach (string collection in _menu.GetAllItems())
         if (collection.Equals(path, StringComparison.OrdinalIgnoreCase))
@@ -379,7 +377,7 @@ namespace MediaPortal.Plugins
       return null;
     }
 
-    void PopulateListControl(string path)
+    private void PopulateListControl(string path)
     {
       if (path.Equals("\\", StringComparison.Ordinal))
         GUIControl.SetControlLabel(WindowID, mainLabel.GetID, "Blast Zone");
@@ -425,10 +423,10 @@ namespace MediaPortal.Plugins
       //GUIPropertyManager.SetProperty("#itemcount", strObjects);
     }
 
-    static void CommsFailure(object obj)
+    private static void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
-      
+
       if (ex != null)
         Log.Error("MPBlastZonePlugin: Communications failure: {0}", ex.ToString());
       else
@@ -439,18 +437,20 @@ namespace MediaPortal.Plugins
       Log.Warn("MPBlastZonePlugin: Attempting communications restart ...");
 
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);
     }
-    static void Connected(object obj)
+
+    private static void Connected(object obj)
     {
       Log.Info("MPBlastZonePlugin: Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    static void Disconnected(object obj)
+
+    private static void Disconnected(object obj)
     {
       Log.Warn("MPBlastZonePlugin: Communications with server has been lost");
 
@@ -462,23 +462,20 @@ namespace MediaPortal.Plugins
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
 
       if (_client.Start())
-      {
         return true;
-      }
-      else
-      {
-        _client = null;
-        return false;
-      }
+
+      _client = null;
+      return false;
     }
+
     internal static void StopClient()
     {
       if (_client != null)
@@ -488,7 +485,7 @@ namespace MediaPortal.Plugins
       }
     }
 
-    static void ReceivedMessage(IrssMessage received)
+    private static void ReceivedMessage(IrssMessage received)
     {
       if (LogVerbose)
         Log.Debug("MPBlastZonePlugin: Received Message \"{0}\"", received.Type);
@@ -627,14 +624,15 @@ namespace MediaPortal.Plugins
       using (FileStream file = File.OpenRead(fileName))
       {
         if (file.Length == 0)
-          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure",
+                                              fileName));
 
         byte[] outData = new byte[4 + port.Length + file.Length];
 
         BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
         Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-        file.Read(outData, 4 + port.Length, (int)file.Length);
+        file.Read(outData, 4 + port.Length, (int) file.Length);
 
         IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
         _client.Send(message);
@@ -653,7 +651,7 @@ namespace MediaPortal.Plugins
       {
         try
         {
-          Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+          Thread newThread = new Thread(ProcCommand);
           newThread.Name = ProcessCommandThreadName;
           newThread.IsBackground = true;
           newThread.Start(command);
@@ -674,7 +672,7 @@ namespace MediaPortal.Plugins
     /// Can be called Synchronously or as a Parameterized Thread.
     /// </summary>
     /// <param name="commandObj">Command string to process.</param>
-    static void ProcCommand(object commandObj)
+    private static void ProcCommand(object commandObj)
     {
       try
       {
@@ -688,7 +686,8 @@ namespace MediaPortal.Plugins
 
         if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
-          string fileName = Path.Combine(FolderMacros, command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
+          string fileName = Path.Combine(FolderMacros,
+                                         command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
           ProcMacro(fileName);
         }
         else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
@@ -785,35 +784,40 @@ namespace MediaPortal.Plugins
         else if (command.StartsWith(Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot exit MediaPortal in configuration", Common.UITextExit, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot exit MediaPortal in configuration", Common.UITextExit, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           else
             MPCommon.ExitMP();
         }
         else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           else
             MPCommon.Hibernate();
         }
         else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           else
             MPCommon.Reboot();
         }
         else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot Shutdown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot Shutdown in configuration", Common.UITextShutdown, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           else
             MPCommon.ShutDown();
         }
         else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           else
             MPCommon.Standby();
         }
@@ -821,11 +825,12 @@ namespace MediaPortal.Plugins
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
           }
           else
           {
-            IrssUtils.Forms.VirtualKeyboard vk = new IrssUtils.Forms.VirtualKeyboard();
+            VirtualKeyboard vk = new VirtualKeyboard();
             if (vk.ShowDialog() == DialogResult.OK)
               Keyboard.ProcessCommand(vk.TextOutput);
           }
@@ -834,23 +839,26 @@ namespace MediaPortal.Plugins
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           }
           else
           {
-            IrssUtils.Forms.SmsKeyboard sms = new IrssUtils.Forms.SmsKeyboard();
+            SmsKeyboard sms = new SmsKeyboard();
             if (sms.ShowDialog() == DialogResult.OK)
               Keyboard.ProcessCommand(sms.TextOutput);
           }
         }
         else
         {
-          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
+                                      "commandObj");
         }
       }
       catch (Exception ex)
       {
-        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) && Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
+            Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
           Log.Error(ex);
         else
           throw;
@@ -861,7 +869,7 @@ namespace MediaPortal.Plugins
     /// Called by ProcCommand to process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
-    static void ProcMacro(string fileName)
+    private static void ProcMacro(string fileName)
     {
       XmlDocument doc = new XmlDocument();
       doc.Load(fileName);
@@ -928,11 +936,11 @@ namespace MediaPortal.Plugins
     /// <summary>
     /// Loads the settings.
     /// </summary>
-    static void LoadSettings()
+    private static void LoadSettings()
     {
       try
       {
-        using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(MPCommon.MPConfigFile))
+        using (Settings xmlreader = new Settings(MPCommon.MPConfigFile))
         {
           ServerHost = xmlreader.GetValueAsString("MPBlastZonePlugin", "ServerHost", "localhost");
 
@@ -947,14 +955,15 @@ namespace MediaPortal.Plugins
         Log.Error(ex);
       }
     }
+
     /// <summary>
     /// Saves the settings.
     /// </summary>
-    static void SaveSettings()
+    private static void SaveSettings()
     {
       try
       {
-        using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MPCommon.MPConfigFile))
+        using (Settings xmlwriter = new Settings(MPCommon.MPConfigFile))
         {
           xmlwriter.SetValue("MPBlastZonePlugin", "ServerHost", ServerHost);
 
@@ -968,7 +977,5 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Implementation
-
   }
-
 }

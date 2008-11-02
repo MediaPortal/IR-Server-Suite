@@ -1,23 +1,14 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-
-using IrssUtils;
 
 namespace Translator
 {
-
   /// <summary>
   /// Advanced Configuration Form.
   /// </summary>
-  partial class Advanced : Form
+  internal partial class Advanced : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -26,14 +17,8 @@ namespace Translator
     /// <value>The process priority.</value>
     public string ProcessPriority
     {
-      get
-      {
-        return comboBoxPriority.SelectedItem as string;
-      }
-      set
-      {
-        comboBoxPriority.SelectedItem = value;
-      }
+      get { return comboBoxPriority.SelectedItem as string; }
+      set { comboBoxPriority.SelectedItem = value; }
     }
 
     /// <summary>
@@ -42,14 +27,8 @@ namespace Translator
     /// <value><c>true</c> to hide tray icon; otherwise, <c>false</c>.</value>
     public bool HideTrayIcon
     {
-      get
-      {
-        return checkBoxHideTrayIcon.Checked;
-      }
-      set
-      {
-        checkBoxHideTrayIcon.Checked = value;
-      }
+      get { return checkBoxHideTrayIcon.Checked; }
+      set { checkBoxHideTrayIcon.Checked = value; }
     }
 
     #endregion Properties
@@ -64,7 +43,7 @@ namespace Translator
       InitializeComponent();
 
       comboBoxPriority.Items.Add("No Change");
-      comboBoxPriority.Items.AddRange(Enum.GetNames(typeof(ProcessPriorityClass)));
+      comboBoxPriority.Items.AddRange(Enum.GetNames(typeof (ProcessPriorityClass)));
       comboBoxPriority.SelectedIndex = 0;
     }
 
@@ -74,17 +53,16 @@ namespace Translator
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Controls
-
   }
-
 }

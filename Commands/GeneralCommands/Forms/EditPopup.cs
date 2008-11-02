@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands.General
 {
-
   /// <summary>
   /// Popup Message Command form.
   /// </summary>
   public partial class EditPopup : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -24,11 +18,12 @@ namespace Commands.General
     {
       get
       {
-        return new string[] {
-          textBoxHeading.Text.Trim(),
-          textBoxText.Text.Trim(),
-          numericUpDownTimeout.Value.ToString()
-        };
+        return new string[]
+                 {
+                   textBoxHeading.Text.Trim(),
+                   textBoxText.Text.Trim(),
+                   numericUpDownTimeout.Value.ToString()
+                 };
       }
     }
 
@@ -53,7 +48,7 @@ namespace Commands.General
     {
       textBoxHeading.Text = commands[0];
       textBoxText.Text = commands[1];
-      
+
       if (!String.IsNullOrEmpty(commands[2]))
         numericUpDownTimeout.Value = Convert.ToDecimal(commands[2]);
     }
@@ -64,17 +59,16 @@ namespace Commands.General
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

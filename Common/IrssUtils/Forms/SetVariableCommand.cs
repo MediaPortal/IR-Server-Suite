@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Set Variable Command form.
   /// </summary>
   public partial class SetVariableCommand : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -25,9 +19,9 @@ namespace IrssUtils.Forms
       get
       {
         return String.Format("{0}{1}|{2}",
-          Common.VariablePrefix,
-          textBoxVariable.Text,
-          textBoxValue.Text);
+                             Common.VariablePrefix,
+                             textBoxVariable.Text,
+                             textBoxValue.Text);
       }
     }
 
@@ -54,30 +48,29 @@ namespace IrssUtils.Forms
       if (varName.StartsWith(Common.VariablePrefix, StringComparison.OrdinalIgnoreCase))
         varName = varName.Substring(Common.VariablePrefix.Length);
 
-      textBoxVariable.Text  = varName;
-      textBoxValue.Text     = commands[1];
+      textBoxVariable.Text = varName;
+      textBoxValue.Text = commands[1];
     }
-    
+
     #endregion Constructors
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
       if (String.IsNullOrEmpty(textBoxVariable.Text.Trim()))
       {
-        MessageBox.Show(this, "You must include a variable name", "Missing variable name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must include a variable name", "Missing variable name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
         return;
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

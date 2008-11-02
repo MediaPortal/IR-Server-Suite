@@ -1,18 +1,16 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using IrssUtils.Exceptions;
 
 namespace IrssUtils
 {
@@ -40,7 +38,6 @@ namespace IrssUtils
   /// </summary>
   public static class Common
   {
-
     #region Constants
 
     #region Folders
@@ -48,22 +45,23 @@ namespace IrssUtils
     /// <summary>
     /// IR Server Suite "Application Data" folder location (includes trailing '\')
     /// </summary>
-    public static readonly string FolderAppData     = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IR Server Suite");
-
-    /// <summary>
-    /// IR Server Suite "Logs" folder location (includes trailing '\')
-    /// </summary>
-    public static readonly string FolderIrssLogs    = Path.Combine(FolderAppData, "Logs");
+    public static readonly string FolderAppData =
+      Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IR Server Suite");
 
     /// <summary>
     /// IR Server Suite "IR Commands" folder location (includes trailing '\')
     /// </summary>
-    public static readonly string FolderIRCommands  = Path.Combine(FolderAppData, "IR Commands");
+    public static readonly string FolderIRCommands = Path.Combine(FolderAppData, "IR Commands");
+
+    /// <summary>
+    /// IR Server Suite "Logs" folder location (includes trailing '\')
+    /// </summary>
+    public static readonly string FolderIrssLogs = Path.Combine(FolderAppData, "Logs");
 
     /// <summary>
     /// IR Server Suite "Set Top Boxes" folder location (includes trailing '\')
     /// </summary>
-    public static readonly string FolderSTB         = Path.Combine(FolderAppData, "Set Top Boxes");
+    public static readonly string FolderSTB = Path.Combine(FolderAppData, "Set Top Boxes");
 
     #endregion Folders
 
@@ -72,12 +70,12 @@ namespace IrssUtils
     /// <summary>
     /// File extension for IR Commands.
     /// </summary>
-    public const string FileExtensionIR           = ".IR";
+    public const string FileExtensionIR = ".IR";
 
     /// <summary>
     /// File extension for Macros.
     /// </summary>
-    public const string FileExtensionMacro        = ".Macro";
+    public const string FileExtensionMacro = ".Macro";
 
     /// <summary>
     /// File extension for stored Variable Lists.
@@ -95,133 +93,124 @@ namespace IrssUtils
 
     #region Command Prefixes
 
-    public const string CmdPrefixCommand      = "Command: ";
-
-    public const string CmdPrefixMacro        = "Macro: ";
-    public const string CmdPrefixSTB          = "STB: ";
-    public const string CmdPrefixBlast        = "Blast: ";
-    public const string CmdPrefixPause        = "Pause: ";
-    public const string CmdPrefixRun          = "Run: ";
-    public const string CmdPrefixSerial       = "Serial: ";
-    public const string CmdPrefixKeys         = "Keys: ";
-    public const string CmdPrefixWindowMsg    = "Window Message: ";
-    public const string CmdPrefixTcpMsg       = "TCP Message: ";
-    public const string CmdPrefixHttpMsg      = "HTTP Message: ";
-    public const string CmdPrefixPopup        = "Popup: ";
-    public const string CmdPrefixMouseMode    = "Mouse Mode: ";
+    public const string CmdPrefixBeep = "Beep: ";
+    public const string CmdPrefixBlast = "Blast: ";
+    public const string CmdPrefixClearVars = "Clear Variables";
     public const string CmdPrefixCloseProgram = "Close Program: ";
+    public const string CmdPrefixCommand = "Command: ";
 //  public const string CmdPrefixWindowState  = "Toggle Window State";
 
-    public const string CmdPrefixStandby      = "Standby";
-    public const string CmdPrefixHibernate    = "Hibernate";
-    public const string CmdPrefixReboot       = "Reboot";
-    public const string CmdPrefixShutdown     = "Shutdown";
-    public const string CmdPrefixLogOff       = "Log Off";
-
-    public const string CmdPrefixMouse        = "Mouse: ";
-    public const string CmdPrefixEject        = "Eject: ";
-    public const string CmdPrefixSound        = "Sound: ";
-    public const string CmdPrefixBeep         = "Beep: ";
-    public const string CmdPrefixDisplayMode  = "Display Mode: ";
+    public const string CmdPrefixDisplayMode = "Display Mode: ";
     public const string CmdPrefixDisplayPower = "Display Power: ";
-
-    public const string CmdPrefixTranslator   = "Show Translator OSD";
-    public const string CmdPrefixVirtualKB    = "Show Virtual Keyboard";
-    public const string CmdPrefixSmsKB        = "Show SMS Keyboard";
-
-    public const string CmdPrefixShowTrayIcon = "Show Tray Icon";
+    public const string CmdPrefixEject = "Eject: ";
+    public const string CmdPrefixExit = "Exit MediaPortal";
+    public const string CmdPrefixFocus = "Get Focus";
 
     // Macro Commands ...
-    public const string CmdPrefixGotoLabel    = "Goto Label: ";
-    public const string CmdPrefixLabel        = "Label: ";
-    public const string CmdPrefixIf           = "If: ";
-    public const string CmdPrefixSetVar       = "Set Variable: ";
-    public const string CmdPrefixClearVars    = "Clear Variables";
-    public const string CmdPrefixSaveVars     = "Save Variables: ";
-    public const string CmdPrefixLoadVars     = "Load Variables: ";
+    public const string CmdPrefixGotoLabel = "Goto Label: ";
+    public const string CmdPrefixGotoScreen = "Goto: ";
+    public const string CmdPrefixHibernate = "Hibernate";
+    public const string CmdPrefixHttpMsg = "HTTP Message: ";
+    public const string CmdPrefixIf = "If: ";
+    public const string CmdPrefixInputLayer = "Toggle Input Layer";
+    public const string CmdPrefixKeys = "Keys: ";
+    public const string CmdPrefixLabel = "Label: ";
+    public const string CmdPrefixLoadVars = "Load Variables: ";
+    public const string CmdPrefixLogOff = "Log Off";
+    public const string CmdPrefixMacro = "Macro: ";
+    public const string CmdPrefixMouse = "Mouse: ";
+    public const string CmdPrefixMouseMode = "Mouse Mode: ";
 
     // For MediaPortal ...
-    public const string CmdPrefixMultiMap     = "Multi-Mapping: ";
-    public const string CmdPrefixInputLayer   = "Toggle Input Layer";
-    public const string CmdPrefixFocus        = "Get Focus";
-    public const string CmdPrefixGotoScreen   = "Goto: ";
-    public const string CmdPrefixExit         = "Exit MediaPortal";
-    public const string CmdPrefixSendMPMsg    = "MediaPortal Message: ";
+    public const string CmdPrefixMultiMap = "Multi-Mapping: ";
+    public const string CmdPrefixPause = "Pause: ";
+    public const string CmdPrefixPopup = "Popup: ";
+    public const string CmdPrefixReboot = "Reboot";
+    public const string CmdPrefixRun = "Run: ";
+    public const string CmdPrefixSaveVars = "Save Variables: ";
     public const string CmdPrefixSendMPAction = "MediaPortal Action: ";
+    public const string CmdPrefixSendMPMsg = "MediaPortal Message: ";
+    public const string CmdPrefixSerial = "Serial: ";
+    public const string CmdPrefixSetVar = "Set Variable: ";
+    public const string CmdPrefixShowTrayIcon = "Show Tray Icon";
+    public const string CmdPrefixShutdown = "Shutdown";
+    public const string CmdPrefixSmsKB = "Show SMS Keyboard";
+    public const string CmdPrefixSound = "Sound: ";
+    public const string CmdPrefixStandby = "Standby";
+    public const string CmdPrefixSTB = "STB: ";
+    public const string CmdPrefixTcpMsg = "TCP Message: ";
+    public const string CmdPrefixTranslator = "Show Translator OSD";
+    public const string CmdPrefixVirtualKB = "Show Virtual Keyboard";
+    public const string CmdPrefixWindowMsg = "Window Message: ";
 
     #endregion Command Prefixes
 
     #region User Interface Text
 
-    public const string UITextMacro           = "Macro";
-    public const string UITextRun             = "Run Program";
-    public const string UITextPause           = "Pause";
-    public const string UITextSerial          = "Serial Command";
-    public const string UITextKeys            = "Keystrokes Command";
-    public const string UITextWindowMsg       = "Window Message";
-    public const string UITextTcpMsg          = "TCP Message";
-    public const string UITextHttpMsg         = "HTTP Message";
-    public const string UITextPopup           = "Popup Message";
-    public const string UITextMouseMode       = "Set Mouse Mode";
-    public const string UITextCloseProgram    = "Close a Running Program";
-    //public const string UITextWindowState     = "Toggle Window State";
-
-    public const string UITextStandby         = "Standby";
-    public const string UITextHibernate       = "Hibernate";
-    public const string UITextReboot          = "Reboot";
-    public const string UITextShutdown        = "Shutdown";
-    public const string UITextLogOff          = "Log Off";
-
-    public const string UITextMouse           = "Mouse Command";
-    public const string UITextEject           = "Eject CD";
-    public const string UITextSound           = "Play Sound";
-    public const string UITextBeep            = "Beep";
-    public const string UITextDisplayMode     = "Display Mode";
-    public const string UITextDisplayPower    = "Display Power";
-
-    public const string UITextTranslator      = "Show Translator OSD";
-    public const string UITextVirtualKB       = "Show Virtual Keyboard";
-    public const string UITextSmsKB           = "Show SMS Keyboard";
+    public const string UITextBeep = "Beep";
+    public const string UITextClearVars = "Clear Variables";
+    public const string UITextCloseProgram = "Close a Running Program";
+    public const string UITextDisplayMode = "Display Mode";
+    public const string UITextDisplayPower = "Display Power";
+    public const string UITextEject = "Eject CD";
+    public const string UITextExit = "Exit MediaPortal";
+    public const string UITextFocus = "Get Focus";
 
     // Macro Commands ...
-    public const string UITextGotoLabel       = "Goto Label";
-    public const string UITextLabel           = "Insert Label";
-    public const string UITextIf              = "If Statement";
-    public const string UITextSetVar          = "Set Variable";
-    public const string UITextClearVars       = "Clear Variables";
-    public const string UITextSaveVars        = "Save Variables";
-    public const string UITextLoadVars        = "Load Variables";
+    public const string UITextGotoLabel = "Goto Label";
+    public const string UITextGotoScreen = "Go To Screen";
+    public const string UITextHibernate = "Hibernate";
+    public const string UITextHttpMsg = "HTTP Message";
+    public const string UITextIf = "If Statement";
+    public const string UITextInputLayer = "Toggle Input Handler Layer";
+    public const string UITextKeys = "Keystrokes Command";
+    public const string UITextLabel = "Insert Label";
+    public const string UITextLoadVars = "Load Variables";
+    public const string UITextLogOff = "Log Off";
+    public const string UITextMacro = "Macro";
+    public const string UITextMouse = "Mouse Command";
+    public const string UITextMouseMode = "Set Mouse Mode";
 
     // For MediaPortal ...
-    public const string UITextMultiMap        = "Set Multi-Mapping";
-    public const string UITextInputLayer      = "Toggle Input Handler Layer";
-    public const string UITextFocus           = "Get Focus";
-    public const string UITextGotoScreen      = "Go To Screen";
-    public const string UITextExit            = "Exit MediaPortal";
-    public const string UITextSendMPMsg       = "Send MediaPortal Message";
-    public const string UITextSendMPAction    = "Send MediaPortal Action";
+    public const string UITextMultiMap = "Set Multi-Mapping";
+    public const string UITextPause = "Pause";
+    public const string UITextPopup = "Popup Message";
+    public const string UITextReboot = "Reboot";
+    public const string UITextRun = "Run Program";
+    public const string UITextSaveVars = "Save Variables";
+    public const string UITextSendMPAction = "Send MediaPortal Action";
+    public const string UITextSendMPMsg = "Send MediaPortal Message";
+    public const string UITextSerial = "Serial Command";
+    public const string UITextSetVar = "Set Variable";
+    public const string UITextShutdown = "Shutdown";
+    public const string UITextSmsKB = "Show SMS Keyboard";
+    public const string UITextSound = "Play Sound";
+    public const string UITextStandby = "Standby";
+    public const string UITextTcpMsg = "TCP Message";
+    public const string UITextTranslator = "Show Translator OSD";
+    public const string UITextVirtualKB = "Show Virtual Keyboard";
+    public const string UITextWindowMsg = "Window Message";
 
     #endregion User Interface Text
 
     #region Mouse Commands
 
-    public const string MouseMoveUp             = "Move_Up ";
-    public const string MouseMoveDown           = "Move_Down ";
-    public const string MouseMoveLeft           = "Move_Left ";
-    public const string MouseMoveRight          = "Move_Right ";
+    public const string MouseClickLeft = "Click_Left";
+    public const string MouseClickMiddle = "Click_Middle";
+    public const string MouseClickRight = "Click_Right";
 
-    public const string MouseMoveToPos          = "Move_To_Pos ";
+    public const string MouseDoubleClickLeft = "DoubleClick_Left";
+    public const string MouseDoubleClickMiddle = "DoubleClick_Middle";
+    public const string MouseDoubleClickRight = "DoubleClick_Right";
+    public const string MouseMoveDown = "Move_Down ";
+    public const string MouseMoveLeft = "Move_Left ";
+    public const string MouseMoveRight = "Move_Right ";
 
-    public const string MouseClickLeft          = "Click_Left";
-    public const string MouseClickRight         = "Click_Right";
-    public const string MouseClickMiddle        = "Click_Middle";
+    public const string MouseMoveToPos = "Move_To_Pos ";
+    public const string MouseMoveUp = "Move_Up ";
 
-    public const string MouseDoubleClickLeft    = "DoubleClick_Left";
-    public const string MouseDoubleClickRight   = "DoubleClick_Right";
-    public const string MouseDoubleClickMiddle  = "DoubleClick_Middle";
-
-    public const string MouseScrollUp           = "Scroll_Up";
-    public const string MouseScrollDown         = "Scroll_Down";
+    public const string MouseScrollDown = "Scroll_Down";
+    public const string MouseScrollUp = "Scroll_Up";
 
     #endregion Mouse Commands
 
@@ -230,19 +219,22 @@ namespace IrssUtils
     /// <summary>
     /// Target the active window.
     /// </summary>
-    public const string TargetActive      = "ACTIVE";
+    public const string TargetActive = "ACTIVE";
+
     /// <summary>
     /// Target an application.
     /// </summary>
     public const string TargetApplication = "APPLICATION";
+
     /// <summary>
     /// Target a class.
     /// </summary>
-    public const string TargetClass       = "CLASS";
+    public const string TargetClass = "CLASS";
+
     /// <summary>
     /// Target a window title.
     /// </summary>
-    public const string TargetWindow      = "WINDOW";
+    public const string TargetWindow = "WINDOW";
 
     #endregion Commad Targets
 
@@ -251,61 +243,74 @@ namespace IrssUtils
     #region Command Segments
 
     /// <summary>
-    /// Number of Segments in an If Command.
+    /// Number of Segments in a Beep Command.
     /// </summary>
-    const int SegmentsIfCommand             = 5;
-    /// <summary>
-    /// Number of Segments in a Set Variable Command.
-    /// </summary>
-    const int SegmentsSetVarCommand         = 2;
+    private const int SegmentsBeepCommand = 2;
+
     /// <summary>
     /// Number of Segments in a Blast Command.
     /// </summary>
-    const int SegmentsBlastCommand          = 2;
-    /// <summary>
-    /// Number of Segments in a Run Command.
-    /// </summary>
-    const int SegmentsRunCommand            = 8;
-    /// <summary>
-    /// Number of Segments in a Serial Command.
-    /// </summary>
-    const int SegmentsSerialCommand         = 7;
-    /// <summary>
-    /// Number of Segments in a Windows Message Command.
-    /// </summary>
-    const int SegmentsWindowMessageCommand  = 5;
-    /// <summary>
-    /// Number of Segments in a Popup Command.
-    /// </summary>
-    const int SegmentsPopupCommand          = 3;
-    /// <summary>
-    /// Number of Segments in a TCP Message Command.
-    /// </summary>
-    const int SegmentsTcpMessageCommand     = 3;
-    /// <summary>
-    /// Number of Segments in a HTTP Message Command.
-    /// </summary>
-    const int SegmentsHttpMessageCommand    = 4;
-    /// <summary>
-    /// Number of Segments in a Beep Command.
-    /// </summary>
-    const int SegmentsBeepCommand           = 2;
-    /// <summary>
-    /// Number of Segments in a Display Mode Command.
-    /// </summary>
-    const int SegmentsDisplayModeCommand    = 4;
+    private const int SegmentsBlastCommand = 2;
+
     /// <summary>
     /// Number of Segments in a Close Program Command.
     /// </summary>
-    const int SegmentsCloseProgramCommand   = 2;
+    private const int SegmentsCloseProgramCommand = 2;
+
+    /// <summary>
+    /// Number of Segments in a Display Mode Command.
+    /// </summary>
+    private const int SegmentsDisplayModeCommand = 4;
+
+    /// <summary>
+    /// Number of Segments in a HTTP Message Command.
+    /// </summary>
+    private const int SegmentsHttpMessageCommand = 4;
+
+    /// <summary>
+    /// Number of Segments in an If Command.
+    /// </summary>
+    private const int SegmentsIfCommand = 5;
+
+    /// <summary>
+    /// Number of Segments in a Popup Command.
+    /// </summary>
+    private const int SegmentsPopupCommand = 3;
+
+    /// <summary>
+    /// Number of Segments in a Run Command.
+    /// </summary>
+    private const int SegmentsRunCommand = 8;
+
     /// <summary>
     /// Number of Segments in a Send MP Action Command.
     /// </summary>
-    const int SegmentsSendMPActionCommand   = 3;
+    private const int SegmentsSendMPActionCommand = 3;
+
     /// <summary>
     /// Number of Segments in a Send MP Message Command.
     /// </summary>
-    const int SegmentsSendMPMessageCommand  = 6;
+    private const int SegmentsSendMPMessageCommand = 6;
+
+    /// <summary>
+    /// Number of Segments in a Serial Command.
+    /// </summary>
+    private const int SegmentsSerialCommand = 7;
+
+    /// <summary>
+    /// Number of Segments in a Set Variable Command.
+    /// </summary>
+    private const int SegmentsSetVarCommand = 2;
+
+    /// <summary>
+    /// Number of Segments in a TCP Message Command.
+    /// </summary>
+    private const int SegmentsTcpMessageCommand = 3;
+
+    /// <summary>
+    /// Number of Segments in a Windows Message Command.
+    /// </summary>
+    private const int SegmentsWindowMessageCommand = 5;
 
     #endregion Command Segments
 
@@ -461,7 +466,7 @@ namespace IrssUtils
     /// <param name="command">The command.</param>
     /// <param name="elements">The number of element.</param>
     /// <returns>Returns string[] of command elements.</returns>
-    static string[] SplitCommand(string command, int elements)
+    private static string[] SplitCommand(string command, int elements)
     {
       if (String.IsNullOrEmpty(command))
         throw new ArgumentNullException("command");
@@ -469,7 +474,7 @@ namespace IrssUtils
       string[] commands = command.Split('|');
 
       if (commands.Length != elements)
-        throw new Exceptions.CommandStructureException(String.Format("Command structure does not split as expected: {0}", command));
+        throw new CommandStructureException(String.Format("Command structure does not split as expected: {0}", command));
 
       return commands;
     }
@@ -489,21 +494,22 @@ namespace IrssUtils
 
       using (Process process = new Process())
       {
-        process.StartInfo.FileName          = commands[0];
-        process.StartInfo.WorkingDirectory  = commands[1];
-        process.StartInfo.Arguments         = commands[2];
-        process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true);
-        process.StartInfo.CreateNoWindow    = bool.Parse(commands[4]);
-        process.StartInfo.UseShellExecute   = bool.Parse(commands[5]);
+        process.StartInfo.FileName = commands[0];
+        process.StartInfo.WorkingDirectory = commands[1];
+        process.StartInfo.Arguments = commands[2];
+        process.StartInfo.WindowStyle = (ProcessWindowStyle) Enum.Parse(typeof (ProcessWindowStyle), commands[3], true);
+        process.StartInfo.CreateNoWindow = bool.Parse(commands[4]);
+        process.StartInfo.UseShellExecute = bool.Parse(commands[5]);
         //process.PriorityClass               = ProcessPriorityClass.
 
-        bool waitForExit  = bool.Parse(commands[6]);
-        bool forceFocus   = bool.Parse(commands[7]);
+        bool waitForExit = bool.Parse(commands[6]);
+        bool forceFocus = bool.Parse(commands[7]);
 
         process.Start();
 
         // Give new process focus ...
-        if (forceFocus && !process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
+        if (forceFocus && !process.StartInfo.CreateNoWindow &&
+            process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
         {
           FocusForcer forcer = new FocusForcer(process.Id);
           //forcer.Start();
@@ -524,14 +530,14 @@ namespace IrssUtils
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      string command        = ReplaceSpecial(commands[0]);
-      
-      string comPort        = commands[1];
-      int baudRate          = int.Parse(commands[2]);
-      Parity parity         = (Parity)Enum.Parse(typeof(Parity), commands[3], true);
-      int dataBits          = int.Parse(commands[4]);
-      StopBits stopBits     = (StopBits)Enum.Parse(typeof(StopBits), commands[5], true);
-      bool waitForResponse  = bool.Parse(commands[6]);
+      string command = ReplaceSpecial(commands[0]);
+
+      string comPort = commands[1];
+      int baudRate = int.Parse(commands[2]);
+      Parity parity = (Parity) Enum.Parse(typeof (Parity), commands[3], true);
+      int dataBits = int.Parse(commands[4]);
+      StopBits stopBits = (StopBits) Enum.Parse(typeof (StopBits), commands[5], true);
+      bool waitForResponse = bool.Parse(commands[6]);
 
       SerialPort serialPort = new SerialPort(comPort, baudRate, parity, dataBits, stopBits);
       serialPort.Open();
@@ -604,11 +610,11 @@ namespace IrssUtils
           break;
 
         default:
-          throw new Exceptions.CommandStructureException(String.Format("Invalid message target type: {0}", commands[0]));
+          throw new CommandStructureException(String.Format("Invalid message target type: {0}", commands[0]));
       }
 
       if (windowHandle == IntPtr.Zero)
-        throw new Exceptions.CommandExecutionException(String.Format("Window Message target ({0}) not found", commands[1]));
+        throw new CommandExecutionException(String.Format("Window Message target ({0}) not found", commands[1]));
 
       int msg = int.Parse(commands[2]);
       IntPtr wordParam = new IntPtr(int.Parse(commands[3]));
@@ -632,7 +638,7 @@ namespace IrssUtils
       }
       catch (Exception ex)
       {
-        throw new Exceptions.CommandExecutionException("Error executing Keystrokes Command", ex);
+        throw new CommandExecutionException("Error executing Keystrokes Command", ex);
       }
     }
 
@@ -654,7 +660,7 @@ namespace IrssUtils
           using (StreamWriter streamWriter = new StreamWriter(networkStream))
           {
             string toWrite = ReplaceSpecial(commands[2]);
-            
+
             streamWriter.Write(toWrite);
             streamWriter.Flush();
 
@@ -741,7 +747,7 @@ namespace IrssUtils
           }
           else
           {
-            throw new Exceptions.CommandStructureException(String.Format("Invalid Mouse Command: {0}", command));
+            throw new CommandStructureException(String.Format("Invalid Mouse Command: {0}", command));
           }
           break;
       }
@@ -759,7 +765,7 @@ namespace IrssUtils
       if (CDRom.IsCDRom(command))
         CDRom.Open(command);
       else
-        throw new Exceptions.CommandExecutionException(String.Format("Drive ({0}) is not a recognised optical drive", command));
+        throw new CommandExecutionException(String.Format("Drive ({0}) is not a recognised optical drive", command));
     }
 
     /// <summary>
@@ -772,7 +778,7 @@ namespace IrssUtils
         throw new ArgumentNullException("command");
 
       if (!Audio.PlayFile(command, false))
-        throw new Exceptions.CommandExecutionException(String.Format("Sound Command ({0}) failed to play", command));
+        throw new CommandExecutionException(String.Format("Sound Command ({0}) failed to play", command));
     }
 
     /// <summary>
@@ -787,16 +793,16 @@ namespace IrssUtils
 
       Uri uri = new Uri(ReplaceSpecial(commands[0]));
 
-      WebRequest request  = WebRequest.Create(uri);
-      request.Timeout     = int.Parse(commands[1]);
+      WebRequest request = WebRequest.Create(uri);
+      request.Timeout = int.Parse(commands[1]);
 
       if (!String.IsNullOrEmpty(commands[2]))
         request.Credentials = new NetworkCredential(commands[2], commands[3]);
 
       using (WebResponse response = request.GetResponse())
-        using (Stream responseStream = response.GetResponseStream())
-          using (StreamReader streamReader = new StreamReader(responseStream))
-            return streamReader.ReadToEnd();
+      using (Stream responseStream = response.GetResponseStream())
+      using (StreamReader streamReader = new StreamReader(responseStream))
+        return streamReader.ReadToEnd();
     }
 
     /// <summary>
@@ -823,9 +829,9 @@ namespace IrssUtils
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      int width   = int.Parse(commands[0]);
-      int height  = int.Parse(commands[1]);
-      short bpp   = short.Parse(commands[2]);
+      int width = int.Parse(commands[0]);
+      int height = int.Parse(commands[1]);
+      short bpp = short.Parse(commands[2]);
       int refresh = int.Parse(commands[3]);
 
       Display.ChangeDisplayMode(width, height, bpp, refresh);
@@ -844,7 +850,8 @@ namespace IrssUtils
       if (int.TryParse(command, out powerState))
         Display.SetPowerState(powerState);
       else
-        throw new Exceptions.CommandStructureException(String.Format("Display Power Command data is not a valid integer: {0}", command));
+        throw new CommandStructureException(String.Format("Display Power Command data is not a valid integer: {0}",
+                                                          command));
     }
 
     /// <summary>
@@ -878,11 +885,11 @@ namespace IrssUtils
           break;
 
         default:
-          throw new Exceptions.CommandStructureException(String.Format("Invalid close program target type: {0}", commands[0]));
+          throw new CommandStructureException(String.Format("Invalid close program target type: {0}", commands[0]));
       }
 
       if (process == null)
-        throw new Exceptions.CommandExecutionException(String.Format("Close Program target ({0}) not found", commands[1]));
+        throw new CommandExecutionException(String.Format("Close Program target ({0}) not found", commands[1]));
 
       EndProcess(process, 5000);
 
@@ -950,6 +957,7 @@ namespace IrssUtils
       }
     }
     */
+
     /// <summary>
     /// Returns a list of IR Commands.
     /// </summary>
@@ -981,7 +989,9 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(fileName))
         return false;
 
-      Regex validate = new Regex("^(?!^(PRN|AUX|CLOCK\\$|NUL|CON|COM\\d|LPT\\d|\\..*)(\\..+)?$)[^\\x00-\\x1f\\\\?*:\\\";|/]+$", RegexOptions.IgnoreCase);
+      Regex validate =
+        new Regex("^(?!^(PRN|AUX|CLOCK\\$|NUL|CON|COM\\d|LPT\\d|\\..*)(\\..+)?$)[^\\x00-\\x1f\\\\?*:\\\";|/]+$",
+                  RegexOptions.IgnoreCase);
       return validate.IsMatch(fileName);
     }
 
@@ -1052,7 +1062,7 @@ namespace IrssUtils
               break;
 
             case "$USERNAME$":
-              envVar = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+              envVar = WindowsIdentity.GetCurrent().Name;
               break;
 
             case "$MACHINENAME$":
@@ -1071,7 +1081,6 @@ namespace IrssUtils
       // Process Escape Codes ...
       bool inEscapeCode = false;
       bool inHexCode = false;
-      byte hexParsed;
       StringBuilder hexCode = new StringBuilder();
       StringBuilder output = new StringBuilder();
 
@@ -1082,36 +1091,36 @@ namespace IrssUtils
           switch (currentChar)
           {
             case 'a':
-              output.Append((char)7);
+              output.Append((char) 7);
               break;
             case 'b':
-              output.Append((char)Keys.Back);
+              output.Append((char) Keys.Back);
               break;
             case 'f':
-              output.Append((char)12);
+              output.Append((char) 12);
               break;
             case 'n':
-              output.Append((char)Keys.LineFeed);
+              output.Append((char) Keys.LineFeed);
               break;
             case 'r':
-              output.Append((char)Keys.Return);
+              output.Append((char) Keys.Return);
               break;
             case 't':
-              output.Append((char)Keys.Tab);
+              output.Append((char) Keys.Tab);
               break;
             case 'v':
-              output.Append((char)11);
+              output.Append((char) 11);
               break;
             case 'x':
               hexCode = new StringBuilder();
               inHexCode = true;
               inEscapeCode = false;
               break;
-            case '0':   // I've got a bad feeling about this
-              output.Append((char)0);
+            case '0': // I've got a bad feeling about this
+              output.Append((char) 0);
               break;
 
-            default:    // If it doesn't know it as an escape code, just use the char
+            default: // If it doesn't know it as an escape code, just use the char
               output.Append(currentChar);
               break;
           }
@@ -1122,11 +1131,12 @@ namespace IrssUtils
         {
           switch (currentChar)
           {
-            case 'h':   // 'h' terminates the hex code
-              if (byte.TryParse(hexCode.ToString(), System.Globalization.NumberStyles.HexNumber, null, out hexParsed))
-                output.Append((char)hexParsed);
+            case 'h': // 'h' terminates the hex code
+              byte hexParsed;
+              if (byte.TryParse(hexCode.ToString(), NumberStyles.HexNumber, null, out hexParsed))
+                output.Append((char) hexParsed);
               else
-                throw new ArgumentException(String.Format("Bad Hex Code \"{0}\"", hexCode.ToString()), "input");
+                throw new ArgumentException(String.Format("Bad Hex Code \"{0}\"", hexCode), "input");
 
               inHexCode = false;
               break;
@@ -1157,7 +1167,7 @@ namespace IrssUtils
     {
       return Application.SetSuspendState(PowerState.Hibernate, false, false);
     }
-    
+
     /// <summary>
     /// Standby the PC.
     /// </summary>
@@ -1166,7 +1176,7 @@ namespace IrssUtils
     {
       return Application.SetSuspendState(PowerState.Suspend, false, false);
     }
-    
+
     /// <summary>
     /// Reboot the PC.
     /// </summary>
@@ -1175,7 +1185,7 @@ namespace IrssUtils
     {
       return Win32.WindowsExit(Win32.ExitWindows.Reboot, Win32.ShutdownReasons.FlagUserDefined);
     }
-        
+
     /// <summary>
     /// LogOff the current user.
     /// </summary>
@@ -1184,7 +1194,7 @@ namespace IrssUtils
     {
       return Win32.WindowsExit(Win32.ExitWindows.LogOff, Win32.ShutdownReasons.FlagUserDefined);
     }
-    
+
     /// <summary>
     /// Shut Down the computer.
     /// </summary>
@@ -1220,14 +1230,19 @@ namespace IrssUtils
     */
 
 
-
-    static Process GetProcessByWindowHandle(IntPtr windowHandle)
+    private static Process GetProcessByWindowHandle(IntPtr windowHandle)
     {
       foreach (Process process in Process.GetProcesses())
       {
         IntPtr procWindowHandle;
-        try { procWindowHandle = process.MainWindowHandle; }
-        catch { continue; }
+        try
+        {
+          procWindowHandle = process.MainWindowHandle;
+        }
+        catch
+        {
+          continue;
+        }
 
         if (procWindowHandle == windowHandle)
           return process;
@@ -1236,13 +1251,19 @@ namespace IrssUtils
       return null;
     }
 
-    static Process GetProcessByWindowTitle(string windowTitle)
+    private static Process GetProcessByWindowTitle(string windowTitle)
     {
       foreach (Process process in Process.GetProcesses())
       {
         string procWindowTitle;
-        try { procWindowTitle = process.MainWindowTitle; }
-        catch { continue; }
+        try
+        {
+          procWindowTitle = process.MainWindowTitle;
+        }
+        catch
+        {
+          continue;
+        }
 
         if (procWindowTitle.Equals(windowTitle, StringComparison.OrdinalIgnoreCase))
           return process;
@@ -1251,13 +1272,19 @@ namespace IrssUtils
       return null;
     }
 
-    static Process GetProcessByFilePath(string filePath)
+    private static Process GetProcessByFilePath(string filePath)
     {
       foreach (Process process in Process.GetProcesses())
       {
         string procFilePath;
-        try { procFilePath = process.MainModule.FileName; }
-        catch { continue; }
+        try
+        {
+          procFilePath = process.MainModule.FileName;
+        }
+        catch
+        {
+          continue;
+        }
 
         if (procFilePath.Equals(filePath, StringComparison.OrdinalIgnoreCase))
           return process;
@@ -1266,13 +1293,20 @@ namespace IrssUtils
       return null;
     }
 
-    static Process GetProcessByFileName(string fileName)
+/*
+    private static Process GetProcessByFileName(string fileName)
     {
       foreach (Process process in Process.GetProcesses())
       {
         string procFileName;
-        try { procFileName = process.MainModule.ModuleName; }
-        catch { continue; }
+        try
+        {
+          procFileName = process.MainModule.ModuleName;
+        }
+        catch
+        {
+          continue;
+        }
 
         if (procFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase))
           return process;
@@ -1280,8 +1314,9 @@ namespace IrssUtils
 
       return null;
     }
+*/
 
-    static void EndProcess(Process process, int timeout)
+    private static void EndProcess(Process process, int timeout)
     {
       if (process.CloseMainWindow())
         process.WaitForExit(timeout);
@@ -1290,11 +1325,8 @@ namespace IrssUtils
         process.Kill();
     }
 
-
     #endregion Misc
 
     #endregion Methods
-
   }
-
 }

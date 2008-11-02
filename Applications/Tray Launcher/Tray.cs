@@ -4,52 +4,47 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssComms;
 using IrssUtils;
+using TrayLauncher.Properties;
 
 namespace TrayLauncher
 {
-
   /// <summary>
   /// Tray launcher main class.
   /// </summary>
-  class Tray
+  internal class Tray
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Tray Launcher\\Tray Launcher.xml");
+    private const string ProcessCommandThreadName = "ProcessCommand";
 
-    const string ProcessCommandThreadName = "ProcessCommand";
+    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
+                                                                    "Tray Launcher\\Tray Launcher.xml");
 
     #endregion Constants
 
     #region Variables
 
-    static ClientMessageSink _handleMessage;
+    private static ClientMessageSink _handleMessage;
 
-    Client _client;
+    private static bool _registered;
+    private readonly Container _container;
+    private readonly NotifyIcon _notifyIcon;
 
-    static bool _registered;
-
-    string _serverHost;
-    string _programFile;
-    bool _autoRun;
-    bool _launchOnLoad;
-    bool _oneInstanceOnly;
-    bool _repeatsFocus;
-    string _launchKeyCode;
-
-    Container _container;
-    NotifyIcon _notifyIcon;
-
-    bool _inConfiguration;
+    private bool _autoRun;
+    private Client _client;
+    private bool _inConfiguration;
+    private string _launchKeyCode;
+    private bool _launchOnLoad;
+    private bool _oneInstanceOnly;
+    private string _programFile;
+    private bool _repeatsFocus;
+    private string _serverHost;
 
     #endregion Variables
 
@@ -86,16 +81,16 @@ namespace TrayLauncher
 
       _notifyIcon = new NotifyIcon(_container);
       _notifyIcon.ContextMenuStrip = contextMenu;
-      _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
+      _notifyIcon.DoubleClick += ClickSetup;
 
-      UpdateTrayIcon("Tray Launcher - Connecting ...", Properties.Resources.Icon16Connecting);
+      UpdateTrayIcon("Tray Launcher - Connecting ...", Resources.Icon16Connecting);
     }
 
     #endregion Constructor
 
     #region Implementation
 
-    void UpdateTrayIcon(string text, Icon icon)
+    private void UpdateTrayIcon(string text, Icon icon)
     {
       if (String.IsNullOrEmpty(text))
         throw new ArgumentNullException("text");
@@ -127,14 +122,15 @@ namespace TrayLauncher
         try
         {
           IPAddress serverIP = Client.GetIPFromName(_serverHost);
-          IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+          IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
           clientStarted = StartClient(endPoint);
         }
         catch (Exception ex)
         {
           IrssLog.Error(ex);
-          MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Tray Launcher - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.",
+                          "Tray Launcher - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
           clientStarted = false;
         }
 
@@ -160,7 +156,7 @@ namespace TrayLauncher
       return false;
     }
 
-    void Stop()
+    private void Stop()
     {
       _notifyIcon.Visible = false;
 
@@ -174,12 +170,14 @@ namespace TrayLauncher
           _client.Send(message);
         }
       }
-      catch { }
-      
+      catch
+      {
+      }
+
       StopClient();
     }
 
-    void LoadSettings()
+    private void LoadSettings()
     {
       try
       {
@@ -213,14 +211,57 @@ namespace TrayLauncher
         return;
       }
 
-      try { _serverHost       = doc.DocumentElement.Attributes["ServerHost"].Value; }                   catch { _serverHost = "localhost"; }
-      try { _programFile      = doc.DocumentElement.Attributes["ProgramFile"].Value; }                  catch { _programFile = String.Empty; }
-      try { _launchOnLoad     = bool.Parse(doc.DocumentElement.Attributes["LaunchOnLoad"].Value); }     catch { _launchOnLoad = false; }
-      try { _oneInstanceOnly  = bool.Parse(doc.DocumentElement.Attributes["OneInstanceOnly"].Value); }  catch { _oneInstanceOnly = true; }
-      try { _repeatsFocus     = bool.Parse(doc.DocumentElement.Attributes["RepeatsFocus"].Value); }     catch { _repeatsFocus = true; }
-      try { _launchKeyCode    = doc.DocumentElement.Attributes["LaunchKeyCode"].Value; }                catch { _launchKeyCode = "Start"; }
+      try
+      {
+        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+      }
+      catch
+      {
+        _serverHost = "localhost";
+      }
+      try
+      {
+        _programFile = doc.DocumentElement.Attributes["ProgramFile"].Value;
+      }
+      catch
+      {
+        _programFile = String.Empty;
+      }
+      try
+      {
+        _launchOnLoad = bool.Parse(doc.DocumentElement.Attributes["LaunchOnLoad"].Value);
+      }
+      catch
+      {
+        _launchOnLoad = false;
+      }
+      try
+      {
+        _oneInstanceOnly = bool.Parse(doc.DocumentElement.Attributes["OneInstanceOnly"].Value);
+      }
+      catch
+      {
+        _oneInstanceOnly = true;
+      }
+      try
+      {
+        _repeatsFocus = bool.Parse(doc.DocumentElement.Attributes["RepeatsFocus"].Value);
+      }
+      catch
+      {
+        _repeatsFocus = true;
+      }
+      try
+      {
+        _launchKeyCode = doc.DocumentElement.Attributes["LaunchKeyCode"].Value;
+      }
+      catch
+      {
+        _launchKeyCode = "Start";
+      }
     }
-    void SaveSettings()
+
+    private void SaveSettings()
     {
       try
       {
@@ -240,16 +281,16 @@ namespace TrayLauncher
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
-          writer.WriteAttributeString("ServerHost",       _serverHost);
-          writer.WriteAttributeString("ProgramFile",      _programFile);
-          writer.WriteAttributeString("LaunchOnLoad",     _launchOnLoad.ToString());
-          writer.WriteAttributeString("OneInstanceOnly",  _oneInstanceOnly.ToString());
-          writer.WriteAttributeString("RepeatsFocus",     _repeatsFocus.ToString());          
-          writer.WriteAttributeString("LaunchKeyCode",    _launchKeyCode);
+          writer.WriteAttributeString("ServerHost", _serverHost);
+          writer.WriteAttributeString("ProgramFile", _programFile);
+          writer.WriteAttributeString("LaunchOnLoad", _launchOnLoad.ToString());
+          writer.WriteAttributeString("OneInstanceOnly", _oneInstanceOnly.ToString());
+          writer.WriteAttributeString("RepeatsFocus", _repeatsFocus.ToString());
+          writer.WriteAttributeString("LaunchKeyCode", _launchKeyCode);
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
@@ -260,19 +301,20 @@ namespace TrayLauncher
         IrssLog.Error(ex);
       }
     }
-    void CreateDefaultSettings()
+
+    private void CreateDefaultSettings()
     {
-      _serverHost       = "localhost";
-      _programFile      = String.Empty;
-      _launchOnLoad     = false;
-      _oneInstanceOnly  = true;
-      _repeatsFocus     = true;
-      _launchKeyCode    = "Start";
+      _serverHost = "localhost";
+      _programFile = String.Empty;
+      _launchOnLoad = false;
+      _oneInstanceOnly = true;
+      _repeatsFocus = true;
+      _launchKeyCode = "Start";
 
       SaveSettings();
     }
 
-    void CommsFailure(object obj)
+    private void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
 
@@ -283,38 +325,41 @@ namespace TrayLauncher
 
       StopClient();
 
-      MessageBox.Show("Please report this error.", "Tray Launcher - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show("Please report this error.", "Tray Launcher - Communications failure", MessageBoxButtons.OK,
+                      MessageBoxIcon.Error);
     }
-    void Connected(object obj)
+
+    private void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
-      UpdateTrayIcon("Tray Launcher", Properties.Resources.Icon16);
+      UpdateTrayIcon("Tray Launcher", Resources.Icon16);
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    void Disconnected(object obj)
+
+    private void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
-      UpdateTrayIcon("Tray Launcher - Re-Connecting ...", Properties.Resources.Icon16Connecting);
+      UpdateTrayIcon("Tray Launcher - Re-Connecting ...", Resources.Icon16Connecting);
 
       Thread.Sleep(1000);
     }
 
-    bool StartClient(IPEndPoint endPoint)
+    private bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
+
       if (_client.Start())
       {
         return true;
@@ -325,7 +370,8 @@ namespace TrayLauncher
         return false;
       }
     }
-    void StopClient()
+
+    private void StopClient()
     {
       if (_client == null)
         return;
@@ -336,7 +382,7 @@ namespace TrayLauncher
       _registered = false;
     }
 
-    void ReceivedMessage(IrssMessage received)
+    private void ReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
@@ -388,7 +434,7 @@ namespace TrayLauncher
       }
     }
 
-    void RemoteHandlerCallback(string deviceName, string keyCode)
+    private void RemoteHandlerCallback(string deviceName, string keyCode)
     {
       IrssLog.Info("Remote Event: {0}", keyCode);
 
@@ -396,33 +442,33 @@ namespace TrayLauncher
         Launch();
     }
 
-    bool Configure()
+    private bool Configure()
     {
       Setup setup = new Setup();
 
-      setup.AutoRun       = _autoRun;
-      setup.ServerHost    = _serverHost;
-      setup.ProgramFile   = _programFile;
-      setup.LaunchOnLoad  = _launchOnLoad;
+      setup.AutoRun = _autoRun;
+      setup.ServerHost = _serverHost;
+      setup.ProgramFile = _programFile;
+      setup.LaunchOnLoad = _launchOnLoad;
       setup.LaunchKeyCode = _launchKeyCode;
 
       if (setup.ShowDialog() == DialogResult.OK)
       {
-        _autoRun        = setup.AutoRun;
-        _serverHost     = setup.ServerHost;
-        _programFile    = setup.ProgramFile;
-        _launchOnLoad   = setup.LaunchOnLoad;
-        _launchKeyCode  = setup.LaunchKeyCode;
+        _autoRun = setup.AutoRun;
+        _serverHost = setup.ServerHost;
+        _programFile = setup.ProgramFile;
+        _launchOnLoad = setup.LaunchOnLoad;
+        _launchKeyCode = setup.LaunchKeyCode;
 
         SaveSettings();
-        
+
         return true;
       }
 
       return false;
     }
 
-    void ClickSetup(object sender, EventArgs e)
+    private void ClickSetup(object sender, EventArgs e)
     {
       IrssLog.Info("Setup");
 
@@ -434,16 +480,18 @@ namespace TrayLauncher
         Thread.Sleep(500);
         Start();
       }
-      
+
       _inConfiguration = false;
     }
-    void ClickLaunch(object sender, EventArgs e)
+
+    private void ClickLaunch(object sender, EventArgs e)
     {
       IrssLog.Info("Launch");
 
       Launch();
     }
-    void ClickQuit(object sender, EventArgs e)
+
+    private void ClickQuit(object sender, EventArgs e)
     {
       IrssLog.Info("Quit");
 
@@ -458,7 +506,7 @@ namespace TrayLauncher
       Application.Exit();
     }
 
-    void Launch()
+    private void Launch()
     {
       if (_inConfiguration)
       {
@@ -475,7 +523,8 @@ namespace TrayLauncher
           {
             try
             {
-              if (Path.GetFileName(process.MainModule.ModuleName).Equals(Path.GetFileName(_programFile), StringComparison.OrdinalIgnoreCase))
+              if (Path.GetFileName(process.MainModule.ModuleName).Equals(Path.GetFileName(_programFile),
+                                                                         StringComparison.OrdinalIgnoreCase))
               {
                 IrssLog.Info("Can't launch target application, program already running");
                 if (_repeatsFocus)
@@ -503,16 +552,16 @@ namespace TrayLauncher
         IrssLog.Info("Launching \"{0}\" ...", _programFile);
 
         string[] launchCommand = new string[]
-        {
-          _programFile,
-          Path.GetDirectoryName(_programFile),
-          String.Empty,
-          Enum.GetName(typeof(ProcessWindowStyle), ProcessWindowStyle.Normal),
-          false.ToString(),
-          true.ToString(),
-          false.ToString(),
-          true.ToString()
-        };
+                                   {
+                                     _programFile,
+                                     Path.GetDirectoryName(_programFile),
+                                     String.Empty,
+                                     Enum.GetName(typeof (ProcessWindowStyle), ProcessWindowStyle.Normal),
+                                     false.ToString(),
+                                     true.ToString(),
+                                     false.ToString(),
+                                     true.ToString()
+                                   };
 
         Common.ProcessRunCommand(launchCommand);
       }
@@ -524,7 +573,5 @@ namespace TrayLauncher
     }
 
     #endregion Implementation
-
   }
-
 }

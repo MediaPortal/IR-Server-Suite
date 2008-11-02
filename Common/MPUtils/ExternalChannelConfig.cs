@@ -1,49 +1,45 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using System.Xml;
 
 namespace MPUtils
 {
-
   /// <summary>
   /// External Channel Changing configuration file for tuning Set Top Boxes in MediaPortal.
   /// </summary>
   public class ExternalChannelConfig
   {
-
     #region Constants
 
-    const int DefaultCardID                 = 0;
+    private const int DefaultCardID = 0;
+    private const int DefaultChannelDigits = 0;
 
-    const int DefaultPauseTime              = 500;
-    const bool DefaultSendSelect            = false;
-    const bool DefaultDoubleChannelSelect   = false;
-    const int DefaultRepeatChannelCommands  = 0;
-    const int DefaultChannelDigits          = 0;
-    const int DefaultRepeatPauseTime        = 2000;
-    const bool DefaultUsePreChangeCommand   = false;
+    private const bool DefaultDoubleChannelSelect = false;
+    private const int DefaultPauseTime = 500;
+    private const int DefaultRepeatChannelCommands = 0;
+    private const int DefaultRepeatPauseTime = 2000;
+    private const bool DefaultSendSelect = false;
+    private const bool DefaultUsePreChangeCommand = false;
 
     #endregion Constants
 
     #region Variables
 
-    string _fileName;
+    private readonly string _fileName;
 
-    int _cardID;
+    private int _cardID;
+    private int _channelDigits;
+    private string[] _digits;
 
-    int _pauseTime;
-    bool _sendSelect;
-    bool _doubleChannelSelect;
-    int _repeatChannelCommands;
-    int _channelDigits;
-    int _repeatPauseTime;
-    bool _usePreChangeCommand;
+    private bool _doubleChannelSelect;
+    private int _pauseTime;
+    private string _preChangeCommand;
+    private int _repeatChannelCommands;
+    private int _repeatPauseTime;
 
-    string _selectCommand;
-    string _preChangeCommand;
-    string[] _digits;
+    private string _selectCommand;
+    private bool _sendSelect;
+    private bool _usePreChangeCommand;
 
     #endregion Variables
 
@@ -77,6 +73,7 @@ namespace MPUtils
       get { return _pauseTime; }
       set { _pauseTime = value; }
     }
+
     /// <summary>
     /// Gets or sets a value indicating whether to send a select command.
     /// </summary>
@@ -86,6 +83,7 @@ namespace MPUtils
       get { return _sendSelect; }
       set { _sendSelect = value; }
     }
+
     /// <summary>
     /// Gets or sets a value indicating whether to send the select command twice.
     /// </summary>
@@ -95,6 +93,7 @@ namespace MPUtils
       get { return _doubleChannelSelect; }
       set { _doubleChannelSelect = value; }
     }
+
     /// <summary>
     /// Gets or sets the flag to repeat channel commands.
     /// </summary>
@@ -104,6 +103,7 @@ namespace MPUtils
       get { return _repeatChannelCommands; }
       set { _repeatChannelCommands = value; }
     }
+
     /// <summary>
     /// Gets or sets the channel digit count.
     /// </summary>
@@ -113,6 +113,7 @@ namespace MPUtils
       get { return _channelDigits; }
       set { _channelDigits = value; }
     }
+
     /// <summary>
     /// Gets or sets the pause time between repeats.
     /// </summary>
@@ -122,6 +123,7 @@ namespace MPUtils
       get { return _repeatPauseTime; }
       set { _repeatPauseTime = value; }
     }
+
     /// <summary>
     /// Gets or sets a value indicating whether to use a pre-change command.
     /// </summary>
@@ -143,6 +145,7 @@ namespace MPUtils
       get { return _digits; }
       set { _digits = value; }
     }
+
     /// <summary>
     /// Gets or sets the select command.
     /// </summary>
@@ -152,6 +155,7 @@ namespace MPUtils
       get { return _selectCommand; }
       set { _selectCommand = value; }
     }
+
     /// <summary>
     /// Gets or sets the pre-change command.
     /// </summary>
@@ -161,7 +165,7 @@ namespace MPUtils
       get { return _preChangeCommand; }
       set { _preChangeCommand = value; }
     }
-    
+
     #endregion Properties
 
     #region Constructor
@@ -172,21 +176,21 @@ namespace MPUtils
     /// <param name="fileName">Name of the configuration file.</param>
     public ExternalChannelConfig(string fileName)
     {
-      _fileName               = fileName;
+      _fileName = fileName;
 
-      _cardID                 = DefaultCardID;
+      _cardID = DefaultCardID;
 
-      _pauseTime              = DefaultPauseTime;
-      _sendSelect             = DefaultSendSelect;
-      _doubleChannelSelect    = DefaultDoubleChannelSelect;
-      _repeatChannelCommands  = DefaultRepeatChannelCommands;
-      _channelDigits          = DefaultChannelDigits;
-      _repeatPauseTime        = DefaultRepeatPauseTime;
-      _usePreChangeCommand    = DefaultUsePreChangeCommand;
+      _pauseTime = DefaultPauseTime;
+      _sendSelect = DefaultSendSelect;
+      _doubleChannelSelect = DefaultDoubleChannelSelect;
+      _repeatChannelCommands = DefaultRepeatChannelCommands;
+      _channelDigits = DefaultChannelDigits;
+      _repeatPauseTime = DefaultRepeatPauseTime;
+      _usePreChangeCommand = DefaultUsePreChangeCommand;
 
-      _selectCommand          = String.Empty;
-      _preChangeCommand       = String.Empty;
-      _digits                 = new string[10];
+      _selectCommand = String.Empty;
+      _preChangeCommand = String.Empty;
+      _digits = new string[10];
 
       for (int i = 0; i < 10; i++)
         _digits[i] = String.Empty;
@@ -203,7 +207,7 @@ namespace MPUtils
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("config"); // <config>
 
@@ -219,25 +223,26 @@ namespace MPUtils
         writer.WriteElementString("PreChangeCommand", PreChangeCommand);
 
         for (int i = 0; i < 10; i++)
-          writer.WriteElementString("Digit" + i.ToString(), Digits[i]);
+          writer.WriteElementString("Digit" + i, Digits[i]);
 
         writer.WriteEndElement(); // </config>
         writer.WriteEndDocument();
       }
     }
 
-    static string GetString(XmlDocument doc, string element, string defaultValue)
+    private static string GetString(XmlDocument doc, string element, string defaultValue)
     {
       if (String.IsNullOrEmpty(element))
         return defaultValue;
-      
+
       XmlNode node = doc.DocumentElement.SelectSingleNode(element);
       if (node == null)
         return defaultValue;
 
       return node.InnerText;
     }
-    static int GetInt(XmlDocument doc, string element, int defaultValue)
+
+    private static int GetInt(XmlDocument doc, string element, int defaultValue)
     {
       if (String.IsNullOrEmpty(element))
         return defaultValue;
@@ -252,7 +257,8 @@ namespace MPUtils
 
       return defaultValue;
     }
-    static bool GetBool(XmlDocument doc, string element, bool defaultValue)
+
+    private static bool GetBool(XmlDocument doc, string element, bool defaultValue)
     {
       if (String.IsNullOrEmpty(element))
         return defaultValue;
@@ -280,23 +286,21 @@ namespace MPUtils
       XmlDocument doc = new XmlDocument();
       doc.Load(fileName);
 
-      newECC.PauseTime              = GetInt(doc, "PauseTime", DefaultPauseTime);
-      newECC.UsePreChangeCommand    = GetBool(doc, "UsePreChangeCommand", DefaultUsePreChangeCommand);
-      newECC.SendSelect             = GetBool(doc, "SendSelect", DefaultSendSelect);
-      newECC.DoubleChannelSelect    = GetBool(doc, "DoubleChannelSelect", DefaultDoubleChannelSelect);
-      newECC.RepeatChannelCommands  = GetInt(doc, "RepeatChannelCommands", DefaultRepeatChannelCommands);
-      newECC.ChannelDigits          = GetInt(doc, "ChannelDigits", DefaultChannelDigits);
-      newECC.RepeatPauseTime        = GetInt(doc, "RepeatDelay", DefaultRepeatPauseTime);
+      newECC.PauseTime = GetInt(doc, "PauseTime", DefaultPauseTime);
+      newECC.UsePreChangeCommand = GetBool(doc, "UsePreChangeCommand", DefaultUsePreChangeCommand);
+      newECC.SendSelect = GetBool(doc, "SendSelect", DefaultSendSelect);
+      newECC.DoubleChannelSelect = GetBool(doc, "DoubleChannelSelect", DefaultDoubleChannelSelect);
+      newECC.RepeatChannelCommands = GetInt(doc, "RepeatChannelCommands", DefaultRepeatChannelCommands);
+      newECC.ChannelDigits = GetInt(doc, "ChannelDigits", DefaultChannelDigits);
+      newECC.RepeatPauseTime = GetInt(doc, "RepeatDelay", DefaultRepeatPauseTime);
 
-      newECC.SelectCommand          = GetString(doc, "SelectCommand", String.Empty);
-      newECC.PreChangeCommand       = GetString(doc, "PreChangeCommand", String.Empty);
-      
+      newECC.SelectCommand = GetString(doc, "SelectCommand", String.Empty);
+      newECC.PreChangeCommand = GetString(doc, "PreChangeCommand", String.Empty);
+
       for (int index = 0; index < 10; index++)
-        newECC.Digits[index]        = GetString(doc, "Digit" + index.ToString(), String.Empty);
+        newECC.Digits[index] = GetString(doc, "Digit" + index, String.Empty);
 
       return newECC;
     }
-
   }
-
 }

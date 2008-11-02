@@ -1,22 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Xml.Serialization;
-
 using IrssUtils;
 
 namespace Translator
 {
- 
   /// <summary>
   /// Holds profile settings for a program that Translator can load.
   /// </summary>
   [XmlRoot]
   public class AppProfile
   {
-
     #region Enumerations
 
     /// <summary>
@@ -46,11 +41,10 @@ namespace Translator
 
     #region Variables
 
-    string _name;
-    DetectionMethod _matchType;
-    string _matchParameters;
-
-    List<ButtonMapping> _buttonMappings;
+    private readonly List<ButtonMapping> _buttonMappings;
+    private string _matchParameters;
+    private DetectionMethod _matchType;
+    private string _name;
 
     #endregion Variables
 
@@ -66,11 +60,11 @@ namespace Translator
       get { return _name; }
       set { _name = value; }
     }
-    
+
     /// <summary>
     /// Program file name.
     /// </summary>
-    [XmlElement]  
+    [XmlElement]
     public DetectionMethod MatchType
     {
       get { return _matchType; }
@@ -90,7 +84,7 @@ namespace Translator
     /// <summary>
     /// Gets a list of button mappings associated with this program.
     /// </summary>
-    [XmlArray]      
+    [XmlArray]
     public List<ButtonMapping> ButtonMappings
     {
       get { return _buttonMappings; }
@@ -105,12 +99,12 @@ namespace Translator
     /// </summary>
     public AppProfile()
     {
-      _name             = String.Empty;
-      _matchType        = DetectionMethod.Executable;
-      _matchParameters  = String.Empty;
-      _buttonMappings   = new List<ButtonMapping>();
+      _name = String.Empty;
+      _matchType = DetectionMethod.Executable;
+      _matchParameters = String.Empty;
+      _buttonMappings = new List<ButtonMapping>();
     }
-    
+
     #endregion Constructors
 
     #region Static Methods
@@ -125,7 +119,7 @@ namespace Translator
     {
       try
       {
-        XmlSerializer writer = new XmlSerializer(typeof(AppProfile));
+        XmlSerializer writer = new XmlSerializer(typeof (AppProfile));
         using (StreamWriter file = new StreamWriter(fileName))
           writer.Serialize(file, profile);
 
@@ -147,9 +141,9 @@ namespace Translator
     {
       try
       {
-        XmlSerializer reader = new XmlSerializer(typeof(AppProfile));
+        XmlSerializer reader = new XmlSerializer(typeof (AppProfile));
         using (StreamReader file = new StreamReader(fileName))
-          return (AppProfile)reader.Deserialize(file);
+          return (AppProfile) reader.Deserialize(file);
       }
       catch (Exception ex)
       {
@@ -160,7 +154,5 @@ namespace Translator
     }
 
     #endregion Static Methods
-
   }
-
 }

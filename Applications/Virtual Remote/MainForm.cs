@@ -1,25 +1,19 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 
 namespace VirtualRemote
 {
-
-  partial class MainForm : Form
+  internal partial class MainForm : Form
   {
-
     #region Variables
 
     //Thread _updateThread;
@@ -56,6 +50,7 @@ namespace VirtualRemote
 
       Program.ProcessClick(e.X, e.Y);
     }
+
     private void MainForm_KeyDown(object sender, KeyEventArgs e)
     {
       if (e.KeyCode == Keys.None)
@@ -71,7 +66,7 @@ namespace VirtualRemote
       }
     }
 
-    static void LoadSkinXml(string xmlFile)
+    private static void LoadSkinXml(string xmlFile)
     {
       XmlDocument doc = new XmlDocument();
       doc.Load(xmlFile);
@@ -90,24 +85,24 @@ namespace VirtualRemote
         try
         {
           key = item.Attributes["shortcut"].Value;
-          temp.Shortcut = (Keys)Enum.Parse(typeof(Keys), key, true);
+          temp.Shortcut = (Keys) Enum.Parse(typeof (Keys), key, true);
         }
         catch (ArgumentException)
         {
           IrssLog.Error("Invalid Key Shortcut \"{0}\" in skin \"{1}\"", key, xmlFile);
         }
 
-        temp.Top    = int.Parse(item.Attributes["top"].Value);
-        temp.Left   = int.Parse(item.Attributes["left"].Value);
+        temp.Top = int.Parse(item.Attributes["top"].Value);
+        temp.Left = int.Parse(item.Attributes["left"].Value);
         temp.Height = int.Parse(item.Attributes["height"].Value);
-        temp.Width  = int.Parse(item.Attributes["width"].Value);
+        temp.Width = int.Parse(item.Attributes["width"].Value);
         buttons.Add(temp);
       }
 
-      Program.Buttons = (RemoteButton[])buttons.ToArray(typeof(RemoteButton));
+      Program.Buttons = (RemoteButton[]) buttons.ToArray(typeof (RemoteButton));
     }
 
-    void SetSkinList()
+    private void SetSkinList()
     {
       try
       {
@@ -126,7 +121,7 @@ namespace VirtualRemote
       }
     }
 
-    void SetSkin(string skin)
+    private void SetSkin(string skin)
     {
       try
       {
@@ -141,7 +136,7 @@ namespace VirtualRemote
         string xmlFile = Path.Combine(Program.SkinsFolder, skin + ".xml");
         if (!File.Exists(xmlFile))
         {
-          string firstWord = skin.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
+          string firstWord = skin.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries)[0];
 
           xmlFile = Path.Combine(Program.SkinsFolder, firstWord + ".xml");
           if (!File.Exists(xmlFile))
@@ -151,9 +146,9 @@ namespace VirtualRemote
         Program.Device = Path.GetFileNameWithoutExtension(xmlFile);
         LoadSkinXml(xmlFile);
 
-        this.BackgroundImage = new Bitmap(skinFile);
-        this.ClientSize = new Size(this.BackgroundImage.Width, this.BackgroundImage.Height);
-        
+        BackgroundImage = new Bitmap(skinFile);
+        ClientSize = new Size(BackgroundImage.Width, BackgroundImage.Height);
+
         Program.RemoteSkin = skin;
       }
       catch (Exception ex)
@@ -163,7 +158,7 @@ namespace VirtualRemote
       }
     }
 
-    void SetLabel()
+    private void SetLabel()
     {
       while (true)
       {
@@ -176,7 +171,7 @@ namespace VirtualRemote
     {
       IrssLog.Info("User quit");
 
-      this.Close();
+      Close();
     }
 
     private void toolStripComboBoxSkin_SelectedIndexChanged(object sender, EventArgs e)
@@ -195,7 +190,7 @@ namespace VirtualRemote
       Program.ServerHost = serverAddress.ServerHost;
 
       IPAddress serverIP = Client.GetIPFromName(Program.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       Program.StartClient(endPoint);
     }
@@ -213,7 +208,5 @@ namespace VirtualRemote
         MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-
   }
-
 }

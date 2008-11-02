@@ -1,11 +1,9 @@
-using System;
-
 namespace IrFileTool
 {
 
   #region Enumerations
 
-  enum RemoteDetectionState
+  internal enum RemoteDetectionState
   {
     HeaderPulse,
     HeaderSpace,
@@ -17,19 +15,18 @@ namespace IrFileTool
 
   #endregion Enumerations
 
-  class RemoteDetectionData
+  internal class RemoteDetectionData
   {
-
     #region Member Variables
 
-    RemoteDetectionState _state = RemoteDetectionState.HeaderPulse;
-    byte _bit;
-    byte _halfBit;
-    uint _code;
-    uint _header;
-    bool _longPulse;
-    bool _longSpace;
-    int _toggle;
+    private byte _bit;
+    private uint _code;
+    private byte _halfBit;
+    private uint _header;
+    private bool _longPulse;
+    private bool _longSpace;
+    private RemoteDetectionState _state = RemoteDetectionState.HeaderPulse;
+    private int _toggle;
 
     #endregion Member Variables
 
@@ -46,11 +43,13 @@ namespace IrFileTool
       get { return _bit; }
       set { _bit = value; }
     }
+
     public byte HalfBit
     {
       get { return _halfBit; }
       set { _halfBit = value; }
     }
+
     public uint Code
     {
       get { return _code; }
@@ -68,6 +67,7 @@ namespace IrFileTool
       get { return _longPulse; }
       set { _longPulse = value; }
     }
+
     public bool LongSpace
     {
       get { return _longSpace; }
@@ -84,11 +84,15 @@ namespace IrFileTool
 
     #region Constructors
 
-    public RemoteDetectionData() : this(RemoteDetectionState.HeaderPulse) { }
-    public RemoteDetectionData(RemoteDetectionState state) { _state = state; }
+    public RemoteDetectionData() : this(RemoteDetectionState.HeaderPulse)
+    {
+    }
+
+    public RemoteDetectionData(RemoteDetectionState state)
+    {
+      _state = state;
+    }
 
     #endregion Constructors
-
   }
-
 }

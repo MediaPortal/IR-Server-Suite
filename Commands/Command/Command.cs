@@ -1,26 +1,25 @@
 using System;
+using System.Globalization;
 using System.IO;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace Commands
 {
-
   /// <summary>
   /// Base class for all IR Server Suite commands.
   /// </summary>
   public abstract class Command
   {
-
     #region Variables
 
     /// <summary>
     /// Command parameters.
     /// </summary>
-    string[] _parameters;
+    private string[] _parameters;
 
     #endregion Variables
 
@@ -43,13 +42,18 @@ namespace Commands
     /// <summary>
     /// Initializes a new instance of the <see cref="Command"/> class.
     /// </summary>
-    protected Command() { }
+    protected Command()
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Command"/> class.
     /// </summary>
     /// <param name="parameters">The command parameters.</param>
-    protected Command(string[] parameters) { _parameters = parameters; }
+    protected Command(string[] parameters)
+    {
+      _parameters = parameters;
+    }
 
     #endregion Constructors
 
@@ -85,14 +89,19 @@ namespace Commands
     /// Execute this command.
     /// </summary>
     /// <param name="variables">The variable list of the calling code.</param>
-    public virtual void Execute(VariableList variables) { }
+    public virtual void Execute(VariableList variables)
+    {
+    }
 
     /// <summary>
     /// Edit this command.
     /// </summary>
     /// <param name="parent">The parent window.</param>
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public virtual bool Edit(IWin32Window parent) { return true; }
+    public virtual bool Edit(IWin32Window parent)
+    {
+      return true;
+    }
 
     /// <summary>
     /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
@@ -103,11 +112,11 @@ namespace Commands
       StringBuilder xml = new StringBuilder();
       using (StringWriter stringWriter = new StringWriter(xml))
       {
-        XmlSerializer xmlSerializer = new XmlSerializer(typeof(string[]));
+        XmlSerializer xmlSerializer = new XmlSerializer(typeof (string[]));
         xmlSerializer.Serialize(stringWriter, _parameters);
       }
 
-      return String.Format("{0}, {1}", this.GetType().FullName, xml);
+      return String.Format("{0}, {1}", GetType().FullName, xml);
     }
 
     /// <summary>
@@ -228,7 +237,7 @@ namespace Commands
               break;
 
             case "$USERNAME$":
-              envVar = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+              envVar = WindowsIdentity.GetCurrent().Name;
               break;
 
             case "$MACHINENAME$":
@@ -258,36 +267,36 @@ namespace Commands
           switch (currentChar)
           {
             case 'a':
-              output.Append((char)7);
+              output.Append((char) 7);
               break;
             case 'b':
-              output.Append((char)Keys.Back);
+              output.Append((char) Keys.Back);
               break;
             case 'f':
-              output.Append((char)12);
+              output.Append((char) 12);
               break;
             case 'n':
-              output.Append((char)Keys.LineFeed);
+              output.Append((char) Keys.LineFeed);
               break;
             case 'r':
-              output.Append((char)Keys.Return);
+              output.Append((char) Keys.Return);
               break;
             case 't':
-              output.Append((char)Keys.Tab);
+              output.Append((char) Keys.Tab);
               break;
             case 'v':
-              output.Append((char)11);
+              output.Append((char) 11);
               break;
             case 'x':
               hexCode = new StringBuilder();
               inHexCode = true;
               inEscapeCode = false;
               break;
-            case '0':   // I've got a bad feeling about this
-              output.Append((char)0);
+            case '0': // I've got a bad feeling about this
+              output.Append((char) 0);
               break;
 
-            default:    // If it doesn't know it as an escape code, just use the char
+            default: // If it doesn't know it as an escape code, just use the char
               output.Append(currentChar);
               break;
           }
@@ -298,11 +307,11 @@ namespace Commands
         {
           switch (currentChar)
           {
-            case 'h':   // 'h' terminates the hex code
-              if (byte.TryParse(hexCode.ToString(), System.Globalization.NumberStyles.HexNumber, null, out hexParsed))
-                output.Append((char)hexParsed);
+            case 'h': // 'h' terminates the hex code
+              if (byte.TryParse(hexCode.ToString(), NumberStyles.HexNumber, null, out hexParsed))
+                output.Append((char) hexParsed);
               else
-                throw new ArgumentException(String.Format("Bad Hex Code \"{0}\"", hexCode.ToString()), "input");
+                throw new ArgumentException(String.Format("Bad Hex Code \"{0}\"", hexCode), "input");
 
               inHexCode = false;
               break;
@@ -326,7 +335,5 @@ namespace Commands
     }
 
     #endregion Static Methods
-
   }
-
 }

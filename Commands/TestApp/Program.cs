@@ -1,18 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
-  static class Program
+  internal static class Program
   {
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    private static void Main()
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
@@ -20,21 +17,19 @@ namespace Commands
       CommandEditDialog dialog = new CommandEditDialog(new ControlLabel());
       dialog.ShowDialog();
 
-      Processor commandProcessor = new Processor(new BlastIrDelegate(BlastIr), new string[] { "Default", "Port 1" });
+      Processor commandProcessor = new Processor(BlastIr, new string[] {"Default", "Port 1"});
 
       string[] categories = new string[]
-      { 
-        Processor.CategoryControl,
-        Processor.CategoryVariable,
-        Processor.CategoryStack,
-
-        Processor.CategoryGeneral,
-        Processor.CategoryMediaPortal,
-        Processor.CategoryIRCommands,
-        Processor.CategoryMacros,
-
-        Processor.CategorySpecial
-      };
+                              {
+                                Processor.CategoryControl,
+                                Processor.CategoryVariable,
+                                Processor.CategoryStack,
+                                Processor.CategoryGeneral,
+                                Processor.CategoryMediaPortal,
+                                Processor.CategoryIRCommands,
+                                Processor.CategoryMacros,
+                                Processor.CategorySpecial
+                              };
 
       try
       {
@@ -67,11 +62,10 @@ namespace Commands
     }
 
 
-    static void BlastIr(string fileName, string port)
+    private static void BlastIr(string fileName, string port)
     {
-      MessageBox.Show(String.Format("File - {0}, Port - {1}", fileName, port), "Blast Command", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(String.Format("File - {0}, Port - {1}", fileName, port), "Blast Command", MessageBoxButtons.OK,
+                      MessageBoxIcon.Information);
     }
-
   }
-
 }

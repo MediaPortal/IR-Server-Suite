@@ -159,9 +159,6 @@
     <None Include="Icon16Connecting.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Default Settings\GBPVR.exe.xml" />
-    <Content Include="Default Settings\Meedio.exe.xml" />
-    <Content Include="Default Settings\PVRX2.exe.xml" />
     <Content Include="Graphics\ClickLeft.png" />
     <Content Include="Graphics\ClickMiddle.png" />
     <Content Include="Graphics\ClickRight.png" />

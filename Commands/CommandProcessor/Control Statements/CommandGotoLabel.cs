@@ -1,30 +1,31 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Goto Label macro command.
   /// </summary>
   public class CommandGotoLabel : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandGotoLabel"/> class.
     /// </summary>
-    public CommandGotoLabel() { InitParameters(1); }
-    
+    public CommandGotoLabel()
+    {
+      InitParameters(1);
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandGotoLabel"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandGotoLabel(string[] parameters) : base(parameters) { }
-    
+    public CommandGotoLabel(string[] parameters) : base(parameters)
+    {
+    }
+
     #endregion Constructors
 
     #region Implementation
@@ -33,13 +34,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryControl; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryControl;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Goto Label"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Goto Label";
+    }
 
     /// <summary>
     /// Gets the user display text.
@@ -47,7 +54,7 @@ namespace Commands
     /// <returns>The user display text.</returns>
     public override string GetUserDisplayText()
     {
-        return String.Format("{0} \"{1}\"", GetUserInterfaceText(), Parameters[0]);
+      return String.Format("{0} \"{1}\"", GetUserInterfaceText(), Parameters[0]);
     }
 
     /// <summary>
@@ -68,7 +75,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

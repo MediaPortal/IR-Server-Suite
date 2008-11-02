@@ -1,29 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// String Trim macro command.
   /// </summary>
   public class CommandStringTrim : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStringTrim"/> class.
     /// </summary>
-    public CommandStringTrim() { InitParameters(2); }
+    public CommandStringTrim()
+    {
+      InitParameters(2);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStringTrim"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandStringTrim(string[] parameters) : base(parameters) { }
+    public CommandStringTrim(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +33,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryString; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryString;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "String Trim"; }
+    public override string GetUserInterfaceText()
+    {
+      return "String Trim";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -72,7 +78,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

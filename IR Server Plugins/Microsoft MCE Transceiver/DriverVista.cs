@@ -1,28 +1,21 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.ServiceProcess;
-using System.Text;
 using System.Threading;
-
 using Microsoft.Win32.SafeHandles;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Driver class for the Windows Vista eHome driver.
   /// </summary>
-  class DriverVista : Driver
+  internal class DriverVista : Driver
   {
-
     #region Interop
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool DeviceIoControl(
+    private static extern bool DeviceIoControl(
       SafeFileHandle handle,
       [MarshalAs(UnmanagedType.U4)] IoCtrl ioControlCode,
       IntPtr inBuffer, int inBufferSize,
@@ -43,7 +36,7 @@ namespace InputService.Plugin
     // Given that it is exactly the same data on 32-bit or 64-bit systems it
     // makes no sense (to me) why Microsoft would do it this way ...
 
-    // Note: I couldn't find any reference to this in the WinHEC or other
+    // I couldn't find any reference to this in the WinHEC or other
     // documentation I have seen.  When 64-bit users started reporting
     // "The data area passed to a system call is too small." errors (122) the
     // only thing I could think of was that the structures were differenly
@@ -51,120 +44,14 @@ namespace InputService.Plugin
     // differently on 64-bit systems is the IntPtr.
 
     #endregion Notes
-    
-    /// <summary>
-    /// Information for transmitting IR.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    struct TransmitChunk
-    {
-      /// <summary>
-      /// Next chunk offset.
-      /// </summary>
-      public IntPtr OffsetToNextChunk;
-      /// <summary>
-      /// Repeat count.
-      /// </summary>
-      public IntPtr RepeatCount;
-      /// <summary>
-      /// Number of bytes.
-      /// </summary>
-      public IntPtr ByteCount;
-    }
 
-    /// <summary>
-    /// Parameters for transmitting IR.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    struct TransmitParams
-    {
-      /// <summary>
-      /// Bitmask containing ports to transmit on.
-      /// </summary>
-      public IntPtr TransmitPortMask;
-      /// <summary>
-      /// Carrier period.
-      /// </summary>
-      public IntPtr CarrierPeriod;
-      /// <summary>
-      /// Transmit Flags.
-      /// </summary>
-      public IntPtr Flags;
-      /// <summary>
-      /// Pulse Size.  If Pulse Mode Flag set.
-      /// </summary>
-      public IntPtr PulseSize;
-    }
-
-    /// <summary>
-    /// Receive parameters.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    struct ReceiveParams
-    {
-      /// <summary>
-      /// Last packet in block?
-      /// </summary>
-      public IntPtr DataEnd;
-      /// <summary>
-      /// Number of bytes in block.
-      /// </summary>
-      public IntPtr ByteCount;
-      /// <summary>
-      /// Carrier frequency of IR received.
-      /// </summary>
-      public IntPtr CarrierFrequency;
-    }
-
-    /// <summary>
-    /// Parameters for StartReceive.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    struct StartReceiveParams
-    {
-      /// <summary>
-      /// Index of the receiver to use.
-      /// </summary>
-      public IntPtr Receiver;
-      /// <summary>
-      /// Receive timeout, in milliseconds.
-      /// </summary>
-      public IntPtr Timeout;
-    }
-
-    /// <summary>
-    /// Device Capabilities data structure.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    struct DeviceCapabilities
-    {
-      /// <summary>
-      /// Device protocol version.
-      /// </summary>
-      public IntPtr ProtocolVersion;
-      /// <summary>
-      /// Number of transmit ports – 0-32.
-      /// </summary>
-      public IntPtr TransmitPorts;
-      /// <summary>
-      /// Number of receive ports – 0-32. For beanbag, this is two (one for learning, one for normal receiving).
-      /// </summary>
-      public IntPtr ReceivePorts;
-      /// <summary>
-      /// Bitmask identifying which receivers are learning receivers – low bit is the first receiver, second-low bit is the second receiver, etc ...
-      /// </summary>
-      public IntPtr LearningMask;
-      /// <summary>
-      /// Device flags.
-      /// </summary>
-      public IntPtr DetailsFlags;
-    }
+    #region Nested type: AvailableBlasters
 
     /// <summary>
     /// Available Blasters data structure.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    struct AvailableBlasters
+    private struct AvailableBlasters
     {
       /// <summary>
       /// Blaster bit-mask.
@@ -172,89 +59,257 @@ namespace InputService.Plugin
       public IntPtr Blasters;
     }
 
+    #endregion
+
+    #region Nested type: DeviceCapabilities
+
+    /// <summary>
+    /// Device Capabilities data structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DeviceCapabilities
+    {
+      /// <summary>
+      /// Device protocol version.
+      /// </summary>
+      public IntPtr ProtocolVersion;
+
+      /// <summary>
+      /// Number of transmit ports – 0-32.
+      /// </summary>
+      public IntPtr TransmitPorts;
+
+      /// <summary>
+      /// Number of receive ports – 0-32. For beanbag, this is two (one for learning, one for normal receiving).
+      /// </summary>
+      public IntPtr ReceivePorts;
+
+      /// <summary>
+      /// Bitmask identifying which receivers are learning receivers – low bit is the first receiver, second-low bit is the second receiver, etc ...
+      /// </summary>
+      public IntPtr LearningMask;
+
+      /// <summary>
+      /// Device flags.
+      /// </summary>
+      public IntPtr DetailsFlags;
+    }
+
+    #endregion
+
+    #region Nested type: ReceiveParams
+
+    /// <summary>
+    /// Receive parameters.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ReceiveParams
+    {
+      /// <summary>
+      /// Last packet in block?
+      /// </summary>
+      public IntPtr DataEnd;
+
+      /// <summary>
+      /// Number of bytes in block.
+      /// </summary>
+      public IntPtr ByteCount;
+
+      /// <summary>
+      /// Carrier frequency of IR received.
+      /// </summary>
+      public IntPtr CarrierFrequency;
+    }
+
+    #endregion
+
+    #region Nested type: StartReceiveParams
+
+    /// <summary>
+    /// Parameters for StartReceive.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct StartReceiveParams
+    {
+      /// <summary>
+      /// Index of the receiver to use.
+      /// </summary>
+      public IntPtr Receiver;
+
+      /// <summary>
+      /// Receive timeout, in milliseconds.
+      /// </summary>
+      public IntPtr Timeout;
+    }
+
+    #endregion
+
+    #region Nested type: TransmitChunk
+
+    /// <summary>
+    /// Information for transmitting IR.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TransmitChunk
+    {
+      /// <summary>
+      /// Next chunk offset.
+      /// </summary>
+      public IntPtr OffsetToNextChunk;
+
+      /// <summary>
+      /// Repeat count.
+      /// </summary>
+      public IntPtr RepeatCount;
+
+      /// <summary>
+      /// Number of bytes.
+      /// </summary>
+      public IntPtr ByteCount;
+    }
+
+    #endregion
+
+    #region Nested type: TransmitParams
+
+    /// <summary>
+    /// Parameters for transmitting IR.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TransmitParams
+    {
+      /// <summary>
+      /// Bitmask containing ports to transmit on.
+      /// </summary>
+      public IntPtr TransmitPortMask;
+
+      /// <summary>
+      /// Carrier period.
+      /// </summary>
+      public IntPtr CarrierPeriod;
+
+      /// <summary>
+      /// Transmit Flags.
+      /// </summary>
+      public IntPtr Flags;
+
+      /// <summary>
+      /// Pulse Size.  If Pulse Mode Flag set.
+      /// </summary>
+      public IntPtr PulseSize;
+    }
+
+    #endregion
+
     #endregion Structures
 
     #region Enumerations
 
+    //#region Nested type: DeviceCapabilityFlags
+
+    ///// <summary>
+    ///// IR Device Capability Flags.
+    ///// </summary>
+    //[Flags]
+    //private enum DeviceCapabilityFlags
+    //{
+    //  /// <summary>
+    //  /// Hardware supports legacy key signing.
+    //  /// </summary>
+    //  LegacySigning = 0x0001,
+    //  /// <summary>
+    //  /// Hardware has unique serial number.
+    //  /// </summary>
+    //  SerialNumber = 0x0002,
+    //  /// <summary>
+    //  /// Can hardware flash LED to identify receiver? 
+    //  /// </summary>
+    //  FlashLed = 0x0004,
+    //  /// <summary>
+    //  /// Is this a legacy device?
+    //  /// </summary>
+    //  Legacy = 0x0008,
+    //  /// <summary>
+    //  /// Device can wake from S1.
+    //  /// </summary>
+    //  WakeS1 = 0x0010,
+    //  /// <summary>
+    //  /// Device can wake from S2.
+    //  /// </summary>
+    //  WakeS2 = 0x0020,
+    //  /// <summary>
+    //  /// Device can wake from S3.
+    //  /// </summary>
+    //  WakeS3 = 0x0040,
+    //  /// <summary>
+    //  /// Device can wake from S4.
+    //  /// </summary>
+    //  WakeS4 = 0x0080,
+    //  /// <summary>
+    //  /// Device can wake from S5.
+    //  /// </summary>
+    //  WakeS5 = 0x0100,
+    //}
+
+    //#endregion
+
+    #region Nested type: IoCtrl
+
     /// <summary>
     /// Device IO Control details.
     /// </summary>
-    enum IoCtrl
+    private enum IoCtrl
     {
       /// <summary>
       /// Start receiving IR.
       /// </summary>
-      StartReceive  = 0x0F608028,
+      StartReceive = 0x0F608028,
       /// <summary>
       /// Stop receiving IR.
       /// </summary>
-      StopReceive   = 0x0F60802C,
+      StopReceive = 0x0F60802C,
       /// <summary>
       /// Get IR device details.
       /// </summary>
-      GetDetails    = 0x0F604004,
+      GetDetails = 0x0F604004,
       /// <summary>
       /// Get IR blasters
       /// </summary>
-      GetBlasters   = 0x0F604008,
+      GetBlasters = 0x0F604008,
       /// <summary>
       /// Receive IR.
       /// </summary>
-      Receive       = 0x0F604022,
+      Receive = 0x0F604022,
       /// <summary>
       /// Transmit IR.
       /// </summary>
-      Transmit      = 0x0F608015,
+      Transmit = 0x0F608015,
     }
 
+    #endregion
+
+    #region Nested type: ReadThreadMode
+
     /// <summary>
-    /// IR Device Capability Flags.
+    /// Read Thread Mode.
     /// </summary>
-    [Flags]
-    enum DeviceCapabilityFlags
+    private enum ReadThreadMode
     {
-      /// <summary>
-      /// Hardware supports legacy key signing.
-      /// </summary>
-      LegacySigning = 0x0001, 
-      /// <summary>
-      /// Hardware has unique serial number.
-      /// </summary>
-      SerialNumber  = 0x0002,
-      /// <summary>
-      /// Can hardware flash LED to identify receiver? 
-      /// </summary>
-      FlashLed      = 0x0004,
-      /// <summary>
-      /// Is this a legacy device?
-      /// </summary>
-      Legacy        = 0x0008,
-      /// <summary>
-      /// Device can wake from S1.
-      /// </summary>
-      WakeS1        = 0x0010,
-      /// <summary>
-      /// Device can wake from S2.
-      /// </summary>
-      WakeS2        = 0x0020,
-      /// <summary>
-      /// Device can wake from S3.
-      /// </summary>
-      WakeS3        = 0x0040,
-      /// <summary>
-      /// Device can wake from S4.
-      /// </summary>
-      WakeS4        = 0x0080,
-      /// <summary>
-      /// Device can wake from S5.
-      /// </summary>
-      WakeS5        = 0x0100,
+      Receiving,
+      Learning,
+      LearningDone,
+      LearningFailed,
+      Stop,
     }
+
+    #endregion
+
+    #region Nested type: TransmitMode
 
     /// <summary>
     /// Used to set the carrier mode for IR blasting.
     /// </summary>
-    enum TransmitMode
+    private enum TransmitMode
     {
       /// <summary>
       /// Carrier Mode.
@@ -266,25 +321,15 @@ namespace InputService.Plugin
       DCMode = 1,
     }
 
-    /// <summary>
-    /// Read Thread Mode.
-    /// </summary>
-    enum ReadThreadMode
-    {
-      Receiving,
-      Learning,
-      LearningDone,
-      LearningFailed,
-      Stop,
-    }
+    #endregion
 
     #endregion Enumerations
 
     #region Constants
 
-    const int DeviceBufferSize  = 100;
-    const int PacketTimeout     = 100;
-    const int WriteSyncTimeout  = 10000;
+    private const int DeviceBufferSize = 100;
+    private const int PacketTimeout = 100;
+    //private const int WriteSyncTimeout = 10000;
 
     #endregion Constants
 
@@ -292,43 +337,41 @@ namespace InputService.Plugin
 
     #region Device Details
 
-    int _numTxPorts;
-    int _txPortMask;
-    int _learnPortMask;
+    private int _learnPort;
+    private int _learnPortMask;
+    private int _numTxPorts;
 
-    int _receivePort;
-    int _learnPort;
+    private int _receivePort;
+    private int _txPortMask;
 
     #endregion Device Details
 
-    NotifyWindow _notifyWindow;
+    private bool _deviceAvailable;
+    private SafeFileHandle _eHomeHandle;
+    private IrCode _learningCode;
+    private NotifyWindow _notifyWindow;
 
-    SafeFileHandle _eHomeHandle;
-
-    Thread _readThread;
-    ReadThreadMode _readThreadMode;
-
-    IrCode _learningCode;
-
-    bool _deviceAvailable;
+    private Thread _readThread;
+    private ReadThreadMode _readThreadMode;
 
     #endregion Variables
 
     #region Constructor
 
-    public DriverVista(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
-      : base(deviceGuid, devicePath, remoteCallback, keyboardCallback, mouseCallback) { }
+    public DriverVista(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback,
+                       KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
+      : base(deviceGuid, devicePath, remoteCallback, keyboardCallback, mouseCallback)
+    {
+    }
 
     #endregion Constructor
 
     #region Device Control Functions
 
-    void StartReceive(int receivePort, int timeout)
+    private void StartReceive(int receivePort, int timeout)
     {
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
-
-      int bytesReturned;
 
       StartReceiveParams structure;
       structure.Receiver = new IntPtr(receivePort);
@@ -342,6 +385,7 @@ namespace InputService.Plugin
 
         Marshal.StructureToPtr(structure, structPtr, false);
 
+        int bytesReturned;
         IoControl(IoCtrl.StartReceive, structPtr, Marshal.SizeOf(structure), IntPtr.Zero, 0, out bytesReturned);
       }
       finally
@@ -351,7 +395,7 @@ namespace InputService.Plugin
       }
     }
 
-    void StopReceive()
+    private void StopReceive()
     {
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
@@ -360,12 +404,10 @@ namespace InputService.Plugin
       IoControl(IoCtrl.StopReceive, IntPtr.Zero, 0, IntPtr.Zero, 0, out bytesReturned);
     }
 
-    void GetDeviceCapabilities()
+    private void GetDeviceCapabilities()
     {
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
-
-      int bytesReturned;
 
       DeviceCapabilities structure = new DeviceCapabilities();
 
@@ -377,9 +419,10 @@ namespace InputService.Plugin
 
         Marshal.StructureToPtr(structure, structPtr, false);
 
+        int bytesReturned;
         IoControl(IoCtrl.GetDetails, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
 
-        structure = (DeviceCapabilities)Marshal.PtrToStructure(structPtr, typeof(DeviceCapabilities));
+        structure = (DeviceCapabilities) Marshal.PtrToStructure(structPtr, typeof (DeviceCapabilities));
       }
       finally
       {
@@ -416,15 +459,13 @@ namespace InputService.Plugin
 #endif
     }
 
-    void GetBlasters()
+    private void GetBlasters()
     {
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
 
       if (_numTxPorts <= 0)
         return;
-
-      int bytesReturned;
 
       AvailableBlasters structure = new AvailableBlasters();
 
@@ -436,9 +477,10 @@ namespace InputService.Plugin
 
         Marshal.StructureToPtr(structure, structPtr, false);
 
+        int bytesReturned;
         IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
 
-        structure = (AvailableBlasters)Marshal.PtrToStructure(structPtr, typeof(AvailableBlasters));
+        structure = (AvailableBlasters) Marshal.PtrToStructure(structPtr, typeof (AvailableBlasters));
       }
       finally
       {
@@ -453,7 +495,7 @@ namespace InputService.Plugin
 #endif
     }
 
-    void TransmitIR(byte[] irData, int carrier, int transmitPortMask)
+    private void TransmitIR(byte[] irData, int carrier, int transmitPortMask)
     {
 #if DEBUG
       DebugWriteLine("TransmitIR({0} bytes, carrier: {1}, port: {2})", irData.Length, carrier, transmitPortMask);
@@ -461,8 +503,6 @@ namespace InputService.Plugin
 
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
-
-      int bytesReturned;
 
       TransmitParams transmitParams = new TransmitParams();
       transmitParams.TransmitPortMask = new IntPtr(transmitPortMask);
@@ -476,14 +516,14 @@ namespace InputService.Plugin
       else
         transmitParams.PulseSize = new IntPtr(carrier);
 
-      transmitParams.Flags = new IntPtr((int)mode);
+      transmitParams.Flags = new IntPtr((int) mode);
 
       TransmitChunk transmitChunk = new TransmitChunk();
       transmitChunk.OffsetToNextChunk = new IntPtr(0);
       transmitChunk.RepeatCount = new IntPtr(1);
       transmitChunk.ByteCount = new IntPtr(irData.Length);
 
-      int bufferSize = irData.Length + Marshal.SizeOf(typeof(TransmitChunk)) + 8;
+      int bufferSize = irData.Length + Marshal.SizeOf(typeof (TransmitChunk)) + 8;
       byte[] buffer = new byte[bufferSize];
 
       byte[] rawTransmitChunk = RawSerialize(transmitChunk);
@@ -503,7 +543,9 @@ namespace InputService.Plugin
 
         Marshal.Copy(buffer, 0, bufferPtr, buffer.Length);
 
-        IoControl(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(typeof(TransmitParams)), bufferPtr, bufferSize, out bytesReturned);
+        int bytesReturned;
+        IoControl(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(typeof (TransmitParams)), bufferPtr, bufferSize,
+                  out bytesReturned);
       }
       finally
       {
@@ -518,12 +560,11 @@ namespace InputService.Plugin
       Thread.Sleep(PacketTimeout);
     }
 
-    void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize, out int bytesReturned)
+    private void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize,
+                           out int bytesReturned)
     {
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
-
-      int lastError;
 
       using (WaitHandle waitHandle = new ManualResetEvent(false))
       {
@@ -536,12 +577,15 @@ namespace InputService.Plugin
 
         try
         {
+          int lastError;
+
           IntPtr dangerousWaitHandle = safeWaitHandle.DangerousGetHandle();
 
           DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
           overlapped.ClearAndSetEvent(dangerousWaitHandle);
 
-          bool deviceIoControl = DeviceIoControl(_eHomeHandle, ioControlCode, inBuffer, inBufferSize, outBuffer, outBufferSize, out bytesReturned, overlapped.Overlapped);
+          bool deviceIoControl = DeviceIoControl(_eHomeHandle, ioControlCode, inBuffer, inBufferSize, outBuffer,
+                                                 outBufferSize, out bytesReturned, overlapped.Overlapped);
           lastError = Marshal.GetLastWin32Error();
 
           if (!deviceIoControl)
@@ -601,8 +645,8 @@ namespace InputService.Plugin
         StartReceive(_receivePort, PacketTimeout);
         StartReadThread(ReadThreadMode.Receiving);
 
-        _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
-        _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
+        _notifyWindow.DeviceArrival += OnDeviceArrival;
+        _notifyWindow.DeviceRemoval += OnDeviceRemoval;
       }
       catch
       {
@@ -624,8 +668,8 @@ namespace InputService.Plugin
 
       try
       {
-        _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
-        _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
+        _notifyWindow.DeviceArrival -= OnDeviceArrival;
+        _notifyWindow.DeviceRemoval -= OnDeviceRemoval;
 
         StopReadThread();
         CloseDevice();
@@ -678,7 +722,7 @@ namespace InputService.Plugin
 
       try
       {
-        if (String.IsNullOrEmpty(Driver.Find(_deviceGuid)))
+        if (String.IsNullOrEmpty(Find(_deviceGuid)))
         {
 #if DEBUG
           DebugWriteLine("Device not found");
@@ -786,11 +830,17 @@ namespace InputService.Plugin
       byte[] data = DataPacket(code);
 
       int portMask = 0;
-      switch ((BlasterPort)port)
+      switch ((BlasterPort) port)
       {
-        case BlasterPort.Both:    portMask = _txPortMask; break;
-        case BlasterPort.Port_1:  portMask = GetHighBit(_txPortMask, 1); break;
-        case BlasterPort.Port_2:  portMask = GetHighBit(_txPortMask, 2); break;
+        case BlasterPort.Both:
+          portMask = _txPortMask;
+          break;
+        case BlasterPort.Port_1:
+          portMask = GetHighBit(_txPortMask, 1);
+          break;
+        case BlasterPort.Port_2:
+          portMask = GetHighBit(_txPortMask, 2);
+          break;
       }
 
       TransmitIR(data, code.Carrier, portMask);
@@ -803,7 +853,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Initializes the device.
     /// </summary>
-    void InitializeDevice()
+    private void InitializeDevice()
     {
 #if DEBUG
       DebugWriteLine("InitializeDevice()");
@@ -818,7 +868,7 @@ namespace InputService.Plugin
     /// </summary>
     /// <param name="code">IrCode to convert.</param>
     /// <returns>Raw device data.</returns>
-    static byte[] DataPacket(IrCode code)
+    private static byte[] DataPacket(IrCode code)
     {
 #if DEBUG
       DebugWriteLine("DataPacket()");
@@ -827,16 +877,16 @@ namespace InputService.Plugin
       if (code.TimingData.Length == 0)
         return null;
 
-      byte[] data = new byte[code.TimingData.Length * 4];
-      
+      byte[] data = new byte[code.TimingData.Length*4];
+
       int dataIndex = 0;
       for (int timeIndex = 0; timeIndex < code.TimingData.Length; timeIndex++)
       {
-        uint time = (uint)(50 * (int)Math.Round((double)code.TimingData[timeIndex] / 50));
+        uint time = (uint) (50*(int) Math.Round((double) code.TimingData[timeIndex]/50));
 
-        for (int timeShift =  0; timeShift < 4; timeShift++)
+        for (int timeShift = 0; timeShift < 4; timeShift++)
         {
-          data[dataIndex++] = (byte)(time & 0xFF);
+          data[dataIndex++] = (byte) (time & 0xFF);
           time >>= 8;
         }
       }
@@ -847,10 +897,10 @@ namespace InputService.Plugin
     /// <summary>
     /// Start the device read thread.
     /// </summary>
-    void StartReadThread(ReadThreadMode mode)
+    private void StartReadThread(ReadThreadMode mode)
     {
 #if DEBUG
-      DebugWriteLine("StartReadThread({0})", Enum.GetName(typeof(ReadThreadMode), mode));
+      DebugWriteLine("StartReadThread({0})", Enum.GetName(typeof (ReadThreadMode), mode));
 #endif
 
       if (_readThread != null)
@@ -863,15 +913,16 @@ namespace InputService.Plugin
 
       _readThreadMode = mode;
 
-      _readThread = new Thread(new ThreadStart(ReadThread));
+      _readThread = new Thread(ReadThread);
       _readThread.Name = "MicrosoftMceTransceiver.DriverVista.ReadThread";
       _readThread.IsBackground = true;
       _readThread.Start();
     }
+
     /// <summary>
     /// Stop the device read thread.
     /// </summary>
-    void StopReadThread()
+    private void StopReadThread()
     {
 #if DEBUG
       DebugWriteLine("StopReadThread()");
@@ -904,7 +955,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Opens the device handles and registers for device removal notification.
     /// </summary>
-    void OpenDevice()
+    private void OpenDevice()
     {
 #if DEBUG
       DebugWriteLine("OpenDevice()");
@@ -920,7 +971,9 @@ namespace InputService.Plugin
 
       int lastError;
 
-      _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite,
+                                CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting,
+                                CreateFileAttributes.Overlapped, IntPtr.Zero);
       lastError = Marshal.GetLastWin32Error();
       if (_eHomeHandle.IsInvalid)
       {
@@ -942,7 +995,8 @@ namespace InputService.Plugin
       }
 #endif
 
-      Thread.Sleep(PacketTimeout); // Hopefully improves compatibility with Zalman remote which times out retrieving device capabilities. (2008-01-01)
+      Thread.Sleep(PacketTimeout);
+      // Hopefully improves compatibility with Zalman remote which times out retrieving device capabilities. (2008-01-01)
 
       _deviceAvailable = true;
     }
@@ -950,7 +1004,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Close all handles to the device and unregisters device removal notification.
     /// </summary>
-    void CloseDevice()
+    private void CloseDevice()
     {
 #if DEBUG
       DebugWriteLine("CloseDevice()");
@@ -977,7 +1031,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Called when device arrival is notified.
     /// </summary>
-    void OnDeviceArrival()
+    private void OnDeviceArrival()
     {
 #if DEBUG
       DebugWriteLine("OnDeviceArrival()");
@@ -989,10 +1043,11 @@ namespace InputService.Plugin
       StartReceive(_receivePort, PacketTimeout);
       StartReadThread(ReadThreadMode.Receiving);
     }
+
     /// <summary>
     /// Called when device removal is notified.
     /// </summary>
-    void OnDeviceRemoval()
+    private void OnDeviceRemoval()
     {
 #if DEBUG
       DebugWriteLine("OnDeviceRemoval()");
@@ -1005,15 +1060,13 @@ namespace InputService.Plugin
     /// <summary>
     /// Device read thread method.
     /// </summary>
-    void ReadThread()
+    private void ReadThread()
     {
-      int bytesRead;
-
       IntPtr receiveParamsPtr = IntPtr.Zero;
 
       try
       {
-        int receiveParamsSize = Marshal.SizeOf(typeof(ReceiveParams)) + DeviceBufferSize + 8;
+        int receiveParamsSize = Marshal.SizeOf(typeof (ReceiveParams)) + DeviceBufferSize + 8;
         receiveParamsPtr = Marshal.AllocHGlobal(receiveParamsSize);
 
         ReceiveParams receiveParams = new ReceiveParams();
@@ -1022,6 +1075,7 @@ namespace InputService.Plugin
 
         while (_readThreadMode != ReadThreadMode.Stop)
         {
+          int bytesRead;
           IoControl(IoCtrl.Receive, IntPtr.Zero, 0, receiveParamsPtr, receiveParamsSize, out bytesRead);
 
           if (bytesRead > Marshal.SizeOf(receiveParams))
@@ -1046,13 +1100,14 @@ namespace InputService.Plugin
             if (_readThreadMode == ReadThreadMode.Learning)
               _learningCode.AddTimingData(timingData);
             else
-              IrDecoder.DecodeIR(timingData, _remoteCallback, _keyboardCallback, _mouseCallback);              
+              IrDecoder.DecodeIR(timingData, _remoteCallback, _keyboardCallback, _mouseCallback);
           }
 
           // Determine carrier frequency when learning ...
           if (_readThreadMode == ReadThreadMode.Learning && bytesRead >= Marshal.SizeOf(receiveParams))
           {
-            ReceiveParams receiveParams2 = (ReceiveParams)Marshal.PtrToStructure(receiveParamsPtr, typeof(ReceiveParams));
+            ReceiveParams receiveParams2 =
+              (ReceiveParams) Marshal.PtrToStructure(receiveParamsPtr, typeof (ReceiveParams));
 
             if (receiveParams2.DataEnd.ToInt32() != 0)
             {
@@ -1106,13 +1161,13 @@ namespace InputService.Plugin
 
     #region Misc Methods
 
-    static byte[] RawSerialize(object anything)
+    private static byte[] RawSerialize(object anything)
     {
       int rawSize = Marshal.SizeOf(anything);
       byte[] rawData = new byte[rawSize];
 
       GCHandle handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
-      
+
       try
       {
         IntPtr buffer = handle.AddrOfPinnedObject();
@@ -1127,7 +1182,7 @@ namespace InputService.Plugin
       return rawData;
     }
 
-    static int GetHighBit(int mask, int bitCount)
+    private static int GetHighBit(int mask, int bitCount)
     {
       int count = 0;
       for (int i = 0; i < 32; i++)
@@ -1142,7 +1197,7 @@ namespace InputService.Plugin
       return 0;
     }
 
-    static int FirstHighBit(int mask)
+    private static int FirstHighBit(int mask)
     {
       for (int i = 0; i < 32; i++)
         if ((mask & (1 << i)) != 0)
@@ -1150,7 +1205,8 @@ namespace InputService.Plugin
 
       return -1;
     }
-    static int FirstLowBit(int mask)
+
+    private static int FirstLowBit(int mask)
     {
       for (int i = 0; i < 32; i++)
         if ((mask & (1 << i)) == 0)
@@ -1159,38 +1215,35 @@ namespace InputService.Plugin
       return -1;
     }
 
-    static int GetCarrierPeriod(int carrier)
+    private static int GetCarrierPeriod(int carrier)
     {
-      return (int)Math.Round(1000000.0 / (double)carrier);
+      return (int) Math.Round(1000000.0/carrier);
     }
 
-    static TransmitMode GetTransmitMode(int carrier)
+    private static TransmitMode GetTransmitMode(int carrier)
     {
       if (carrier > 100)
         return TransmitMode.CarrierMode;
-      else
-        return TransmitMode.DCMode;
+
+      return TransmitMode.DCMode;
     }
 
-    static int[] GetTimingDataFromPacket(byte[] packetBytes)
+    private static int[] GetTimingDataFromPacket(byte[] packetBytes)
     {
-      int[] timingData = new int[packetBytes.Length / 4];
+      int[] timingData = new int[packetBytes.Length/4];
 
       int timingDataIndex = 0;
 
       for (int index = 0; index < packetBytes.Length; index += 4)
         timingData[timingDataIndex++] =
-          (int)
           (packetBytes[index] +
-          (packetBytes[index + 1] << 8) +
-          (packetBytes[index + 2] << 16) +
-          (packetBytes[index + 3] << 24));
+           (packetBytes[index + 1] << 8) +
+           (packetBytes[index + 2] << 16) +
+           (packetBytes[index + 3] << 24));
 
       return timingData;
     }
 
     #endregion Misc Methods
-
   }
-
 }

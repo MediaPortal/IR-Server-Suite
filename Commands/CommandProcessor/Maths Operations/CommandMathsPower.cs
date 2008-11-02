@@ -1,29 +1,30 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Maths Power macro command.
   /// </summary>
   public class CommandMathsPower : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandMathsPower"/> class.
     /// </summary>
-    public CommandMathsPower() { InitParameters(3); }
+    public CommandMathsPower()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandMathsPower"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandMathsPower(string[] parameters) : base(parameters) { }
+    public CommandMathsPower(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +34,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMaths; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryMaths;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Maths Power"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Maths Power";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -72,13 +79,11 @@ namespace Commands
       int input1Int = 0;
       int.TryParse(processed[1], out input1Int);
 
-      int output = (int)Math.Pow((double)input0Int, (double)input1Int);
+      int output = (int) Math.Pow(input0Int, input1Int);
 
       variables.VariableSet(processed[2], output.ToString());
     }
 
     #endregion Implementation
-
   }
-
 }

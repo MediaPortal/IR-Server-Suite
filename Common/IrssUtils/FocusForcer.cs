@@ -4,20 +4,18 @@ using System.Threading;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// Used to monitor a process and force windows to give that process focus.
   /// </summary>
   public class FocusForcer
   {
-
     #region Variables
 
-    int _processId;
+    private readonly int _processId;
     //Thread _forcerThread;
-    IntPtr _windowHandle;
 
-    EventWaitHandle _waitHandle;
+    private EventWaitHandle _waitHandle;
+    private IntPtr _windowHandle;
 
     #endregion Variables
 
@@ -46,7 +44,7 @@ namespace IrssUtils
 
       try
       {
-        Win32.EnumWindowsProc ewc = new Win32.EnumWindowsProc(CheckWindow);
+        Win32.EnumWindowsProc ewc = CheckWindow;
 
         int focusedId = Win32.GetForegroundWindowPID();
         if (focusedId != _processId)
@@ -79,13 +77,13 @@ namespace IrssUtils
         throw new InvalidOperationException("Cannot force focus, process is not running");
 
       //if (_forcerThread != null)
-        //throw new InvalidOperationException("Cannot force focus, Forcer thread already running");
+      //throw new InvalidOperationException("Cannot force focus, Forcer thread already running");
 
       _waitHandle = new AutoResetEvent(false);
 
       try
       {
-        Win32.EnumWindowsProc ewc = new Win32.EnumWindowsProc(CheckWindow);
+        Win32.EnumWindowsProc ewc = CheckWindow;
 
         while (!process.HasExited)
         {
@@ -191,7 +189,7 @@ namespace IrssUtils
     }
     */
 
-    bool CheckWindow(IntPtr hWnd, IntPtr lParam)
+    private bool CheckWindow(IntPtr hWnd, IntPtr lParam)
     {
       if (hWnd == IntPtr.Zero)
       {
@@ -217,7 +215,5 @@ namespace IrssUtils
     }
 
     #endregion Implementation
-
   }
-
 }

@@ -1,31 +1,24 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Virtual Keyboard.
   /// </summary>
   public partial class VirtualKeyboard : Form
   {
-
     #region Variables
 
-    bool _capsLock;
-    bool _shift;
+    private readonly Timer _timer;
+    private bool _capsLock;
+    private string _cursor = "|";
+    private int _pos;
+    private bool _shift;
 
-    string _text = String.Empty;
-    int _pos = 0;
-
-    string _cursor = "|";
-
-    Timer _timer;
+    private string _text = String.Empty;
 
     #endregion Variables
 
@@ -62,14 +55,14 @@ namespace IrssUtils.Forms
 
       _timer = new Timer();
       _timer.Interval = 1000;
-      _timer.Tick += new EventHandler(Flash);
+      _timer.Tick += Flash;
       _timer.Enabled = true;
       _timer.Start();
     }
 
     #endregion Constructor
 
-    void Flash(object sender, EventArgs e)
+    private void Flash(object sender, EventArgs e)
     {
       if (_cursor == "|")
         _cursor = " ";
@@ -79,15 +72,15 @@ namespace IrssUtils.Forms
       TextUpdate();
     }
 
-    void LayoutNormal()
+    private void LayoutNormal()
     {
       buttonSymbols.Text = "Symbols";
 
-      if (_shift)     ToggleShift();
-      if (_capsLock)  ToggleCapsLock();
+      if (_shift) ToggleShift();
+      if (_capsLock) ToggleCapsLock();
 
-      buttonCapsLock.Enabled  = true;
-      buttonShift.Enabled     = true;
+      buttonCapsLock.Enabled = true;
+      buttonShift.Enabled = true;
 
       button1.Text = "1";
       button2.Text = "2";
@@ -127,15 +120,16 @@ namespace IrssUtils.Forms
       buttonY.Text = "y";
       buttonZ.Text = "z";
     }
-    void LayoutSymbols()
+
+    private void LayoutSymbols()
     {
       buttonSymbols.Text = "Normal";
 
-      if (_shift)     ToggleShift();
-      if (_capsLock)  ToggleCapsLock();
+      if (_shift) ToggleShift();
+      if (_capsLock) ToggleCapsLock();
 
-      buttonCapsLock.Enabled  = false;
-      buttonShift.Enabled     = false;
+      buttonCapsLock.Enabled = false;
+      buttonShift.Enabled = false;
 
       button1.Text = "!";
       button2.Text = "@";
@@ -176,22 +170,24 @@ namespace IrssUtils.Forms
       buttonZ.Text = " ";
     }
 
-    void TextAdd(string str)
+    private void TextAdd(string str)
     {
       if (_pos == _text.Length)
         _text += str;
       else
         _text = _text.Insert(_pos, str);
-      
+
       _pos += str.Length;
 
       TextUpdate();
     }
-    void TextRemove()
+
+    private void TextRemove()
     {
       TextRemove(1);
     }
-    void TextRemove(int count)
+
+    private void TextRemove(int count)
     {
       int remPos = _pos - count;
       if (remPos == -1 || (remPos == 0 && _text.Length == 0))
@@ -202,7 +198,8 @@ namespace IrssUtils.Forms
 
       TextUpdate();
     }
-    void TextUpdate()
+
+    private void TextUpdate()
     {
       string mod = _text.Clone() as string;
 
@@ -214,13 +211,14 @@ namespace IrssUtils.Forms
       textBoxKeys.Text = mod;
     }
 
-    void NumberButton_Click(object sender, EventArgs e)
+    private void NumberButton_Click(object sender, EventArgs e)
     {
       Button origin = sender as Button;
 
       TextAdd(origin.Text);
     }
-    void SpecialButton_Click(object sender, EventArgs e)
+
+    private void SpecialButton_Click(object sender, EventArgs e)
     {
       Button origin = sender as Button;
 
@@ -265,7 +263,7 @@ namespace IrssUtils.Forms
             int newPos = _pos - 1;
             if (newPos == -1)
               return;
-            
+
             _pos = newPos;
             TextUpdate();
             break;
@@ -283,7 +281,8 @@ namespace IrssUtils.Forms
           }
       }
     }
-    void LetterButton_Click(object sender, EventArgs e)
+
+    private void LetterButton_Click(object sender, EventArgs e)
     {
       Button origin = sender as Button;
 
@@ -300,7 +299,7 @@ namespace IrssUtils.Forms
       }
     }
 
-    void ButtonsCaseUpper()
+    private void ButtonsCaseUpper()
     {
       buttonA.Text = buttonA.Text.ToUpper(CultureInfo.CurrentCulture);
       buttonB.Text = buttonB.Text.ToUpper(CultureInfo.CurrentCulture);
@@ -329,7 +328,8 @@ namespace IrssUtils.Forms
       buttonY.Text = buttonY.Text.ToUpper(CultureInfo.CurrentCulture);
       buttonZ.Text = buttonZ.Text.ToUpper(CultureInfo.CurrentCulture);
     }
-    void ButtonsCaseLower()
+
+    private void ButtonsCaseLower()
     {
       buttonA.Text = buttonA.Text.ToLower(CultureInfo.CurrentCulture);
       buttonB.Text = buttonB.Text.ToLower(CultureInfo.CurrentCulture);
@@ -359,7 +359,7 @@ namespace IrssUtils.Forms
       buttonZ.Text = buttonZ.Text.ToLower(CultureInfo.CurrentCulture);
     }
 
-    void ToggleShift()
+    private void ToggleShift()
     {
       _shift = !_shift;
       if (_capsLock)
@@ -377,9 +377,10 @@ namespace IrssUtils.Forms
       {
         buttonShift.BackColor = Color.Transparent;
         ButtonsCaseLower();
-      }      
+      }
     }
-    void ToggleCapsLock()
+
+    private void ToggleCapsLock()
     {
       _capsLock = !_capsLock;
       if (_shift)
@@ -400,50 +401,61 @@ namespace IrssUtils.Forms
       }
     }
 
-    void Button_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+    private void Button_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
     {
       e.IsInputKey = true;
     }
-    void Button_KeyDown(object sender, KeyEventArgs e)
+
+    private void Button_KeyDown(object sender, KeyEventArgs e)
     {
       Button origin = sender as Button;
 
-      int col     = tableLayoutPanelKeys.GetColumn(origin);
-      int row     = tableLayoutPanelKeys.GetRow(origin);
+      int col = tableLayoutPanelKeys.GetColumn(origin);
+      int row = tableLayoutPanelKeys.GetRow(origin);
       int colSpan = tableLayoutPanelKeys.GetColumnSpan(origin);
       int rowSpan = tableLayoutPanelKeys.GetRowSpan(origin);
 
       bool proc = true;
       switch (e.KeyCode)
       {
-        case Keys.Down:   row += rowSpan;   break;
-        case Keys.Up:     row--;            break;
-        case Keys.Right:  col += colSpan;   break;
-        case Keys.Left:   col--;            break;
+        case Keys.Down:
+          row += rowSpan;
+          break;
+        case Keys.Up:
+          row--;
+          break;
+        case Keys.Right:
+          col += colSpan;
+          break;
+        case Keys.Left:
+          col--;
+          break;
 
         case Keys.Escape:
           {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            DialogResult = DialogResult.Cancel;
+            Close();
             break;
           }
 
         case Keys.Enter:
           {
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
             break;
           }
 
-        default:          proc = false;     break;
+        default:
+          proc = false;
+          break;
       }
 
       if (proc)
       {
-        if (col == tableLayoutPanelKeys.ColumnCount)  col = 0;
-        if (col == -1)                                col = tableLayoutPanelKeys.ColumnCount - 1;
-        if (row == tableLayoutPanelKeys.RowCount)     row = 0;
-        if (row == -1)                                row = tableLayoutPanelKeys.RowCount - 1;
+        if (col == tableLayoutPanelKeys.ColumnCount) col = 0;
+        if (col == -1) col = tableLayoutPanelKeys.ColumnCount - 1;
+        if (row == tableLayoutPanelKeys.RowCount) row = 0;
+        if (row == -1) row = tableLayoutPanelKeys.RowCount - 1;
 
         Control select = tableLayoutPanelKeys.GetControlFromPosition(col, row);
         if (select.Enabled)
@@ -454,20 +466,19 @@ namespace IrssUtils.Forms
     private void buttonDone_Click(object sender, EventArgs e)
     {
       if (String.IsNullOrEmpty(_text))
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
 
-      this.Close();
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.Close();
+      Close();
     }
 
     private void VirtualKeyboard_FormClosed(object sender, FormClosedEventArgs e)
     {
       _timer.Stop();
     }
-
   }
-
 }

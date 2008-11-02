@@ -1,28 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.ServiceProcess;
-using System.Text;
 using System.Threading;
-
 using Microsoft.Win32.SafeHandles;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Driver class for the replacement driver.
   /// </summary>
-  class DriverReplacement : Driver
+  internal class DriverReplacement : Driver
   {
-
     #region Interop
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool ReadFile(
+    private static extern bool ReadFile(
       SafeFileHandle handle,
       IntPtr buffer,
       int bytesToRead,
@@ -31,7 +25,7 @@ namespace InputService.Plugin
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool WriteFile(
+    private static extern bool WriteFile(
       SafeFileHandle handle,
       byte[] buffer,
       int bytesToWrite,
@@ -42,11 +36,13 @@ namespace InputService.Plugin
 
     #region Enumerations
 
+    #region Nested type: DeviceType
+
     /// <summary>
     /// Type of device in use.
     /// This is used to determine the blaster port selection method.
     /// </summary>
-    enum DeviceType
+    private enum DeviceType
     {
       /// <summary>
       /// Device is a first party Microsoft MCE transceiver.
@@ -58,19 +54,27 @@ namespace InputService.Plugin
       SmkTopseed = 1,
     }
 
+    #endregion
+
+    #region Nested type: InputPort
+
     /// <summary>
     /// Device input port.
     /// </summary>
-    enum InputPort
+    private enum InputPort
     {
-      Receive   = 0,
-      Learning  = 1,
+      Receive = 0,
+      Learning = 1,
     }
+
+    #endregion
+
+    #region Nested type: ReadThreadMode
 
     /// <summary>
     /// Read Thread Mode.
     /// </summary>
-    enum ReadThreadMode
+    private enum ReadThreadMode
     {
       Receiving,
       Learning,
@@ -79,96 +83,101 @@ namespace InputService.Plugin
       Stop,
     }
 
+    #endregion
+
     #endregion Enumerations
 
     #region Constants
 
-    const int TimingResolution = 50; // In microseconds.
+    private const int DeviceBufferSize = 100;
+    private const int PacketTimeout = 100;
+    private const int TimingResolution = 50; // In microseconds.
 
     // Vendor ID's for SMK and Topseed devices.
-    const string VidSMK       = "vid_1784";
-    const string VidTopseed   = "vid_0609";
+    private const string VidSMK = "vid_1784";
+    private const string VidTopseed = "vid_0609";
 
     // Device variables
-    const int DeviceBufferSize  = 100;
-    const int PacketTimeout     = 100;
-    const int WriteSyncTimeout  = 10000;
+    private const int WriteSyncTimeout = 10000;
 
     // Microsoft Port Packets
-    static readonly byte[][] MicrosoftPorts = new byte[][]
-    {
-      new byte[] { 0x9F, 0x08, 0x06 },        // Both
-      new byte[] { 0x9F, 0x08, 0x04 },        // 1
-      new byte[] { 0x9F, 0x08, 0x02 },        // 2
-    };
+    private static readonly byte[][] MicrosoftPorts = new byte[][]
+                                                        {
+                                                          new byte[] {0x9F, 0x08, 0x06}, // Both
+                                                          new byte[] {0x9F, 0x08, 0x04}, // 1
+                                                          new byte[] {0x9F, 0x08, 0x02}, // 2
+                                                        };
 
     // SMK / Topseed Port Packets
-    static readonly byte[][] SmkTopseedPorts = new byte[][]
-    {
-      new byte[] { 0x9F, 0x08, 0x00 },        // Both
-      new byte[] { 0x9F, 0x08, 0x01 },        // 1
-      new byte[] { 0x9F, 0x08, 0x02 },        // 2
-    };
 
-    // Start, Stop and Reset Packets
-    static readonly byte[] StartPacket            = { 0x00, 0xFF, 0xAA };
-    static readonly byte[] StopPacket             = { 0xFF, 0xBB, 
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF, 0xFF };
     //static readonly byte[] ResetPacket = { 0xFF, 0xFE };
 
     // Misc Packets
-    static readonly byte[] SetCarrierFreqPacket   = { 0x9F, 0x06, 0x01, 0x80 };
-    static readonly byte[] SetInputPortPacket     = { 0x9F, 0x14, 0x00 };
-    static readonly byte[] SetTimeoutPacket       = { 0x9F, 0x0C, 0x00, 0x00 };
+    private static readonly byte[] SetCarrierFreqPacket = {0x9F, 0x06, 0x01, 0x80};
+    private static readonly byte[] SetInputPortPacket = {0x9F, 0x14, 0x00};
+    private static readonly byte[] SetTimeoutPacket = {0x9F, 0x0C, 0x00, 0x00};
+
+    private static readonly byte[][] SmkTopseedPorts = new byte[][]
+                                                         {
+                                                           new byte[] {0x9F, 0x08, 0x00}, // Both
+                                                           new byte[] {0x9F, 0x08, 0x01}, // 1
+                                                           new byte[] {0x9F, 0x08, 0x02}, // 2
+                                                         };
+
+    // Start, Stop and Reset Packets
+    private static readonly byte[] StartPacket = {0x00, 0xFF, 0xAA};
+
+    private static readonly byte[] StopPacket = {
+                                                  0xFF, 0xBB,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                  0xFF, 0xFF
+                                                };
 
     #endregion Constants
 
     #region Variables
 
-    NotifyWindow _notifyWindow;
+    private readonly DeviceType _deviceType = DeviceType.Microsoft;
+    private int _decodeCarry;
+    private bool _deviceAvailable;
+    private IrCode _learningCode;
+    private NotifyWindow _notifyWindow;
 
-    SafeFileHandle _readHandle;
-    SafeFileHandle _writeHandle;
+    private SafeFileHandle _readHandle;
 
-    Thread _readThread;
-    ReadThreadMode _readThreadMode;
-    ManualResetEvent _stopReadThread;
-
-    IrCode _learningCode;
-
-    DeviceType _deviceType = DeviceType.Microsoft;
-
-    bool _deviceAvailable;
-
-    int _decodeCarry;
+    private Thread _readThread;
+    private ReadThreadMode _readThreadMode;
+    private ManualResetEvent _stopReadThread;
+    private SafeFileHandle _writeHandle;
 
     #endregion Variables
 
     #region Constructor
 
-    public DriverReplacement(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback, KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
+    public DriverReplacement(Guid deviceGuid, string devicePath, RemoteCallback remoteCallback,
+                             KeyboardCallback keyboardCallback, MouseCallback mouseCallback)
       : base(deviceGuid, devicePath, remoteCallback, keyboardCallback, mouseCallback)
     {
-      if (devicePath.IndexOf(VidSMK, StringComparison.OrdinalIgnoreCase) != -1 || devicePath.IndexOf(VidTopseed, StringComparison.OrdinalIgnoreCase) != -1)
+      if (devicePath.IndexOf(VidSMK, StringComparison.OrdinalIgnoreCase) != -1 ||
+          devicePath.IndexOf(VidTopseed, StringComparison.OrdinalIgnoreCase) != -1)
         _deviceType = DeviceType.SmkTopseed;
       else
         _deviceType = DeviceType.Microsoft;
@@ -186,24 +195,24 @@ namespace InputService.Plugin
 #if DEBUG
       try
       {
-      DebugOpen("MicrosoftMceTransceiver_DriverReplacement.log");
-      DebugWriteLine("Start()");
-      DebugWriteLine("Device Guid: {0}", _deviceGuid);
-      DebugWriteLine("Device Path: {0}", _devicePath);
-      DebugWriteLine("Device Type: {0}", Enum.GetName(typeof(DeviceType), _deviceType));
+        DebugOpen("MicrosoftMceTransceiver_DriverReplacement.log");
+        DebugWriteLine("Start()");
+        DebugWriteLine("Device Guid: {0}", _deviceGuid);
+        DebugWriteLine("Device Path: {0}", _devicePath);
+        DebugWriteLine("Device Type: {0}", Enum.GetName(typeof (DeviceType), _deviceType));
 #endif
 
-      _notifyWindow = new NotifyWindow();
-      _notifyWindow.Create();
-      _notifyWindow.Class = _deviceGuid;
-      _notifyWindow.RegisterDeviceArrival();
+        _notifyWindow = new NotifyWindow();
+        _notifyWindow.Create();
+        _notifyWindow.Class = _deviceGuid;
+        _notifyWindow.RegisterDeviceArrival();
 
-      OpenDevice();
-      StartReadThread();
-      InitializeDevice();
+        OpenDevice();
+        StartReadThread();
+        InitializeDevice();
 
-      _notifyWindow.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
-      _notifyWindow.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
+        _notifyWindow.DeviceArrival += OnDeviceArrival;
+        _notifyWindow.DeviceRemoval += OnDeviceRemoval;
 #if DEBUG
       }
       catch
@@ -228,8 +237,8 @@ namespace InputService.Plugin
         if (_readHandle == null)
           throw new InvalidOperationException("Cannot stop, device is not active");
 
-        _notifyWindow.DeviceArrival -= new DeviceEventHandler(OnDeviceArrival);
-        _notifyWindow.DeviceRemoval -= new DeviceEventHandler(OnDeviceRemoval);
+        _notifyWindow.DeviceArrival -= OnDeviceArrival;
+        _notifyWindow.DeviceRemoval -= OnDeviceRemoval;
 
         WriteSync(StopPacket);
         StopReadThread();
@@ -308,7 +317,7 @@ namespace InputService.Plugin
 
       try
       {
-        if (String.IsNullOrEmpty(Driver.Find(_deviceGuid)))
+        if (String.IsNullOrEmpty(Find(_deviceGuid)))
         {
 #if DEBUG
           DebugWriteLine("Device not found");
@@ -422,9 +431,10 @@ namespace InputService.Plugin
       byte[] data = DataPacket(code);
 
       // If the code would go longer than the allowable limit, truncate the code
-      if (data.Length > 341) // 340 minus the overhead of 1 byte in 4 for header is 255 bytes of actual time code data, add one for a terminator byte
+      if (data.Length > 341)
+        // 340 minus the overhead of 1 byte in 4 for header is 255 bytes of actual time code data, add one for a terminator byte
       {
-        Array.Resize<byte>(ref data, 341); // Shrink the array to fit
+        Array.Resize(ref data, 341); // Shrink the array to fit
         data[340] = 0x80; // Set the terminator byte
       }
 
@@ -438,7 +448,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Initializes the device.
     /// </summary>
-    void InitializeDevice()
+    private void InitializeDevice()
     {
 #if DEBUG
       DebugWriteLine("InitializeDevice()");
@@ -447,12 +457,12 @@ namespace InputService.Plugin
       WriteSync(StartPacket);
 
       // Testing some commands that MCE sends, but I don't know what they mean (what do these get back?)
-      WriteSync(new byte[] { 0xFF, 0x0B }); // Looks like a request for Firmware version
-      WriteSync(new byte[] { 0x9F, 0x05 });
-      WriteSync(new byte[] { 0x9F, 0x0D });
-      WriteSync(new byte[] { 0x9F, 0x13 });
+      WriteSync(new byte[] {0xFF, 0x0B}); // Looks like a request for Firmware version
+      WriteSync(new byte[] {0x9F, 0x05});
+      WriteSync(new byte[] {0x9F, 0x0D});
+      WriteSync(new byte[] {0x9F, 0x13});
 
-      Thread.Sleep(4 * PacketTimeout);
+      Thread.Sleep(4*PacketTimeout);
 
       SetTimeout(PacketTimeout);
       SetInputPort(InputPort.Receive);
@@ -463,7 +473,7 @@ namespace InputService.Plugin
     /// </summary>
     /// <param name="code">IrCode to convert.</param>
     /// <returns>Raw device data.</returns>
-    static byte[] DataPacket(IrCode code)
+    private static byte[] DataPacket(IrCode code)
     {
 #if DEBUG
       DebugWriteLine("DataPacket()");
@@ -477,23 +487,23 @@ namespace InputService.Plugin
 
       for (int index = 0; index < code.TimingData.Length; index++)
       {
-        double time = (double)code.TimingData[index];
+        double time = code.TimingData[index];
 
-        byte duration = (byte)Math.Abs(Math.Round(time / TimingResolution));
+        byte duration = (byte) Math.Abs(Math.Round(time/TimingResolution));
         bool pulse = (time > 0);
 
 #if DEBUG
-        DebugWrite("{0}{1}, ", pulse ? '+' : '-', duration * TimingResolution);
+        DebugWrite("{0}{1}, ", pulse ? '+' : '-', duration*TimingResolution);
 #endif
 
         while (duration > 0x7F)
         {
-          packet.Add((byte)(pulse ? 0xFF : 0x7F));
+          packet.Add((byte) (pulse ? 0xFF : 0x7F));
 
           duration -= 0x7F;
         }
 
-        packet.Add((byte)(pulse ? 0x80 | duration : duration));
+        packet.Add((byte) (pulse ? 0x80 | duration : duration));
       }
 
 #if DEBUG
@@ -501,17 +511,17 @@ namespace InputService.Plugin
 #endif
 
       // Insert byte count markers into packet data bytes ...
-      int subpackets = (int)Math.Ceiling(packet.Count / (double)4);
+      int subpackets = (int) Math.Ceiling(packet.Count/(double) 4);
 
       byte[] output = new byte[packet.Count + subpackets + 1];
 
       int outputPos = 0;
 
-      for (int packetPos = 0; packetPos < packet.Count; )
+      for (int packetPos = 0; packetPos < packet.Count;)
       {
-        byte copyCount = (byte)(packet.Count - packetPos < 4 ? packet.Count - packetPos : 0x04);
+        byte copyCount = (byte) (packet.Count - packetPos < 4 ? packet.Count - packetPos : 0x04);
 
-        output[outputPos++] = (byte)(0x80 | copyCount);
+        output[outputPos++] = (byte) (0x80 | copyCount);
 
         for (int index = 0; index < copyCount; index++)
           output[outputPos++] = packet[packetPos++];
@@ -526,15 +536,15 @@ namespace InputService.Plugin
     /// Set the receive buffer timeout.
     /// </summary>
     /// <param name="timeout">Packet timeout (in milliseconds).</param>
-    void SetTimeout(int timeout)
+    private void SetTimeout(int timeout)
     {
       byte[] timeoutPacket = new byte[SetTimeoutPacket.Length];
       SetTimeoutPacket.CopyTo(timeoutPacket, 0);
 
-      int timeoutSamples = 1000 * timeout / TimingResolution;   // Timeout as a multiple of the timing resolution
+      int timeoutSamples = 1000*timeout/TimingResolution; // Timeout as a multiple of the timing resolution
 
-      timeoutPacket[2] = (byte)(timeoutSamples >> 8);
-      timeoutPacket[3] = (byte)(timeoutSamples & 0xFF);
+      timeoutPacket[2] = (byte) (timeoutSamples >> 8);
+      timeoutPacket[3] = (byte) (timeoutSamples & 0xFF);
 
       WriteSync(timeoutPacket);
     }
@@ -543,12 +553,12 @@ namespace InputService.Plugin
     /// Sets the IR receiver input port.
     /// </summary>
     /// <param name="port">The input port.</param>
-    void SetInputPort(InputPort port)
+    private void SetInputPort(InputPort port)
     {
       byte[] inputPortPacket = new byte[SetInputPortPacket.Length];
       SetInputPortPacket.CopyTo(inputPortPacket, 0);
 
-      inputPortPacket[2] = (byte)(port + 1);
+      inputPortPacket[2] = (byte) (port + 1);
 
       WriteSync(inputPortPacket);
     }
@@ -557,13 +567,17 @@ namespace InputService.Plugin
     /// Sets the IR blaster port.
     /// </summary>
     /// <param name="port">The output port.</param>
-    void SetOutputPort(int port)
+    private void SetOutputPort(int port)
     {
       byte[] portPacket;
       switch (_deviceType)
       {
-        case DeviceType.Microsoft:  portPacket = MicrosoftPorts[port];  break;
-        case DeviceType.SmkTopseed: portPacket = SmkTopseedPorts[port]; break;
+        case DeviceType.Microsoft:
+          portPacket = MicrosoftPorts[port];
+          break;
+        case DeviceType.SmkTopseed:
+          portPacket = SmkTopseedPorts[port];
+          break;
         default:
           throw new InvalidOperationException("Invalid device type");
       }
@@ -575,7 +589,7 @@ namespace InputService.Plugin
     /// Sets the IR output carrier frequency.
     /// </summary>
     /// <param name="carrier">The IR carrier frequency.</param>
-    void SetCarrierFrequency(int carrier)
+    private void SetCarrierFrequency(int carrier)
     {
       if (carrier == IrCode.CarrierFrequencyUnknown)
       {
@@ -598,12 +612,12 @@ namespace InputService.Plugin
       {
         for (int scaler = 1; scaler <= 4; scaler++)
         {
-          int divisor = (10000000 >> (2 * scaler)) / carrier;
+          int divisor = (10000000 >> (2*scaler))/carrier;
 
           if (divisor <= 0xFF)
           {
-            carrierPacket[2] = (byte)scaler;
-            carrierPacket[3] = (byte)divisor;
+            carrierPacket[2] = (byte) scaler;
+            carrierPacket[3] = (byte) divisor;
             break;
           }
         }
@@ -615,7 +629,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Start the device read thread.
     /// </summary>
-    void StartReadThread()
+    private void StartReadThread()
     {
 #if DEBUG
       DebugWriteLine("StartReadThread()");
@@ -632,15 +646,16 @@ namespace InputService.Plugin
       _stopReadThread = new ManualResetEvent(false);
       _readThreadMode = ReadThreadMode.Receiving;
 
-      _readThread = new Thread(new ThreadStart(ReadThread));
+      _readThread = new Thread(ReadThread);
       _readThread.Name = "MicrosoftMceTransceiver.DriverReplacement.ReadThread";
       _readThread.IsBackground = true;
       _readThread.Start();
     }
+
     /// <summary>
     /// Stop the device read thread.
     /// </summary>
-    void StopReadThread()
+    private void StopReadThread()
     {
 #if DEBUG
       DebugWriteLine("StopReadThread()");
@@ -659,7 +674,7 @@ namespace InputService.Plugin
         _readThreadMode = ReadThreadMode.Stop;
         _stopReadThread.Set();
         if (Thread.CurrentThread != _readThread)
-          _readThread.Join(PacketTimeout * 2);
+          _readThread.Join(PacketTimeout*2);
 
         //_readThread.Abort();
       }
@@ -686,7 +701,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Opens the device handles and registers for device removal notification.
     /// </summary>
-    void OpenDevice()
+    private void OpenDevice()
     {
 #if DEBUG
       DebugWriteLine("OpenDevice()");
@@ -702,7 +717,9 @@ namespace InputService.Plugin
 
       int lastError;
 
-      _readHandle = CreateFile(_devicePath + "\\Pipe01", CreateFileAccessTypes.GenericRead, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      _readHandle = CreateFile(_devicePath + "\\Pipe01", CreateFileAccessTypes.GenericRead, CreateFileShares.None,
+                               IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped,
+                               IntPtr.Zero);
       lastError = Marshal.GetLastWin32Error();
       if (_readHandle.IsInvalid)
       {
@@ -710,7 +727,9 @@ namespace InputService.Plugin
         throw new Win32Exception(lastError);
       }
 
-      _writeHandle = CreateFile(_devicePath + "\\Pipe00", CreateFileAccessTypes.GenericWrite, CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped, IntPtr.Zero);
+      _writeHandle = CreateFile(_devicePath + "\\Pipe00", CreateFileAccessTypes.GenericWrite, CreateFileShares.None,
+                                IntPtr.Zero, CreateFileDisposition.OpenExisting, CreateFileAttributes.Overlapped,
+                                IntPtr.Zero);
       lastError = Marshal.GetLastWin32Error();
       if (_writeHandle.IsInvalid)
       {
@@ -734,7 +753,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Close all handles to the device and unregisters device removal notification.
     /// </summary>
-    void CloseDevice()
+    private void CloseDevice()
     {
 #if DEBUG
       DebugWriteLine("CloseDevice()");
@@ -770,7 +789,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Called when device arrival is notified.
     /// </summary>
-    void OnDeviceArrival()
+    private void OnDeviceArrival()
     {
 #if DEBUG
       DebugWriteLine("OnDeviceArrival()");
@@ -780,10 +799,11 @@ namespace InputService.Plugin
       StartReadThread();
       InitializeDevice();
     }
+
     /// <summary>
     /// Called when device removal is notified.
     /// </summary>
-    void OnDeviceRemoval()
+    private void OnDeviceRemoval()
     {
 #if DEBUG
       DebugWriteLine("OnDeviceRemoval()");
@@ -796,17 +816,15 @@ namespace InputService.Plugin
     /// <summary>
     /// Device read thread method.
     /// </summary>
-    void ReadThread()
+    private void ReadThread()
     {
-      int bytesRead;
       byte[] packetBytes;
-      int lastError;
 
       WaitHandle waitHandle = new ManualResetEvent(false);
       SafeHandle safeWaitHandle = waitHandle.SafeWaitHandle;
-      WaitHandle[] waitHandles = new WaitHandle[] { waitHandle, _stopReadThread };
+      WaitHandle[] waitHandles = new WaitHandle[] {waitHandle, _stopReadThread};
 
-      IntPtr deviceBufferPtr  = IntPtr.Zero;
+      IntPtr deviceBufferPtr = IntPtr.Zero;
 
       bool success = false;
       safeWaitHandle.DangerousAddRef(ref success);
@@ -824,9 +842,10 @@ namespace InputService.Plugin
 
         while (_readThreadMode != ReadThreadMode.Stop)
         {
-          bytesRead = 0;
-
-          bool readDevice = ReadFile(_readHandle, deviceBufferPtr, DeviceBufferSize, out bytesRead, overlapped.Overlapped);
+          int lastError;
+          int bytesRead;
+          bool readDevice = ReadFile(_readHandle, deviceBufferPtr, DeviceBufferSize, out bytesRead,
+                                     overlapped.Overlapped);
           lastError = Marshal.GetLastWin32Error();
 
           if (!readDevice)
@@ -836,16 +855,18 @@ namespace InputService.Plugin
 
             while (true)
             {
-              int handle = WaitHandle.WaitAny(waitHandles, 2 * PacketTimeout, false);
+              int handle = WaitHandle.WaitAny(waitHandles, 2*PacketTimeout, false);
 
               if (handle == ErrorWaitTimeout)
                 continue;
-              else if (handle == 0)
+
+              if (handle == 0)
                 break;
-              else if (handle == 1)
+
+              if (handle == 1)
                 throw new ThreadInterruptedException("Read thread stopping by request");
-              else
-                throw new InvalidOperationException(String.Format("Invalid wait handle return: {0}", handle));
+
+              throw new InvalidOperationException(String.Format("Invalid wait handle return: {0}", handle));
             }
 
             bool getOverlapped = GetOverlappedResult(_readHandle, overlapped.Overlapped, out bytesRead, true);
@@ -877,14 +898,14 @@ namespace InputService.Plugin
           {
             double firmware = 0.0;
 
-            int indexOfFF = Array.IndexOf(packetBytes, (byte)0xFF);
+            int indexOfFF = Array.IndexOf(packetBytes, (byte) 0xFF);
             while (indexOfFF != -1)
             {
               if (packetBytes.Length > indexOfFF + 2 && packetBytes[indexOfFF + 1] == 0x0B) // FF 0B XY - Firmware X.Y00
               {
                 byte b1 = packetBytes[indexOfFF + 2];
 
-                firmware += (b1 >> 4) + (0.1 * (b1 & 0x0F));
+                firmware += (b1 >> 4) + (0.1*(b1 & 0x0F));
                 DebugWriteLine("Firmware: {0}", firmware);
               }
 
@@ -892,12 +913,12 @@ namespace InputService.Plugin
               {
                 byte b1 = packetBytes[indexOfFF + 2];
 
-                firmware += (0.01 * (b1 >> 4)) + (0.001 * (b1 & 0x0F));
+                firmware += (0.01*(b1 >> 4)) + (0.001*(b1 & 0x0F));
                 DebugWriteLine("Firmware: {0}", firmware);
               }
 
               if (packetBytes.Length > indexOfFF + 1)
-                indexOfFF = Array.IndexOf(packetBytes, (byte)0xFF, indexOfFF + 1);
+                indexOfFF = Array.IndexOf(packetBytes, (byte) 0xFF, indexOfFF + 1);
               else
                 break;
             }
@@ -924,10 +945,13 @@ namespace InputService.Plugin
                   break;
                 }
 
+                if (_learningCode == null)
+                  throw new InvalidOperationException("Learning not initialised correctly, _learningCode object is null");
+
                 _learningCode.AddTimingData(timingData);
 
                 // Example: 9F 01 02 9F 15 00 BE 80
-                int indexOf9F = Array.IndexOf(packetBytes, (byte)0x9F);
+                int indexOf9F = Array.IndexOf(packetBytes, (byte) 0x9F);
                 while (indexOf9F != -1)
                 {
                   if (packetBytes.Length > indexOf9F + 3 && packetBytes[indexOf9F + 1] == 0x15) // 9F 15 XX XX
@@ -938,20 +962,26 @@ namespace InputService.Plugin
                     int onTime, onCount;
                     GetIrCodeLengths(_learningCode, out onTime, out onCount);
 
-                    double carrierCount = (b1 * 256) + b2;
+                    double carrierCount = (b1*256) + b2;
 
-                    if (carrierCount / onCount < 2.0)
+                    if (carrierCount/onCount < 2.0)
                     {
                       _learningCode.Carrier = IrCode.CarrierFrequencyDCMode;
                     }
                     else
                     {
-                      double carrier = (double)1000000 * carrierCount / onTime;
+                      double carrier = 1000000*carrierCount/onTime;
 
+                      // TODO: Double-Check this calculation.
                       if (carrier > 32000)
-                        _learningCode.Carrier = (int)(carrier + 0.05 * carrier - 32000 / 48000);
+                      {
+                        _learningCode.Carrier = (int) (carrier + 0.05*carrier - 0.666667);
+                        // was: _learningCode.Carrier = (int) (carrier + 0.05*carrier - 32000/48000);
+                      }
                       else
-                        _learningCode.Carrier = (int)carrier;
+                      {
+                        _learningCode.Carrier = (int) carrier;
+                      }
                     }
 
                     _readThreadMode = ReadThreadMode.LearningDone;
@@ -960,7 +990,7 @@ namespace InputService.Plugin
 
                   if (packetBytes.Length > indexOf9F + 1)
                   {
-                    indexOf9F = Array.IndexOf(packetBytes, (byte)0x9F, indexOf9F + 1);
+                    indexOf9F = Array.IndexOf(packetBytes, (byte) 0x9F, indexOf9F + 1);
                   }
                   else
                   {
@@ -972,7 +1002,6 @@ namespace InputService.Plugin
                 break;
               }
           }
-
         }
       }
 #if DEBUG
@@ -1015,7 +1044,7 @@ namespace InputService.Plugin
     /// Synchronously write a packet of bytes to the device.
     /// </summary>
     /// <param name="data">Packet to write to device.</param>
-    void WriteSync(byte[] data)
+    private void WriteSync(byte[] data)
     {
 #if DEBUG
       DebugWrite("WriteSync({0}): ", data.Length);
@@ -1025,14 +1054,14 @@ namespace InputService.Plugin
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
 
-      int lastError;
-
       WaitHandle waitHandle = new ManualResetEvent(false);
       SafeHandle safeWaitHandle = waitHandle.SafeWaitHandle;
-      WaitHandle[] waitHandles = new WaitHandle[] { waitHandle };
+      WaitHandle[] waitHandles = new WaitHandle[] {waitHandle};
 
       try
       {
+        int lastError;
+
         bool success = false;
         safeWaitHandle.DangerousAddRef(ref success);
         if (!success)
@@ -1041,7 +1070,7 @@ namespace InputService.Plugin
         DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
         overlapped.ClearAndSetEvent(safeWaitHandle.DangerousGetHandle());
 
-        int bytesWritten = 0;
+        int bytesWritten;
         bool writeDevice = WriteFile(_writeHandle, data, data.Length, out bytesWritten, overlapped.Overlapped);
         lastError = Marshal.GetLastWin32Error();
 
@@ -1054,8 +1083,9 @@ namespace InputService.Plugin
         int handle = WaitHandle.WaitAny(waitHandles, WriteSyncTimeout, false);
 
         if (handle == ErrorWaitTimeout)
-          throw new System.TimeoutException("Timeout trying to write data to device");
-        else if (handle != 0)
+          throw new TimeoutException("Timeout trying to write data to device");
+
+        if (handle != 0)
           throw new InvalidOperationException(String.Format("Invalid wait handle return: {0}", handle));
 
         bool getOverlapped = GetOverlappedResult(_writeHandle, overlapped.Overlapped, out bytesWritten, true);
@@ -1085,7 +1115,7 @@ namespace InputService.Plugin
     /// </summary>
     /// <param name="packet">The raw device packet.</param>
     /// <returns>Timing data.</returns>
-    int[] GetTimingDataFromPacket(byte[] packet)
+    private int[] GetTimingDataFromPacket(byte[] packet)
     {
 #if DEBUG
       // TODO: Remove this try/catch block once the IndexOutOfRangeException is corrected...
@@ -1104,7 +1134,7 @@ namespace InputService.Plugin
 
         int len = 0;
 
-        for (int index = 0; index < packet.Length; )
+        for (int index = 0; index < packet.Length;)
         {
           byte curByte = packet[index];
 
@@ -1140,13 +1170,13 @@ namespace InputService.Plugin
             curByte = packet[j];
 
             if ((curByte & 0x80) != 0)
-              len += (int)(curByte & 0x7F);
+              len += (curByte & 0x7F);
             else
-              len -= (int)curByte;
+              len -= curByte;
 
             if ((curByte & 0x7F) != 0x7F)
             {
-              timingData.Add(len * TimingResolution);
+              timingData.Add(len*TimingResolution);
               len = 0;
             }
           }
@@ -1155,7 +1185,7 @@ namespace InputService.Plugin
         }
 
         if (len != 0)
-          timingData.Add(len * TimingResolution);
+          timingData.Add(len*TimingResolution);
 
 #if DEBUG
         DebugWrite("Received timing:    ");
@@ -1183,9 +1213,9 @@ namespace InputService.Plugin
     /// <param name="code">The IrCode to analyse.</param>
     /// <param name="pulseTime">The total ammount of pulse time.</param>
     /// <param name="pulseCount">The total count of pulses.</param>
-    static void GetIrCodeLengths(IrCode code, out int pulseTime, out int pulseCount)
+    private static void GetIrCodeLengths(IrCode code, out int pulseTime, out int pulseCount)
     {
-      pulseTime  = 0;
+      pulseTime = 0;
       pulseCount = 0;
 
       foreach (int time in code.TimingData)
@@ -1199,7 +1229,5 @@ namespace InputService.Plugin
     }
 
     #endregion Implementation
-
   }
-
 }

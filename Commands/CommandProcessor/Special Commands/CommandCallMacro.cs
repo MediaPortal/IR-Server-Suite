@@ -1,32 +1,32 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace Commands
 {
-
   /// <summary>
   /// Call Macro macro command.
   /// </summary>
   public class CommandCallMacro : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandCallMacro"/> class.
     /// </summary>
-    public CommandCallMacro() { InitParameters(1); }
+    public CommandCallMacro()
+    {
+      InitParameters(1);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandCallMacro"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandCallMacro(string [] parameters): base(parameters) { }
+    public CommandCallMacro(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -36,13 +36,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategorySpecial; }
+    public override string GetCategory()
+    {
+      return Processor.CategorySpecial;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Macro"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Macro";
+    }
 
     /// <summary>
     /// Gets the user display text.
@@ -53,7 +59,7 @@ namespace Commands
       string fileDir = Path.GetDirectoryName(Parameters[0]);
       if (!fileDir.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
         fileDir += Path.DirectorySeparatorChar;
-      
+
       string fileName = Path.GetFileNameWithoutExtension(Parameters[0]);
 
       if (fileDir.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
@@ -94,7 +100,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

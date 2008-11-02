@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Popup Message Command form.
   /// </summary>
   public partial class PopupMessage : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -25,9 +19,9 @@ namespace IrssUtils.Forms
       get
       {
         return String.Format("{0}|{1}|{2}",
-          textBoxHeading.Text,
-          textBoxText.Text,
-          numericUpDownTimeout.Value.ToString());
+                             textBoxHeading.Text,
+                             textBoxText.Text,
+                             numericUpDownTimeout.Value);
       }
     }
 
@@ -38,7 +32,10 @@ namespace IrssUtils.Forms
     /// <summary>
     /// Initializes a new instance of the <see cref="PopupMessage"/> class.
     /// </summary>
-    public PopupMessage() : this(null) { }
+    public PopupMessage() : this(null)
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PopupMessage"/> class.
     /// </summary>
@@ -61,17 +58,16 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Edit Maths Operation Command form.
   /// </summary>
-  partial class EditMathsOperation : Form
+  internal partial class EditMathsOperation : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -25,9 +19,9 @@ namespace Commands
       get
       {
         if (labelInput2.Visible)
-          return new string[] { textBoxInput1.Text.Trim(), textBoxInput2.Text.Trim(), textBoxOutputVar.Text.Trim() };
+          return new string[] {textBoxInput1.Text.Trim(), textBoxInput2.Text.Trim(), textBoxOutputVar.Text.Trim()};
         else
-          return new string[] { textBoxInput1.Text.Trim(), textBoxOutputVar.Text.Trim() };
+          return new string[] {textBoxInput1.Text.Trim(), textBoxOutputVar.Text.Trim()};
       }
     }
 
@@ -54,16 +48,16 @@ namespace Commands
     {
       if (parameters.Length == 3)
       {
-        textBoxInput1.Text      = parameters[0];
-        textBoxInput2.Text      = parameters[1];
-        textBoxOutputVar.Text   = parameters[2];
+        textBoxInput1.Text = parameters[0];
+        textBoxInput2.Text = parameters[1];
+        textBoxOutputVar.Text = parameters[2];
       }
       else if (parameters.Length == 2)
       {
-        textBoxInput1.Text      = parameters[0];
-        labelInput2.Visible     = false;
-        textBoxInput2.Visible   = false;
-        textBoxOutputVar.Text   = parameters[1];
+        textBoxInput1.Text = parameters[0];
+        labelInput2.Visible = false;
+        textBoxInput2.Visible = false;
+        textBoxOutputVar.Text = parameters[1];
       }
       else
       {
@@ -79,28 +73,28 @@ namespace Commands
     {
       if (String.IsNullOrEmpty(textBoxInput1.Text.Trim()))
       {
-        MessageBox.Show(this, "You must include at least the first input", "Missing first input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must include at least the first input", "Missing first input", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
         return;
       }
 
       if (String.IsNullOrEmpty(textBoxOutputVar.Text.Trim()))
       {
-        MessageBox.Show(this, "You must include an output variable name", "Missing output variable name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must include an output variable name", "Missing output variable name",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

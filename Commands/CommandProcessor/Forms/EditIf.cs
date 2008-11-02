@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Edit If Command form.
   /// </summary>
-  partial class EditIf : Form
+  internal partial class EditIf : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -24,12 +18,14 @@ namespace Commands
     {
       get
       {
-        return new string[] {
-          textBoxParam1.Text.Trim(),
-          comboBoxComparer.SelectedItem as string,
-          textBoxParam2.Text.Trim(),
-          textBoxLabel1.Text.Trim(),
-          textBoxLabel2.Text.Trim() };
+        return new string[]
+                 {
+                   textBoxParam1.Text.Trim(),
+                   comboBoxComparer.SelectedItem as string,
+                   textBoxParam2.Text.Trim(),
+                   textBoxLabel1.Text.Trim(),
+                   textBoxLabel2.Text.Trim()
+                 };
       }
     }
 
@@ -64,11 +60,11 @@ namespace Commands
     /// <param name="parameters">The parameters.</param>
     public EditIf(string[] parameters) : this()
     {
-      textBoxParam1.Text            = parameters[0];
+      textBoxParam1.Text = parameters[0];
       comboBoxComparer.SelectedItem = parameters[1];
-      textBoxParam2.Text            = parameters[2];
-      textBoxLabel1.Text            = parameters[3];
-      textBoxLabel2.Text            = parameters[4];
+      textBoxParam2.Text = parameters[2];
+      textBoxLabel1.Text = parameters[3];
+      textBoxLabel2.Text = parameters[4];
     }
 
     #endregion Constructors
@@ -79,22 +75,21 @@ namespace Commands
     {
       if (String.IsNullOrEmpty(textBoxLabel1.Text.Trim()))
       {
-        MessageBox.Show(this, "You must include at least the first label name", "Missing first label name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must include at least the first label name", "Missing first label name",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

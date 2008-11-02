@@ -1,22 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-
 using MediaPortal.GUI.Library;
 
 namespace Commands.MediaPortal
 {
-
   /// <summary>
   /// Go To Screen command input form.
   /// </summary>
   public partial class EditGotoScreen : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -34,7 +26,9 @@ namespace Commands.MediaPortal
     /// <summary>
     /// Default Constructor.
     /// </summary>
-    public EditGotoScreen() : this(String.Empty) { }
+    public EditGotoScreen() : this(String.Empty)
+    {
+    }
 
     /// <summary>
     /// Create the form with a preselected MediaPortal screen identifier.
@@ -51,17 +45,17 @@ namespace Commands.MediaPortal
       else
         comboBoxScreen.Text = selected;
     }
-    
+
     #endregion Constructors
 
-    void SetupComboBox()
+    private void SetupComboBox()
     {
       comboBoxScreen.Items.Clear();
-      string[] items = Enum.GetNames(typeof(GUIWindow.Window));
+      string[] items = Enum.GetNames(typeof (GUIWindow.Window));
 
       int index;
       for (index = 0; index < items.Length; index++)
-          items[index] = items[index].Substring(7);
+        items[index] = items[index].Substring(7);
 
       Array.Sort(items);
 
@@ -76,16 +70,14 @@ namespace Commands.MediaPortal
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

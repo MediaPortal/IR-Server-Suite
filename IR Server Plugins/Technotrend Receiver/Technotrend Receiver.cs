@@ -1,68 +1,24 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Drawing;
-using System.IO;
 using System.Runtime.InteropServices;
+using InputService.Plugin.Properties;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// IR Server Plugin for the Technotrend Receivers.
   /// </summary>
   public class TechnotrendReceiver : PluginBase, IRemoteReceiver
   {
-
-    // #define TEST_APPLICATION in the project properties when creating the console test app ...
-#if TEST_APPLICATION
-
-    static void Remote(string deviceName, string code)
-    {
-      Console.WriteLine("Remote: {0}", code);
-    }
-
-    [STAThread]
-    static void Main()
-    {
-      TechnotrendReceiver c;
-
-      try
-      {
-        c = new TechnotrendReceiver();
-
-        c.RemoteCallback += new RemoteHandler(Remote);
-
-        c.Start();
-
-        System.Windows.Forms.Application.Run();
-
-        c.Stop();
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-      finally
-      {
-        c = null;
-      }
-
-      Console.ReadKey();
-    }
-
-#endif
-
-
     #region Enumerations
+
+    #region Nested type: DEVICE_CAT
 
     /// <summary>
     /// Device Category.
     /// </summary>
-    enum DEVICE_CAT
+    private enum DEVICE_CAT
     {
       /// <summary>
       /// Not set.
@@ -90,10 +46,14 @@ namespace InputService.Plugin
       USB_2_DSS,
     }
 
+    #endregion
+
+    #region Nested type: TYPE_RET_VAL
+
     /// <summary>
     /// Return Value.
     /// </summary>
-    enum TYPE_RET_VAL
+    private enum TYPE_RET_VAL
     {
       /// <summary>
       /// 0 operation finished successful.
@@ -161,47 +121,87 @@ namespace InputService.Plugin
       RET_ERROR_POINTER,
     }
 
+    #endregion
+
     #endregion Enumerations
 
-    #region Delegates
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
+
+    static void Remote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      TechnotrendReceiver c;
+
+      try
+      {
+        c = new TechnotrendReceiver();
+
+        c.RemoteCallback += new RemoteHandler(Remote);
+
+        c.Start();
+
+        System.Windows.Forms.Application.Run();
+
+        c.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+      finally
+      {
+        c = null;
+      }
+
+      Console.ReadKey();
+    }
+
+#endif
+
+    #region Nested type: CallbackDef
 
     /// <summary>
     /// Called by the Technotrend api dll to signal a remote button has been received.
     /// </summary>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    unsafe delegate void CallbackDef(int context, uint* buffer);
+    private unsafe delegate void CallbackDef(int context, uint* buffer);
 
-    #endregion Delegates
+    #endregion
 
     #region Interop
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiEnumerate")]
-    static extern UInt32 bdaapiEnumerate(DEVICE_CAT deviceType);
+    private static extern UInt32 bdaapiEnumerate(DEVICE_CAT deviceType);
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiOpen")]
-    static extern IntPtr bdaapiOpen(DEVICE_CAT deviceType, uint deviceId);
+    private static extern IntPtr bdaapiOpen(DEVICE_CAT deviceType, uint deviceId);
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiClose")]
-    static extern void bdaapiClose(IntPtr handle);
+    private static extern void bdaapiClose(IntPtr handle);
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiOpenIR")]
-    static extern TYPE_RET_VAL bdaapiOpenIR(IntPtr handle, IntPtr callback, int context);
+    private static extern TYPE_RET_VAL bdaapiOpenIR(IntPtr handle, IntPtr callback, int context);
 
     [DllImport("ttBdaDrvApi_Dll.dll", EntryPoint = "bdaapiCloseIR")]
-    static extern TYPE_RET_VAL bdaapiCloseIR(IntPtr handle);
+    private static extern TYPE_RET_VAL bdaapiCloseIR(IntPtr handle);
 
     #endregion Interop
 
     #region Variables
 
-    List<IntPtr> _handles;
-    CallbackDef _callback;
-    IntPtr _callbackPtr;
+    private readonly CallbackDef _callback;
+    private readonly IntPtr _callbackPtr;
+    private readonly List<IntPtr> _handles;
 
-    RemoteHandler _remoteButtonHandler;
-
-    int _lastCode           = -1;
-    DateTime _lastCodeTime  = DateTime.Now;
+    private int _lastCode = -1;
+    private DateTime _lastCodeTime = DateTime.Now;
+    private RemoteHandler _remoteButtonHandler;
 
     #endregion Variables
 
@@ -212,12 +212,12 @@ namespace InputService.Plugin
     /// </summary>
     public TechnotrendReceiver()
     {
-      _handles        = new List<IntPtr>();
+      _handles = new List<IntPtr>();
 
       unsafe
       {
-        _callback     = new CallbackDef(OnIRCode);
-        _callbackPtr  = Marshal.GetFunctionPointerForDelegate(_callback);
+        _callback = OnIRCode;
+        _callbackPtr = Marshal.GetFunctionPointerForDelegate(_callback);
       }
     }
 
@@ -229,27 +229,56 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "Technotrend"; } }
+    public override string Name
+    {
+      get { return "Technotrend"; }
+    }
+
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.4.2.0"; } }
+    public override string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81, original MediaPortal plugin by Alexander Plas"; } }
+    public override string Author
+    {
+      get { return "and-81, original MediaPortal plugin by Alexander Plas"; }
+    }
+
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports the Technotrend receivers"; } }
+    public override string Description
+    {
+      get { return "Supports the Technotrend receivers"; }
+    }
+
     /// <summary>
     /// Gets a display icon for the plugin.
     /// </summary>
     /// <value>The icon.</value>
-    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
+    public override Icon DeviceIcon
+    {
+      get { return Resources.Icon; }
+    }
+
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
+    public RemoteHandler RemoteCallback
+    {
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
+    }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
@@ -325,6 +354,7 @@ namespace InputService.Plugin
       if (_handles.Count == 0)
         throw new InvalidOperationException("No Technotrend IR devices found");
     }
+
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
@@ -332,6 +362,7 @@ namespace InputService.Plugin
     {
       Stop();
     }
+
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
@@ -339,6 +370,7 @@ namespace InputService.Plugin
     {
       Start();
     }
+
     /// <summary>
     /// Stop the IR Server plugin.
     /// </summary>
@@ -357,25 +389,15 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    /// <value>The remote callback.</value>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
-    }
-
-    /// <summary>
     /// Called when an IR code is received.
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="buffer">The code.</param>
-    unsafe void OnIRCode(int context, uint *buffer)
+    private unsafe void OnIRCode(int context, uint* buffer)
     {
       try
       {
-        int code = ((int)buffer[0]) & 0x00FF;
+        int code = ((int) buffer[0]) & 0x00FF;
 
         DateTime now = DateTime.Now;
         TimeSpan timeSpan = now - _lastCodeTime;
@@ -383,7 +405,7 @@ namespace InputService.Plugin
         if (code != _lastCode || timeSpan.Milliseconds >= 250)
         {
           if (_remoteButtonHandler != null)
-            _remoteButtonHandler(this.Name, code.ToString());
+            _remoteButtonHandler(Name, code.ToString());
 
           _lastCodeTime = now;
         }
@@ -403,7 +425,5 @@ namespace InputService.Plugin
     }
 
     #endregion Implementation
-
   }
-
 }

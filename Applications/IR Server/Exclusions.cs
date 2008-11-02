@@ -1,18 +1,22 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace IRServer
 {
-
-  partial class Exclusions : Form
+  internal partial class Exclusions : Form
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Exclusions"/> class.
+    /// </summary>
+    public Exclusions()
+    {
+      InitializeComponent();
+
+      InitTree();
+    }
 
     /// <summary>
     /// Gets or sets the exclusion list.
@@ -34,7 +38,7 @@ namespace IRServer
         foreach (TreeNode node in treeViewExclusions.Nodes)
         {
           node.Checked = false;
-          
+
           foreach (string exclusion in value)
             if (exclusion.Equals(node.Tag as string, StringComparison.OrdinalIgnoreCase))
               node.Checked = true;
@@ -42,17 +46,7 @@ namespace IRServer
       }
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Exclusions"/> class.
-    /// </summary>
-    public Exclusions()
-    {
-      InitializeComponent();
-
-      InitTree();
-    }
-
-    void InitTree()
+    private void InitTree()
     {
       treeViewExclusions.Nodes.Clear();
 
@@ -65,7 +59,7 @@ namespace IRServer
           continue;
 
         string device = Path.GetFileName(folder);
-        
+
         TreeNode deviceNode = new TreeNode(device);
         deviceNode.Tag = String.Format("{0}:", device);
 
@@ -79,7 +73,7 @@ namespace IRServer
 
           TreeNode remoteNode = new TreeNode(remote);
           remoteNode.Tag = String.Format("{0}:{1}", device, remote);
-          
+
           deviceNode.Nodes.Add(remoteNode);
         }
 
@@ -89,24 +83,24 @@ namespace IRServer
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void labelExpandAll_Click(object sender, EventArgs e)
     {
       treeViewExclusions.ExpandAll();
     }
+
     private void labelCollapseAll_Click(object sender, EventArgs e)
     {
       treeViewExclusions.CollapseAll();
     }
-
   }
-
 }

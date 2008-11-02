@@ -1,20 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Variables file filename collection form.
   /// </summary>
   public partial class VariablesFileDialog : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -23,10 +16,7 @@ namespace IrssUtils.Forms
     /// <value>The file name.</value>
     public string FileName
     {
-      get
-      {
-        return textBoxLabel.Text.Trim();
-      }
+      get { return textBoxLabel.Text.Trim(); }
     }
 
     #endregion Properties
@@ -59,22 +49,21 @@ namespace IrssUtils.Forms
     {
       if (String.IsNullOrEmpty(textBoxLabel.Text.Trim()))
       {
-        MessageBox.Show(this, "You must include a variables file name", "Missing file name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must include a variables file name", "Missing file name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
         return;
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

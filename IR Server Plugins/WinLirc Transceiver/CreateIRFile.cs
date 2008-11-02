@@ -1,17 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
 namespace InputService.Plugin
 {
-
-  partial class CreateIRFile : Form
+  internal partial class CreateIRFile : Form
   {
-
     public CreateIRFile()
     {
       InitializeComponent();
@@ -19,8 +14,8 @@ namespace InputService.Plugin
 
     private void buttonDone_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCreate_Click(object sender, EventArgs e)
@@ -36,7 +31,7 @@ namespace InputService.Plugin
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("IRCommand"); // <IRCommand>
 
@@ -54,7 +49,5 @@ namespace InputService.Plugin
         MessageBox.Show(this, ex.ToString(), "Error Creating IR File", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-
   }
-
 }

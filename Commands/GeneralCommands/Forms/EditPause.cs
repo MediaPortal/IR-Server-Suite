@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands.General
 {
-
   /// <summary>
   /// Pause Time Command form.
   /// </summary>
   public partial class EditPause : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -24,9 +18,10 @@ namespace Commands.General
     {
       get
       {
-        return new string[] {
-          numericUpDownPause.Value.ToString()
-        };
+        return new string[]
+                 {
+                   numericUpDownPause.Value.ToString()
+                 };
       }
     }
 
@@ -57,16 +52,14 @@ namespace Commands.General
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

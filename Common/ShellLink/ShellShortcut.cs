@@ -27,29 +27,28 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-
 namespace MSjogren.Samples.ShellLink
 {
-	/// <remarks>
-	///   .NET friendly wrapper for the ShellLink class
-	/// </remarks>
-	public class ShellShortcut : IDisposable
-	{
+  /// <remarks>
+  ///   .NET friendly wrapper for the ShellLink class
+  /// </remarks>
+  public class ShellShortcut : IDisposable
+  {
     private const int INFOTIPSIZE = 1024;
     private const int MAX_PATH = 260;
 
-    private const int SW_SHOWNORMAL = 1;
-    private const int SW_SHOWMINIMIZED = 2;
     private const int SW_SHOWMAXIMIZED = 3;
+    private const int SW_SHOWMINIMIZED = 2;
     private const int SW_SHOWMINNOACTIVE = 7;
+    private const int SW_SHOWNORMAL = 1;
 
 
-  #if UNICODE
+#if UNICODE
     private IShellLinkW m_Link;
-  #else
+#else
+#endif
+    private readonly string m_sPath;
     private IShellLinkA m_Link;
-  #endif
-    private string m_sPath;
 
     ///
     /// <param name='linkPath'>
@@ -62,29 +61,22 @@ namespace MSjogren.Samples.ShellLink
 
       m_sPath = linkPath;
 
-    #if UNICODE
+#if UNICODE
       m_Link = (IShellLinkW) new ShellLink();
-    #else
+#else
       m_Link = (IShellLinkA) new ShellLink();
-    #endif
+#endif
 
-      if ( File.Exists( linkPath ) ) {
-        pf = (IPersistFile)m_Link;
-        pf.Load( linkPath, 0 );
+      if (File.Exists(linkPath))
+      {
+        pf = (IPersistFile) m_Link;
+        pf.Load(linkPath, 0);
       }
-
     }
 
     //
     //  IDisplosable implementation
     //
-    public void Dispose()
-    {
-      if ( m_Link != null ) {
-        Marshal.ReleaseComObject( m_Link );
-        m_Link = null;
-      }
-    }
 
     /// <value>
     ///   Gets or sets the argument list of the shortcut.
@@ -93,11 +85,11 @@ namespace MSjogren.Samples.ShellLink
     {
       get
       {
-        StringBuilder sb = new StringBuilder( INFOTIPSIZE );
-        m_Link.GetArguments( sb, sb.Capacity );
+        StringBuilder sb = new StringBuilder(INFOTIPSIZE);
+        m_Link.GetArguments(sb, sb.Capacity);
         return sb.ToString();
       }
-      set { m_Link.SetArguments( value ); }
+      set { m_Link.SetArguments(value); }
     }
 
     /// <value>
@@ -107,11 +99,11 @@ namespace MSjogren.Samples.ShellLink
     {
       get
       {
-        StringBuilder sb = new StringBuilder( INFOTIPSIZE );
-        m_Link.GetDescription( sb, sb.Capacity );
+        StringBuilder sb = new StringBuilder(INFOTIPSIZE);
+        m_Link.GetDescription(sb, sb.Capacity);
         return sb.ToString();
       }
-      set { m_Link.SetDescription( value ); }
+      set { m_Link.SetDescription(value); }
     }
 
     /// <value>
@@ -121,11 +113,11 @@ namespace MSjogren.Samples.ShellLink
     {
       get
       {
-        StringBuilder sb = new StringBuilder( MAX_PATH );
-        m_Link.GetWorkingDirectory( sb, sb.Capacity );
+        StringBuilder sb = new StringBuilder(MAX_PATH);
+        m_Link.GetWorkingDirectory(sb, sb.Capacity);
         return sb.ToString();
       }
-      set { m_Link.SetWorkingDirectory( value ); }
+      set { m_Link.SetWorkingDirectory(value); }
     }
 
     //
@@ -140,17 +132,17 @@ namespace MSjogren.Samples.ShellLink
     {
       get
       {
-      #if UNICODE
+#if UNICODE
         WIN32_FIND_DATAW wfd = new WIN32_FIND_DATAW();
-      #else
+#else
         WIN32_FIND_DATAA wfd = new WIN32_FIND_DATAA();
-      #endif
-        StringBuilder sb = new StringBuilder( MAX_PATH );
+#endif
+        StringBuilder sb = new StringBuilder(MAX_PATH);
 
-        m_Link.GetPath( sb, sb.Capacity, out wfd, SLGP_FLAGS.SLGP_UNCPRIORITY );
+        m_Link.GetPath(sb, sb.Capacity, out wfd, SLGP_FLAGS.SLGP_UNCPRIORITY);
         return sb.ToString();
       }
-      set { m_Link.SetPath( value ); }
+      set { m_Link.SetPath(value); }
     }
 
     /// <value>
@@ -163,12 +155,12 @@ namespace MSjogren.Samples.ShellLink
     {
       get
       {
-        StringBuilder sb = new StringBuilder( MAX_PATH );
+        StringBuilder sb = new StringBuilder(MAX_PATH);
         int nIconIdx;
-        m_Link.GetIconLocation( sb, sb.Capacity, out nIconIdx );
+        m_Link.GetIconLocation(sb, sb.Capacity, out nIconIdx);
         return sb.ToString();
       }
-      set { m_Link.SetIconLocation( value, IconIndex ); }
+      set { m_Link.SetIconLocation(value, IconIndex); }
     }
 
     /// <value>
@@ -182,12 +174,12 @@ namespace MSjogren.Samples.ShellLink
     {
       get
       {
-        StringBuilder sb = new StringBuilder( MAX_PATH );
+        StringBuilder sb = new StringBuilder(MAX_PATH);
         int nIconIdx;
-        m_Link.GetIconLocation( sb, sb.Capacity, out nIconIdx );
+        m_Link.GetIconLocation(sb, sb.Capacity, out nIconIdx);
         return nIconIdx;
       }
-      set { m_Link.SetIconLocation( IconPath, value ); }
+      set { m_Link.SetIconLocation(IconPath, value); }
     }
 
     /// <value>
@@ -199,23 +191,23 @@ namespace MSjogren.Samples.ShellLink
     {
       get
       {
-        StringBuilder sb = new StringBuilder( MAX_PATH );
+        StringBuilder sb = new StringBuilder(MAX_PATH);
         int nIconIdx;
         IntPtr hIcon, hInst;
         Icon ico, clone;
 
 
-        m_Link.GetIconLocation( sb, sb.Capacity, out nIconIdx );
-        hInst = Marshal.GetHINSTANCE( this.GetType().Module );
-        hIcon = Native.ExtractIcon( hInst, sb.ToString(), nIconIdx );
-        if ( hIcon == IntPtr.Zero )
+        m_Link.GetIconLocation(sb, sb.Capacity, out nIconIdx);
+        hInst = Marshal.GetHINSTANCE(GetType().Module);
+        hIcon = Native.ExtractIcon(hInst, sb.ToString(), nIconIdx);
+        if (hIcon == IntPtr.Zero)
           return null;
 
         // Return a cloned Icon, because we have to free the original ourselves.
-        ico = Icon.FromHandle( hIcon );
-        clone = (Icon)ico.Clone();
+        ico = Icon.FromHandle(hIcon);
+        clone = (Icon) ico.Clone();
         ico.Dispose();
-        Native.DestroyIcon( hIcon );
+        Native.DestroyIcon(hIcon);
         return clone;
       }
     }
@@ -230,13 +222,14 @@ namespace MSjogren.Samples.ShellLink
       get
       {
         int nWS;
-        m_Link.GetShowCmd( out nWS );
+        m_Link.GetShowCmd(out nWS);
 
-        switch ( nWS ) {
+        switch (nWS)
+        {
           case SW_SHOWMINIMIZED:
           case SW_SHOWMINNOACTIVE:
             return ProcessWindowStyle.Minimized;
-          
+
           case SW_SHOWMAXIMIZED:
             return ProcessWindowStyle.Maximized;
 
@@ -248,7 +241,8 @@ namespace MSjogren.Samples.ShellLink
       {
         int nWS;
 
-        switch ( value ) {
+        switch (value)
+        {
           case ProcessWindowStyle.Normal:
             nWS = SW_SHOWNORMAL;
             break;
@@ -265,8 +259,7 @@ namespace MSjogren.Samples.ShellLink
             throw new ArgumentException("Unsupported ProcessWindowStyle value.");
         }
 
-        m_Link.SetShowCmd( nWS );
-      
+        m_Link.SetShowCmd(nWS);
       }
     }
 
@@ -280,7 +273,7 @@ namespace MSjogren.Samples.ShellLink
         short wHotkey;
         int dwHotkey;
 
-        m_Link.GetHotkey( out wHotkey );
+        m_Link.GetHotkey(out wHotkey);
 
         //
         // Convert from IShellLink 16-bit format to Keys enumeration 32-bit value
@@ -296,7 +289,7 @@ namespace MSjogren.Samples.ShellLink
       {
         short wHotkey;
 
-        if ( (value & Keys.Modifiers) == 0 )
+        if ((value & Keys.Modifiers) == 0)
           throw new ArgumentException("Hotkey must include a modifier key.");
 
         //    
@@ -306,19 +299,9 @@ namespace MSjogren.Samples.ShellLink
         //   MM = Modifier (Alt, Control, Shift)
         //   VK = Virtual key code
         //       
-        wHotkey = unchecked((short) ( ((int) (value & Keys.Modifiers) >> 8) | (int) (value & Keys.KeyCode) ));
-        m_Link.SetHotkey( wHotkey );
-
+        wHotkey = unchecked((short) (((int) (value & Keys.Modifiers) >> 8) | (int) (value & Keys.KeyCode)));
+        m_Link.SetHotkey(wHotkey);
       }
-    }
-
-    /// <summary>
-    ///   Saves the shortcut to disk.
-    /// </summary>
-    public void Save()
-    {
-      IPersistFile pf = (IPersistFile) m_Link;
-      pf.Save( m_sPath, true );
     }
 
     /// <summary>
@@ -332,17 +315,39 @@ namespace MSjogren.Samples.ShellLink
       get { return m_Link; }
     }
 
+    #region Native Win32 API functions
 
-  #region Native Win32 API functions
     private class Native
     {
-      [DllImport("shell32.dll", CharSet=CharSet.Auto)]
+      [DllImport("shell32.dll", CharSet = CharSet.Auto)]
       public static extern IntPtr ExtractIcon(IntPtr hInst, string lpszExeFileName, int nIconIndex);
 
       [DllImport("user32.dll")]
       public static extern bool DestroyIcon(IntPtr hIcon);
     }
-  #endregion
 
-	}
+    #endregion
+
+    #region IDisposable Members
+
+    public void Dispose()
+    {
+      if (m_Link != null)
+      {
+        Marshal.ReleaseComObject(m_Link);
+        m_Link = null;
+      }
+    }
+
+    #endregion
+
+    /// <summary>
+    ///   Saves the shortcut to disk.
+    /// </summary>
+    public void Save()
+    {
+      IPersistFile pf = (IPersistFile) m_Link;
+      pf.Save(m_sPath, true);
+    }
+  }
 }

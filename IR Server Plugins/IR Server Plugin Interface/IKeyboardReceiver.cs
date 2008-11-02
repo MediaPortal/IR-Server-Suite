@@ -1,5 +1,3 @@
-using System;
-
 namespace InputService.Plugin
 {
 
@@ -20,13 +18,10 @@ namespace InputService.Plugin
   /// </summary>
   public interface IKeyboardReceiver
   {
-
     /// <summary>
     /// Callback for keyboard presses.
     /// </summary>
     /// <value>The keyboard callback.</value>
     KeyboardHandler KeyboardCallback { get; set; }
-
   }
-
 }

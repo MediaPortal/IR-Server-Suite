@@ -1,88 +1,26 @@
 using System;
 using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Drawing;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using InputService.Plugin.Properties;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// IR Server Plugin for the IR507 IR receiver.
   /// </summary>
   [CLSCompliant(false)]
   public class IR507Receiver : PluginBase, IRemoteReceiver
   {
-
-    // #define TEST_APPLICATION in the project properties when creating the console test app ...
-#if TEST_APPLICATION
-
-    static void xRemote(string deviceName, string code)
-    {
-      Console.WriteLine("Remote: {0}", code);
-    }
-
-    [STAThread]
-    static void Main()
-    {
-      try
-      {
-        IR507Receiver device = new IR507Receiver();
-
-        device.RemoteCallback += new RemoteHandler(xRemote);
-        device.Start();
-
-        Application.Run();
-
-        device.Stop();
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-    }
-
-#endif
-
-
     #region Interop
 
-    [StructLayout(LayoutKind.Sequential)]
-    struct DeviceInfoData
-    {
-      public int Size;
-      public Guid Class;
-      public uint DevInst;
-      public IntPtr Reserved;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct DeviceInterfaceData
-    {
-      public int Size;
-      public Guid Class;
-      public uint Flags;
-      public uint Reserved;
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    struct DeviceInterfaceDetailData
-    {
-      public int Size;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-      public string DevicePath;
-    }
-
     [DllImport("hid")]
-    static extern void HidD_GetHidGuid(
+    private static extern void HidD_GetHidGuid(
       ref Guid guid);
 
     [DllImport("setupapi", CharSet = CharSet.Auto)]
-    static extern IntPtr SetupDiGetClassDevs(
+    private static extern IntPtr SetupDiGetClassDevs(
       ref Guid ClassGuid,
       [MarshalAs(UnmanagedType.LPTStr)] string Enumerator,
       IntPtr hwndParent,
@@ -90,14 +28,14 @@ namespace InputService.Plugin
 
     [DllImport("setupapi", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool SetupDiEnumDeviceInfo(
+    private static extern bool SetupDiEnumDeviceInfo(
       IntPtr handle,
       int Index,
       ref DeviceInfoData deviceInfoData);
 
     [DllImport("setupapi", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool SetupDiEnumDeviceInterfaces(
+    private static extern bool SetupDiEnumDeviceInterfaces(
       IntPtr handle,
       ref DeviceInfoData deviceInfoData,
       ref Guid guidClass,
@@ -106,7 +44,7 @@ namespace InputService.Plugin
 
     [DllImport("setupapi", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool SetupDiGetDeviceInterfaceDetail(
+    private static extern bool SetupDiGetDeviceInterfaceDetail(
       IntPtr handle,
       ref DeviceInterfaceData deviceInterfaceData,
       IntPtr unused1,
@@ -116,7 +54,7 @@ namespace InputService.Plugin
 
     [DllImport("setupapi", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool SetupDiGetDeviceInterfaceDetail(
+    private static extern bool SetupDiGetDeviceInterfaceDetail(
       IntPtr handle,
       ref DeviceInterfaceData deviceInterfaceData,
       ref DeviceInterfaceDetailData deviceInterfaceDetailData,
@@ -126,26 +64,62 @@ namespace InputService.Plugin
 
     [DllImport("setupapi")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool SetupDiDestroyDeviceInfoList(IntPtr handle);
+    private static extern bool SetupDiDestroyDeviceInfoList(IntPtr handle);
+
+    #region Nested type: DeviceInfoData
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DeviceInfoData
+    {
+      public int Size;
+      public Guid Class;
+      public uint DevInst;
+      public IntPtr Reserved;
+    }
+
+    #endregion
+
+    #region Nested type: DeviceInterfaceData
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DeviceInterfaceData
+    {
+      public int Size;
+      public Guid Class;
+      public uint Flags;
+      public uint Reserved;
+    }
+
+    #endregion
+
+    #region Nested type: DeviceInterfaceDetailData
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    private struct DeviceInterfaceDetailData
+    {
+      public int Size;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string DevicePath;
+    }
+
+    #endregion
 
     #endregion Interop
 
     #region Constants
 
     //const string DeviceID = "vid_0e6a&pid_6002";  // Unknown
-    const string DeviceID = "vid_147a&pid_e02a";
+    private const string DeviceID = "vid_147a&pid_e02a";
 
     #endregion Constants
 
     #region Variables
 
-    RemoteHandler _remoteButtonHandler;
+    private RawInput.RAWINPUTDEVICE _device;
 
-    ReceiverWindow _receiverWindow;
-    RawInput.RAWINPUTDEVICE _device;
-
-    string _lastCode = String.Empty;
-    DateTime _lastCodeTime = DateTime.Now;
+    private string _lastCode = String.Empty;
+    private DateTime _lastCodeTime = DateTime.Now;
+    private ReceiverWindow _receiverWindow;
+    private RemoteHandler _remoteButtonHandler;
 
     #endregion Variables
 
@@ -155,27 +129,56 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "IR507"; } }
+    public override string Name
+    {
+      get { return "IR507"; }
+    }
+
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.4.2.0"; } }
+    public override string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81"; } }
+    public override string Author
+    {
+      get { return "and-81"; }
+    }
+
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Support for the IR507 IR Receiver"; } }
+    public override string Description
+    {
+      get { return "Support for the IR507 IR Receiver"; }
+    }
+
     /// <summary>
     /// Gets a display icon for the plugin.
     /// </summary>
     /// <value>The icon.</value>
-    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
+    public override Icon DeviceIcon
+    {
+      get { return Resources.Icon; }
+    }
+
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
+    public RemoteHandler RemoteCallback
+    {
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
+    }
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
@@ -206,16 +209,17 @@ namespace InputService.Plugin
     public override void Start()
     {
       _receiverWindow = new ReceiverWindow("IR507 Receiver");
-      _receiverWindow.ProcMsg += new ProcessMessage(ProcMessage);
+      _receiverWindow.ProcMsg += ProcMessage;
 
-      _device.usUsage     = 1;
+      _device.usUsage = 1;
       _device.usUsagePage = 12;
-      _device.dwFlags     = RawInput.RawInputDeviceFlags.InputSink;
-      _device.hwndTarget  = _receiverWindow.Handle;
+      _device.dwFlags = RawInput.RawInputDeviceFlags.InputSink;
+      _device.hwndTarget = _receiverWindow.Handle;
 
       if (!RegisterForRawInput(_device))
         throw new InvalidOperationException("Failed to register for HID Raw input");
     }
+
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
@@ -223,6 +227,7 @@ namespace InputService.Plugin
     {
       Stop();
     }
+
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
@@ -230,6 +235,7 @@ namespace InputService.Plugin
     {
       Start();
     }
+
     /// <summary>
     /// Stop the IR Server plugin.
     /// </summary>
@@ -238,56 +244,50 @@ namespace InputService.Plugin
       _device.dwFlags |= RawInput.RawInputDeviceFlags.Remove;
       RegisterForRawInput(_device);
 
-      _receiverWindow.ProcMsg -= new ProcessMessage(ProcMessage);
+      _receiverWindow.ProcMsg -= ProcMessage;
       _receiverWindow.DestroyHandle();
       _receiverWindow = null;
     }
 
-    /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    /// <value>The remote callback.</value>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
-    }
-
-    bool RegisterForRawInput(RawInput.RAWINPUTDEVICE device)
+    private bool RegisterForRawInput(RawInput.RAWINPUTDEVICE device)
     {
       RawInput.RAWINPUTDEVICE[] devices = new RawInput.RAWINPUTDEVICE[1];
       devices[0] = device;
 
       return RegisterForRawInput(devices);
     }
-    bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
+
+    private bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
     {
-      return RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(devices[0]));
+      return RawInput.RegisterRawInputDevices(devices, (uint) devices.Length, (uint) Marshal.SizeOf(devices[0]));
     }
 
-    void ProcMessage(ref Message m)
+    private void ProcMessage(ref Message m)
     {
       if (m.Msg != RawInput.WM_INPUT)
         return;
 
       uint dwSize = 0;
 
-      RawInput.GetRawInputData(m.LParam, RawInput.RawInputCommand.Input, IntPtr.Zero, ref dwSize, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)));
+      RawInput.GetRawInputData(m.LParam, RawInput.RawInputCommand.Input, IntPtr.Zero, ref dwSize,
+                               (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)));
 
-      IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
+      IntPtr buffer = Marshal.AllocHGlobal((int) dwSize);
       try
       {
         if (buffer == IntPtr.Zero)
           return;
 
-        if (RawInput.GetRawInputData(m.LParam, RawInput.RawInputCommand.Input, buffer, ref dwSize, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER))) != dwSize)
+        if (
+          RawInput.GetRawInputData(m.LParam, RawInput.RawInputCommand.Input, buffer, ref dwSize,
+                                   (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER))) != dwSize)
           return;
 
-        RawInput.RAWINPUT raw = (RawInput.RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RawInput.RAWINPUT));
+        RawInput.RAWINPUT raw = (RawInput.RAWINPUT) Marshal.PtrToStructure(buffer, typeof (RawInput.RAWINPUT));
 
         if (raw.header.dwType == RawInput.RawInputType.HID)
         {
-          int offset = Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof(RawInput.RAWHID));
+          int offset = Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof (RawInput.RAWHID));
 
           byte[] bRawData = new byte[offset + raw.hid.dwSizeHid];
           Marshal.Copy(buffer, bRawData, 0, bRawData.Length);
@@ -302,7 +302,7 @@ namespace InputService.Plugin
           if (!code.Equals(_lastCode, StringComparison.Ordinal) || timeSpan.Milliseconds > 250)
           {
             if (_remoteButtonHandler != null)
-              _remoteButtonHandler(this.Name, code);
+              _remoteButtonHandler(Name, code);
 
             _lastCodeTime = DateTime.Now;
           }
@@ -316,7 +316,7 @@ namespace InputService.Plugin
       }
     }
 
-    static string FindDevice(Guid classGuid)
+    private static string FindDevice(Guid classGuid)
     {
       int lastError;
 
@@ -329,7 +329,7 @@ namespace InputService.Plugin
 
       string devicePath = null;
 
-      for (int deviceIndex = 0; ; deviceIndex++)
+      for (int deviceIndex = 0;; deviceIndex++)
       {
         DeviceInfoData deviceInfoData = new DeviceInfoData();
         deviceInfoData.Size = Marshal.SizeOf(deviceInfoData);
@@ -359,7 +359,8 @@ namespace InputService.Plugin
 
         uint cbData = 0;
 
-        if (SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) == false && cbData == 0)
+        if (SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) ==
+            false && cbData == 0)
         {
           SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -368,7 +369,9 @@ namespace InputService.Plugin
         DeviceInterfaceDetailData deviceInterfaceDetailData = new DeviceInterfaceDetailData();
         deviceInterfaceDetailData.Size = 5;
 
-        if (SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData, IntPtr.Zero, IntPtr.Zero) == false)
+        if (
+          SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData,
+                                          IntPtr.Zero, IntPtr.Zero) == false)
         {
           SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -387,6 +390,34 @@ namespace InputService.Plugin
 
     #endregion Implementation
 
-  }
+    // #define TEST_APPLICATION in the project properties when creating the console test app ...
+#if TEST_APPLICATION
 
+    static void xRemote(string deviceName, string code)
+    {
+      Console.WriteLine("Remote: {0}", code);
+    }
+
+    [STAThread]
+    static void Main()
+    {
+      try
+      {
+        IR507Receiver device = new IR507Receiver();
+
+        device.RemoteCallback += new RemoteHandler(xRemote);
+        device.Start();
+
+        Application.Run();
+
+        device.Stop();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+    }
+
+#endif
+  }
 }

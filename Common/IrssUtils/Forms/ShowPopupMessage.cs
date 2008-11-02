@@ -1,22 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Show a popup message.
   /// </summary>
   public partial class ShowPopupMessage : Form
   {
-
     #region Variables
 
-    int _timeout;
+    private int _timeout;
 
     #endregion Variables
 
@@ -29,9 +23,9 @@ namespace IrssUtils.Forms
     {
       InitializeComponent();
 
-      this.Text           = header;
+      Text = header;
       textBoxMessage.Text = text;
-      _timeout            = timeout;
+      _timeout = timeout;
 
       buttonOK.Text = String.Format("OK ({0})", _timeout);
     }
@@ -44,8 +38,8 @@ namespace IrssUtils.Forms
 
       if (_timeout <= 0)
       {
-        this.DialogResult = DialogResult.Cancel;
-        this.Close();
+        DialogResult = DialogResult.Cancel;
+        Close();
       }
 
       buttonOK.Text = String.Format("OK ({0})", _timeout);
@@ -63,10 +57,8 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
-
   }
-
 }

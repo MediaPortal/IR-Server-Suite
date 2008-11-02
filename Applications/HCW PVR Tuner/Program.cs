@@ -1,57 +1,54 @@
 using System;
 using System.Runtime.InteropServices;
-
 using IrssUtils;
 
 namespace HcwPvrTuner
 {
-
-  static class Program
+  internal static class Program
   {
-
     #region Interop
 
     [DllImport("hcwIRblast.dll")]
-    static extern ushort UIR_Open(uint bVerbose, ushort wIRPort);
+    private static extern ushort UIR_Open(uint bVerbose, ushort wIRPort);
 
     [DllImport("hcwIRblast.dll")]
-    static extern int UIR_Close();
+    private static extern int UIR_Close();
 
     [DllImport("hcwIRblast.dll")]
-    static extern int UIR_GetConfig(int device, int codeset, ref UIR_CFG cfgPtr);
+    private static extern int UIR_GetConfig(int device, int codeset, ref UIR_CFG cfgPtr);
 
     [DllImport("hcwIRblast.dll")]
-    static extern int UIR_GotoChannel(int device, int codeset, int channel);
+    private static extern int UIR_GotoChannel(int device, int codeset, int channel);
 
     #endregion Interop
 
     #region Structures
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    struct UIR_CFG
+    private struct UIR_CFG
     {
-      public int a;   // 0x38;
+      public int a; // 0x38;
       public int b;
-      public int c;   // Region 
-      public int d;   // Device
-      public int e;   // Vendor
-      public int f;   // Code Set
+      public int c; // Region 
+      public int d; // Device
+      public int e; // Vendor
+      public int f; // Code Set
       public int g;
       public int h;
-      public int i;   // Minimum Digits
-      public int j;   // Digit Delay
-      public int k;   // Need Enter
-      public int l;   // Enter Delay
-      public int m;   // Tune Delay
-      public int n;   // One Digit Delay
+      public int i; // Minimum Digits
+      public int j; // Digit Delay
+      public int k; // Need Enter
+      public int l; // Enter Delay
+      public int m; // Tune Delay
+      public int n; // One Digit Delay
     }
 
     #endregion Structures
 
     #region Constants
 
-    const int ReturnError   = 1;
-    const int ReturnSuccess = 0;
+    private const int ReturnError = 1;
+    private const int ReturnSuccess = 0;
 
     #endregion Constants
 
@@ -59,7 +56,7 @@ namespace HcwPvrTuner
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static int Main(string[] args)
+    private static int Main(string[] args)
     {
       Console.WriteLine("HCW PVR Tuner");
       Console.WriteLine();
@@ -85,7 +82,8 @@ namespace HcwPvrTuner
       {
         int channelNumber;
         if (!int.TryParse(args[0], out channelNumber))
-          throw new ArgumentException(String.Format("Failed to convert command line parameter ({0}) to channel number", args[0]));
+          throw new ArgumentException(String.Format("Failed to convert command line parameter ({0}) to channel number",
+                                                    args[0]));
 
         Info("Attempting to tune channel {0} ...", channelNumber);
 
@@ -135,13 +133,11 @@ namespace HcwPvrTuner
       return ReturnSuccess;
     }
 
-    static void Info(string format, params object[] args)
+    private static void Info(string format, params object[] args)
     {
       string message = String.Format(format, args);
       IrssLog.Info(message);
       Console.WriteLine(message);
     }
-
   }
-
 }

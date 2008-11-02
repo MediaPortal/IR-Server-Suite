@@ -1,43 +1,36 @@
 using System;
-using System.Collections;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
+using InputService.Plugin.Properties;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// IR Server Plugin for WinLirc.
   /// </summary>
   public class WinLircTransceiver : PluginBase, IConfigure, IRemoteReceiver, ITransmitIR
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "WinLirc Receiver.xml");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "WinLirc Receiver.xml");
 
     #endregion Constants
 
     #region Variables
 
-    RemoteHandler _remoteButtonHandler;
-    WinLircServer _server;
+    private int _buttonReleaseTime;
+    private RemoteHandler _remoteButtonHandler;
+    private int _repeatDelay;
+    private WinLircServer _server;
 
-    IPAddress _serverIP;
-    int _serverPort;
-    bool _startServer;
-    string _serverPath;
-    int _buttonReleaseTime;
-    int _repeatDelay;
+    private IPAddress _serverIP;
+    private string _serverPath;
+    private int _serverPort;
+    private bool _startServer;
 
     #endregion Variables
 
@@ -47,27 +40,132 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "WinLirc"; } }
+    public override string Name
+    {
+      get { return "WinLirc"; }
+    }
+
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.4.2.0"; } }
+    public override string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81, original code for MediaPortal by Sven, with contributions by zaphman"; } }
+    public override string Author
+    {
+      get { return "and-81, original code for MediaPortal by Sven, with contributions by zaphman"; }
+    }
+
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports WinLirc as a Transciever"; } }
+    public override string Description
+    {
+      get { return "Supports WinLirc as a Transciever"; }
+    }
+
     /// <summary>
     /// Gets a display icon for the plugin.
     /// </summary>
     /// <value>The icon.</value>
-    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
+    public override Icon DeviceIcon
+    {
+      get { return Resources.Icon; }
+    }
+
+    #region IConfigure Members
+
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
+    public void Configure(IWin32Window owner)
+    {
+      LoadSettings();
+
+      Configure config = new Configure();
+
+      config.ServerIP = _serverIP;
+      config.ServerPort = _serverPort;
+      config.StartServer = _startServer;
+      config.ServerPath = _serverPath;
+      config.ButtonReleaseTime = _buttonReleaseTime;
+      config.RepeatDelay = _repeatDelay;
+
+      if (config.ShowDialog(owner) == DialogResult.OK)
+      {
+        _serverIP = config.ServerIP;
+        _serverPort = config.ServerPort;
+        _startServer = config.StartServer;
+        _serverPath = config.ServerPath;
+        _buttonReleaseTime = config.ButtonReleaseTime;
+        _repeatDelay = config.RepeatDelay;
+        SaveSettings();
+      }
+    }
+
+    #endregion
+
+    #region IRemoteReceiver Members
+
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    /// <value>The remote callback.</value>
+    public RemoteHandler RemoteCallback
+    {
+      get { return _remoteButtonHandler; }
+      set { _remoteButtonHandler = value; }
+    }
+
+    #endregion
+
+    #region ITransmitIR Members
+
+    /// <summary>
+    /// Lists the available blaster ports.
+    /// </summary>
+    /// <value>The available ports.</value>
+    public string[] AvailablePorts
+    {
+      get { return new string[] {"Default"}; }
+    }
+
+    /// <summary>
+    /// Transmit an infrared command.
+    /// </summary>
+    /// <param name="port">Port to transmit on.</param>
+    /// <param name="data">Data to transmit.</param>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public bool Transmit(string port, byte[] data)
+    {
+      string password, remoteName, buttonName, repeats;
+
+      using (MemoryStream memoryStream = new MemoryStream(data))
+      {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(memoryStream);
+
+        password = doc.DocumentElement.Attributes["Password"].Value;
+        remoteName = doc.DocumentElement.Attributes["RemoteName"].Value;
+        buttonName = doc.DocumentElement.Attributes["ButtonName"].Value;
+        repeats = doc.DocumentElement.Attributes["Repeats"].Value;
+
+        string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
+        _server.Transmit(output);
+      }
+
+      return true;
+    }
+
+    #endregion
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
@@ -97,9 +195,10 @@ namespace InputService.Plugin
       if (_startServer && !WinLircServer.StartServer(_serverPath))
         throw new InvalidOperationException("Failed to start server");
 
-    _server = new WinLircServer(_serverIP, _serverPort, TimeSpan.FromMilliseconds(_buttonReleaseTime), _repeatDelay);
-      _server.CommandEvent += new WinLircServer.CommandEventHandler(CommandHandler);
+      _server = new WinLircServer(_serverIP, _serverPort, TimeSpan.FromMilliseconds(_buttonReleaseTime), _repeatDelay);
+      _server.CommandEvent += CommandHandler;
     }
+
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
@@ -107,6 +206,7 @@ namespace InputService.Plugin
     {
       //Stop();
     }
+
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
@@ -114,6 +214,7 @@ namespace InputService.Plugin
     {
       //Start();
     }
+
     /// <summary>
     /// Stop the IR Server plugin.
     /// </summary>
@@ -121,102 +222,31 @@ namespace InputService.Plugin
     {
       if (_server != null)
       {
-        _server.CommandEvent -= new WinLircServer.CommandEventHandler(CommandHandler);
+        _server.CommandEvent -= CommandHandler;
         _server = null;
       }
     }
 
     /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    /// <value>The remote callback.</value>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteButtonHandler; }
-      set { _remoteButtonHandler = value; }
-    }
-
-    /// <summary>
-    /// Configure the IR Server plugin.
-    /// </summary>
-    public void Configure(IWin32Window owner)
-    {
-      LoadSettings();
-
-      Configure config = new Configure();
-
-      config.ServerIP           = _serverIP;
-      config.ServerPort         = _serverPort;
-      config.StartServer        = _startServer;
-      config.ServerPath         = _serverPath;
-      config.ButtonReleaseTime  = _buttonReleaseTime;
-      config.RepeatDelay        = _repeatDelay;
-
-      if (config.ShowDialog(owner) == DialogResult.OK)
-      {
-        _serverIP           = config.ServerIP;
-        _serverPort         = config.ServerPort;
-        _startServer        = config.StartServer;
-        _serverPath         = config.ServerPath;
-        _buttonReleaseTime  = config.ButtonReleaseTime;
-        _repeatDelay        = config.RepeatDelay;
-        SaveSettings();
-      }
-    }
-
-    /// <summary>
-    /// Lists the available blaster ports.
-    /// </summary>
-    /// <value>The available ports.</value>
-    public string[] AvailablePorts { get { return new string[] { "Default" }; } }
-
-    /// <summary>
-    /// Transmit an infrared command.
-    /// </summary>
-    /// <param name="port">Port to transmit on.</param>
-    /// <param name="data">Data to transmit.</param>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public bool Transmit(string port, byte[] data)
-    {
-      string password, remoteName, buttonName, repeats;
-
-      using (MemoryStream memoryStream = new MemoryStream(data))
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(memoryStream);
-
-        password    = doc.DocumentElement.Attributes["Password"].Value;
-        remoteName  = doc.DocumentElement.Attributes["RemoteName"].Value;
-        buttonName  = doc.DocumentElement.Attributes["ButtonName"].Value;
-        repeats     = doc.DocumentElement.Attributes["Repeats"].Value;
-
-        string output = String.Format("{0} {1} {2} {3}\n", password, remoteName, buttonName, repeats);
-        _server.Transmit(output);
-      }
-
-      return true;
-    }
-
-    /// <summary>
     /// Loads the settings.
     /// </summary>
-    void LoadSettings()
+    private void LoadSettings()
     {
       try
       {
         XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
 
-        _serverIP           = IPAddress.Parse(doc.DocumentElement.Attributes["ServerIP"].Value);
-        _serverPort         = int.Parse(doc.DocumentElement.Attributes["ServerPort"].Value);
-        _startServer        = bool.Parse(doc.DocumentElement.Attributes["StartServer"].Value);
-        _serverPath         = doc.DocumentElement.Attributes["ServerPath"].Value;
-        
+        _serverIP = IPAddress.Parse(doc.DocumentElement.Attributes["ServerIP"].Value);
+        _serverPort = int.Parse(doc.DocumentElement.Attributes["ServerPort"].Value);
+        _startServer = bool.Parse(doc.DocumentElement.Attributes["StartServer"].Value);
+        _serverPath = doc.DocumentElement.Attributes["ServerPath"].Value;
+
         if (!int.TryParse(doc.DocumentElement.Attributes["ButtonReleaseTime"].Value, out _buttonReleaseTime))
-            _buttonReleaseTime = 200;
-        
+          _buttonReleaseTime = 200;
+
         if (!int.TryParse(doc.DocumentElement.Attributes["RepeatDelay"].Value, out _repeatDelay))
-            _repeatDelay = 1;
+          _repeatDelay = 1;
       }
 #if TRACE
       catch (Exception ex)
@@ -227,18 +257,19 @@ namespace InputService.Plugin
       {
 #endif
 
-        _serverIP           = IPAddress.Loopback;
-        _serverPort         = 8765;
-        _startServer        = false;
-        _serverPath         = "winlirc.exe";
-        _buttonReleaseTime  = 200;
-        _repeatDelay        = 1;
+        _serverIP = IPAddress.Loopback;
+        _serverPort = 8765;
+        _startServer = false;
+        _serverPath = "winlirc.exe";
+        _buttonReleaseTime = 200;
+        _repeatDelay = 1;
       }
     }
+
     /// <summary>
     /// Saves the settings.
     /// </summary>
-    void SaveSettings()
+    private void SaveSettings()
     {
       try
       {
@@ -246,7 +277,7 @@ namespace InputService.Plugin
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -277,18 +308,16 @@ namespace InputService.Plugin
     /// Handles commands.
     /// </summary>
     /// <param name="cmd">The Command.</param>
-    void CommandHandler(WinLircCommand cmd)
+    private void CommandHandler(WinLircCommand cmd)
     {
       if (_remoteButtonHandler == null)
         return;
 
       string buttonCode = String.Format("{0}: {1}", cmd.Remote, cmd.Button);
 
-      _remoteButtonHandler(this.Name, buttonCode);
+      _remoteButtonHandler(Name, buttonCode);
     }
-    
+
     #endregion Implementation
-
   }
-
 }

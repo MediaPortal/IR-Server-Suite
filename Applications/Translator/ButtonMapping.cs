@@ -1,21 +1,17 @@
-using System;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace Translator
 {
-
   /// <summary>
   /// Stores the relevant information for mapping a remote button to a command.
   /// </summary>
   public class ButtonMapping
   {
-
     #region Variables
 
-    string _keyCode;
-    string _description;
-    string _command;
+    private string _command;
+    private string _description;
+    private string _keyCode;
 
     #endregion Variables
 
@@ -58,7 +54,10 @@ namespace Translator
     /// <summary>
     /// Initializes a new instance of the <see cref="ButtonMapping"/> class.
     /// </summary>
-    public ButtonMapping() { }
+    public ButtonMapping()
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ButtonMapping"/> class.
     /// </summary>
@@ -67,13 +66,11 @@ namespace Translator
     /// <param name="command">The command to execute for this remote button.</param>
     public ButtonMapping(string keyCode, string description, string command)
     {
-      _keyCode      = keyCode;
-      _description  = description;
-      _command      = command;
+      _keyCode = keyCode;
+      _description = description;
+      _command = command;
     }
 
     #endregion Constructors
-
   }
-
 }

@@ -1,24 +1,21 @@
-using System;
 using System.Windows.Forms;
 
 namespace VirtualRemote
 {
-
   /// <summary>
   /// Data structure for Virtual Remote button representation.
   /// </summary>
-  struct RemoteButton
+  internal struct RemoteButton
   {
-
     #region Variables
 
-    string _name;
-    string _code;
-    Keys _shortcut;
-    int _top;
-    int _left;
-    int _width;
-    int _height;
+    private string _code;
+    private int _height;
+    private int _left;
+    private string _name;
+    private Keys _shortcut;
+    private int _top;
+    private int _width;
 
     #endregion Variables
 
@@ -33,6 +30,7 @@ namespace VirtualRemote
       get { return _name; }
       set { _name = value; }
     }
+
     /// <summary>
     /// Gets or sets the code.
     /// </summary>
@@ -42,6 +40,7 @@ namespace VirtualRemote
       get { return _code; }
       set { _code = value; }
     }
+
     /// <summary>
     /// Gets or sets the shortcut.
     /// </summary>
@@ -51,6 +50,7 @@ namespace VirtualRemote
       get { return _shortcut; }
       set { _shortcut = value; }
     }
+
     /// <summary>
     /// Gets or sets the distance from top.
     /// </summary>
@@ -60,6 +60,7 @@ namespace VirtualRemote
       get { return _top; }
       set { _top = value; }
     }
+
     /// <summary>
     /// Gets or sets the distance from left.
     /// </summary>
@@ -69,6 +70,7 @@ namespace VirtualRemote
       get { return _left; }
       set { _left = value; }
     }
+
     /// <summary>
     /// Gets or sets the width.
     /// </summary>
@@ -78,6 +80,7 @@ namespace VirtualRemote
       get { return _width; }
       set { _width = value; }
     }
+
     /// <summary>
     /// Gets or sets the height.
     /// </summary>
@@ -89,7 +92,5 @@ namespace VirtualRemote
     }
 
     #endregion Properties
-
   }
-
 }

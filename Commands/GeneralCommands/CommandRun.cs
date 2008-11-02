@@ -1,31 +1,31 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace Commands.General
 {
-
   /// <summary>
   /// Run command.
   /// </summary>
   public class CommandRun : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandRun"/> class.
     /// </summary>
-    public CommandRun() { InitParameters(8); }
+    public CommandRun()
+    {
+      InitParameters(8);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandRun"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandRun(string[] parameters) : base(parameters) { }
+    public CommandRun(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -35,13 +35,19 @@ namespace Commands.General
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return "General Commands"; }
+    public override string GetCategory()
+    {
+      return "General Commands";
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Run Program"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Run Program";
+    }
 
     /// <summary>
     /// Execute this command.
@@ -53,21 +59,22 @@ namespace Commands.General
 
       using (Process process = new Process())
       {
-        process.StartInfo.FileName          = processed[0];
-        process.StartInfo.WorkingDirectory  = processed[1];
-        process.StartInfo.Arguments         = processed[2];
-        process.StartInfo.WindowStyle       = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), processed[3], true);
-        process.StartInfo.CreateNoWindow    = bool.Parse(processed[4]);
-        process.StartInfo.UseShellExecute   = bool.Parse(processed[5]);
+        process.StartInfo.FileName = processed[0];
+        process.StartInfo.WorkingDirectory = processed[1];
+        process.StartInfo.Arguments = processed[2];
+        process.StartInfo.WindowStyle = (ProcessWindowStyle) Enum.Parse(typeof (ProcessWindowStyle), processed[3], true);
+        process.StartInfo.CreateNoWindow = bool.Parse(processed[4]);
+        process.StartInfo.UseShellExecute = bool.Parse(processed[5]);
         //process.PriorityClass               = ProcessPriorityClass.
 
-        bool waitForExit  = bool.Parse(processed[6]);
-        bool forceFocus   = bool.Parse(processed[7]);
+        bool waitForExit = bool.Parse(processed[6]);
+        bool forceFocus = bool.Parse(processed[7]);
 
         process.Start();
 
         // Give new process focus ...
-        if (forceFocus && !process.StartInfo.CreateNoWindow && process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
+        if (forceFocus && !process.StartInfo.CreateNoWindow &&
+            process.StartInfo.WindowStyle != ProcessWindowStyle.Hidden)
         {
           //FocusForcer forcer = new FocusForcer(process.Id);
           //forcer.Start();
@@ -97,7 +104,5 @@ namespace Commands.General
     }
 
     #endregion Public Methods
-
   }
-
 }

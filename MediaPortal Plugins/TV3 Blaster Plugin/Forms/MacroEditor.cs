@@ -1,26 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
-using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
-using TvLibrary.Log;
-
 using IrssUtils;
+using IrssUtils.Exceptions;
 using IrssUtils.Forms;
+using TvLibrary.Log;
 
 namespace TvEngine
 {
-
-  partial class MacroEditor : Form
+  internal partial class MacroEditor : Form
   {
-
     #region Constructor
 
     /// <summary>
@@ -30,7 +20,7 @@ namespace TvEngine
     {
       InitializeComponent();
 
-      textBoxName.Text    = "New";
+      textBoxName.Text = "New";
       textBoxName.Enabled = true;
     }
 
@@ -44,7 +34,7 @@ namespace TvEngine
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      textBoxName.Text    = name;
+      textBoxName.Text = name;
       textBoxName.Enabled = false;
 
       string fileName = TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
@@ -55,7 +45,7 @@ namespace TvEngine
 
     #region Implementation
 
-    void RefreshCommandList()
+    private void RefreshCommandList()
     {
       comboBoxCommands.Items.Clear();
 
@@ -81,7 +71,7 @@ namespace TvEngine
     /// Write the macro in the listBox to a macro name provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
-    void WriteToFile(string fileName)
+    private void WriteToFile(string fileName)
     {
       try
       {
@@ -112,7 +102,7 @@ namespace TvEngine
     /// Read a macro into the listBox from the macro name provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to read (macro name, not file path).</param>
-    void ReadFromFile(string fileName)
+    private void ReadFromFile(string fileName)
     {
       try
       {
@@ -157,7 +147,7 @@ namespace TvEngine
         {
           PauseTime pauseTime = new PauseTime();
           if (pauseTime.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+            newCommand = Common.CmdPrefixPause + pauseTime.Time;
         }
         else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
         {
@@ -214,7 +204,7 @@ namespace TvEngine
         else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            TV3BlasterPlugin.BlastIR,
             Common.FolderIRCommands,
             TV3BlasterPlugin.TransceiverInformation.Ports,
             selected.Substring(Common.CmdPrefixBlast.Length));
@@ -228,7 +218,7 @@ namespace TvEngine
         }
         else
         {
-          throw new IrssUtils.Exceptions.CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
+          throw new CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
         }
 
         if (!String.IsNullOrEmpty(newCommand))
@@ -252,6 +242,7 @@ namespace TvEngine
         listBoxMacro.SelectedIndex = selected - 1;
       }
     }
+
     private void buttonMoveDown_Click(object sender, EventArgs e)
     {
       int selected = listBoxMacro.SelectedIndex;
@@ -276,14 +267,16 @@ namespace TvEngine
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -303,8 +296,8 @@ namespace TvEngine
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonOK_Click(object sender, EventArgs e)
@@ -313,14 +306,16 @@ namespace TvEngine
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -335,8 +330,8 @@ namespace TvEngine
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void listBoxCommandSequence_DoubleClick(object sender, EventArgs e)
@@ -361,7 +356,7 @@ namespace TvEngine
         {
           PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
           if (pauseTime.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+            newCommand = Common.CmdPrefixPause + pauseTime.Time;
         }
         else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
@@ -390,7 +385,7 @@ namespace TvEngine
         else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
-        
+
           HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
           if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
@@ -418,7 +413,7 @@ namespace TvEngine
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            TV3BlasterPlugin.BlastIR,
             Common.FolderIRCommands,
             TV3BlasterPlugin.TransceiverInformation.Ports,
             commands);
@@ -443,7 +438,5 @@ namespace TvEngine
     }
 
     #endregion Implementation
-
   }
-
 }

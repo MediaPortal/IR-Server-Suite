@@ -1,23 +1,21 @@
 using System;
 using System.Security.Permissions;
-
 using Microsoft.Win32;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// Used for accessing the Windows System Registry.
   /// </summary>
-  [RegistryPermission(SecurityAction.Demand, Read = "HKEY_CURRENT_USER\\SOFTWARE", Write = "HKEY_CURRENT_USER\\SOFTWARE")]
+  [RegistryPermission(SecurityAction.Demand, Read = "HKEY_CURRENT_USER\\SOFTWARE", Write = "HKEY_CURRENT_USER\\SOFTWARE"
+    )]
   [RegistryPermission(SecurityAction.Demand, Read = "HKEY_LOCAL_MACHINE\\Software")]
   public static class SystemRegistry
   {
-
     #region Constants
 
-    const string AutoRunPath  = @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-    const string SoftwarePath = @"HKEY_LOCAL_MACHINE\Software\IR Server Suite";
+    private const string AutoRunPath = @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+    private const string SoftwarePath = @"HKEY_LOCAL_MACHINE\Software\IR Server Suite";
 
     #endregion Constants
 
@@ -76,7 +74,5 @@ namespace IrssUtils
     }
 
     #endregion Methods
-
   }
-
 }

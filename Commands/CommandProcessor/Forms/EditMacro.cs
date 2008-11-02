@@ -1,33 +1,26 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.IO;
+using System.Windows.Forms;
+using IrssUtils;
 #if TRACE
 using System.Diagnostics;
 #endif
-using System.Drawing;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using System.Xml;
-
-using IrssUtils;
 
 namespace Commands
 {
-
   /// <summary>
   /// Edit Macro form.
   /// </summary>
   public partial class EditMacro : Form
   {
-
     #region Variables
 
-    Processor _commandProcessor;
+    private readonly Processor _commandProcessor;
 
-    string _macroFolder;
-    
-    string _fileName;
+    private readonly string _macroFolder;
+
+    private string _fileName;
 
     #endregion Variables
 
@@ -52,10 +45,10 @@ namespace Commands
 
       InitializeComponent();
 
-      _commandProcessor   = commandProcessor;
-      _macroFolder        = macroFolder;
+      _commandProcessor = commandProcessor;
+      _macroFolder = macroFolder;
 
-      textBoxName.Text    = "New Macro";
+      textBoxName.Text = "New Macro";
       textBoxName.Enabled = true;
 
       PopulateCommandList(categories);
@@ -84,19 +77,19 @@ namespace Commands
 
       InitializeComponent();
 
-      _commandProcessor   = commandProcessor;
-      _macroFolder        = macroFolder;
-      _fileName           = fileName;
+      _commandProcessor = commandProcessor;
+      _macroFolder = macroFolder;
+      _fileName = fileName;
 
-      string macroPath    = Path.GetDirectoryName(_fileName);
-      string macroFile    = Path.GetFileNameWithoutExtension(_fileName);
-      string macroName    = Path.Combine(macroPath, macroFile);
+      string macroPath = Path.GetDirectoryName(_fileName);
+      string macroFile = Path.GetFileNameWithoutExtension(_fileName);
+      string macroName = Path.Combine(macroPath, macroFile);
       if (macroName.StartsWith(_macroFolder, StringComparison.OrdinalIgnoreCase))
-        macroName = macroName.Substring(_macroFolder.Length);      
+        macroName = macroName.Substring(_macroFolder.Length);
       if (macroName.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
         macroName = macroName.Substring(Common.FolderAppData.Length);
 
-      textBoxName.Text    = macroName;
+      textBoxName.Text = macroName;
       textBoxName.Enabled = false;
 
       Macro macro = new Macro(_fileName);
@@ -114,10 +107,10 @@ namespace Commands
 
     #region Implementation
 
-    void PopulateCommandList(string[] categories)
+    private void PopulateCommandList(string[] categories)
     {
       treeViewCommandList.Nodes.Clear();
-      Dictionary<string, TreeNode> categoryNodes = new Dictionary<string,TreeNode>(categories.Length);
+      Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
 
       // Create requested categories ...
       foreach (string category in categories)
@@ -138,7 +131,7 @@ namespace Commands
 
       foreach (Type type in allCommands)
       {
-        Command command = (Command)Activator.CreateInstance(type);
+        Command command = (Command) Activator.CreateInstance(type);
 
         string commandCategory = command.GetCategory();
 
@@ -195,7 +188,7 @@ namespace Commands
       treeViewCommandList.SelectedNode.Expand();
     }
 
-    void EditMacroCommand()
+    private void EditMacroCommand()
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -211,8 +204,8 @@ namespace Commands
         selected.Tag = command.ToString();
       }
     }
-    
-    void MoveToTop()
+
+    private void MoveToTop()
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -226,7 +219,8 @@ namespace Commands
         item.Selected = true;
       }
     }
-    void MoveUp()
+
+    private void MoveUp()
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -240,7 +234,8 @@ namespace Commands
         item.Selected = true;
       }
     }
-    void MoveDown()
+
+    private void MoveDown()
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -254,7 +249,8 @@ namespace Commands
         item.Selected = true;
       }
     }
-    void MoveBottom()
+
+    private void MoveBottom()
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -269,14 +265,17 @@ namespace Commands
       }
     }
 
-    void DeleteItem()
+    private void DeleteItem()
     {
       if (listViewMacro.SelectedItems.Count == 1)
         listViewMacro.Items.RemoveAt(listViewMacro.SelectedIndices[0]);
     }
-    void DeleteAllItems()
+
+    private void DeleteAllItems()
     {
-      if (MessageBox.Show(this, "Are you sure you want to clear this entire macro?", "Clear macro", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+      if (
+        MessageBox.Show(this, "Are you sure you want to clear this entire macro?", "Clear macro",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
         listViewMacro.Clear();
     }
 
@@ -285,14 +284,17 @@ namespace Commands
       if (treeViewCommandList.SelectedNode == null || treeViewCommandList.SelectedNode.Level == 0)
         return;
 
-      string selected = treeViewCommandList.SelectedNode.Text as string;
+      string selected = treeViewCommandList.SelectedNode.Text;
 
       ListViewItem newCommand = new ListViewItem();
       Command command;
 
-      if (treeViewCommandList.SelectedNode.Parent.Text.Equals(Processor.CategoryIRCommands, StringComparison.OrdinalIgnoreCase))
+      if (treeViewCommandList.SelectedNode.Parent.Text.Equals(Processor.CategoryIRCommands,
+                                                              StringComparison.OrdinalIgnoreCase))
       {
-        command = new CommandBlastIR(new string[] { treeViewCommandList.SelectedNode.Tag as string, _commandProcessor.BlastIrPorts[0] });
+        command =
+          new CommandBlastIR(new string[]
+                               {treeViewCommandList.SelectedNode.Tag as string, _commandProcessor.BlastIrPorts[0]});
 
         if (_commandProcessor.Edit(command, this))
         {
@@ -301,9 +303,10 @@ namespace Commands
           listViewMacro.Items.Add(newCommand);
         }
       }
-      else if (treeViewCommandList.SelectedNode.Parent.Text.Equals(Processor.CategoryMacros, StringComparison.OrdinalIgnoreCase))
+      else if (treeViewCommandList.SelectedNode.Parent.Text.Equals(Processor.CategoryMacros,
+                                                                   StringComparison.OrdinalIgnoreCase))
       {
-        command = new CommandCallMacro(new string[] { treeViewCommandList.SelectedNode.Tag as string });
+        command = new CommandCallMacro(new string[] {treeViewCommandList.SelectedNode.Tag as string});
 
         newCommand.Text = command.GetUserDisplayText();
         newCommand.Tag = command.ToString();
@@ -312,7 +315,7 @@ namespace Commands
       else
       {
         Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
-        command = (Command)Activator.CreateInstance(commandType);
+        command = (Command) Activator.CreateInstance(commandType);
 
         if (_commandProcessor.Edit(command, this))
         {
@@ -322,24 +325,27 @@ namespace Commands
         }
       }
     }
-    
+
     private void listViewMacro_DoubleClick(object sender, EventArgs e)
     {
       EditMacroCommand();
     }
-    
+
     private void toolStripButtonTop_Click(object sender, EventArgs e)
     {
       MoveToTop();
     }
+
     private void toolStripButtonUp_Click(object sender, EventArgs e)
     {
       MoveUp();
     }
+
     private void toolStripButtonDown_Click(object sender, EventArgs e)
     {
       MoveDown();
     }
+
     private void toolStripButtonBottom_Click(object sender, EventArgs e)
     {
       MoveBottom();
@@ -354,6 +360,7 @@ namespace Commands
     {
       DeleteItem();
     }
+
     private void toolStripButtonDeleteAll_Click(object sender, EventArgs e)
     {
       DeleteAllItems();
@@ -365,14 +372,16 @@ namespace Commands
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (textBoxName.Enabled && !Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -397,8 +406,8 @@ namespace Commands
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonOK_Click(object sender, EventArgs e)
@@ -407,14 +416,16 @@ namespace Commands
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (textBoxName.Enabled && !Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -439,12 +450,10 @@ namespace Commands
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     #endregion Implementation
-
   }
-
 }

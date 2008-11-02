@@ -1,32 +1,32 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace Commands
 {
-
   /// <summary>
   /// Blast IR macro command.
   /// </summary>
   public class CommandBlastIR : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandBlastIR"/> class.
     /// </summary>
-    public CommandBlastIR() { InitParameters(2); }
+    public CommandBlastIR()
+    {
+      InitParameters(2);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandBlastIR"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandBlastIR(string[] parameters) : base(parameters) { }
+    public CommandBlastIR(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -36,13 +36,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategorySpecial; }
+    public override string GetCategory()
+    {
+      return Processor.CategorySpecial;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Blast IR"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Blast IR";
+    }
 
     /// <summary>
     /// Gets the user display text.
@@ -94,7 +100,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

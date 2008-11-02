@@ -4,13 +4,11 @@ using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Server Address form.
   /// </summary>
   public partial class ServerAddress : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -60,12 +58,10 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     #endregion Implementation
-
   }
-
 }

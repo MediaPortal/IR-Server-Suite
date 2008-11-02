@@ -29,33 +29,31 @@ using Microsoft.DirectX.DirectInput;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Summary description for DirectInputListener.
   /// </summary>
   /// 
-  class DirectInputListener
+  internal class DirectInputListener
   {
-
     #region Variables
 
-    Device device = null;
-    Thread inputListener = null;
-    volatile bool isListening = false;
-    int delay = 150; // sleep time in milliseconds
+    #region Delegates
 
-    // event: send info on joystick state change 
     public delegate void diStateChange(object sender, JoystickState state);
+
+    #endregion
+
+    private int delay = 150; // sleep time in milliseconds
+
+    private Device device;
+    private Thread inputListener;
+    private volatile bool isListening;
+
     public event diStateChange OnStateChange = null;
 
     #endregion Variables
 
     #region Constructor / Deconstructor
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DirectInputListener"/> class.
-    /// </summary>
-    public DirectInputListener() { }
 
     ~DirectInputListener()
     {
@@ -102,6 +100,7 @@ namespace InputService.Plugin
 
       return true;
     }
+
     public void DeInitDevice()
     {
       if (null != device)
@@ -110,7 +109,7 @@ namespace InputService.Plugin
         {
           device.Unacquire();
         }
-        catch (System.NullReferenceException)
+        catch (NullReferenceException)
         {
         }
         device.Dispose();
@@ -142,7 +141,7 @@ namespace InputService.Plugin
       return res;
     }
 
-    string ButtonComboAsString(JoystickState state)
+    private string ButtonComboAsString(JoystickState state)
     {
       byte[] buttons = state.GetButtons();
       int button = 0;
@@ -162,7 +161,7 @@ namespace InputService.Plugin
       return res;
     }
 
-    void ThreadFunction()
+    private void ThreadFunction()
     {
       while (isListening)
       {
@@ -210,7 +209,7 @@ namespace InputService.Plugin
       return (device != null);
     }
 
-    void UpdateInputState()
+    private void UpdateInputState()
     {
       JoystickState state;
 
@@ -221,13 +220,14 @@ namespace InputService.Plugin
         {
           state = device.CurrentJoystickState;
         }
-        catch (InputException) // Catch any exceptions. None will be handled here, any device re-aquisition will be handled above.
+        catch (InputException)
+          // Catch any exceptions. None will be handled here, any device re-aquisition will be handled above.
         {
           return;
         }
 
         // send events here
-        if (null != this.OnStateChange)
+        if (null != OnStateChange)
         {
           OnStateChange(this, state);
         }
@@ -246,20 +246,18 @@ namespace InputService.Plugin
 
       if (inputListener != null && inputListener.IsAlive)
         inputListener.Abort();
-      
+
       inputListener = null;
     }
 
-    void StartListener()
+    private void StartListener()
     {
       isListening = true;
 
-      inputListener = new Thread(new ThreadStart(this.ThreadFunction));
+      inputListener = new Thread(ThreadFunction);
       inputListener.Name = "DirectInputListener";
       inputListener.IsBackground = true;
       inputListener.Start();
     }
-
   }
-
 }

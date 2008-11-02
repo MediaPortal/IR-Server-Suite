@@ -4,13 +4,11 @@ using System.IO;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Base class for all IR Server Plugins.
   /// </summary>
   public abstract class PluginBase
   {
-
     #region Constants
 
     /// <summary>
@@ -18,7 +16,7 @@ namespace InputService.Plugin
     /// </summary>
     public static readonly string ConfigurationPath =
       Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-      Path.Combine("IR Server Suite", "Input Service"));
+                   Path.Combine("IR Server Suite", "Input Service"));
 
     #endregion Constants
 
@@ -52,7 +50,10 @@ namespace InputService.Plugin
     /// Gets a display icon for the plugin.
     /// </summary>
     /// <value>The icon.</value>
-    public virtual Icon DeviceIcon { get { return null; } }
+    public virtual Icon DeviceIcon
+    {
+      get { return null; }
+    }
 
     #endregion Properties
 
@@ -63,7 +64,10 @@ namespace InputService.Plugin
     /// This method should not throw exceptions.
     /// </summary>
     /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
-    public virtual bool Detect() { return false; }
+    public virtual bool Detect()
+    {
+      return false;
+    }
 
     /// <summary>
     /// Start the IR Server plugin.
@@ -73,12 +77,16 @@ namespace InputService.Plugin
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
-    public virtual void Suspend() { }
+    public virtual void Suspend()
+    {
+    }
 
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
-    public virtual void Resume() { }
+    public virtual void Resume()
+    {
+    }
 
     /// <summary>
     /// Stop the IR Server plugin.
@@ -86,7 +94,5 @@ namespace InputService.Plugin
     public abstract void Stop();
 
     #endregion Methods
-
   }
-
 }

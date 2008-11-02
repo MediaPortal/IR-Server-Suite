@@ -1,20 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Close Program Command form.
   /// </summary>
   public partial class CloseProgramCommand : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -46,8 +39,8 @@ namespace IrssUtils.Forms
         }
 
         return String.Format("{0}|{1}",
-          target,
-          textBoxTarget.Text);
+                             target,
+                             textBoxTarget.Text);
       }
     }
 
@@ -58,7 +51,10 @@ namespace IrssUtils.Forms
     /// <summary>
     /// Initializes a new instance of the <see cref="CloseProgramCommand"/> class.
     /// </summary>
-    public CloseProgramCommand() : this(new string[] { Common.TargetActive, String.Empty }) { }
+    public CloseProgramCommand() : this(new string[] {Common.TargetActive, String.Empty})
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CloseProgramCommand"/> class.
     /// </summary>
@@ -72,10 +68,18 @@ namespace IrssUtils.Forms
         string target = commands[0].ToUpperInvariant();
         switch (target)
         {
-          case Common.TargetActive:       radioButtonActiveWindow.Checked = true;   break;
-          case Common.TargetApplication:  radioButtonApplication.Checked  = true;   break;
-          case Common.TargetClass:        radioButtonClass.Checked        = true;   break;
-          case Common.TargetWindow:       radioButtonWindowTitle.Checked  = true;   break;
+          case Common.TargetActive:
+            radioButtonActiveWindow.Checked = true;
+            break;
+          case Common.TargetApplication:
+            radioButtonApplication.Checked = true;
+            break;
+          case Common.TargetClass:
+            radioButtonClass.Checked = true;
+            break;
+          case Common.TargetWindow:
+            radioButtonWindowTitle.Checked = true;
+            break;
           default:
             throw new ArgumentOutOfRangeException("commands", commands[0], "Invalid message target");
         }
@@ -98,7 +102,7 @@ namespace IrssUtils.Forms
         find.Title = "Application to close";
 
         if (find.ShowDialog(this) == DialogResult.OK)
-            textBoxTarget.Text = find.FileName;
+          textBoxTarget.Text = find.FileName;
       }
       else if (radioButtonClass.Checked)
       {
@@ -116,14 +120,14 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void radioButtonActiveWindow_CheckedChanged(object sender, EventArgs e)
@@ -131,16 +135,19 @@ namespace IrssUtils.Forms
       buttonFindTarget.Enabled = false;
       textBoxTarget.Enabled = false;
     }
+
     private void radioButtonApplication_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindTarget.Enabled = true;
       textBoxTarget.Enabled = true;
     }
+
     private void radioButtonClass_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindTarget.Enabled = true;
       textBoxTarget.Enabled = true;
     }
+
     private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindTarget.Enabled = true;
@@ -148,7 +155,5 @@ namespace IrssUtils.Forms
     }
 
     #endregion Controls
-
   }
-
 }

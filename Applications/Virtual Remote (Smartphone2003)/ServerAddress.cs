@@ -1,8 +1,6 @@
 #region Using directives
 
 using System;
-using System.Drawing;
-using System.Collections;
 using System.Windows.Forms;
 
 #endregion
@@ -12,24 +10,13 @@ namespace VirtualRemote
   /// <summary>
   /// Summary description for ServerAddress.
   /// </summary>
-  class ServerAddress : Form
+  internal class ServerAddress : Form
   {
-
-    private MainMenu mainMenu;
-    private MenuItem menuItemOK;
-    private MenuItem menuItemCancel;
-    private TextBox textBoxServerHost;
     private Label labelDescription;
-
-    /// <summary>
-    /// Gets or sets the server host.
-    /// </summary>
-    /// <value>The server host.</value>
-    public string ServerHost
-    {
-      get { return textBoxServerHost.Text; }
-      set { textBoxServerHost.Text = value; }
-    }
+    private MainMenu mainMenu;
+    private MenuItem menuItemCancel;
+    private MenuItem menuItemOK;
+    private TextBox textBoxServerHost;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerAddress"/> class.
@@ -50,11 +37,49 @@ namespace VirtualRemote
     }
 
     /// <summary>
+    /// Gets or sets the server host.
+    /// </summary>
+    /// <value>The server host.</value>
+    public string ServerHost
+    {
+      get { return textBoxServerHost.Text; }
+      set { textBoxServerHost.Text = value; }
+    }
+
+    /// <summary>
     /// Clean up any resources being used.
     /// </summary>
     protected override void Dispose(bool disposing)
     {
       base.Dispose(disposing);
+    }
+
+    private void menuItemOK_Click(object sender, EventArgs e)
+    {
+      DialogResult = DialogResult.OK;
+      Close();
+    }
+
+    private void menuItemCancel_Click(object sender, EventArgs e)
+    {
+      DialogResult = DialogResult.Cancel;
+      Close();
+    }
+
+    private void textBoxServerHost_KeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.KeyCode)
+      {
+        case Keys.Enter:
+          DialogResult = DialogResult.OK;
+          Close();
+          break;
+
+        case Keys.Escape:
+          DialogResult = DialogResult.Cancel;
+          Close();
+          break;
+      }
     }
 
     #region Windows Form Designer generated code
@@ -106,38 +131,8 @@ namespace VirtualRemote
       this.Controls.Add(this.labelDescription);
       this.Menu = this.mainMenu;
       this.Text = "Server Address";
-
     }
 
     #endregion
-
-    private void menuItemOK_Click(object sender, EventArgs e)
-    {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
-    }
-    private void menuItemCancel_Click(object sender, EventArgs e)
-    {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
-    }
-
-    private void textBoxServerHost_KeyDown(object sender, KeyEventArgs e)
-    {
-      switch (e.KeyCode)
-      {
-        case Keys.Enter:
-          this.DialogResult = DialogResult.OK;
-          this.Close();
-          break;
-
-        case Keys.Escape:
-          this.DialogResult = DialogResult.Cancel;
-          this.Close();
-          break;
-      }
-    }
-
   }
-
 }

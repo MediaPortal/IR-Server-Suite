@@ -1,37 +1,28 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Xml;
-
 using IrssComms;
 using IrssUtils;
 
 namespace IRBlast
 {
-
-  static class Program
+  internal static class Program
   {
-
     #region Variables
 
-    static Client _client;
+    private static string _blastPort = "Default";
+    private static Client _client;
+    private static int _delay = 250;
+    private static int _padChannelNumber;
 
-    static bool _registered;
+    private static bool _registered;
 
-    static string _serverHost = "localhost";
+    private static string _serverHost = "localhost";
 
-    static string _blastPort = "Default";
-
-    static int _delay = 250;
-
-    static bool _treatAsChannelNumber;
-    static int _padChannelNumber;
+    private static bool _treatAsChannelNumber;
 
     #endregion Variables
 
@@ -39,7 +30,7 @@ namespace IRBlast
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
 #if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
@@ -52,7 +43,6 @@ namespace IRBlast
 
       try
       {
-
         if (args.Length > 0) // Command Line Start ...
         {
           List<String> irCommands = new List<string>();
@@ -60,7 +50,8 @@ namespace IRBlast
           for (int index = 0; index < args.Length; index++)
           {
             string parameter = args[index].ToUpperInvariant();
-            if (parameter.StartsWith("-", StringComparison.Ordinal) || parameter.StartsWith("/", StringComparison.Ordinal))
+            if (parameter.StartsWith("-", StringComparison.Ordinal) ||
+                parameter.StartsWith("/", StringComparison.Ordinal))
               parameter = parameter.Substring(1);
 
             switch (parameter)
@@ -101,7 +92,7 @@ namespace IRBlast
           else
           {
             IPAddress serverIP = Client.GetIPFromName(_serverHost);
-            IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+            IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
             if (StartClient(endPoint))
             {
@@ -147,14 +138,14 @@ namespace IRBlast
                         fileName = Path.Combine(Common.FolderIRCommands, digit + Common.FileExtensionIR);
                         BlastIR(fileName, _blastPort);
                       }
-                      
+
                       if (_delay > 0)
                         Thread.Sleep(_delay);
                     }
                   }
                   else if (command.StartsWith("~", StringComparison.OrdinalIgnoreCase))
                   {
-                    Thread.Sleep(command.Length * 500);
+                    Thread.Sleep(command.Length*500);
                   }
                   else
                   {
@@ -190,7 +181,7 @@ namespace IRBlast
       IrssLog.Close();
     }
 
-    static void ShowHeader()
+    private static void ShowHeader()
     {
       Console.WriteLine("");
       Console.WriteLine("IR Blast");
@@ -201,7 +192,7 @@ namespace IRBlast
       Console.WriteLine("");
     }
 
-    static void ShowHelp()
+    private static void ShowHelp()
     {
       IrssLog.Debug("Show Help");
 
@@ -239,10 +230,10 @@ namespace IRBlast
       Console.WriteLine("");
     }
 
-    static void CommsFailure(object obj)
+    private static void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
-      
+
       if (ex != null)
         IrssLog.Error("Communications failure: {0}", ex.Message);
       else
@@ -250,32 +241,34 @@ namespace IRBlast
 
       StopClient();
     }
-    static void Connected(object obj)
+
+    private static void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    static void Disconnected(object obj)
+
+    private static void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
       Thread.Sleep(1000);
     }
 
-    static bool StartClient(IPEndPoint endPoint)
+    private static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
+
       if (_client.Start())
       {
         return true;
@@ -286,7 +279,8 @@ namespace IRBlast
         return false;
       }
     }
-    static void StopClient()
+
+    private static void StopClient()
     {
       if (_client == null)
         return;
@@ -297,7 +291,7 @@ namespace IRBlast
       _registered = false;
     }
 
-    static void ReceivedMessage(IrssMessage received)
+    private static void ReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
@@ -342,45 +336,47 @@ namespace IRBlast
       }
     }
 
-    static void BlastIR(string fileName, string port)
+    private static void BlastIR(string fileName, string port)
     {
       using (FileStream file = File.OpenRead(fileName))
       {
         if (file.Length == 0)
-          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure",
+                                              fileName));
 
         byte[] outData = new byte[4 + port.Length + file.Length];
 
         BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
         Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-        file.Read(outData, 4 + port.Length, (int)file.Length);
+        file.Read(outData, 4 + port.Length, (int) file.Length);
 
-        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request | MessageFlags.ForceNotRespond, outData);
+        IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request | MessageFlags.ForceNotRespond,
+                                              outData);
         _client.Send(message);
       }
     }
 
     #region Log Commands
 
-    static void Info(string format, params object[] args)
+    private static void Info(string format, params object[] args)
     {
       Console.WriteLine(format, args);
       IrssLog.Info(format, args);
     }
-    static void Warn(string format, params object[] args)
+
+    private static void Warn(string format, params object[] args)
     {
       Console.WriteLine(format, args);
       IrssLog.Warn(format, args);
     }
-    static void Error(Exception ex)
+
+    private static void Error(Exception ex)
     {
       Console.WriteLine(ex.Message);
       IrssLog.Error(ex);
     }
 
     #endregion Log Commands
-
   }
-
 }

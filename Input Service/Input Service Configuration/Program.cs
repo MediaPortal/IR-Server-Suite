@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -7,9 +8,9 @@ using System.ServiceProcess;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
 using InputService.Plugin;
 using IrssUtils;
+using TimeoutException=System.ServiceProcess.TimeoutException;
 
 namespace InputService.Configuration
 {
@@ -19,43 +20,43 @@ namespace InputService.Configuration
   /// <summary>
   /// Describes the operation mode of the Input Service.
   /// </summary>
-  enum InputServiceMode
+  internal enum InputServiceMode
   {
     /// <summary>
     /// Acts as a standard Server (Default).
     /// </summary>
-    ServerMode    = 0,
+    ServerMode = 0,
     /// <summary>
     /// Relays button presses to another Input Service.
     /// </summary>
-    RelayMode     = 1,
+    RelayMode = 1,
     /// <summary>
     /// Acts as a repeater for another Input Service's blasting.
     /// </summary>
-    RepeaterMode  = 2,
+    RepeaterMode = 2,
   }
 
   #endregion Enumerations
 
-  static class Program
+  internal static class Program
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Input Service\\Input Service.xml");
-
     internal const string ServiceName = "InputService";
+
+    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
+                                                                    "Input Service\\Input Service.xml");
 
     #endregion Constants
 
     #region Variables
 
-    static bool _abstractRemoteMode;
-    static InputServiceMode _mode;
-    static string _hostComputer;
-    static string _processPriority;
-    static string[] _pluginNameReceive;
-    static string _pluginNameTransmit;
+    private static bool _abstractRemoteMode;
+    private static string _hostComputer;
+    private static InputServiceMode _mode;
+    private static string[] _pluginNameReceive;
+    private static string _pluginNameTransmit;
+    private static string _processPriority;
 
     #endregion Variables
 
@@ -63,14 +64,15 @@ namespace InputService.Configuration
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    private static void Main()
     {
       // Check for multiple instances ...
       try
       {
         if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
         {
-          MessageBox.Show("Input Service Configuration is already running!", "Cannot start", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+          MessageBox.Show("Input Service Configuration is already running!", "Cannot start", MessageBoxButtons.OK,
+                          MessageBoxIcon.Stop);
           return;
         }
       }
@@ -95,29 +97,32 @@ namespace InputService.Configuration
       Config config = new Config();
 
       config.AbstractRemoteMode = _abstractRemoteMode;
-      config.Mode               = _mode;
-      config.HostComputer       = _hostComputer;
-      config.ProcessPriority    = _processPriority;
-      config.PluginReceive      = _pluginNameReceive;
-      config.PluginTransmit     = _pluginNameTransmit;
+      config.Mode = _mode;
+      config.HostComputer = _hostComputer;
+      config.ProcessPriority = _processPriority;
+      config.PluginReceive = _pluginNameReceive;
+      config.PluginTransmit = _pluginNameTransmit;
 
       if (config.ShowDialog() == DialogResult.OK)
       {
-        if ((_abstractRemoteMode  != config.AbstractRemoteMode) ||
-            (_mode                != config.Mode)               ||
-            (_hostComputer        != config.HostComputer)       ||
-            (_processPriority     != config.ProcessPriority)    ||
-            (_pluginNameReceive   != config.PluginReceive)      ||
-            (_pluginNameTransmit  != config.PluginTransmit))
+        if ((_abstractRemoteMode != config.AbstractRemoteMode) ||
+            (_mode != config.Mode) ||
+            (_hostComputer != config.HostComputer) ||
+            (_processPriority != config.ProcessPriority) ||
+            (_pluginNameReceive != config.PluginReceive) ||
+            (_pluginNameTransmit != config.PluginTransmit))
         {
-          if (MessageBox.Show("Input Service will now be restarted for configuration changes to take effect", "Restarting Input Service", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+          if (
+            MessageBox.Show("Input Service will now be restarted for configuration changes to take effect",
+                            "Restarting Input Service", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) ==
+            DialogResult.OK)
           {
             // Change settings ...
             _abstractRemoteMode = config.AbstractRemoteMode;
-            _mode               = config.Mode;
-            _hostComputer       = config.HostComputer;
-            _processPriority    = config.ProcessPriority;
-            _pluginNameReceive  = config.PluginReceive;
+            _mode = config.Mode;
+            _hostComputer = config.HostComputer;
+            _processPriority = config.ProcessPriority;
+            _pluginNameReceive = config.PluginReceive;
             _pluginNameTransmit = config.PluginTransmit;
 
             SaveSettings();
@@ -135,15 +140,15 @@ namespace InputService.Configuration
       IrssLog.Close();
     }
 
-    static void LoadSettings()
+    private static void LoadSettings()
     {
       IrssLog.Info("Loading settings ...");
 
       _abstractRemoteMode = false;
-      _mode               = InputServiceMode.ServerMode;
-      _hostComputer       = String.Empty;
-      _processPriority    = "No Change";
-      _pluginNameReceive  = null;
+      _mode = InputServiceMode.ServerMode;
+      _hostComputer = String.Empty;
+      _processPriority = "No Change";
+      _pluginNameReceive = null;
       _pluginNameTransmit = String.Empty;
 
       XmlDocument doc = new XmlDocument();
@@ -154,7 +159,8 @@ namespace InputService.Configuration
       }
       catch (DirectoryNotFoundException)
       {
-        IrssLog.Error("No configuration file found ({0}), folder not found! Creating default configuration file", ConfigurationFile);
+        IrssLog.Error("No configuration file found ({0}), folder not found! Creating default configuration file",
+                      ConfigurationFile);
 
         Directory.CreateDirectory(Path.GetDirectoryName(ConfigurationFile));
 
@@ -174,33 +180,65 @@ namespace InputService.Configuration
         return;
       }
 
-      try { _abstractRemoteMode = bool.Parse(doc.DocumentElement.Attributes["AbstractRemoteMode"].Value); }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
-
-      try { _mode               = (InputServiceMode)Enum.Parse(typeof(InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
-
-      try { _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value; }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
-
-      try { _processPriority    = doc.DocumentElement.Attributes["ProcessPriority"].Value; }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
-
-      try { _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value; }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+      try
+      {
+        _abstractRemoteMode = bool.Parse(doc.DocumentElement.Attributes["AbstractRemoteMode"].Value);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
 
       try
       {
-        string receivers        = doc.DocumentElement.Attributes["PluginReceive"].Value;
+        _mode =
+          (InputServiceMode) Enum.Parse(typeof (InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
+        _hostComputer = doc.DocumentElement.Attributes["HostComputer"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
+        _processPriority = doc.DocumentElement.Attributes["ProcessPriority"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
+        _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
+        string receivers = doc.DocumentElement.Attributes["PluginReceive"].Value;
         if (!String.IsNullOrEmpty(receivers))
-          _pluginNameReceive    = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+          _pluginNameReceive = receivers.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
       }
       catch (Exception ex)
       {
         IrssLog.Warn(ex.ToString());
       }
     }
-    static void SaveSettings()
+
+    private static void SaveSettings()
     {
       IrssLog.Info("Saving settings ...");
 
@@ -210,12 +248,12 @@ namespace InputService.Configuration
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
           writer.WriteAttributeString("AbstractRemoteMode", _abstractRemoteMode.ToString());
-          writer.WriteAttributeString("Mode", Enum.GetName(typeof(InputServiceMode), _mode));
+          writer.WriteAttributeString("Mode", Enum.GetName(typeof (InputServiceMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
           writer.WriteAttributeString("ProcessPriority", _processPriority);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
@@ -247,11 +285,11 @@ namespace InputService.Configuration
       }
     }
 
-    static void CreateDefaultSettings()
+    private static void CreateDefaultSettings()
     {
       try
       {
-        string[] blasters = Program.DetectBlasters();
+        string[] blasters = DetectBlasters();
         if (blasters == null)
           _pluginNameTransmit = String.Empty;
         else
@@ -265,7 +303,7 @@ namespace InputService.Configuration
 
       try
       {
-        string[] receivers = Program.DetectReceivers();
+        string[] receivers = DetectReceivers();
         if (receivers == null)
           _pluginNameReceive = null;
         else
@@ -287,7 +325,7 @@ namespace InputService.Configuration
       }
     }
 
-    static void RestartService(string serviceName)
+    private static void RestartService(string serviceName)
     {
       IrssLog.Info("Restarting service ({0})", serviceName);
 
@@ -308,12 +346,12 @@ namespace InputService.Configuration
           }
         }
       }
-      catch (System.ComponentModel.Win32Exception ex)
+      catch (Win32Exception ex)
       {
         IrssLog.Error(ex);
         MessageBox.Show(ex.Message, "Error restarting service", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
-      catch (System.ServiceProcess.TimeoutException ex)
+      catch (TimeoutException ex)
       {
         IrssLog.Error(ex);
         MessageBox.Show(ex.Message, "Error stopping service", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -346,18 +384,24 @@ namespace InputService.Configuration
 
           foreach (Type type in types)
           {
-            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
+            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof (PluginBase)))
             {
-              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+              PluginBase plugin = (PluginBase) assembly.CreateInstance(type.FullName);
 
               if (plugin != null)
                 plugins.Add(plugin);
             }
           }
         }
-        catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
-        catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
-        catch (FileNotFoundException) { }   // Ignore File Not Found Exceptions, just keep checking for Input Service Plugins
+        catch (BadImageFormatException)
+        {
+        } // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
+        catch (TypeLoadException)
+        {
+        } // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
+        catch (FileNotFoundException)
+        {
+        } // Ignore File Not Found Exceptions, just keep checking for Input Service Plugins
       }
 
       return plugins.ToArray();
@@ -404,7 +448,7 @@ namespace InputService.Configuration
     {
       IrssLog.Info("Detect Blasters ...");
 
-      PluginBase[] plugins = Program.AvailablePlugins();
+      PluginBase[] plugins = AvailablePlugins();
       if (plugins == null || plugins.Length == 0)
         return null;
 
@@ -428,7 +472,5 @@ namespace InputService.Configuration
 
       return null;
     }
-
   }
-
 }

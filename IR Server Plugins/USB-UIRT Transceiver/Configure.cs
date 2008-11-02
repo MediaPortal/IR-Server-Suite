@@ -1,16 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
-  partial class Configure : Form
+  internal partial class Configure : Form
   {
-
     #region Properties
 
     public int RepeatDelay
@@ -18,11 +12,13 @@ namespace InputService.Plugin
       get { return Decimal.ToInt32(numericUpDownButtonRepeatDelay.Value); }
       set { numericUpDownButtonRepeatDelay.Value = new Decimal(value); }
     }
+
     public int BlastRepeats
     {
       get { return Decimal.ToInt32(numericUpDownRepeatCount.Value); }
       set { numericUpDownRepeatCount.Value = new Decimal(value); }
     }
+
     public int LearnTimeout
     {
       get { return Decimal.ToInt32(numericUpDownLearnTimeout.Value); }
@@ -44,18 +40,16 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

@@ -1,29 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// String To Upper macro command.
   /// </summary>
   public class CommandStringToUpper : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStringToUpper"/> class.
     /// </summary>
-    public CommandStringToUpper() { InitParameters(2); }
+    public CommandStringToUpper()
+    {
+      InitParameters(2);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStringToUpper"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandStringToUpper(string[] parameters) : base(parameters) { }
+    public CommandStringToUpper(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +34,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryString; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryString;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "String To Upper"; }
+    public override string GetUserInterfaceText()
+    {
+      return "String To Upper";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -66,13 +73,11 @@ namespace Commands
     {
       string[] processed = ProcessParameters(variables, Parameters);
 
-      string output = processed[0].ToUpper(System.Globalization.CultureInfo.CurrentCulture);
+      string output = processed[0].ToUpper(CultureInfo.CurrentCulture);
 
       variables.VariableSet(processed[1], output);
     }
 
     #endregion Implementation
-
   }
-
 }

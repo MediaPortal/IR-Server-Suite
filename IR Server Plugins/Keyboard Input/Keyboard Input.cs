@@ -1,24 +1,31 @@
 using System;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Drawing;
-using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
-using Microsoft.Win32.SafeHandles;
+using InputService.Plugin.Properties;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Input Service Plugin to capture ALL keyboard button presses and basic key combinations and forward as remote control commands.
   /// </summary>
   public class KeyboardInput : PluginBase, IRemoteReceiver
   {
+    #region Interop
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr SetWindowsHookEx(HookType code, HookDelegate func, IntPtr hInstance, int threadID);
+
+    [DllImport("user32.dll")]
+    private static extern int UnhookWindowsHookEx(IntPtr hhook);
+
+    [DllImport("user32.dll")]
+    private static extern int CallNextHookEx(IntPtr hhook, int code, int wParam, IntPtr lParam);
+
+    [DllImport("kernel32.dll")]
+    private static extern IntPtr LoadLibrary(string lpFileName);
+
+    #endregion Interop
 
     // #define TEST_APPLICATION in the project properties when creating the console test app ...
 #if TEST_APPLICATION
@@ -59,51 +66,17 @@ namespace InputService.Plugin
 
 #endif
 
+    #region Nested type: HookDelegate
 
-    #region Interop
+    private delegate int HookDelegate(int code, int wParam, IntPtr lParam);
 
-    [DllImport("user32.dll")]
-    static extern IntPtr SetWindowsHookEx(HookType code, HookDelegate func, IntPtr hInstance, int threadID);
-
-    [DllImport("user32.dll")]
-    static extern int UnhookWindowsHookEx(IntPtr hhook);
-
-    [DllImport("user32.dll")]
-    static extern int CallNextHookEx(IntPtr hhook, int code, int wParam, IntPtr lParam);
-
-    [DllImport("kernel32.dll")]
-    static extern IntPtr LoadLibrary(string lpFileName);
-
-    #endregion Interop
-
-    #region Delegates
-
-    delegate int HookDelegate(int code, int wParam, IntPtr lParam);
-
-    #endregion Delegates
+    #endregion
 
     #region Enumerations
 
-    enum HookType
-    {
-      WH_JOURNALRECORD = 0,
-      WH_JOURNALPLAYBACK = 1,
-      WH_KEYBOARD = 2,
-      WH_GETMESSAGE = 3,
-      WH_CALLWNDPROC = 4,
-      WH_CBT = 5,
-      WH_SYSMSGFILTER = 6,
-      WH_MOUSE = 7,
-      WH_HARDWARE = 8,
-      WH_DEBUG = 9,
-      WH_SHELL = 10,
-      WH_FOREGROUNDIDLE = 11,
-      WH_CALLWNDPROCRET = 12,
-      WH_KEYBOARD_LL = 13,
-      WH_MOUSE_LL = 14
-    }
+    #region Nested type: AppCommands
 
-    enum AppCommands
+    private enum AppCommands
     {
       None = 0,
       BrowserBackward = 1,
@@ -162,12 +135,42 @@ namespace InputService.Plugin
       Flip3D = 54,
     }
 
+    #endregion
+
+    #region Nested type: HookType
+
+    private enum HookType
+    {
+      WH_JOURNALRECORD = 0,
+      WH_JOURNALPLAYBACK = 1,
+      WH_KEYBOARD = 2,
+      WH_GETMESSAGE = 3,
+      WH_CALLWNDPROC = 4,
+      WH_CBT = 5,
+      WH_SYSMSGFILTER = 6,
+      WH_MOUSE = 7,
+      WH_HARDWARE = 8,
+      WH_DEBUG = 9,
+      WH_SHELL = 10,
+      WH_FOREGROUNDIDLE = 11,
+      WH_CALLWNDPROCRET = 12,
+      WH_KEYBOARD_LL = 13,
+      WH_MOUSE_LL = 14
+    }
+
+    #endregion
+
     #endregion Enumerations
 
     #region Structures
 
-    struct KeyboardHookStruct
+    private struct KeyboardHookStruct
     {
+      public readonly int dwExtraInfo;
+      public readonly int flags;
+      public readonly int scanCode;
+      public readonly int time;
+      public readonly int virtualKey;
 
       /// <summary>
       /// Initializes a new instance of the <see cref="KeyboardHookStruct"/> struct.
@@ -175,33 +178,25 @@ namespace InputService.Plugin
       /// <param name="lParam">The lParam to derive from.</param>
       public KeyboardHookStruct(IntPtr lParam)
       {
-        KeyboardHookStruct khs = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
-        
-        virtualKey  = khs.virtualKey;
-        scanCode    = khs.scanCode;
-        flags       = khs.flags;
-        time        = khs.time;
+        KeyboardHookStruct khs = (KeyboardHookStruct) Marshal.PtrToStructure(lParam, typeof (KeyboardHookStruct));
+
+        virtualKey = khs.virtualKey;
+        scanCode = khs.scanCode;
+        flags = khs.flags;
+        time = khs.time;
         dwExtraInfo = khs.dwExtraInfo;
       }
-
-      public int virtualKey;
-      public int scanCode;
-      public int flags;
-      public int time;
-      public int dwExtraInfo;
     }
 
     #endregion Structures
 
     #region Variables
 
-    bool _stealAppCommands = true;
-
-    RemoteHandler _remoteButtonHandler;
-
-    IntPtr _hookHandle;
-    HookDelegate _hookDelegate;
-    IntPtr _libPtr;
+    private HookDelegate _hookDelegate;
+    private IntPtr _hookHandle;
+    private IntPtr _libPtr;
+    private RemoteHandler _remoteButtonHandler;
+    private bool _stealAppCommands = true;
 
     #endregion Variables
 
@@ -211,61 +206,45 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "Keyboard Input"; } }
+    public override string Name
+    {
+      get { return "Keyboard Input"; }
+    }
+
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.4.2.0"; } }
+    public override string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81"; } }
+    public override string Author
+    {
+      get { return "and-81"; }
+    }
+
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Captures ALL keyboard button presses and basic key combinations as remote control commands"; } }
+    public override string Description
+    {
+      get { return "Captures ALL keyboard button presses and basic key combinations as remote control commands"; }
+    }
+
     /// <summary>
     /// Gets the plugin icon.
     /// </summary>
     /// <value>The plugin icon.</value>
-    public override Icon DeviceIcon { get { return Properties.Resources.Icon; } }
-
-    /// <summary>
-    /// Start the IR Server plugin.
-    /// </summary>
-    public override void Start()
+    public override Icon DeviceIcon
     {
-      _hookDelegate = new HookDelegate(InternalHookDelegate);
-      _libPtr = LoadLibrary("User32");
-      _hookHandle = SetWindowsHookEx(HookType.WH_KEYBOARD_LL, _hookDelegate, _libPtr, 0);
-    }
-    /// <summary>
-    /// Suspend the IR Server plugin when computer enters standby.
-    /// </summary>
-    public override void Suspend()
-    {
-      Stop();
-    }
-    /// <summary>
-    /// Resume the IR Server plugin when the computer returns from standby.
-    /// </summary>
-    public override void Resume()
-    {
-      Start();
-    }
-    /// <summary>
-    /// Stop the IR Server plugin.
-    /// </summary>
-    public override void Stop()
-    {
-      UnhookWindowsHookEx(_hookHandle);
-
-      _hookHandle = IntPtr.Zero;
-      _hookDelegate = null;
-      _libPtr = IntPtr.Zero;
+      get { return Resources.Icon; }
     }
 
     /// <summary>
@@ -278,69 +257,125 @@ namespace InputService.Plugin
       set { _remoteButtonHandler = value; }
     }
 
+    /// <summary>
+    /// Start the IR Server plugin.
+    /// </summary>
+    public override void Start()
+    {
+      _hookDelegate = InternalHookDelegate;
+      _libPtr = LoadLibrary("User32");
+      _hookHandle = SetWindowsHookEx(HookType.WH_KEYBOARD_LL, _hookDelegate, _libPtr, 0);
+    }
 
-    int InternalHookDelegate(int code, int wParam, IntPtr lParam)
+    /// <summary>
+    /// Suspend the IR Server plugin when computer enters standby.
+    /// </summary>
+    public override void Suspend()
+    {
+      Stop();
+    }
+
+    /// <summary>
+    /// Resume the IR Server plugin when the computer returns from standby.
+    /// </summary>
+    public override void Resume()
+    {
+      Start();
+    }
+
+    /// <summary>
+    /// Stop the IR Server plugin.
+    /// </summary>
+    public override void Stop()
+    {
+      UnhookWindowsHookEx(_hookHandle);
+
+      _hookHandle = IntPtr.Zero;
+      _hookDelegate = null;
+      _libPtr = IntPtr.Zero;
+    }
+
+
+    private int InternalHookDelegate(int code, int wParam, IntPtr lParam)
     {
       if (code >= 0 && wParam == 256)
       {
         KeyboardHookStruct khs = new KeyboardHookStruct(lParam);
         int keyCode = khs.virtualKey;
 
-        AppCommands appCommand = KeyCodeToAppCommand((Keys)khs.virtualKey);
+        AppCommands appCommand = KeyCodeToAppCommand((Keys) khs.virtualKey);
         if (appCommand == AppCommands.None)
         {
-          if (khs.virtualKey == (int)Keys.LShiftKey || khs.virtualKey == (int)Keys.LControlKey ||
-              khs.virtualKey == (int)Keys.RShiftKey || khs.virtualKey == (int)Keys.RControlKey)
+          if (khs.virtualKey == (int) Keys.LShiftKey || khs.virtualKey == (int) Keys.LControlKey ||
+              khs.virtualKey == (int) Keys.RShiftKey || khs.virtualKey == (int) Keys.RControlKey)
             return CallNextHookEx(_hookHandle, code, wParam, lParam);
-          
-          if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)      keyCode |= 0x00100000;
-          if ((Control.ModifierKeys & Keys.Control) == Keys.Control)  keyCode |= 0x01000000;
-          if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)          keyCode |= 0x10000000;
+
+          if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) keyCode |= 0x00100000;
+          if ((Control.ModifierKeys & Keys.Control) == Keys.Control) keyCode |= 0x01000000;
+          if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt) keyCode |= 0x10000000;
         }
         else
         {
-          keyCode |= (((int)appCommand) << 8);
+          keyCode |= (((int) appCommand) << 8);
         }
 
         if (_remoteButtonHandler != null)
-          _remoteButtonHandler(this.Name, String.Format("{0:X8}", keyCode));
+          _remoteButtonHandler(Name, String.Format("{0:X8}", keyCode));
 
-         if (_stealAppCommands && appCommand != AppCommands.None)
+        if (_stealAppCommands && appCommand != AppCommands.None)
           return 1;
       }
 
       return CallNextHookEx(_hookHandle, code, wParam, lParam);
     }
 
-    static AppCommands KeyCodeToAppCommand(Keys keyCode)
+    private static AppCommands KeyCodeToAppCommand(Keys keyCode)
     {
       switch (keyCode)
       {
-        case Keys.BrowserBack:        return AppCommands.BrowserBackward;
-        case Keys.BrowserFavorites:   return AppCommands.BrowserFavorites;
-        case Keys.BrowserForward:     return AppCommands.BrowserForward;
-        case Keys.BrowserHome:        return AppCommands.BrowserHome;
-        case Keys.BrowserRefresh:     return AppCommands.BrowserRefresh;
-        case Keys.BrowserSearch:      return AppCommands.BrowserSearch;
-        case Keys.BrowserStop:        return AppCommands.BrowserStop;
-        case Keys.Help:               return AppCommands.Help;
-        case Keys.LaunchApplication1: return AppCommands.LaunchApp1;
-        case Keys.LaunchApplication2: return AppCommands.LaunchApp2;
-        case Keys.LaunchMail:         return AppCommands.LaunchMail;
-        case Keys.MediaNextTrack:     return AppCommands.MediaNextTrack;
-        case Keys.MediaPlayPause:     return AppCommands.MediaPlayPause;
-        case Keys.MediaPreviousTrack: return AppCommands.MediaPreviousTrack;
-        case Keys.MediaStop:          return AppCommands.MediaStop;
-        case Keys.SelectMedia:        return AppCommands.LaunchMediaSelect;
-        case Keys.VolumeDown:         return AppCommands.VolumeDown;
-        case Keys.VolumeMute:         return AppCommands.VolumeMute;
-        case Keys.VolumeUp:           return AppCommands.VolumeUp;
-        default:                      return AppCommands.None;
+        case Keys.BrowserBack:
+          return AppCommands.BrowserBackward;
+        case Keys.BrowserFavorites:
+          return AppCommands.BrowserFavorites;
+        case Keys.BrowserForward:
+          return AppCommands.BrowserForward;
+        case Keys.BrowserHome:
+          return AppCommands.BrowserHome;
+        case Keys.BrowserRefresh:
+          return AppCommands.BrowserRefresh;
+        case Keys.BrowserSearch:
+          return AppCommands.BrowserSearch;
+        case Keys.BrowserStop:
+          return AppCommands.BrowserStop;
+        case Keys.Help:
+          return AppCommands.Help;
+        case Keys.LaunchApplication1:
+          return AppCommands.LaunchApp1;
+        case Keys.LaunchApplication2:
+          return AppCommands.LaunchApp2;
+        case Keys.LaunchMail:
+          return AppCommands.LaunchMail;
+        case Keys.MediaNextTrack:
+          return AppCommands.MediaNextTrack;
+        case Keys.MediaPlayPause:
+          return AppCommands.MediaPlayPause;
+        case Keys.MediaPreviousTrack:
+          return AppCommands.MediaPreviousTrack;
+        case Keys.MediaStop:
+          return AppCommands.MediaStop;
+        case Keys.SelectMedia:
+          return AppCommands.LaunchMediaSelect;
+        case Keys.VolumeDown:
+          return AppCommands.VolumeDown;
+        case Keys.VolumeMute:
+          return AppCommands.VolumeMute;
+        case Keys.VolumeUp:
+          return AppCommands.VolumeUp;
+        default:
+          return AppCommands.None;
       }
     }
 
     #endregion Implementation
-
   }
-
 }

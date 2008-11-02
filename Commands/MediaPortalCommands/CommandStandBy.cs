@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-
 using MediaPortal.GUI.Library;
 using MediaPortal.Player;
 using MediaPortal.Profile;
@@ -10,25 +5,28 @@ using MediaPortal.Util;
 
 namespace Commands.MediaPortal
 {
-
   /// <summary>
   /// StandBy MediaPortal macro command.
   /// </summary>
   public class CommandStandBy : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStandBy"/> class.
     /// </summary>
-    public CommandStandBy() { InitParameters(0); }
+    public CommandStandBy()
+    {
+      InitParameters(0);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandStandBy"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandStandBy(string[] parameters) : base(parameters) { }
+    public CommandStandBy(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -38,13 +36,19 @@ namespace Commands.MediaPortal
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return "MediaPortal Commands"; }
+    public override string GetCategory()
+    {
+      return "MediaPortal Commands";
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "StandBy"; }
+    public override string GetUserInterfaceText()
+    {
+      return "StandBy";
+    }
 
     /// <summary>
     /// Execute this command.
@@ -63,9 +67,11 @@ namespace Commands.MediaPortal
       GUIMessage msg;
 
       if (mpBasicHome)
-        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
+        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0,
+                             (int) GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
       else
-        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int)GUIWindow.Window.WINDOW_HOME, 0, null);
+        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int) GUIWindow.Window.WINDOW_HOME, 0,
+                             null);
 
       GUIWindowManager.SendThreadMessage(msg);
 
@@ -73,7 +79,5 @@ namespace Commands.MediaPortal
     }
 
     #endregion Implementation
-
   }
-
 }

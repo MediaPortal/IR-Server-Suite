@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Threading;
 
 namespace IrssComms
@@ -21,18 +18,16 @@ namespace IrssComms
   /// <summary>
   /// Implements a thread-safe Producer/Consumer Queue for generics.
   /// </summary>
-  public class GenericPCQueue<T> : IDisposable
+  public class GenericPCQueue<T> : IDisposable where T : class
   {
-
     #region Variables
 
-    Thread _workerThread;
-    Queue<T> _queue;
-    object _queueLock;
-    EventWaitHandle _queueWaitHandle;
-    volatile bool _processQueue;
-
-    GenericPCQueueSink<T> _sink;
+    private readonly GenericPCQueueSink<T> _sink;
+    private volatile bool _processQueue;
+    private Queue<T> _queue;
+    private object _queueLock;
+    private EventWaitHandle _queueWaitHandle;
+    private Thread _workerThread;
 
     #endregion Variables
 
@@ -93,7 +88,6 @@ namespace IrssComms
       }
 
       // Free native resources ...
-
     }
 
     #endregion IDisposable
@@ -111,7 +105,7 @@ namespace IrssComms
       _processQueue = true;
 
       // Create the worker thread  ...
-      _workerThread = new Thread(new ThreadStart(WorkerThread));
+      _workerThread = new Thread(WorkerThread);
       _workerThread.Name = "GenericPCQueue";
       _workerThread.IsBackground = true;
 
@@ -139,7 +133,7 @@ namespace IrssComms
 
       _workerThread = null;
     }
-    
+
     /// <summary>
     /// Add a generic object to the queue.
     /// </summary>
@@ -171,7 +165,7 @@ namespace IrssComms
     /// <summary>
     /// Queue processing worker thread.
     /// </summary>
-    void WorkerThread()
+    private void WorkerThread()
     {
       try
       {
@@ -214,7 +208,5 @@ namespace IrssComms
     }
 
     #endregion Implementation
-
   }
-
 }

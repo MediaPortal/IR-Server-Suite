@@ -1,30 +1,26 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// Access to the CDRom door.
   /// </summary>
   public static class CDRom
   {
-
     #region Constants
 
-    const uint DRIVE_CDROM = 5;
+    private const uint DRIVE_CDROM = 5;
 
     #endregion Constants
 
     #region Interop
 
     [DllImport("kernel32", SetLastError = true)]
-    static extern int GetDriveType(string driveLetter);
+    private static extern int GetDriveType(string driveLetter);
 
     [DllImport("winmm.dll", EntryPoint = "mciSendStringA")]
-    static extern void mciSendStringA(string command, string returnString, int returnLength, int callback);
+    private static extern void mciSendStringA(string command, string returnString, int returnLength, int callback);
 
     #endregion Interop
 
@@ -65,7 +61,5 @@ namespace IrssUtils
     }
 
     #endregion Static Methods
-
   }
-
 }

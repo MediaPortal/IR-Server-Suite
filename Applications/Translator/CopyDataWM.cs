@@ -2,39 +2,31 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-
 using IrssUtils;
 using IrssUtils.Exceptions;
 
 namespace Translator
 {
-
   /// <summary>
   /// Used for sending and receiving Copy Data Windows Messages.
   /// </summary>
-  class CopyDataWM : NativeWindow, IDisposable
+  internal class CopyDataWM : NativeWindow, IDisposable
   {
-
     #region Constants
-
-    /// <summary>
-    /// Window name for CopyData messages.
-    /// </summary>
-    public const string CopyDataTarget = "Translator CopyData Target";
 
     /// <summary>
     /// Data value for CopyData messages.
     /// </summary>
     public const int CopyDataID = 24;
 
+    /// <summary>
+    /// Window name for CopyData messages.
+    /// </summary>
+    public const string CopyDataTarget = "Translator CopyData Target";
+
     #endregion Constants
 
     #region Constructor / Destructor
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CopyDataWM"/> class.
-    /// </summary>
-    public CopyDataWM() { }
 
     /// <summary>
     /// Releases unmanaged resources and performs other cleanup operations before the
@@ -62,6 +54,8 @@ namespace Translator
       GC.SuppressFinalize(this);
     }
 
+    #endregion
+
     /// <summary>
     /// Releases unmanaged and - optionally - managed resources
     /// </summary>
@@ -78,7 +72,28 @@ namespace Translator
       // Free native resources ...
     }
 
-    #endregion IDisposable Members
+    /// <summary>
+    /// Sends a copy data message.
+    /// </summary>
+    /// <param name="data">The data.</param>
+    public static void SendCopyDataMessage(string data)
+    {
+      Win32.COPYDATASTRUCT copyData;
+
+      byte[] dataBytes = Encoding.ASCII.GetBytes(data);
+
+      copyData.dwData = CopyDataID;
+      copyData.lpData = Win32.VarPtr(dataBytes);
+      copyData.cbData = dataBytes.Length;
+
+      IntPtr windowHandle = Win32.FindWindowByTitle(CopyDataTarget);
+
+      if (windowHandle != IntPtr.Zero)
+        Win32.SendWindowsMessage(windowHandle, (int) Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero,
+                                 Win32.VarPtr(copyData));
+      else
+        throw new CommandExecutionException("Could not find running Translator instance to send message to");
+    }
 
     #region Methods
 
@@ -92,9 +107,9 @@ namespace Translator
         return false;
 
       CreateParams createParams = new CreateParams();
-      createParams.Caption      = CopyDataTarget;
-      createParams.ExStyle      = 0x80;
-      createParams.Style        = unchecked((int)0x80000000);
+      createParams.Caption = CopyDataTarget;
+      createParams.ExStyle = 0x80;
+      createParams.Style = unchecked((int) 0x80000000);
 
       CreateHandle(createParams);
 
@@ -120,13 +135,13 @@ namespace Translator
     /// <param name="m">A <see cref="T:System.Windows.Forms.Message"></see> that is associated with the current Windows message.</param>
     protected override void WndProc(ref Message m)
     {
-      if (m.Msg == (int)Win32.WindowsMessage.WM_COPYDATA)
+      if (m.Msg == (int) Win32.WindowsMessage.WM_COPYDATA)
       {
         IrssLog.Info("Received WM_COPYDATA message");
 
         try
         {
-          Win32.COPYDATASTRUCT dataStructure = (Win32.COPYDATASTRUCT)m.GetLParam(typeof(Win32.COPYDATASTRUCT));
+          Win32.COPYDATASTRUCT dataStructure = (Win32.COPYDATASTRUCT) m.GetLParam(typeof (Win32.COPYDATASTRUCT));
 
           if (dataStructure.dwData != CopyDataID)
           {
@@ -150,29 +165,5 @@ namespace Translator
     }
 
     #endregion Overrides
-
-    /// <summary>
-    /// Sends a copy data message.
-    /// </summary>
-    /// <param name="data">The data.</param>
-    public static void SendCopyDataMessage(string data)
-    {
-      Win32.COPYDATASTRUCT copyData;
-
-      byte[] dataBytes = Encoding.ASCII.GetBytes(data);
-
-      copyData.dwData = CopyDataID;
-      copyData.lpData = Win32.VarPtr(dataBytes);
-      copyData.cbData = dataBytes.Length;
-
-      IntPtr windowHandle = Win32.FindWindowByTitle(CopyDataTarget);
-
-      if (windowHandle != IntPtr.Zero)
-        Win32.SendWindowsMessage(windowHandle, (int)Win32.WindowsMessage.WM_COPYDATA, IntPtr.Zero, Win32.VarPtr(copyData));
-      else
-        throw new CommandExecutionException("Could not find running Translator instance to send message to");
-    }
-
   }
-
 }

@@ -1,29 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
-using MediaPortal.GUI.Library;
-using MediaPortal.Util;
-
 using IrssUtils;
+using IrssUtils.Exceptions;
 using IrssUtils.Forms;
-using MPUtils;
+using MediaPortal.GUI.Library;
 using MPUtils.Forms;
 
 namespace MediaPortal.Plugins
 {
-
-  partial class MacroEditor : Form
+  internal partial class MacroEditor : Form
   {
-
     #region Constructor
 
     /// <summary>
@@ -33,7 +22,7 @@ namespace MediaPortal.Plugins
     {
       InitializeComponent();
 
-      textBoxName.Text    = "New";
+      textBoxName.Text = "New";
       textBoxName.Enabled = true;
     }
 
@@ -47,7 +36,7 @@ namespace MediaPortal.Plugins
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      textBoxName.Text    = name;
+      textBoxName.Text = name;
       textBoxName.Enabled = false;
 
       string fileName = Path.Combine(TV2BlasterPlugin.FolderMacros, name + Common.FileExtensionMacro);
@@ -58,7 +47,7 @@ namespace MediaPortal.Plugins
 
     #region Implementation
 
-    void RefreshCommandList()
+    private void RefreshCommandList()
     {
       comboBoxCommands.Items.Clear();
 
@@ -92,7 +81,7 @@ namespace MediaPortal.Plugins
     /// Write the macro in the listBox to a macro name provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
-    void WriteToFile(string fileName)
+    private void WriteToFile(string fileName)
     {
       try
       {
@@ -123,7 +112,7 @@ namespace MediaPortal.Plugins
     /// Read a macro into the listBox from the macro name provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to read (macro name, not file path).</param>
-    void ReadFromFile(string fileName)
+    private void ReadFromFile(string fileName)
     {
       try
       {
@@ -168,7 +157,7 @@ namespace MediaPortal.Plugins
         {
           PauseTime pauseTime = new PauseTime();
           if (pauseTime.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+            newCommand = Common.CmdPrefixPause + pauseTime.Time;
         }
         else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
         {
@@ -224,7 +213,7 @@ namespace MediaPortal.Plugins
           if (goToScreen.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
         }
-        /*
+          /*
         else if (selected.Equals(Common.UITextWindowState, StringComparison.OrdinalIgnoreCase))
         {
           newCommand = Common.CmdPrefixWindowState;
@@ -269,7 +258,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            TV2BlasterPlugin.BlastIR,
             Common.FolderIRCommands,
             TV2BlasterPlugin.TransceiverInformation.Ports,
             selected.Substring(Common.CmdPrefixBlast.Length));
@@ -283,7 +272,7 @@ namespace MediaPortal.Plugins
         }
         else
         {
-          throw new IrssUtils.Exceptions.CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
+          throw new CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
         }
 
         if (!String.IsNullOrEmpty(newCommand))
@@ -307,6 +296,7 @@ namespace MediaPortal.Plugins
         listBoxMacro.SelectedIndex = selected - 1;
       }
     }
+
     private void buttonMoveDown_Click(object sender, EventArgs e)
     {
       int selected = listBoxMacro.SelectedIndex;
@@ -331,14 +321,16 @@ namespace MediaPortal.Plugins
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -359,8 +351,8 @@ namespace MediaPortal.Plugins
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonOK_Click(object sender, EventArgs e)
@@ -369,14 +361,16 @@ namespace MediaPortal.Plugins
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -392,8 +386,8 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void listBoxCommandSequence_DoubleClick(object sender, EventArgs e)
@@ -418,7 +412,7 @@ namespace MediaPortal.Plugins
         {
           PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
           if (pauseTime.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+            newCommand = Common.CmdPrefixPause + pauseTime.Time;
         }
         else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
@@ -447,7 +441,7 @@ namespace MediaPortal.Plugins
         else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
-        
+
           HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
           if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
@@ -505,7 +499,7 @@ namespace MediaPortal.Plugins
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(TV2BlasterPlugin.BlastIR),
+            TV2BlasterPlugin.BlastIR,
             Common.FolderIRCommands,
             TV2BlasterPlugin.TransceiverInformation.Ports,
             commands);
@@ -530,7 +524,5 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Implementation
-
   }
-
 }

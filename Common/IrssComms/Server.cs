@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -25,7 +22,6 @@ namespace IrssComms
   /// </summary>
   public class Server : IDisposable
   {
-
     #region Constants
 
     /// <summary>
@@ -36,25 +32,22 @@ namespace IrssComms
     /// <summary>
     /// Backlog of Socket requests that can build up on the server socket.
     /// </summary>
-    const int SocketBacklog = 10;
+    private const int SocketBacklog = 10;
 
     #endregion Constants
 
     #region Variables
 
-    ServerMessageSink _messageSink;
-    IPEndPoint _localEndPoint;
+    private readonly IPEndPoint _localEndPoint;
 
-    Socket _serverSocket;
+    private readonly GenericPCQueue<MessageManagerCombo> _messageQueue;
+    private readonly ServerMessageSink _messageSink;
 
-    bool _processConnectionThread;
-    Thread _connectionThread;
-
-    List<ClientManager> _clientManagers;
-
-    GenericPCQueue<MessageManagerCombo> _messageQueue;
-
-    WaitCallback _clientDisconnectCallback;
+    private WaitCallback _clientDisconnectCallback;
+    private List<ClientManager> _clientManagers;
+    private Thread _connectionThread;
+    private bool _processConnectionThread;
+    private Socket _serverSocket;
 
     #endregion Variables
 
@@ -84,11 +77,11 @@ namespace IrssComms
 
       _messageSink = messageSink;
 
-      _messageQueue = new GenericPCQueue<MessageManagerCombo>(new GenericPCQueueSink<MessageManagerCombo>(QueueMessageSink));
+      _messageQueue = new GenericPCQueue<MessageManagerCombo>(QueueMessageSink);
     }
 
     #endregion Constructor
-    
+
     #region IDisposable
 
     /// <summary>
@@ -110,12 +103,11 @@ namespace IrssComms
       {
         // Dispose managed resources ...
         Stop();
-        
+
         _messageQueue.Dispose();
       }
 
       // Free native resources ...
-
     }
 
     #endregion IDisposable
@@ -163,7 +155,7 @@ namespace IrssComms
       {
         _clientManagers = new List<ClientManager>();
 
-        _connectionThread = new Thread(new ThreadStart(ConnectionThread));
+        _connectionThread = new Thread(ConnectionThread);
         _connectionThread.Name = "IrssComms.Server.ConnectionThread";
         _connectionThread.IsBackground = true;
         _connectionThread.Start();
@@ -171,8 +163,8 @@ namespace IrssComms
       catch
       {
         _processConnectionThread = false;
-        _serverSocket     = null;
-        _clientManagers   = null;
+        _serverSocket = null;
+        _clientManagers = null;
         _connectionThread = null;
 
         throw;
@@ -233,29 +225,31 @@ namespace IrssComms
       }
     }
 
-    void ClientManagerMessageSink(MessageManagerCombo combo)
+    private void ClientManagerMessageSink(MessageManagerCombo combo)
     {
       _messageQueue.Enqueue(combo);
     }
 
-    void QueueMessageSink(MessageManagerCombo combo)
+    private void QueueMessageSink(MessageManagerCombo combo)
     {
       _messageSink(combo);
     }
 
-    void ClientDisconnect(object obj)
+    private void ClientDisconnect(object obj)
     {
       ClientManager clientManager = obj as ClientManager;
-      if (clientManager == null || _clientManagers == null)
+      if (clientManager == null)
         return;
 
-      lock (_clientManagers)
+      if (_clientManagers != null)
       {
-        if (_clientManagers == null)
-          return;
-
-        if (_clientManagers.Contains(clientManager))
-          _clientManagers.Remove(clientManager);
+        lock (_clientManagers)
+        {
+          if (_clientManagers.Contains(clientManager))
+          {
+            _clientManagers.Remove(clientManager);
+          }
+        }
       }
 
       if (_clientDisconnectCallback != null)
@@ -264,23 +258,22 @@ namespace IrssComms
       clientManager.Dispose();
     }
 
-    void ConnectionThread()
+    private void ConnectionThread()
     {
       try
       {
-        ServerMessageSink clientManagerMessageSink = new ServerMessageSink(ClientManagerMessageSink);
-
         while (_processConnectionThread)
         {
           Socket socket = _serverSocket.Accept();
 
+          if (_clientManagers == null)
+            throw new InvalidOperationException(
+              "Cannot accept new connections, _clientManagers object is not initialised.");
+
           lock (_clientManagers)
           {
-            if (_clientManagers == null)
-              continue;
-
-            ClientManager manager = new ClientManager(socket, clientManagerMessageSink);
-            manager.DisconnectCallback = new WaitCallback(ClientDisconnect);
+            ClientManager manager = new ClientManager(socket, ClientManagerMessageSink);
+            manager.DisconnectCallback = ClientDisconnect;
 
             _clientManagers.Add(manager);
 
@@ -301,7 +294,5 @@ namespace IrssComms
     }
 
     #endregion Implementation
-
   }
-
 }

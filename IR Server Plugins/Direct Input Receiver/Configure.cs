@@ -1,22 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-
 using Microsoft.DirectX.DirectInput;
 
 namespace InputService.Plugin
 {
-
-  partial class Configure : Form
+  internal partial class Configure : Form
   {
-
     #region Variables
 
-    DirectInputListener _diListener;
-    Device _device;
+    private Device _device;
+    private DirectInputListener _diListener;
 
     #endregion Variables
 
@@ -65,15 +58,13 @@ namespace InputService.Plugin
       foreach (DeviceInstance di in deviceList)
       {
         ListViewItem item = new ListViewItem(
-          new string[] { di.InstanceName, di.ProductName }
-        );
+          new string[] {di.InstanceName, di.ProductName}
+          );
 
         item.Tag = di.InstanceGuid.ToString();
 
         listViewDevices.Items.Add(item);
       }
-
-      
     }
 
     #endregion Constructor
@@ -83,10 +74,10 @@ namespace InputService.Plugin
       _diListener.DeInitDevice();
       _diListener = null;
     }
-    
+
     private void listViewDevices_SelectedIndexChanged(object sender, EventArgs e)
     {
-      string guid = this.DeviceGuid;
+      string guid = DeviceGuid;
 
       if (String.IsNullOrEmpty(guid))
         return;
@@ -99,6 +90,10 @@ namespace InputService.Plugin
       _device = _diListener.SelectedDevice;
     }
 
+    private void groupBoxMouseButtons_Enter(object sender, EventArgs e)
+    {
+    }
+
     #region Buttons
 
     private void buttonConfigure_Click(object sender, EventArgs e)
@@ -109,25 +104,16 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
-    private void groupBoxMouseButtons_Enter(object sender, EventArgs e)
-    {
-
-    }
-
-
-
   }
-
 }

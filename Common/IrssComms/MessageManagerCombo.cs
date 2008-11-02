@@ -2,17 +2,15 @@ using System;
 
 namespace IrssComms
 {
-
   /// <summary>
   /// Encapsulates an IrssMessage and a ClientManager object instance for queueing.
   /// </summary>
   public class MessageManagerCombo : IEquatable<MessageManagerCombo>
   {
-
     #region Variables
 
-    IrssMessage _message;
-    ClientManager _manager;
+    private ClientManager _manager;
+    private IrssMessage _message;
 
     #endregion Variables
 
@@ -58,6 +56,18 @@ namespace IrssComms
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
+    public bool Equals(MessageManagerCombo other)
+    {
+      return (Message == other.Message && Manager == other.Manager);
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
     /// <param name="obj">An object to compare with this object.</param>
     /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
     public override bool Equals(object obj)
@@ -68,16 +78,6 @@ namespace IrssComms
         return false;
 
       return Equals(asCombo);
-    }
-
-    /// <summary>
-    /// Indicates whether the current object is equal to another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
-    public bool Equals(MessageManagerCombo other)
-    {
-      return (this.Message == other.Message && this.Manager == other.Manager);
     }
 
     /// <summary>
@@ -114,9 +114,5 @@ namespace IrssComms
     {
       return _message.GetHashCode() + _manager.GetHashCode();
     }
-
-    #endregion
-
   }
-
 }

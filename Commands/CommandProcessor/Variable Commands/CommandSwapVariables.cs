@@ -1,29 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Swap Variables macro command.
   /// </summary>
   public class CommandSwapVariables : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSwapVariables"/> class.
     /// </summary>
-    public CommandSwapVariables() { InitParameters(2); }
+    public CommandSwapVariables()
+    {
+      InitParameters(2);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSwapVariables"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSwapVariables(string[] parameters) : base(parameters) { }
+    public CommandSwapVariables(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +33,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryVariable; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryVariable;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Swap Variables"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Swap Variables";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -57,7 +63,7 @@ namespace Commands
 
       return false;
     }
-    
+
     /// <summary>
     /// Execute this command.
     /// </summary>
@@ -74,7 +80,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

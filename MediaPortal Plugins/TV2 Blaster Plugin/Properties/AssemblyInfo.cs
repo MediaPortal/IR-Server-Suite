@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 //
@@ -8,6 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
+
 [assembly: AssemblyTitle("TV2 Blaster Plugin")]
 [assembly: AssemblyDescription("External Channel Changer for TV Engine 2 using IR Server")]
 [assembly: AssemblyConfiguration("")]
@@ -15,11 +15,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("MediaPortal IR Server Suite Plugin")]
 [assembly: AssemblyCopyright("Aaron Dinnage")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]		
+[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
+
 [assembly: ComVisible(false)]
 
 //
@@ -34,8 +35,6 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.4.2.0")]
-[assembly: AssemblyFileVersionAttribute("1.4.2.0")]
-
+[assembly: AssemblyFileVersion("1.4.2.0")]
 [assembly: CLSCompliant(true)]
-
 [assembly: Guid("5bdbc5bc-1085-4c12-9056-f6fade27d919")]

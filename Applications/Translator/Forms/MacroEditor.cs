@@ -1,24 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using System.Xml;
-
 using IrssUtils;
+using IrssUtils.Exceptions;
 using IrssUtils.Forms;
 
 namespace Translator
 {
-
-  partial class MacroEditor : Form
+  internal partial class MacroEditor : Form
   {
-
     #region Constructor
 
     /// <summary>
@@ -28,7 +18,7 @@ namespace Translator
     {
       InitializeComponent();
 
-      textBoxName.Text    = "New";
+      textBoxName.Text = "New";
       textBoxName.Enabled = true;
     }
 
@@ -43,7 +33,7 @@ namespace Translator
 
       InitializeComponent();
 
-      textBoxName.Text    = name;
+      textBoxName.Text = name;
       textBoxName.Enabled = false;
 
       string fileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
@@ -59,7 +49,7 @@ namespace Translator
     /// <summary>
     /// Refreshes the macro command list.
     /// </summary>
-    void RefreshCommandList()
+    private void RefreshCommandList()
     {
       comboBoxCommands.Items.Clear();
 
@@ -164,7 +154,7 @@ namespace Translator
         {
           PauseTime pauseTime = new PauseTime();
           if (pauseTime.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+            newCommand = Common.CmdPrefixPause + pauseTime.Time;
         }
         else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
         {
@@ -262,7 +252,7 @@ namespace Translator
         else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(Program.BlastIR),
+            Program.BlastIR,
             Common.FolderIRCommands,
             Program.TransceiverInformation.Ports,
             selected.Substring(Common.CmdPrefixBlast.Length));
@@ -276,7 +266,7 @@ namespace Translator
         }
         else
         {
-          throw new IrssUtils.Exceptions.CommandStructureException(String.Format("Unknown macro command ({0})", selected));
+          throw new CommandStructureException(String.Format("Unknown macro command ({0})", selected));
         }
 
         if (!String.IsNullOrEmpty(newCommand))
@@ -300,6 +290,7 @@ namespace Translator
         listBoxMacro.SelectedIndex = selected - 1;
       }
     }
+
     private void buttonMoveDown_Click(object sender, EventArgs e)
     {
       int selected = listBoxMacro.SelectedIndex;
@@ -324,14 +315,16 @@ namespace Translator
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -358,8 +351,8 @@ namespace Translator
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonOK_Click(object sender, EventArgs e)
@@ -368,14 +361,16 @@ namespace Translator
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -397,8 +392,8 @@ namespace Translator
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void listBoxCommandSequence_DoubleClick(object sender, EventArgs e)
@@ -442,13 +437,15 @@ namespace Translator
         }
         else if (selected.StartsWith(Common.CmdPrefixLoadVars, StringComparison.OrdinalIgnoreCase))
         {
-          VariablesFileDialog varsFileDialog = new VariablesFileDialog(selected.Substring(Common.CmdPrefixLoadVars.Length));
+          VariablesFileDialog varsFileDialog =
+            new VariablesFileDialog(selected.Substring(Common.CmdPrefixLoadVars.Length));
           if (varsFileDialog.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixLoadVars + varsFileDialog.FileName;
         }
         else if (selected.StartsWith(Common.CmdPrefixSaveVars, StringComparison.OrdinalIgnoreCase))
         {
-          VariablesFileDialog varsFileDialog = new VariablesFileDialog(selected.Substring(Common.CmdPrefixSaveVars.Length));
+          VariablesFileDialog varsFileDialog =
+            new VariablesFileDialog(selected.Substring(Common.CmdPrefixSaveVars.Length));
           if (varsFileDialog.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixSaveVars + varsFileDialog.FileName;
         }
@@ -464,7 +461,7 @@ namespace Translator
         {
           PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
           if (pauseTime.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+            newCommand = Common.CmdPrefixPause + pauseTime.Time;
         }
         else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
@@ -493,7 +490,7 @@ namespace Translator
         else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
-        
+
           HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
           if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
@@ -555,7 +552,7 @@ namespace Translator
           string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
           BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(Program.BlastIR),
+            Program.BlastIR,
             Common.FolderIRCommands,
             Program.TransceiverInformation.Ports,
             commands);
@@ -580,7 +577,5 @@ namespace Translator
     }
 
     #endregion Implementation
-
   }
-
 }

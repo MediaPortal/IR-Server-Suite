@@ -1,32 +1,31 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
-
 using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
 
 namespace Commands.MediaPortal
 {
-
   /// <summary>
   /// Popup Message command.
   /// </summary>
   public class CommandPopup : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandPopup"/> class.
     /// </summary>
-    public CommandPopup() { InitParameters(3); }
+    public CommandPopup()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandPopup"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandPopup(string[] parameters) : base(parameters) { }
+    public CommandPopup(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -36,13 +35,19 @@ namespace Commands.MediaPortal
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return "MediaPortal Commands"; }
+    public override string GetCategory()
+    {
+      return "MediaPortal Commands";
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Popup Message"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Popup Message";
+    }
 
     /// <summary>
     /// Execute this command.
@@ -50,7 +55,8 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      GUIDialogNotify dlgNotify = (GUIDialogNotify)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
+      GUIDialogNotify dlgNotify =
+        (GUIDialogNotify) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
       if (dlgNotify == null)
         throw new CommandExecutionException("Failed to create GUIDialogNotify");
 
@@ -85,7 +91,5 @@ namespace Commands.MediaPortal
     }
 
     #endregion Public Methods
-
   }
-
 }

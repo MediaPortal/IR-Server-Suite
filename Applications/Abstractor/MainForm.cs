@@ -1,31 +1,21 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-
 using IrssComms;
 using IrssUtils;
 
 namespace Abstractor
 {
-
   /// <summary>
   /// Main Form.
   /// </summary>
-  partial class MainForm : Form
+  internal partial class MainForm : Form
   {
-
     #region Constants
 
     /*
@@ -103,8 +93,11 @@ namespace Abstractor
       "Page Down"
     };*/
 
-    static readonly string AbstractRemoteMapFolder  = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
-    static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
+    private static readonly string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData,
+                                                                          "Input Service\\Abstract Remote Maps");
+
+    private static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData,
+                                                                           "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
 
     #endregion Constants
 
@@ -183,29 +176,27 @@ namespace Abstractor
       PageUp,
       PageDown,
       PictureInPicture,
-
     }
 
     #endregion Enumerations
 
     #region Variables
 
-    Client _client;
-
-    string _serverHost = "localhost";
-
-    bool _registered;
+    private Client _client;
 
     //IRServerInfo _irServerInfo = new IRServerInfo();
 
-    string[] _devices;
-    string _selectedDevice;
+    private string[] _devices;
+    private bool _registered;
+    private string _selectedDevice;
+    private string _serverHost = "localhost";
 
     #endregion Variables
 
-    delegate void DelegateAddStatusLine(string status);
-    DelegateAddStatusLine _addStatusLine;
-    void AddStatusLine(string status)
+    private DelegateAddStatusLine _addStatusLine;
+    private DelegateSetDevices _setDevices;
+
+    private void AddStatusLine(string status)
     {
       IrssLog.Info(status);
 
@@ -214,10 +205,7 @@ namespace Abstractor
       listBoxStatus.SetSelected(listBoxStatus.Items.Count - 1, true);
     }
 
-
-    delegate void DelegateSetDevices(string[] devices);
-    DelegateSetDevices _setDevices;
-    void SetDevices(string[] devices)
+    private void SetDevices(string[] devices)
     {
       _devices = devices;
 
@@ -229,6 +217,352 @@ namespace Abstractor
         textBoxRemoteName.Text = devices[0];
     }
 
+    private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      buttonDisconnect_Click(null, null);
+
+      _addStatusLine = null;
+      _setDevices = null;
+
+      IrssLog.Close();
+    }
+
+
+    private void ReceivedMessage(IrssMessage received)
+    {
+      Invoke(_addStatusLine, String.Format("Received Message: \"{0}, {1}\"", received.Type, received.Flags));
+
+      try
+      {
+        switch (received.Type)
+        {
+          case MessageType.RegisterClient:
+            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+            {
+              _registered = true;
+              //_irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
+
+              _client.Send(new IrssMessage(MessageType.ActiveReceivers, MessageFlags.Request));
+              _client.Send(new IrssMessage(MessageType.ActiveBlasters, MessageFlags.Request));
+            }
+            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+            {
+              _registered = false;
+            }
+            return;
+
+          case MessageType.ActiveBlasters:
+            Invoke(_addStatusLine, received.GetDataAsString());
+            break;
+
+          case MessageType.ActiveReceivers:
+            Invoke(_addStatusLine, received.GetDataAsString());
+
+            string[] receivers = received.GetDataAsString().Split(new char[] {','},
+                                                                  StringSplitOptions.RemoveEmptyEntries);
+
+            Invoke(_setDevices, receivers);
+            break;
+
+          case MessageType.RemoteEvent:
+            byte[] data = received.GetDataAsBytes();
+            int deviceNameSize = BitConverter.ToInt32(data, 0);
+            string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
+            int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
+            string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+
+            RemoteHandlerCallback(deviceName, keyCode);
+            return;
+
+          case MessageType.ServerShutdown:
+            _registered = false;
+            return;
+
+          case MessageType.Error:
+            Invoke(_addStatusLine, received.GetDataAsString());
+            return;
+        }
+      }
+      catch (Exception ex)
+      {
+        Invoke(_addStatusLine, ex.Message);
+      }
+    }
+
+    private void RemoteHandlerCallback(string deviceName, string keyCode)
+    {
+      string text = String.Format("Remote Event \"{0}\", \"{1}\"", deviceName, keyCode);
+      Invoke(_addStatusLine, text);
+
+      bool foundDevice = false;
+      foreach (string device in _devices)
+      {
+        if (device.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
+        {
+          foundDevice = true;
+          break;
+        }
+      }
+
+      if (!foundDevice)
+      {
+        List<string> newDevices = new List<string>(_devices);
+        newDevices.Add(deviceName);
+        Invoke(_setDevices, new object[] {newDevices.ToArray()});
+      }
+
+      // If this remote event matches the criteria then set it to an abstract button in the list view ...
+      if (deviceName.Equals(_selectedDevice, StringComparison.OrdinalIgnoreCase))
+      {
+        if (listViewButtonMap.SelectedItems.Count == 1)
+        {
+          bool found = false;
+          foreach (ListViewItem item in listViewButtonMap.Items)
+            if (item.SubItems[1].Text.Equals(keyCode, StringComparison.OrdinalIgnoreCase))
+              found = true;
+
+          if (!found)
+          {
+            int index = listViewButtonMap.SelectedIndices[0];
+            listViewButtonMap.SelectedItems[0].SubItems[1].Text = keyCode;
+            listViewButtonMap.SelectedIndices.Clear();
+
+            if (listViewButtonMap.Items.Count > index + 1)
+            {
+              listViewButtonMap.SelectedIndices.Add(index + 1);
+              listViewButtonMap.SelectedItems[0].Focused = true;
+              listViewButtonMap.EnsureVisible(index + 1);
+            }
+          }
+        }
+      }
+    }
+
+    private void CommsFailure(object obj)
+    {
+      Exception ex = obj as Exception;
+
+      if (ex != null)
+        Invoke(_addStatusLine, new Object[] {String.Format("Communications failure: {0}", ex.Message)});
+      else
+        Invoke(_addStatusLine, new Object[] {"Communications failure"});
+
+      StopClient();
+    }
+
+    private void Connected(object obj)
+    {
+      IrssLog.Info("Connected to server");
+
+      IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
+      _client.Send(message);
+    }
+
+    private void Disconnected(object obj)
+    {
+      IrssLog.Warn("Communications with server has been lost");
+
+      Thread.Sleep(1000);
+    }
+
+    private bool StartClient(IPEndPoint endPoint)
+    {
+      if (_client != null)
+        return false;
+
+      _client = new Client(endPoint, ReceivedMessage);
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
+
+      if (_client.Start())
+      {
+        return true;
+      }
+      else
+      {
+        _client = null;
+        return false;
+      }
+    }
+
+    private void StopClient()
+    {
+      if (_client == null)
+        return;
+
+      _client.Dispose();
+      _client = null;
+    }
+
+    private void buttonConnect_Click(object sender, EventArgs e)
+    {
+      try
+      {
+        AddStatusLine("Connect");
+        listBoxStatus.Update();
+
+        if (_client != null)
+        {
+          AddStatusLine("Already connected/connecting");
+          return;
+        }
+
+        _serverHost = comboBoxComputer.Text;
+
+        IPAddress serverIP = Client.GetIPFromName(_serverHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
+
+        StartClient(endPoint);
+      }
+      catch (Exception ex)
+      {
+        AddStatusLine(ex.Message);
+      }
+    }
+
+    private void buttonDisconnect_Click(object sender, EventArgs e)
+    {
+      AddStatusLine("Disconnect");
+
+      try
+      {
+        if (_client == null)
+        {
+          AddStatusLine(" - Not connected");
+          return;
+        }
+
+        if (_registered)
+        {
+          IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
+          _client.Send(message);
+        }
+
+        StopClient();
+      }
+      catch (Exception ex)
+      {
+        AddStatusLine(ex.Message);
+      }
+    }
+
+    private void buttonClear_Click(object sender, EventArgs e)
+    {
+      ClearMap();
+    }
+
+    private void buttonLoad_Click(object sender, EventArgs e)
+    {
+      LoadMap();
+    }
+
+    private void buttonSave_Click(object sender, EventArgs e)
+    {
+      SaveMap();
+    }
+
+
+    private void ClearMap()
+    {
+      string[] abstractButtons = Enum.GetNames(typeof (AbstractButton));
+
+      listViewButtonMap.Items.Clear();
+      foreach (string abstractButton in abstractButtons)
+        listViewButtonMap.Items.Add(new ListViewItem(new string[] {abstractButton, String.Empty}));
+    }
+
+    private void SaveMap()
+    {
+      if (String.IsNullOrEmpty(textBoxRemoteName.Text))
+      {
+        MessageBox.Show(this, "You must include a remote name before saving", "Missing remote name",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+      }
+
+      string directory = Path.Combine(AbstractRemoteMapFolder, _selectedDevice);
+
+      if (!Directory.Exists(directory))
+        Directory.CreateDirectory(directory);
+
+      string fileName = Path.ChangeExtension(textBoxRemoteName.Text, ".xml");
+      string path = Path.Combine(directory, fileName);
+
+      Invoke(_addStatusLine, String.Format("Writing to file \"{0}\"", path));
+
+      DataTable table = new DataTable("RemoteTable");
+      table.ReadXmlSchema(AbstractRemoteSchemaFile);
+
+      foreach (ListViewItem item in listViewButtonMap.Items)
+      {
+        if (!String.IsNullOrEmpty(item.SubItems[1].Text))
+          table.Rows.Add(item.SubItems[1].Text, item.SubItems[0].Text);
+      }
+
+      table.WriteXml(path);
+    }
+
+    private void LoadMap()
+    {
+      if (String.IsNullOrEmpty(textBoxRemoteName.Text))
+      {
+        MessageBox.Show(this, "You must include a remote name to load", "Missing remote name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+        return;
+      }
+
+      string fileName = Path.ChangeExtension(textBoxRemoteName.Text, ".xml");
+      string directory = Path.Combine(AbstractRemoteMapFolder, _selectedDevice);
+      string path = Path.Combine(directory, fileName);
+
+      if (!File.Exists(path))
+      {
+        MessageBox.Show(this,
+                        String.Format("Remote file not found ({0}) in device folder ({1})", fileName, _selectedDevice),
+                        "Remote file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+      }
+
+      Invoke(_addStatusLine, String.Format("Reading remote from file \"{0}\" (device: {1})", fileName, _selectedDevice));
+
+      DataTable table = new DataTable("RemoteTable");
+      table.ReadXmlSchema(AbstractRemoteSchemaFile);
+      table.ReadXml(path);
+
+      string[] abstractButtons = Enum.GetNames(typeof (AbstractButton));
+
+      listViewButtonMap.Items.Clear();
+      foreach (string abstractButton in abstractButtons)
+      {
+        string[] subitems = new string[] {abstractButton, String.Empty};
+
+        DataRow[] rows = table.Select(String.Format("AbstractButton = '{0}'", abstractButton));
+
+        if (rows.Length == 1)
+          subitems[1] = rows[0]["RawCode"].ToString();
+
+        ListViewItem item = new ListViewItem(subitems);
+        listViewButtonMap.Items.Add(item);
+      }
+    }
+
+    private void listViewButtonMap_KeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.KeyCode == Keys.Delete)
+      {
+        if (listViewButtonMap.SelectedItems.Count == 1)
+        {
+          listViewButtonMap.SelectedItems[0].SubItems[1].Text = String.Empty;
+        }
+      }
+    }
+
+    private void comboBoxDevice_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      _selectedDevice = comboBoxDevice.Text;
+    }
+
     #region Constructor
 
     public MainForm()
@@ -238,8 +572,8 @@ namespace Abstractor
 
       InitializeComponent();
 
-      _addStatusLine = new DelegateAddStatusLine(AddStatusLine);
-      _setDevices = new DelegateSetDevices(SetDevices);
+      _addStatusLine = AddStatusLine;
+      _setDevices = SetDevices;
 
       comboBoxComputer.Items.Clear();
       comboBoxComputer.Items.Add("localhost");
@@ -288,343 +622,16 @@ namespace Abstractor
 
     #endregion Constructor
 
+    #region Nested type: DelegateAddStatusLine
 
-    private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-    {
-      buttonDisconnect_Click(null, null);
+    private delegate void DelegateAddStatusLine(string status);
 
-      _addStatusLine = null;
-      _setDevices = null;
+    #endregion
 
-      IrssLog.Close();
-    }
+    #region Nested type: DelegateSetDevices
 
+    private delegate void DelegateSetDevices(string[] devices);
 
-    void ReceivedMessage(IrssMessage received)
-    {
-      this.Invoke(_addStatusLine, new Object[] { String.Format("Received Message: \"{0}, {1}\"", received.Type, received.Flags) });
-
-      try
-      {
-        switch (received.Type)
-        {
-          case MessageType.RegisterClient:
-            if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
-            {
-              _registered = true;
-              //_irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
-
-              _client.Send(new IrssMessage(MessageType.ActiveReceivers, MessageFlags.Request));
-              _client.Send(new IrssMessage(MessageType.ActiveBlasters, MessageFlags.Request));
-            }
-            else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
-            {
-              _registered = false;
-            }
-            return;
-
-          case MessageType.ActiveBlasters:
-            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
-            break;
-
-          case MessageType.ActiveReceivers:
-            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
-
-            string[] receivers = received.GetDataAsString().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-            this.Invoke(_setDevices, new object[] { receivers });
-            break;
-
-          case MessageType.RemoteEvent:
-            byte[] data = received.GetDataAsBytes();
-            int deviceNameSize = BitConverter.ToInt32(data, 0);
-            string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
-            int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
-            string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
-
-            RemoteHandlerCallback(deviceName, keyCode);
-            return;
-
-          case MessageType.ServerShutdown:
-            _registered = false;
-            return;
-
-          case MessageType.Error:
-            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
-            return;
-        }
-      }
-      catch (Exception ex)
-      {
-        this.Invoke(_addStatusLine, new Object[] { ex.Message });
-      }
-    }
-
-    void RemoteHandlerCallback(string deviceName, string keyCode)
-    {
-      string text = String.Format("Remote Event \"{0}\", \"{1}\"", deviceName, keyCode);
-      this.Invoke(_addStatusLine, text);
-
-      bool foundDevice = false;
-      foreach (string device in _devices)
-      {
-        if (device.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
-        {
-          foundDevice = true;
-          break;
-        }
-      }
-
-      if (!foundDevice)
-      {
-        List<string> newDevices = new List<string>(_devices);
-        newDevices.Add(deviceName);
-        this.Invoke(_setDevices, new object[] { newDevices.ToArray() });
-      }
-
-      // If this remote event matches the criteria then set it to an abstract button in the list view ...
-      if (deviceName.Equals(_selectedDevice, StringComparison.OrdinalIgnoreCase))
-      {
-        if (listViewButtonMap.SelectedItems.Count == 1)
-        {
-          bool found = false;
-          foreach (ListViewItem item in listViewButtonMap.Items)
-            if (item.SubItems[1].Text.Equals(keyCode, StringComparison.OrdinalIgnoreCase))
-              found = true;
-
-          if (!found)
-          {
-            int index = listViewButtonMap.SelectedIndices[0];
-            listViewButtonMap.SelectedItems[0].SubItems[1].Text = keyCode;
-            listViewButtonMap.SelectedIndices.Clear();
-
-            if (listViewButtonMap.Items.Count > index + 1)
-            {
-              listViewButtonMap.SelectedIndices.Add(index + 1);
-              listViewButtonMap.SelectedItems[0].Focused = true;
-              listViewButtonMap.EnsureVisible(index + 1);
-            }
-          }
-        }
-      }
-    }
-
-    void CommsFailure(object obj)
-    {
-      Exception ex = obj as Exception;
-      
-      if (ex != null)
-        this.Invoke(_addStatusLine, new Object[] { String.Format("Communications failure: {0}", ex.Message) });
-      else
-        this.Invoke(_addStatusLine, new Object[] { "Communications failure" });
-
-      StopClient();
-    }
-    void Connected(object obj)
-    {
-      IrssLog.Info("Connected to server");
-
-      IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
-      _client.Send(message);
-    }
-    void Disconnected(object obj)
-    {
-      IrssLog.Warn("Communications with server has been lost");
-
-      Thread.Sleep(1000);
-    }
-
-    bool StartClient(IPEndPoint endPoint)
-    {
-      if (_client != null)
-        return false;
-
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
-
-      _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
-      if (_client.Start())
-      {
-        return true;
-      }
-      else
-      {
-        _client = null;
-        return false;
-      }
-    }
-    void StopClient()
-    {
-      if (_client == null)
-        return;
-
-      _client.Dispose();
-      _client = null;
-    }
-
-    private void buttonConnect_Click(object sender, EventArgs e)
-    {
-      try
-      {
-        AddStatusLine("Connect");
-        listBoxStatus.Update();
-
-        if (_client != null)
-        {
-          AddStatusLine("Already connected/connecting");
-          return;
-        }
-
-        _serverHost = comboBoxComputer.Text;
-
-        IPAddress serverIP = Client.GetIPFromName(_serverHost);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
-
-        StartClient(endPoint);
-      }
-      catch (Exception ex)
-      {
-        AddStatusLine(ex.Message);
-      }
-    }
-    private void buttonDisconnect_Click(object sender, EventArgs e)
-    {
-      AddStatusLine("Disconnect");
-
-      try
-      {
-        if (_client == null)
-        {
-          AddStatusLine(" - Not connected");
-          return;
-        }
-
-        if (_registered)
-        {
-          IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
-          _client.Send(message);
-        }
-
-        StopClient();
-      }
-      catch (Exception ex)
-      {
-        AddStatusLine(ex.Message);
-      }
-    }
-
-    private void buttonClear_Click(object sender, EventArgs e)
-    {
-      ClearMap();
-    }
-    private void buttonLoad_Click(object sender, EventArgs e)
-    {
-      LoadMap();
-    }
-    private void buttonSave_Click(object sender, EventArgs e)
-    {
-      SaveMap();
-    }
-
-
-    void ClearMap()
-    {
-      string[] abstractButtons = Enum.GetNames(typeof(AbstractButton));
-      
-      listViewButtonMap.Items.Clear();
-      foreach (string abstractButton in abstractButtons)
-        listViewButtonMap.Items.Add(new ListViewItem(new string[] { abstractButton, String.Empty }));
-    }
-    void SaveMap()
-    {
-      if (String.IsNullOrEmpty(textBoxRemoteName.Text))
-      {
-        MessageBox.Show(this, "You must include a remote name before saving", "Missing remote name", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return;
-      }
-
-      string directory = Path.Combine(AbstractRemoteMapFolder, _selectedDevice);
-
-      if (!Directory.Exists(directory))
-        Directory.CreateDirectory(directory);
-
-      string fileName = Path.ChangeExtension(textBoxRemoteName.Text, ".xml");
-      string path = Path.Combine(directory, fileName);
-
-      this.Invoke(_addStatusLine, String.Format("Writing to file \"{0}\"", path));
-
-      DataTable table = new DataTable("RemoteTable");
-      table.ReadXmlSchema(AbstractRemoteSchemaFile);
-
-      foreach (ListViewItem item in listViewButtonMap.Items)
-      {
-        if (!String.IsNullOrEmpty(item.SubItems[1].Text))
-          table.Rows.Add(item.SubItems[1].Text, item.SubItems[0].Text);
-      }
-
-      table.WriteXml(path);
-    }
-    void LoadMap()
-    {
-      if (String.IsNullOrEmpty(textBoxRemoteName.Text))
-      {
-        MessageBox.Show(this, "You must include a remote name to load", "Missing remote name", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return;
-      }
-
-      string fileName = Path.ChangeExtension(textBoxRemoteName.Text, ".xml");
-      string directory = Path.Combine(AbstractRemoteMapFolder, _selectedDevice);
-      string path = Path.Combine(directory, fileName);
-
-      if (!File.Exists(path))
-      {
-        MessageBox.Show(this, String.Format("Remote file not found ({0}) in device folder ({1})", fileName, _selectedDevice), "Remote file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return;
-      }
-
-      this.Invoke(_addStatusLine, String.Format("Reading remote from file \"{0}\" (device: {1})", fileName, _selectedDevice));
-
-      DataTable table = new DataTable("RemoteTable");
-      table.ReadXmlSchema(AbstractRemoteSchemaFile);
-      table.ReadXml(path);
-
-      string[] abstractButtons = Enum.GetNames(typeof(AbstractButton));
-
-      listViewButtonMap.Items.Clear();
-      foreach (string abstractButton in abstractButtons)
-      {
-        string[] subitems = new string[] { abstractButton, String.Empty };
-
-        DataRow[] rows = table.Select(String.Format("AbstractButton = '{0}'", abstractButton));
-
-        if (rows.Length == 1)
-          subitems[1] = rows[0]["RawCode"].ToString();
-
-        ListViewItem item = new ListViewItem(subitems);
-        listViewButtonMap.Items.Add(item);
-      }
-    }
-
-    private void listViewButtonMap_KeyDown(object sender, KeyEventArgs e)
-    {
-      if (e.KeyCode == Keys.Delete)
-      {
-        if (listViewButtonMap.SelectedItems.Count == 1)
-        {
-          listViewButtonMap.SelectedItems[0].SubItems[1].Text = String.Empty;
-        }
-      }
-    }
-
-    private void comboBoxDevice_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      _selectedDevice = comboBoxDevice.Text;
-    }
-
-
+    #endregion
   }
-
 }

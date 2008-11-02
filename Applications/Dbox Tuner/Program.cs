@@ -4,10 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssUtils;
 
 namespace DboxTuner
@@ -28,28 +26,27 @@ namespace DboxTuner
   /// <summary>
   /// Based on MyDbox MediaPortal plugin by Mark Koenig (kroko).
   /// </summary>
-  static class Program
+  internal static class Program
   {
-
     #region Constants
 
     internal const string UrlPrefix = "http://";
 
     internal static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Dbox Tuner\\Dbox Tuner.xml");
-    internal static readonly string DataFile          = Path.Combine(Common.FolderAppData, "Dbox Tuner\\Data.xml");
+    internal static readonly string DataFile = Path.Combine(Common.FolderAppData, "Dbox Tuner\\Data.xml");
 
     #endregion Constants
 
     #region Variables
 
-    static string _address;
-    static string _userName;
-    static string _password;
-    static StbBoxType _boxType;
-    static int _timeout;
+    private static string _address;
+    private static StbBoxType _boxType;
+    private static string _password;
+    private static int _timeout;
 
-    static string _url;
-    static DataTable _tvBouquets;
+    private static DataTable _tvBouquets;
+    private static string _url;
+    private static string _userName;
 
     #endregion Variables
 
@@ -58,7 +55,7 @@ namespace DboxTuner
     /// </summary>
     /// <param name="args">The command line parameters.</param>
     [STAThread]
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
       Console.WriteLine("Dbox Tuner");
       Console.WriteLine();
@@ -74,7 +71,7 @@ namespace DboxTuner
       IrssLog.Append("Dbox Tuner.log");
 
       LoadSettings();
-      
+
       if (args.Length == 0)
       {
         Console.WriteLine("Usage:");
@@ -99,19 +96,19 @@ namespace DboxTuner
         {
           case "SETUP":
             SetupForm setup = new SetupForm();
-            setup.Address  = _address;
+            setup.Address = _address;
             setup.UserName = _userName;
             setup.Password = _password;
-            setup.BoxType  = _boxType;
-            setup.Timeout   = _timeout;
+            setup.BoxType = _boxType;
+            setup.Timeout = _timeout;
 
             if (setup.ShowDialog() == DialogResult.OK)
             {
-              _address  = setup.Address;
+              _address = setup.Address;
               _userName = setup.UserName;
               _password = setup.Password;
-              _boxType  = setup.BoxType;
-              _timeout  = setup.Timeout;
+              _boxType = setup.BoxType;
+              _timeout = setup.Timeout;
 
               SaveSettings();
               Info("Setup saved");
@@ -204,25 +201,25 @@ namespace DboxTuner
       IrssLog.Close();
     }
 
-    static void Info(string format, params object[] args)
+    private static void Info(string format, params object[] args)
     {
       string message = String.Format(format, args);
       IrssLog.Info(message);
       Console.WriteLine(message);
     }
 
-    static void LoadSettings()
+    private static void LoadSettings()
     {
       try
       {
         XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
 
-        _address  = doc.DocumentElement.Attributes["Address"].Value;
+        _address = doc.DocumentElement.Attributes["Address"].Value;
         _userName = doc.DocumentElement.Attributes["UserName"].Value;
         _password = doc.DocumentElement.Attributes["Password"].Value;
-        _boxType  = (StbBoxType)Enum.Parse(typeof(StbBoxType), doc.DocumentElement.Attributes["BoxType"].Value, true);
-        _timeout  = int.Parse(doc.DocumentElement.Attributes["Timeout"].Value);
+        _boxType = (StbBoxType) Enum.Parse(typeof (StbBoxType), doc.DocumentElement.Attributes["BoxType"].Value, true);
+        _timeout = int.Parse(doc.DocumentElement.Attributes["Timeout"].Value);
       }
       catch (FileNotFoundException)
       {
@@ -237,7 +234,8 @@ namespace DboxTuner
         CreateDefaultSettings();
       }
     }
-    static void SaveSettings()
+
+    private static void SaveSettings()
     {
       try
       {
@@ -245,14 +243,14 @@ namespace DboxTuner
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
           writer.WriteAttributeString("Address", _address);
           writer.WriteAttributeString("UserName", _userName);
           writer.WriteAttributeString("Password", _password);
-          writer.WriteAttributeString("BoxType", Enum.GetName(typeof(StbBoxType), _boxType));
+          writer.WriteAttributeString("BoxType", Enum.GetName(typeof (StbBoxType), _boxType));
           writer.WriteAttributeString("Timeout", _timeout.ToString());
 
           writer.WriteEndElement(); // </settings>
@@ -264,18 +262,20 @@ namespace DboxTuner
         IrssLog.Error(ex);
       }
     }
-    static void CreateDefaultSettings()
+
+    private static void CreateDefaultSettings()
     {
-      _address  = "192.168.0.100";
+      _address = "192.168.0.100";
       _userName = "root";
       _password = "dbox2";
-      _boxType  = StbBoxType.Unknown;
-      _timeout  = 4000;
+      _boxType = StbBoxType.Unknown;
+      _timeout = 4000;
 
       SaveSettings();
     }
 
-    internal static string PostData(string url, string userName, string password, StbBoxType boxType, int timeout, string command)
+    internal static string PostData(string url, string userName, string password, StbBoxType boxType, int timeout,
+                                    string command)
     {
       try
       {
@@ -292,9 +292,9 @@ namespace DboxTuner
           encode = Encoding.GetEncoding("utf-8");
 
         using (WebResponse response = request.GetResponse())
-          using (Stream receiveStream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(receiveStream, encode))
-              return reader.ReadToEnd();
+        using (Stream receiveStream = response.GetResponseStream())
+        using (StreamReader reader = new StreamReader(receiveStream, encode))
+          return reader.ReadToEnd();
       }
       catch (Exception ex)
       {
@@ -307,10 +307,10 @@ namespace DboxTuner
     internal static DataSet GetData(string url, string userName, string password, StbBoxType boxType, int timeout)
     {
       DataSet ds = new DataSet();
-      
+
       string command;
       string temp;
-      
+
       string sreturn = String.Empty;
 
       #region Get data from STB
@@ -319,10 +319,13 @@ namespace DboxTuner
       {
         case StbBoxType.EnigmaV1:
           // get userbouquets (ref=4097:7:0:6:0:0:0:0:0:0:)
-          sreturn = PostData(url, userName, password, boxType, timeout, "/cgi-bin/getServices?ref=4097:7:0:6:0:0:0:0:0:0:");
+          sreturn = PostData(url, userName, password, boxType, timeout,
+                             "/cgi-bin/getServices?ref=4097:7:0:6:0:0:0:0:0:0:");
 
           // get internal hdd recording
-          if (!PostData(url, userName, password, boxType, timeout, "/cgi-bin/getServices?ref=2:47:0:0:0:0:0:0:0:0:/var/media/movie/").Contains("E: "))
+          if (
+            !PostData(url, userName, password, boxType, timeout,
+                      "/cgi-bin/getServices?ref=2:47:0:0:0:0:0:0:0:0:/var/media/movie/").Contains("E: "))
             sreturn += "2:47:0:0:0:0:0:0:0:0:/var/media/movie/;Recordings\n";
 
           // replace neutrino split character with ; 
@@ -334,10 +337,11 @@ namespace DboxTuner
           break;
 
         case StbBoxType.EnigmaV2:
-          string serviceID    = String.Empty;
-          string serviceName  = String.Empty;
+          string serviceID = String.Empty;
+          string serviceName = String.Empty;
 
-          string returnedXml  = PostData(url, userName, password, boxType, timeout, "/web/fetchchannels?ServiceListBrowse=1:7:1:0:0:0:0:0:0:0:(type == 1) FROM BOUQUET \"bouquets.tv\" ORDER BY bouquet");
+          string returnedXml = PostData(url, userName, password, boxType, timeout,
+                                        "/web/fetchchannels?ServiceListBrowse=1:7:1:0:0:0:0:0:0:0:(type == 1) FROM BOUQUET \"bouquets.tv\" ORDER BY bouquet");
 
           // xmlbased, return all userbouquets
           XmlDocument doc = new XmlDocument();
@@ -461,11 +465,13 @@ namespace DboxTuner
                     // which => one webrequest for each channel in every bouquet
                     if (boxType == StbBoxType.EnigmaV1 || boxType == StbBoxType.EnigmaV2)
                     {
-                      string chan_id    = bouquets.Split(';')[0]; // eg. 1:0:1:6D67:437:1:C00000:0:0:0:
-                      string chan_name  = bouquets.Split(';')[1]; // eg. DISCOVERY CHANNEL
+                      string chan_id = bouquets.Split(';')[0]; // eg. 1:0:1:6D67:437:1:C00000:0:0:0:
+                      string chan_name = bouquets.Split(';')[1]; // eg. DISCOVERY CHANNEL
 
                       // if chan_id is a TV service and chan_name is NOT <n/a> or empty
-                      if (chan_id.StartsWith("1:0:1", StringComparison.Ordinal) || chan_id.StartsWith("1:0:0", StringComparison.Ordinal) && !String.IsNullOrEmpty(chan_name) && !chan_name.Equals("<n/a>", StringComparison.OrdinalIgnoreCase))
+                      if (chan_id.StartsWith("1:0:1", StringComparison.Ordinal) ||
+                          chan_id.StartsWith("1:0:0", StringComparison.Ordinal) && !String.IsNullOrEmpty(chan_name) &&
+                          !chan_name.Equals("<n/a>", StringComparison.OrdinalIgnoreCase))
                         bucket = Convert.ToString(++loopcount) + " " + chan_id + " " + chan_name;
                     }
                     else if (boxType == StbBoxType.Neutrino)
@@ -485,22 +491,24 @@ namespace DboxTuner
                     string tmp_ID = bucket.Split(' ')[1];
 
                     if (boxType == StbBoxType.EnigmaV1)
-                      tmp_ID = tmp_ID.Replace("1:0:0:0:0:0:0:0:0:0:", _url + "/rootX");  //workaround for the inability to stream internal recordings from the enigma hdd
+                      tmp_ID = tmp_ID.Replace("1:0:0:0:0:0:0:0:0:0:", _url + "/rootX");
+                    //workaround for the inability to stream internal recordings from the enigma hdd
 
                     start = tmp_Channel.Length + tmp_ID.Length + 2;
                     string tmp_Name = bucket.Substring(start, bucket.Length - start);
                     tmp_Name = tmp_Name.Replace("\"", "'");
 
-                    row["BouqNo"]   = tmp_Ref;
+                    row["BouqNo"] = tmp_Ref;
                     row["BouqName"] = tmp_Bouquet;
-                    row["Channel"]  = tmp_Channel;
-                    row["ID"]       = tmp_ID;
-                    row["Name"]     = tmp_Name;
+                    row["Channel"] = tmp_Channel;
+                    row["ID"] = tmp_ID;
+                    row["Name"] = tmp_Name;
 
                     // test if enigma got a error on service list
                     table.Rows.Add(row);
 
-                    if (tmp_ID.Equals("E:", StringComparison.OrdinalIgnoreCase) || tmp_Name.Equals("<n/a>", StringComparison.OrdinalIgnoreCase))
+                    if (tmp_ID.Equals("E:", StringComparison.OrdinalIgnoreCase) ||
+                        tmp_Name.Equals("<n/a>", StringComparison.OrdinalIgnoreCase))
                     {
                       // kill the row or we get error
                       table.Rows.Remove(row);
@@ -512,7 +520,6 @@ namespace DboxTuner
           }
         }
         ds.Tables.Add(table);
-
       }
       catch (Exception ex)
       {
@@ -526,7 +533,8 @@ namespace DboxTuner
 
     internal static StbBoxType DetectBoxType(string url, string userName, string password, int timeout)
     {
-      string str1 = PostData(url, userName, password, StbBoxType.Unknown, timeout, "/control/getmode").ToUpperInvariant();
+      string str1 =
+        PostData(url, userName, password, StbBoxType.Unknown, timeout, "/control/getmode").ToUpperInvariant();
       if (str1.Contains("TV") || str1.Contains("RADIO") || str1.Contains("UNKNOWN"))
         return StbBoxType.Neutrino;
 
@@ -541,16 +549,20 @@ namespace DboxTuner
       return StbBoxType.Unknown;
     }
 
-    static string ZapTo(string ID)
+    private static string ZapTo(string ID)
     {
       switch (_boxType)
       {
-        case StbBoxType.EnigmaV1: return PostData(_url, _userName, _password, _boxType, _timeout, "/cgi-bin/zapTo?path=" + ID);
-        case StbBoxType.EnigmaV2: return PostData(_url, _userName, _password, _boxType, _timeout, "/web/zap?ZapTo=" + ID);
-        default:                  return PostData(_url, _userName, _password, _boxType, _timeout, "/control/zapto?" + ID);
+        case StbBoxType.EnigmaV1:
+          return PostData(_url, _userName, _password, _boxType, _timeout, "/cgi-bin/zapTo?path=" + ID);
+        case StbBoxType.EnigmaV2:
+          return PostData(_url, _userName, _password, _boxType, _timeout, "/web/zap?ZapTo=" + ID);
+        default:
+          return PostData(_url, _userName, _password, _boxType, _timeout, "/control/zapto?" + ID);
       }
     }
-    static void WakeUp()
+
+    private static void WakeUp()
     {
       switch (_boxType)
       {
@@ -567,7 +579,8 @@ namespace DboxTuner
           break;
       }
     }
-    static string SetSPTS()
+
+    private static string SetSPTS()
     {
       //set playback to spts only required for neutrino, (i think)
 
@@ -576,7 +589,8 @@ namespace DboxTuner
       else // return ok for enigma
         return "ok";
     }
-    static string ToggleMute()
+
+    private static string ToggleMute()
     {
       string status;
 
@@ -601,12 +615,14 @@ namespace DboxTuner
 
       return status;
     }
-    static void ShowMessage(string message)
+
+    private static void ShowMessage(string message)
     {
       switch (_boxType)
       {
         case StbBoxType.EnigmaV1:
-          PostData(_url, _userName, _password, _boxType, _timeout, "/cgi-bin/xmessage?timeout=10&caption=Message&body=" + message);
+          PostData(_url, _userName, _password, _boxType, _timeout,
+                   "/cgi-bin/xmessage?timeout=10&caption=Message&body=" + message);
           break;
 
         case StbBoxType.EnigmaV2:
@@ -618,7 +634,8 @@ namespace DboxTuner
           break;
       }
     }
-    static string GetInfo()
+
+    private static string GetInfo()
     {
       string info;
 
@@ -703,5 +720,4 @@ namespace DboxTuner
     }
     */
   }
-
 }

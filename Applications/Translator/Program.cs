@@ -1,71 +1,61 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Ports;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml;
-
-using Microsoft.Win32;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Exceptions;
+using IrssUtils.Forms;
+using Microsoft.Win32;
+using Translator.Properties;
 
 namespace Translator
 {
-
-  static class Program
+  internal static class Program
   {
-
     #region Constants
 
-    static readonly string DefaultConfigFile              = Path.Combine(Common.FolderAppData, "Translator\\Translator.xml");
+    private const string ProcessCommandThreadName = "ProcessCommand";
+    private static readonly string DefaultConfigFile = Path.Combine(Common.FolderAppData, "Translator\\Translator.xml");
 
-    internal static readonly string FolderMacros          = Path.Combine(Common.FolderAppData, "Translator\\Macro");
+    internal static readonly string FolderDefaultSettings = Path.Combine(Common.FolderAppData,
+                                                                         "Translator\\Default Settings");
 
-    internal static readonly string FolderDefaultSettings = Path.Combine(Common.FolderAppData, "Translator\\Default Settings");
-
-    const string ProcessCommandThreadName                 = "ProcessCommand";
+    internal static readonly string FolderMacros = Path.Combine(Common.FolderAppData, "Translator\\Macro");
 
     #endregion Constants
 
     #region Components
 
-    static Container _container;
-    static NotifyIcon _notifyIcon;
-    static MainForm _mainForm;
-    static Client _client;
-    static Configuration _config;
-    static CopyDataWM _copyDataWM;
+    private static Client _client;
+    private static Configuration _config;
+    private static Container _container;
+    private static CopyDataWM _copyDataWM;
+    private static MainForm _mainForm;
+    private static NotifyIcon _notifyIcon;
 
     #endregion Components
 
     #region Variables
 
-    static string _configFile;
+    private static string _configFile;
 
-    static string _learnIRFilename;
+    private static bool _firstConnection = true;
 
-    static bool _registered;
+    private static ClientMessageSink _handleMessage;
 
-    static bool _firstConnection = true;
+    private static bool _inConfiguration;
 
-    static ClientMessageSink _handleMessage;
+    private static IRServerInfo _irServerInfo = new IRServerInfo();
+    private static string _learnIRFilename;
+    private static bool _menuFormVisible;
+    private static bool _registered;
 
-    static bool _inConfiguration;
-    static bool _menuFormVisible;
-
-    static IRServerInfo _irServerInfo = new IRServerInfo();
-
-    static VariableList _variables;
+    private static VariableList _variables;
 
     #endregion Variables
 
@@ -107,7 +97,7 @@ namespace Translator
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
       _configFile = DefaultConfigFile;
 
@@ -128,7 +118,8 @@ namespace Translator
         }
         catch (Exception ex)
         {
-          MessageBox.Show(ex.ToString(), "Translator - Error processing command line", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          MessageBox.Show(ex.ToString(), "Translator - Error processing command line", MessageBoxButtons.OK,
+                          MessageBoxIcon.Error);
         }
       }
 
@@ -149,7 +140,7 @@ namespace Translator
 #endif
       IrssLog.Open("Translator.log");
 
-      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException += Application_ThreadException;
 
       // Initialize Variable List.
       _variables = new VariableList();
@@ -165,7 +156,7 @@ namespace Translator
       // Adjust process priority ...
       AdjustPriority(_config.ProcessPriority);
 
-      
+
       //foreach (ProgramSettings progSettings in _config.Programs)
       //{
       //  AppProfile profile = new AppProfile();
@@ -177,15 +168,15 @@ namespace Translator
 
       //  AppProfile.Save(profile, "C:\\" + profile.Name + ".xml");
       //}
-      
+
 
       // Setup notify icon ...
       _container = new Container();
       _notifyIcon = new NotifyIcon(_container);
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
-      _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+      _notifyIcon.Icon = Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Connecting ...";
-      _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
+      _notifyIcon.DoubleClick += ClickSetup;
       _notifyIcon.Visible = !_config.HideTrayIcon;
 
       // Setup the main form ...
@@ -195,7 +186,7 @@ namespace Translator
       bool clientStarted = false;
 
       IPAddress serverIP = Client.GetIPFromName(_config.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       try
       {
@@ -210,8 +201,8 @@ namespace Translator
       if (clientStarted)
       {
         // Setup event notification ...
-        SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
-        SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
+        SystemEvents.SessionEnding += SystemEvents_SessionEnding;
+        SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
         try
         {
@@ -231,14 +222,15 @@ namespace Translator
           _copyDataWM = null;
         }
 
-        SystemEvents.SessionEnding -= new SessionEndingEventHandler(SystemEvents_SessionEnding);
-        SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
+        SystemEvents.SessionEnding -= SystemEvents_SessionEnding;
+        SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
 
         StopClient();
       }
       else
       {
-        MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Translator - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.",
+                        "Translator - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         _inConfiguration = true;
 
@@ -256,7 +248,7 @@ namespace Translator
       _container.Dispose();
       _container = null;
 
-      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException -= Application_ThreadException;
 
       IrssLog.Close();
     }
@@ -270,12 +262,12 @@ namespace Translator
     /// </summary>
     /// <param name="sender">Sender.</param>
     /// <param name="e">Event args.</param>
-    static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
       IrssLog.Error(e.Exception);
     }
 
-    static bool ProcessCommandLine(string[] args)
+    private static bool ProcessCommandLine(string[] args)
     {
       bool dontRun = true;
 
@@ -352,7 +344,8 @@ namespace Translator
             }
             else
             {
-              throw new CommandStructureException("Channel command requires three parameters (Channel, Padding, Port, Delay)");
+              throw new CommandStructureException(
+                "Channel command requires three parameters (Channel, Padding, Port, Delay)");
             }
             break;
 
@@ -366,7 +359,7 @@ namespace Translator
             break;
 
 
-          // TODO: Add more command line options.
+            // TODO: Add more command line options.
 
 
           default:
@@ -377,7 +370,7 @@ namespace Translator
       return dontRun;
     }
 
-    static void ShowOSD()
+    private static void ShowOSD()
     {
       IrssLog.Info("Show OSD");
 
@@ -387,13 +380,15 @@ namespace Translator
       }
       else
       {
-        Thread thread = new Thread(new ThreadStart(MenuThread));
+        ThreadStart threadStart = MenuThread;
+        Thread thread = new Thread(threadStart);
         thread.Name = "Translator OSD";
         thread.IsBackground = true;
         thread.Start();
       }
     }
-    static void MenuThread()
+
+    private static void MenuThread()
     {
       try
       {
@@ -410,7 +405,7 @@ namespace Translator
       }
     }
 
-    static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    private static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
     {
       switch (e.Mode)
       {
@@ -423,7 +418,8 @@ namespace Translator
           break;
       }
     }
-    static void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e)
+
+    private static void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e)
     {
       switch (e.Reason)
       {
@@ -449,11 +445,11 @@ namespace Translator
         ToolStripMenuItem launch = new ToolStripMenuItem("&Launch");
 
         foreach (ProgramSettings programSettings in Config.Programs)
-          launch.DropDownItems.Add(programSettings.Name, null, new EventHandler(ClickProgram));
+          launch.DropDownItems.Add(programSettings.Name, null, ClickProgram);
 
         _notifyIcon.ContextMenuStrip.Items.Add(launch);
       }
-      
+
       //string[] irList = Common.GetIRList(false);
       //if (irList.Length > 0)
       //{
@@ -465,24 +461,24 @@ namespace Translator
       //  _notifyIcon.ContextMenuStrip.Items.Add(irCommands);
       //}
 
-      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
+      string[] macroList = IrssMacro.GetMacroList(FolderMacros, false);
       if (macroList.Length > 0)
       {
         ToolStripMenuItem macros = new ToolStripMenuItem("&Macros");
 
         foreach (string macro in macroList)
-          macros.DropDownItems.Add(macro, null, new EventHandler(ClickMacro));
+          macros.DropDownItems.Add(macro, null, ClickMacro);
 
         _notifyIcon.ContextMenuStrip.Items.Add(macros);
       }
 
       ToolStripMenuItem actions = new ToolStripMenuItem("&Actions");
 
-      actions.DropDownItems.Add("System Standby", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("System Hibernate", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("System Reboot", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("System LogOff", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("System Shutdown", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("System Standby", null, ClickAction);
+      actions.DropDownItems.Add("System Hibernate", null, ClickAction);
+      actions.DropDownItems.Add("System Reboot", null, ClickAction);
+      actions.DropDownItems.Add("System LogOff", null, ClickAction);
+      actions.DropDownItems.Add("System Shutdown", null, ClickAction);
 
       actions.DropDownItems.Add(new ToolStripSeparator());
 
@@ -490,24 +486,24 @@ namespace Translator
       DriveInfo[] drives = DriveInfo.GetDrives();
       foreach (DriveInfo drive in drives)
         if (drive.DriveType == DriveType.CDRom)
-          ejectMenu.DropDownItems.Add(drive.Name, null, new EventHandler(ClickEjectAction));
+          ejectMenu.DropDownItems.Add(drive.Name, null, ClickEjectAction);
       actions.DropDownItems.Add(ejectMenu);
 
       actions.DropDownItems.Add(new ToolStripSeparator());
 
-      actions.DropDownItems.Add("Volume Up", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Volume Down", null, new EventHandler(ClickAction));
-      actions.DropDownItems.Add("Volume Mute", null, new EventHandler(ClickAction));
+      actions.DropDownItems.Add("Volume Up", null, ClickAction);
+      actions.DropDownItems.Add("Volume Down", null, ClickAction);
+      actions.DropDownItems.Add("Volume Mute", null, ClickAction);
 
       _notifyIcon.ContextMenuStrip.Items.Add(actions);
 
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-      _notifyIcon.ContextMenuStrip.Items.Add("Show &OSD", null, new EventHandler(ClickOSD));
-      _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, new EventHandler(ClickSetup));
-      _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, new EventHandler(ClickQuit));
+      _notifyIcon.ContextMenuStrip.Items.Add("Show &OSD", null, ClickOSD);
+      _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, ClickSetup);
+      _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, ClickQuit);
     }
 
-    static void ClickProgram(object sender, EventArgs e)
+    private static void ClickProgram(object sender, EventArgs e)
     {
       IrssLog.Info("Click Launch Program");
 
@@ -529,7 +525,8 @@ namespace Translator
 
       IrssLog.Warn("Failed to launch (could not find program details): {0}", program);
     }
-    static void ClickMacro(object sender, EventArgs e)
+
+    private static void ClickMacro(object sender, EventArgs e)
     {
       IrssLog.Info("Click Macro");
 
@@ -547,7 +544,8 @@ namespace Translator
         MessageBox.Show(ex.Message, "Macro failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-    static void ClickAction(object sender, EventArgs e)
+
+    private static void ClickAction(object sender, EventArgs e)
     {
       IrssLog.Info("Click Action");
 
@@ -584,25 +582,25 @@ namespace Translator
             // TODO: Replace with Volume Commands
             Win32.SendWindowsMessage(
               Win32.GetDesktopWindowHandle(),
-              (int)Win32.WindowsMessage.WM_APPCOMMAND,
+              (int) Win32.WindowsMessage.WM_APPCOMMAND,
               0,
-              65536 * (int)Win32.AppCommand.APPCOMMAND_VOLUME_UP);
+              65536*(int) Win32.AppCommand.APPCOMMAND_VOLUME_UP);
             break;
 
           case "Volume Down":
             Win32.SendWindowsMessage(
               Win32.GetDesktopWindowHandle(),
-              (int)Win32.WindowsMessage.WM_APPCOMMAND,
+              (int) Win32.WindowsMessage.WM_APPCOMMAND,
               0,
-              65536 * (int)Win32.AppCommand.APPCOMMAND_VOLUME_DOWN);
+              65536*(int) Win32.AppCommand.APPCOMMAND_VOLUME_DOWN);
             break;
 
           case "Volume Mute":
             Win32.SendWindowsMessage(
               Win32.GetDesktopWindowHandle(),
-              (int)Win32.WindowsMessage.WM_APPCOMMAND,
+              (int) Win32.WindowsMessage.WM_APPCOMMAND,
               0,
-              65536 * (int)Win32.AppCommand.APPCOMMAND_VOLUME_MUTE);
+              65536*(int) Win32.AppCommand.APPCOMMAND_VOLUME_MUTE);
             break;
 
           default:
@@ -616,7 +614,7 @@ namespace Translator
       }
     }
 
-    static void ClickEjectAction(object sender, EventArgs e)
+    private static void ClickEjectAction(object sender, EventArgs e)
     {
       IrssLog.Info("Click Eject Action");
 
@@ -627,12 +625,12 @@ namespace Translator
       ProcessCommand(Common.CmdPrefixEject + menuItem.Text, true);
     }
 
-    static void ClickOSD(object sender, EventArgs e)
+    private static void ClickOSD(object sender, EventArgs e)
     {
       ShowOSD();
     }
-    
-    static void ClickSetup(object sender, EventArgs e)
+
+    private static void ClickSetup(object sender, EventArgs e)
     {
       IrssLog.Info("Enter configuration");
 
@@ -648,7 +646,8 @@ namespace Translator
 
       _inConfiguration = false;
     }
-    static void ClickQuit(object sender, EventArgs e)
+
+    private static void ClickQuit(object sender, EventArgs e)
     {
       IrssLog.Info("User quit");
 
@@ -663,30 +662,32 @@ namespace Translator
       Application.Exit();
     }
 
-    static void CommsFailure(object obj)
+    private static void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
-      
+
       if (ex != null)
         IrssLog.Error("Communications failure: {0}", ex.Message);
       else
         IrssLog.Error("Communications failure");
 
-      _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+      _notifyIcon.Icon = Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Serious Communications Failure";
 
       StopClient();
 
-      MessageBox.Show("Please report this error.", "Translator - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show("Please report this error.", "Translator - Communications failure", MessageBoxButtons.OK,
+                      MessageBoxIcon.Error);
     }
-    static void Connected(object obj)
+
+    private static void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
 
-      _notifyIcon.Icon = Properties.Resources.Icon16;
+      _notifyIcon.Icon = Resources.Icon16;
       _notifyIcon.Text = "Translator";
 
       if (_firstConnection)
@@ -695,11 +696,12 @@ namespace Translator
         MapEvent(MappingEvent.Translator_Start, true);
       }
     }
-    static void Disconnected(object obj)
+
+    private static void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
-      _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+      _notifyIcon.Icon = Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Reconnecting ...";
 
       Thread.Sleep(1000);
@@ -710,26 +712,23 @@ namespace Translator
       if (_client != null)
         return false;
 
-      _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+      _notifyIcon.Icon = Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Connecting ...";
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
 
       if (_client.Start())
-      {
         return true;
-      }
-      else
-      {
-        _client = null;
-        return false;
-      }
+
+      _client = null;
+      return false;
     }
+
     internal static void StopClient()
     {
       if (_client == null)
@@ -741,7 +740,7 @@ namespace Translator
       _registered = false;
     }
 
-    static void ReceivedMessage(IrssMessage received)
+    private static void ReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
@@ -760,27 +759,27 @@ namespace Translator
             break;
 
           case MessageType.KeyboardEvent:
-          {
-            byte[] dataBytes = received.GetDataAsBytes();
+            {
+              byte[] dataBytes = received.GetDataAsBytes();
 
-            int vKey    = BitConverter.ToInt32(dataBytes, 0);
-            bool keyUp  = BitConverter.ToBoolean(dataBytes, 4);
+              int vKey = BitConverter.ToInt32(dataBytes, 0);
+              bool keyUp = BitConverter.ToBoolean(dataBytes, 4);
 
-            KeyboardHandlerCallback("TODO", vKey, keyUp);
-            break;
-          }
+              KeyboardHandlerCallback("TODO", vKey, keyUp);
+              break;
+            }
 
           case MessageType.MouseEvent:
-          {
-            byte[] dataBytes = received.GetDataAsBytes();
+            {
+              byte[] dataBytes = received.GetDataAsBytes();
 
-            int deltaX  = BitConverter.ToInt32(dataBytes, 0);
-            int deltaY  = BitConverter.ToInt32(dataBytes, 4);
-            int buttons = BitConverter.ToInt32(dataBytes, 8);
+              int deltaX = BitConverter.ToInt32(dataBytes, 0);
+              int deltaY = BitConverter.ToInt32(dataBytes, 4);
+              int buttons = BitConverter.ToInt32(dataBytes, 8);
 
-            MouseHandlerCallback("TODO", deltaX, deltaY, buttons);
-            break;
-          }
+              MouseHandlerCallback("TODO", deltaX, deltaY, buttons);
+              break;
+            }
 
           case MessageType.BlastIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
@@ -830,9 +829,9 @@ namespace Translator
             IrssLog.Warn("Input Service Shutdown - Translator disabled until Input Service returns");
             _registered = false;
 
-            _notifyIcon.Icon = Properties.Resources.Icon16Connecting;
+            _notifyIcon.Icon = Resources.Icon16Connecting;
             _notifyIcon.Text = "Translator - Connecting ...";
-            
+
             break;
 
           case MessageType.Error:
@@ -851,7 +850,7 @@ namespace Translator
       }
     }
 
-    static ProgramSettings ActiveProgram()
+    private static ProgramSettings ActiveProgram()
     {
       try
       {
@@ -862,7 +861,14 @@ namespace Translator
           return null;
         }
 
-        string fileName = Path.GetFileName(Process.GetProcessById(pid).MainModule.FileName);
+        Process process = Process.GetProcessById(pid);
+        if (process == null)
+        {
+          IrssLog.Debug("Failed to locate process by process ID");
+          return null;
+        }
+
+        string fileName = Path.GetFileName(process.MainModule.FileName);
 
         foreach (ProgramSettings progSettings in Config.Programs)
         {
@@ -881,7 +887,7 @@ namespace Translator
       return null;
     }
 
-    static void RemoteHandlerCallback(string deviceName, string keyCode)
+    private static void RemoteHandlerCallback(string deviceName, string keyCode)
     {
       if (_inConfiguration)
         return;
@@ -890,7 +896,7 @@ namespace Translator
 
       // TODO: When Abstract Remote Model becomes on by default
       //if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase)
-        button = keyCode;
+      button = keyCode;
       //else
       //  button = String.Format("{0} ({1})", deviceName, keyCode);
 
@@ -962,28 +968,30 @@ namespace Translator
 
       IrssLog.Debug("No mapping found for KeyCode = {0}", button);
     }
-    static void KeyboardHandlerCallback(string deviceName, int vKey, bool keyUp)
+
+    private static void KeyboardHandlerCallback(string deviceName, int vKey, bool keyUp)
     {
       if (keyUp)
-        Keyboard.KeyUp((Keyboard.VKey)vKey);
+        Keyboard.KeyUp((Keyboard.VKey) vKey);
       else
-        Keyboard.KeyDown((Keyboard.VKey)vKey);
+        Keyboard.KeyDown((Keyboard.VKey) vKey);
     }
-    static void MouseHandlerCallback(string deviceName, int deltaX, int deltaY, int buttons)
+
+    private static void MouseHandlerCallback(string deviceName, int deltaX, int deltaY, int buttons)
     {
       if (deltaX != 0 || deltaY != 0)
         Mouse.Move(deltaX, deltaY, false);
 
-      if (buttons != (int)Mouse.MouseEvents.None)
-        Mouse.Button((Mouse.MouseEvents)buttons);
+      if (buttons != (int) Mouse.MouseEvents.None)
+        Mouse.Button((Mouse.MouseEvents) buttons);
     }
 
-    static void MapEvent(MappingEvent theEvent, bool async)
+    private static void MapEvent(MappingEvent theEvent, bool async)
     {
       if (_inConfiguration)
         return;
 
-      string eventName = Enum.GetName(typeof(MappingEvent), theEvent);
+      string eventName = Enum.GetName(typeof (MappingEvent), theEvent);
 
       IrssLog.Debug("Mappable event: {0}", eventName);
 
@@ -1072,14 +1080,15 @@ namespace Translator
       using (FileStream file = File.OpenRead(fileName))
       {
         if (file.Length == 0)
-          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure",
+                                              fileName));
 
         byte[] outData = new byte[4 + port.Length + file.Length];
 
         BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
         Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-        file.Read(outData, 4 + port.Length, (int)file.Length);
+        file.Read(outData, 4 + port.Length, (int) file.Length);
 
         IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
         _client.Send(message);
@@ -1098,7 +1107,7 @@ namespace Translator
       {
         try
         {
-          Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+          Thread newThread = new Thread(ProcCommand);
           newThread.Name = ProcessCommandThreadName;
           newThread.IsBackground = true;
           newThread.Start(command);
@@ -1119,7 +1128,7 @@ namespace Translator
     /// Can be called Synchronously or as a Parameterized Thread.
     /// </summary>
     /// <param name="commandObj">Command string to process.</param>
-    static void ProcCommand(object commandObj)
+    private static void ProcCommand(object commandObj)
     {
       try
       {
@@ -1133,8 +1142,9 @@ namespace Translator
 
         if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
-          string fileName = Path.Combine(FolderMacros, command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
-          IrssMacro.ExecuteMacro(fileName, _variables, new ProcessCommandCallback(ProcCommand));
+          string fileName = Path.Combine(FolderMacros,
+                                         command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
+          IrssMacro.ExecuteMacro(fileName, _variables, ProcCommand);
         }
         else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
@@ -1193,14 +1203,15 @@ namespace Translator
         {
           string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
 
-          IrssUtils.Forms.ShowPopupMessage showPopupMessage = new IrssUtils.Forms.ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
+          ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
           showPopupMessage.ShowDialog();
         }
         else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           }
           else
           {
@@ -1212,7 +1223,8 @@ namespace Translator
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot Log off in configuration", Common.UITextLogOff, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot Log off in configuration", Common.UITextLogOff, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           }
           else
           {
@@ -1224,7 +1236,8 @@ namespace Translator
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           }
           else
           {
@@ -1236,7 +1249,8 @@ namespace Translator
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot ShutDown in configuration", Common.UITextShutdown, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot ShutDown in configuration", Common.UITextShutdown, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           }
           else
           {
@@ -1248,7 +1262,8 @@ namespace Translator
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           }
           else
           {
@@ -1264,11 +1279,12 @@ namespace Translator
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
           }
           else
           {
-            IrssUtils.Forms.VirtualKeyboard vk = new IrssUtils.Forms.VirtualKeyboard();
+            VirtualKeyboard vk = new VirtualKeyboard();
             if (vk.ShowDialog() == DialogResult.OK)
               Keyboard.ProcessCommand(vk.TextOutput);
           }
@@ -1277,11 +1293,12 @@ namespace Translator
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
           }
           else
           {
-            IrssUtils.Forms.SmsKeyboard sms = new IrssUtils.Forms.SmsKeyboard();
+            SmsKeyboard sms = new SmsKeyboard();
             if (sms.ShowDialog() == DialogResult.OK)
               Keyboard.ProcessCommand(sms.TextOutput);
           }
@@ -1296,12 +1313,14 @@ namespace Translator
         }
         else
         {
-          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "commandObj");
+          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
+                                      "commandObj");
         }
       }
       catch (Exception ex)
       {
-        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) && Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
+            Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
           IrssLog.Error(ex);
         else
           throw;
@@ -1318,7 +1337,8 @@ namespace Translator
       {
         try
         {
-          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), newPriority, true);
+          ProcessPriorityClass priority =
+            (ProcessPriorityClass) Enum.Parse(typeof (ProcessPriorityClass), newPriority, true);
           Process.GetCurrentProcess().PriorityClass = priority;
 
           IrssLog.Info("Process priority set to: {0}", newPriority);
@@ -1331,7 +1351,5 @@ namespace Translator
     }
 
     #endregion Implementation
-
   }
-
 }

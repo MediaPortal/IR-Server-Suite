@@ -1,20 +1,17 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace IrFileTool
 {
-
-  static class Program
+  internal static class Program
   {
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    private static void Main()
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
@@ -26,13 +23,13 @@ namespace IrFileTool
 #endif
       IrssLog.Open("IR File Tool.log");
 
-      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException += Application_ThreadException;
 
       FormMain main = new FormMain();
 
       Application.Run(main);
 
-      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException -= Application_ThreadException;
 
       IrssLog.Close();
     }
@@ -46,7 +43,5 @@ namespace IrFileTool
     {
       IrssLog.Error(e.Exception);
     }
-
   }
-
 }

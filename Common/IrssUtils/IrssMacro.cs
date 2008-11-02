@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
+using IrssUtils.Exceptions;
 
 namespace IrssUtils
 {
@@ -21,31 +21,34 @@ namespace IrssUtils
   /// </summary>
   public static class IrssMacro
   {
-
     #region Constants
 
     #region String comparisons
 
     /// <summary>
-    /// Equals.
-    /// </summary>
-    public const string IfEquals              = "==";
-    /// <summary>
-    /// Does Not Equal.
-    /// </summary>
-    public const string IfNotEqual            = "!=";
-    /// <summary>
     /// Contains.
     /// </summary>
-    public const string IfContains            = "CONTAINS";
-    /// <summary>
-    /// Starts With.
-    /// </summary>
-    public const string IfStartsWith          = "STARTS WITH";
+    public const string IfContains = "CONTAINS";
+
     /// <summary>
     /// Ends With.
     /// </summary>
-    public const string IfEndsWith            = "ENDS WITH";
+    public const string IfEndsWith = "ENDS WITH";
+
+    /// <summary>
+    /// Equals.
+    /// </summary>
+    public const string IfEquals = "==";
+
+    /// <summary>
+    /// Does Not Equal.
+    /// </summary>
+    public const string IfNotEqual = "!=";
+
+    /// <summary>
+    /// Starts With.
+    /// </summary>
+    public const string IfStartsWith = "STARTS WITH";
 
     #endregion String comparisons
 
@@ -54,19 +57,22 @@ namespace IrssUtils
     /// <summary>
     /// Greater Than.
     /// </summary>
-    public const string IfGreaterThan         = ">";
-    /// <summary>
-    /// Less Than.
-    /// </summary>
-    public const string IfLessThan            = "<";
+    public const string IfGreaterThan = ">";
+
     /// <summary>
     /// Greater Than or Equal To.
     /// </summary>
-    public const string IfGreaterThanOrEqual  = ">=";
+    public const string IfGreaterThanOrEqual = ">=";
+
+    /// <summary>
+    /// Less Than.
+    /// </summary>
+    public const string IfLessThan = "<";
+
     /// <summary>
     /// Less Than or Equal To.
     /// </summary>
-    public const string IfLessThanOrEqual     = "<=";
+    public const string IfLessThanOrEqual = "<=";
 
     #endregion Integer comparisons
 
@@ -226,7 +232,7 @@ namespace IrssUtils
     /// <param name="commandList">The command list.</param>
     /// <param name="label">The label to find.</param>
     /// <returns>The label position.</returns>
-    static int GetLabelPosition(string[] commandList, string label)
+    private static int GetLabelPosition(string[] commandList, string label)
     {
       for (int position = 0; position < commandList.Length; position++)
       {
@@ -240,7 +246,7 @@ namespace IrssUtils
         }
       }
 
-      throw new Exceptions.MacroStructureException(String.Format("Macro label not found: {0}", label));
+      throw new MacroStructureException(String.Format("Macro label not found: {0}", label));
     }
 
     /// <summary>
@@ -248,7 +254,7 @@ namespace IrssUtils
     /// </summary>
     /// <param name="commands">An array of arguments for the method (the output of SplitIfCommand).</param>
     /// <returns><c>true</c> if the command evaluates true, otherwise <c>false</c>.</returns>
-    static bool EvaluateIfCommand(string[] commands)
+    private static bool EvaluateIfCommand(string[] commands)
     {
       int value1AsInt;
       bool value1IsInt = int.TryParse(commands[0], out value1AsInt);
@@ -259,43 +265,51 @@ namespace IrssUtils
       bool comparisonResult = false;
       switch (commands[1].ToUpperInvariant())
       {
-        // Use string comparison ...
-        case IfEquals:      comparisonResult = commands[0].Equals(commands[2], StringComparison.OrdinalIgnoreCase);         break;
-        case IfNotEqual:    comparisonResult = !commands[0].Equals(commands[2], StringComparison.OrdinalIgnoreCase);        break;
-        case IfContains:    comparisonResult = commands[0].ToUpperInvariant().Contains(commands[2].ToUpperInvariant());     break;
-        case IfStartsWith:  comparisonResult = commands[0].StartsWith(commands[2], StringComparison.OrdinalIgnoreCase);     break;
-        case IfEndsWith:    comparisonResult = commands[0].EndsWith(commands[2], StringComparison.OrdinalIgnoreCase);       break;
+          // Use string comparison ...
+        case IfEquals:
+          comparisonResult = commands[0].Equals(commands[2], StringComparison.OrdinalIgnoreCase);
+          break;
+        case IfNotEqual:
+          comparisonResult = !commands[0].Equals(commands[2], StringComparison.OrdinalIgnoreCase);
+          break;
+        case IfContains:
+          comparisonResult = commands[0].ToUpperInvariant().Contains(commands[2].ToUpperInvariant());
+          break;
+        case IfStartsWith:
+          comparisonResult = commands[0].StartsWith(commands[2], StringComparison.OrdinalIgnoreCase);
+          break;
+        case IfEndsWith:
+          comparisonResult = commands[0].EndsWith(commands[2], StringComparison.OrdinalIgnoreCase);
+          break;
 
-        // Use integer comparison ...
+          // Use integer comparison ...
         case IfGreaterThan:
           if (value1IsInt && value2IsInt)
             comparisonResult = (value1AsInt > value2AsInt);
           break;
-        
+
         case IfLessThan:
           if (value1IsInt && value2IsInt)
             comparisonResult = (value1AsInt < value2AsInt);
           break;
-        
+
         case IfGreaterThanOrEqual:
           if (value1IsInt && value2IsInt)
             comparisonResult = (value1AsInt >= value2AsInt);
           break;
-        
+
         case IfLessThanOrEqual:
           if (value1IsInt && value2IsInt)
             comparisonResult = (value1AsInt <= value2AsInt);
           break;
 
         default:
-          throw new Exceptions.CommandExecutionException(String.Format("Invalid variable comparison method: {0}", commands[1]));
+          throw new CommandExecutionException(String.Format("Invalid variable comparison method: {0}", commands[1]));
       }
 
       return comparisonResult;
     }
 
     #endregion Implementation
-
   }
-
 }

@@ -1,18 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Serialization;
+using IrssUtils;
 
 namespace Commands
 {
-
   /// <summary>
   /// Provides a delegate to call to execute an IR Command.
   /// </summary>
@@ -25,7 +21,6 @@ namespace Commands
   /// </summary>
   public class Processor
   {
-
     #region Constants
 
     /*
@@ -45,66 +40,76 @@ namespace Commands
     */
 
     /// <summary>
-    /// Macro file extension.
+    /// Standard text for the Macro Category.
     /// </summary>
-    public const string FileExtensionMacro  = ".Macro";
-    /// <summary>
-    /// IR Command file extension.
-    /// </summary>
-    public const string FileExtensionIR     = ".IR";
+    public const string CategoryControl = "Control Statements";
 
     /// <summary>
     /// Standard text for the Macro Category.
     /// </summary>
-    public const string CategoryControl     = "Control Statements";
+    public const string CategoryGeneral = "General Commands";
+
     /// <summary>
-    /// Standard text for the Variable Category.
+    /// Standard text for the IR Commands Category.
     /// </summary>
-    public const string CategoryVariable    = "Variable Commands";
+    public const string CategoryIRCommands = "IR Commands";
+
     /// <summary>
-    /// Standard text for the Stack Category.
+    /// Standard text for the Macros Category.
     /// </summary>
-    public const string CategoryStack       = "Stack Commands";
-    /// <summary>
-    /// Standard text for the String Operations Category.
-    /// </summary>
-    public const string CategoryString      = "String Operations";
+    public const string CategoryMacros = "Macros";
+
     /// <summary>
     /// Standard text for the Maths Operations Category.
     /// </summary>
-    public const string CategoryMaths       = "Maths Operations";
-    /// <summary>
-    /// Standard text for the Macro Category.
-    /// </summary>
-    public const string CategoryGeneral     = "General Commands";
+    public const string CategoryMaths = "Maths Operations";
+
     /// <summary>
     /// Standard text for the Macro Category.
     /// </summary>
     public const string CategoryMediaPortal = "MediaPortal Commands";
-    /// <summary>
-    /// Standard text for the IR Commands Category.
-    /// </summary>
-    public const string CategoryIRCommands  = "IR Commands";
-    /// <summary>
-    /// Standard text for the Macros Category.
-    /// </summary>
-    public const string CategoryMacros      = "Macros";
+
     /// <summary>
     /// Standard text for the Hidden Category.
     /// </summary>
-    public const string CategorySpecial     = "Special Commands";
+    public const string CategorySpecial = "Special Commands";
+
+    /// <summary>
+    /// Standard text for the Stack Category.
+    /// </summary>
+    public const string CategoryStack = "Stack Commands";
+
+    /// <summary>
+    /// Standard text for the String Operations Category.
+    /// </summary>
+    public const string CategoryString = "String Operations";
+
+    /// <summary>
+    /// Standard text for the Variable Category.
+    /// </summary>
+    public const string CategoryVariable = "Variable Commands";
+
+    /// <summary>
+    /// IR Command file extension.
+    /// </summary>
+    public const string FileExtensionIR = ".IR";
+
+    /// <summary>
+    /// Macro file extension.
+    /// </summary>
+    public const string FileExtensionMacro = ".Macro";
 
 
-    const string ProcessCommandThreadName = "ProcessCommand";
+    private const string ProcessCommandThreadName = "ProcessCommand";
 
     #endregion Constants
 
     #region Variables
 
-    VariableList _variables;
+    private readonly VariableList _variables;
 
-    BlastIrDelegate _blastIrDelegate;
-    string[] _blastIrPorts;
+    private BlastIrDelegate _blastIrDelegate;
+    private string[] _blastIrPorts;
 
     #endregion Variables
 
@@ -152,8 +157,8 @@ namespace Commands
     {
       _variables = new VariableList();
 
-      _blastIrDelegate  = blastIrDelegate;
-      _blastIrPorts     = blastIrPorts;
+      _blastIrDelegate = blastIrDelegate;
+      _blastIrPorts = blastIrPorts;
     }
 
     #endregion Constructor
@@ -172,7 +177,7 @@ namespace Commands
 
       if (async)
       {
-        Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
+        Thread newThread = new Thread(ProcCommand);
         newThread.Name = ProcessCommandThreadName;
         newThread.IsBackground = true;
         newThread.Start(command);
@@ -183,7 +188,7 @@ namespace Commands
       }
     }
 
-    void ProcCommand(object commandObj)
+    private void ProcCommand(object commandObj)
     {
       Command command = commandObj as Command;
 
@@ -222,7 +227,7 @@ namespace Commands
     /// <returns>List of IR Command files.</returns>
     public static string[] GetListIR()
     {
-      string[] files = Directory.GetFiles(IrssUtils.Common.FolderIRCommands, '*' + FileExtensionIR, SearchOption.TopDirectoryOnly);
+      string[] files = Directory.GetFiles(Common.FolderIRCommands, '*' + FileExtensionIR, SearchOption.TopDirectoryOnly);
       Array.Sort(files);
 
       return files;
@@ -449,8 +454,8 @@ namespace Commands
       string[] parameters;
       using (StringReader stringReader = new StringReader(parametersXml))
       {
-        XmlSerializer xmlSerializer = new XmlSerializer(typeof(string[]));
-        parameters = (string[])xmlSerializer.Deserialize(stringReader);
+        XmlSerializer xmlSerializer = new XmlSerializer(typeof (string[]));
+        parameters = (string[]) xmlSerializer.Deserialize(stringReader);
       }
 
       return CreateCommand(commandType, parameters);
@@ -476,7 +481,7 @@ namespace Commands
 
       foreach (Type type in allCommands)
         if (type.FullName.Equals(commandType))
-          return (Command)Activator.CreateInstance(type, new object[] { parameters });
+          return (Command) Activator.CreateInstance(type, new object[] {parameters});
 
       throw new InvalidOperationException(String.Format("Could not find command type: {0}", commandType));
     }
@@ -490,46 +495,46 @@ namespace Commands
       List<Type> specialCommands = new List<Type>();
 
       // Control Statements ...
-      specialCommands.Add(typeof(CommandIf));
-      specialCommands.Add(typeof(CommandLabel));
-      specialCommands.Add(typeof(CommandGotoLabel));
-      specialCommands.Add(typeof(CommandSwitch));
-      specialCommands.Add(typeof(CommandAbortMacro));
+      specialCommands.Add(typeof (CommandIf));
+      specialCommands.Add(typeof (CommandLabel));
+      specialCommands.Add(typeof (CommandGotoLabel));
+      specialCommands.Add(typeof (CommandSwitch));
+      specialCommands.Add(typeof (CommandAbortMacro));
 
       // Variable Commands ...
-      specialCommands.Add(typeof(CommandSetVariable));
-      specialCommands.Add(typeof(CommandSwapVariables));
-      specialCommands.Add(typeof(CommandClearVariables));
-      specialCommands.Add(typeof(CommandSaveVariables));
-      specialCommands.Add(typeof(CommandLoadVariables));
+      specialCommands.Add(typeof (CommandSetVariable));
+      specialCommands.Add(typeof (CommandSwapVariables));
+      specialCommands.Add(typeof (CommandClearVariables));
+      specialCommands.Add(typeof (CommandSaveVariables));
+      specialCommands.Add(typeof (CommandLoadVariables));
 
       // Stack Commands ...
-      specialCommands.Add(typeof(CommandPushStack));
-      specialCommands.Add(typeof(CommandPopStack));
-      specialCommands.Add(typeof(CommandPeekStack));
-      specialCommands.Add(typeof(CommandClearStack));
-      specialCommands.Add(typeof(CommandLoadStack));
-      specialCommands.Add(typeof(CommandSaveStack));
+      specialCommands.Add(typeof (CommandPushStack));
+      specialCommands.Add(typeof (CommandPopStack));
+      specialCommands.Add(typeof (CommandPeekStack));
+      specialCommands.Add(typeof (CommandClearStack));
+      specialCommands.Add(typeof (CommandLoadStack));
+      specialCommands.Add(typeof (CommandSaveStack));
 
       // Maths Operations ...
-      specialCommands.Add(typeof(CommandMathsAbsolute));
-      specialCommands.Add(typeof(CommandMathsAdd));
-      specialCommands.Add(typeof(CommandMathsDivide));
-      specialCommands.Add(typeof(CommandMathsModulo));
-      specialCommands.Add(typeof(CommandMathsMultiply));
-      specialCommands.Add(typeof(CommandMathsPower));
-      specialCommands.Add(typeof(CommandMathsSquareRoot));
-      specialCommands.Add(typeof(CommandMathsSubtract));
+      specialCommands.Add(typeof (CommandMathsAbsolute));
+      specialCommands.Add(typeof (CommandMathsAdd));
+      specialCommands.Add(typeof (CommandMathsDivide));
+      specialCommands.Add(typeof (CommandMathsModulo));
+      specialCommands.Add(typeof (CommandMathsMultiply));
+      specialCommands.Add(typeof (CommandMathsPower));
+      specialCommands.Add(typeof (CommandMathsSquareRoot));
+      specialCommands.Add(typeof (CommandMathsSubtract));
 
       // String Operations ...
-      specialCommands.Add(typeof(CommandStringJoin));
-      specialCommands.Add(typeof(CommandStringToLower));
-      specialCommands.Add(typeof(CommandStringToUpper));
-      specialCommands.Add(typeof(CommandStringTrim));
+      specialCommands.Add(typeof (CommandStringJoin));
+      specialCommands.Add(typeof (CommandStringToLower));
+      specialCommands.Add(typeof (CommandStringToUpper));
+      specialCommands.Add(typeof (CommandStringTrim));
 
       // Special commands ...
-      specialCommands.Add(typeof(CommandBlastIR));
-      specialCommands.Add(typeof(CommandCallMacro));
+      specialCommands.Add(typeof (CommandBlastIR));
+      specialCommands.Add(typeof (CommandCallMacro));
 
       return specialCommands.ToArray();
     }
@@ -544,7 +549,7 @@ namespace Commands
       {
         List<Type> commands = new List<Type>();
 
-        string installFolder = IrssUtils.SystemRegistry.GetInstallFolder();
+        string installFolder = SystemRegistry.GetInstallFolder();
         if (String.IsNullOrEmpty(installFolder))
           return null;
 
@@ -559,7 +564,7 @@ namespace Commands
             Type[] types = assembly.GetExportedTypes();
 
             foreach (Type type in types)
-              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Commands.Command)))
+              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof (Command)))
                 commands.Add(type);
           }
           catch (BadImageFormatException)
@@ -591,7 +596,5 @@ namespace Commands
     }
 
     #endregion Static Methods
-
   }
-
 }

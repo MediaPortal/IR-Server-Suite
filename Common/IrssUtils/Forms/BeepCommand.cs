@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Beep Command form.
   /// </summary>
   public partial class BeepCommand : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -25,8 +19,8 @@ namespace IrssUtils.Forms
       get
       {
         return String.Format("{0}|{1}",
-          numericUpDownFreq.Value.ToString(),
-          numericUpDownDuration.Value.ToString());
+                             numericUpDownFreq.Value,
+                             numericUpDownDuration.Value);
       }
     }
 
@@ -53,21 +47,19 @@ namespace IrssUtils.Forms
       numericUpDownFreq.Value = Decimal.Parse(commands[0]);
       numericUpDownDuration.Value = Decimal.Parse(commands[1]);
     }
-    
+
     #endregion Constructors
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

@@ -1,20 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Display Mode Command form.
   /// </summary>
   public partial class DisplayModeCommand : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -26,10 +20,10 @@ namespace IrssUtils.Forms
       get
       {
         return String.Format("{0}|{1}|{2}|{3}",
-          textBoxWidth.Text,
-          textBoxHeight.Text,
-          checkBoxBpp.Checked ? textBoxBpp.Text : "-1",
-          checkBoxRefresh.Checked ? textBoxRefresh.Text : "-1");
+                             textBoxWidth.Text,
+                             textBoxHeight.Text,
+                             checkBoxBpp.Checked ? textBoxBpp.Text : "-1",
+                             checkBoxRefresh.Checked ? textBoxRefresh.Text : "-1");
       }
     }
 
@@ -61,9 +55,9 @@ namespace IrssUtils.Forms
     {
       InitializeComponent();
 
-      textBoxWidth.Text   = commands[0];
-      textBoxHeight.Text  = commands[1];
-      textBoxBpp.Text     = commands[2];
+      textBoxWidth.Text = commands[0];
+      textBoxHeight.Text = commands[1];
+      textBoxBpp.Text = commands[2];
       textBoxRefresh.Text = commands[3];
     }
 
@@ -73,18 +67,16 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

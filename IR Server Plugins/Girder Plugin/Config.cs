@@ -1,20 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Config form for selecting and configuring a Girder plugin.
   /// </summary>
-  partial class Config : Form
+  internal partial class Config : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -23,10 +17,7 @@ namespace InputService.Plugin
     /// <value>The path of the Girder plugin folder.</value>
     public string PluginFolder
     {
-      get
-      {
-        return textBoxPluginFolder.Text;
-      }
+      get { return textBoxPluginFolder.Text; }
       set
       {
         textBoxPluginFolder.Text = value;
@@ -90,13 +81,15 @@ namespace InputService.Plugin
 
         if (!pluginWrapper.CanConfigure)
         {
-          MessageBox.Show(this, "No configuration available", "Girder Plugin Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          MessageBox.Show(this, "No configuration available", "Girder Plugin Configuration", MessageBoxButtons.OK,
+                          MessageBoxIcon.Information);
         }
         else
         {
           pluginWrapper.GirCommandGui();
 
-          MessageBox.Show(this, "Press OK after the Girder plugin configuration is complete", "Girder Plugin Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          MessageBox.Show(this, "Press OK after the Girder plugin configuration is complete",
+                          "Girder Plugin Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         pluginWrapper.GirClose();
@@ -115,17 +108,17 @@ namespace InputService.Plugin
       {
         textBoxPluginFolder.Text = folderBrowserDialog.SelectedPath;
 
-        UpdatePluginList();        
+        UpdatePluginList();
       }
     }
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
-    void UpdatePluginList()
+    private void UpdatePluginList()
     {
       listViewPlugins.Clear();
 
@@ -139,7 +132,5 @@ namespace InputService.Plugin
         foreach (string file in files)
           listViewPlugins.Items.Add(Path.GetFileName(file));
     }
-
   }
-
 }

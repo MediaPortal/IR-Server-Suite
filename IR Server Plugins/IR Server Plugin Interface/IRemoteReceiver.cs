@@ -1,5 +1,3 @@
-using System;
-
 namespace InputService.Plugin
 {
 
@@ -19,13 +17,10 @@ namespace InputService.Plugin
   /// </summary>
   public interface IRemoteReceiver
   {
-
     /// <summary>
     /// Callback for remote button presses.
     /// </summary>
     /// <value>The remote callback.</value>
     RemoteHandler RemoteCallback { get; set; }
-
   }
-
 }

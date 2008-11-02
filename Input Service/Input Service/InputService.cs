@@ -1,21 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Xml;
-
-using Microsoft.Win32;
-using Microsoft.Win32.SafeHandles;
-
 using InputService.Plugin;
 using IrssComms;
 using IrssUtils;
@@ -28,20 +20,20 @@ namespace InputService
   /// <summary>
   /// Describes the operation mode of the Input Service.
   /// </summary>
-  enum InputServiceMode
+  internal enum InputServiceMode
   {
     /// <summary>
     /// Acts as a standard Server (Default).
     /// </summary>
-    ServerMode    = 0,
+    ServerMode = 0,
     /// <summary>
     /// Relays button presses to another Input Service.
     /// </summary>
-    RelayMode     = 1,
+    RelayMode = 1,
     /// <summary>
     /// Acts as a repeater for another Input Service's blasting.
     /// </summary>
-    RepeaterMode  = 2,
+    RepeaterMode = 2,
   }
 
   #endregion Enumerations
@@ -49,40 +41,40 @@ namespace InputService
   /// <summary>
   /// Input Service.
   /// </summary>
-  class InputService : ServiceBase
+  internal class InputService : ServiceBase
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile        = Path.Combine(Common.FolderAppData, "Input Service\\Input Service.xml");
+    private static readonly string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData,
+                                                                          "Input Service\\Abstract Remote Maps");
 
-    static readonly string AbstractRemoteMapFolder  = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
-    static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
+    private static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData,
+                                                                           "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
+
+    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
+                                                                    "Input Service\\Input Service.xml");
 
     #endregion Constants
 
     #region Variables
 
-    bool _abstractRemoteMode;
-    InputServiceMode _mode;
-    string _hostComputer;
-    string _processPriority;
+    private DataSet _abstractRemoteButtons;
+    private bool _abstractRemoteMode;
+    private Client _client;
+    private string _hostComputer;
+    private InputServiceMode _mode;
 
-    string[] _pluginNameReceive;
-    List<PluginBase> _pluginReceive;
+    private string[] _pluginNameReceive;
 
-    string _pluginNameTransmit;
-    PluginBase _pluginTransmit;
+    private string _pluginNameTransmit;
+    private List<PluginBase> _pluginReceive;
+    private PluginBase _pluginTransmit;
+    private string _processPriority;
+    private bool _registered; // Used for relay and repeater modes.
 
-    Server _server;
-    Client _client;
-
-    List<ClientManager> _registeredClients;
-    List<ClientManager> _registeredRepeaters;
-
-    bool _registered; // Used for relay and repeater modes.
-
-    DataSet _abstractRemoteButtons;
+    private List<ClientManager> _registeredClients;
+    private List<ClientManager> _registeredRepeaters;
+    private Server _server;
 
     #endregion Variables
 
@@ -93,16 +85,16 @@ namespace InputService
     /// </summary>
     public InputService()
     {
-      this.ServiceName = Program.ServiceName;
+      ServiceName = Program.ServiceName;
 
       //this.EventLog.Log = "Application";
       //this.AutoLog = true;
 
-      this.CanHandlePowerEvent          = true;
-      this.CanHandleSessionChangeEvent  = false;
-      this.CanPauseAndContinue          = false;
-      this.CanShutdown                  = true;
-      this.CanStop                      = true;
+      CanHandlePowerEvent = true;
+      CanHandleSessionChangeEvent = false;
+      CanPauseAndContinue = false;
+      CanShutdown = true;
+      CanStop = true;
     }
 
     #endregion Constructor
@@ -126,7 +118,6 @@ namespace InputService
         }
 
         // Free native resources ...
-
       }
       finally
       {
@@ -154,7 +145,8 @@ namespace InputService
       {
         try
         {
-          ProcessPriorityClass priority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), _processPriority, true);
+          ProcessPriorityClass priority =
+            (ProcessPriorityClass) Enum.Parse(typeof (ProcessPriorityClass), _processPriority, true);
           Process.GetCurrentProcess().PriorityClass = priority;
 
           IrssLog.Info("Process priority set to: {0}", _processPriority);
@@ -169,7 +161,7 @@ namespace InputService
 
       #region Load plugin(s)
 
-      _pluginReceive  = null;
+      _pluginReceive = null;
       _pluginTransmit = null;
 
       if (_pluginNameReceive == null && String.IsNullOrEmpty(_pluginNameTransmit))
@@ -202,7 +194,8 @@ namespace InputService
               {
                 _pluginReceive.Add(plugin);
 
-                if (!String.IsNullOrEmpty(_pluginNameTransmit) && plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
+                if (!String.IsNullOrEmpty(_pluginNameTransmit) &&
+                    plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
                   _pluginTransmit = plugin;
               }
             }
@@ -232,7 +225,7 @@ namespace InputService
           }
         }
       }
-      
+
       #endregion Load plugin(s)
 
       #region Mode select
@@ -285,15 +278,15 @@ namespace InputService
 
             IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
             if (remoteReceiver != null)
-              remoteReceiver.RemoteCallback += new RemoteHandler(RemoteHandlerCallback);
+              remoteReceiver.RemoteCallback += RemoteHandlerCallback;
 
             IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
             if (keyboardReceiver != null)
-              keyboardReceiver.KeyboardCallback += new KeyboardHandler(KeyboardHandlerCallback);
+              keyboardReceiver.KeyboardCallback += KeyboardHandlerCallback;
 
             IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
             if (mouseReceiver != null)
-              mouseReceiver.MouseCallback += new MouseHandler(MouseHandlerCallback);
+              mouseReceiver.MouseCallback += MouseHandlerCallback;
 
             if (plugin.Name.Equals(_pluginNameTransmit, StringComparison.OrdinalIgnoreCase))
             {
@@ -392,15 +385,15 @@ namespace InputService
           {
             IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
             if (remoteReceiver != null)
-              remoteReceiver.RemoteCallback -= new RemoteHandler(RemoteHandlerCallback);
+              remoteReceiver.RemoteCallback -= RemoteHandlerCallback;
 
             IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
             if (keyboardReceiver != null)
-              keyboardReceiver.KeyboardCallback -= new KeyboardHandler(KeyboardHandlerCallback);
+              keyboardReceiver.KeyboardCallback -= KeyboardHandlerCallback;
 
             IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
             if (mouseReceiver != null)
-              mouseReceiver.MouseCallback -= new MouseHandler(MouseHandlerCallback);
+              mouseReceiver.MouseCallback -= MouseHandlerCallback;
 
             plugin.Stop();
 
@@ -476,12 +469,12 @@ namespace InputService
     /// <returns>true if the event is handled, otherwise false.</returns>
     protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
     {
-      IrssLog.Info("PowerEvent: {0}", Enum.GetName(typeof(PowerBroadcastStatus), powerStatus));
+      IrssLog.Info("PowerEvent: {0}", Enum.GetName(typeof (PowerBroadcastStatus), powerStatus));
 
       switch (powerStatus)
       {
+          #region Suspend
 
-        #region Suspend
         case PowerBroadcastStatus.Suspend:
           // TODO: if anyone has any trouble with on-suspend commands then try changing this to QuerySuspend.
           IrssLog.Info("Entering standby ...");
@@ -525,12 +518,14 @@ namespace InputService
             SendToAll(message);
           }
           break;
-        #endregion Suspend
 
-        #region Resume
+          #endregion Suspend
+
+          #region Resume
+
         case PowerBroadcastStatus.ResumeAutomatic:
-        //case PowerBroadcastStatus.ResumeCritical:
-        //case PowerBroadcastStatus.ResumeSuspend:
+          //case PowerBroadcastStatus.ResumeCritical:
+          //case PowerBroadcastStatus.ResumeSuspend:
           IrssLog.Info("Resume from standby ...");
 
           bool resumedTransmit = false;
@@ -572,8 +567,8 @@ namespace InputService
             SendToAll(message);
           }
           break;
-        #endregion Resume
 
+          #endregion Resume
       }
 
       return true;
@@ -583,7 +578,7 @@ namespace InputService
 
     #region Implementation
 
-    void StartServer()
+    private void StartServer()
     {
       if (_server != null)
         return;
@@ -592,13 +587,13 @@ namespace InputService
       _registeredClients = new List<ClientManager>();
       _registeredRepeaters = new List<ClientManager>();
 
-      ServerMessageSink sink = new ServerMessageSink(ServerReceivedMessage);
-      _server = new Server(Server.DefaultPort, sink);
-      _server.ClientDisconnectCallback = new WaitCallback(ClientDisconnect);
+      _server = new Server(Server.DefaultPort, ServerReceivedMessage);
+      _server.ClientDisconnectCallback = ClientDisconnect;
 
       _server.Start();
     }
-    void StopServer()
+
+    private void StopServer()
     {
       if (_server != null)
       {
@@ -619,7 +614,7 @@ namespace InputService
       }
     }
 
-    void CommsFailure(object obj)
+    private void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
 
@@ -632,7 +627,8 @@ namespace InputService
 
       IrssLog.Error("Please report this error");
     }
-    void Connected(object obj)
+
+    private void Connected(object obj)
     {
       IrssLog.Info("Connected to another server");
 
@@ -642,14 +638,15 @@ namespace InputService
         _client.Send(message);
       }
     }
-    void Disconnected(object obj)
+
+    private void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with other server has been lost");
 
       Thread.Sleep(1000);
     }
 
-    void ClientDisconnect(object obj)
+    private void ClientDisconnect(object obj)
     {
       ClientManager clientManager = obj as ClientManager;
 
@@ -660,18 +657,16 @@ namespace InputService
       }
     }
 
-    bool StartClient(IPEndPoint endPoint)
+    private bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ClientReceivedMessage);
+      _client = new Client(endPoint, ClientReceivedMessage);
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
 
-      _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
       if (_client.Start())
       {
         return true;
@@ -682,7 +677,8 @@ namespace InputService
         return false;
       }
     }
-    void StopClient()
+
+    private void StopClient()
     {
       if (_client == null)
         return;
@@ -693,14 +689,14 @@ namespace InputService
       _registered = false;
     }
 
-    bool StartRelay()
+    private bool StartRelay()
     {
       try
       {
         StartServer();
 
         IPAddress serverIP = Client.GetIPFromName(_hostComputer);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         StartClient(endPoint);
 
@@ -712,24 +708,27 @@ namespace InputService
         return false;
       }
     }
-    void StopRelay()
+
+    private void StopRelay()
     {
       try
       {
         StopServer();
         StopClient();
       }
-      catch { }
+      catch
+      {
+      }
     }
 
-    bool StartRepeater()
+    private bool StartRepeater()
     {
       try
       {
         StartServer();
 
         IPAddress serverIP = Client.GetIPFromName(_hostComputer);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         StartClient(endPoint);
 
@@ -741,7 +740,8 @@ namespace InputService
         return false;
       }
     }
-    void StopRepeater()
+
+    private void StopRepeater()
     {
       try
       {
@@ -764,12 +764,12 @@ namespace InputService
       }
     }
 
-    void RemoteHandlerCallback(string deviceName, string keyCode)
+    private void RemoteHandlerCallback(string deviceName, string keyCode)
     {
       IrssLog.Debug("{0} generated a remote event: {1}", deviceName, keyCode);
 
-      string messageDeviceName  = deviceName;
-      string messageKeyCode     = keyCode;
+      string messageDeviceName = deviceName;
+      string messageKeyCode = keyCode;
 
       switch (_mode)
       {
@@ -780,7 +780,7 @@ namespace InputService
             if (!String.IsNullOrEmpty(abstractButton))
             {
               messageDeviceName = "Abstract";
-              messageKeyCode    = abstractButton;
+              messageKeyCode = abstractButton;
 
               IrssLog.Info("Abstract Remote Button mapped: {0}", abstractButton);
             }
@@ -827,14 +827,15 @@ namespace InputService
           }
       }
     }
-    void KeyboardHandlerCallback(string deviceName, int vKey, bool keyUp)
+
+    private void KeyboardHandlerCallback(string deviceName, int vKey, bool keyUp)
     {
       IrssLog.Debug("{0} generated a keyboard event: {1}, keyUp: {2}", deviceName, vKey, keyUp);
 
       byte[] bytes = new byte[8];
       BitConverter.GetBytes(vKey).CopyTo(bytes, 0);
       BitConverter.GetBytes(keyUp).CopyTo(bytes, 4);
-      
+
       switch (_mode)
       {
         case InputServiceMode.ServerMode:
@@ -858,9 +859,11 @@ namespace InputService
           }
       }
     }
-    void MouseHandlerCallback(string deviceName, int deltaX, int deltaY, int buttons)
+
+    private void MouseHandlerCallback(string deviceName, int deltaX, int deltaY, int buttons)
     {
-      IrssLog.Debug("{0} generated a mouse Event - deltaX: {1}, deltaY: {2}, buttons: {3}", deviceName, deltaX, deltaY, buttons);
+      IrssLog.Debug("{0} generated a mouse Event - deltaX: {1}, deltaY: {2}, buttons: {3}", deviceName, deltaX, deltaY,
+                    buttons);
 
       byte[] bytes = new byte[12];
       BitConverter.GetBytes(deltaX).CopyTo(bytes, 0);
@@ -891,7 +894,7 @@ namespace InputService
       }
     }
 
-    void SendToAll(IrssMessage message)
+    private void SendToAll(IrssMessage message)
     {
       IrssLog.Debug("SendToAll({0}, {1})", message.Type, message.Flags);
 
@@ -919,7 +922,8 @@ namespace InputService
         }
       }
     }
-    void SendToAllExcept(ClientManager exceptClient, IrssMessage message)
+
+    private void SendToAllExcept(ClientManager exceptClient, IrssMessage message)
     {
       IrssLog.Debug("SendToAllExcept({0}, {1})", message.Type, message.Flags);
 
@@ -931,7 +935,7 @@ namespace InputService
         {
           if (client == exceptClient)
             continue;
-          
+
           if (!_server.Send(client, message))
           {
             IrssLog.Warn("Failed to send message to a client, unregistering client");
@@ -950,10 +954,11 @@ namespace InputService
         }
       }
     }
-    void SendTo(ClientManager receiver, IrssMessage message)
+
+    private void SendTo(ClientManager receiver, IrssMessage message)
     {
       IrssLog.Debug("SendTo({0}, {1})", message.Type, message.Flags);
-      
+
       if (!_server.Send(receiver, message))
       {
         IrssLog.Warn("Failed to send message to a client, unregistering client");
@@ -962,7 +967,8 @@ namespace InputService
         UnregisterClient(receiver);
       }
     }
-    void SendToRepeaters(IrssMessage message)
+
+    private void SendToRepeaters(IrssMessage message)
     {
       IrssLog.Debug("SendToRepeaters({0}, {1})", message.Type, message.Flags);
 
@@ -991,7 +997,7 @@ namespace InputService
       }
     }
 
-    bool RegisterClient(ClientManager addClient)
+    private bool RegisterClient(ClientManager addClient)
     {
       lock (_registeredClients)
       {
@@ -1002,7 +1008,8 @@ namespace InputService
       IrssLog.Info("Registered a client");
       return true;
     }
-    bool UnregisterClient(ClientManager removeClient)
+
+    private bool UnregisterClient(ClientManager removeClient)
     {
       lock (_registeredClients)
       {
@@ -1016,7 +1023,7 @@ namespace InputService
       return true;
     }
 
-    bool RegisterRepeater(ClientManager addRepeater)
+    private bool RegisterRepeater(ClientManager addRepeater)
     {
       lock (_registeredRepeaters)
       {
@@ -1027,7 +1034,8 @@ namespace InputService
       IrssLog.Info("Registered a repeater");
       return true;
     }
-    bool UnregisterRepeater(ClientManager removeRepeater)
+
+    private bool UnregisterRepeater(ClientManager removeRepeater)
     {
       lock (_registeredRepeaters)
       {
@@ -1041,7 +1049,7 @@ namespace InputService
       return true;
     }
 
-    bool BlastIR(byte[] data)
+    private bool BlastIR(byte[] data)
     {
       try
       {
@@ -1077,7 +1085,8 @@ namespace InputService
         return false;
       }
     }
-    LearnStatus LearnIR(out byte[] data)
+
+    private LearnStatus LearnIR(out byte[] data)
     {
       IrssLog.Info("Learn IR");
 
@@ -1126,7 +1135,7 @@ namespace InputService
       return status;
     }
 
-    void ServerReceivedMessage(MessageManagerCombo combo)
+    private void ServerReceivedMessage(MessageManagerCombo combo)
     {
       IrssLog.Debug("Server message received: {0}, {1}", combo.Message.Type, combo.Message.Flags);
 
@@ -1134,12 +1143,13 @@ namespace InputService
       {
         switch (combo.Message.Type)
         {
+            #region ForwardRemoteEvent
 
-          #region ForwardRemoteEvent
           case MessageType.ForwardRemoteEvent:
             if (_mode == InputServiceMode.RelayMode)
             {
-              IrssMessage forward = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
+              IrssMessage forward = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request,
+                                                    combo.Message.GetDataAsBytes());
               _client.Send(forward);
             }
             else
@@ -1194,7 +1204,8 @@ namespace InputService
                   }
                   else
                   {
-                    IrssLog.Info("Abstract Remote Button not found for forwarded remote event: {0} ({1})", deviceName, keyCode);
+                    IrssLog.Info("Abstract Remote Button not found for forwarded remote event: {0} ({1})", deviceName,
+                                 keyCode);
                   }
                 }
               }
@@ -1203,102 +1214,116 @@ namespace InputService
               SendToAllExcept(combo.Manager, forward);
             }
             break;
-          #endregion ForwardRemoteEvent
 
-          #region ForwardKeyboardEvent
+            #endregion ForwardRemoteEvent
+
+            #region ForwardKeyboardEvent
+
           case MessageType.ForwardKeyboardEvent:
             if (_mode == InputServiceMode.RelayMode)
             {
-              IrssMessage forward = new IrssMessage(MessageType.ForwardKeyboardEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
+              IrssMessage forward = new IrssMessage(MessageType.ForwardKeyboardEvent, MessageFlags.Request,
+                                                    combo.Message.GetDataAsBytes());
               _client.Send(forward);
             }
             else
             {
-              IrssMessage forward = new IrssMessage(MessageType.KeyboardEvent, MessageFlags.Notify, combo.Message.GetDataAsBytes());
+              IrssMessage forward = new IrssMessage(MessageType.KeyboardEvent, MessageFlags.Notify,
+                                                    combo.Message.GetDataAsBytes());
               SendToAllExcept(combo.Manager, forward);
             }
             break;
-          #endregion ForwardKeyboardEvent
 
-          #region ForwardMouseEvent
+            #endregion ForwardKeyboardEvent
+
+            #region ForwardMouseEvent
+
           case MessageType.ForwardMouseEvent:
             if (_mode == InputServiceMode.RelayMode)
             {
-              IrssMessage forward = new IrssMessage(MessageType.ForwardMouseEvent, MessageFlags.Request, combo.Message.GetDataAsBytes());
+              IrssMessage forward = new IrssMessage(MessageType.ForwardMouseEvent, MessageFlags.Request,
+                                                    combo.Message.GetDataAsBytes());
               _client.Send(forward);
             }
             else
             {
-              IrssMessage forward = new IrssMessage(MessageType.MouseEvent, MessageFlags.Notify, combo.Message.GetDataAsBytes());
+              IrssMessage forward = new IrssMessage(MessageType.MouseEvent, MessageFlags.Notify,
+                                                    combo.Message.GetDataAsBytes());
               SendToAllExcept(combo.Manager, forward);
             }
             break;
-          #endregion ForwardMouseEvent
 
-          #region BlastIR
+            #endregion ForwardMouseEvent
+
+            #region BlastIR
+
           case MessageType.BlastIR:
-          {
-            IrssMessage response = new IrssMessage(MessageType.BlastIR, MessageFlags.Response);
-
-            if (_mode == InputServiceMode.RelayMode)
             {
-              response.Flags |= MessageFlags.Failure;
-            }
-            else
-            {
-              if (_registeredRepeaters.Count > 0)
-                SendToRepeaters(combo.Message);
+              IrssMessage response = new IrssMessage(MessageType.BlastIR, MessageFlags.Response);
 
-              if (BlastIR(combo.Message.GetDataAsBytes()))
-                response.Flags |= MessageFlags.Success;
-              else
-                response.Flags |= MessageFlags.Failure;
-            }
-
-            if ((combo.Message.Flags & MessageFlags.ForceNotRespond) != MessageFlags.ForceNotRespond)
-              SendTo(combo.Manager, response);
-            
-            break;
-          }
-          #endregion BlastIR
-
-          #region LearnIR
-          case MessageType.LearnIR:
-          {
-            IrssMessage response = new IrssMessage(MessageType.LearnIR, MessageFlags.Response);
-
-            if (_mode == InputServiceMode.RelayMode)
-            {
-              response.Flags |= MessageFlags.Failure;
-            }
-            else
-            {
-              byte[] bytes;
-              LearnStatus status = LearnIR(out bytes);
-
-              switch (status)
+              if (_mode == InputServiceMode.RelayMode)
               {
-                case LearnStatus.Success:
-                  response.Flags |= MessageFlags.Success;
-                  response.SetDataAsBytes(bytes);
-                  break;
-
-                case LearnStatus.Failure:
-                  response.Flags |= MessageFlags.Failure;
-                  break;
-
-                case LearnStatus.Timeout:
-                  response.Flags |= MessageFlags.Timeout;
-                  break;
+                response.Flags |= MessageFlags.Failure;
               }
+              else
+              {
+                if (_registeredRepeaters.Count > 0)
+                  SendToRepeaters(combo.Message);
+
+                if (BlastIR(combo.Message.GetDataAsBytes()))
+                  response.Flags |= MessageFlags.Success;
+                else
+                  response.Flags |= MessageFlags.Failure;
+              }
+
+              if ((combo.Message.Flags & MessageFlags.ForceNotRespond) != MessageFlags.ForceNotRespond)
+                SendTo(combo.Manager, response);
+
+              break;
             }
 
-            SendTo(combo.Manager, response);
-            break;
-          }
-          #endregion LearnIR
+            #endregion BlastIR
 
-          #region ServerShutdown
+            #region LearnIR
+
+          case MessageType.LearnIR:
+            {
+              IrssMessage response = new IrssMessage(MessageType.LearnIR, MessageFlags.Response);
+
+              if (_mode == InputServiceMode.RelayMode)
+              {
+                response.Flags |= MessageFlags.Failure;
+              }
+              else
+              {
+                byte[] bytes;
+                LearnStatus status = LearnIR(out bytes);
+
+                switch (status)
+                {
+                  case LearnStatus.Success:
+                    response.Flags |= MessageFlags.Success;
+                    response.SetDataAsBytes(bytes);
+                    break;
+
+                  case LearnStatus.Failure:
+                    response.Flags |= MessageFlags.Failure;
+                    break;
+
+                  case LearnStatus.Timeout:
+                    response.Flags |= MessageFlags.Timeout;
+                    break;
+                }
+              }
+
+              SendTo(combo.Manager, response);
+              break;
+            }
+
+            #endregion LearnIR
+
+            #region ServerShutdown
+
           case MessageType.ServerShutdown:
             if ((combo.Message.Flags & MessageFlags.Request) == MessageFlags.Request)
             {
@@ -1306,47 +1331,53 @@ namespace InputService
               Stop();
             }
             break;
-          #endregion ServerShutdown
 
-          #region RegisterClient
+            #endregion ServerShutdown
+
+            #region RegisterClient
+
           case MessageType.RegisterClient:
-          {
-            IrssMessage response = new IrssMessage(MessageType.RegisterClient, MessageFlags.Response);
-
-            if (RegisterClient(combo.Manager))
             {
-              IRServerInfo irServerInfo = new IRServerInfo();
+              IrssMessage response = new IrssMessage(MessageType.RegisterClient, MessageFlags.Response);
 
-              if (_pluginReceive != null)
-                irServerInfo.CanReceive = true;
-
-              if (_pluginTransmit != null)
+              if (RegisterClient(combo.Manager))
               {
-                irServerInfo.CanLearn = (_pluginTransmit is ILearnIR);
-                irServerInfo.CanTransmit = true;
-                irServerInfo.Ports = (_pluginTransmit as ITransmitIR).AvailablePorts;
+                IRServerInfo irServerInfo = new IRServerInfo();
+
+                if (_pluginReceive != null)
+                  irServerInfo.CanReceive = true;
+
+                if (_pluginTransmit != null)
+                {
+                  irServerInfo.CanLearn = (_pluginTransmit is ILearnIR);
+                  irServerInfo.CanTransmit = true;
+                  irServerInfo.Ports = (_pluginTransmit as ITransmitIR).AvailablePorts;
+                }
+
+                response.SetDataAsBytes(irServerInfo.ToBytes());
+                response.Flags |= MessageFlags.Success;
+              }
+              else
+              {
+                response.Flags |= MessageFlags.Failure;
               }
 
-              response.SetDataAsBytes(irServerInfo.ToBytes());
-              response.Flags |= MessageFlags.Success;
-            }
-            else
-            {
-              response.Flags |= MessageFlags.Failure;
+              SendTo(combo.Manager, response);
+              break;
             }
 
-            SendTo(combo.Manager, response);
-            break;
-          }
-          #endregion RegisterClient
+            #endregion RegisterClient
 
-          #region UnregisterClient
+            #region UnregisterClient
+
           case MessageType.UnregisterClient:
             UnregisterClient(combo.Manager);
             break;
-          #endregion UnregisterClient
 
-          #region RegisterRepeater
+            #endregion UnregisterClient
+
+            #region RegisterRepeater
+
           case MessageType.RegisterRepeater:
             {
               IrssMessage response = new IrssMessage(MessageType.RegisterRepeater, MessageFlags.Response);
@@ -1359,26 +1390,32 @@ namespace InputService
               SendTo(combo.Manager, response);
               break;
             }
-          #endregion RegisterRepeater
 
-          #region UnregisterRepeater
+            #endregion RegisterRepeater
+
+            #region UnregisterRepeater
+
           case MessageType.UnregisterRepeater:
             UnregisterRepeater(combo.Manager);
             break;
-          #endregion UnregisterRepeater
 
-          #region ActiveBlasters
+            #endregion UnregisterRepeater
+
+            #region ActiveBlasters
+
           case MessageType.ActiveBlasters:
             {
               IrssMessage response = new IrssMessage(MessageType.ActiveBlasters, MessageFlags.Response);
               response.SetDataAsString(_pluginNameTransmit);
-              
+
               SendTo(combo.Manager, response);
               break;
             }
-          #endregion ActiveBlasters
 
-          #region ActiveReceivers
+            #endregion ActiveBlasters
+
+            #region ActiveReceivers
+
           case MessageType.ActiveReceivers:
             {
               IrssMessage response = new IrssMessage(MessageType.ActiveReceivers, MessageFlags.Response);
@@ -1404,9 +1441,11 @@ namespace InputService
               SendTo(combo.Manager, response);
               break;
             }
-          #endregion ActiveReceivers
 
-          #region AvailableBlasters
+            #endregion ActiveReceivers
+
+            #region AvailableBlasters
+
           case MessageType.AvailableBlasters:
             {
               IrssMessage response = new IrssMessage(MessageType.AvailableBlasters, MessageFlags.Response);
@@ -1434,13 +1473,15 @@ namespace InputService
                 blasters.Remove(blasters.Length - 1, 1);
                 response.SetDataAsString(blasters.ToString());
               }
-              
+
               SendTo(combo.Manager, response);
               break;
             }
-          #endregion AvailableBlasters
 
-          #region AvailableReceivers
+            #endregion AvailableBlasters
+
+            #region AvailableReceivers
+
           case MessageType.AvailableReceivers:
             {
               IrssMessage response = new IrssMessage(MessageType.AvailableReceivers, MessageFlags.Response);
@@ -1472,9 +1513,11 @@ namespace InputService
               SendTo(combo.Manager, response);
               break;
             }
-          #endregion AvailableReceivers
 
-          #region DetectedBlasters
+            #endregion AvailableReceivers
+
+            #region DetectedBlasters
+
           case MessageType.DetectedBlasters:
             {
               IrssMessage response = new IrssMessage(MessageType.DetectedBlasters, MessageFlags.Response);
@@ -1501,9 +1544,11 @@ namespace InputService
               SendTo(combo.Manager, response);
               break;
             }
-          #endregion DetectedBlasters
 
-          #region DetectedReceivers
+            #endregion DetectedBlasters
+
+            #region DetectedReceivers
+
           case MessageType.DetectedReceivers:
             {
               IrssMessage response = new IrssMessage(MessageType.DetectedReceivers, MessageFlags.Response);
@@ -1530,8 +1575,8 @@ namespace InputService
               SendTo(combo.Manager, response);
               break;
             }
-          #endregion DetectedReceivers
 
+            #endregion DetectedReceivers
         }
       }
       catch (Exception ex)
@@ -1541,7 +1586,8 @@ namespace InputService
         SendTo(combo.Manager, response);
       }
     }
-    void ClientReceivedMessage(IrssMessage received)
+
+    private void ClientReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Client message received: {0}, {1}", received.Type, received.Flags);
 
@@ -1582,13 +1628,13 @@ namespace InputService
       }
     }
 
-    void LoadSettings()
+    private void LoadSettings()
     {
       _abstractRemoteMode = false;
-      _mode               = InputServiceMode.ServerMode;
-      _hostComputer       = String.Empty;
-      _processPriority    = "No Change";
-      _pluginNameReceive  = null;
+      _mode = InputServiceMode.ServerMode;
+      _hostComputer = String.Empty;
+      _processPriority = "No Change";
+      _pluginNameReceive = null;
       _pluginNameTransmit = String.Empty;
 
       XmlDocument doc = new XmlDocument();
@@ -1599,7 +1645,8 @@ namespace InputService
       }
       catch (DirectoryNotFoundException)
       {
-        IrssLog.Error("No configuration file found ({0}), folder not found! Creating default configuration file", ConfigurationFile);
+        IrssLog.Error("No configuration file found ({0}), folder not found! Creating default configuration file",
+                      ConfigurationFile);
 
         Directory.CreateDirectory(Path.GetDirectoryName(ConfigurationFile));
 
@@ -1619,33 +1666,65 @@ namespace InputService
         return;
       }
 
-      try { _abstractRemoteMode = bool.Parse(doc.DocumentElement.Attributes["AbstractRemoteMode"].Value); }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
-
-      try { _mode               = (InputServiceMode)Enum.Parse(typeof(InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true); }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
-
-      try { _hostComputer       = doc.DocumentElement.Attributes["HostComputer"].Value; }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
-
-      try { _processPriority    = doc.DocumentElement.Attributes["ProcessPriority"].Value; }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
-
-      try { _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value; }
-      catch (Exception ex) { IrssLog.Warn(ex.ToString()); }
+      try
+      {
+        _abstractRemoteMode = bool.Parse(doc.DocumentElement.Attributes["AbstractRemoteMode"].Value);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
 
       try
       {
-        string receivers        = doc.DocumentElement.Attributes["PluginReceive"].Value;
+        _mode =
+          (InputServiceMode) Enum.Parse(typeof (InputServiceMode), doc.DocumentElement.Attributes["Mode"].Value, true);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
+        _hostComputer = doc.DocumentElement.Attributes["HostComputer"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
+        _processPriority = doc.DocumentElement.Attributes["ProcessPriority"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
+        _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
+        string receivers = doc.DocumentElement.Attributes["PluginReceive"].Value;
         if (!String.IsNullOrEmpty(receivers))
-          _pluginNameReceive    = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+          _pluginNameReceive = receivers.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
       }
       catch (Exception ex)
       {
         IrssLog.Warn(ex.ToString());
       }
     }
-    void SaveSettings()
+
+    private void SaveSettings()
     {
       try
       {
@@ -1653,12 +1732,12 @@ namespace InputService
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
           writer.WriteAttributeString("AbstractRemoteMode", _abstractRemoteMode.ToString());
-          writer.WriteAttributeString("Mode", Enum.GetName(typeof(InputServiceMode), _mode));
+          writer.WriteAttributeString("Mode", Enum.GetName(typeof (InputServiceMode), _mode));
           writer.WriteAttributeString("HostComputer", _hostComputer);
           writer.WriteAttributeString("ProcessPriority", _processPriority);
           writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
@@ -1689,7 +1768,8 @@ namespace InputService
         IrssLog.Error(ex);
       }
     }
-    void CreateDefaultSettings()
+
+    private void CreateDefaultSettings()
     {
       try
       {
@@ -1713,7 +1793,7 @@ namespace InputService
       }
     }
 
-    string LookupAbstractButton(string deviceName, string keyCode)
+    private string LookupAbstractButton(string deviceName, string keyCode)
     {
       if (_abstractRemoteButtons == null || _abstractRemoteButtons.Tables.Count == 0)
         return null;
@@ -1734,7 +1814,8 @@ namespace InputService
               string button = rows[0]["AbstractButton"] as string;
               if (!String.IsNullOrEmpty(button))
               {
-                IrssLog.Debug("{0}, remote: {1}, device: {2}", button, table.ExtendedProperties["Remote"] as string, deviceName);
+                IrssLog.Debug("{0}, remote: {1}, device: {2}", button, table.ExtendedProperties["Remote"] as string,
+                              deviceName);
                 return button;
               }
             }
@@ -1749,7 +1830,7 @@ namespace InputService
       return null;
     }
 
-    bool LoadAbstractDeviceFiles(string device)
+    private bool LoadAbstractDeviceFiles(string device)
     {
       if (String.IsNullOrEmpty(device))
         return false;
@@ -1798,7 +1879,5 @@ namespace InputService
     }
 
     #endregion Implementation
-
   }
-
 }

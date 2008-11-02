@@ -1,29 +1,30 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Maths Square Root macro command.
   /// </summary>
   public class CommandMathsSquareRoot : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandMathsSquareRoot"/> class.
     /// </summary>
-    public CommandMathsSquareRoot() { InitParameters(2); }
+    public CommandMathsSquareRoot()
+    {
+      InitParameters(2);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandMathsSquareRoot"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandMathsSquareRoot(string[] parameters) : base(parameters) { }
+    public CommandMathsSquareRoot(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +34,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMaths; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryMaths;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Maths Square Root"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Maths Square Root";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -69,13 +76,11 @@ namespace Commands
       int input0Int = 0;
       int.TryParse(processed[0], out input0Int);
 
-      int output = (int)Math.Sqrt((double)input0Int);
+      int output = (int) Math.Sqrt(input0Int);
 
       variables.VariableSet(processed[1], output.ToString());
     }
 
     #endregion Implementation
-
   }
-
 }

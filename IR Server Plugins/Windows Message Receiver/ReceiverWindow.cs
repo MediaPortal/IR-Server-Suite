@@ -1,4 +1,3 @@
-using System;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
@@ -10,19 +9,18 @@ namespace InputService.Plugin
   /// Windows message processing delegate.
   /// </summary>
   /// <param name="m">Windows message.</param>
-  delegate void ProcessMessage(ref Message m);
+  internal delegate void ProcessMessage(ref Message m);
 
   #endregion Delegates
 
   /// <summary>
   /// Use this class to receive windows messages.
   /// </summary>
-  class ReceiverWindow : NativeWindow
+  internal class ReceiverWindow : NativeWindow
   {
-
     #region Variables
 
-    ProcessMessage _processMessage;
+    private ProcessMessage _processMessage;
 
     #endregion Variables
 
@@ -50,8 +48,8 @@ namespace InputService.Plugin
       CreateParams createParams = new CreateParams();
       createParams.Caption = windowTitle;
       createParams.ExStyle = 0x80;
-      createParams.Style = unchecked((int)0x80000000);
-      
+      createParams.Style = unchecked((int) 0x80000000);
+
       base.CreateHandle(createParams);
     }
 
@@ -68,7 +66,5 @@ namespace InputService.Plugin
     }
 
     #endregion Implementation
-
   }
-
 }

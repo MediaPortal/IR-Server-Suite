@@ -1,19 +1,16 @@
-using System;
 using System.Net.Sockets;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Class containing information for the data callback function
   /// </summary>
-  class SocketInfo
+  internal class SocketInfo
   {
-
     #region Variables
 
-    Socket _socket;
-    byte[] _dataBuffer;
+    private readonly byte[] _dataBuffer;
+    private readonly Socket _socket;
 
     #endregion Variables
 
@@ -23,13 +20,19 @@ namespace InputService.Plugin
     /// Gets the socket.
     /// </summary>
     /// <value>The socket.</value>
-    public Socket Sock { get { return _socket; } }
+    public Socket Sock
+    {
+      get { return _socket; }
+    }
 
     /// <summary>
     /// Gets the data buffer.
     /// </summary>
     /// <value>The data buffer.</value>
-    public byte[] DataBuffer { get { return _dataBuffer; } }
+    public byte[] DataBuffer
+    {
+      get { return _dataBuffer; }
+    }
 
     #endregion Properties
 
@@ -53,7 +56,5 @@ namespace InputService.Plugin
     }
 
     #endregion Constructors
-
   }
-
 }

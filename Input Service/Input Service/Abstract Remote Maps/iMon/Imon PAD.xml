@@ -11,9 +11,6 @@
   <RemoteTable RawCode="1208" AbstractButton="NextChapter" />
   <RemoteTable RawCode="1220" AbstractButton="Stop" />
   <RemoteTable RawCode="1066" AbstractButton="PreviousChapter" />
-
-  <RemoteTable RawCode="1032" AbstractButton="Clear" />
-
   <RemoteTable RawCode="1148" AbstractButton="OK" />
   <RemoteTable RawCode="1038" AbstractButton="VolumeUp" />
   <RemoteTable RawCode="1042" AbstractButton="VolumeDown" />
@@ -51,8 +48,6 @@
   <RemoteTable RawCode="1124" AbstractButton="Teletext" />
   <RemoteTable RawCode="1198" AbstractButton="Guide" />
   <RemoteTable RawCode="1150" AbstractButton="Home" />
-
-	<RemoteTable RawCode="1226" AbstractButton="LeftClick" />
-	<RemoteTable RawCode="1228" AbstractButton="RightClick" />
-
+  <RemoteTable RawCode="1226" AbstractButton="LeftClick" />
+  <RemoteTable RawCode="1228" AbstractButton="RightClick" />
 </DocumentElement>

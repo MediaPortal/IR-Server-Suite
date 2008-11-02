@@ -1,29 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Load Stack stack command.
   /// </summary>
   public class CommandLoadStack : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandLoadStack"/> class.
     /// </summary>
-    public CommandLoadStack() { InitParameters(1); }
+    public CommandLoadStack()
+    {
+      InitParameters(1);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandLoadStack"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandLoadStack(string[] parameters) : base(parameters) { }
+    public CommandLoadStack(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +33,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryStack; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryStack;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Load Stack"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Load Stack";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -69,7 +75,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

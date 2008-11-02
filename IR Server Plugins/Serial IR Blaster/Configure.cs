@@ -1,23 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO.Ports;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
-  partial class Configure : Form
+  internal partial class Configure : Form
   {
-
     #region Variables
 
-    string[] _ports;
+    private readonly string[] _ports;
 
     #endregion Variables
-    
+
     #region Properties
 
     public string CommPort
@@ -39,7 +33,8 @@ namespace InputService.Plugin
       _ports = SerialPort.GetPortNames();
       if (_ports == null || _ports.Length == 0)
       {
-        MessageBox.Show(this, "No available serial ports found!", "IRMan Receiver", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "No available serial ports found!", "IRMan Receiver", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         return;
       }
 
@@ -52,17 +47,16 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

@@ -1,32 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration.Install;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.IO;
 using System.Reflection;
 using System.ServiceProcess;
-using System.Text;
-
-using Microsoft.Win32;
-
 using InputService.Plugin;
 using IrssUtils;
 
 namespace InputService
 {
-
-  static class Program
+  internal static class Program
   {
-
     #region Constants
 
-    public const string ServiceName         = "InputService";
-    public const string ServiceDisplayName  = "Input Service";
-    public const string ServiceDescription  = "The main component of IR Server Suite, the Input Service provides access to your input devices";
+    public const string ServiceDescription =
+      "The main component of IR Server Suite, the Input Service provides access to your input devices";
+
+    public const string ServiceDisplayName = "Input Service";
+    public const string ServiceName = "InputService";
 
     #endregion Constants
 
@@ -34,7 +26,7 @@ namespace InputService
     /// The main entry point for the service.
     /// </summary>
     /// <param name="args">Command line parameters.</param>
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
 #if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
@@ -68,7 +60,7 @@ namespace InputService
                     transactedInstaller.Installers.Add(inputServiceInstaller);
 
                     string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
-                    string[] cmdline = { path };
+                    string[] cmdline = {path};
 
                     InstallContext installContext = new InstallContext(String.Empty, cmdline);
                     transactedInstaller.Context = installContext;
@@ -87,7 +79,7 @@ namespace InputService
                     transactedInstaller.Installers.Add(inputServiceInstaller);
 
                     string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
-                    string[] cmdline = { path };
+                    string[] cmdline = {path};
 
                     InstallContext installContext = new InstallContext(String.Empty, cmdline);
                     transactedInstaller.Context = installContext;
@@ -169,18 +161,24 @@ namespace InputService
 
           foreach (Type type in types)
           {
-            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
+            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof (PluginBase)))
             {
-              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+              PluginBase plugin = (PluginBase) assembly.CreateInstance(type.FullName);
 
               if (plugin != null)
                 plugins.Add(plugin);
             }
           }
         }
-        catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
-        catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
-        catch (FileNotFoundException) { }   // Ignore File Not Found Exceptions, just keep checking for Input Service Plugins
+        catch (BadImageFormatException)
+        {
+        } // Ignore Bad Image Format Exceptions, just keep checking for Input Service Plugins
+        catch (TypeLoadException)
+        {
+        } // Ignore Type Load Exceptions, just keep checking for Input Service Plugins
+        catch (FileNotFoundException)
+        {
+        } // Ignore File Not Found Exceptions, just keep checking for Input Service Plugins
       }
 
       return plugins.ToArray();
@@ -248,7 +246,7 @@ namespace InputService
     {
       IrssLog.Info("Detect Blasters ...");
 
-      PluginBase[] plugins = Program.AvailablePlugins();
+      PluginBase[] plugins = AvailablePlugins();
       if (plugins == null || plugins.Length == 0)
         return null;
 
@@ -272,7 +270,5 @@ namespace InputService
 
       return null;
     }
-
   }
-
 }

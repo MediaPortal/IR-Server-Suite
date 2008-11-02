@@ -4,21 +4,21 @@ using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Win32 native method wrapper for Mouse control functions.
   /// </summary>
-  static class Mouse
+  internal static class Mouse
   {
-
     #region Interop
 
     [DllImport("user32")]
-    static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
+    private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
 
     #endregion Interop
 
     #region Enumerations
+
+    #region MouseEvents enum
 
     /// <summary>
     /// Used to simulate mouse actions.
@@ -68,6 +68,10 @@ namespace InputService.Plugin
       Absolute = 0x8000
     }
 
+    #endregion
+
+    #region ScrollDir enum
+
     /// <summary>
     /// Used to simulate mouse wheel scrolling.
     /// </summary>
@@ -87,6 +91,8 @@ namespace InputService.Plugin
       Down = -120
     }
 
+    #endregion
+
     #endregion Enumerations
 
     #region Public Methods
@@ -97,7 +103,7 @@ namespace InputService.Plugin
     /// <param name="flags">The button action to simulate.</param>
     public static void Button(MouseEvents flags)
     {
-      mouse_event((int)flags, 0, 0, 0, IntPtr.Zero);
+      mouse_event((int) flags, 0, 0, 0, IntPtr.Zero);
     }
 
     /// <summary>
@@ -115,14 +121,14 @@ namespace InputService.Plugin
 
       if (absolute)
       {
-        int x = dx * 65536 / Screen.PrimaryScreen.Bounds.Width;
-        int y = dy * 65536 / Screen.PrimaryScreen.Bounds.Height;
+        int x = dx*65536/Screen.PrimaryScreen.Bounds.Width;
+        int y = dy*65536/Screen.PrimaryScreen.Bounds.Height;
 
-        mouse_event((int)(MouseEvents.Move | MouseEvents.Absolute), x, y, 0, IntPtr.Zero);
+        mouse_event((int) (MouseEvents.Move | MouseEvents.Absolute), x, y, 0, IntPtr.Zero);
       }
       else
       {
-        mouse_event((int)(MouseEvents.Move), dx, dy, 0, IntPtr.Zero);
+        mouse_event((int) (MouseEvents.Move), dx, dy, 0, IntPtr.Zero);
       }
     }
 
@@ -132,11 +138,9 @@ namespace InputService.Plugin
     /// <param name="direction">The direction to scroll.</param>
     public static void Scroll(ScrollDir direction)
     {
-      mouse_event((int)MouseEvents.Scroll, 0, 0, (int)direction, IntPtr.Zero);
+      mouse_event((int) MouseEvents.Scroll, 0, 0, (int) direction, IntPtr.Zero);
     }
 
     #endregion Public Methods
-
   }
-
 }

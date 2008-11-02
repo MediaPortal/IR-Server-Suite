@@ -1,67 +1,56 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Web;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using WebRemote.Properties;
 
 namespace WebRemote
 {
-
   /// <summary>
   /// Web Remote.
   /// </summary>
-  static class Program
+  internal static class Program
   {
-
     #region Constants
 
     internal const string ButtonClickPrefix = "send?";
 
-    const string DefaultSkin = "MCE";
-    const int DefaultWebPort = 2481;
+    private const string DefaultSkin = "MCE";
+    private const int DefaultWebPort = 2481;
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Virtual Remote\\Web Remote.xml");
+    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
+                                                                    "Virtual Remote\\Web Remote.xml");
 
     #endregion Constants
 
     #region Variables
 
-    static Container _container;
-    static NotifyIcon _notifyIcon;
+    private static RemoteButton[] _buttons;
+    private static Client _client;
+    private static Container _container;
+    private static string _device;
+    private static string _imageFile;
+    private static string _imageMap;
 
-    static bool _inConfiguration;
+    private static bool _inConfiguration;
+    private static NotifyIcon _notifyIcon;
 
-    static Client _client;
-
-    static bool _registered;
-    static string _serverHost;
-    static string _skinsFolder;
-    static string _remoteSkin;
-
-    static string _device;
-
-    static RemoteButton[] _buttons;
-
-    static WebServer _webServer;
-    static int _webPort;
-    //static string _passwordHash;
-
-    static string _imageFile;
-    static string _imageMap;
-    static string _webFile;
+    private static bool _registered;
+    private static string _remoteSkin;
+    private static string _serverHost;
+    private static string _skinsFolder;
+    private static string _webFile;
+    private static int _webPort;
+    private static WebServer _webServer;
 
     #endregion Variables
 
@@ -93,12 +82,12 @@ namespace WebRemote
     }
 
     #endregion Properties
-    
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    private static void Main()
     {
       // Check for multiple instances.
       if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
@@ -114,10 +103,10 @@ namespace WebRemote
 #endif
       IrssLog.Open("Web Remote.log");
 
-      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException += Application_ThreadException;
 
       LoadSettings();
-      
+
       if (String.IsNullOrEmpty(_serverHost))
       {
         ServerAddress serverAddress = new ServerAddress();
@@ -129,7 +118,7 @@ namespace WebRemote
       bool clientStarted = false;
 
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       try
       {
@@ -150,8 +139,8 @@ namespace WebRemote
         _container = new Container();
         _notifyIcon = new NotifyIcon(_container);
         _notifyIcon.ContextMenuStrip = contextMenu;
-        _notifyIcon.DoubleClick += new EventHandler(ClickSetup);
-        _notifyIcon.Icon = Properties.Resources.Icon;
+        _notifyIcon.DoubleClick += ClickSetup;
+        _notifyIcon.Icon = Resources.Icon;
         _notifyIcon.Text = "Web Remote";
 
         ChangeSkin();
@@ -180,7 +169,7 @@ namespace WebRemote
 
       StopClient();
 
-      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException -= Application_ThreadException;
 
       IrssLog.Close();
     }
@@ -190,24 +179,24 @@ namespace WebRemote
     /// </summary>
     /// <param name="sender">Sender.</param>
     /// <param name="e">Event args.</param>
-    static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
       IrssLog.Error(e.Exception);
     }
 
-    static bool Configure()
+    private static bool Configure()
     {
       Setup setup = new Setup();
 
-      setup.ServerHost  = _serverHost;
-      setup.RemoteSkin  = _remoteSkin;
-      setup.WebPort     = _webPort;
+      setup.ServerHost = _serverHost;
+      setup.RemoteSkin = _remoteSkin;
+      setup.WebPort = _webPort;
 
       if (setup.ShowDialog() == DialogResult.OK)
       {
         _serverHost = setup.ServerHost;
         _remoteSkin = setup.RemoteSkin;
-        _webPort    = setup.WebPort;
+        _webPort = setup.WebPort;
 
         //_passwordHash = setup.PasswordHash;
 
@@ -219,7 +208,7 @@ namespace WebRemote
       return false;
     }
 
-    static void ClickSetup(object sender, EventArgs e)
+    private static void ClickSetup(object sender, EventArgs e)
     {
       IrssLog.Info("Setup");
 
@@ -247,7 +236,8 @@ namespace WebRemote
 
       _inConfiguration = false;
     }
-    static void ClickQuit(object sender, EventArgs e)
+
+    private static void ClickQuit(object sender, EventArgs e)
     {
       IrssLog.Info("Quit");
 
@@ -282,7 +272,7 @@ namespace WebRemote
       SendMessage(message);
     }
 
-    static void ChangeSkin()
+    private static void ChangeSkin()
     {
       SetSkin(_remoteSkin);
 
@@ -290,7 +280,7 @@ namespace WebRemote
       _webFile = Path.Combine(_skinsFolder, "web.html");
     }
 
-    static void SetSkin(string skin)
+    private static void SetSkin(string skin)
     {
       try
       {
@@ -305,7 +295,7 @@ namespace WebRemote
         string xmlFile = Path.Combine(_skinsFolder, skin + ".xml");
         if (!File.Exists(xmlFile))
         {
-          string firstWord = skin.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
+          string firstWord = skin.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries)[0];
 
           xmlFile = Path.Combine(_skinsFolder, firstWord + ".xml");
 
@@ -321,7 +311,8 @@ namespace WebRemote
         MessageBox.Show(ex.Message, "Web Remote - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-    static void LoadSkinXml(string xmlFile)
+
+    private static void LoadSkinXml(string xmlFile)
     {
       XmlDocument doc = new XmlDocument();
       doc.Load(xmlFile);
@@ -340,7 +331,7 @@ namespace WebRemote
         try
         {
           key = item.Attributes["shortcut"].Value;
-          temp.Shortcut = (Keys)Enum.Parse(typeof(Keys), key, true);
+          temp.Shortcut = (Keys) Enum.Parse(typeof (Keys), key, true);
         }
         catch (ArgumentException)
         {
@@ -354,10 +345,10 @@ namespace WebRemote
         buttons.Add(temp);
       }
 
-      _buttons = (RemoteButton[])buttons.ToArray(typeof(RemoteButton));
+      _buttons = (RemoteButton[]) buttons.ToArray(typeof (RemoteButton));
     }
 
-    static string CreateImageMap()
+    private static string CreateImageMap()
     {
       StringBuilder imageMap = new StringBuilder();
       imageMap.AppendLine("<MAP NAME=\"REMOTE_MAP\">");
@@ -379,7 +370,7 @@ namespace WebRemote
       return imageMap.ToString();
     }
 
-    static void LoadSettings()
+    private static void LoadSettings()
     {
       try
       {
@@ -417,12 +408,34 @@ namespace WebRemote
         return;
       }
 
-      try { _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value; } catch { _serverHost = "localhost"; }
-      try { _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value; } catch { _remoteSkin = DefaultSkin; }
-      try { _webPort = int.Parse(doc.DocumentElement.Attributes["WebPort"].Value); } catch { _webPort = DefaultWebPort; }
+      try
+      {
+        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+      }
+      catch
+      {
+        _serverHost = "localhost";
+      }
+      try
+      {
+        _remoteSkin = doc.DocumentElement.Attributes["RemoteSkin"].Value;
+      }
+      catch
+      {
+        _remoteSkin = DefaultSkin;
+      }
+      try
+      {
+        _webPort = int.Parse(doc.DocumentElement.Attributes["WebPort"].Value);
+      }
+      catch
+      {
+        _webPort = DefaultWebPort;
+      }
       //try { _passwordHash = doc.DocumentElement.Attributes["PasswordHash"].Value; } catch { _passwordHash = null; }
     }
-    static void SaveSettings()
+
+    private static void SaveSettings()
     {
       try
       {
@@ -430,7 +443,7 @@ namespace WebRemote
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -448,20 +461,21 @@ namespace WebRemote
         IrssLog.Error(ex);
       }
     }
-    static void CreateDefaultSettings()
+
+    private static void CreateDefaultSettings()
     {
-      _serverHost   = "localhost";
-      _remoteSkin   = DefaultSkin;
-      _webPort      = DefaultWebPort;
+      _serverHost = "localhost";
+      _remoteSkin = DefaultSkin;
+      _webPort = DefaultWebPort;
       //_passwordHash = null;
 
       SaveSettings();
     }
 
-    static void CommsFailure(object obj)
+    private static void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
-      
+
       if (ex != null)
         IrssLog.Error("Communications failure: {0}", ex.Message);
       else
@@ -469,34 +483,37 @@ namespace WebRemote
 
       StopClient();
 
-      MessageBox.Show("Please report this error.", "Virtual Remote - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show("Please report this error.", "Virtual Remote - Communications failure", MessageBoxButtons.OK,
+                      MessageBoxIcon.Error);
     }
-    static void Connected(object obj)
+
+    private static void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    static void Disconnected(object obj)
+
+    private static void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
       Thread.Sleep(1000);
     }
 
-    static bool StartClient(IPEndPoint endPoint)
+    private static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
+
       if (_client.Start())
       {
         return true;
@@ -507,7 +524,8 @@ namespace WebRemote
         return false;
       }
     }
-    static void StopClient()
+
+    private static void StopClient()
     {
       if (_client == null)
         return;
@@ -518,7 +536,7 @@ namespace WebRemote
       _registered = false;
     }
 
-    static void SendMessage(IrssMessage message)
+    private static void SendMessage(IrssMessage message)
     {
       if (message == null)
         throw new ArgumentNullException("message");
@@ -527,7 +545,7 @@ namespace WebRemote
         _client.Send(message);
     }
 
-    static void ReceivedMessage(IrssMessage received)
+    private static void ReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
@@ -565,7 +583,5 @@ namespace WebRemote
         IrssLog.Error(ex);
       }
     }
-
   }
-
 }

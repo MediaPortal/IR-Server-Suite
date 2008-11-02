@@ -1,32 +1,25 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
-using MediaPortal.GUI.Library;
-using MediaPortal.Hardware;
-using MediaPortal.Util;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using MediaPortal.GUI.Library;
+using MediaPortal.Hardware;
+using MPUtils;
 using MPUtils.Forms;
 
 namespace MediaPortal.Plugins
 {
-
-  partial class SetupForm : Form
+  internal partial class SetupForm : Form
   {
-
     #region Variables
 
-    LearnIR _learnIR;
+    private LearnIR _learnIR;
 
     #endregion Variables
 
@@ -50,46 +43,47 @@ namespace MediaPortal.Plugins
       }
 
       IPAddress serverIP = Client.GetIPFromName(MPControlPlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!MPControlPlugin.StartClient(endPoint))
-        MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "MP Control Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.",
+                        "MP Control Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-      checkBoxLogVerbose.Checked      = MPControlPlugin.LogVerbose;
-      checkBoxRequiresFocus.Checked   = MPControlPlugin.RequireFocus;
-      checkBoxMultiMapping.Checked    = MPControlPlugin.MultiMappingEnabled;
-      checkBoxEventMapper.Checked     = MPControlPlugin.EventMapperEnabled;
-      checkBoxMouseMode.Checked       = MPControlPlugin.MouseModeEnabled;
+      checkBoxLogVerbose.Checked = MPControlPlugin.LogVerbose;
+      checkBoxRequiresFocus.Checked = MPControlPlugin.RequireFocus;
+      checkBoxMultiMapping.Checked = MPControlPlugin.MultiMappingEnabled;
+      checkBoxEventMapper.Checked = MPControlPlugin.EventMapperEnabled;
+      checkBoxMouseMode.Checked = MPControlPlugin.MouseModeEnabled;
 
       RefreshIRList();
       RefreshMacroList();
 
       // Mouse Mode ...
-      foreach (string button in Enum.GetNames(typeof(RemoteButton)))
+      foreach (string button in Enum.GetNames(typeof (RemoteButton)))
         if (!button.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxMouseModeButton.Items.Add(button);
 
-      comboBoxMouseModeButton.SelectedItem = Enum.GetName(typeof(RemoteButton), MPControlPlugin.MouseModeButton);
+      comboBoxMouseModeButton.SelectedItem = Enum.GetName(typeof (RemoteButton), MPControlPlugin.MouseModeButton);
 
       numericUpDownMouseStep.Value = new decimal(MPControlPlugin.MouseModeStep);
 
       checkBoxMouseAcceleration.Checked = MPControlPlugin.MouseModeAcceleration;
 
       // Multi-Mapping ...
-      foreach (string button in Enum.GetNames(typeof(RemoteButton)))
+      foreach (string button in Enum.GetNames(typeof (RemoteButton)))
         if (!button.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxMultiButton.Items.Add(button);
 
-      comboBoxMultiButton.SelectedItem = Enum.GetName(typeof(RemoteButton), MPControlPlugin.MultiMappingButton);
+      comboBoxMultiButton.SelectedItem = Enum.GetName(typeof (RemoteButton), MPControlPlugin.MultiMappingButton);
 
       foreach (string map in MPControlPlugin.MultiMaps)
         listBoxMappings.Items.Add(map);
-      
+
       // Event Mapper ...
       RefreshEventMapperCommands();
 
       comboBoxEvents.Items.Clear();
-      foreach (string eventType in Enum.GetNames(typeof(MappedEvent.MappingEvent)))
+      foreach (string eventType in Enum.GetNames(typeof (MappedEvent.MappingEvent)))
         if (!eventType.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxEvents.Items.Add(eventType);
 
@@ -112,7 +106,7 @@ namespace MediaPortal.Plugins
       comboBoxParameter.Items.Add("Target Control ID");
       comboBoxParameter.Items.Add("Target Window ID");
       comboBoxParameter.SelectedIndex = 0;
-      
+
       LoadEvents();
 
       // Remote Control Presets ...
@@ -127,19 +121,21 @@ namespace MediaPortal.Plugins
       LoadRemotes(MPControlPlugin.RemotesFile);
 
       // Register for remote button presses
-      _addNode = new DelegateAddNode(AddNode);
+      _addNode = AddNode;
 
-      MPControlPlugin.HandleMessage += new ClientMessageSink(ReceivedMessage);
+      MPControlPlugin.HandleMessage += ReceivedMessage;
     }
 
     private void SetupForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-      MPControlPlugin.HandleMessage -= new ClientMessageSink(ReceivedMessage);
+      MPControlPlugin.HandleMessage -= ReceivedMessage;
     }
 
     #region Local Methods
 
-    void ReceivedMessage(IrssMessage received)
+    private DelegateAddNode _addNode;
+
+    private void ReceivedMessage(IrssMessage received)
     {
       if (received.Type == MessageType.RemoteEvent)
       {
@@ -151,7 +147,7 @@ namespace MediaPortal.Plugins
 
         // TODO: Activate this code for 1.4.3
         //if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
-          this.Invoke(_addNode, new Object[] { keyCode });
+        Invoke(_addNode, new Object[] {keyCode});
         //else
         //  this.Invoke(_addNode, new Object[] { String.Format("{0} ({1})", deviceName, keyCode) });
       }
@@ -172,7 +168,7 @@ namespace MediaPortal.Plugins
       }
     }
 
-    void LoadRemotes(string file)
+    private void LoadRemotes(string file)
     {
       try
       {
@@ -207,13 +203,14 @@ namespace MediaPortal.Plugins
         Log.Error(ex);
       }
     }
-    void SaveRemotes(string file)
+
+    private void SaveRemotes(string file)
     {
       using (XmlTextWriter writer = new XmlTextWriter(file, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("remotes"); // <remotes>
 
@@ -245,7 +242,7 @@ namespace MediaPortal.Plugins
       }
     }
 
-    string KeyNodeExists(string keyCode)
+    private string KeyNodeExists(string keyCode)
     {
       foreach (TreeNode remote in treeViewRemotes.Nodes)
         foreach (TreeNode button in remote.Nodes)
@@ -256,10 +253,7 @@ namespace MediaPortal.Plugins
       return null;
     }
 
-    delegate void DelegateAddNode(string keyCode);
-    DelegateAddNode _addNode;
-
-    void AddNode(string keyCode)
+    private void AddNode(string keyCode)
     {
       string exists = KeyNodeExists(keyCode);
       if (!String.IsNullOrEmpty(exists))
@@ -268,7 +262,7 @@ namespace MediaPortal.Plugins
         labelStatus.ForeColor = Color.Purple;
         return;
       }
-      
+
       TreeNode selected = treeViewRemotes.SelectedNode;
 
       if (selected != null && selected.Level > 0)
@@ -302,7 +296,7 @@ namespace MediaPortal.Plugins
       }
     }
 
-    void RefreshIRList()
+    private void RefreshIRList()
     {
       listViewIR.Items.Clear();
 
@@ -311,7 +305,8 @@ namespace MediaPortal.Plugins
         foreach (string irFile in irList)
           listViewIR.Items.Add(irFile);
     }
-    void RefreshMacroList()
+
+    private void RefreshMacroList()
     {
       listViewMacro.Items.Clear();
 
@@ -321,7 +316,7 @@ namespace MediaPortal.Plugins
           listViewMacro.Items.Add(macroFile);
     }
 
-    void RefreshEventMapperCommands()
+    private void RefreshEventMapperCommands()
     {
       comboBoxCommands.Items.Clear();
 
@@ -345,7 +340,7 @@ namespace MediaPortal.Plugins
         comboBoxCommands.Items.AddRange(fileList);
     }
 
-    void EditIR()
+    private void EditIR()
     {
       if (listViewIR.SelectedItems.Count != 1)
         return;
@@ -358,8 +353,8 @@ namespace MediaPortal.Plugins
         if (File.Exists(fileName))
         {
           _learnIR = new LearnIR(
-            new LearnIrDelegate(MPControlPlugin.LearnIR),
-            new BlastIrDelegate(MPControlPlugin.BlastIR),
+            MPControlPlugin.LearnIR,
+            MPControlPlugin.BlastIR,
             MPControlPlugin.TransceiverInformation.Ports,
             command);
 
@@ -381,7 +376,8 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-    void EditMacro()
+
+    private void EditMacro()
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -411,7 +407,7 @@ namespace MediaPortal.Plugins
       }
     }
 
-    void LoadEvents()
+    private void LoadEvents()
     {
       if (!File.Exists(MPControlPlugin.EventMappingFile))
         return;
@@ -429,13 +425,14 @@ namespace MediaPortal.Plugins
         listViewEventMap.Items.Add(new ListViewItem(items));
       }
     }
-    void SaveEvents()
+
+    private void SaveEvents()
     {
       using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.EventMappingFile, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("events"); // <events>
 
@@ -454,13 +451,13 @@ namespace MediaPortal.Plugins
       }
     }
 
-    void SaveMultiMappings()
+    private void SaveMultiMappings()
     {
       using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.MultiMappingFile, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("mappings"); // <mappings>
 
@@ -475,6 +472,8 @@ namespace MediaPortal.Plugins
         writer.WriteEndDocument();
       }
     }
+
+    private delegate void DelegateAddNode(string keyCode);
 
     #endregion Local Methods
 
@@ -497,8 +496,8 @@ namespace MediaPortal.Plugins
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
       _learnIR = new LearnIR(
-        new LearnIrDelegate(MPControlPlugin.LearnIR),
-        new BlastIrDelegate(MPControlPlugin.BlastIR),
+        MPControlPlugin.LearnIR,
+        MPControlPlugin.BlastIR,
         MPControlPlugin.TransceiverInformation.Ports);
 
       _learnIR.ShowDialog(this);
@@ -508,10 +507,12 @@ namespace MediaPortal.Plugins
       RefreshIRList();
       RefreshEventMapperCommands();
     }
+
     private void buttonEditIR_Click(object sender, EventArgs e)
     {
       EditIR();
     }
+
     private void buttonDeleteIR_Click(object sender, EventArgs e)
     {
       if (listViewIR.SelectedItems.Count != 1)
@@ -521,12 +522,15 @@ namespace MediaPortal.Plugins
       string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (
+          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
       {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
       }
 
       RefreshIRList();
@@ -541,10 +545,12 @@ namespace MediaPortal.Plugins
       RefreshMacroList();
       RefreshEventMapperCommands();
     }
+
     private void buttonEditMacro_Click(object sender, EventArgs e)
     {
       EditMacro();
     }
+
     private void buttonDeleteMacro_Click(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
@@ -554,17 +560,21 @@ namespace MediaPortal.Plugins
       string fileName = Path.Combine(MPControlPlugin.FolderMacros, file + Common.FileExtensionMacro);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (
+          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
       {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
       }
 
       RefreshMacroList();
       RefreshEventMapperCommands();
     }
+
     private void buttonTestMacro_Click(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
@@ -586,6 +596,7 @@ namespace MediaPortal.Plugins
       comboBoxParameter.SelectedIndex = 0;
       textBoxParamValue.Text = String.Empty;
     }
+
     private void buttonAddEvent_Click(object sender, EventArgs e)
     {
       string[] items = new string[2];
@@ -607,6 +618,7 @@ namespace MediaPortal.Plugins
 
       listViewEventMap.Items.Add(new ListViewItem(items));
     }
+
     private void buttonSetCommand_Click(object sender, EventArgs e)
     {
       if (comboBoxCommands.SelectedIndex == -1)
@@ -660,7 +672,7 @@ namespace MediaPortal.Plugins
       else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         BlastCommand blastCommand = new BlastCommand(
-          new BlastIrDelegate(MPControlPlugin.BlastIR),
+          MPControlPlugin.BlastIR,
           Common.FolderIRCommands,
           MPControlPlugin.TransceiverInformation.Ports,
           selected.Substring(Common.CmdPrefixBlast.Length));
@@ -685,8 +697,8 @@ namespace MediaPortal.Plugins
 
       string mappingName = multiMapNameBox.MapName;
 
-      string pathCustom = Path.Combine(MPUtils.MPCommon.CustomInputDevice, "MPControlPlugin.xml");
-      string pathDefault = Path.Combine(MPUtils.MPCommon.CustomInputDefault, "MPControlPlugin.xml");
+      string pathCustom = Path.Combine(MPCommon.CustomInputDevice, "MPControlPlugin.xml");
+      string pathDefault = Path.Combine(MPCommon.CustomInputDefault, "MPControlPlugin.xml");
 
       string sourceFile;
       if (File.Exists(pathCustom))
@@ -703,18 +715,20 @@ namespace MediaPortal.Plugins
         return;
       }
 
-      string destinationFile = Path.Combine(MPUtils.MPCommon.CustomInputDevice, mappingName + ".xml");
+      string destinationFile = Path.Combine(MPCommon.CustomInputDevice, mappingName + ".xml");
 
       File.Copy(sourceFile, destinationFile, true);
 
       listBoxMappings.Items.Add(mappingName);
     }
+
     private void buttonRemove_Click(object sender, EventArgs e)
     {
       int selected = listBoxMappings.SelectedIndex;
       if (selected != -1)
         listBoxMappings.Items.RemoveAt(selected);
     }
+
     private void buttonUp_Click(object sender, EventArgs e)
     {
       int selected = listBoxMappings.SelectedIndex;
@@ -726,6 +740,7 @@ namespace MediaPortal.Plugins
         listBoxMappings.SelectedIndex = selected - 1;
       }
     }
+
     private void buttonDown_Click(object sender, EventArgs e)
     {
       int selected = listBoxMappings.SelectedIndex;
@@ -737,6 +752,7 @@ namespace MediaPortal.Plugins
         listBoxMappings.SelectedIndex = selected + 1;
       }
     }
+
     private void buttonEdit_Click(object sender, EventArgs e)
     {
       if (listBoxMappings.SelectedIndex != -1)
@@ -751,6 +767,7 @@ namespace MediaPortal.Plugins
       InputMappingForm inputMappingForm = new InputMappingForm("MPControlPlugin");
       inputMappingForm.ShowDialog(this);
     }
+
     private void buttonClearAll_Click(object sender, EventArgs e)
     {
       treeViewRemotes.Nodes.Clear();
@@ -767,11 +784,13 @@ namespace MediaPortal.Plugins
       MPControlPlugin.EventMapperEnabled = checkBoxEventMapper.Checked;
       MPControlPlugin.MouseModeEnabled = checkBoxMouseMode.Checked;
 
-      MPControlPlugin.MouseModeButton = (RemoteButton)Enum.Parse(typeof(RemoteButton), comboBoxMouseModeButton.SelectedItem as string, true);
+      MPControlPlugin.MouseModeButton =
+        (RemoteButton) Enum.Parse(typeof (RemoteButton), comboBoxMouseModeButton.SelectedItem as string, true);
       MPControlPlugin.MouseModeStep = Decimal.ToInt32(numericUpDownMouseStep.Value);
       MPControlPlugin.MouseModeAcceleration = checkBoxMouseAcceleration.Checked;
 
-      MPControlPlugin.MultiMappingButton = (RemoteButton)Enum.Parse(typeof(RemoteButton), comboBoxMultiButton.SelectedItem as string, true);
+      MPControlPlugin.MultiMappingButton =
+        (RemoteButton) Enum.Parse(typeof (RemoteButton), comboBoxMultiButton.SelectedItem as string, true);
 
       SaveMultiMappings();
 
@@ -779,13 +798,14 @@ namespace MediaPortal.Plugins
 
       SaveEvents();
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonChangeServer_Click(object sender, EventArgs e)
@@ -798,14 +818,16 @@ namespace MediaPortal.Plugins
       MPControlPlugin.ServerHost = serverAddress.ServerHost;
 
       IPAddress serverIP = Client.GetIPFromName(MPControlPlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       MPControlPlugin.StartClient(endPoint);
     }
 
     private void buttonLoadPreset_Click(object sender, EventArgs e)
     {
-      string fileName= Path.Combine(MPControlPlugin.RemotePresetsFolder, comboBoxRemotePresets.SelectedItem as string + ".xml");
+      string fileName = Path.Combine(MPControlPlugin.RemotePresetsFolder, comboBoxRemotePresets.SelectedItem as string +
+                        ".xml")
+      ;
       LoadRemotes(fileName);
     }
 
@@ -817,6 +839,7 @@ namespace MediaPortal.Plugins
     {
       EditIR();
     }
+
     private void listViewMacro_DoubleClick(object sender, EventArgs e)
     {
       EditMacro();
@@ -842,7 +865,8 @@ namespace MediaPortal.Plugins
       string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
       if (!File.Exists(oldFileName))
       {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -851,7 +875,8 @@ namespace MediaPortal.Plugins
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -868,6 +893,7 @@ namespace MediaPortal.Plugins
         MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+
     private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
     {
       ListView origin = sender as ListView;
@@ -888,7 +914,8 @@ namespace MediaPortal.Plugins
       string oldFileName = Path.Combine(MPControlPlugin.FolderMacros, originItem.Text + Common.FileExtensionMacro);
       if (!File.Exists(oldFileName))
       {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -897,7 +924,8 @@ namespace MediaPortal.Plugins
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -921,6 +949,7 @@ namespace MediaPortal.Plugins
         foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
           listViewEventMap.Items.Remove(listViewItem);
     }
+
     private void listViewEventMap_DoubleClick(object sender, EventArgs e)
     {
       if (listViewEventMap.SelectedItems.Count != 1)
@@ -967,7 +996,7 @@ namespace MediaPortal.Plugins
         string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
 
         BlastCommand blastCommand = new BlastCommand(
-          new BlastIrDelegate(MPControlPlugin.BlastIR),
+          MPControlPlugin.BlastIR,
           Common.FolderIRCommands,
           MPControlPlugin.TransceiverInformation.Ports,
           commands);
@@ -1000,12 +1029,16 @@ namespace MediaPortal.Plugins
               switch (treeViewRemotes.SelectedNode.Level)
               {
                 case 0:
-                  if (MessageBox.Show(this, "Are you sure you want to remove this entire Remote?", "Remove remote", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                  if (
+                    MessageBox.Show(this, "Are you sure you want to remove this entire Remote?", "Remove remote",
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     treeViewRemotes.Nodes.Remove(treeViewRemotes.SelectedNode);
                   break;
 
                 case 1:
-                  if (MessageBox.Show(this, "Are you sure you want to remove this Button?", "Remove button", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                  if (
+                    MessageBox.Show(this, "Are you sure you want to remove this Button?", "Remove button",
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     treeViewRemotes.SelectedNode.Parent.Nodes.Remove(treeViewRemotes.SelectedNode);
                   break;
 
@@ -1026,7 +1059,5 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Other Controls
-
   }
-
 }

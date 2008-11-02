@@ -1,30 +1,23 @@
 using System;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
 namespace IrssComms
 {
-
   /// <summary>
   /// Manages Server socket connections.
   /// </summary>
   public class ClientManager : IDisposable
   {
-
     #region Variables
 
-    bool _processReceiveThread;
-    Thread _receiveThread;
-    
-    ServerMessageSink _messageSink;
+    private Socket _connection;
 
-    Socket _connection;
-
-    WaitCallback _disconnectCallback;
+    private WaitCallback _disconnectCallback;
+    private ServerMessageSink _messageSink;
+    private bool _processReceiveThread;
+    private Thread _receiveThread;
 
     #endregion Variables
 
@@ -75,7 +68,6 @@ namespace IrssComms
       }
 
       // Free native resources ...
-
     }
 
     #endregion IDisposable
@@ -89,7 +81,7 @@ namespace IrssComms
 
       _processReceiveThread = true;
 
-      _receiveThread = new Thread(new ThreadStart(ReceiveThread));
+      _receiveThread = new Thread(ReceiveThread);
       _receiveThread.Name = "IrssComms.ClientManager";
       _receiveThread.IsBackground = true;
       _receiveThread.Start();
@@ -130,16 +122,15 @@ namespace IrssComms
       _connection.Send(data);
     }
 
-    void ReceiveThread()
+    private void ReceiveThread()
     {
       try
       {
         byte[] buffer = new byte[4];
-        int bytesRead;
 
         while (_processReceiveThread)
         {
-          bytesRead = _connection.Receive(buffer, buffer.Length, SocketFlags.None);
+          int bytesRead = _connection.Receive(buffer, buffer.Length, SocketFlags.None);
           if (bytesRead != buffer.Length)
             break;
 
@@ -154,7 +145,7 @@ namespace IrssComms
 
           IrssMessage message = IrssMessage.FromBytes(packet);
           MessageManagerCombo combo = new MessageManagerCombo(message, this);
-          
+
           if (_messageSink != null)
             _messageSink(combo);
         }
@@ -182,7 +173,5 @@ namespace IrssComms
     }
 
     #endregion Implementation
-
   }
-
 }

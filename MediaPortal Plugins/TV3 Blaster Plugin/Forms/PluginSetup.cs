@@ -1,35 +1,22 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
-using System.Xml;
-
-using TvLibrary.Log;
-using TvEngine;
-using TvControl;
-using TvDatabase;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using TvDatabase;
+using TvEngine;
+using TvLibrary.Log;
+using Server=IrssComms.Server;
 
 namespace SetupTv.Sections
 {
-
-  partial class PluginSetup : SetupTv.SectionSettings
+  internal partial class PluginSetup : SectionSettings
   {
-
     #region Variables
 
-    LearnIR _learnIR;
+    private LearnIR _learnIR;
 
     #endregion Variables
 
@@ -51,7 +38,8 @@ namespace SetupTv.Sections
       TV3BlasterPlugin.InConfiguration = true;
 
       TvBusinessLayer layer = new TvBusinessLayer();
-      TV3BlasterPlugin.LogVerbose = checkBoxLogVerbose.Checked = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
+      TV3BlasterPlugin.LogVerbose =
+        checkBoxLogVerbose.Checked = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
       TV3BlasterPlugin.ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", String.Empty).Value;
 
       if (String.IsNullOrEmpty(TV3BlasterPlugin.ServerHost))
@@ -60,25 +48,27 @@ namespace SetupTv.Sections
       }
 
       IPAddress serverIP = Client.GetIPFromName(TV3BlasterPlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!TV3BlasterPlugin.StartClient(endPoint))
-        MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.", "TV3 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.",
+                        "TV3 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
       TV3BlasterPlugin.LoadExternalConfigs();
 
       RefreshIRList();
       RefreshMacroList();
 
-      TV3BlasterPlugin.HandleMessage += new ClientMessageSink(ReceivedMessage);
+      TV3BlasterPlugin.HandleMessage += ReceivedMessage;
 
       base.OnSectionActivated();
     }
+
     public override void OnSectionDeActivated()
     {
       Log.Info("TV3BlasterPlugin: Configuration deactivated");
 
-      TV3BlasterPlugin.HandleMessage -= new ClientMessageSink(ReceivedMessage);
+      TV3BlasterPlugin.HandleMessage -= ReceivedMessage;
 
       TvBusinessLayer layer = new TvBusinessLayer();
       Setting setting;
@@ -106,7 +96,7 @@ namespace SetupTv.Sections
 
     #region Implementation
 
-    void ReceivedMessage(IrssMessage received)
+    private void ReceivedMessage(IrssMessage received)
     {
       if (_learnIR != null && received.Type == MessageType.LearnIR)
       {
@@ -125,7 +115,7 @@ namespace SetupTv.Sections
       }
     }
 
-    void RefreshIRList()
+    private void RefreshIRList()
     {
       listViewIR.Items.Clear();
 
@@ -134,7 +124,8 @@ namespace SetupTv.Sections
         foreach (string irFile in irList)
           listViewIR.Items.Add(irFile);
     }
-    void RefreshMacroList()
+
+    private void RefreshMacroList()
     {
       listViewMacro.Items.Clear();
 
@@ -144,7 +135,7 @@ namespace SetupTv.Sections
           listViewMacro.Items.Add(macroFile);
     }
 
-    void EditIR()
+    private void EditIR()
     {
       if (listViewIR.SelectedItems.Count != 1)
         return;
@@ -157,8 +148,8 @@ namespace SetupTv.Sections
         if (File.Exists(fileName))
         {
           _learnIR = new LearnIR(
-            new LearnIrDelegate(TV3BlasterPlugin.LearnIR),
-            new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+            TV3BlasterPlugin.LearnIR,
+            TV3BlasterPlugin.BlastIR,
             TV3BlasterPlugin.TransceiverInformation.Ports,
             command);
 
@@ -179,7 +170,8 @@ namespace SetupTv.Sections
         MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-    void EditMacro()
+
+    private void EditMacro()
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -228,9 +220,10 @@ namespace SetupTv.Sections
 
     private void buttonSTB_Click(object sender, EventArgs e)
     {
-      if (TvDatabase.Card.ListAll().Count == 0)
+      if (Card.ListAll().Count == 0)
       {
-        MessageBox.Show(this, "There are no capture cards installed in the TV server", "No TV Cards", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        MessageBox.Show(this, "There are no capture cards installed in the TV server", "No TV Cards",
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
       }
       else
       {
@@ -242,8 +235,8 @@ namespace SetupTv.Sections
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
       _learnIR = new LearnIR(
-        new LearnIrDelegate(TV3BlasterPlugin.LearnIR),
-        new BlastIrDelegate(TV3BlasterPlugin.BlastIR),
+        TV3BlasterPlugin.LearnIR,
+        TV3BlasterPlugin.BlastIR,
         TV3BlasterPlugin.TransceiverInformation.Ports);
 
       _learnIR.ShowDialog(this);
@@ -252,10 +245,12 @@ namespace SetupTv.Sections
 
       RefreshIRList();
     }
+
     private void buttonEditIR_Click(object sender, EventArgs e)
     {
       EditIR();
     }
+
     private void buttonDeleteIR_Click(object sender, EventArgs e)
     {
       if (listViewIR.SelectedItems.Count != 1)
@@ -265,12 +260,15 @@ namespace SetupTv.Sections
       string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (
+          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
       {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
       }
 
       RefreshIRList();
@@ -283,10 +281,12 @@ namespace SetupTv.Sections
 
       RefreshMacroList();
     }
+
     private void buttonEditMacro_Click(object sender, EventArgs e)
     {
       EditMacro();
     }
+
     private void buttonDeleteMacro_Click(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
@@ -296,16 +296,20 @@ namespace SetupTv.Sections
       string fileName = TV3BlasterPlugin.FolderMacros + file + Common.FileExtensionMacro;
       if (File.Exists(fileName))
       {
-        if (MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (
+          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           File.Delete(fileName);
       }
       else
       {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
       }
 
       RefreshMacroList();
     }
+
     private void buttonTestMacro_Click(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
@@ -332,7 +336,7 @@ namespace SetupTv.Sections
       TV3BlasterPlugin.ServerHost = serverAddress.ServerHost;
 
       IPAddress serverIP = Client.GetIPFromName(TV3BlasterPlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       TV3BlasterPlugin.StartClient(endPoint);
     }
@@ -345,6 +349,7 @@ namespace SetupTv.Sections
     {
       EditIR();
     }
+
     private void listViewMacro_DoubleClick(object sender, EventArgs e)
     {
       EditMacro();
@@ -370,7 +375,8 @@ namespace SetupTv.Sections
       string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
       if (!File.Exists(oldFileName))
       {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -379,7 +385,8 @@ namespace SetupTv.Sections
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -396,6 +403,7 @@ namespace SetupTv.Sections
         MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+
     private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
     {
       ListView origin = sender as ListView;
@@ -416,7 +424,8 @@ namespace SetupTv.Sections
       string oldFileName = TV3BlasterPlugin.FolderMacros + originItem.Text + Common.FileExtensionMacro;
       if (!File.Exists(oldFileName))
       {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -425,7 +434,8 @@ namespace SetupTv.Sections
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         e.CancelEdit = true;
         return;
       }
@@ -444,7 +454,5 @@ namespace SetupTv.Sections
     }
 
     #endregion Other Controls
-
   }
-
 }

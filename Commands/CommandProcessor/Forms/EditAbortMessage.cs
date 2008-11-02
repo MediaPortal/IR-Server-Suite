@@ -1,20 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Edit Abort Message form.
   /// </summary>
-  partial class EditAbortMessage : Form
+  internal partial class EditAbortMessage : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -23,10 +16,7 @@ namespace Commands
     /// <value>The abort message.</value>
     public string AbortMessage
     {
-      get
-      {
-        return textBoxMessage.Text.Trim();
-      }
+      get { return textBoxMessage.Text.Trim(); }
     }
 
     #endregion Properties
@@ -58,18 +48,16 @@ namespace Commands
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

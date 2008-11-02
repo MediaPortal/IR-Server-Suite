@@ -1,30 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace Commands.General
 {
-
   /// <summary>
   /// Popup Message command.
   /// </summary>
   public class CommandPopup : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandPopup"/> class.
     /// </summary>
-    public CommandPopup() { InitParameters(3); }
+    public CommandPopup()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandPopup"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandPopup(string[] parameters) : base(parameters) { }
+    public CommandPopup(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -34,13 +33,19 @@ namespace Commands.General
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return "General Commands"; }
+    public override string GetCategory()
+    {
+      return "General Commands";
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Popup Message"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Popup Message";
+    }
 
     /// <summary>
     /// Execute this command.
@@ -74,7 +79,5 @@ namespace Commands.General
     }
 
     #endregion Public Methods
-
   }
-
 }

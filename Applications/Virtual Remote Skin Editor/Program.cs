@@ -1,21 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace SkinEditor
 {
-
-  static class Program
+  internal static class Program
   {
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    private static void Main()
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
@@ -27,13 +23,13 @@ namespace SkinEditor
 #endif
       IrssLog.Open("Virtual Remote Skin Editor.log");
 
-      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException += Application_ThreadException;
 
       MainForm mainForm = new MainForm();
 
       Application.Run(mainForm);
 
-      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException -= Application_ThreadException;
 
       IrssLog.Close();
     }
@@ -47,7 +43,5 @@ namespace SkinEditor
     {
       IrssLog.Error(e.Exception);
     }
-
   }
-
 }

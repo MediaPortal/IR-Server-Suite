@@ -5,23 +5,20 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-
-using Microsoft.Win32;
-
 using InputService.Plugin;
 using IrssUtils;
 
 namespace IRServer
 {
-
-  static class Program
+  internal static class Program
   {
+    private static PluginBase[] _plugins;
 
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    private static void Main()
     {
       // Check for multiple instances ...
       try
@@ -48,7 +45,7 @@ namespace IRServer
 #endif
       IrssLog.Open("IR Server.log");
 
-      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException += Application_ThreadException;
 
       // Start Server
       using (IRServer irServer = new IRServer())
@@ -60,7 +57,7 @@ namespace IRServer
         }
       }
 
-      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
+      Application.ThreadException -= Application_ThreadException;
 
       IrssLog.Close();
     }
@@ -74,8 +71,6 @@ namespace IRServer
     {
       IrssLog.Error(e.Exception);
     }
-
-    static PluginBase[] _plugins = null;
 
     /// <summary>
     /// Retreives a list of available IR Server plugins.
@@ -105,18 +100,27 @@ namespace IRServer
 
             foreach (Type type in types)
             {
-              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
+              if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof (PluginBase)))
               {
-                PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+                PluginBase plugin = (PluginBase) assembly.CreateInstance(type.FullName);
 
                 if (plugin != null)
                   plugins.Add(plugin);
               }
             }
           }
-          catch (BadImageFormatException) { } // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
-          catch (TypeLoadException) { }       // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
-          catch (FileNotFoundException) { }   // Ignore File Not Found Exceptions, just keep checking for IR Server Plugins
+          catch (BadImageFormatException)
+          {
+            // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
+          }
+          catch (TypeLoadException)
+          {
+            // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
+          }
+          catch (FileNotFoundException)
+          {
+            // Ignore File Not Found Exceptions, just keep checking for IR Server Plugins 
+          }
         }
 
         _plugins = plugins.ToArray();
@@ -188,7 +192,7 @@ namespace IRServer
     {
       IrssLog.Info("Detect Blasters ...");
 
-      PluginBase[] plugins = Program.AvailablePlugins();
+      PluginBase[] plugins = AvailablePlugins();
       if (plugins == null || plugins.Length == 0)
         return null;
 
@@ -212,7 +216,5 @@ namespace IRServer
 
       return null;
     }
-
   }
-
 }

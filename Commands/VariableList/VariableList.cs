@@ -5,24 +5,22 @@ using System.Xml;
 
 namespace Commands
 {
-
   /// <summary>
   /// List of Variables for use in macros and commands.
   /// </summary>
   public class VariableList
   {
-
     #region Constants
-
-    /// <summary>
-    /// File extension for stored Variable Lists.
-    /// </summary>
-    public const string FileExtensionVariableList = ".VariableList";
 
     /// <summary>
     /// File extension for a stored Stack.
     /// </summary>
     public const string FileExtensionStack = ".Stack";
+
+    /// <summary>
+    /// File extension for stored Variable Lists.
+    /// </summary>
+    public const string FileExtensionVariableList = ".VariableList";
 
     /// <summary>
     /// Variables must be prefixed with this string.
@@ -33,9 +31,8 @@ namespace Commands
 
     #region Variables
 
-    Dictionary<string, string> _variables;
-
-    Stack<string> _stack;
+    private readonly Stack<string> _stack;
+    private readonly Dictionary<string, string> _variables;
 
     #endregion Variables
 
@@ -112,7 +109,7 @@ namespace Commands
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("variables"); // <variables>
 
@@ -213,7 +210,7 @@ namespace Commands
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("stack"); // <stack>
 
@@ -244,11 +241,8 @@ namespace Commands
         foreach (XmlNode node in stackNodes)
           _stack.Push(node.Value);
       }
-
     }
 
     #endregion Implementation
-
   }
-
 }

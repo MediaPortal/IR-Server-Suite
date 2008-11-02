@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Diagnostics;
 
 namespace IrssComms
 {
@@ -122,41 +123,41 @@ namespace IrssComms
     /// <summary>
     /// No Flags.
     /// </summary>
-    None            = 0x0000,
+    None = 0x0000,
 
     /// <summary>
     /// Message is a Request.
     /// </summary>
-    Request         = 0x0001,
+    Request = 0x0001,
     /// <summary>
     /// Message is a Response to a received Message.
     /// </summary>
-    Response        = 0x0002,
+    Response = 0x0002,
     /// <summary>
     /// Message is a Notification.
     /// </summary>
-    Notify          = 0x0004,
+    Notify = 0x0004,
 
     /// <summary>
     /// Operation Success.
     /// </summary>
-    Success         = 0x0008,
+    Success = 0x0008,
     /// <summary>
     /// Operation Failure.
     /// </summary>
-    Failure         = 0x0010,
+    Failure = 0x0010,
     /// <summary>
     /// Operation Time-Out.
     /// </summary>
-    Timeout         = 0x0020,
-    
+    Timeout = 0x0020,
+
     //Error           = 0x0040,
 
     //DataString      = 0x0080,
     //DataBytes       = 0x0100,
 
     //ForceRespond    = 0x0200,
-    
+
     /// <summary>
     /// Force the recipient not to respond.
     /// </summary>
@@ -168,15 +169,16 @@ namespace IrssComms
   /// <summary>
   /// Message class for passing over network.
   /// </summary>
+  [DebuggerDisplay("Type={Type}, Flags={Flags}, Data={GetDataAsString()}")]
   public class IrssMessage
   {
-
     #region Members
 
-    MessageType _type;
-    MessageFlags _flags;
-    
-    byte[] _data;
+    private byte[] _data;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private MessageFlags _flags;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private MessageType _type;
 
     #endregion Members
 
@@ -209,8 +211,8 @@ namespace IrssComms
     /// </summary>
     protected IrssMessage()
     {
-      _type   = MessageType.Unknown;
-      _flags  = MessageFlags.None;
+      _type = MessageType.Unknown;
+      _flags = MessageFlags.None;
     }
 
     /// <summary>
@@ -220,8 +222,8 @@ namespace IrssComms
     /// <param name="flags">The message flags.</param>
     public IrssMessage(MessageType type, MessageFlags flags)
     {
-      _type   = type;
-      _flags  = flags;
+      _type = type;
+      _flags = flags;
     }
 
     /// <summary>
@@ -268,7 +270,7 @@ namespace IrssComms
       if (data == null)
         _data = null;
       else
-        _data = (byte[])data.Clone();      
+        _data = (byte[]) data.Clone();
     }
 
     /// <summary>
@@ -278,8 +280,8 @@ namespace IrssComms
     {
       if (_data == null)
         return String.Empty;
-      else
-        return Encoding.ASCII.GetString(_data);
+
+      return Encoding.ASCII.GetString(_data);
     }
 
     /// <summary>
@@ -305,8 +307,8 @@ namespace IrssComms
 
       byte[] byteArray = new byte[8 + dataLength];
 
-      BitConverter.GetBytes((int)_type).CopyTo(byteArray, 0);
-      BitConverter.GetBytes((int)_flags).CopyTo(byteArray, 4);
+      BitConverter.GetBytes((int) _type).CopyTo(byteArray, 0);
+      BitConverter.GetBytes((int) _flags).CopyTo(byteArray, 4);
 
       if (_data != null)
         _data.CopyTo(byteArray, 8);
@@ -327,25 +329,17 @@ namespace IrssComms
       if (from.Length < 8)
         throw new ArgumentException("Insufficient bytes to create message", "from");
 
-      MessageType type    = (MessageType)BitConverter.ToInt32(from, 0);
-      MessageFlags flags  = (MessageFlags)BitConverter.ToInt32(from, 4);
+      MessageType type = (MessageType) BitConverter.ToInt32(from, 0);
+      MessageFlags flags = (MessageFlags) BitConverter.ToInt32(from, 4);
 
       if (from.Length == 8)
-      {
         return new IrssMessage(type, flags);
-      }
-      else
-      {
-        byte[] data = new byte[from.Length - 8];
 
-        Array.Copy(from, 8, data, 0, data.Length);
-
-        return new IrssMessage(type, flags, data);
-      }
+      byte[] data = new byte[from.Length - 8];
+      Array.Copy(from, 8, data, 0, data.Length);
+      return new IrssMessage(type, flags, data);
     }
 
     #endregion Implementation
-
   }
-
 }

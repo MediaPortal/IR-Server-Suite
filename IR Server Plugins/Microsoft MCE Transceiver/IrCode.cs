@@ -1,45 +1,45 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using System.Text;
 
 // Remember: Pulse is Positive, Space is Negative.
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Encapsulates an MCE compatible IR Code.
   /// </summary>
-  class IrCode
+  internal class IrCode
   {
-
     #region Constants
+
+    /// <summary>
+    /// This code does not use a carrier wave.
+    /// </summary>
+    public const int CarrierFrequencyDCMode = 0;
+
+    /// <summary>
+    /// Default carrier frequency, 36kHz (the carrier frequency for RC5, RC6 and RC-MM).
+    /// </summary>
+    public const int CarrierFrequencyDefault = 36000;
 
     /// <summary>
     /// The carrier frequency for this code is Unknown.
     /// </summary>
-    public const int CarrierFrequencyUnknown  = -1;
-    /// <summary>
-    /// This code does not use a carrier wave.
-    /// </summary>
-    public const int CarrierFrequencyDCMode   = 0;
-    /// <summary>
-    /// Default carrier frequency, 36kHz (the carrier frequency for RC5, RC6 and RC-MM).
-    /// </summary>
-    public const int CarrierFrequencyDefault  = 36000;
+    public const int CarrierFrequencyUnknown = -1;
 
     /// <summary>
     /// How long the longest IR Code space should be (in microseconds).
     /// </summary>
-    const int LongestSpace = -75000;
+    private const int LongestSpace = -75000;
 
     #endregion Constants
 
     #region Member Variables
 
-    int _carrier;
-    int[] _timingData;
+    private int _carrier;
+    private int[] _timingData;
 
     #endregion Member Variables
 
@@ -67,12 +67,21 @@ namespace InputService.Plugin
 
     #region Constructors
 
-    public IrCode() : this(CarrierFrequencyUnknown, new int[] { })              { }
-    public IrCode(int carrier) : this(carrier, new int[] { })                   { }
-    public IrCode(int[] timingData) : this(CarrierFrequencyUnknown, timingData) { }
+    public IrCode() : this(CarrierFrequencyUnknown, new int[] {})
+    {
+    }
+
+    public IrCode(int carrier) : this(carrier, new int[] {})
+    {
+    }
+
+    public IrCode(int[] timingData) : this(CarrierFrequencyUnknown, timingData)
+    {
+    }
+
     public IrCode(int carrier, int[] timingData)
     {
-      _carrier    = carrier;
+      _carrier = carrier;
       _timingData = timingData;
     }
 
@@ -178,7 +187,7 @@ namespace InputService.Plugin
     /// </summary>
     /// <param name="data">IR file bytes.</param>
     /// <returns>New IrCode object.</returns>
-    static IrCode FromOldData(byte[] data)
+    private static IrCode FromOldData(byte[] data)
     {
       List<int> timingData = new List<int>();
 
@@ -189,22 +198,23 @@ namespace InputService.Plugin
         byte curByte = data[index];
 
         if ((curByte & 0x80) != 0)
-          len += (int)(curByte & 0x7F);
+          len += (curByte & 0x7F);
         else
-          len -= (int)curByte;
+          len -= curByte;
 
         if ((curByte & 0x7F) != 0x7F)
         {
-          timingData.Add(len * 50);
+          timingData.Add(len*50);
           len = 0;
         }
       }
 
       if (len != 0)
-        timingData.Add(len * 50);
+        timingData.Add(len*50);
 
       IrCode newCode = new IrCode(timingData.ToArray());
-      newCode.FinalizeData(); // Seems some old files have excessively long delays in them .. this might fix that problem ...
+      newCode.FinalizeData();
+      // Seems some old files have excessively long delays in them .. this might fix that problem ...
 
       return newCode;
     }
@@ -214,19 +224,20 @@ namespace InputService.Plugin
     /// </summary>
     /// <param name="data">IR file bytes.</param>
     /// <returns>New IrCode object.</returns>
-    static IrCode FromProntoData(byte[] data)
+    private static IrCode FromProntoData(byte[] data)
     {
       string code = Encoding.ASCII.GetString(data);
 
-      string[] stringData = code.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+      string[] stringData = code.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 
       ushort[] prontoData = new ushort[stringData.Length];
       for (int i = 0; i < stringData.Length; i++)
-        prontoData[i] = ushort.Parse(stringData[i], System.Globalization.NumberStyles.HexNumber);
+        prontoData[i] = ushort.Parse(stringData[i], NumberStyles.HexNumber);
 
       IrCode newCode = Pronto.ConvertProntoDataToIrCode(prontoData);
       if (newCode != null)
-        newCode.FinalizeData(); // Seems some old files have excessively long delays in them .. this might fix that problem ...
+        newCode.FinalizeData();
+      // Seems some old files have excessively long delays in them .. this might fix that problem ...
 
       return newCode;
     }
@@ -245,7 +256,5 @@ namespace InputService.Plugin
     }
 
     #endregion Static Methods
-
   }
-
 }

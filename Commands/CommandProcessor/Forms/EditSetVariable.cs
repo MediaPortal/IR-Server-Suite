@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Set Variable Command form.
   /// </summary>
-  partial class EditSetVariable : Form
+  internal partial class EditSetVariable : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -24,9 +18,11 @@ namespace Commands
     {
       get
       {
-        return new string[] {
-          textBoxVariable.Text.Trim(),
-          textBoxValue.Text };
+        return new string[]
+                 {
+                   textBoxVariable.Text.Trim(),
+                   textBoxValue.Text
+                 };
       }
     }
 
@@ -49,30 +45,29 @@ namespace Commands
     /// <param name="parameters">The parameters.</param>
     public EditSetVariable(string[] parameters) : this()
     {
-      textBoxVariable.Text  = parameters[0];
-      textBoxValue.Text     = parameters[1];
+      textBoxVariable.Text = parameters[0];
+      textBoxValue.Text = parameters[1];
     }
-    
+
     #endregion Constructors
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
       if (String.IsNullOrEmpty(textBoxVariable.Text.Trim()))
       {
-        MessageBox.Show(this, "You must include a variable name", "Missing variable name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "You must include a variable name", "Missing variable name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
         return;
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

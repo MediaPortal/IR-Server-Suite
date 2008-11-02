@@ -1,19 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using MediaPortal.GUI.Library;
 
 namespace MPUtils.Forms
 {
-
   /// <summary>
   /// Send MediaPortal Action command form.
   /// </summary>
   public partial class MPAction : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -25,9 +20,9 @@ namespace MPUtils.Forms
       get
       {
         return String.Format("{0}|{1}|{2}",
-          comboBoxActionType.Text,
-          textBoxFloat1.Text,
-          textBoxFloat2.Text);
+                             comboBoxActionType.Text,
+                             textBoxFloat1.Text,
+                             textBoxFloat2.Text);
       }
     }
 
@@ -52,34 +47,32 @@ namespace MPUtils.Forms
     public MPAction(string[] parameters) : this()
     {
       comboBoxActionType.SelectedItem = parameters[0];
-      textBoxFloat1.Text  = parameters[1];
-      textBoxFloat2.Text  = parameters[2];
+      textBoxFloat1.Text = parameters[1];
+      textBoxFloat2.Text = parameters[2];
     }
 
     #endregion Constructors
 
-    void SetupComboBox()
+    private void SetupComboBox()
     {
       comboBoxActionType.Items.Clear();
 
-      string[] items = Enum.GetNames(typeof(MediaPortal.GUI.Library.Action.ActionType));
+      string[] items = Enum.GetNames(typeof (Action.ActionType));
       Array.Sort(items);
-      
+
       comboBoxActionType.Items.AddRange(items);
     }
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

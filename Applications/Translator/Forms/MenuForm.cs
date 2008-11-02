@@ -1,28 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-
 using IrssUtils;
+using Translator.Properties;
 
 namespace Translator
 {
-
   /// <summary>
   /// Translator Menu.
   /// </summary>
   public partial class MenuForm : Form
   {
-
     #region Enumerations
 
-    enum Menus
+    private enum Menus
     {
       Main,
 
@@ -39,74 +32,64 @@ namespace Translator
       WindowClose,
       WindowMinimize,
       WindowMaximize,
-
     }
 
     #endregion Enumerations
 
     #region Constants
 
-    const string WindowTitle = "Translator OSD";
-
-    // Menu UI Text
-    const string UITextMain     = "Main Menu";
-    const string UITextLaunch   = "Launch App";
-    const string UITextTasks    = "Task Swap";
-    const string UITextMacros   = "Macros";
-    const string UITextSystem   = "System Commands";
-    const string UITextWindows  = "Window Management";
-    const string UITextPower    = "Power";
-    const string UITextAudio    = "Audio";
-    const string UITextEject    = "Eject";
-    
     // Menu descriptions
-    const string DescLaunch   = "Launch an application";
-    const string DescTasks    = "Switch between running programs";
-    const string DescMacros   = "Run a macro";
-    const string DescSystem   = "Perform a system command";
-    const string DescWindows  = "Manage open windows";
-    const string DescPower    = "Modify the computer's power state";
-    const string DescAudio    = "Adjust the system volume";
-    const string DescEject    = "Eject a disc";
-
-    // Tags
-    const string TagMenu    = "Menu: ";
-    const string TagMacro   = "Macro: ";
-    const string TagLaunch  = "Launch: ";
-    const string TagCommand = "Command: ";
-    const string TagEject   = "Eject: ";
-
-    // Commands
-    const string CommandShutdown  = "Shutdown";
-    const string CommandReboot    = "Reboot";
-    const string CommandLogOff    = "LogOff";
-    const string CommandStandby   = "Standby";
-    const string CommandHibernate = "Hibernate";
+    private const string CommandHibernate = "Hibernate";
+    private const string CommandLogOff = "LogOff";
+    private const string CommandReboot = "Reboot";
+    private const string CommandShutdown = "Shutdown";
+    private const string CommandStandby = "Standby";
+    private const string DescAudio = "Adjust the system volume";
+    private const string DescEject = "Eject a disc";
+    private const string DescLaunch = "Launch an application";
+    private const string DescMacros = "Run a macro";
+    private const string DescPower = "Modify the computer's power state";
+    private const string DescSystem = "Perform a system command";
+    private const string DescTasks = "Switch between running programs";
+    private const string DescWindows = "Manage open windows";
+    private const int IconAudio = 168;
+    private const int IconDesktop = 34;
+    private const int IconEject = 188;
 
     // Icon indexes
-    const int IconLaunch  = 24;
-    const int IconTasks   = 98;
-    const int IconMacros  = 70;
-    const int IconDesktop = 34;
-    const int IconWindows = 15;
-    const int IconPower   = 27;
-    const int IconAudio   = 168;
-    const int IconEject   = 188;
+    private const int IconLaunch = 24;
+    private const int IconMacros = 70;
+    private const int IconPower = 27;
+    private const int IconTasks = 98;
+    private const int IconWindows = 15;
+    private const string TagCommand = "Command: ";
+    private const string TagEject = "Eject: ";
+    private const string TagLaunch = "Launch: ";
+    private const string TagMacro = "Macro: ";
+    private const string TagMenu = "Menu: ";
+    private const string UITextAudio = "Audio";
+    private const string UITextEject = "Eject";
+    private const string UITextLaunch = "Launch App";
+    private const string UITextMacros = "Macros";
+    private const string UITextMain = "Main Menu";
+    private const string UITextPower = "Power";
+    private const string UITextSystem = "System Commands";
+    private const string UITextTasks = "Task Swap";
+    private const string UITextWindows = "Window Management";
+    private const string WindowTitle = "Translator OSD";
 
     #endregion Constants
 
     #region Variables
 
-    ImageList _listMain;
+    private readonly Win32.EnumWindowsProc _ewp;
+    private readonly ListViewItem _launch;
+    private readonly ListViewItem _macro;
+    private readonly ListViewItem _system;
+    private readonly ListViewItem _taskSwitch;
+    private ImageList _listMain;
 
-    ListViewItem _launch;
-    ListViewItem _taskSwitch;
-    ListViewItem _macro;
-    ListViewItem _system;
-
-    List<Menus> _menuStack;
-
-    Win32.EnumWindowsProc _ewp;
+    private List<Menus> _menuStack;
 
     #endregion Variables
 
@@ -117,7 +100,7 @@ namespace Translator
     {
       InitializeComponent();
 
-      _ewp = new Win32.EnumWindowsProc(AddTask);
+      _ewp = AddTask;
 
       CreateMainImageList();
 
@@ -144,14 +127,17 @@ namespace Translator
 
       SwitchMenu(Menus.Main);
     }
+
     private void MenuForm_Shown(object sender, EventArgs e)
     {
-      Win32.SetForegroundWindow(this.Handle, true);
+      Win32.SetForegroundWindow(Handle, true);
     }
+
     private void MenuForm_Deactivate(object sender, EventArgs e)
     {
-      this.Close();
+      Close();
     }
+
     private void MenuForm_FormClosed(object sender, FormClosedEventArgs e)
     {
       listViewMenu.SelectedItems.Clear();
@@ -160,7 +146,7 @@ namespace Translator
       _menuStack = null;
     }
 
-    void CreateMainImageList()
+    private void CreateMainImageList()
     {
       _listMain = new ImageList();
       _listMain.ColorDepth = ColorDepth.Depth32Bit;
@@ -181,21 +167,22 @@ namespace Translator
       Win32.ExtractIcons(file, IconMacros, out large, out small);
       _listMain.Images.Add(large);
 
-      _listMain.Images.Add(Properties.Resources.WinLogo);
+      _listMain.Images.Add(Resources.WinLogo);
     }
 
-    void SetToIconStyle()
+    private void SetToIconStyle()
     {
       listViewMenu.View = View.LargeIcon;
       listViewMenu.Alignment = ListViewAlignment.Left;
     }
-    void SetToListStyle()
+
+    private void SetToListStyle()
     {
       listViewMenu.View = View.Details;
       listViewMenu.Alignment = ListViewAlignment.Top;
     }
 
-    void SetWindowTitle(string subMenuName)
+    private void SetWindowTitle(string subMenuName)
     {
       if (String.IsNullOrEmpty(subMenuName))
         labelHeader.Text = WindowTitle;
@@ -204,7 +191,7 @@ namespace Translator
     }
 
 
-    void LoadMenuMain()
+    private void LoadMenuMain()
     {
       SetWindowTitle(UITextMain);
 
@@ -218,7 +205,7 @@ namespace Translator
       listViewMenu.Items.Add(_system);
     }
 
-    void LoadMenuTasks()
+    private void LoadMenuTasks()
     {
       SetWindowTitle(UITextTasks);
 
@@ -246,7 +233,8 @@ namespace Translator
 
       PopulateTaskList();
     }
-    void LoadMenuLaunch()
+
+    private void LoadMenuLaunch()
     {
       SetWindowTitle(UITextLaunch);
 
@@ -274,7 +262,8 @@ namespace Translator
         listViewMenu.Items.Add(item);
       }
     }
-    void LoadMenuMacros()
+
+    private void LoadMenuMacros()
     {
       SetWindowTitle(UITextMacros);
 
@@ -294,7 +283,8 @@ namespace Translator
         listViewMenu.Items.Add(item);
       }
     }
-    void LoadMenuSystem()
+
+    private void LoadMenuSystem()
     {
       SetWindowTitle(UITextSystem);
 
@@ -347,7 +337,7 @@ namespace Translator
       listViewMenu.Items.Add(item);
     }
 
-    void LoadMenuWindows()
+    private void LoadMenuWindows()
     {
       SetWindowTitle(UITextWindows);
 
@@ -406,9 +396,9 @@ namespace Translator
       item.ToolTipText = "Minimize all open windows";
       item.Tag = IntPtr.Zero;
       listViewMenu.Items.Add(item);
-
     }
-    void LoadMenuPower()
+
+    private void LoadMenuPower()
     {
       SetWindowTitle(UITextPower);
 
@@ -456,7 +446,8 @@ namespace Translator
       item.Tag = TagCommand + CommandHibernate;
       listViewMenu.Items.Add(item);
     }
-    void LoadMenuAudio()
+
+    private void LoadMenuAudio()
     {
       SetWindowTitle(UITextAudio);
 
@@ -493,9 +484,9 @@ namespace Translator
       item.ToolTipText = "Mutes the audio";
       item.Tag = TagCommand + "Mute";
       listViewMenu.Items.Add(item);
-
     }
-    void LoadMenuEject()
+
+    private void LoadMenuEject()
     {
       SetWindowTitle(UITextEject);
 
@@ -531,7 +522,7 @@ namespace Translator
       }
     }
 
-    void LoadMenuWindowActivate()
+    private void LoadMenuWindowActivate()
     {
       SetWindowTitle("Activate Window");
 
@@ -545,7 +536,8 @@ namespace Translator
 
       PopulateTaskList();
     }
-    void LoadMenuWindowClose()
+
+    private void LoadMenuWindowClose()
     {
       SetWindowTitle("Close Window");
 
@@ -559,7 +551,8 @@ namespace Translator
 
       PopulateTaskList();
     }
-    void LoadMenuWindowMaximize()
+
+    private void LoadMenuWindowMaximize()
     {
       SetWindowTitle("Maximize Window");
 
@@ -573,7 +566,8 @@ namespace Translator
 
       PopulateTaskList();
     }
-    void LoadMenuWindowMinimize()
+
+    private void LoadMenuWindowMinimize()
     {
       SetWindowTitle("Minimize Window");
 
@@ -589,8 +583,7 @@ namespace Translator
     }
 
 
-
-    void SwitchMenu(Menus menu)
+    private void SwitchMenu(Menus menu)
     {
       _menuStack.Add(menu);
 
@@ -599,22 +592,48 @@ namespace Translator
 
       switch (menu)
       {
-        case Menus.Tasks:   LoadMenuTasks();    break;
-        case Menus.Launch:  LoadMenuLaunch();   break;
-        case Menus.Macros:  LoadMenuMacros();   break;
-        case Menus.System:  LoadMenuSystem();   break;
+        case Menus.Tasks:
+          LoadMenuTasks();
+          break;
+        case Menus.Launch:
+          LoadMenuLaunch();
+          break;
+        case Menus.Macros:
+          LoadMenuMacros();
+          break;
+        case Menus.System:
+          LoadMenuSystem();
+          break;
 
-        case Menus.Windows: LoadMenuWindows();  break;
-        case Menus.Power:   LoadMenuPower();    break;
-        case Menus.Audio:   LoadMenuAudio();    break;
-        case Menus.Eject:   LoadMenuEject();    break;
+        case Menus.Windows:
+          LoadMenuWindows();
+          break;
+        case Menus.Power:
+          LoadMenuPower();
+          break;
+        case Menus.Audio:
+          LoadMenuAudio();
+          break;
+        case Menus.Eject:
+          LoadMenuEject();
+          break;
 
-        case Menus.WindowActivate:  LoadMenuWindowActivate(); break;
-        case Menus.WindowClose:     LoadMenuWindowClose();    break;
-        case Menus.WindowMaximize:  LoadMenuWindowMaximize(); break;
-        case Menus.WindowMinimize:  LoadMenuWindowMinimize(); break;
+        case Menus.WindowActivate:
+          LoadMenuWindowActivate();
+          break;
+        case Menus.WindowClose:
+          LoadMenuWindowClose();
+          break;
+        case Menus.WindowMaximize:
+          LoadMenuWindowMaximize();
+          break;
+        case Menus.WindowMinimize:
+          LoadMenuWindowMinimize();
+          break;
 
-        default:            LoadMenuMain();     break;
+        default:
+          LoadMenuMain();
+          break;
       }
 
       ResizeWindow();
@@ -626,14 +645,14 @@ namespace Translator
       }
     }
 
-    void ResizeWindow()
+    private void ResizeWindow()
     {
       int newWidth = 0;
       int newHeight = 0;
 
       if (listViewMenu.View == View.Details)
       {
-        newWidth = this.MinimumSize.Width;
+        newWidth = MinimumSize.Width;
         foreach (ListViewItem item in listViewMenu.Items)
           newHeight += item.Bounds.Height + 2;
 
@@ -653,30 +672,30 @@ namespace Translator
         newWidth += 8;
       }
 
-      if (newWidth > this.MaximumSize.Width)
-        newWidth = this.MaximumSize.Width;
-      else if (newWidth < this.MinimumSize.Width)
-        newWidth = this.MinimumSize.Width;
+      if (newWidth > MaximumSize.Width)
+        newWidth = MaximumSize.Width;
+      else if (newWidth < MinimumSize.Width)
+        newWidth = MinimumSize.Width;
 
-      if (newHeight > this.MaximumSize.Height)
-        newHeight = this.MaximumSize.Height;
-      else if (newHeight < this.MinimumSize.Height)
-        newHeight = this.MinimumSize.Height;
+      if (newHeight > MaximumSize.Height)
+        newHeight = MaximumSize.Height;
+      else if (newHeight < MinimumSize.Height)
+        newHeight = MinimumSize.Height;
 
-      this.Size = new Size(newWidth, newHeight);
+      Size = new Size(newWidth, newHeight);
 
-      Screen thisScreen = Screen.FromPoint(this.Location);
+      Screen thisScreen = Screen.FromPoint(Location);
       Rectangle workingArea = thisScreen.Bounds;
 
-      this.Location =
+      Location =
         new Point(
-          workingArea.X + (workingArea.Width / 2) - (newWidth / 2),
-          workingArea.Y + (workingArea.Height / 2) - (newHeight / 2));
+          workingArea.X + (workingArea.Width/2) - (newWidth/2),
+          workingArea.Y + (workingArea.Height/2) - (newHeight/2));
     }
 
-    void Launch(string programFile)
+    private void Launch(string programFile)
     {
-      this.Close();
+      Close();
 
       foreach (ProgramSettings settings in Program.Config.Programs)
       {
@@ -687,72 +706,86 @@ namespace Translator
         }
       }
     }
-    void RunMacro(string macroName)
+
+    private void RunMacro(string macroName)
     {
-      this.Close();
+      Close();
 
       Program.ProcessCommand(Common.CmdPrefixMacro + macroName, true);
     }
-    void TaskSwap(IntPtr window)
+
+    private void TaskSwap(IntPtr window)
     {
-      this.Close();
+      Close();
 
       if (window == IntPtr.Zero)
         Win32.ShowDesktop();
       else
         Win32.ActivateWindowByHandle(window);
     }
-    void Command(string command)
+
+    private void Command(string command)
     {
-      this.Close();
+      Close();
 
       switch (command)
       {
-        case CommandShutdown:   Program.ProcessCommand(Common.CmdPrefixShutdown, true);   break;
-        case CommandReboot:     Program.ProcessCommand(Common.CmdPrefixReboot, true);     break;
-        case CommandLogOff:     Program.ProcessCommand(Common.CmdPrefixLogOff, true);     break;
-        case CommandStandby:    Program.ProcessCommand(Common.CmdPrefixStandby, true);    break;
-        case CommandHibernate:  Program.ProcessCommand(Common.CmdPrefixHibernate, true);  break;
-
-
+        case CommandShutdown:
+          Program.ProcessCommand(Common.CmdPrefixShutdown, true);
+          break;
+        case CommandReboot:
+          Program.ProcessCommand(Common.CmdPrefixReboot, true);
+          break;
+        case CommandLogOff:
+          Program.ProcessCommand(Common.CmdPrefixLogOff, true);
+          break;
+        case CommandStandby:
+          Program.ProcessCommand(Common.CmdPrefixStandby, true);
+          break;
+        case CommandHibernate:
+          Program.ProcessCommand(Common.CmdPrefixHibernate, true);
+          break;
       }
     }
-    void Eject(string drive)
+
+    private void Eject(string drive)
     {
-      this.Close();
+      Close();
 
       Program.ProcessCommand(Common.CmdPrefixEject + drive, true);
     }
 
-    void Close(IntPtr window)
+    private void Close(IntPtr window)
     {
-      this.Close();
+      Close();
 
       if (window == IntPtr.Zero)
         return;
 
-      Win32.SendWindowsMessage(window, (int)Win32.WindowsMessage.WM_SYSCOMMAND, (int)Win32.SysCommand.SC_CLOSE, 0);
+      Win32.SendWindowsMessage(window, (int) Win32.WindowsMessage.WM_SYSCOMMAND, (int) Win32.SysCommand.SC_CLOSE, 0);
     }
-    void Minimize(IntPtr window)
+
+    private void Minimize(IntPtr window)
     {
-      this.Close();
+      Close();
 
       if (window == IntPtr.Zero)
         return;
 
-      Win32.SendWindowsMessage(window, (int)Win32.WindowsMessage.WM_SYSCOMMAND, (int)Win32.SysCommand.SC_MINIMIZE, 0);
+      Win32.SendWindowsMessage(window, (int) Win32.WindowsMessage.WM_SYSCOMMAND, (int) Win32.SysCommand.SC_MINIMIZE, 0);
     }
-    void Maximize(IntPtr window)
+
+    private void Maximize(IntPtr window)
     {
-      this.Close();
+      Close();
 
       if (window == IntPtr.Zero)
         return;
 
-      Win32.SendWindowsMessage(window, (int)Win32.WindowsMessage.WM_SYSCOMMAND, (int)Win32.SysCommand.SC_MAXIMIZE, 0);
+      Win32.SendWindowsMessage(window, (int) Win32.WindowsMessage.WM_SYSCOMMAND, (int) Win32.SysCommand.SC_MAXIMIZE, 0);
     }
 
-    void ActivateItem(int index)
+    private void ActivateItem(int index)
     {
       if (index >= listViewMenu.Items.Count)
         return;
@@ -767,25 +800,37 @@ namespace Translator
         }
         else if (selectedItem.Tag is Menus)
         {
-          SwitchMenu((Menus)selectedItem.Tag);
+          SwitchMenu((Menus) selectedItem.Tag);
         }
         else if (selectedItem.Tag is IntPtr)
         {
-          IntPtr handle = (IntPtr)selectedItem.Tag;
+          IntPtr handle = (IntPtr) selectedItem.Tag;
 
           switch (GetCurrentMenu())
           {
-            case Menus.Tasks:           TaskSwap(handle); break;
-            case Menus.Windows:         TaskSwap(handle); break;
-            case Menus.WindowActivate:  TaskSwap(handle); break;
-            case Menus.WindowClose:     Close(handle);    break;
-            case Menus.WindowMaximize:  Maximize(handle); break;
-            case Menus.WindowMinimize:  Minimize(handle); break;
+            case Menus.Tasks:
+              TaskSwap(handle);
+              break;
+            case Menus.Windows:
+              TaskSwap(handle);
+              break;
+            case Menus.WindowActivate:
+              TaskSwap(handle);
+              break;
+            case Menus.WindowClose:
+              Close(handle);
+              break;
+            case Menus.WindowMaximize:
+              Maximize(handle);
+              break;
+            case Menus.WindowMinimize:
+              Minimize(handle);
+              break;
           }
         }
         else if (selectedItem.Tag is string)
         {
-          string tag = (string)selectedItem.Tag;
+          string tag = (string) selectedItem.Tag;
 
           if (tag.StartsWith(TagLaunch, StringComparison.OrdinalIgnoreCase))
             Launch(tag.Substring(TagLaunch.Length));
@@ -819,10 +864,10 @@ namespace Translator
 
       switch (e.KeyChar)
       {
-        case (char)27:  // ESC
+        case (char) 27: // ESC
           if (_menuStack.Count == 1)
           {
-            this.Close();
+            Close();
           }
           else
           {
@@ -840,47 +885,64 @@ namespace Translator
           }
           break;
 
-        case '1': ActivateItem(0); break;
-        case '2': ActivateItem(1); break;
-        case '3': ActivateItem(2); break;
-        case '4': ActivateItem(3); break;
-        case '5': ActivateItem(4); break;
-        case '6': ActivateItem(5); break;
-        case '7': ActivateItem(6); break;
-        case '8': ActivateItem(7); break;
-        case '9': ActivateItem(8); break;
+        case '1':
+          ActivateItem(0);
+          break;
+        case '2':
+          ActivateItem(1);
+          break;
+        case '3':
+          ActivateItem(2);
+          break;
+        case '4':
+          ActivateItem(3);
+          break;
+        case '5':
+          ActivateItem(4);
+          break;
+        case '6':
+          ActivateItem(5);
+          break;
+        case '7':
+          ActivateItem(6);
+          break;
+        case '8':
+          ActivateItem(7);
+          break;
+        case '9':
+          ActivateItem(8);
+          break;
 
         default:
           e.Handled = false;
           break;
       }
-
     }
 
-    Menus GetCurrentMenu()
+    private Menus GetCurrentMenu()
     {
       return _menuStack[_menuStack.Count - 1];
     }
 
-    void PopulateTaskList()
+    private void PopulateTaskList()
     {
       Win32.EnumerateWindows(_ewp, IntPtr.Zero);
     }
 
-    bool AddTask(IntPtr hWnd, IntPtr lParam)
+    private bool AddTask(IntPtr hWnd, IntPtr lParam)
     {
       IntPtr style = Win32.GetWindowLongPtr(hWnd, Win32.GWL.GWL_STYLE);
-      if (!Win32.CheckMask(style.ToInt32(), (int)Win32.WindowStyles.WS_VISIBLE))
+      if (!Win32.CheckMask(style.ToInt32(), (int) Win32.WindowStyles.WS_VISIBLE))
         return true;
 
       IntPtr exStyle = Win32.GetWindowLongPtr(hWnd, Win32.GWL.GWL_EXSTYLE);
-      if (Win32.CheckMask(exStyle.ToInt32(), (int)Win32.WindowExStyles.WS_EX_TOOLWINDOW))
-          return true;
+      if (Win32.CheckMask(exStyle.ToInt32(), (int) Win32.WindowExStyles.WS_EX_TOOLWINDOW))
+        return true;
 
       string title = Win32.GetWindowTitle(hWnd);
       if (String.IsNullOrEmpty(title))
         return true;
-              
+
       Icon icon = Win32.GetWindowIcon(hWnd);
       if (icon == null)
         return true;
@@ -896,7 +958,5 @@ namespace Translator
 
       return true;
     }
-
   }
-
 }

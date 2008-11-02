@@ -1,27 +1,20 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-  
-  partial class DeviceSelect : Form
+  internal partial class DeviceSelect : Form
   {
-
     #region Variables
 
-    List<DeviceDetails> _devices;
+    private readonly List<DeviceDetails> _devices;
 
-    int _inputByte;
-    byte _byteMask;
-    bool _useAllBytes;
+    private byte _byteMask;
+    private int _inputByte;
 
-    int _repeatDelay;
+    private int _repeatDelay;
+    private bool _useAllBytes;
 
     #endregion Variables
 
@@ -54,7 +47,7 @@ namespace InputService.Plugin
         {
           if (details.Usage == value.usUsage && details.UsagePage == value.usUsagePage)
           {
-            foreach(ListViewItem item in listViewDevices.Items)
+            foreach (ListViewItem item in listViewDevices.Items)
             {
               if (details.ID.Equals(item.SubItems[1].Text, StringComparison.Ordinal))
               {
@@ -73,16 +66,19 @@ namespace InputService.Plugin
       get { return _inputByte; }
       set { _inputByte = value; }
     }
+
     public byte ByteMask
     {
       get { return _byteMask; }
       set { _byteMask = value; }
     }
+
     public bool UseAllBytes
     {
       get { return _useAllBytes; }
       set { _useAllBytes = value; }
     }
+
     public int RepeatDelay
     {
       get { return _repeatDelay; }
@@ -112,7 +108,7 @@ namespace InputService.Plugin
       {
         foreach (DeviceDetails details in _devices)
         {
-          listViewDevices.Items.Add(new ListViewItem(new string[] { details.Name, details.ID }));
+          listViewDevices.Items.Add(new ListViewItem(new string[] {details.Name, details.ID}));
         }
       }
     }
@@ -134,37 +130,32 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
 
     private void buttonAdvanced_Click(object sender, EventArgs e)
     {
       AdvancedSettings advancedSettings = new AdvancedSettings();
-      advancedSettings.InputByte    = _inputByte;
-      advancedSettings.ByteMask     = _byteMask;
-      advancedSettings.UseAllBytes  = _useAllBytes;
-      advancedSettings.RepeatDelay  = _repeatDelay;
+      advancedSettings.InputByte = _inputByte;
+      advancedSettings.ByteMask = _byteMask;
+      advancedSettings.UseAllBytes = _useAllBytes;
+      advancedSettings.RepeatDelay = _repeatDelay;
 
       if (advancedSettings.ShowDialog(this) == DialogResult.OK)
       {
-        _inputByte    = advancedSettings.InputByte;
-        _byteMask     = advancedSettings.ByteMask;
-        _useAllBytes  = advancedSettings.UseAllBytes;
-        _repeatDelay  = advancedSettings.RepeatDelay;
+        _inputByte = advancedSettings.InputByte;
+        _byteMask = advancedSettings.ByteMask;
+        _useAllBytes = advancedSettings.UseAllBytes;
+        _repeatDelay = advancedSettings.RepeatDelay;
       }
-
     }
-
-
-
   }
-
 }

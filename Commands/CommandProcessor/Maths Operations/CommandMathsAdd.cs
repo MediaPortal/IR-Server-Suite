@@ -1,29 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Maths Add macro command.
   /// </summary>
   public class CommandMathsAdd : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandMathsAdd"/> class.
     /// </summary>
-    public CommandMathsAdd() { InitParameters(3); }
+    public CommandMathsAdd()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandMathsAdd"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandMathsAdd(string[] parameters) : base(parameters) { }
+    public CommandMathsAdd(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +33,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMaths; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryMaths;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Maths Add"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Maths Add";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -78,7 +84,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

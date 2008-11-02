@@ -1,22 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace Commands
 {
-
   /// <summary>
   /// Edit Blast IR Command form.
   /// </summary>
-  partial class EditBlastIR : Form
+  internal partial class EditBlastIR : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -27,9 +20,11 @@ namespace Commands
     {
       get
       {
-        return new string[] {
-          _fileName,
-          comboBoxPort.SelectedItem as string };
+        return new string[]
+                 {
+                   _fileName,
+                   comboBoxPort.SelectedItem as string
+                 };
       }
     }
 
@@ -56,8 +51,8 @@ namespace Commands
 
     #region Variables
 
-    BlastIrDelegate _blastIrDelegate;
-    string _fileName;
+    private readonly BlastIrDelegate _blastIrDelegate;
+    private readonly string _fileName;
 
     #endregion Variables
 
@@ -68,7 +63,7 @@ namespace Commands
     /// </summary>
     /// <param name="blastIrDelegate">The blast IR delegate.</param>
     /// <param name="ports">The available ports.</param>
-    EditBlastIR(BlastIrDelegate blastIrDelegate, string[] ports)
+    private EditBlastIR(BlastIrDelegate blastIrDelegate, string[] ports)
     {
       if (blastIrDelegate == null)
         throw new ArgumentNullException("blastIrDelegate");
@@ -144,14 +139,14 @@ namespace Commands
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonTest_Click(object sender, EventArgs e)
@@ -167,7 +162,5 @@ namespace Commands
     }
 
     #endregion Buttons
-
   }
-
 }

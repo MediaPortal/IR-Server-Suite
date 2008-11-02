@@ -1,48 +1,39 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 
 namespace IrFileTool
 {
-
   /// <summary>
   /// IR File Tool Main Form.
   /// </summary>
-  partial class FormMain : Form
+  internal partial class FormMain : Form
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "IR File Tool\\IR File Tool.xml");
+    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
+                                                                    "IR File Tool\\IR File Tool.xml");
 
     #endregion Constants
 
     #region Variables
 
-    string _fileName = String.Empty;
+    private Client _client;
+    private IrCode _code = new IrCode();
+    private string _fileName = String.Empty;
+    private IRServerInfo _irServerInfo = new IRServerInfo();
 
-    IrCode _code = new IrCode();
+    private bool _registered;
 
-
-    Client _client;
-
-    bool _registered;
-
-    string _serverHost = String.Empty;
-
-    IRServerInfo _irServerInfo = new IRServerInfo();
+    private string _serverHost = String.Empty;
 
     #endregion Variables
 
@@ -60,12 +51,12 @@ namespace IrFileTool
 
     #endregion Constructor
 
-    void RefreshForm()
+    private void RefreshForm()
     {
       if (String.IsNullOrEmpty(_fileName))
-        this.Text = "IR File Tool";
+        Text = "IR File Tool";
       else
-        this.Text = "IR File Tool - " + _fileName;
+        Text = "IR File Tool - " + _fileName;
 
       textBoxPronto.Text = Encoding.ASCII.GetString(_code.ToByteArray());
 
@@ -85,7 +76,7 @@ namespace IrFileTool
       }
     }
 
-    void Save()
+    private void Save()
     {
       if (String.IsNullOrEmpty(_fileName))
         if (!GetSaveFileName())
@@ -106,7 +97,7 @@ namespace IrFileTool
       }
     }
 
-    bool GetSaveFileName()
+    private bool GetSaveFileName()
     {
       if (String.IsNullOrEmpty(saveFileDialog.InitialDirectory))
         saveFileDialog.InitialDirectory = Common.FolderIRCommands;
@@ -119,7 +110,7 @@ namespace IrFileTool
     }
 
 
-    void LoadSettings()
+    private void LoadSettings()
     {
       try
       {
@@ -141,7 +132,8 @@ namespace IrFileTool
         CreateDefaultSettings();
       }
     }
-    void SaveSettings()
+
+    private void SaveSettings()
     {
       try
       {
@@ -149,7 +141,7 @@ namespace IrFileTool
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -164,7 +156,8 @@ namespace IrFileTool
         IrssLog.Error(ex);
       }
     }
-    void CreateDefaultSettings()
+
+    private void CreateDefaultSettings()
     {
       _serverHost = "localhost";
 
@@ -172,8 +165,7 @@ namespace IrFileTool
     }
 
 
-    delegate void UpdateWindowDel(string status);
-    void UpdateWindow(string status)
+    private void UpdateWindow(string status)
     {
       toolStripStatusLabelConnected.Text = status;
 
@@ -194,7 +186,7 @@ namespace IrFileTool
     }
 
 
-    void CommsFailure(object obj)
+    private void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
 
@@ -205,33 +197,36 @@ namespace IrFileTool
 
       StopClient();
 
-      MessageBox.Show(this, "Please report this error.", "IR File Tool - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show(this, "Please report this error.", "IR File Tool - Communications failure", MessageBoxButtons.OK,
+                      MessageBoxIcon.Error);
     }
-    void Connected(object obj)
+
+    private void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    void Disconnected(object obj)
+
+    private void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
       Thread.Sleep(1000);
     }
 
-    bool StartClient(IPEndPoint endPoint)
+    private bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback = new WaitCallback(CommsFailure);
-      _client.ConnectCallback = new WaitCallback(Connected);
-      _client.DisconnectCallback = new WaitCallback(Disconnected);
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
 
       if (_client.Start())
       {
@@ -243,7 +238,8 @@ namespace IrFileTool
         return false;
       }
     }
-    void StopClient()
+
+    private void StopClient()
     {
       if (_client == null)
         return;
@@ -252,7 +248,7 @@ namespace IrFileTool
       _client = null;
     }
 
-    void ReceivedMessage(IrssMessage received)
+    private void ReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
@@ -268,7 +264,7 @@ namespace IrFileTool
 
               string message = "Connected";
               IrssLog.Info(message);
-              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+              Invoke(new UpdateWindowDel(UpdateWindow), new string[] {message});
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -276,7 +272,7 @@ namespace IrFileTool
 
               string message = "Failed to connect";
               IrssLog.Warn(message);
-              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+              Invoke(new UpdateWindowDel(UpdateWindow), new string[] {message});
             }
             return;
 
@@ -285,13 +281,13 @@ namespace IrFileTool
             {
               string message = "Blast successful";
               IrssLog.Info(message);
-              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+              Invoke(new UpdateWindowDel(UpdateWindow), new string[] {message});
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               string message = "Failed to blast IR command";
               IrssLog.Error(message);
-              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+              Invoke(new UpdateWindowDel(UpdateWindow), new string[] {message});
             }
             break;
 
@@ -306,7 +302,7 @@ namespace IrFileTool
 
               string message = "Learned IR Successfully";
               IrssLog.Info(message);
-              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+              Invoke(new UpdateWindowDel(UpdateWindow), new string[] {message});
 
               RefreshForm();
             }
@@ -315,20 +311,20 @@ namespace IrFileTool
               string message = "Failed to learn IR command";
 
               IrssLog.Warn(message);
-              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+              Invoke(new UpdateWindowDel(UpdateWindow), new string[] {message});
             }
             else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
             {
               string message = "Learn IR command timed-out";
 
               IrssLog.Warn(message);
-              this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { message });
+              Invoke(new UpdateWindowDel(UpdateWindow), new string[] {message});
             }
             break;
 
           case MessageType.ServerShutdown:
             _registered = false;
-            this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Server shut down" });
+            Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Server shut down"});
             return;
 
           case MessageType.Error:
@@ -351,6 +347,7 @@ namespace IrFileTool
 
       RefreshForm();
     }
+
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (String.IsNullOrEmpty(openFileDialog.InitialDirectory))
@@ -368,7 +365,7 @@ namespace IrFileTool
         }
 
         byte[] fileData = new byte[file.Length];
-        file.Read(fileData, 0, (int)file.Length);
+        file.Read(fileData, 0, (int) file.Length);
 
         IrCode newCode = IrCode.FromByteArray(fileData);
         if (newCode == null)
@@ -382,21 +379,25 @@ namespace IrFileTool
 
       _fileName = openFileDialog.FileName;
 
-      RefreshForm();      
+      RefreshForm();
     }
+
     private void saveToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Save();
     }
+
     private void saveasToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (GetSaveFileName())
         Save();
     }
+
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      this.Close();
+      Close();
     }
+
     private void buttonAttemptDecode_Click(object sender, EventArgs e)
     {
       // NOTES:
@@ -490,10 +491,10 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
         //Pronto.WriteProntoFile(String.Format("C:\\{0}.ir", index), Pronto.ConvertIrCodeToProntoRaw(newCode));
       }
       */
-      IrDecoder.DecodeIR(_code.TimingData, new RemoteCallback(RemoteEvent), new KeyboardCallback(KeyboardEvent), new MouseCallback(MouseEvent));
+      IrDecoder.DecodeIR(_code.TimingData, RemoteEvent, KeyboardEvent, MouseEvent);
     }
 
-    static byte[] DataPacket(IrCode code)
+    private static byte[] DataPacket(IrCode code)
     {
       if (code.TimingData.Length == 0)
         return null;
@@ -503,33 +504,33 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
 
       for (int index = 0; index < code.TimingData.Length; index++)
       {
-        double time = (double)code.TimingData[index];
+        double time = code.TimingData[index];
 
-        byte duration = (byte)Math.Abs(Math.Round(time / 50));
+        byte duration = (byte) Math.Abs(Math.Round(time/50));
         bool pulse = (time > 0);
 
         while (duration > 0x7F)
         {
-          packet.Add((byte)(pulse ? 0xFF : 0x7F));
+          packet.Add((byte) (pulse ? 0xFF : 0x7F));
 
           duration -= 0x7F;
         }
 
-        packet.Add((byte)(pulse ? 0x80 | duration : duration));
+        packet.Add((byte) (pulse ? 0x80 | duration : duration));
       }
 
       // Insert byte count markers into packet data bytes ...
-      int subpackets = (int)Math.Ceiling(packet.Count / (double)4);
+      int subpackets = (int) Math.Ceiling(packet.Count/(double) 4);
 
       byte[] output = new byte[packet.Count + subpackets + 1];
 
       int outputPos = 0;
 
-      for (int packetPos = 0; packetPos < packet.Count; )
+      for (int packetPos = 0; packetPos < packet.Count;)
       {
-        byte copyCount = (byte)(packet.Count - packetPos < 4 ? packet.Count - packetPos : 0x04);
+        byte copyCount = (byte) (packet.Count - packetPos < 4 ? packet.Count - packetPos : 0x04);
 
-        output[outputPos++] = (byte)(0x80 | copyCount);
+        output[outputPos++] = (byte) (0x80 | copyCount);
 
         for (int index = 0; index < copyCount; index++)
           output[outputPos++] = packet[packetPos++];
@@ -540,36 +541,84 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
       return output;
     }
 
-    void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
+    private void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
     {
-      MessageBox.Show(this, String.Format("Protocol: {0}\nCode: {1}", Enum.GetName(typeof(IrProtocol), codeType), keyCode), "Decode IR", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(this,
+                      String.Format("Protocol: {0}\nCode: {1}", Enum.GetName(typeof (IrProtocol), codeType), keyCode),
+                      "Decode IR", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
       int newCarrier;
       switch (codeType)
       {
-        case IrProtocol.Daewoo:     newCarrier = 38000; break;
-        case IrProtocol.JVC:        newCarrier = 38000; break;
-        case IrProtocol.Matsushita: newCarrier = 56800; break;
-        case IrProtocol.Mitsubishi: newCarrier = 40000; break;
-        case IrProtocol.NEC:        newCarrier = 38000; break;
-        case IrProtocol.NRC17:      newCarrier = 38000; break;
-        case IrProtocol.Panasonic:  newCarrier = 38000; break;
-        case IrProtocol.RC5:        newCarrier = 36000; break;
-        case IrProtocol.RC5X:       newCarrier = 36000; break;
-        case IrProtocol.RC6:        newCarrier = 36000; break;
-        case IrProtocol.RC6A:       newCarrier = 36000; break;
-        case IrProtocol.RC6_MCE:    newCarrier = 36000; break;
-        case IrProtocol.RC6_16:     newCarrier = 36000; break;
-        case IrProtocol.RC6_20:     newCarrier = 36000; break;
-        case IrProtocol.RC6_24:     newCarrier = 36000; break;
-        case IrProtocol.RC6_32:     newCarrier = 36000; break;
-        case IrProtocol.RCA:        newCarrier = 56000; break;
-        case IrProtocol.RCMM:       newCarrier = 36000; break;
-        case IrProtocol.RECS80:     newCarrier = 38000; break;
-        case IrProtocol.Sharp:      newCarrier = 38000; break;
-        case IrProtocol.SIRC:       newCarrier = 40000; break;
-        case IrProtocol.Toshiba:    newCarrier = 38000; break;
-        case IrProtocol.XSAT:       newCarrier = 38000; break;
+        case IrProtocol.Daewoo:
+          newCarrier = 38000;
+          break;
+        case IrProtocol.JVC:
+          newCarrier = 38000;
+          break;
+        case IrProtocol.Matsushita:
+          newCarrier = 56800;
+          break;
+        case IrProtocol.Mitsubishi:
+          newCarrier = 40000;
+          break;
+        case IrProtocol.NEC:
+          newCarrier = 38000;
+          break;
+        case IrProtocol.NRC17:
+          newCarrier = 38000;
+          break;
+        case IrProtocol.Panasonic:
+          newCarrier = 38000;
+          break;
+        case IrProtocol.RC5:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RC5X:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RC6:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RC6A:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RC6_MCE:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RC6_16:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RC6_20:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RC6_24:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RC6_32:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RCA:
+          newCarrier = 56000;
+          break;
+        case IrProtocol.RCMM:
+          newCarrier = 36000;
+          break;
+        case IrProtocol.RECS80:
+          newCarrier = 38000;
+          break;
+        case IrProtocol.Sharp:
+          newCarrier = 38000;
+          break;
+        case IrProtocol.SIRC:
+          newCarrier = 40000;
+          break;
+        case IrProtocol.Toshiba:
+          newCarrier = 38000;
+          break;
+        case IrProtocol.XSAT:
+          newCarrier = 38000;
+          break;
 
         default:
           return;
@@ -579,7 +628,9 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
       if (_code.Carrier >= newCarrier - 50 && _code.Carrier <= newCarrier + 50)
         return;
 
-      if (DialogResult.Yes == MessageBox.Show(this, String.Format("Use this protocol's carrier frequency ({0})?", newCarrier), "Decode IR", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+      if (DialogResult.Yes ==
+          MessageBox.Show(this, String.Format("Use this protocol's carrier frequency ({0})?", newCarrier), "Decode IR",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Question))
       {
         textBoxCarrier.Text = newCarrier.ToString();
 
@@ -588,13 +639,17 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
         RefreshForm();
       }
     }
-    void KeyboardEvent(uint keyCode, uint modifiers)
+
+    private void KeyboardEvent(uint keyCode, uint modifiers)
     {
-      MessageBox.Show(this, String.Format("Keyboard: {0}, {1}", keyCode, modifiers), "Decode IR", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(this, String.Format("Keyboard: {0}, {1}", keyCode, modifiers), "Decode IR", MessageBoxButtons.OK,
+                      MessageBoxIcon.Information);
     }
-    void MouseEvent(int deltaX, int deltaY, bool right, bool left)
+
+    private void MouseEvent(int deltaX, int deltaY, bool right, bool left)
     {
-      MessageBox.Show(this, String.Format("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left), "Decode IR", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show(this, String.Format("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left),
+                      "Decode IR", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void buttonSetCarrier_Click(object sender, EventArgs e)
@@ -612,13 +667,14 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
 
     private void connectToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Connecting ..." });
+      Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Connecting ..."});
 
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);
     }
+
     private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (_registered)
@@ -629,10 +685,11 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
         _registered = false;
       }
 
-      this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Disconnected" });
+      Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Disconnected"});
 
       StopClient();
     }
+
     private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
     {
       ServerAddress serverAddress = new ServerAddress(_serverHost);
@@ -646,13 +703,14 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
     private void buttonBlast_Click(object sender, EventArgs e)
     {
       if (!_registered)
-        MessageBox.Show(this, "Not registered to an active Input Service", "Cannot blast", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "Not registered to an active Input Service", "Cannot blast", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
 
-      this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Blasting ..." });
+      Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Blasting ..."});
 
       string port = comboBoxPort.Text;
       byte[] codeBytes = _code.ToByteArray();
- 
+
       byte[] outData = new byte[4 + port.Length + codeBytes.Length];
 
       BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
@@ -663,17 +721,23 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
       IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
       _client.Send(message);
     }
+
     private void buttonLearn_Click(object sender, EventArgs e)
     {
       if (!_registered)
-        MessageBox.Show(this, "Not registered to an active Input Service", "Cannot learn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, "Not registered to an active Input Service", "Cannot learn", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
 
-      this.Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Learning ..." });
+      Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Learning ..."});
 
       IrssMessage message = new IrssMessage(MessageType.LearnIR, MessageFlags.Request);
       _client.Send(message);
     }
 
-  }
+    #region Nested type: UpdateWindowDel
 
+    private delegate void UpdateWindowDel(string status);
+
+    #endregion
+  }
 }

@@ -1,18 +1,14 @@
 using System;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.IO;
+using System.Reflection;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// Log file recording class.
   /// </summary>
   public static class IrssLog
   {
-
     #region Constants
 
     /// <summary>
@@ -32,7 +28,7 @@ namespace IrssUtils
       /// <summary>
       /// Do not log any messages.
       /// </summary>
-      Off   = 0,
+      Off = 0,
       /// <summary>
       /// Log only Error messages.
       /// </summary>
@@ -40,11 +36,11 @@ namespace IrssUtils
       /// <summary>
       /// Log only Warning and Error messages.
       /// </summary>
-      Warn  = 2,
+      Warn = 2,
       /// <summary>
       /// Log only Warning, Error and Information messages.
       /// </summary>
-      Info  = 3,
+      Info = 3,
       /// <summary>
       /// Log all messages.
       /// </summary>
@@ -55,8 +51,8 @@ namespace IrssUtils
 
     #region Variables
 
-    static Level _logLevel = Level.Debug;
-    static StreamWriter _streamWriter;
+    private static Level _logLevel = Level.Debug;
+    private static StreamWriter _streamWriter;
 
     #endregion Variables
 
@@ -124,7 +120,8 @@ namespace IrssUtils
         Trace.WriteLine(message);
 #endif
 
-        message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - {1}", DateTime.Now, System.Reflection.Assembly.GetCallingAssembly().FullName);
+        message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - {1}", DateTime.Now,
+                                Assembly.GetCallingAssembly().FullName);
         _streamWriter.WriteLine(message);
 
 #if TRACE
@@ -156,7 +153,8 @@ namespace IrssUtils
 
       try
       {
-        if (File.Exists(filePath) && File.GetCreationTime(filePath).Ticks < DateTime.Now.Subtract(TimeSpan.FromDays(7)).Ticks)
+        if (File.Exists(filePath) &&
+            File.GetCreationTime(filePath).Ticks < DateTime.Now.Subtract(TimeSpan.FromDays(7)).Ticks)
         {
           string backup = Path.ChangeExtension(filePath, ExtensionBackupFile);
 
@@ -199,7 +197,7 @@ namespace IrssUtils
       }
 #endif
     }
-    
+
     /// <summary>
     /// Close the currently open log file.
     /// </summary>
@@ -243,7 +241,7 @@ namespace IrssUtils
     {
       if (_streamWriter != null && _logLevel >= Level.Error)
       {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Error:\t{1}", DateTime.Now, ex.ToString());
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Error:\t{1}", DateTime.Now, ex);
 
         _streamWriter.WriteLine(message);
 #if TRACE
@@ -261,7 +259,8 @@ namespace IrssUtils
     {
       if (_streamWriter != null && _logLevel >= Level.Error)
       {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Error:\t", DateTime.Now) + String.Format(format, args);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Error:\t", DateTime.Now) +
+                         String.Format(format, args);
 
         _streamWriter.WriteLine(message);
 #if TRACE
@@ -269,7 +268,7 @@ namespace IrssUtils
 #endif
       }
     }
-    
+
     /// <summary>
     /// Log a Warning.
     /// </summary>
@@ -279,7 +278,8 @@ namespace IrssUtils
     {
       if (_streamWriter != null && _logLevel >= Level.Warn)
       {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Warn:\t", DateTime.Now) + String.Format(format, args);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Warn:\t", DateTime.Now) +
+                         String.Format(format, args);
 
         _streamWriter.WriteLine(message);
 #if TRACE
@@ -287,7 +287,7 @@ namespace IrssUtils
 #endif
       }
     }
-    
+
     /// <summary>
     /// Log Information.
     /// </summary>
@@ -297,7 +297,8 @@ namespace IrssUtils
     {
       if (_streamWriter != null && _logLevel >= Level.Info)
       {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Info:\t", DateTime.Now) + String.Format(format, args);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Info:\t", DateTime.Now) +
+                         String.Format(format, args);
 
         _streamWriter.WriteLine(message);
 #if TRACE
@@ -305,7 +306,7 @@ namespace IrssUtils
 #endif
       }
     }
-    
+
     /// <summary>
     /// Log a Debug message.
     /// </summary>
@@ -315,7 +316,8 @@ namespace IrssUtils
     {
       if (_streamWriter != null && _logLevel >= Level.Debug)
       {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Debug:\t", DateTime.Now) + String.Format(format, args);
+        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Debug:\t", DateTime.Now) +
+                         String.Format(format, args);
 
         _streamWriter.WriteLine(message);
 #if TRACE
@@ -327,7 +329,5 @@ namespace IrssUtils
     #endregion Log recording methods
 
     #endregion Implementation
-
   }
-
 }

@@ -1,41 +1,34 @@
 using System;
-#if TRACE
-using System.Diagnostics;
-#endif
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Web;
-using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace WebRemote
 {
-
   /// <summary>
   /// Provides a Web front-end to the Virtual Remote.
   /// </summary>
-  class WebServer
+  internal class WebServer
   {
-
     #region Constants
 
-    const string ServerName = "Web Remote";
+    private const string ServerName = "Web Remote";
 
     #endregion Constants
 
     #region Variables
 
-    int _serverPort;
+    private readonly int _serverPort;
 
-    Socket _serverSocket;
-    NetworkStream _networkStream;
-    TextReader _networkReader;
+    private TextReader _networkReader;
+    private NetworkStream _networkStream;
 
-    Thread _runningThread;
+    private Thread _runningThread;
+    private Socket _serverSocket;
 
     #endregion Variables
 
@@ -62,7 +55,7 @@ namespace WebRemote
       if (_runningThread != null)
         _runningThread.Abort();
 
-      _runningThread = new Thread(new ThreadStart(RunThread));
+      _runningThread = new Thread(RunThread);
       _runningThread.Name = "WebRemote Server";
       _runningThread.IsBackground = true;
       _runningThread.Start();
@@ -92,7 +85,7 @@ namespace WebRemote
 
     #region Implementation
 
-    void RunThread()
+    private void RunThread()
     {
       try
       {
@@ -116,7 +109,6 @@ namespace WebRemote
           _networkStream.Flush();
           _networkStream.Close();
         }
-
       }
       catch (Exception ex)
       {
@@ -128,7 +120,7 @@ namespace WebRemote
       }
     }
 
-    void DoGet(string argument)
+    private void DoGet(string argument)
     {
       string url = GetUrl(argument);
 
@@ -176,17 +168,17 @@ namespace WebRemote
       }
     }
 
-    void AcceptConnection()
+    private void AcceptConnection()
     {
       _serverSocket.Listen(1);
-      
+
       Socket socket = _serverSocket.Accept();
 
       _networkStream = new NetworkStream(socket, FileAccess.ReadWrite, true);
       _networkReader = new StreamReader(_networkStream);
     }
 
-    string GetCommand()
+    private string GetCommand()
     {
       string buf;
       string command = String.Empty;
@@ -204,7 +196,7 @@ namespace WebRemote
       return command;
     }
 
-    void SendFile(string path)
+    private void SendFile(string path)
     {
       byte[] buffer = new byte[2048];
 
@@ -218,7 +210,7 @@ namespace WebRemote
       }
     }
 
-    void SendString(string message, params object[] args)
+    private void SendString(string message, params object[] args)
     {
       string output = String.Format(message, args);
 
@@ -227,7 +219,7 @@ namespace WebRemote
       _networkStream.Write(outputBytes, 0, outputBytes.Length);
     }
 
-    void SendError(int errorNumber, string errorString)
+    private void SendError(int errorNumber, string errorString)
     {
       SendString("HTTP/1.1 {0} {1}\r\n", errorNumber, errorString);
       SendString("Date:{0}\r\n", DateTime.Now);
@@ -236,7 +228,7 @@ namespace WebRemote
       SendString("Connection: close\r\n");
     }
 
-    void SendOK(string contentType)
+    private void SendOK(string contentType)
     {
       SendString("HTTP/1.1 200 OK\r\n");
       SendString("Date:{0}\r\n", DateTime.Now);
@@ -254,7 +246,7 @@ namespace WebRemote
     }
     */
 
-    static string GetUrl(string argument)
+    private static string GetUrl(string argument)
     {
       StringBuilder outputString = new StringBuilder();
 
@@ -271,14 +263,12 @@ namespace WebRemote
       return outputString.ToString();
     }
 
-    static string GetCommandElement(string command)
+    private static string GetCommandElement(string command)
     {
-      string[] commandElements = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+      string[] commandElements = command.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
       return commandElements[1];
     }
 
     #endregion Implementation
-
   }
-
 }

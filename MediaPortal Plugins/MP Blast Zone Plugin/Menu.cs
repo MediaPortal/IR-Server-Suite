@@ -5,16 +5,14 @@ using System.Xml;
 
 namespace MediaPortal.Plugins
 {
-
   /// <summary>
   /// Represents the root element of the menu tree
   /// </summary>
-  class MenuRoot
+  internal class MenuRoot
   {
-
     #region Variables
 
-    List<MenuFolder> _items;
+    private readonly List<MenuFolder> _items;
 
     #endregion Variables
 
@@ -24,6 +22,7 @@ namespace MediaPortal.Plugins
     {
       _items = new List<MenuFolder>();
     }
+
     public MenuRoot(string fileName) : this()
     {
       XmlDocument doc = new XmlDocument();
@@ -38,7 +37,8 @@ namespace MediaPortal.Plugins
 
         foreach (XmlNode nodeCommand in nodeCollection.SelectNodes("command"))
         {
-          MenuCommand newCommand = new MenuCommand(nodeCommand.Attributes["name"].Value, nodeCommand.Attributes["value"].Value);
+          MenuCommand newCommand = new MenuCommand(nodeCommand.Attributes["name"].Value,
+                                                   nodeCommand.Attributes["value"].Value);
           newCollection.Add(newCommand);
         }
       }
@@ -54,7 +54,7 @@ namespace MediaPortal.Plugins
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("menu"); // <menu>
 
@@ -93,6 +93,7 @@ namespace MediaPortal.Plugins
     {
       _items.Add(item);
     }
+
     public void Remove(MenuFolder item)
     {
       _items.Remove(item);
@@ -114,25 +115,26 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Methods
-
   }
 
   /// <summary>
   /// Represents a folder of commands
   /// </summary>
-  class MenuFolder
+  internal class MenuFolder
   {
-
     #region Variables
 
-    string _name;
-    List<MenuCommand> _items;
+    private readonly List<MenuCommand> _items;
+    private readonly string _name;
 
     #endregion Variables
 
     #region Constructors
 
-    public MenuFolder() : this("New Collection") { }
+    public MenuFolder() : this("New Collection")
+    {
+    }
+
     public MenuFolder(string name)
     {
       _items = new List<MenuCommand>();
@@ -188,25 +190,26 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Methods
-
   }
-  
+
   /// <summary>
   /// Represents a menu item and it's command
   /// </summary>
-  class MenuCommand
+  internal class MenuCommand
   {
-
     #region Variables
 
-    string _name;
-    string _command;
+    private string _command;
+    private string _name;
 
     #endregion Variables
 
     #region Constructors
 
-    public MenuCommand() : this("New Command", String.Empty) { }
+    public MenuCommand() : this("New Command", String.Empty)
+    {
+    }
+
     public MenuCommand(string name, string command)
     {
       _name = name;
@@ -230,7 +233,5 @@ namespace MediaPortal.Plugins
     }
 
     #endregion Properties
-
   }
-
 }

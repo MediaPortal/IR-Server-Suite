@@ -1,26 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Learn IR form.
   /// </summary>
   public partial class LearnIR : Form
   {
-
     #region Variables
 
-    LearnIrDelegate _learnIrDelegate;
-    BlastIrDelegate _blastIrDelegate;
+    private readonly BlastIrDelegate _blastIrDelegate;
 
-    bool _isNewCode;
+    private readonly bool _isNewCode;
+    private readonly LearnIrDelegate _learnIrDelegate;
 
     #endregion Variables
 
@@ -52,11 +47,11 @@ namespace IrssUtils.Forms
       comboBoxPort.Items.AddRange(ports);
       comboBoxPort.SelectedIndex = 0;
 
-      labelStatus.Text          = "Nothing learned yet";
-      groupBoxTest.Enabled      = false;
-      textBoxName.Text          = "New";
-      textBoxName.Enabled       = true;
-      _isNewCode                = true;
+      labelStatus.Text = "Nothing learned yet";
+      groupBoxTest.Enabled = false;
+      textBoxName.Text = "New";
+      textBoxName.Enabled = true;
+      _isNewCode = true;
     }
 
     /// <summary>
@@ -66,22 +61,21 @@ namespace IrssUtils.Forms
     /// <param name="blastIrDelegate">Delegate to call to test an IR Command.</param>
     /// <param name="ports">Available blast ports to transmit on.</param>
     /// <param name="existingCodeName">Name of the existing IR Command.</param>
-    public LearnIR(LearnIrDelegate learnIrDelegate, BlastIrDelegate blastIrDelegate, string[] ports, string existingCodeName)
+    public LearnIR(LearnIrDelegate learnIrDelegate, BlastIrDelegate blastIrDelegate, string[] ports,
+                   string existingCodeName)
       : this(learnIrDelegate, blastIrDelegate, ports)
     {
       if (String.IsNullOrEmpty(existingCodeName))
         throw new ArgumentNullException("existingCodeName");
 
-      labelStatus.Text          = "IR Command is unchanged";
-      groupBoxTest.Enabled      = true;
-      textBoxName.Text          = existingCodeName;
-      textBoxName.Enabled       = false;
-      _isNewCode                = false;
+      labelStatus.Text = "IR Command is unchanged";
+      groupBoxTest.Enabled = true;
+      textBoxName.Text = existingCodeName;
+      textBoxName.Enabled = false;
+      _isNewCode = false;
     }
 
     #endregion Constructor
-
-    delegate void LearnStatusDelegate(string status, bool success);
 
     /// <summary>
     /// Updates the Learn IR status.
@@ -92,7 +86,7 @@ namespace IrssUtils.Forms
     {
       if (labelStatus.InvokeRequired)
       {
-        this.Invoke(new LearnStatusDelegate(LearnStatus), new object[] { status, success });
+        Invoke(new LearnStatusDelegate(LearnStatus), new object[] {status, success});
       }
       else
       {
@@ -100,10 +94,10 @@ namespace IrssUtils.Forms
         labelStatus.ForeColor = success ? Color.Green : Color.Red;
         labelStatus.Update();
 
-        textBoxName.Enabled   = _isNewCode;
-        buttonLearn.Enabled   = true;
-        groupBoxTest.Enabled  = success || !_isNewCode;
-        buttonDone.Enabled    = true;
+        textBoxName.Enabled = _isNewCode;
+        buttonLearn.Enabled = true;
+        groupBoxTest.Enabled = success || !_isNewCode;
+        buttonDone.Enabled = true;
       }
     }
 
@@ -115,22 +109,24 @@ namespace IrssUtils.Forms
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this IR Command", "Missing name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this IR Command", "Missing name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this IR Command", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this IR Command", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
-      textBoxName.Enabled   = false;
-      buttonLearn.Enabled   = false;
-      groupBoxTest.Enabled  = false;
-      buttonDone.Enabled    = false;
+      textBoxName.Enabled = false;
+      buttonLearn.Enabled = false;
+      groupBoxTest.Enabled = false;
+      buttonDone.Enabled = false;
 
       string fileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
       if (_learnIrDelegate(fileName))
@@ -144,16 +140,16 @@ namespace IrssUtils.Forms
         labelStatus.Text = "Failed to learn IR";
         labelStatus.ForeColor = Color.Red;
 
-        textBoxName.Enabled   = _isNewCode;
-        buttonLearn.Enabled   = true;
-        groupBoxTest.Enabled  = !_isNewCode;
-        buttonDone.Enabled    = true;
+        textBoxName.Enabled = _isNewCode;
+        buttonLearn.Enabled = true;
+        groupBoxTest.Enabled = !_isNewCode;
+        buttonDone.Enabled = true;
       }
     }
 
     private void buttonDone_Click(object sender, EventArgs e)
     {
-      this.Close();
+      Close();
     }
 
     private void buttonTest_Click(object sender, EventArgs e)
@@ -178,6 +174,10 @@ namespace IrssUtils.Forms
 
     #endregion Buttons
 
-  }
+    #region Nested type: LearnStatusDelegate
 
+    private delegate void LearnStatusDelegate(string status, bool success);
+
+    #endregion
+  }
 }

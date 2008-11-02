@@ -1,17 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// XML access utils.
   /// </summary>
   public static class XML
   {
-
     /// <summary>
     /// Given a list of nodes, return a requested property or it's default value if not present.
     /// </summary>
@@ -80,7 +76,5 @@ namespace IrssUtils
 
       return returnValue;
     }
-
   }
-
 }

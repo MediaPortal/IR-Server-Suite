@@ -3,44 +3,42 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-using Microsoft.Win32.SafeHandles;
-
 namespace InputService.Plugin
 {
-
-  class NotifyWindow : NativeWindow, IDisposable
+  internal class NotifyWindow : NativeWindow, IDisposable
   {
-
     #region Interop
 
-    const int WM_DEVICECHANGE           = 0x0219;
-    const int WM_SETTINGSCHANGE         = 0x001A;
+    private const int DBT_DEVICEARRIVAL = 0x8000;
+    private const int DBT_DEVICEREMOVECOMPLETE = 0x8004;
+    private const int WM_DEVICECHANGE = 0x0219;
+    //private const int WM_SETTINGSCHANGE = 0x001A;
 
-    const int DBT_DEVICEARRIVAL         = 0x8000;
-    const int DBT_DEVICEREMOVECOMPLETE  = 0x8004;
+    [DllImport("user32", SetLastError = true)]
+    private static extern IntPtr RegisterDeviceNotification(
+      IntPtr handle,
+      ref DeviceBroadcastHandle filter,
+      int flags);
+
+    [DllImport("user32", SetLastError = true)]
+    private static extern IntPtr RegisterDeviceNotification(
+      IntPtr handle,
+      ref DeviceBroadcastInterface filter,
+      int flags);
+
+    [DllImport("user32")]
+    private static extern int UnregisterDeviceNotification(
+      IntPtr handle);
+
+    [DllImport("kernel32")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool CancelIo(
+      IntPtr handle);
+
+    #region Nested type: DeviceBroadcastHandle
 
     [StructLayout(LayoutKind.Sequential)]
-    struct DeviceBroadcastHeader
-    {
-      public int Size;
-      public int DeviceType;
-      public int Reserved;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct DeviceBroadcastInterface
-    {
-      public int Size;
-      public int DeviceType;
-      public int Reserved;
-      public Guid ClassGuid;
-
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-      public string Name;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct DeviceBroadcastHandle
+    private struct DeviceBroadcastHandle
     {
       public int Size;
       public int DeviceType;
@@ -52,35 +50,38 @@ namespace InputService.Plugin
       public byte Data;
     }
 
-    [DllImport("user32", SetLastError = true)]
-    static extern IntPtr RegisterDeviceNotification(
-      IntPtr handle, 
-      ref DeviceBroadcastHandle filter, 
-      int flags);
+    #endregion
 
-    [DllImport("user32", SetLastError = true)]
-    static extern IntPtr RegisterDeviceNotification(
-      IntPtr handle, 
-      ref DeviceBroadcastInterface filter, 
-      int flags);
+    #region Nested type: DeviceBroadcastHeader
 
-    [DllImport("user32")]
-    static extern int UnregisterDeviceNotification(
-      IntPtr handle);
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DeviceBroadcastHeader
+    {
+      public int Size;
+      public int DeviceType;
+      public int Reserved;
+    }
 
-    [DllImport("kernel32")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CancelIo(
-      IntPtr handle);
+    #endregion
+
+    #region Nested type: DeviceBroadcastInterface
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DeviceBroadcastInterface
+    {
+      public int Size;
+      public int DeviceType;
+      public int Reserved;
+      public Guid ClassGuid;
+
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string Name;
+    }
+
+    #endregion
 
     #endregion Interop
 
     #region Constructor / Destructor
-
-    public NotifyWindow()
-    {
-
-    }
 
     ~NotifyWindow()
     {
@@ -89,6 +90,18 @@ namespace InputService.Plugin
     }
 
     #endregion Constructor / Destructor
+
+    internal DeviceEventHandler DeviceArrival;
+    internal DeviceEventHandler DeviceRemoval;
+
+    #region Members
+
+    private Guid _deviceClass;
+    private IntPtr _deviceHandle;
+    private IntPtr _handleDeviceArrival;
+    private IntPtr _handleDeviceRemoval;
+
+    #endregion Members
 
     #region IDisposable Members
 
@@ -100,6 +113,8 @@ namespace InputService.Plugin
       // Tell the GC that the Finalize process no longer needs to be run for this object.
       GC.SuppressFinalize(this);
     }
+
+    #endregion
 
     private void Dispose(bool disposing)
     {
@@ -115,8 +130,6 @@ namespace InputService.Plugin
       UnregisterDeviceRemoval();
     }
 
-    #endregion IDisposable Members
-
     #region Methods
 
     /// <summary>
@@ -129,14 +142,14 @@ namespace InputService.Plugin
 
       CreateParams Params = new CreateParams();
       Params.ExStyle = 0x80;
-      Params.Style = unchecked((int)0x80000000);
+      Params.Style = unchecked((int) 0x80000000);
       CreateHandle(Params);
     }
 
     /// <summary>
     /// Destroys the window handle.
     /// </summary>
-    void Destroy()
+    private void Destroy()
     {
       if (Handle == IntPtr.Zero)
         return;
@@ -148,16 +161,16 @@ namespace InputService.Plugin
 
     #region Properties
 
-    internal Guid Class 
-    { 
+    internal Guid Class
+    {
       get { return _deviceClass; }
-      set { _deviceClass = value; } 
+      set { _deviceClass = value; }
     }
 
     #endregion Properties
 
     #region Overrides
-    
+
     protected override void WndProc(ref Message m)
     {
       if (m.Msg == WM_DEVICECHANGE)
@@ -165,11 +178,13 @@ namespace InputService.Plugin
         switch (m.WParam.ToInt32())
         {
           case DBT_DEVICEARRIVAL:
-            OnDeviceArrival((DeviceBroadcastHeader)Marshal.PtrToStructure(m.LParam, typeof(DeviceBroadcastHeader)), m.LParam);
+            OnDeviceArrival((DeviceBroadcastHeader) Marshal.PtrToStructure(m.LParam, typeof (DeviceBroadcastHeader)),
+                            m.LParam);
             break;
 
           case DBT_DEVICEREMOVECOMPLETE:
-            OnDeviceRemoval((DeviceBroadcastHeader)Marshal.PtrToStructure(m.LParam, typeof(DeviceBroadcastHeader)), m.LParam);
+            OnDeviceRemoval((DeviceBroadcastHeader) Marshal.PtrToStructure(m.LParam, typeof (DeviceBroadcastHeader)),
+                            m.LParam);
             break;
         }
       }
@@ -234,22 +249,23 @@ namespace InputService.Plugin
       _deviceHandle = IntPtr.Zero;
     }
 
-    void OnDeviceArrival(DeviceBroadcastHeader dbh, IntPtr ptr)
+    private void OnDeviceArrival(DeviceBroadcastHeader dbh, IntPtr ptr)
     {
       if (dbh.DeviceType == 0x05)
       {
-        DeviceBroadcastInterface dbi = (DeviceBroadcastInterface)Marshal.PtrToStructure(ptr, typeof(DeviceBroadcastInterface));
+        DeviceBroadcastInterface dbi =
+          (DeviceBroadcastInterface) Marshal.PtrToStructure(ptr, typeof (DeviceBroadcastInterface));
 
         if (dbi.ClassGuid == _deviceClass && DeviceArrival != null)
           DeviceArrival();
       }
     }
 
-    void OnDeviceRemoval(DeviceBroadcastHeader header, IntPtr ptr)
+    private void OnDeviceRemoval(DeviceBroadcastHeader header, IntPtr ptr)
     {
       if (header.DeviceType == 0x06)
       {
-        DeviceBroadcastHandle dbh = (DeviceBroadcastHandle)Marshal.PtrToStructure(ptr, typeof(DeviceBroadcastHandle));
+        DeviceBroadcastHandle dbh = (DeviceBroadcastHandle) Marshal.PtrToStructure(ptr, typeof (DeviceBroadcastHandle));
 
         if (dbh.Handle != _deviceHandle)
           return;
@@ -264,23 +280,6 @@ namespace InputService.Plugin
 
     #endregion Implementation
 
-    #region Delegates
-
-    internal DeviceEventHandler DeviceArrival;
-    internal DeviceEventHandler DeviceRemoval;
     //internal SettingsChanged SettingsChanged;
-
-    #endregion Delegates
-
-    #region Members
-
-    IntPtr _handleDeviceArrival;
-    IntPtr _handleDeviceRemoval;
-    IntPtr _deviceHandle;
-    Guid _deviceClass;
-
-    #endregion Members
-
   }
-
 }

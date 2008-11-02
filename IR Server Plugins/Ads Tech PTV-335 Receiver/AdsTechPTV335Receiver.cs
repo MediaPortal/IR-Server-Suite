@@ -1,75 +1,106 @@
 using System;
 using System.Drawing;
-using System.Text;
-using System.Threading;
 using System.Runtime.InteropServices;
+using System.Threading;
+using InputService.Plugin.Properties;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// IR Server plugin to support the Ads Tech PTV-335 Receiver device.
   /// </summary>
   public class AdsTechPTV335Receiver : PluginBase, IRemoteReceiver
   {
-
     #region Interop
 
     // int __cdecl ADS335RCP_GetKey(unsigned char &)
-    [DllImport("ADS_335_RCPLIB.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?ADS335RCP_GetKey@@YAHAAE@Z")]
-    static extern int GetKey(out byte key);
+    [DllImport("ADS_335_RCPLIB.dll", CallingConvention = CallingConvention.Cdecl,
+      EntryPoint = "?ADS335RCP_GetKey@@YAHAAE@Z")]
+    private static extern int GetKey(out byte key);
 
     //int __cdecl ADS335RCP_Init(void)
-    [DllImport("ADS_335_RCPLIB.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?ADS335RCP_Init@@YAHXZ")]
-    static extern int Init();
+    [DllImport("ADS_335_RCPLIB.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?ADS335RCP_Init@@YAHXZ")
+    ]
+    private static extern int Init();
 
     //int __cdecl ADS335RCP_UnInit(void)
-    [DllImport("ADS_335_RCPLIB.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?ADS335RCP_UnInit@@YAHXZ")]
-    static extern int UnInit();
+    [DllImport("ADS_335_RCPLIB.dll", CallingConvention = CallingConvention.Cdecl,
+      EntryPoint = "?ADS335RCP_UnInit@@YAHXZ")]
+    private static extern int UnInit();
 
     #endregion Interop
 
     #region Consatnts
 
-    const int PacketTimeout = 200;
+    private const int PacketTimeout = 200;
 
     #endregion Constants
 
     #region Variables
 
-    RemoteHandler _remoteHandler;
-
-    bool _processReadThread;
-    Thread _readThread;
+    private bool _processReadThread;
+    private Thread _readThread;
+    private RemoteHandler _remoteHandler;
 
     #endregion Variables
-
 
     /// <summary>
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "Ads Tech PTV-335"; } }
+    public override string Name
+    {
+      get { return "Ads Tech PTV-335"; }
+    }
+
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.4.2.0"; } }
+    public override string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81"; } }
+    public override string Author
+    {
+      get { return "and-81"; }
+    }
+
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Supports the Ads Tech PTV-335 Receiver"; } }
+    public override string Description
+    {
+      get { return "Supports the Ads Tech PTV-335 Receiver"; }
+    }
+
     /// <summary>
     /// Gets a display icon for the plugin.
     /// </summary>
     /// <value>The icon.</value>
-    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
+    public override Icon DeviceIcon
+    {
+      get { return Resources.Icon; }
+    }
+
+    #region IRemoteReceiver Members
+
+    /// <summary>
+    /// Callback for remote button presses.
+    /// </summary>
+    public RemoteHandler RemoteCallback
+    {
+      get { return _remoteHandler; }
+      set { _remoteHandler = value; }
+    }
+
+    #endregion
 
     /// <summary>
     /// Detect the presence of this device.  Devices that cannot be detected will always return false.
@@ -101,6 +132,7 @@ namespace InputService.Plugin
 
       StartReadThread();
     }
+
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
@@ -108,6 +140,7 @@ namespace InputService.Plugin
     {
       Stop();
     }
+
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
@@ -115,6 +148,7 @@ namespace InputService.Plugin
     {
       Start();
     }
+
     /// <summary>
     /// Stop the IR Server plugin.
     /// </summary>
@@ -124,44 +158,35 @@ namespace InputService.Plugin
 
       UnInit();
     }
-    
-    /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteHandler; }
-      set { _remoteHandler = value; }
-    }
 
 
-    void StartReadThread()
+    private void StartReadThread()
     {
       if (_readThread != null)
         return;
 
       _processReadThread = true;
 
-      _readThread = new Thread(new ThreadStart(ReadThread));
+      _readThread = new Thread(ReadThread);
       _readThread.Name = "AdsTechPTV335Receiver.ReadThread";
       _readThread.IsBackground = true;
       _readThread.Start();
     }
 
-    void StopReadThread()
+    private void StopReadThread()
     {
       if (_readThread == null)
         return;
 
       _processReadThread = false;
 
-      if (!_readThread.Join(PacketTimeout * 2))
+      if (!_readThread.Join(PacketTimeout*2))
         _readThread.Abort();
 
       _readThread = null;
     }
 
-    void ReadThread()
+    private void ReadThread()
     {
       byte key;
       int retVal;
@@ -173,10 +198,8 @@ namespace InputService.Plugin
         if (retVal == 0)
           Thread.Sleep(PacketTimeout);
         else if (_remoteHandler != null)
-          _remoteHandler(this.Name, key.ToString("X2"));
+          _remoteHandler(Name, key.ToString("X2"));
       }
     }
-    
   }
-
 }

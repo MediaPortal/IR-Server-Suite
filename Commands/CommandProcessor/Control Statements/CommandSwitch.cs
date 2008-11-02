@@ -1,32 +1,32 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace Commands
 {
-
   /// <summary>
   /// Switch Statement macro command.
   /// </summary>
   public class CommandSwitch : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSwitch"/> class.
     /// </summary>
-    public CommandSwitch() { InitParameters(3); }
+    public CommandSwitch()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSwitch"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSwitch(string[] parameters) : base(parameters) { }
+    public CommandSwitch(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -36,13 +36,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryControl; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryControl;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Switch Statement"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Switch Statement";
+    }
 
     /// <summary>
     /// Gets the user display text.
@@ -85,8 +91,8 @@ namespace Commands
       string[] cases;
       using (StringReader stringReader = new StringReader(casesXml))
       {
-        XmlSerializer xmlSerializer = new XmlSerializer(typeof(string[]));
-        cases = (string[])xmlSerializer.Deserialize(stringReader);
+        XmlSerializer xmlSerializer = new XmlSerializer(typeof (string[]));
+        cases = (string[]) xmlSerializer.Deserialize(stringReader);
       }
 
       for (int index = 0; index < cases.Length; index += 2)
@@ -97,7 +103,5 @@ namespace Commands
     }
 
     #endregion Static Methods
-
   }
-
 }

@@ -1,16 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
-  partial class Configure : Form
+  internal partial class Configure : Form
   {
-
     #region Properties
 
     public string ServerAddress
@@ -18,11 +12,13 @@ namespace InputService.Plugin
       get { return textBoxServerAddress.Text; }
       set { textBoxServerAddress.Text = value; }
     }
+
     public int ServerPort
     {
       get { return decimal.ToInt32(numericUpDownServerPort.Value); }
       set { numericUpDownServerPort.Value = new decimal(value); }
     }
+
     public string RemoteModel
     {
       get { return textBoxRemoteModel.Text; }
@@ -44,17 +40,16 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

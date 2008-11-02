@@ -3,21 +3,19 @@ using System.Text;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// Holds data on an the current capabilities of the IR Server.
   /// This class is used to pass information about the IR Server's current capabilities on to the clients.
   /// </summary>
   public class IRServerInfo
   {
-
     #region Variables
 
-    bool _canLearn;
-    bool _canReceive;
-    bool _canTransmit;
+    private bool _canLearn;
+    private bool _canReceive;
+    private bool _canTransmit;
 
-    string[] _ports;
+    private string[] _ports;
 
     #endregion Variables
 
@@ -68,7 +66,7 @@ namespace IrssUtils
     /// </summary>
     public IRServerInfo()
     {
-      _ports = new string[] { "None" };
+      _ports = new string[] {"None"};
     }
 
     #endregion Construcors
@@ -92,12 +90,12 @@ namespace IrssUtils
         }
 
         string data = String.Format("{0},{1},{2},{3},{4}",
-          _canLearn,        // 0
-          _canReceive,      // 1
-          _canTransmit,     // 2
-          _ports.Length,    // 3
-          ports.ToString()  // 4
-        );
+                                    _canLearn, // 0
+                                    _canReceive, // 1
+                                    _canTransmit, // 2
+                                    _ports.Length, // 3
+                                    ports // 4
+          );
 
         return Encoding.ASCII.GetBytes(data);
       }
@@ -121,9 +119,9 @@ namespace IrssUtils
         string[] data = dataString.Split(',');
 
         IRServerInfo irServerInfo = new IRServerInfo();
-        irServerInfo.CanLearn     = bool.Parse(data[0]);
-        irServerInfo.CanReceive   = bool.Parse(data[1]);
-        irServerInfo.CanTransmit  = bool.Parse(data[2]);
+        irServerInfo.CanLearn = bool.Parse(data[0]);
+        irServerInfo.CanReceive = bool.Parse(data[1]);
+        irServerInfo.CanTransmit = bool.Parse(data[2]);
 
         int portIndex = 3;
         int portCount = int.Parse(data[portIndex]);
@@ -140,7 +138,5 @@ namespace IrssUtils
     }
 
     #endregion Methods
-
   }
-
 }

@@ -4,21 +4,21 @@ using System.Windows.Forms;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// Win32 native method wrapper for Mouse control functions.
   /// </summary>
   public static class Mouse
   {
-
     #region Interop
 
     [DllImport("user32")]
-    static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
+    private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
 
     #endregion Interop
 
     #region Enumerations
+
+    #region MouseEvents enum
 
     /// <summary>
     /// Used to simulate mouse actions.
@@ -29,44 +29,48 @@ namespace IrssUtils
       /// <summary>
       /// No Event.
       /// </summary>
-      None        = 0x0000,
+      None = 0x0000,
       /// <summary>
       /// Move.
       /// </summary>
-      Move        = 0x0001,
+      Move = 0x0001,
       /// <summary>
       /// Left Button Down.
       /// </summary>
-      LeftDown    = 0x0002,
+      LeftDown = 0x0002,
       /// <summary>
       /// Left Button Up.
       /// </summary>
-      LeftUp      = 0x0004,
+      LeftUp = 0x0004,
       /// <summary>
       /// Right Button Down.
       /// </summary>
-      RightDown   = 0x0008,
+      RightDown = 0x0008,
       /// <summary>
       /// Right Button Up.
       /// </summary>
-      RightUp     = 0x0010,
+      RightUp = 0x0010,
       /// <summary>
       /// Middle Button Down.
       /// </summary>
-      MiddleDown  = 0x0020,
+      MiddleDown = 0x0020,
       /// <summary>
       /// Middle Button Up.
       /// </summary>
-      MiddleUp    = 0x0040,
+      MiddleUp = 0x0040,
       /// <summary>
       /// Scroll.
       /// </summary>
-      Scroll      = 0x0800,
+      Scroll = 0x0800,
       /// <summary>
       /// Position Absolute.
       /// </summary>
-      Absolute    = 0x8000
+      Absolute = 0x8000
     }
+
+    #endregion
+
+    #region ScrollDir enum
 
     /// <summary>
     /// Used to simulate mouse wheel scrolling.
@@ -76,16 +80,18 @@ namespace IrssUtils
       /// <summary>
       /// No Scroll.
       /// </summary>
-      None  =    0,
+      None = 0,
       /// <summary>
       /// Scroll Up.
       /// </summary>
-      Up    =  120,
+      Up = 120,
       /// <summary>
       /// Scroll Down.
       /// </summary>
-      Down  = -120
+      Down = -120
     }
+
+    #endregion
 
     #endregion Enumerations
 
@@ -97,7 +103,7 @@ namespace IrssUtils
     /// <param name="flags">The button action to simulate.</param>
     public static void Button(MouseEvents flags)
     {
-      mouse_event((int)flags, 0, 0, 0, IntPtr.Zero);
+      mouse_event((int) flags, 0, 0, 0, IntPtr.Zero);
     }
 
     /// <summary>
@@ -110,14 +116,14 @@ namespace IrssUtils
     {
       if (absolute)
       {
-        int x = (int)(dx * (65536.0 / Screen.PrimaryScreen.Bounds.Width));
-        int y = (int)(dy * (65536.0 / Screen.PrimaryScreen.Bounds.Height));
+        int x = (int) (dx*(65536.0/Screen.PrimaryScreen.Bounds.Width));
+        int y = (int) (dy*(65536.0/Screen.PrimaryScreen.Bounds.Height));
 
-        mouse_event((int)(MouseEvents.Move | MouseEvents.Absolute), x, y, 0, IntPtr.Zero);
+        mouse_event((int) (MouseEvents.Move | MouseEvents.Absolute), x, y, 0, IntPtr.Zero);
       }
       else
       {
-        mouse_event((int)(MouseEvents.Move), dx, dy, 0, IntPtr.Zero);
+        mouse_event((int) (MouseEvents.Move), dx, dy, 0, IntPtr.Zero);
       }
     }
 
@@ -127,11 +133,9 @@ namespace IrssUtils
     /// <param name="direction">The direction to scroll.</param>
     public static void Scroll(ScrollDir direction)
     {
-      mouse_event((int)MouseEvents.Scroll, 0, 0, (int)direction, IntPtr.Zero);
+      mouse_event((int) MouseEvents.Scroll, 0, 0, (int) direction, IntPtr.Zero);
     }
 
     #endregion Public Methods
-
   }
-
 }

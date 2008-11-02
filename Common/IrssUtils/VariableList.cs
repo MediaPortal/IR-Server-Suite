@@ -6,16 +6,14 @@ using System.Xml;
 
 namespace IrssUtils
 {
-
   /// <summary>
   /// List of Variables for use in macros and commands.
   /// </summary>
   public class VariableList
   {
-
     #region Variables
 
-    Dictionary<string, string> _variables;
+    private readonly Dictionary<string, string> _variables;
 
     #endregion Variables
 
@@ -82,7 +80,7 @@ namespace IrssUtils
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("variables"); // <variables>
 
@@ -114,7 +112,5 @@ namespace IrssUtils
     }
 
     #endregion Implementation
-
   }
-
 }

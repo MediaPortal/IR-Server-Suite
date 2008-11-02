@@ -1,25 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Text;
 using System.Windows.Forms;
-
-using IrssComms;
 using IrssUtils;
+using TrayLauncher.Properties;
 
 namespace TrayLauncher
 {
-
-  partial class Setup : Form
+  internal partial class Setup : Form
   {
-
     #region Variables
 
-    OpenFileDialog openFileDialog;
-    string _launchKeyCode;
+    private string _launchKeyCode;
+    private OpenFileDialog openFileDialog;
 
     #endregion Variables
 
@@ -30,31 +22,37 @@ namespace TrayLauncher
       get { return comboBoxComputer.Text; }
       set { comboBoxComputer.Text = value; }
     }
+
     public string ProgramFile
     {
       get { return textBoxApplication.Text; }
       set { textBoxApplication.Text = value; }
     }
+
     public bool AutoRun
     {
       get { return checkBoxAuto.Checked; }
       set { checkBoxAuto.Checked = value; }
     }
+
     public bool LaunchOnLoad
     {
       get { return checkBoxLaunchOnLoad.Checked; }
       set { checkBoxLaunchOnLoad.Checked = value; }
     }
+
     public bool OneInstanceOnly
     {
       get { return checkBoxOneInstance.Checked; }
       set { checkBoxOneInstance.Checked = value; }
     }
+
     public bool RepeatsFocus
     {
       get { return checkBoxRepeatsFocus.Checked; }
       set { checkBoxRepeatsFocus.Checked = value; }
-    }    
+    }
+
     public string LaunchKeyCode
     {
       get { return _launchKeyCode; }
@@ -69,7 +67,7 @@ namespace TrayLauncher
     {
       InitializeComponent();
 
-      this.Icon = Properties.Resources.Icon16;
+      Icon = Resources.Icon16;
 
       openFileDialog.Filter = "All files|*.*";
       openFileDialog.Title = "Select Application to Launch";
@@ -88,31 +86,36 @@ namespace TrayLauncher
     {
       if (String.IsNullOrEmpty(textBoxApplication.Text))
       {
-        MessageBox.Show("You must specify an application to launch", "No application", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("You must specify an application to launch", "No application", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
         return;
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
+
     private void buttonFind_Click(object sender, EventArgs e)
     {
       if (openFileDialog.ShowDialog() == DialogResult.OK)
         textBoxApplication.Text = openFileDialog.FileName;
     }
+
     private void buttonRemoteButton_Click(object sender, EventArgs e)
     {
       if (!Tray.Registered)
       {
-        MessageBox.Show(this, "Cannot learn a new launch button without being connected to an active IR Server", "Can't learn button", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        MessageBox.Show(this, "Cannot learn a new launch button without being connected to an active IR Server",
+                        "Can't learn button", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         return;
       }
-      
+
       GetKeyCodeForm getKeyCode = new GetKeyCodeForm();
       getKeyCode.ShowDialog(this);
 
@@ -128,7 +131,5 @@ namespace TrayLauncher
     {
       checkBoxRepeatsFocus.Enabled = checkBoxOneInstance.Checked;
     }
-
   }
-
 }

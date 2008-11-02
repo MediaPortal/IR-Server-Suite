@@ -1,22 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-
 using MediaPortal.GUI.Library;
 
 namespace Commands.MediaPortal
 {
-
   /// <summary>
   /// Send MediaPortal Message command form.
   /// </summary>
   public partial class EditSendMessage : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -27,14 +19,15 @@ namespace Commands.MediaPortal
     {
       get
       {
-        return new string[] {
-          comboBoxMessageType.Text.Trim(),
-          textBoxWindowId.Text.Trim(),
-          textBoxSenderId.Text.Trim(),
-          textBoxControlId.Text.Trim(),
-          textBoxParam1.Text.Trim(),
-          textBoxParam2.Text.Trim()
-        };
+        return new string[]
+                 {
+                   comboBoxMessageType.Text.Trim(),
+                   textBoxWindowId.Text.Trim(),
+                   textBoxSenderId.Text.Trim(),
+                   textBoxControlId.Text.Trim(),
+                   textBoxParam1.Text.Trim(),
+                   textBoxParam2.Text.Trim()
+                 };
       }
     }
 
@@ -69,11 +62,11 @@ namespace Commands.MediaPortal
 
     #endregion Constructors
 
-    void SetupComboBox()
+    private void SetupComboBox()
     {
       comboBoxMessageType.Items.Clear();
 
-      string[] items = Enum.GetNames(typeof(GUIMessage.MessageType));
+      string[] items = Enum.GetNames(typeof (GUIMessage.MessageType));
       Array.Sort(items);
 
       comboBoxMessageType.Items.AddRange(items);
@@ -81,16 +74,14 @@ namespace Commands.MediaPortal
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

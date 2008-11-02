@@ -1,20 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Blast Command form.
   /// </summary>
   public partial class BlastCommand : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -26,8 +20,8 @@ namespace IrssUtils.Forms
       get
       {
         return String.Format("{0}|{1}",
-          labelIRCommandFile.Text,
-          comboBoxPort.SelectedItem as string);
+                             labelIRCommandFile.Text,
+                             comboBoxPort.SelectedItem as string);
       }
     }
 
@@ -54,9 +48,9 @@ namespace IrssUtils.Forms
 
     #region Variables
 
-    string _baseFolder;
+    private readonly string _baseFolder;
 
-    BlastIrDelegate _blastIrDelegate;
+    private readonly BlastIrDelegate _blastIrDelegate;
 
     #endregion Variables
 
@@ -68,7 +62,7 @@ namespace IrssUtils.Forms
     /// <param name="blastIrDelegate">The blast IR delegate.</param>
     /// <param name="baseFolder">The IR Command base folder.</param>
     /// <param name="ports">The available ports.</param>
-    BlastCommand(BlastIrDelegate blastIrDelegate, string baseFolder, string[] ports)
+    private BlastCommand(BlastIrDelegate blastIrDelegate, string baseFolder, string[] ports)
     {
       if (blastIrDelegate == null)
         throw new ArgumentNullException("blastIrDelegate");
@@ -132,7 +126,8 @@ namespace IrssUtils.Forms
     /// <param name="ports">The available ports.</param>
     /// <param name="name">The name of the IR Command.</param>
     /// <param name="commandCount">The command count for this batch of commands.</param>
-    public BlastCommand(BlastIrDelegate blastIrDelegate, string baseFolder, string[] ports, string name, int commandCount)
+    public BlastCommand(BlastIrDelegate blastIrDelegate, string baseFolder, string[] ports, string name,
+                        int commandCount)
       : this(blastIrDelegate, baseFolder, ports, name)
     {
       if (commandCount > 1)
@@ -150,7 +145,8 @@ namespace IrssUtils.Forms
     /// <param name="ports">The available ports.</param>
     /// <param name="commands">The command elements.</param>
     /// <param name="commandCount">The command count for this batch of commands.</param>
-    public BlastCommand(BlastIrDelegate blastIrDelegate, string baseFolder, string[] ports, string[] commands, int commandCount)
+    public BlastCommand(BlastIrDelegate blastIrDelegate, string baseFolder, string[] ports, string[] commands,
+                        int commandCount)
       : this(blastIrDelegate, baseFolder, ports, commands)
     {
       if (commandCount > 1)
@@ -166,14 +162,14 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonTest_Click(object sender, EventArgs e)
@@ -197,7 +193,5 @@ namespace IrssUtils.Forms
     }
 
     #endregion Buttons
-
   }
-
 }

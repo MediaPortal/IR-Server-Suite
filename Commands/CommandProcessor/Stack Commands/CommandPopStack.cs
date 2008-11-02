@@ -1,29 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Pop Stack stack command.
   /// </summary>
   public class CommandPopStack : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandPopStack"/> class.
     /// </summary>
-    public CommandPopStack() { InitParameters(1); }
+    public CommandPopStack()
+    {
+      InitParameters(1);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandPopStack"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandPopStack(string[] parameters) : base(parameters) { }
+    public CommandPopStack(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +33,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryStack; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryStack;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Pop Stack"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Pop Stack";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -68,7 +74,5 @@ namespace Commands
     }
 
     #endregion Implementation
-
   }
-
 }

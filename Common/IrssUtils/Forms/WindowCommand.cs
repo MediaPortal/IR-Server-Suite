@@ -1,20 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IrssUtils.Forms
 {
-
   /// <summary>
   /// Window Command form.
   /// </summary>
   public partial class WindowCommand : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -50,9 +43,9 @@ namespace IrssUtils.Forms
         }
 
         return String.Format("{0}|{1}|{2}",
-          action,
-          target,
-          textBoxMsgTarget.Text);
+                             action,
+                             target,
+                             textBoxMsgTarget.Text);
       }
     }
 
@@ -67,9 +60,10 @@ namespace IrssUtils.Forms
     {
       InitializeComponent();
 
-      radioButtonRestore.Checked      = true;
+      radioButtonRestore.Checked = true;
       radioButtonActiveWindow.Checked = true;
     }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowCommand"/> class.
     /// </summary>
@@ -81,21 +75,31 @@ namespace IrssUtils.Forms
         string action = commands[0].ToUpperInvariant();
         switch (action)
         {
-          case "RESTORE": radioButtonRestore.Checked = true; break;
+          case "RESTORE":
+            radioButtonRestore.Checked = true;
+            break;
         }
 
         string target = commands[1].ToUpperInvariant();
         switch (target)
         {
-          case Common.TargetActive:       radioButtonActiveWindow.Checked = true;   break;
-          case Common.TargetApplication:  radioButtonApplication.Checked  = true;   break;
-          case Common.TargetClass:        radioButtonClass.Checked        = true;   break;
-          case Common.TargetWindow:       radioButtonWindowTitle.Checked  = true;   break;
+          case Common.TargetActive:
+            radioButtonActiveWindow.Checked = true;
+            break;
+          case Common.TargetApplication:
+            radioButtonApplication.Checked = true;
+            break;
+          case Common.TargetClass:
+            radioButtonClass.Checked = true;
+            break;
+          case Common.TargetWindow:
+            radioButtonWindowTitle.Checked = true;
+            break;
           default:
             throw new ArgumentOutOfRangeException("commands", commands[0], "Invalid window target");
         }
 
-        textBoxMsgTarget.Text     = commands[2];
+        textBoxMsgTarget.Text = commands[2];
       }
     }
 
@@ -113,7 +117,7 @@ namespace IrssUtils.Forms
         find.Title = "Application to target";
 
         if (find.ShowDialog(this) == DialogResult.OK)
-            textBoxMsgTarget.Text = find.FileName;
+          textBoxMsgTarget.Text = find.FileName;
       }
       else if (radioButtonClass.Checked)
       {
@@ -131,14 +135,14 @@ namespace IrssUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void radioButtonActiveWindow_CheckedChanged(object sender, EventArgs e)
@@ -146,16 +150,19 @@ namespace IrssUtils.Forms
       buttonFindMsgTarget.Enabled = false;
       textBoxMsgTarget.Enabled = false;
     }
+
     private void radioButtonApplication_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindMsgTarget.Enabled = true;
       textBoxMsgTarget.Enabled = true;
     }
+
     private void radioButtonClass_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindMsgTarget.Enabled = true;
       textBoxMsgTarget.Enabled = true;
     }
+
     private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)
     {
       buttonFindMsgTarget.Enabled = true;
@@ -163,7 +170,5 @@ namespace IrssUtils.Forms
     }
 
     #endregion Controls
-
   }
-
 }

@@ -1,27 +1,17 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-
 using IrssComms;
 using IrssUtils;
 
 namespace DebugClient
 {
-
-  partial class MainForm : Form
+  internal partial class MainForm : Form
   {
-
     #region Enumerations
 
     /// <summary>
@@ -29,60 +19,60 @@ namespace DebugClient
     /// </summary>
     public enum MceButton
     {
-      Custom        = -1,
-      None          = 0,
-      TV_Power      = 0x7b9a,
-      Blue          = 0x7ba1,
-      Yellow        = 0x7ba2,
-      Green         = 0x7ba3,
-      Red           = 0x7ba4,
-      Teletext      = 0x7ba5,
-      Radio         = 0x7baf,
-      Print         = 0x7bb1,
-      Videos        = 0x7bb5,
-      Pictures      = 0x7bb6,
-      Recorded_TV   = 0x7bb7,
-      Music         = 0x7bb8,
-      TV            = 0x7bb9,
-      Guide         = 0x7bd9,
-      Live_TV       = 0x7bda,
-      DVD_Menu      = 0x7bdb,
-      Back          = 0x7bdc,
-      OK            = 0x7bdd,
-      Right         = 0x7bde,
-      Left          = 0x7bdf,
-      Down          = 0x7be0,
-      Up            = 0x7be1,
-      Star          = 0x7be2,
-      Hash          = 0x7be3,
-      Replay        = 0x7be4,
-      Skip          = 0x7be5,
-      Stop          = 0x7be6,
-      Pause         = 0x7be7,
-      Record        = 0x7be8,
-      Play          = 0x7be9,
-      Rewind        = 0x7bea,
-      Forward       = 0x7beb,
-      Channel_Down  = 0x7bec,
-      Channel_Up    = 0x7bed,
-      Volume_Down   = 0x7bee,
-      Volume_Up     = 0x7bef,
-      Info          = 0x7bf0,
-      Mute          = 0x7bf1,
-      Start         = 0x7bf2,
-      PC_Power      = 0x7bf3,
-      Enter         = 0x7bf4,
-      Escape        = 0x7bf5,
-      Number_9      = 0x7bf6,
-      Number_8      = 0x7bf7,
-      Number_7      = 0x7bf8,
-      Number_6      = 0x7bf9,
-      Number_5      = 0x7bfa,
-      Number_4      = 0x7bfb,
-      Number_3      = 0x7bfc,
-      Number_2      = 0x7bfd,
-      Number_1      = 0x7bfe,
-      Number_0      = 0x7bff,
+      Custom = -1,
+      None = 0,
+      TV_Power = 0x7b9a,
+      Blue = 0x7ba1,
+      Yellow = 0x7ba2,
+      Green = 0x7ba3,
+      Red = 0x7ba4,
+      Teletext = 0x7ba5,
+      Radio = 0x7baf,
+      Print = 0x7bb1,
+      Videos = 0x7bb5,
+      Pictures = 0x7bb6,
+      Recorded_TV = 0x7bb7,
+      Music = 0x7bb8,
+      TV = 0x7bb9,
+      Guide = 0x7bd9,
+      Live_TV = 0x7bda,
+      DVD_Menu = 0x7bdb,
+      Back = 0x7bdc,
+      OK = 0x7bdd,
+      Right = 0x7bde,
+      Left = 0x7bdf,
+      Down = 0x7be0,
+      Up = 0x7be1,
+      Star = 0x7be2,
+      Hash = 0x7be3,
+      Replay = 0x7be4,
+      Skip = 0x7be5,
+      Stop = 0x7be6,
+      Pause = 0x7be7,
+      Record = 0x7be8,
+      Play = 0x7be9,
+      Rewind = 0x7bea,
+      Forward = 0x7beb,
+      Channel_Down = 0x7bec,
+      Channel_Up = 0x7bed,
+      Volume_Down = 0x7bee,
+      Volume_Up = 0x7bef,
+      Info = 0x7bf0,
+      Mute = 0x7bf1,
+      Start = 0x7bf2,
+      PC_Power = 0x7bf3,
+      Enter = 0x7bf4,
+      Escape = 0x7bf5,
+      Number_9 = 0x7bf6,
+      Number_8 = 0x7bf7,
+      Number_7 = 0x7bf8,
+      Number_6 = 0x7bf9,
+      Number_5 = 0x7bfa,
+      Number_4 = 0x7bfb,
+      Number_3 = 0x7bfc,
+      Number_2 = 0x7bfd,
+      Number_1 = 0x7bfe,
+      Number_0 = 0x7bff,
     }
 
     #endregion Enumerations
@@ -98,27 +88,25 @@ namespace DebugClient
 
     #region Constants
 
-    static readonly string DebugIRFile = Path.Combine(Common.FolderIRCommands, "DebugClient.IR");
+    private static readonly string DebugIRFile = Path.Combine(Common.FolderIRCommands, "DebugClient.IR");
 
     #endregion
 
     #region Variables
 
-    Client _client;
+    private Client _client;
+    private IRServerInfo _irServerInfo = new IRServerInfo();
 
-    string _serverHost      = "localhost";
-    string _learnIRFilename;
+    private string _learnIRFilename;
 
-    bool _registered;
-
-    IRServerInfo _irServerInfo = new IRServerInfo();
+    private bool _registered;
+    private string _serverHost = "localhost";
 
     #endregion Variables
 
-    delegate void DelegateAddStatusLine(string status);
-    DelegateAddStatusLine _addStatusLine;
+    private DelegateAddStatusLine _addStatusLine;
 
-    void AddStatusLine(string status)
+    private void AddStatusLine(string status)
     {
       IrssLog.Info(status);
 
@@ -132,7 +120,7 @@ namespace DebugClient
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open("Debug Client.log");
 
-      _addStatusLine = new DelegateAddStatusLine(AddStatusLine);
+      _addStatusLine = AddStatusLine;
 
       comboBoxPort.Items.Clear();
       comboBoxPort.Items.Add("None");
@@ -147,19 +135,20 @@ namespace DebugClient
 
       comboBoxComputer.Text = _serverHost;
     }
+
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
       buttonDisconnect_Click(null, null);
-      
+
       _addStatusLine = null;
 
       IrssLog.Close();
     }
 
-    void ReceivedMessage(IrssMessage received)
+    private void ReceivedMessage(IrssMessage received)
     {
-
-      this.Invoke(_addStatusLine, new Object[] { String.Format("Received Message: \"{0}, {1}\"", received.Type, received.Flags) });
+      Invoke(_addStatusLine,
+             new Object[] {String.Format("Received Message: \"{0}, {1}\"", received.Type, received.Flags)});
 
       try
       {
@@ -184,11 +173,11 @@ namespace DebugClient
             return;
 
           case MessageType.ActiveBlasters:
-            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
+            Invoke(_addStatusLine, new Object[] {received.GetDataAsString()});
             break;
 
           case MessageType.ActiveReceivers:
-            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
+            Invoke(_addStatusLine, new Object[] {received.GetDataAsString()});
             break;
 
           case MessageType.RemoteEvent:
@@ -198,7 +187,7 @@ namespace DebugClient
             int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
             string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
 
-            this.Invoke(_addStatusLine, new Object[] { String.Format("{0} ({1})", deviceName, keyCode) });
+            Invoke(_addStatusLine, new Object[] {String.Format("{0} ({1})", deviceName, keyCode)});
             return;
 
           case MessageType.LearnIR:
@@ -219,17 +208,17 @@ namespace DebugClient
 
           case MessageType.Error:
             _learnIRFilename = null;
-            this.Invoke(_addStatusLine, new Object[] { received.GetDataAsString() });
+            Invoke(_addStatusLine, new Object[] {received.GetDataAsString()});
             return;
         }
       }
       catch (Exception ex)
       {
-        this.Invoke(_addStatusLine, new Object[] { ex.Message });
+        Invoke(_addStatusLine, new Object[] {ex.Message});
       }
     }
 
-    bool LearnIR(string fileName)
+    private bool LearnIR(string fileName)
     {
       try
       {
@@ -252,21 +241,23 @@ namespace DebugClient
 
       return true;
     }
-    bool BlastIR(string fileName, string port)
+
+    private bool BlastIR(string fileName, string port)
     {
       try
       {
         using (FileStream file = File.OpenRead(fileName))
         {
           if (file.Length == 0)
-            throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
+            throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure",
+                                                fileName));
 
           byte[] outData = new byte[4 + port.Length + file.Length];
 
           BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
           Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-          file.Read(outData, 4 + port.Length, (int)file.Length);
+          file.Read(outData, 4 + port.Length, (int) file.Length);
 
           IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
           _client.Send(message);
@@ -280,50 +271,53 @@ namespace DebugClient
 
       return true;
     }
-    void RemoteHandlerCallback(string keyCode)
+
+    private void RemoteHandlerCallback(string keyCode)
     {
       string text = String.Format("Remote Event \"{0}\"", keyCode);
 
-      this.Invoke(_addStatusLine, new Object[] { text });
+      Invoke(_addStatusLine, new Object[] {text});
     }
 
-    void CommsFailure(object obj)
+    private void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
-      
+
       if (ex != null)
-        this.Invoke(_addStatusLine, new Object[] { String.Format("Communications failure: {0}", ex.Message) });
+        Invoke(_addStatusLine, new Object[] {String.Format("Communications failure: {0}", ex.Message)});
       else
-        this.Invoke(_addStatusLine, new Object[] { "Communications failure" });
+        Invoke(_addStatusLine, new Object[] {"Communications failure"});
 
       StopClient();
     }
-    void Connected(object obj)
+
+    private void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    void Disconnected(object obj)
+
+    private void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
       Thread.Sleep(1000);
     }
 
-    bool StartClient(IPEndPoint endPoint)
+    private bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
+
       if (_client.Start())
       {
         return true;
@@ -334,7 +328,8 @@ namespace DebugClient
         return false;
       }
     }
-    void StopClient()
+
+    private void StopClient()
     {
       if (_client == null)
         return;
@@ -363,7 +358,7 @@ namespace DebugClient
         _serverHost = comboBoxComputer.Text;
 
         IPAddress serverIP = Client.GetIPFromName(_serverHost);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         StartClient(endPoint);
       }
@@ -372,6 +367,7 @@ namespace DebugClient
         AddStatusLine(ex.Message);
       }
     }
+
     private void buttonDisconnect_Click(object sender, EventArgs e)
     {
       AddStatusLine("Disconnect");
@@ -397,6 +393,7 @@ namespace DebugClient
         AddStatusLine(ex.Message);
       }
     }
+
     private void buttonBlast_Click(object sender, EventArgs e)
     {
       AddStatusLine("Blast IR");
@@ -424,6 +421,7 @@ namespace DebugClient
       else
         AddStatusLine(" - Can't Blast");
     }
+
     private void buttonLearnIR_Click(object sender, EventArgs e)
     {
       AddStatusLine("Learn IR");
@@ -451,6 +449,7 @@ namespace DebugClient
       else
         AddStatusLine(" - Learn IR Busy");
     }
+
     private void buttonShutdownServer_Click(object sender, EventArgs e)
     {
       AddStatusLine("Shutdown");
@@ -520,7 +519,7 @@ namespace DebugClient
       try
       {
         string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this,  file);
+        Help.ShowHelp(this, file);
       }
       catch (Exception ex)
       {
@@ -531,6 +530,10 @@ namespace DebugClient
 
     #endregion Controls
 
-  }
+    #region Nested type: DelegateAddStatusLine
 
+    private delegate void DelegateAddStatusLine(string status);
+
+    #endregion
+  }
 }

@@ -1,29 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Commands
 {
-
   /// <summary>
   /// Maths Multiply macro command.
   /// </summary>
   public class CommandMathsMultiply : Command
   {
-
     #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandMathsMultiply"/> class.
     /// </summary>
-    public CommandMathsMultiply() { InitParameters(3); }
+    public CommandMathsMultiply()
+    {
+      InitParameters(3);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandMathsMultiply"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandMathsMultiply(string[] parameters) : base(parameters) { }
+    public CommandMathsMultiply(string[] parameters) : base(parameters)
+    {
+    }
 
     #endregion Constructors
 
@@ -33,13 +33,19 @@ namespace Commands
     /// Gets the category of this command.
     /// </summary>
     /// <returns>The category of this command.</returns>
-    public override string GetCategory() { return Processor.CategoryMaths; }
+    public override string GetCategory()
+    {
+      return Processor.CategoryMaths;
+    }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
     /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText() { return "Maths Multiply"; }
+    public override string GetUserInterfaceText()
+    {
+      return "Maths Multiply";
+    }
 
     /// <summary>
     /// Edit this command.
@@ -72,13 +78,11 @@ namespace Commands
       int input1Int = 0;
       int.TryParse(processed[1], out input1Int);
 
-      int output = input0Int * input1Int;
+      int output = input0Int*input1Int;
 
       variables.VariableSet(processed[2], output.ToString());
     }
 
     #endregion Implementation
-
   }
-
 }

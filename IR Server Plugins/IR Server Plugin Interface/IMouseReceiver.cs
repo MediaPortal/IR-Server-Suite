@@ -1,5 +1,3 @@
-using System;
-
 namespace InputService.Plugin
 {
 
@@ -21,13 +19,10 @@ namespace InputService.Plugin
   /// </summary>
   public interface IMouseReceiver
   {
-
     /// <summary>
     /// Callback for mouse events.
     /// </summary>
     /// <value>The mouse callback.</value>
     MouseHandler MouseCallback { get; set; }
-
   }
-
 }

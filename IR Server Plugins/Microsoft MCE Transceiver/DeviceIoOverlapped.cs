@@ -4,22 +4,19 @@ using System.Threading;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// 32 and 64-bit compatible NativeOverlapped wrapper.
   /// </summary>
-  class DeviceIoOverlapped
+  internal class DeviceIoOverlapped
   {
-
     #region Variables
 
-    IntPtr _ptrOverlapped = IntPtr.Zero;
-
-    int _fieldOffsetInternalLow;
-    int _fieldOffsetInternalHigh;
-    int _fieldOffsetOffsetLow;
-    int _fieldOffsetOffsetHigh;
-    int _fieldOffsetEventHandle;
+    private readonly int _fieldOffsetEventHandle;
+    private readonly int _fieldOffsetInternalHigh;
+    private readonly int _fieldOffsetInternalLow;
+    private readonly int _fieldOffsetOffsetHigh;
+    private readonly int _fieldOffsetOffsetLow;
+    private IntPtr _ptrOverlapped = IntPtr.Zero;
 
     #endregion Variables
 
@@ -31,14 +28,14 @@ namespace InputService.Plugin
     public DeviceIoOverlapped()
     {
       // Globally allocate the memory for the overlapped structure
-      _ptrOverlapped = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(NativeOverlapped)));
+      _ptrOverlapped = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (NativeOverlapped)));
 
       // Find the structural starting positions in the NativeOverlapped structure.
-      _fieldOffsetInternalLow   = Marshal.OffsetOf(typeof(NativeOverlapped), "InternalLow").ToInt32();
-      _fieldOffsetInternalHigh  = Marshal.OffsetOf(typeof(NativeOverlapped), "InternalHigh").ToInt32();
-      _fieldOffsetOffsetLow     = Marshal.OffsetOf(typeof(NativeOverlapped), "OffsetLow").ToInt32();
-      _fieldOffsetOffsetHigh    = Marshal.OffsetOf(typeof(NativeOverlapped), "OffsetHigh").ToInt32();
-      _fieldOffsetEventHandle   = Marshal.OffsetOf(typeof(NativeOverlapped), "EventHandle").ToInt32();
+      _fieldOffsetInternalLow = Marshal.OffsetOf(typeof (NativeOverlapped), "InternalLow").ToInt32();
+      _fieldOffsetInternalHigh = Marshal.OffsetOf(typeof (NativeOverlapped), "InternalHigh").ToInt32();
+      _fieldOffsetOffsetLow = Marshal.OffsetOf(typeof (NativeOverlapped), "OffsetLow").ToInt32();
+      _fieldOffsetOffsetHigh = Marshal.OffsetOf(typeof (NativeOverlapped), "OffsetHigh").ToInt32();
+      _fieldOffsetEventHandle = Marshal.OffsetOf(typeof (NativeOverlapped), "EventHandle").ToInt32();
     }
 
     /// <summary>
@@ -113,22 +110,20 @@ namespace InputService.Plugin
     #endregion Properties
 
     #region Methods
-    
+
     /// <summary>
     /// Set the overlapped wait handle and clear out the rest of the structure.
     /// </summary>
     /// <param name="eventHandle"></param>
     public void ClearAndSetEvent(IntPtr eventHandle)
     {
-      this.EventHandle  = eventHandle;
-      this.InternalLow  = IntPtr.Zero;
-      this.InternalHigh = IntPtr.Zero;
-      this.OffsetLow    = 0;
-      this.OffsetHigh   = 0;
+      EventHandle = eventHandle;
+      InternalLow = IntPtr.Zero;
+      InternalHigh = IntPtr.Zero;
+      OffsetLow = 0;
+      OffsetHigh = 0;
     }
 
     #endregion Methods
-
   }
-
 }

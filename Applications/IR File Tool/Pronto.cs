@@ -1,73 +1,69 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace IrFileTool
 {
-
   /// <summary>
   /// Philips Pronto interface class.
   /// </summary>
-  static class Pronto
+  internal static class Pronto
   {
-
     #region Enumerations
 
     /// <summary>
     /// Pronto IR Code type identifier.
     /// </summary>
-    enum CodeType
+    private enum CodeType
     {
       // Supported ...
-      RawOscillated   = 0x0000,
-      RawUnmodulated  = 0x0100,
-      RC5             = 0x5000,
-      RC5X            = 0x5001,
-      RC6             = 0x6000,
-      RC6A            = 0x6001,
-      
+      RawOscillated = 0x0000,
+      RawUnmodulated = 0x0100,
+      RC5 = 0x5000,
+      RC5X = 0x5001,
+      RC6 = 0x6000,
+      RC6A = 0x6001,
+
       // Unsupported ...
-      VariableLength  = 0x7000,
-      IndexToUDB      = 0x8000,
-      NEC_1           = 0x9000,
-      NEC_2           = 0x900A,
-      NEC_3           = 0x900B,
-      NEC_4           = 0x900C,
-      NEC_5           = 0x900D,
-      NEC_6           = 0x900E,
-      YamahaNEC       = 0x9001,
+      VariableLength = 0x7000,
+      IndexToUDB = 0x8000,
+      NEC_1 = 0x9000,
+      NEC_2 = 0x900A,
+      NEC_3 = 0x900B,
+      NEC_4 = 0x900C,
+      NEC_5 = 0x900D,
+      NEC_6 = 0x900E,
+      YamahaNEC = 0x9001,
     }
 
     #endregion Enumerations
 
     #region Constants
 
+    private const int CarrierRC5 = 36000;
+    private const int CarrierRC6 = 36000;
+
+    //private const int CarrierITT = 0;
+    //private const int CarrierJVC = 38000;
+    //private const int CarrierNEC = 38000;
+    //private const int CarrierNrc17 = 38000;
+    //private const int CarrierRCA = 56000;
+    //private const int CarrierRCMM = 36000;
+    //private const int CarrierRecs80 = 38000;
+    //private const int CarrierSharp = 38000;
+    //private const int CarrierSirc = 40000;
+    //private const int CarrierXSat = 38000;
+
     /// <summary>
     /// Pronto clock multiplier.
     /// </summary>
-    const double ProntoClock  = 0.241246;
+    private const double ProntoClock = 0.241246;
 
-    const int CarrierRC5 = 36000;
-    const int CarrierRC6 = 36000;
-    /*
-    const int CarrierITT      = 0;
-    const int CarrierJVC      = 38000;
-    const int CarrierNEC      = 38000;
-    const int CarrierNrc17    = 38000;
-    const int CarrierRCA      = 56000;
-    const int CarrierRCMM     = 36000;
-    const int CarrierRecs80   = 38000;
-    const int CarrierSharp    = 38000;
-    const int CarrierSirc     = 40000;
-    const int CarrierXSat     = 38000;
-    */
 
-    static readonly int[] RC6Header   = new int[] { 2700, -900, 450, -900, 450, -450, 450, -450, 450, -900 };
-    static readonly int[] RC6AHeader  = new int[] { 3150, -900, 450, -450, 450, -450, 450, -900, 450, -900 };
-
-    const int SignalFree    = 10000;
-    const int SignalFreeRC6 = 2700;
+    private const int SignalFree = 10000;
+    private const int SignalFreeRC6 = 2700;
+    private static readonly int[] RC6AHeader = new int[] {3150, -900, 450, -450, 450, -450, 450, -900, 450, -900};
+    private static readonly int[] RC6Header = new int[] {2700, -900, 450, -900, 450, -450, 450, -450, 450, -900};
 
     #endregion Constants
 
@@ -107,7 +103,7 @@ namespace IrFileTool
       if (prontoData == null || prontoData.Length == 0)
         throw new ArgumentNullException("prontoData");
 
-      switch ((CodeType)prontoData[0])
+      switch ((CodeType) prontoData[0])
       {
         case CodeType.RawOscillated:
         case CodeType.RawUnmodulated:
@@ -130,7 +126,7 @@ namespace IrFileTool
       }
     }
 
-    static IrCode ConvertProntoRawToIrCode(ushort[] prontoData)
+    private static IrCode ConvertProntoRawToIrCode(ushort[] prontoData)
     {
       int length = prontoData.Length;
       if (length < 5)
@@ -140,10 +136,10 @@ namespace IrFileTool
       if (prontoCarrier == 0x0000)
         prontoCarrier = ConvertToProntoCarrier(IrCode.CarrierFrequencyDefault);
 
-      double carrier = (double)prontoCarrier * ProntoClock;
+      double carrier = prontoCarrier*ProntoClock;
 
-      int firstSeq = 2 * prontoData[2];
-      int repeatSeq = 2 * prontoData[3];
+      int firstSeq = 2*prontoData[2];
+      int repeatSeq = 2*prontoData[3];
 
       List<int> timingData = new List<int>();
 
@@ -166,7 +162,7 @@ namespace IrFileTool
 
       while (!done)
       {
-        int time = (int)(prontoData[index] * carrier);
+        int time = (int) (prontoData[index]*carrier);
 
         if (pulse)
           timingData.Add(time);
@@ -209,12 +205,12 @@ namespace IrFileTool
       return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
     }
 
-    static IrCode ConvertProntoRC5ToIrCode(ushort[] prontoData)
+    private static IrCode ConvertProntoRC5ToIrCode(ushort[] prontoData)
     {
       if (prontoData.Length != 6)
         return null;
 
-      if (prontoData[0] != (ushort)CodeType.RC5)
+      if (prontoData[0] != (ushort) CodeType.RC5)
         return null;
 
       ushort prontoCarrier = prontoData[1];
@@ -224,8 +220,8 @@ namespace IrFileTool
       if (prontoData[2] + prontoData[3] != 1)
         return null;
 
-      ushort system   = prontoData[4];
-      ushort command  = prontoData[5];
+      ushort system = prontoData[4];
+      ushort command = prontoData[5];
 
       if (system > 31)
         return null;
@@ -235,14 +231,14 @@ namespace IrFileTool
 
       ushort rc5 = 0;
 
-      rc5 |= (1 << 13);   // Start Bit 1
+      rc5 |= (1 << 13); // Start Bit 1
 
       if (command < 64)
         rc5 |= (1 << 12); // Start Bit 2
 
-      rc5 |= (1 << 11);   // Toggle Bit
+      rc5 |= (1 << 11); // Toggle Bit
 
-      rc5 |= (ushort)((system << 6) | command);
+      rc5 |= (ushort) ((system << 6) | command);
 
       List<int> timingData = new List<int>();
 
@@ -250,7 +246,7 @@ namespace IrFileTool
 
       for (int i = 13; i > 0; i--)
       {
-        if ((rc5 & (1 << i)) != 0)  // Logic 1 (Space, Pulse)
+        if ((rc5 & (1 << i)) != 0) // Logic 1 (Space, Pulse)
         {
           if (currentTime > 0)
           {
@@ -263,7 +259,7 @@ namespace IrFileTool
 
           currentTime = 900;
         }
-        else  // Logic 0 (Pulse, Space)
+        else // Logic 0 (Pulse, Space)
         {
           if (currentTime < 0)
           {
@@ -290,12 +286,13 @@ namespace IrFileTool
 
       return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
     }
-    static IrCode ConvertProntoRC5XToIrCode(ushort[] prontoData)
+
+    private static IrCode ConvertProntoRC5XToIrCode(ushort[] prontoData)
     {
       if (prontoData.Length != 7)
         return null;
 
-      if (prontoData[0] != (ushort)CodeType.RC5X)
+      if (prontoData[0] != (ushort) CodeType.RC5X)
         return null;
 
       ushort prontoCarrier = prontoData[1];
@@ -305,9 +302,9 @@ namespace IrFileTool
       if (prontoData[2] + prontoData[3] != 2)
         return null;
 
-      ushort system   = prontoData[4];
-      ushort command  = prontoData[5];
-      ushort data     = prontoData[6];
+      ushort system = prontoData[4];
+      ushort command = prontoData[5];
+      ushort data = prontoData[6];
 
       if (system > 31)
         return null;
@@ -320,14 +317,14 @@ namespace IrFileTool
 
       uint rc5 = 0;
 
-      rc5 |= (1 << 19);     // Start Bit 1
+      rc5 |= (1 << 19); // Start Bit 1
 
       if (command < 64)
-        rc5 |= (1 << 18);   // Start Bit 2 (Inverted Command Bit 6)
+        rc5 |= (1 << 18); // Start Bit 2 (Inverted Command Bit 6)
 
-      rc5 |= (1 << 17);     // Toggle Bit
+      rc5 |= (1 << 17); // Toggle Bit
 
-      rc5 |= (uint)((system << 12) | (command << 6) | data);
+      rc5 |= (uint) ((system << 12) | (command << 6) | data);
 
       List<int> timingData = new List<int>();
       int currentTime = 0;
@@ -344,7 +341,7 @@ namespace IrFileTool
           currentTime += 3600;
         }
 
-        if ((rc5 & (1 << i)) != 0)  // Logic 1 (S, P)
+        if ((rc5 & (1 << i)) != 0) // Logic 1 (S, P)
         {
           if (currentTime > 0)
           {
@@ -357,7 +354,7 @@ namespace IrFileTool
 
           currentTime = 900;
         }
-        else  // Logic 0 (P, S)
+        else // Logic 0 (P, S)
         {
           if (currentTime < 0)
           {
@@ -384,12 +381,13 @@ namespace IrFileTool
 
       return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
     }
-    static IrCode ConvertProntoRC6ToIrCode(ushort[] prontoData)
+
+    private static IrCode ConvertProntoRC6ToIrCode(ushort[] prontoData)
     {
       if (prontoData.Length != 6)
         return null;
 
-      if (prontoData[0] != (ushort)CodeType.RC6)
+      if (prontoData[0] != (ushort) CodeType.RC6)
         return null;
 
       ushort prontoCarrier = prontoData[1];
@@ -399,8 +397,8 @@ namespace IrFileTool
       if (prontoData[2] + prontoData[3] != 1)
         return null;
 
-      ushort system   = prontoData[4];
-      ushort command  = prontoData[5];
+      ushort system = prontoData[4];
+      ushort command = prontoData[5];
 
       if (system > 255)
         return null;
@@ -408,7 +406,7 @@ namespace IrFileTool
       if (command > 255)
         return null;
 
-      ushort rc6 = (ushort)((system << 8) | command);
+      ushort rc6 = (ushort) ((system << 8) | command);
 
       List<int> timingData = new List<int>();
       timingData.AddRange(RC6Header);
@@ -417,7 +415,7 @@ namespace IrFileTool
 
       for (int i = 16; i > 0; i--)
       {
-        if ((rc6 & (1 << i)) != 0)  // Logic 1 (S, P)
+        if ((rc6 & (1 << i)) != 0) // Logic 1 (S, P)
         {
           if (currentTime > 0)
           {
@@ -430,7 +428,7 @@ namespace IrFileTool
 
           currentTime = 450;
         }
-        else  // Logic 0 (P, S)
+        else // Logic 0 (P, S)
         {
           if (currentTime < 0)
           {
@@ -457,12 +455,13 @@ namespace IrFileTool
 
       return new IrCode(ConvertFromProntoCarrier(prontoCarrier), timingData.ToArray());
     }
-    static IrCode ConvertProntoRC6AToIrCode(ushort[] prontoData)
+
+    private static IrCode ConvertProntoRC6AToIrCode(ushort[] prontoData)
     {
       if (prontoData.Length != 6)
         return null;
 
-      if (prontoData[0] != (ushort)CodeType.RC6A)
+      if (prontoData[0] != (ushort) CodeType.RC6A)
         return null;
 
       ushort prontoCarrier = prontoData[1];
@@ -473,8 +472,8 @@ namespace IrFileTool
         return null;
 
       ushort customer = prontoData[5];
-      ushort system   = prontoData[5];
-      ushort command  = prontoData[6];
+      ushort system = prontoData[5];
+      ushort command = prontoData[6];
 
       if (system > 255)
         return null;
@@ -485,7 +484,7 @@ namespace IrFileTool
       if (customer > 127 && customer < 32768)
         return null;
 
-      uint rc6 = (uint)((customer << 16) | (system << 8) | command);
+      uint rc6 = (uint) ((customer << 16) | (system << 8) | command);
 
       List<int> timingData = new List<int>();
       timingData.AddRange(RC6AHeader);
@@ -494,7 +493,7 @@ namespace IrFileTool
 
       for (int i = ((customer >= 32768) ? 32 : 24); i > 0; i--)
       {
-        if ((rc6 & (1 << i)) != 0)  // Logic 1 (S, P)
+        if ((rc6 & (1 << i)) != 0) // Logic 1 (S, P)
         {
           if (currentTime > 0)
           {
@@ -507,7 +506,7 @@ namespace IrFileTool
 
           currentTime = 450;
         }
-        else  // Logic 0 (P, S)
+        else // Logic 0 (P, S)
         {
           if (currentTime < 0)
           {
@@ -582,23 +581,23 @@ namespace IrFileTool
       }
 
       prontoCarrier = ConvertToProntoCarrier(irCodeCarrier);
-      carrier = prontoCarrier * ProntoClock;
+      carrier = prontoCarrier*ProntoClock;
 
       for (int index = 0; index < irCode.TimingData.Length; index++)
       {
         int duration = Math.Abs(irCode.TimingData[index]);
-        prontoData.Add((ushort)Math.Round(duration / carrier));
+        prontoData.Add((ushort) Math.Round(duration/carrier));
       }
 
-      if (prontoData.Count % 2 != 0)
+      if (prontoData.Count%2 != 0)
         prontoData.Add(SignalFree);
 
-      ushort burstPairs = (ushort)(prontoData.Count / 2);
+      ushort burstPairs = (ushort) (prontoData.Count/2);
 
-      prontoData.Insert(0, (ushort)codeType); // Pronto Code Type
-      prontoData.Insert(1, prontoCarrier);    // IR Frequency
-      prontoData.Insert(2, burstPairs);       // First Burst Pairs
-      prontoData.Insert(3, 0x0000);           // Repeat Burst Pairs
+      prontoData.Insert(0, (ushort) codeType); // Pronto Code Type
+      prontoData.Insert(1, prontoCarrier); // IR Frequency
+      prontoData.Insert(2, burstPairs); // First Burst Pairs
+      prontoData.Insert(3, 0x0000); // Repeat Burst Pairs
 
       return prontoData.ToArray();
     }
@@ -610,7 +609,7 @@ namespace IrFileTool
     /// <returns>The carrier frequency as an integer number.</returns>
     public static int ConvertFromProntoCarrier(ushort prontoCarrier)
     {
-      return (int)(1000000 / (prontoCarrier * ProntoClock));
+      return (int) (1000000/(prontoCarrier*ProntoClock));
     }
 
     /// <summary>
@@ -620,11 +619,9 @@ namespace IrFileTool
     /// <returns>The carrier frequency in Pronto format.</returns>
     public static ushort ConvertToProntoCarrier(int carrierFrequency)
     {
-      return (ushort)(1000000 / (carrierFrequency * ProntoClock));
+      return (ushort) (1000000/(carrierFrequency*ProntoClock));
     }
 
     #endregion Public Methods
-
   }
-
 }

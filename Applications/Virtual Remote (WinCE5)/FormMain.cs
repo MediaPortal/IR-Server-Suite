@@ -1,11 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -13,28 +7,25 @@ using System.Xml;
 
 namespace VirtualRemote
 {
-
   /// <summary>
   /// Main Form for Virtual Remote.
   /// </summary>
-  partial class FormMain : Form
+  internal partial class FormMain : Form
   {
-
     #region Constants
 
-    const string ConfigurationFile = "VirtualRemote.xml";
+    private const string ConfigurationFile = "VirtualRemote.xml";
 
-    const int ServerPort = 24000;
+    private const int ServerPort = 24000;
 
     #endregion Constants
 
     #region Variables
 
-    Client _client;
+    private Client _client;
 
-    string _serverHost = "192.168.0.3";
-
-    bool _registered;
+    private bool _registered;
+    private string _serverHost = "192.168.0.3";
 
     #endregion Variables
 
@@ -47,7 +38,7 @@ namespace VirtualRemote
     {
       InitializeComponent();
 
-      _Notification = new DelegateNotifcation(Notification);
+      _Notification = Notification;
 
       LoadSettings();
       textBoxComputer.Text = _serverHost;
@@ -55,10 +46,9 @@ namespace VirtualRemote
 
     #endregion Constructor
 
-    delegate void DelegateNotifcation(string text);
-    DelegateNotifcation _Notification;
+    private readonly DelegateNotifcation _Notification;
 
-    void Notification(string text)
+    private void Notification(string text)
     {
       textBoxStatus.Text = text;
     }
@@ -71,7 +61,7 @@ namespace VirtualRemote
       StartClient(endPoint);
     }
 
-    void ReceivedMessage(IrssMessage received)
+    private void ReceivedMessage(IrssMessage received)
     {
       switch (received.Type)
       {
@@ -79,61 +69,63 @@ namespace VirtualRemote
           if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
           {
             _registered = true;
-            this.Invoke(_Notification, "Connected");
+            Invoke(_Notification, "Connected");
           }
           else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
           {
             _registered = false;
-            this.Invoke(_Notification, "Failed to negotiate connection");
+            Invoke(_Notification, "Failed to negotiate connection");
           }
           return;
 
         case MessageType.ServerShutdown:
           _registered = false;
-          this.Invoke(_Notification, "Server Shutdown");
+          Invoke(_Notification, "Server Shutdown");
           return;
 
         case MessageType.Error:
-          this.Invoke(_Notification, received.GetDataAsString());
+          Invoke(_Notification, received.GetDataAsString());
           return;
       }
     }
 
-    void CommsFailure(object obj)
+    private void CommsFailure(object obj)
     {
       StopClient();
 
       Exception ex = obj as Exception;
 
       if (ex != null)
-        this.Invoke(_Notification, ex.Message);
+        Invoke(_Notification, ex.Message);
       else
-        this.Invoke(_Notification, "Communications failure");
+        Invoke(_Notification, "Communications failure");
     }
-    void Connected(object obj)
+
+    private void Connected(object obj)
     {
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    void Disconnected(object obj)
+
+    private void Disconnected(object obj)
     {
-      this.Invoke(_Notification, "Communications with server has been lost");
+      Invoke(_Notification, "Communications with server has been lost");
 
       Thread.Sleep(1000);
     }
 
-    bool StartClient(IPEndPoint endPoint)
+    private bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
 
-      ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
+      ClientMessageSink sink = ReceivedMessage;
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+      _client.CommsFailureCallback = CommsFailure;
+      _client.ConnectCallback = Connected;
+      _client.DisconnectCallback = Disconnected;
+
       if (_client.Start())
       {
         return true;
@@ -144,7 +136,8 @@ namespace VirtualRemote
         return false;
       }
     }
-    void StopClient()
+
+    private void StopClient()
     {
       if (_client == null)
         return;
@@ -155,7 +148,7 @@ namespace VirtualRemote
       _registered = false;
     }
 
-    void ButtonPress(string keyCode)
+    private void ButtonPress(string keyCode)
     {
       if (!_registered)
         return;
@@ -174,13 +167,13 @@ namespace VirtualRemote
       _client.Send(message);
     }
 
-    void Quit()
+    private void Quit()
     {
       StopClient();
       Application.Exit();
     }
 
-    void LoadSettings()
+    private void LoadSettings()
     {
       XmlDocument doc = new XmlDocument();
 
@@ -194,16 +187,23 @@ namespace VirtualRemote
         return;
       }
 
-      try { _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value; }
-      catch { _serverHost = "192.168.0.1"; }
+      try
+      {
+        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+      }
+      catch
+      {
+        _serverHost = "192.168.0.1";
+      }
     }
-    void SaveSettings()
+
+    private void SaveSettings()
     {
       using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("settings"); // <settings>
 
@@ -226,11 +226,21 @@ namespace VirtualRemote
     {
       switch (e.KeyCode)
       {
-        case Keys.Up:     ButtonPress("Up");    break;
-        case Keys.Down:   ButtonPress("Down");  break;
-        case Keys.Left:   ButtonPress("Left");  break;
-        case Keys.Right:  ButtonPress("Right"); break;
-        case Keys.Enter:  ButtonPress("OK");    break;
+        case Keys.Up:
+          ButtonPress("Up");
+          break;
+        case Keys.Down:
+          ButtonPress("Down");
+          break;
+        case Keys.Left:
+          ButtonPress("Left");
+          break;
+        case Keys.Right:
+          ButtonPress("Right");
+          break;
+        case Keys.Enter:
+          ButtonPress("OK");
+          break;
       }
     }
 
@@ -238,14 +248,14 @@ namespace VirtualRemote
     {
       StopClient();
 
-      this.Invoke(_Notification, "Disconnected");
+      Invoke(_Notification, "Disconnected");
     }
 
     private void buttonConnect_Click(object sender, EventArgs e)
     {
       _serverHost = textBoxComputer.Text;
 
-      this.Invoke(_Notification, String.Format("Connecting to {0} ...", _serverHost));
+      Invoke(_Notification, String.Format("Connecting to {0} ...", _serverHost));
 
       SaveSettings();
 
@@ -260,6 +270,10 @@ namespace VirtualRemote
       Quit();
     }
 
-  }
+    #region Nested type: DelegateNotifcation
 
+    private delegate void DelegateNotifcation(string text);
+
+    #endregion
+  }
 }

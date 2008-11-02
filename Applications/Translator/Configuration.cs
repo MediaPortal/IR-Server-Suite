@@ -1,31 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
-
 using IrssUtils;
 
 namespace Translator
 {
-
   /// <summary>
   /// Translator configuration.
   /// </summary>
   [XmlRoot]
   public class Configuration
   {
-
     #region Variables
 
-    string _serverHost;
-    string _processPriority;
-    bool _hideTrayIcon;
-
-    List<ButtonMapping> _systemWideMappings;
-    List<ProgramSettings> _programSettings;
-    List<MappedEvent> _mappedEvents;
+    private readonly List<MappedEvent> _mappedEvents;
+    private readonly List<ProgramSettings> _programSettings;
+    private readonly List<ButtonMapping> _systemWideMappings;
+    private bool _hideTrayIcon;
+    private string _processPriority;
+    private string _serverHost;
 
     #endregion Variables
 
@@ -103,13 +97,13 @@ namespace Translator
     /// </summary>
     public Configuration()
     {
-      _serverHost         = "localhost";
-      _processPriority    = "No Change";
-      _hideTrayIcon       = false;
+      _serverHost = "localhost";
+      _processPriority = "No Change";
+      _hideTrayIcon = false;
 
       _systemWideMappings = new List<ButtonMapping>();
-      _programSettings    = new List<ProgramSettings>();
-      _mappedEvents       = new List<MappedEvent>();
+      _programSettings = new List<ProgramSettings>();
+      _mappedEvents = new List<MappedEvent>();
     }
 
     #endregion Constructors
@@ -143,10 +137,10 @@ namespace Translator
     {
       try
       {
-        XmlSerializer writer = new XmlSerializer(typeof(Configuration));
+        XmlSerializer writer = new XmlSerializer(typeof (Configuration));
         using (StreamWriter file = new StreamWriter(fileName))
           writer.Serialize(file, config);
-        
+
         return true;
       }
       catch (Exception ex)
@@ -165,9 +159,9 @@ namespace Translator
     {
       try
       {
-        XmlSerializer reader = new XmlSerializer(typeof(Configuration));
+        XmlSerializer reader = new XmlSerializer(typeof (Configuration));
         using (StreamReader file = new StreamReader(fileName))
-          return (Configuration)reader.Deserialize(file);
+          return (Configuration) reader.Deserialize(file);
       }
       catch (FileNotFoundException)
       {
@@ -182,7 +176,5 @@ namespace Translator
     }
 
     #endregion Static Methods
-
   }
-
 }

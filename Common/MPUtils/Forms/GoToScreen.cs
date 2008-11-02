@@ -1,19 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using MediaPortal.GUI.Library;
 
 namespace MPUtils.Forms
 {
-
   /// <summary>
   /// Go To Screen command input form.
   /// </summary>
   public partial class GoToScreen : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -32,7 +27,9 @@ namespace MPUtils.Forms
     /// <summary>
     /// Default Constructor.
     /// </summary>
-    public GoToScreen() : this(String.Empty) { }
+    public GoToScreen() : this(String.Empty)
+    {
+    }
 
     /// <summary>
     /// Create the form with a preselected MediaPortal screen identifier.
@@ -49,23 +46,24 @@ namespace MPUtils.Forms
       else
         comboBoxScreen.Text = selected;
     }
-    
+
     #endregion Constructors
 
-    void SetupComboBox()
+    private void SetupComboBox()
     {
       comboBoxScreen.Items.Clear();
-      string[] items = Enum.GetNames(typeof(MediaPortal.GUI.Library.GUIWindow.Window));
+      string[] items = Enum.GetNames(typeof (GUIWindow.Window));
 
       int index;
       for (index = 0; index < items.Length; index++)
-          items[index] = items[index].Substring(7);
+        items[index] = items[index].Substring(7);
 
       Array.Sort(items);
 
       for (index = 0; index < items.Length; index++)
       {
-        if (items[index].Equals("INVALID", StringComparison.OrdinalIgnoreCase) || items[index].Equals("SECOND_HOME", StringComparison.OrdinalIgnoreCase))
+        if (items[index].Equals("INVALID", StringComparison.OrdinalIgnoreCase) ||
+            items[index].Equals("SECOND_HOME", StringComparison.OrdinalIgnoreCase))
           continue;
 
         comboBoxScreen.Items.Add(items[index]);
@@ -74,16 +72,14 @@ namespace MPUtils.Forms
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }

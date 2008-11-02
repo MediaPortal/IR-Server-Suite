@@ -1,29 +1,19 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml;
-
 using IrssUtils;
+using TvDatabase;
 
 namespace TvEngine
 {
-
-  partial class ExternalChannels : Form
+  internal partial class ExternalChannels : Form
   {
-
     #region Variables
 
-    StbSetup[] _tvCardStbSetups;
-    
+    private StbSetup[] _tvCardStbSetups;
+
     #endregion Variables
 
     #region Constructor
@@ -37,11 +27,12 @@ namespace TvEngine
 
     private void ExternalChannels_Load(object sender, EventArgs e)
     {
-      IList cards = TvDatabase.Card.ListAll();
+      IList cards = Card.ListAll();
 
       if (cards.Count == 0)
       {
-        TvDatabase.Card dummyCard = new TvDatabase.Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0, false, 0, "timeshifting folder", 0, 0);
+        Card dummyCard = new Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0,
+                                  false, 0, "timeshifting folder", 0, 0);
         cards.Add(dummyCard);
       }
 
@@ -52,7 +43,7 @@ namespace TvEngine
       TabPage tempPage;
       int index = 0;
 
-      foreach (TvDatabase.Card card in cards)
+      foreach (Card card in cards)
       {
         comboBoxCopyFrom.Items.Add(card.IdCard);
 
@@ -64,7 +55,7 @@ namespace TvEngine
         tempPage = new TabPage(String.Format("TV Card {0}", index + 1));
         tempPage.Controls.Add(_tvCardStbSetups[index]);
 
-        this.tabControlTVCards.TabPages.Add(tempPage);
+        tabControlTVCards.TabPages.Add(tempPage);
 
         index++;
       }
@@ -79,7 +70,8 @@ namespace TvEngine
       comboBoxQuickSetup.Items.Add("Clear all");
     }
 
-    static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit, string fullChannelString)
+    private static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit,
+                                                      string fullChannelString)
     {
       string[] commands = Common.SplitRunCommand(runCommand);
 
@@ -89,7 +81,7 @@ namespace TvEngine
       Common.ProcessRunCommand(commands);
     }
 
-    static void ProcessSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
+    private static void ProcessSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
     {
       string[] commands = Common.SplitSerialCommand(serialCommand);
 
@@ -113,11 +105,12 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.ToString(), "Failed to save external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to save external channel setup", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonTest_Click(object sender, EventArgs e)
@@ -162,7 +155,7 @@ namespace TvEngine
             if (setup.PauseTime > 0)
               Thread.Sleep(setup.PauseTime);
           }
-          
+
           foreach (char digit in channel)
           {
             charVal = digit - 48;
@@ -210,7 +203,8 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.ToString(), "Failed to quick-set external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to quick-set external channel setup", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
     }
 
@@ -222,18 +216,17 @@ namespace TvEngine
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.ToString(), "Failed to copy external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to copy external channel setup", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

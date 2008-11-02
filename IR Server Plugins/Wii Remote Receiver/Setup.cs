@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Setup form for Wii Remote Receiver IR Server Plugin.
   /// </summary>
   public partial class Setup : Form
   {
-
     #region Properties
 
     /// <summary>
@@ -45,7 +39,7 @@ namespace InputService.Plugin
       get { return Decimal.ToInt32(numericUpDownMouseSensitivity.Value); }
       set { numericUpDownMouseSensitivity.Value = new Decimal(value); }
     }
-    
+
     /// <summary>
     /// Gets or sets a value indicating LED state.
     /// </summary>
@@ -55,6 +49,7 @@ namespace InputService.Plugin
       get { return checkBoxLED1.Checked; }
       set { checkBoxLED1.Checked = value; }
     }
+
     /// <summary>
     /// Gets or sets a value indicating LED state.
     /// </summary>
@@ -64,6 +59,7 @@ namespace InputService.Plugin
       get { return checkBoxLED2.Checked; }
       set { checkBoxLED2.Checked = value; }
     }
+
     /// <summary>
     /// Gets or sets a value indicating LED state.
     /// </summary>
@@ -73,6 +69,7 @@ namespace InputService.Plugin
       get { return checkBoxLED3.Checked; }
       set { checkBoxLED3.Checked = value; }
     }
+
     /// <summary>
     /// Gets or sets a value indicating LED state.
     /// </summary>
@@ -99,15 +96,14 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
-
   }
-
 }
