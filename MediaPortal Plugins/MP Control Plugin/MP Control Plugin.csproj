@@ -78,26 +78,26 @@
   <ItemGroup>
     <Reference Include="Core, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\Core.DLL</HintPath>
+      <HintPath>\MediaPortal\mediaportal\xbmc\bin\Release\Core.DLL</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Databases, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\Databases.DLL</HintPath>
+      <HintPath>\MediaPortal\mediaportal\xbmc\bin\Release\Databases.DLL</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Dialogs, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\plugins\windows\Dialogs.DLL</HintPath>
+      <HintPath>\MediaPortal\mediaportal\xbmc\bin\Release\plugins\windows\Dialogs.DLL</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\Microsoft.DirectX.Direct3D.DLL</HintPath>
+      <HintPath>\MediaPortal\mediaportal\xbmc\bin\Release\Microsoft.DirectX.Direct3D.DLL</HintPath>
     </Reference>
     <Reference Include="RemotePlugins, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\RemotePlugins.DLL</HintPath>
+      <HintPath>\MediaPortal\mediaportal\xbmc\bin\Release\RemotePlugins.DLL</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -106,12 +106,12 @@
     <Reference Include="System.Xml" />
     <Reference Include="TVCapture, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\TVCapture.DLL</HintPath>
+      <HintPath>\MediaPortal\mediaportal\xbmc\bin\Release\TVCapture.DLL</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Utils, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\xbmc\bin\Release\Utils.DLL</HintPath>
+      <HintPath>\MediaPortal\mediaportal\xbmc\bin\Release\Utils.DLL</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

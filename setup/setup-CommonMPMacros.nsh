@@ -119,7 +119,7 @@ FunctionEnd
     !error "$\r$\n$\r$\nCOMMON_APPDATA is not defined!$\r$\n$\r$\n"
   !endif
 
-  !define INSTALL_LOG_FILE "${COMMON_APPDATA}\log\install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}.log"
+  !define INSTALL_LOG_FILE "${COMMON_APPDATA}\Logs\install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}.log"
 !endif
 
 Var LogFile

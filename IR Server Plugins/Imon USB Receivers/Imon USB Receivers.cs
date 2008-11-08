@@ -1644,6 +1644,7 @@ namespace InputService.Plugin
 #endif
         _hardwareMode = RcMode.iMon;
         _RemoteMode = RemoteMode.Keyboard;
+        _CurrentRemoteMode = _RemoteMode;
 
         _enableRemoteInput = true;
         _useSystemRatesRemote = false;
