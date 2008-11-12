@@ -23,89 +23,29 @@
 
 #endregion
 
-!include /nonFatal "XML.nsh"
-!ifndef xml::SetCondenseWhiteSpace
-  !error "$\r$\n$\r$\nYou need the xml plugin to compile this script. Look at$\r$\n$\r$\n     http://nsis.sourceforge.net/XML_plug-in$\r$\n$\r$\ndownload and install it!$\r$\n$\r$\n"
+!ifndef svn_InstallScripts
+  !error "$\r$\n$\r$\n The DEFINE ->  svn_InstallScripts  <-- was not found.$\r$\n$\r$\n     Please set the relative Path from your setup.nsi to the CommonNSIS script directory to the DEFINE svn_InstallScripts .$\r$\n$\r$\n"
 !endif
 
-!include FileFunc.nsh
+# references to additional plugins, if not used, these won't be included
+!AddPluginDir "${svn_InstallScripts}\GetVersion-plugin\Plugins"
+!AddPluginDir "${svn_InstallScripts}\XML-plugin\Plugin"
+!include "${svn_InstallScripts}\XML-plugin\Include\XML.nsh"
+
+
+
+
 !insertmacro GetRoot
 !insertmacro un.GetRoot
 
 !include WordFunc.nsh
+!insertmacro WordFind
+!insertmacro un.WordFind
 !insertmacro WordReplace
 !insertmacro un.WordReplace
 
 
-
-#**********************************************************************************************************#
-#
-# code for file association was taken from:
-#                         http://nsis.sourceforge.net/File_Association
-#
-#**********************************************************************************************************#
-!define registerExtension "!insertmacro registerExtension"
-!define unregisterExtension "!insertmacro unregisterExtension"
- 
-!macro registerExtension executable extension description
-       Push "${executable}"  ; "full path to my.exe"
-       Push "${extension}"   ;  ".mkv"
-       Push "${description}" ;  "MKV File"
-       Call registerExtension
-!macroend
- 
-; back up old value of .opt
-Function registerExtension
-!define Index "Line${__LINE__}"
-  pop $R0 ; ext name
-  pop $R1
-  pop $R2
-  push $1
-  push $0
-  ReadRegStr $1 HKCR $R1 ""
-  StrCmp $1 "" "${Index}-NoBackup"
-    StrCmp $1 "OptionsFile" "${Index}-NoBackup"
-    WriteRegStr HKCR $R1 "backup_val" $1
-"${Index}-NoBackup:"
-  WriteRegStr HKCR $R1 "" $R0
-  ReadRegStr $0 HKCR $R0 ""
-  StrCmp $0 "" 0 "${Index}-Skip"
-	WriteRegStr HKCR $R0 "" $R0
-	WriteRegStr HKCR "$R0\shell" "" "open"
-	WriteRegStr HKCR "$R0\DefaultIcon" "" "$R2,0"
-"${Index}-Skip:"
-  WriteRegStr HKCR "$R0\shell\open\command" "" '$R2 "%1"'
-  WriteRegStr HKCR "$R0\shell\edit" "" "Edit $R0"
-  WriteRegStr HKCR "$R0\shell\edit\command" "" '$R2 "%1"'
-  pop $0
-  pop $1
-!undef Index
-FunctionEnd
- 
-!macro unregisterExtension extension description
-       Push "${extension}"   ;  ".mkv"
-       Push "${description}"   ;  "MKV File"
-       Call un.unregisterExtension
-!macroend
- 
-Function un.unregisterExtension
-  pop $R1 ; description
-  pop $R0 ; extension
-!define Index "Line${__LINE__}"
-  ReadRegStr $1 HKCR $R0 ""
-  StrCmp $1 $R1 0 "${Index}-NoOwn" ; only do this if we own it
-  ReadRegStr $1 HKCR $R0 "backup_val"
-  StrCmp $1 "" 0 "${Index}-Restore" ; if backup="" then delete the whole key
-  DeleteRegKey HKCR $R0
-  Goto "${Index}-NoOwn"
-"${Index}-Restore:"
-  WriteRegStr HKCR $R0 "" $1
-  DeleteRegValue HKCR $R0 "backup_val"
-  DeleteRegKey HKCR $R1 ;Delete key with association name settings
-"${Index}-NoOwn:"
-!undef Index
-FunctionEnd
-
+!include "${svn_InstallScripts}\include-FileAssociation.nsh"
 
 
 #**********************************************************************************************************#
@@ -114,35 +54,60 @@ FunctionEnd
 #
 #**********************************************************************************************************#
 !ifdef INSTALL_LOG
-!ifndef INSTALL_LOG_FILE
-  !ifndef COMMON_APPDATA
-    !error "$\r$\n$\r$\nCOMMON_APPDATA is not defined!$\r$\n$\r$\n"
-  !endif
-
-  !define INSTALL_LOG_FILE "${COMMON_APPDATA}\Logs\install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}.log"
-!endif
+!include FileFunc.nsh
+!insertmacro GetTime
+!insertmacro un.GetTime
 
 Var LogFile
+Var TempInstallLog
 
 !define prefixERROR "[ERROR     !!!]   "
 !define prefixDEBUG "[    DEBUG    ]   "
 !define prefixINFO  "[         INFO]   "
 
-!define LOG_OPEN `!insertmacro LOG_OPEN`
-!macro LOG_OPEN
 
-  FileOpen $LogFile "$TEMP\install_$(^Name).log" w
+!define LOG_OPEN `!insertmacro LOG_OPEN ""`
+!define un.LOG_OPEN `!insertmacro LOG_OPEN "un."`
+!macro LOG_OPEN UNINSTALL_PREFIX
+  GetTempFileName $TempInstallLog
+  FileOpen $LogFile "$TempInstallLog" w
 
+  ${${UNINSTALL_PREFIX}GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+  ${LOG_TEXT} "INFO" "$(^Name) ${UNINSTALL_PREFIX}installation"
+  ${LOG_TEXT} "INFO" "Logging started: $0.$1.$2 $4:$5:$6"
+  ${LOG_TEXT} "INFO" "${UNINSTALL_PREFIX}installer version: ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
+  ${LOG_TEXT} "INFO" "============================================================================================"
 !macroend
 
-!define LOG_CLOSE `!insertmacro LOG_CLOSE`
-!macro LOG_CLOSE
+
+!define LOG_CLOSE `!insertmacro LOG_CLOSE ""`
+!define un.LOG_CLOSE `!insertmacro LOG_CLOSE "un."`
+!macro LOG_CLOSE UNINSTALL_PREFIX
+  SetShellVarContext all
+
+  ${${UNINSTALL_PREFIX}GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+  ${LOG_TEXT} "INFO" "============================================================================================"
+  ${LOG_TEXT} "INFO" "Logging stopped: $0.$1.$2 $4:$5:$6"
+  ${LOG_TEXT} "INFO" "${UNINSTALL_PREFIX}installer version: ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
+  ${LOG_TEXT} "INFO" "$(^Name) ${UNINSTALL_PREFIX}installation"
 
   FileClose $LogFile
 
-  CopyFiles "$TEMP\install_$(^Name).log" "${INSTALL_LOG_FILE}"
+!ifdef INSTALL_LOG_FILE
+  CopyFiles "$TempInstallLog" "${INSTALL_LOG_FILE}"
+!else
+  !ifndef COMMON_APPDATA
+    !error "$\r$\n$\r$\nCOMMON_APPDATA is not defined!$\r$\n$\r$\n"
+  !endif
 
+  ${${UNINSTALL_PREFIX}GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+  CopyFiles "$TempInstallLog" "${COMMON_APPDATA}\log\${UNINSTALL_PREFIX}install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}_$2-$1-$0_$4-$5-$6.log"
+
+  Delete "$TempInstallLog"
+
+!endif
 !macroend
+
 
 !define LOG_TEXT `!insertmacro LOG_TEXT`
 !macro LOG_TEXT LEVEL TEXT
@@ -151,7 +116,11 @@ Var LogFile
   !if   "${LEVEL}" != "ERROR"
     !if "${LEVEL}" != "INFO"
       !error "$\r$\n$\r$\nYou call macro LOG_TEXT with wrong LogLevel. Only 'DEBUG', 'ERROR' and 'INFO' are valid!$\r$\n$\r$\n"
+    !else
+      DetailPrint "${prefix${LEVEL}}${TEXT}$\r$\n"
     !endif
+  !else
+    DetailPrint "${prefix${LEVEL}}${TEXT}$\r$\n"
   !endif
 !endif
 
@@ -184,6 +153,7 @@ Var LogFile
 #**********************************************************************************************************#
 !define KILLPROCESS `!insertmacro KILLPROCESS`
 !macro KILLPROCESS PROCESS
+/*
 !if ${KILLMODE} == "1"
   ExecShell "" "Cmd.exe" '/C "taskkill /F /IM "${PROCESS}""' SW_HIDE
   Sleep 300
@@ -192,10 +162,13 @@ Var LogFile
 !else if ${KILLMODE} == "3"
   nsExec::ExecToLog '"taskkill" /F /IM "${PROCESS}"'
 !else
-
+*/
+  ${LOG_TEXT} "DEBUG" "KILLPROCESS: ${PROCESS}"
   nsExec::ExecToLog '"taskkill" /F /IM "${PROCESS}"'
 
-!endif
+  Pop $0
+  ${LOG_TEXT} "DEBUG" "KILLPROCESS result: $0"
+
 !macroend
 
 
@@ -783,7 +756,7 @@ FunctionEnd
     ${LOG_TEXT} "INFO" "read '$MyDocs\Team MediaPortal\MediaPortalDirs.xml' successfully"
   ${EndIf}
 
-  ${LOG_TEXT} "INFO" "Installer will use the following directories:$\r$\n"
+  ${LOG_TEXT} "INFO" "Installer will use the following directories:"
   ${LOG_TEXT} "INFO" "          Base:  $MPdir.Base"
   ${LOG_TEXT} "INFO" "          Config:  $MPdir.Config"
   ${LOG_TEXT} "INFO" "          Plugins: $MPdir.Plugins"
@@ -798,3 +771,47 @@ FunctionEnd
   ${LOG_TEXT} "INFO" "          Cache: $MPdir.Cache"
   ${LOG_TEXT} "INFO" "          BurnerSupport: $MPdir.BurnerSupport"
 !macroend
+
+!ifdef WINVER++
+  !include "${svn_InstallScripts}\include-WinVerEx.nsh"
+!else
+
+!macro GetServicePack _major _minor
+  Push $0
+  Push $1
+
+  ; result is:
+  ; "Service Pack 3"         for final Service Packs
+  ; "Service Pack 3, v.3311" for beta  Service Packs
+
+  GetVersion::WindowsServicePack
+  Pop $0
+  ${LOG_TEXT} "INFO" "GetVersion::WindowsServicePack: $0"
+
+  ;uncomment for testing
+  ;StrCpy $0 "Service Pack 3"
+  ;StrCpy $0 "Service Pack 3, v.3311"
+
+  ; split the string by "." and save the word count in $2
+  ; if no . is found in $2 the input string (was $0) is saved
+  ${WordFind} "$0" "." "#" $1
+
+  ; if $0 = $2 -> no "." was found -> no beta
+  ${If} "$0" == "$1"
+    StrCpy ${_major} $0 1 -1   ;  "Service Pack 3"
+    StrCpy ${_minor} 0
+  ${Else}
+    ${WordFind} "$0" "." "+1" $1  ;  "Service Pack 3, v.3311"
+    StrCpy ${_major} $1 1 -4      ;  "Service Pack 3, v"
+
+    ;split again, and use the second word as minorVer
+    ${WordFind} "$0" "." "+2" ${_minor}  ;  "Service Pack 3, v.3311"
+  ${EndIf}
+
+  ;MessageBox MB_OK|MB_ICONEXCLAMATION "Service Pack: >${_major}< >${_minor}<"
+
+  pop $1
+  pop $0
+!macroend
+
+!endif

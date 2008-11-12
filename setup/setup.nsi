@@ -3,11 +3,17 @@
 ;
 ; (C) Copyright Aaron Dinnage, 2008
 ;======================================
+
+
+# DEFINES
+;!define svn_ROOT_IRSS ".."
+;!define svn_InstallScripts "${svn_ROOT_IRSS}\setup\CommonNSIS"
+!define svn_InstallScripts ".\CommonNSIS"
+
 #**********************************************************************************************************#
 #
 #   For building the installer on your own you need:
-#       1. Lastest NSIS version from http://nsis.sourceforge.net/Download
-#       2. The xml-plugin from http://nsis.sourceforge.net/XML_plug-in
+#       -  Lastest NSIS version from http://nsis.sourceforge.net/Download
 #
 #**********************************************************************************************************#
 
@@ -57,10 +63,11 @@ SetCompressor /SOLID /FINAL lzma
 !include Library.nsh
 !include FileFunc.nsh
 !include WinVer.nsh
+;!define WinVer++    ;  this one is used by MP but not tested with irss
 !include Memento.nsh
 
-!include setup-AddRemovePage.nsh
-!include setup-CommonMPMacros.nsh
+!include "${svn_InstallScripts}\include-AddRemovePage.nsh"
+!include "${svn_InstallScripts}\include-CommonMPMacros.nsh"
 !include setup-languages.nsh
 
 ; FileFunc macros
