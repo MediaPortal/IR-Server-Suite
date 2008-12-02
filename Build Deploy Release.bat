@@ -1,11 +1,16 @@
 @ECHO OFF
 
+REM Select program path based on current machine environment
+
+set progpath=%ProgramFiles%
+if not "%ProgramFiles(x86)%".=="". set progpath=%ProgramFiles(x86)%
+
 echo.
 echo -= IR Server Suite : Build Deploy Release.bat =-
 
 echo.
 echo Building IR Server Suite...
-"%ProgramFiles%\Microsoft Visual Studio 8\Common7\IDE\devenv.com" /rebuild Release "IR Server Suite.sln" > build_release.log
+"%progpath%\Microsoft Visual Studio 8\Common7\IDE\devenv.com" /rebuild Release "IR Server Suite.sln" > build_release.log
 
 echo.
 echo Building Help file...
@@ -13,4 +18,4 @@ echo Building Help file...
 
 echo.
 echo Building Installer...
-"%ProgramFiles%\NSIS\makensis.exe" setup\setup.nsi >> build_release.log
+"%progpath%\NSIS\makensis.exe" setup\setup.nsi >> build_release.log
