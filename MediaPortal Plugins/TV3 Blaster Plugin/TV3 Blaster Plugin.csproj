@@ -80,22 +80,22 @@
   <ItemGroup>
     <Reference Include="Gentle.Common, Version=1.2.9.1285, Culture=neutral, PublicKeyToken=80b5de62e27be49b">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\MediaPortal\TvEngine3\TVLibrary\TvService\bin\Release\Gentle.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvService\bin\Release\Gentle.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Gentle.Framework, Version=1.2.9.1286, Culture=neutral, PublicKeyToken=80b5de62e27be49b">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\MediaPortal\TvEngine3\TVLibrary\TvService\bin\Release\Gentle.Framework.DLL</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvService\bin\Release\Gentle.Framework.DLL</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PluginBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\MediaPortal\TvEngine3\TVLibrary\TvService\bin\Release\PluginBase.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvService\bin\Release\PluginBase.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SetupControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\MediaPortal\TvEngine3\TVLibrary\SetupControls\bin\Release\SetupControls.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\SetupControls\bin\Release\SetupControls.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System">
@@ -110,22 +110,22 @@
     <Reference Include="System.Xml" />
     <Reference Include="TvBusinessLayer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\MediaPortal\TvEngine3\TVLibrary\TvService\bin\Release\TvBusinessLayer.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvService\bin\Release\TvBusinessLayer.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TvControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\MediaPortal\TvEngine3\TVLibrary\TvService\bin\Release\TvControl.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvService\bin\Release\TvControl.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TVDatabase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\MediaPortal\TvEngine3\TVLibrary\TvService\bin\Release\TVDatabase.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvService\bin\Release\TVDatabase.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TvLibrary.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\MediaPortal\TvEngine3\TVLibrary\TvService\bin\Release\TvLibrary.Interfaces.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvService\bin\Release\TvLibrary.Interfaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
