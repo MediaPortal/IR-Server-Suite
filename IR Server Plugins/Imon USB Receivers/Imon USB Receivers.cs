@@ -3726,9 +3726,10 @@ namespace InputService.Plugin
         Process.Start(VFDnew.StartInfo);
         Thread.Sleep(1500);
 #if DEBUG
-        DebugWriteLine("HID_SetMode({0}): waiting for iMon Manager termination");
+        DebugWriteLine("HID_SetMode({0}): waiting for iMon Manager termination",
+                       Enum.GetName(typeof (RemoteMode), mode));
 #if TEST_APPLICATION
-        Console.WriteLine("HID_SetMode({0}): waiting for iMon Manager termination");
+        Console.WriteLine("HID_SetMode({0}): waiting for iMon Manager termination", Enum.GetName(typeof (RemoteMode), mode);
 #endif
 #endif
         KilliMonManager();
