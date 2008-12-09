@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
@@ -68,11 +69,11 @@ namespace InputService.Plugin
       ref uint pcbSize,
       uint cbSizeHeader);
 
-    [DllImport("User32.dll")]
-    internal static extern bool RegisterRawInputDevices(
-      RAWINPUTDEVICE[] pRawInputDevice,
-      uint uiNumDevices,
-      uint cbSize);
+    [DllImport("User32.dll", SetLastError = true)]
+    public static extern bool RegisterRawInputDevices(
+      [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] RAWINPUTDEVICE[] pRawInputDevices,
+      int uiNumDevices,
+      int cbSize);
 
     [DllImport("User32.dll")]
     internal static extern uint GetRawInputDeviceList(
@@ -124,7 +125,7 @@ namespace InputService.Plugin
 
     #region RawInputDeviceFlags enum
 
-    [Flags]
+    [Flags()]
     public enum RawInputDeviceFlags
     {
       /// <summary>No flags.</summary>
@@ -308,8 +309,8 @@ namespace InputService.Plugin
     [StructLayout(LayoutKind.Sequential)]
     public struct RAWINPUTDEVICE
     {
-      [MarshalAs(UnmanagedType.U2)] public ushort usUsagePage;
-      [MarshalAs(UnmanagedType.U2)] public ushort usUsage;
+      [MarshalAs(UnmanagedType.U2)] public short usUsagePage;
+      [MarshalAs(UnmanagedType.U2)] public short usUsage;
       [MarshalAs(UnmanagedType.U4)] public RawInputDeviceFlags dwFlags;
       public IntPtr hwndTarget;
     }
@@ -378,12 +379,18 @@ namespace InputService.Plugin
       uint deviceCount = 0;
       int dwSize = Marshal.SizeOf(typeof (RAWINPUTDEVICELIST));
 
+      string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IR Server Suite\\Logs\\iMon Raw Input.log");
+      StreamWriter _debugFile = new StreamWriter(path, false);
+      _debugFile.AutoFlush = true;
+
       // Get the number of raw input devices in the list,
       // then allocate sufficient memory and get the entire list
       if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, (uint) dwSize) == 0)
       {
         IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int) (dwSize*deviceCount));
         GetRawInputDeviceList(pRawInputDeviceList, ref deviceCount, (uint) dwSize);
+        _debugFile.Write("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
+        _debugFile.WriteLine(String.Format("EnumerateDevices(): Found {0} Devices", deviceCount));
 
         List<DeviceDetails> devices = new List<DeviceDetails>((int) deviceCount);
 

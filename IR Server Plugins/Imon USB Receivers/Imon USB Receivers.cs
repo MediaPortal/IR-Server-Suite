@@ -1727,7 +1727,15 @@ namespace InputService.Plugin
 
     private bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
     {
-      return RawInput.RegisterRawInputDevices(devices, (uint) devices.Length, (uint) Marshal.SizeOf(devices[0]));
+      DebugWriteLine("RegisterForRawInput(): Registering {0} device(s).", devices.Length);
+      if (RawInput.RegisterRawInputDevices(devices, devices.Length, Marshal.SizeOf(typeof(RawInput.RAWINPUTDEVICE))))
+      {
+        int dwError = Marshal.GetLastWin32Error();
+        DebugWriteLine("RegisterForRawInput(): error={0}", dwError);
+        throw new Win32Exception(dwError, "Imon:RegisterForRawInput()");
+      }
+      DebugWriteLine("RegisterForRawInput(): Done.");
+      return true;
     }
 
     /// <summary>
@@ -1789,8 +1797,8 @@ namespace InputService.Plugin
 #endif
                 // found the remote device
                 rDevice = new RawInput.RAWINPUTDEVICE();
-                rDevice.usUsage = details.Usage;
-                rDevice.usUsagePage = details.UsagePage;
+                rDevice.usUsage = (short)details.Usage;
+                rDevice.usUsagePage = (short)details.UsagePage;
                 RemoteDeviceName = details.ID;
               }
               // check for keyboard device - MI_00&Col02#
@@ -1804,8 +1812,8 @@ namespace InputService.Plugin
 #endif
                 // found the keyboard device
                 kDevice = new RawInput.RAWINPUTDEVICE();
-                kDevice.usUsage = details.Usage;
-                kDevice.usUsagePage = details.UsagePage;
+                kDevice.usUsage = (short)details.Usage;
+                kDevice.usUsagePage = (short)details.UsagePage;
                 KeyboardDeviceName = details.ID;
               }
               // check for remote device - MI_00&Col01#
@@ -1819,8 +1827,8 @@ namespace InputService.Plugin
 #endif
                 // found the mouse device
                 mDevice = new RawInput.RAWINPUTDEVICE();
-                mDevice.usUsage = details.Usage;
-                mDevice.usUsagePage = details.UsagePage;
+                mDevice.usUsage = (short)details.Usage;
+                mDevice.usUsagePage = (short)details.UsagePage;
                 MouseDeviceName = details.ID;
               }
             }
