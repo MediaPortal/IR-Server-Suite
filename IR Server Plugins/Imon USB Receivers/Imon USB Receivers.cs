@@ -1180,7 +1180,6 @@ namespace InputService.Plugin
       {
         _deviceTree[KeyboardDevice].dwFlags = RawInput.RawInputDeviceFlags.InputSink |
                                               RawInput.RawInputDeviceFlags.NoLegacy;
-        //_deviceTree[KeyboardDevice].hwndTarget = _receiverWindowHID.Handle;
         _deviceTree[KeyboardDevice].hwndTarget = _receiverWindowHID.Handle;
       }
       if (MouseDevice > -1)
@@ -1197,20 +1196,23 @@ namespace InputService.Plugin
         throw new InvalidOperationException("no input devices enabled");
       }
 
-      if (_deviceTree.Length == 0)
+      if (_deviceTree != null)
       {
+        if (_deviceTree.Length == 0)
+        {
 #if DEBUG
-        DebugWriteLine("ERROR: no iMon devices found");
+          DebugWriteLine("ERROR: no iMon devices found");
 #endif
-        throw new InvalidOperationException("no iMon devices found");
-      }
+          throw new InvalidOperationException("no iMon devices found");
+        }
 
-      if (!RegisterForRawInput(_deviceTree))
-      {
+        if (!RegisterForRawInput(_deviceTree))
+        {
 #if DEBUG
-        DebugWriteLine("ERROR: Failed to register for HID Raw input");
+          DebugWriteLine("ERROR: Failed to register for HID Raw input");
 #endif
-        throw new InvalidOperationException("Failed to register for HID Raw input");
+          throw new InvalidOperationException("Failed to register for HID Raw input");
+        }
       }
 #if DEBUG
       DebugWriteLine("Start_HID(): completed");
@@ -1225,14 +1227,17 @@ namespace InputService.Plugin
 #if DEBUG
       DebugWriteLine("Stop_HID()");
 #endif
-      _deviceTree[0].dwFlags |= RawInput.RawInputDeviceFlags.Remove;
-      _deviceTree[1].dwFlags |= RawInput.RawInputDeviceFlags.Remove;
-      _deviceTree[2].dwFlags |= RawInput.RawInputDeviceFlags.Remove;
-      RegisterForRawInput(_deviceTree);
+      if (_deviceTree != null)
+      {
+        _deviceTree[0].dwFlags |= RawInput.RawInputDeviceFlags.Remove;
+        _deviceTree[1].dwFlags |= RawInput.RawInputDeviceFlags.Remove;
+        _deviceTree[2].dwFlags |= RawInput.RawInputDeviceFlags.Remove;
+        RegisterForRawInput(_deviceTree);
 
-      _receiverWindowHID.ProcMsg -= ProcMessage;
-      _receiverWindowHID.DestroyHandle();
-      _receiverWindowHID = null;
+        _receiverWindowHID.ProcMsg -= ProcMessage;
+        _receiverWindowHID.DestroyHandle();
+        _receiverWindowHID = null;
+      }
     }
 
     /// <summary>
