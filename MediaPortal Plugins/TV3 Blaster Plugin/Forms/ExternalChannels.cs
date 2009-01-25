@@ -27,7 +27,7 @@ namespace TvEngine
 
     private void ExternalChannels_Load(object sender, EventArgs e)
     {
-      IList cards = Card.ListAll();
+      System.Collections.Generic.IList<TvDatabase.Card> cards = Card.ListAll();
 
       if (cards.Count == 0)
       {

@@ -384,7 +384,7 @@ namespace TvEngine
     /// </summary>
     internal static void LoadExternalConfigs()
     {
-      IList cards = Card.ListAll();
+      System.Collections.Generic.IList<TvDatabase.Card> cards = Card.ListAll();
 
       if (cards.Count == 0)
       {

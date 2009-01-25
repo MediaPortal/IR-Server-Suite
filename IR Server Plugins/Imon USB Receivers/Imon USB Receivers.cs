@@ -1732,14 +1732,20 @@ namespace InputService.Plugin
 
     private bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
     {
+#if DEBUG
       DebugWriteLine("RegisterForRawInput(): Registering {0} device(s).", devices.Length);
+#endif
       if (RawInput.RegisterRawInputDevices(devices, devices.Length, Marshal.SizeOf(typeof(RawInput.RAWINPUTDEVICE))))
       {
         int dwError = Marshal.GetLastWin32Error();
+#if DEBUG
         DebugWriteLine("RegisterForRawInput(): error={0}", dwError);
+#endif
         throw new Win32Exception(dwError, "Imon:RegisterForRawInput()");
       }
+#if DEBUG
       DebugWriteLine("RegisterForRawInput(): Done.");
+#endif
       return true;
     }
 
