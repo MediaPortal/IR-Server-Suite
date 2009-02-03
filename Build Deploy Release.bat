@@ -5,20 +5,21 @@ REM detect if BUILD_TYPE should be release or debug
 if not %1!==Debug! goto RELEASE
 :DEBUG
 set BUILD_TYPE=Debug
-goto END_BUILD_TYPE
+goto START
 :RELEASE
 set BUILD_TYPE=Release
-:END_BUILD_TYPE
+goto START
+
+
+:START
+REM Select program path based on current machine environment
+set progpath=%ProgramFiles%
+if not "%ProgramFiles(x86)%".=="". set progpath=%ProgramFiles(x86)%
 
 
 REM set logfile where the infos are written to, and clear that file
 set LOG=build_%BUILD_TYPE%.log
 echo. > %LOG%
-
-
-REM Select program path based on current machine environment
-set progpath=%ProgramFiles%
-if not "%ProgramFiles(x86)%".=="". set progpath=%ProgramFiles(x86)%
 
 
 echo.
@@ -27,13 +28,25 @@ echo -= build mode: %BUILD_TYPE% =-
 echo.
 
 echo.
+echo Writing SVN revision assemblies...
+setup\DeployVersionSVN.exe /svn="%CD%"  >> %LOG%
+
+echo.
 echo Building IR Server Suite...
 "%progpath%\Microsoft Visual Studio 8\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "IR Server Suite.sln" >> %LOG%
 
 echo.
-echo Building Help file...
-"%ProgramFiles%\HTML Help Workshop\hhc.exe" "Documentation\IR Server Suite.hhp" >> %LOG%
+echo Reverting assemblies...
+setup\DeployVersionSVN.exe /svn="%CD%" /revert >> %LOG%
+
+echo.
+echo Reading the svn revision...
+echo $WCREV$>template.txt
+"%ProgramFiles%\TortoiseSVN\bin\SubWCRev.exe" ".." template.txt version.txt >> %LOG%
+SET /p version=<version.txt >> %LOG%
+DEL template.txt >> %LOG%
+DEL version.txt >> %LOG%
 
 echo.
 echo Building Installer...
-"%progpath%\NSIS\makensis.exe" setup\setup.nsi >> %LOG%
+"%progpath%\NSIS\makensis.exe" /DBUILD_TYPE=%BUILD_TYPE% /DVER_BUILD=%version% setup\setup.nsi >> %LOG%

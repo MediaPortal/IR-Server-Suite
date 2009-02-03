@@ -280,14 +280,12 @@ Section "-Core"
   WriteRegStr HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir" "$DIR_MEDIAPORTAL"
   WriteRegStr HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir" "$DIR_TVSERVER"
 
-  ; Write documentation
-!if ${VER_BUILD} != 0
-  DetailPrint "Warning: Documentation is not included in debug builds"
-!else
+
+  ; Create app data directories
   SetOutPath "$DIR_INSTALL"
   SetOverwrite ifnewer
   File "..\Documentation\${PRODUCT_NAME}.chm"
-!endif
+
 
   ; Create app data directories
   CreateDirectory "$APPDATA\${PRODUCT_NAME}"
@@ -694,11 +692,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!if ${VER_BUILD} != 0
 ${MementoSection} "Tray Launcher" SectionTrayLauncher
-!else
-${MementoUnselectedSection} "Tray Launcher" SectionTrayLauncher
-!endif
 
   DetailPrint "Installing Tray Launcher ..."
 
@@ -811,11 +805,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!if ${VER_BUILD} != 0
 ${MementoSection} "IR File Tool" SectionIRFileTool
-!else
-${MementoUnselectedSection} "IR File Tool" SectionIRFileTool
-!endif
 
   DetailPrint "Installing IR File Tool ..."
 
@@ -847,11 +837,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!if ${VER_BUILD} != 0
 ${MementoSection} "Keyboard Relay" SectionKeyboardInputRelay
-!else
-${MementoUnselectedSection} "Keyboard Relay" SectionKeyboardInputRelay
-!endif
 
   DetailPrint "Installing Keyboard Input Relay ..."
 
@@ -886,11 +872,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!if ${VER_BUILD} != 0
 ${MementoSection} "Dbox Tuner" SectionDboxTuner
-!else
-${MementoUnselectedSection} "Dbox Tuner" SectionDboxTuner
-!endif
 
   DetailPrint "Installing Dbox Tuner ..."
 
@@ -916,11 +898,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!if ${VER_BUILD} != 0
 ${MementoSection} "HCW PVR Tuner" SectionHcwPvrTuner
-!else
-${MementoUnselectedSection} "HCW PVR Tuner" SectionHcwPvrTuner
-!endif
 
   DetailPrint "Installing HCW PVR Tuner ..."
 
@@ -943,11 +921,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-!if ${VER_BUILD} != 0
 ${MementoSection} "Debug Client" SectionDebugClient
-!else
-${MementoUnselectedSection} "Debug Client" SectionDebugClient
-!endif
 
   DetailPrint "Installing Debug Client ..."
 
@@ -1024,13 +998,6 @@ Section "-Complete"
   Push $0
   Call DumpLog
 
-  ; Finish
-!if ${VER_BUILD} != 0
-  SetAutoClose false
-!else
-  SetAutoClose true
-!endif
-
 SectionEnd
 
 ;======================================
@@ -1071,12 +1038,6 @@ Section "Uninstall"
   DetailPrint "Removing registry keys ..."
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
   DeleteRegKey HKLM "Software\${PRODUCT_NAME}"
-
-!if ${VER_BUILD} != 0
-  SetAutoClose false
-!else
-  SetAutoClose true
-!endif
 
 SectionEnd
 
