@@ -1735,7 +1735,7 @@ namespace InputService.Plugin
 #if DEBUG
       DebugWriteLine("RegisterForRawInput(): Registering {0} device(s).", devices.Length);
 #endif
-      if (RawInput.RegisterRawInputDevices(devices, devices.Length, Marshal.SizeOf(typeof(RawInput.RAWINPUTDEVICE))))
+      if (RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTDEVICE))))
       {
         int dwError = Marshal.GetLastWin32Error();
 #if DEBUG
@@ -1808,8 +1808,8 @@ namespace InputService.Plugin
 #endif
                 // found the remote device
                 rDevice = new RawInput.RAWINPUTDEVICE();
-                rDevice.usUsage = (short)details.Usage;
-                rDevice.usUsagePage = (short)details.UsagePage;
+                rDevice.usUsage = details.Usage;
+                rDevice.usUsagePage = details.UsagePage;
                 RemoteDeviceName = details.ID;
               }
               // check for keyboard device - MI_00&Col02#
@@ -1823,8 +1823,8 @@ namespace InputService.Plugin
 #endif
                 // found the keyboard device
                 kDevice = new RawInput.RAWINPUTDEVICE();
-                kDevice.usUsage = (short)details.Usage;
-                kDevice.usUsagePage = (short)details.UsagePage;
+                kDevice.usUsage = details.Usage;
+                kDevice.usUsagePage = details.UsagePage;
                 KeyboardDeviceName = details.ID;
               }
               // check for remote device - MI_00&Col01#
@@ -1838,8 +1838,8 @@ namespace InputService.Plugin
 #endif
                 // found the mouse device
                 mDevice = new RawInput.RAWINPUTDEVICE();
-                mDevice.usUsage = (short)details.Usage;
-                mDevice.usUsagePage = (short)details.UsagePage;
+                mDevice.usUsage = details.Usage;
+                mDevice.usUsagePage = details.UsagePage;
                 MouseDeviceName = details.ID;
               }
             }
