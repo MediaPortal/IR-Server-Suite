@@ -617,14 +617,14 @@ ${MementoSectionEnd}
 
 ;======================================
 
+SectionGroupEnd
+
 Section "-TV3PostInstall" SectionTV3PostInstall
   !insertmacro StartTVService  
 SectionEnd
 !macro Remove_${SectionTV3PostInstall}
   !insertmacro StartTVService
 !macroend
-
-SectionGroupEnd
 
 ;======================================
 /*
