@@ -108,7 +108,7 @@ namespace MacroScope
 
     void ResetVariables()
     {
-      _variables.Clear();
+      _variables.VariableClear();
       listViewVariables.Clear();
     }
 
@@ -192,7 +192,6 @@ namespace MacroScope
       TreeNode generalCommands = new TreeNode("General Commands");
       generalCommands.Nodes.Add(Common.UITextBeep);
       generalCommands.Nodes.Add(Common.UITextCloseProgram);
-      generalCommands.Nodes.Add(Common.UITextDisplay);
       generalCommands.Nodes.Add(Common.UITextEject);
       generalCommands.Nodes.Add(Common.UITextHibernate);
       generalCommands.Nodes.Add(Common.UITextHttpMsg);

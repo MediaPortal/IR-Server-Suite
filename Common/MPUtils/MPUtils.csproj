@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Core, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Core.DLL</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
@@ -56,7 +56,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Utils, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Utils.DLL</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

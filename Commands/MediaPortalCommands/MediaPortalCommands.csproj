@@ -38,12 +38,12 @@
   <ItemGroup>
     <Reference Include="Core, Version=0.2.3.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\Core\bin\Release\Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Dialogs, Version=0.2.3.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\WindowPlugins\bin\Release\Dialogs.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\plugins\Windows\Dialogs.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -53,7 +53,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Utils, Version=2.2.4.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\MediaPortal\Utils\bin\Release\Utils.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
