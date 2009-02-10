@@ -42,7 +42,7 @@ setup\DeployVersionSVN.exe /svn="%CD%" /revert >> %LOG%
 echo.
 echo Reading the svn revision...
 echo $WCREV$>template.txt
-"%ProgramFiles%\TortoiseSVN\bin\SubWCRev.exe" ".." template.txt version.txt >> %LOG%
+"%ProgramFiles%\TortoiseSVN\bin\SubWCRev.exe" "." template.txt version.txt >> %LOG%
 SET /p version=<version.txt >> %LOG%
 DEL template.txt >> %LOG%
 DEL version.txt >> %LOG%
