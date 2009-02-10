@@ -23,9 +23,34 @@
 
 #endregion
 
-!ifndef svn_InstallScripts
-  !error "$\r$\n$\r$\n The DEFINE ->  svn_InstallScripts  <-- was not found.$\r$\n$\r$\n     Please set the relative Path from your setup.nsi to the CommonNSIS script directory to the DEFINE svn_InstallScripts .$\r$\n$\r$\n"
+
+!ifndef ___COMMON_MP_MACROS__NSH___
+!define ___COMMON_MP_MACROS__NSH___
+
+
+!include LogicLib.nsh
+
+
+!ifndef COMPANY
+  !define COMPANY "Team MediaPortal"
 !endif
+!ifndef URL
+  !define URL "www.team-mediaportal.com"
+!endif
+!ifndef WEB_REQUIREMENTS
+  !define WEB_REQUIREMENTS "http://wiki.team-mediaportal.com/GeneralRequirements/OperatingSystems"
+!endif
+
+
+!ifndef MP_REG_UNINSTALL
+  !define MP_REG_UNINSTALL  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal"
+!endif
+!ifndef TV3_REG_UNINSTALL
+  !define TV3_REG_UNINSTALL "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal TV Server"
+!endif
+
+
+
 
 # references to additional plugins, if not used, these won't be included
 !AddPluginDir "${svn_InstallScripts}\GetVersion-plugin\Plugins"
@@ -33,27 +58,13 @@
 !include "${svn_InstallScripts}\XML-plugin\Include\XML.nsh"
 
 
-
-
-!insertmacro GetRoot
-!insertmacro un.GetRoot
-
-!include WordFunc.nsh
-!insertmacro WordFind
-!insertmacro un.WordFind
-!insertmacro WordReplace
-!insertmacro un.WordReplace
-
-
-!include "${svn_InstallScripts}\include-FileAssociation.nsh"
-
-
-#**********************************************************************************************************#
+#---------------------------------------------------------------------------
+#   NSIS logging system
 #
-# logging system
-#
-#**********************************************************************************************************#
-!ifdef INSTALL_LOG
+#           enable it by defining         USE_INSTALL_LOG      in parent script
+#---------------------------------------------------------------------------
+!ifdef USE_INSTALL_LOG
+
 !include FileFunc.nsh
 !insertmacro GetTime
 !insertmacro un.GetTime
@@ -117,10 +128,10 @@ Var TempInstallLog
     !if "${LEVEL}" != "INFO"
       !error "$\r$\n$\r$\nYou call macro LOG_TEXT with wrong LogLevel. Only 'DEBUG', 'ERROR' and 'INFO' are valid!$\r$\n$\r$\n"
     !else
-      DetailPrint "${prefix${LEVEL}}${TEXT}$\r$\n"
+      DetailPrint "${prefix${LEVEL}}${TEXT}"
     !endif
   !else
-    DetailPrint "${prefix${LEVEL}}${TEXT}$\r$\n"
+    DetailPrint "${prefix${LEVEL}}${TEXT}"
   !endif
 !endif
 
@@ -128,7 +139,7 @@ Var TempInstallLog
 
 !macroend
 
-!else
+!else #!USE_INSTALL_LOG
 
 !define LOG_OPEN `!insertmacro LOG_OPEN`
 !macro LOG_OPEN
@@ -144,13 +155,9 @@ Var TempInstallLog
 
 !endif
 
-
-
-#**********************************************************************************************************#
-#
-# killing a process
-#
-#**********************************************************************************************************#
+#---------------------------------------------------------------------------
+#   KILL Process       macro for common usage
+#---------------------------------------------------------------------------
 !define KILLPROCESS `!insertmacro KILLPROCESS`
 !macro KILLPROCESS PROCESS
 /*
@@ -170,14 +177,6 @@ Var TempInstallLog
   ${LOG_TEXT} "DEBUG" "KILLPROCESS result: $0"
 
 !macroend
-
-
-
-
-
-
-
-
 
 
 
@@ -255,12 +254,6 @@ Var TempInstallLog
 #
 #**********************************************************************************************************#
 
-!ifndef MP_REG_UNINSTALL
-  !define MP_REG_UNINSTALL      "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal"
-!endif
-!ifndef TV3_REG_UNINSTALL
-  !define TV3_REG_UNINSTALL     "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal TV Server"
-!endif
 
 #**********************************************************************************************************#
 # LOGICLIB EXPRESSIONS
@@ -442,6 +435,7 @@ Var TempInstallLog
   SetRegView 32
 
   ${If} ${TVServerIsInstalled}
+  ${OrIf} ${TVClientIsInstalled}
     ReadRegStr ${_var} HKLM "${TV3_REG_UNINSTALL}" "InstallPath"
   ${Else}
     StrCpy ${_var} ""
@@ -449,6 +443,38 @@ Var TempInstallLog
 
 !macroend
 
+!macro MP_GET_VERSION _var
+  SetRegView 32
+
+  ${If} ${MPIsInstalled}
+    ReadRegDWORD $R0 HKLM "${MP_REG_UNINSTALL}" "VersionMajor"
+    ReadRegDWORD $R1 HKLM "${MP_REG_UNINSTALL}" "VersionMinor"
+    ReadRegDWORD $R2 HKLM "${MP_REG_UNINSTALL}" "VersionRevision"
+    ReadRegDWORD $R3 HKLM "${MP_REG_UNINSTALL}" "VersionBuild"
+    StrCpy ${_var} $R0.$R1.$R2.$R3
+  ${Else}
+    StrCpy ${_var} ""
+  ${EndIf}
+
+!macroend
+
+!macro TVSERVER_GET_VERSION _var
+  SetRegView 32
+
+  ${If} ${TVServerIsInstalled}
+  ${OrIf} ${TVClientIsInstalled}
+    ReadRegDWORD $R0 HKLM "${TV3_REG_UNINSTALL}" "VersionMajor"
+    ReadRegDWORD $R1 HKLM "${TV3_REG_UNINSTALL}" "VersionMinor"
+    ReadRegDWORD $R2 HKLM "${TV3_REG_UNINSTALL}" "VersionRevision"
+    ReadRegDWORD $R3 HKLM "${TV3_REG_UNINSTALL}" "VersionBuild"
+    StrCpy ${_var} $R0.$R1.$R2.$R3
+  ${Else}
+    StrCpy ${_var} ""
+  ${EndIf}
+
+!macroend
+
+!include FileFunc.nsh
 !insertmacro GetTime
 !macro GET_BACKUP_POSTFIX _var
 
@@ -489,7 +515,11 @@ LangString TEXT_MSGBOX_ERROR_IS_INSTALLED         ${LANG_ENGLISH} "$(^Name) is a
 LangString TEXT_MSGBOX_ERROR_ON_UNINSTALL         ${LANG_ENGLISH} "An error occured while trying to uninstall old version!$\r$\nDo you still want to continue the installation?"
 LangString TEXT_MSGBOX_ERROR_REBOOT_REQUIRED      ${LANG_ENGLISH} "A reboot is required after a previous action. Reboot you system and try it again."
 
-
+LangString UPDATE_ERROR_WRONGEXE                  ${LANG_ENGLISH} "updating $(^Name) is only allowed by starting MediaPortalUpdater!"
+LangString UPDATE_ERROR_UNKNOWN                   ${LANG_ENGLISH} "strange / unknown error, please use full installer"
+LangString UPDATE_ERROR_NOTHING_INSTALLED         ${LANG_ENGLISH} "Nothing to do, nothing installed, please use the full installer"
+LangString UPDATE_ERROR_VERSION_MP                ${LANG_ENGLISH} "wrong version of MediaPortal is installed or svn, please use the full installer"
+LangString UPDATE_ERROR_VERSION_TVSERVER          ${LANG_ENGLISH} "wrong version or TVServer or Client plugin is installed or svn, please use the full installer"
 
   /*
 ; Section flag test
@@ -522,11 +552,13 @@ LangString TEXT_MSGBOX_ERROR_REBOOT_REQUIRED      ${LANG_ENGLISH} "A reboot is r
 !define MPIsInstalled "!insertmacro _MPIsInstalled"
   */
 
+#---------------------------------------------------------------------------
+#   Read      Special MediaPortal directories from  xml
+#
+#           enable it by defining         USE_READ_MP_DIRS      in parent script
+#---------------------------------------------------------------------------
+!ifdef USE_READ_MP_DIRS
 
-
-#***************************
-#***************************
-  
 Var MyDocs
 Var UserAppData
 Var CommonAppData
@@ -613,6 +645,12 @@ FunctionEnd
 #***************************
 #***************************
 
+!include FileFunc.nsh
+!insertmacro GetRoot
+!insertmacro un.GetRoot
+!include WordFunc.nsh
+!insertmacro WordReplace
+!insertmacro un.WordReplace
 !macro ReadMPdir UNINSTALL_PREFIX DIR
   ${LOG_TEXT} "DEBUG" "macro: ReadMPdir | DIR: ${DIR}"
 
@@ -715,9 +753,6 @@ FunctionEnd
 
 !macroend
 
-#***************************
-#***************************
-
 !define ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirs ""`
 !define un.ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirs "un."`
 !macro ReadMediaPortalDirs UNINSTALL_PREFIX INSTDIR
@@ -772,46 +807,165 @@ FunctionEnd
   ${LOG_TEXT} "INFO" "          BurnerSupport: $MPdir.BurnerSupport"
 !macroend
 
-!ifdef WINVER++
-  !include "${svn_InstallScripts}\include-WinVerEx.nsh"
+!endif # !USE_READ_MP_DIRS
+
+
+#---------------------------------------------------------------------------
+#   COMPLETE MEDIAPORTAL CLEANUP
+#---------------------------------------------------------------------------
+!macro CompleteMediaPortalCleanup
+
+# make and uninstallation of the other app, which may be still installed
+!if "${NAME}" == "MediaPortal"
+  !insertmacro NSISuninstall "${TV3_REG_UNINSTALL}"
 !else
+  !if "${NAME}" == "MediaPortal TV Server / Client"
+    !insertmacro NSISuninstall "${MP_REG_UNINSTALL}"
+  !endif
+!endif
 
-!macro GetServicePack _major _minor
-  Push $0
-  Push $1
+SetShellVarContext all
+# Delete new MediaPortal ( >= 0.2.3 RC3 ) and TVengine 3 directories
+RMDir /r /REBOOTOK "$PROGRAMFILES\Team MediaPortal"
+RMDir /r /REBOOTOK "$APPDATA\Team MediaPortal"
+RMDir /r /REBOOTOK "$LOCALAPPDATA\VirtualStore\Program Files\Team MediaPortal"
+RMDir /r /REBOOTOK "$LOCALAPPDATA\VirtualStore\ProgramData\Team MediaPortal"
 
-  ; result is:
-  ; "Service Pack 3"         for final Service Packs
-  ; "Service Pack 3, v.3311" for beta  Service Packs
+# Delete old MediaPortal ( <= 0.2.3 RC2 ) directories 
+RMDir /r /REBOOTOK "$PROGRAMFILES\MediaPortal"
+RMDir /r /REBOOTOK "$APPDATA\MediaPortal"
+RMDir /r /REBOOTOK "$LOCALAPPDATA\VirtualStore\Program Files\MediaPortal"
+RMDir /r /REBOOTOK "$LOCALAPPDATA\VirtualStore\ProgramData\MediaPortal"
 
-  GetVersion::WindowsServicePack
-  Pop $0
-  ${LOG_TEXT} "INFO" "GetVersion::WindowsServicePack: $0"
+# Delete old TV3 engine directories
+RMDir /r /REBOOTOK "$PROGRAMFILES\MediaPortal TV Engine"
+RMDir /r /REBOOTOK "$APPDATA\MediaPortal TV Engine"
+RMDir /r /REBOOTOK "$LOCALAPPDATA\VirtualStore\Program Files\MediaPortal TV Engine"
+RMDir /r /REBOOTOK "$LOCALAPPDATA\VirtualStore\ProgramData\MediaPortal TV Engine"
 
-  ;uncomment for testing
-  ;StrCpy $0 "Service Pack 3"
-  ;StrCpy $0 "Service Pack 3, v.3311"
+# Delete menu shortcut icons
+SetShellVarContext all
+RMDir /r /REBOOTOK "$APPDATA\Microsoft\Windows\Start Menu\Programs\Team MediaPortal"
+RMDir /r /REBOOTOK "$APPDATA\Microsoft\Windows\Start Menu\Programs\MediaPortal"
+SetShellVarContext current
+RMDir /r /REBOOTOK "$APPDATA\Microsoft\Windows\Start Menu\Programs\Team MediaPortal"
+RMDir /r /REBOOTOK "$APPDATA\Microsoft\Windows\Start Menu\Programs\MediaPortal"
+RMDir /r /REBOOTOK "$LOCALAPPDATA\Microsoft\Windows\Start Menu\Programs\Team MediaPortal"
+RMDir /r /REBOOTOK "$LOCALAPPDATA\Microsoft\Windows\Start Menu\Programs\MediaPortal"
 
-  ; split the string by "." and save the word count in $2
-  ; if no . is found in $2 the input string (was $0) is saved
-  ${WordFind} "$0" "." "#" $1
+# Remove registry keys
+DeleteRegKey HKLM "Software\Team MediaPortal"
+DeleteRegKey HKCU "Software\Team MediaPortal"
 
-  ; if $0 = $2 -> no "." was found -> no beta
-  ${If} "$0" == "$1"
-    StrCpy ${_major} $0 1 -1   ;  "Service Pack 3"
-    StrCpy ${_minor} 0
-  ${Else}
-    ${WordFind} "$0" "." "+1" $1  ;  "Service Pack 3, v.3311"
-    StrCpy ${_major} $1 1 -4      ;  "Service Pack 3, v"
+DeleteRegKey HKLM "Software\MediaPortal"
+DeleteRegKey HKCU "Software\MediaPortal"
 
-    ;split again, and use the second word as minorVer
-    ${WordFind} "$0" "." "+2" ${_minor}  ;  "Service Pack 3, v.3311"
-  ${EndIf}
-
-  ;MessageBox MB_OK|MB_ICONEXCLAMATION "Service Pack: >${_major}< >${_minor}<"
-
-  pop $1
-  pop $0
 !macroend
 
-!endif
+!include FileFunc.nsh
+!insertmacro un.GetParent
+!macro NSISuninstall REG_KEY
+
+  ReadRegStr $R0 HKLM "${REG_KEY}" UninstallString
+  ${If} ${FileExists} "$R0"
+    ; get parent folder of uninstallation EXE (RO) and save it to R1
+    ${un.GetParent} $R0 $R1
+    ; start uninstallation of installed MP, from tmp folder, so it will delete itself
+    ;HideWindow
+    ClearErrors
+    CopyFiles $R0 "$TEMP\uninstall-temp.exe"
+    ExecWait '"$TEMP\uninstall-temp.exe" _?=$R1 /RemoveAll'
+    ;BringToFront
+
+    /*
+    ; if an error occured, ask to cancel installation
+    ${If} ${Errors}
+      MessageBox MB_YESNO|MB_ICONEXCLAMATION "$(TEXT_MSGBOX_ERROR_ON_UNINSTALL)" IDYES +2
+      Quit
+    ${EndIf}
+    */
+  ${EndIf}
+!macroend
+
+
+#---------------------------------------------------------------------------
+#   MediaPortal specific OS SystemCheck
+#---------------------------------------------------------------------------
+!macro MediaPortalOperatingSystemCheck HideWarnings
+# HideWarnings   is used to disable some Warning MessageBoxes if needed, for example:     if $DeployMode = 1
+
+  ; show error that the OS is not supported and abort the installation
+  ${If} ${AtMostWin2000Srv}
+    StrCpy $0 "OSabort"
+  ${ElseIf} ${IsWinXP}
+    !insertmacro GetServicePack $R1 $R2
+    ${If} $R2 > 0
+      StrCpy $0 "OSwarnBetaSP"
+    ${ElseIf} $R1 < 2
+      StrCpy $0 "OSabort"
+    ${Else}
+      StrCpy $0 "OSok"
+    ${EndIf}
+
+  ${ElseIf} ${IsWinXP64}
+    StrCpy $0 "OSabort"
+
+  ${ElseIf} ${IsWin2003}
+    StrCpy $0 "OSwarn"
+
+  ${ElseIf} ${IsWinVISTA}
+    !insertmacro GetServicePack $R1 $R2
+    ${If} $R2 > 0
+      StrCpy $0 "OSwarnBetaSP"
+    ${ElseIf} $R1 < 1
+      StrCpy $0 "OSwarn"
+    ${Else}
+      StrCpy $0 "OSok"
+    ${EndIf}
+
+  ${ElseIf} ${IsWin2008}
+    StrCpy $0 "OSwarn"
+
+  ${Else}
+    StrCpy $0 "OSabort"
+  ${EndIf}
+
+  ; show warnings for some OS
+  ${If} $0 == "OSabort"
+    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_WIN)" IDNO +2
+    ExecShell open "${WEB_REQUIREMENTS}"
+    Abort
+  ${ElseIf} $0 == "OSwarn"
+    ${If} ${HideWarnings} == 0
+      MessageBox MB_YESNO|MB_ICONEXCLAMATION "$(TEXT_MSGBOX_ERROR_WIN_NOT_RECOMMENDED)" IDNO +2
+      ExecShell open "${WEB_REQUIREMENTS}"
+    ${EndIf}
+  ${ElseIf} $0 == "OSwarnBetaSP"
+    ${If} ${HideWarnings} == 0
+      MessageBox MB_YESNO|MB_ICONEXCLAMATION "You are using a beta Service Pack! $(TEXT_MSGBOX_ERROR_WIN_NOT_RECOMMENDED)" IDNO +2
+      ExecShell open "${WEB_REQUIREMENTS}"
+    ${EndIf}
+  ${Else}
+    ; do nothing
+  ${EndIf}
+
+  ; check if current user is admin
+  UserInfo::GetOriginalAccountType
+  Pop $0
+  #StrCmp $0 "Admin" 0 +3
+  ${IfNot} $0 == "Admin"
+    MessageBox MB_OK|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_ADMIN)"
+    Abort
+  ${EndIf}
+
+  ; check if VC Redist 2005 SP1 is installed
+  ${IfNot} ${VCRedistIsInstalled}
+    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_VCREDIST)" IDNO +2
+    ExecShell open "${WEB_REQUIREMENTS}"
+    Abort
+  ${EndIf}
+
+!macroend
+
+!endif # !___COMMON_MP_MACROS__NSH___
+

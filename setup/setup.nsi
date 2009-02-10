@@ -5,18 +5,31 @@
 ;======================================
 
 
-# DEFINES
+#---------------------------------------------------------------------------
+# SPECIAL BUILDS
+#---------------------------------------------------------------------------
+##### BUILD_TYPE
+# Uncomment the following line to create a setup in debug mode
+;!define BUILD_TYPE "Debug"
+# parameter for command line execution: /DBUILD_TYPE=Debug
+# by default BUILD_TYPE is set to "Release"
+!ifndef BUILD_TYPE
+  !define BUILD_TYPE "Release"
+!endif
+
+
+#---------------------------------------------------------------------------
+# DEVELOPMENT ENVIRONMENT
+#---------------------------------------------------------------------------
+# path definitions
 ;!define svn_ROOT_IRSS ".."
 ;!define svn_InstallScripts "${svn_ROOT_IRSS}\setup\CommonNSIS"
 !define svn_InstallScripts ".\CommonNSIS"
 
-#**********************************************************************************************************#
-#
-#   For building the installer on your own you need:
-#       -  Lastest NSIS version from http://nsis.sourceforge.net/Download
-#
-#**********************************************************************************************************#
 
+#---------------------------------------------------------------------------
+# DEFINES
+#---------------------------------------------------------------------------
 !define PRODUCT_NAME          "IR Server Suite"
 !define PRODUCT_PUBLISHER     "Aaron Dinnage (and-81)"
 !define PRODUCT_WEB_SITE      "http://forum.team-mediaportal.com/mce_replacement_plugin-f165.html"
@@ -54,18 +67,21 @@ SetCompressor /SOLID /FINAL lzma
 
 ;======================================
 
-!include "x64.nsh"
+!include x64.nsh
 !include MUI2.nsh
 !include Sections.nsh
 !include LogicLib.nsh
 !include Library.nsh
 !include FileFunc.nsh
-!include WinVer.nsh
-;!define WinVer++    ;  this one is used by MP but not tested with irss
 !include Memento.nsh
+!include WinVer.nsh
+
+
+!define USE_READ_MP_DIRS ; defines if MediaPortal's special directories needs to be read from config
+!define USE_INSTALL_LOG  ; enables logging during installation and uninstallation
+!include "${svn_InstallScripts}\include-CommonMPMacros.nsh"
 
 !include "${svn_InstallScripts}\include-AddRemovePage.nsh"
-!include "${svn_InstallScripts}\include-CommonMPMacros.nsh"
 !include setup-languages.nsh
 
 ; FileFunc macros
@@ -168,24 +184,29 @@ Page custom PageReinstall PageLeaveReinstall
   !insertmacro "${MacroName}" "SectionInputService"
 
   !insertmacro "${MacroName}" "SectionMPCommon"
-  !insertmacro "${MacroName}" "SectionMPControlPlugin"
-  !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
-  !insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
+    !insertmacro "${MacroName}" "SectionMPControlPlugin"
+    !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
+    !insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
 
   !insertmacro "${MacroName}" "SectionTV3Common"
-  !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
+    !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
+  !insertmacro "${MacroName}" "SectionTV3PostInstall"
 
 ;  !insertmacro "${MacroName}" "SectionMCEBlaster"
 
+  #SectionGroupTools
+  !insertmacro "${MacroName}" "SectionAbstractor"
+  !insertmacro "${MacroName}" "SectionDebugClient"
+  !insertmacro "${MacroName}" "SectionIRFileTool"
+  !insertmacro "${MacroName}" "SectionKeyboardInputRelay"
   !insertmacro "${MacroName}" "SectionTranslator"
   !insertmacro "${MacroName}" "SectionTrayLauncher"
   !insertmacro "${MacroName}" "SectionVirtualRemote"
+  
+  #SectionGroupCmdLineTools
   !insertmacro "${MacroName}" "SectionIRBlast"
-  !insertmacro "${MacroName}" "SectionIRFileTool"
-  !insertmacro "${MacroName}" "SectionKeyboardInputRelay"
   !insertmacro "${MacroName}" "SectionDboxTuner"
   !insertmacro "${MacroName}" "SectionHcwPvrTuner"
-  !insertmacro "${MacroName}" "SectionDebugClient"
 !macroend
 
 ;======================================
@@ -235,22 +256,6 @@ Section "-Prepare"
 
   DetailPrint "Preparing to install ..."
 
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Kill running Programs
-  DetailPrint "Attempting to terminate running processes ..."
-  ${KILLPROCESS} "Translator.exe"
-  ${KILLPROCESS} "TrayLauncher.exe"
-  ${KILLPROCESS} "WebRemote.exe"
-  ${KILLPROCESS} "VirtualRemote.exe"
-  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
-  ${KILLPROCESS} "IRFileTool.exe"
-  ${KILLPROCESS} "DebugClient.exe"
-  ${KILLPROCESS} "KeyboardInputRelay.exe"
-  ${KILLPROCESS} "MediaCenterBlaster.exe"
-  ${KILLPROCESS} "Input Service Configuration.exe"
-
   IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StopInputService SkipStopInputService
 
 StopInputService:
@@ -281,7 +286,6 @@ Section "-Core"
 
   ; Create app data directories
   SetOutPath "$DIR_INSTALL"
-  SetOverwrite ifnewer
   File "..\Documentation\${PRODUCT_NAME}.chm"
 
 
@@ -295,6 +299,7 @@ Section "-Core"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
   SetOverwrite ifnewer
   File /r /x .svn "..\Set Top Boxes\*.*"
+  SetOverwrite on
 
   ; Create a start menu shortcut folder
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
@@ -304,8 +309,8 @@ SectionEnd
 ;======================================
 
 ${MementoSection} "Input Service" SectionInputService
-
-  DetailPrint "Installing Input Service ..."
+  ${LOG_TEXT} "INFO" "Installing Input Service..."
+  ${KILLPROCESS} "Input Service Configuration.exe"
 
   ; Use the all users context
   SetShellVarContext all
@@ -319,23 +324,22 @@ UninstallInputService:
 SkipUninstallInputService:
   Sleep 100
 
-  ; Installing Input Service
-  CreateDirectory "$DIR_INSTALL\Input Service"
+
+  ${LOG_TEXT} "INFO" "Installing Input Service..."
   SetOutPath "$DIR_INSTALL\Input Service"
-  SetOverwrite ifnewer
   File "..\Input Service\Input Service\bin\${Build_Type}\*.*"
 
-  ; Installing Input Service Configuration
-  CreateDirectory "$DIR_INSTALL\Input Service Configuration"
+  ${LOG_TEXT} "INFO" "Installing Input Service Configuration..."
   SetOutPath "$DIR_INSTALL\Input Service Configuration"
-  SetOverwrite ifnewer
   File "..\Input Service\Input Service Configuration\bin\${Build_Type}\*.*"
 
-  ; Install IR Server Plugins ...
-  DetailPrint "Installing IR Server Plugins ..."
-  CreateDirectory "$DIR_INSTALL\IR Server Plugins"
+  ${LOG_TEXT} "INFO" "Installing IR Server..."
+  SetOutPath "$DIR_INSTALL\Input Service"
+  File "..\Applications\IR Server\bin\${Build_Type}\*.*"
+
+
+  ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
   SetOutPath "$DIR_INSTALL\IR Server Plugins"
-  SetOverwrite ifnewer
 
   File "..\IR Server Plugins\Ads Tech PTV-335 Receiver\bin\${Build_Type}\Ads Tech PTV-335 Receiver.*"
   File "..\IR Server Plugins\CoolCommand Receiver\bin\${Build_Type}\CoolCommand Receiver.*"
@@ -379,11 +383,11 @@ SkipUninstallInputService:
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service"
   
   ; Copy Abstract Remote maps
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
   SetOverwrite ifnewer
   File /r /x .svn "..\Input Service\Input Service\Abstract Remote Maps\*.*"
   File "..\Input Service\Input Service\RemoteTable.xsd"
+  SetOverwrite on
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" "" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" 0
@@ -394,47 +398,47 @@ SkipUninstallInputService:
 
 ${MementoSectionEnd}
 !macro Remove_${SectionInputService}
-  DetailPrint "Attempting to remove Input Service ..."
+  ${LOG_TEXT} "INFO" "Removing Input Service..."
+  ${KILLPROCESS} "Input Service Configuration.exe"
 
   ; remove Input Service
   ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
 
-  ; remove Start Menu shortcuts
+  ; remove start menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk"
 
   ; remove files
   RMDir /R /REBOOTOK "$DIR_INSTALL\Input Service"
   RMDir /R /REBOOTOK "$DIR_INSTALL\Input Service Configuration"
+  RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server"
   RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server Plugins"
 !macroend
 
 ;======================================
 
-SectionGroup /e "MediaPortal plugins" SectionGroupMP
+SectionGroup "MediaPortal plugins" SectionGroupMP
 
 Section "-commonMP" SectionMPCommon
-
-  DetailPrint "Installing common files for MediaPortal plugins ..."
-
-  ; Use the all users context
-  SetShellVarContext all
+  ${LOG_TEXT} "INFO" "Installing common files for MediaPortal plugins..."
+  ${KILLPROCESS} "MediaPortal.exe"
+  ${KILLPROCESS} "configuration.exe"
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
-  SetOverwrite ifnewer
   File "..\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
   File "..\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
   File "..\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Windows"
-  SetOverwrite ifnewer
   File "..\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
   File "..\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
   File "..\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
 SectionEnd
 !macro Remove_${SectionMPCommon}
-  DetailPrint "Attempting to remove common files for MediaPortal plugins ..."
+  ${LOG_TEXT} "INFO" "Removing common files for MediaPortal plugins..."
+  ${KILLPROCESS} "MediaPortal.exe"
+  ${KILLPROCESS} "configuration.exe"
 
   ; remove files
   Delete /REBOOTOK "$MPdir.Plugins\Process\MPUtils.*"
@@ -448,20 +452,14 @@ SectionEnd
 ;======================================
 
 ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
-
-  DetailPrint "Installing MP Control Plugin ..."
-
-  ; Use the all users context
-  SetShellVarContext all
+  ${LOG_TEXT} "INFO" "Installing MP Control Plugin..."
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
-  SetOverwrite ifnewer
   File "..\MediaPortal Plugins\MP Control Plugin\bin\${Build_Type}\MPControlPlugin.*"
 
   ; Write input mapping
   SetOutPath "$MPdir.CustomInputDefault"
-  SetOverwrite ifnewer
   File "..\MediaPortal Plugins\MP Control Plugin\InputMapping\MPControlPlugin.xml"
 
   ; Write app data
@@ -469,13 +467,14 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   SetOutPath "$APPDATA\${PRODUCT_NAME}\MP Control Plugin"
   SetOverwrite ifnewer
   File /r /x .svn "..\MediaPortal Plugins\MP Control Plugin\AppData\*.*"
+  SetOverwrite on
 
   ; Create Macro folder
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Control Plugin\Macro"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionMPControlPlugin}
-  DetailPrint "Attempting to remove MediaPortal Control Plugin ..."
+  ${LOG_TEXT} "INFO" "MP Control Plugin..."
 
   Delete /REBOOTOK "$MPdir.Plugins\Process\MPControlPlugin.*"
 !macroend
@@ -483,15 +482,13 @@ ${MementoSectionEnd}
 ;======================================
 
 ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
-
-  DetailPrint "Installing MP Blast Zone Plugin ..."
+  ${LOG_TEXT} "INFO" "Installing MP Blast Zone Plugin..."
 
   ; Use the all users context
   SetShellVarContext all
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Windows"
-  SetOverwrite ifnewer
   File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${Build_Type}\MPBlastZonePlugin.*"
 
   ; Write app data
@@ -499,14 +496,13 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   SetOutPath "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin"
   SetOverwrite off
   File "..\MediaPortal Plugins\MP Blast Zone Plugin\AppData\Menu.xml"
+  SetOverwrite on
 
   ; Write skin files
-  SetOutPath "$MPdir.Skin\BlueTwo"
-  SetOverwrite on
+  SetOutPath "$MPdir.Skin\Blue3"
   File /r /x .svn "..\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
-  SetOutPath "$MPdir.Skin\BlueTwo wide"
-  SetOverwrite on
+  SetOutPath "$MPdir.Skin\Blue3wide"
   File /r /x .svn "..\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   ; Create Macro folder
@@ -514,7 +510,7 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
 
 ${MementoSectionEnd}
 !macro Remove_${SectionMPBlastZonePlugin}
-  DetailPrint "Attempting to remove MediaPortal Blast Zone Plugin ..."
+  ${LOG_TEXT} "INFO" "Removing MP Blast Zone Plugin..."
 
   Delete /REBOOTOK "$MPdir.Plugins\Windows\MPBlastZonePlugin.*"
 !macroend
@@ -522,15 +518,10 @@ ${MementoSectionEnd}
 ;======================================
 
 ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
-
-  DetailPrint "Installing TV2 Blaster Plugin ..."
-
-  ; Use the all users context
-  SetShellVarContext all
+  ${LOG_TEXT} "INFO" "Installing TV2 Blaster Plugin..."
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
-  SetOverwrite ifnewer
   File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${Build_Type}\TV2BlasterPlugin.*"
 
   ; Create folders
@@ -539,7 +530,7 @@ ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
 
 ${MementoSectionEnd}
 !macro Remove_${SectionTV2BlasterPlugin}
-  DetailPrint "Attempting to remove MediaPortal TV2 Plugin ..."
+  ${LOG_TEXT} "INFO" "Removing TV2 Blaster Plugin..."
 
   Delete /REBOOTOK "$MPdir.Plugins\Process\TV2BlasterPlugin.*"
 !macroend
@@ -549,44 +540,63 @@ ${MementoSectionEnd}
 SectionGroupEnd
 
 ;======================================
+Var RestartTvService
+!macro StopTVService
 
-SectionGroup /e "TV Server plugins" SectionGroupTV3
+  ; stopping TV Service
+  ; if TV service was Running, and has been stopped correctly   $RestartTvService = 0 , otherwise 1 or 2 ............
+  ${LOG_TEXT} "INFO" "Stopping TV Service..."
+  nsExec::ExecToLog 'net stop TVservice'
+  Pop $RestartTvService
+  
+  ${KILLPROCESS} "TVService.exe"
+  ${KILLPROCESS} "SetupTv.exe"
+
+!macroend
+!macro StartTVService
+  ; only if TVService was stopped by the installer before, correctly, start it now
+  ${If} $RestartTvService == 0
+    ${LOG_TEXT} "INFO" "Starting TV Service..."
+    nsExec::ExecToLog 'net start TVservice'
+    StrCpy $RestartTvService 1
+  ${EndIf}
+!macroend
+
+SectionGroup "TV Server plugins" SectionGroupTV3
 
 Section "-commonTV3" SectionTV3Common
-
-  DetailPrint "Installing common files for TV Server plugins ..."
-
-  ; Use the all users context
-  SetShellVarContext all
+  ${LOG_TEXT} "INFO" "Installing common files for TV Server plugins..."
+  !insertmacro StopTVService
 
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
-  SetOverwrite ifnewer
   File "..\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
   File "..\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
   File "..\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
 SectionEnd
 !macro Remove_${SectionTV3Common}
-  DetailPrint "Attempting to remove common files for TV Server plugins ..."
+  ${If} ${FileExists} "$DIR_TVSERVER\Plugins\MPUtils.*"
+  ${OrIf} ${FileExists} "$DIR_TVSERVER\Plugins\IrssComms.*"
+  ${OrIf} ${FileExists} "$DIR_TVSERVER\Plugins\IrssUtils.*"
 
-  ; remove files
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.*"
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssComms.*"
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssUtils.*"
+    ${LOG_TEXT} "INFO" "Removing common files for TV Server plugins..."
+    !insertmacro StopTVService
+
+    ; remove files
+    Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.*"
+    Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssComms.*"
+    Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssUtils.*"
+
+  ${EndIf}
 !macroend
 
 ;======================================
 
-${MementoSection} "TV3 Blaster Plugin" SectionTV3BlasterPlugin
-
-  DetailPrint "Installing TV3 Blaster Plugin ..."
-
-  ; Use the all users context
-  SetShellVarContext all
+${MementoSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
+  ${LOG_TEXT} "INFO" "Installing TV Server Blaster Plugin..."
 
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
-  SetOverwrite ifnewer
   File "..\MediaPortal Plugins\TV3 Blaster Plugin\bin\${Build_Type}\TV3BlasterPlugin.*"
 
   ; Create folders
@@ -595,12 +605,24 @@ ${MementoSection} "TV3 Blaster Plugin" SectionTV3BlasterPlugin
 
 ${MementoSectionEnd}
 !macro Remove_${SectionTV3BlasterPlugin}
-  DetailPrint "Attempting to remove MediaPortal TV3 Plugin ..."
+  ${If} ${FileExists} "$DIR_TVSERVER\Plugins\MPUtils.*"
 
-  Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.*"
+    ${LOG_TEXT} "INFO" "Removing TV Server Blaster Plugin..."
+    !insertmacro StopTVService
+
+    Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.*"
+
+  ${EndIf}
 !macroend
 
 ;======================================
+
+Section "-TV3PostInstall" SectionTV3PostInstall
+  !insertmacro StartTVService  
+SectionEnd
+!macro Remove_${SectionTV3PostInstall}
+  !insertmacro StartTVService
+!macroend
 
 SectionGroupEnd
 
@@ -609,8 +631,8 @@ SectionGroupEnd
 SectionGroup /e "Media Center add-ons" SectionGroupMCE
 
 ${MementoUnselectedSection} "Media Center Blaster (experimental)" SectionMCEBlaster
-
-  DetailPrint "Installing Media Center Blaster ..."
+  ${LOG_TEXT} "INFO" "Installing MediaCenterBlaster..."
+  ${KILLPROCESS} "MediaCenterBlaster.exe"
 
   ; Use the all users context
   SetShellVarContext all
@@ -618,7 +640,6 @@ ${MementoUnselectedSection} "Media Center Blaster (experimental)" SectionMCEBlas
   ; Installing Translator
   CreateDirectory "$DIR_INSTALL\Media Center Blaster"
   SetOutPath "$DIR_INSTALL\Media Center Blaster"
-  SetOverwrite ifnewer
   File "..\Applications\Media Center Blaster\bin\${Build_Type}\*.*"
 
   ; Create folders
@@ -630,7 +651,8 @@ ${MementoUnselectedSection} "Media Center Blaster (experimental)" SectionMCEBlas
 
 ${MementoSectionEnd}
 !macro Remove_${SectionMCEBlaster}
-  DetailPrint "Attempting to remove Media Center Blaster ..."
+  ${LOG_TEXT} "INFO" "Removing MediaCenterBlaster..."
+  ${KILLPROCESS} "MediaCenterBlaster.exe"
 
   ; Remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Media Center Blaster"
@@ -648,40 +670,149 @@ SectionGroupEnd
 */
 ;======================================
 
+SectionGroup "Tools" SectionGroupTools
+
+${MementoSection} "Abstractor" SectionAbstractor
+  ${LOG_TEXT} "INFO" "Installing Abstractor..."
+  ${KILLPROCESS} "Abstractor.exe"
+
+  ; install files
+  SetOutPath "$DIR_INSTALL\Abstractor"
+  File "..\Applications\Abstractor\bin\${Build_Type}\*.*"
+
+  ; create start menu shortcuts
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator\Translator.exe" "" "$DIR_INSTALL\Translator\Translator.exe" 0
+
+${MementoSectionEnd}
+!macro Remove_${SectionAbstractor}
+  ${LOG_TEXT} "INFO" "Removing Abstractor..."
+  ${KILLPROCESS} "Abstractor.exe"
+
+  ; remove start menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Abstractor"
+!macroend
+
+;======================================
+
+${MementoSection} "Debug Client" SectionDebugClient
+  ${LOG_TEXT} "INFO" "Installing Debug Client..."
+  ${KILLPROCESS} "DebugClient.exe"
+
+  ; install files
+  SetOutPath "$DIR_INSTALL\Debug Client"
+  File "..\Applications\Debug Client\bin\${Build_Type}\*.*"
+
+  ; create folders
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Debug Client"
+
+  ; create start menu shortcuts
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk" "$DIR_INSTALL\Debug Client\DebugClient.exe" "" "$DIR_INSTALL\Debug Client\DebugClient.exe" 0
+
+${MementoSectionEnd}
+!macro Remove_${SectionDebugClient}
+  ${LOG_TEXT} "INFO" "Removing Debug Client..."
+  ${KILLPROCESS} "DebugClient.exe"
+
+  ; remove start menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Debug Client"
+!macroend
+
+;======================================
+
+${MementoSection} "IR File Tool" SectionIRFileTool
+  ${LOG_TEXT} "INFO" "Installing IR File Tool..."
+  ${KILLPROCESS} "IRFileTool.exe"
+
+  ; install files
+  SetOutPath "$DIR_INSTALL\IR File Tool"
+  File "..\Applications\IR File Tool\bin\${Build_Type}\*.*"
+
+  ; create folders
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR File Tool"
+
+  ; create start menu shortcuts
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk" "$DIR_INSTALL\IR File Tool\IRFileTool.exe" "" "$DIR_INSTALL\IR File Tool\IRFileTool.exe" 0
+
+${MementoSectionEnd}
+!macro Remove_${SectionIRFileTool}
+  ${LOG_TEXT} "INFO" "Removing IR File Tool..."
+  ${KILLPROCESS} "IRFileTool.exe"
+
+  ; remove start menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\IR File Tool"
+!macroend
+
+;======================================
+
+${MementoSection} "Keyboard Input Relay" SectionKeyboardInputRelay
+  ${LOG_TEXT} "INFO" "Installing Keyboard Input Relay..."
+  ${KILLPROCESS} "KeyboardInputRelay.exe"
+
+  ; install files
+  SetOutPath "$DIR_INSTALL\Keyboard Input Relay"
+  File "..\Applications\Keyboard Input Relay\bin\${Build_Type}\*.*"
+
+  ; create folders
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
+
+  ; create start menu shortcuts
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" "" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" 0
+
+${MementoSectionEnd}
+!macro Remove_${SectionKeyboardInputRelay}
+  ${LOG_TEXT} "INFO" "Removing Keyboard Input Relay..."
+  ${KILLPROCESS} "KeyboardInputRelay.exe"
+
+  ; remove auto-run
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
+
+  ; remove start menu shortcuts
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk"
+
+  ; remove files
+  RMDir /R /REBOOTOK "$DIR_INSTALL\Keyboard Input Relay"
+!macroend
+
+;======================================
+
 ${MementoSection} "Translator" SectionTranslator
+  ${LOG_TEXT} "INFO" "Installing Translator..."
+  ${KILLPROCESS} "Translator.exe"
 
-  DetailPrint "Installing Translator ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing Translator
-  CreateDirectory "$DIR_INSTALL\Translator"
+  ; install files
   SetOutPath "$DIR_INSTALL\Translator"
-  SetOverwrite ifnewer
   File "..\Applications\Translator\bin\${Build_Type}\*.*"
 
-  ; Create folders
+  ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator\Macro"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator\Default Settings"
 
   ; Copy in default settings files  
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Translator\Default Settings"
-  SetOverwrite ifnewer
   File "..\Applications\Translator\Default Settings\*.xml"
 
-  ; Create start menu shortcut
+  ; create start menu shortcuts
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator\Translator.exe" "" "$DIR_INSTALL\Translator\Translator.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionTranslator}
-  DetailPrint "Attempting to remove Translator ..."
+  ${LOG_TEXT} "INFO" "Removing Translator..."
+  ${KILLPROCESS} "Translator.exe"
 
-  ; Remove auto-run
+  ; remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
 
-  ; remove Start Menu shortcuts
+  ; remove start menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk"
 
   ; remove files
@@ -691,32 +822,25 @@ ${MementoSectionEnd}
 ;======================================
 
 ${MementoSection} "Tray Launcher" SectionTrayLauncher
+  ${LOG_TEXT} "INFO" "Installing Tray Launcher..."
+  ${KILLPROCESS} "TrayLauncher.exe"
 
-  DetailPrint "Installing Tray Launcher ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing Translator
-  CreateDirectory "$DIR_INSTALL\Tray Launcher"
+  ; install files
   SetOutPath "$DIR_INSTALL\Tray Launcher"
-  SetOverwrite ifnewer
   File "..\Applications\Tray Launcher\bin\${Build_Type}\*.*"
 
-  ; Create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Tray Launcher"
-
-  ; Create start menu shortcut
+  ; create start menu shortcuts
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe" "" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionTrayLauncher}
-  DetailPrint "Attempting to remove Tray Launcher ..."
+  ${LOG_TEXT} "INFO" "Removing Tray Launcher..."
+  ${KILLPROCESS} "TrayLauncher.exe"
 
-  ; Remove auto-run
+  ; remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Tray Launcher"
 
-  ; remove Start Menu shortcuts
+  ; remove start menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk"
 
   ; remove files
@@ -726,38 +850,31 @@ ${MementoSectionEnd}
 ;======================================
 
 ${MementoSection} "Virtual Remote" SectionVirtualRemote
-
-  DetailPrint "Installing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
-
-  ; Use the all users context
-  SetShellVarContext all
+  ${LOG_TEXT} "INFO" "Installing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
+  ${KILLPROCESS} "WebRemote.exe"
+  ${KILLPROCESS} "VirtualRemote.exe"
+  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
 
   ; Installing Virtual Remote and Web Remote
-  CreateDirectory "$DIR_INSTALL\Virtual Remote"
   SetOutPath "$DIR_INSTALL\Virtual Remote"
-  SetOverwrite ifnewer
   File "..\Applications\Virtual Remote\bin\${Build_Type}\*.*"
   File "..\Applications\Web Remote\bin\${Build_Type}\WebRemote.*"
   File "..\Applications\Virtual Remote Skin Editor\bin\${Build_Type}\VirtualRemoteSkinEditor.*"
 
   ; Installing skins
-  CreateDirectory "$DIR_INSTALL\Virtual Remote\Skins"
   SetOutPath "$DIR_INSTALL\Virtual Remote\Skins"
-  SetOverwrite ifnewer
   File "..\Applications\Virtual Remote\Skins\*.*"
 
   ; Installing Virtual Remote for Smart Devices
-  CreateDirectory "$DIR_INSTALL\Virtual Remote\Smart Devices"
   SetOutPath "$DIR_INSTALL\Virtual Remote\Smart Devices"
-  SetOverwrite ifnewer
   File "..\Applications\Virtual Remote (PocketPC2003) Installer\${Build_Type}\*.cab"
   File "..\Applications\Virtual Remote (Smartphone2003) Installer\${Build_Type}\*.cab"
   File "..\Applications\Virtual Remote (WinCE5) Installer\${Build_Type}\*.cab"
 
-  ; Create folders
+  ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Virtual Remote"
 
-  ; Create start menu shortcut
+  ; create start menu shortcuts
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk" "$DIR_INSTALL\Virtual Remote\VirtualRemote.exe" "" "$DIR_INSTALL\Virtual Remote\VirtualRemote.exe" 0
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk" "$DIR_INSTALL\Virtual Remote\VirtualRemoteSkinEditor.exe" "" "$DIR_INSTALL\Virtual Remote\VirtualRemoteSkinEditor.exe" 0
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote for Smart Devices.lnk" "$DIR_INSTALL\Virtual Remote\Smart Devices"
@@ -765,9 +882,12 @@ ${MementoSection} "Virtual Remote" SectionVirtualRemote
 
 ${MementoSectionEnd}
 !macro Remove_${SectionVirtualRemote}
-  DetailPrint "Attempting to remove Virtual Remote, Skin Editor, Smart Device versions, and Web Remote ..."
+  ${LOG_TEXT} "INFO" "Removing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
+  ${KILLPROCESS} "WebRemote.exe"
+  ${KILLPROCESS} "VirtualRemote.exe"
+  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
 
-  ; remove Start Menu shortcuts
+  ; remove start menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote for Smart Devices.lnk"
@@ -777,25 +897,23 @@ ${MementoSectionEnd}
   RMDir /R /REBOOTOK "$DIR_INSTALL\Virtual Remote"
 !macroend
 
+SectionGroupEnd
+
 ;======================================
 
+SectionGroup "CommandLine Tools" SectionGroupCmdLineTools
+
 ${MementoSection} "IR Blast" SectionIRBlast
+  ${LOG_TEXT} "INFO" "Installing IR Blast..."
 
-  DetailPrint "Installing IR Blast ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing IR Server
-  CreateDirectory "$DIR_INSTALL\IR Blast"
+  ; install files
   SetOutPath "$DIR_INSTALL\IR Blast"
-  SetOverwrite ifnewer
   File "..\Applications\IR Blast (No Window)\bin\${Build_Type}\*.*"
   File "..\Applications\IR Blast\bin\${Build_Type}\IRBlast.exe"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRBlast}
-  DetailPrint "Attempting to remove IR Blast ..."
+  ${LOG_TEXT} "INFO" "Removing IR Blast..."
 
   ; remove files
   RMDir /R /REBOOTOK "$DIR_INSTALL\IR Blast"
@@ -803,92 +921,19 @@ ${MementoSectionEnd}
 
 ;======================================
 
-${MementoSection} "IR File Tool" SectionIRFileTool
+${MementoSection} "Dreambox Tuner" SectionDboxTuner
+  ${LOG_TEXT} "INFO" "Installing Dreambox Tuner..."
 
-  DetailPrint "Installing IR File Tool ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing IR Server
-  CreateDirectory "$DIR_INSTALL\IR File Tool"
-  SetOutPath "$DIR_INSTALL\IR File Tool"
-  SetOverwrite ifnewer
-  File "..\Applications\IR File Tool\bin\${Build_Type}\*.*"
-
-  ; Create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR File Tool"
-
-  ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk" "$DIR_INSTALL\IR File Tool\IRFileTool.exe" "" "$DIR_INSTALL\IR File Tool\IRFileTool.exe" 0
-
-${MementoSectionEnd}
-!macro Remove_${SectionIRFileTool}
-  DetailPrint "Attempting to remove IR File Tool ..."
-
-  ; remove Start Menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk"
-
-  ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\IR File Tool"
-!macroend
-
-;======================================
-
-${MementoSection} "Keyboard Relay" SectionKeyboardInputRelay
-
-  DetailPrint "Installing Keyboard Input Relay ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing IR Server
-  CreateDirectory "$DIR_INSTALL\Keyboard Input Relay"
-  SetOutPath "$DIR_INSTALL\Keyboard Input Relay"
-  SetOverwrite ifnewer
-  File "..\Applications\Keyboard Input Relay\bin\${Build_Type}\*.*"
-
-  ; Create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
-
-  ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" "" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" 0
-
-${MementoSectionEnd}
-!macro Remove_${SectionKeyboardInputRelay}
-  DetailPrint "Attempting to remove Keyboard Relay ..."
-
-  ; Remove auto-run
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
-
-  ; remove Start Menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk"
-
-  ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Keyboard Input Relay"
-!macroend
-
-;======================================
-
-${MementoSection} "Dbox Tuner" SectionDboxTuner
-
-  DetailPrint "Installing Dbox Tuner ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing IR Server
-  CreateDirectory "$DIR_INSTALL\Dbox Tuner"
+  ; install files
   SetOutPath "$DIR_INSTALL\Dbox Tuner"
-  SetOverwrite ifnewer
   File "..\Applications\Dbox Tuner\bin\${Build_Type}\*.*"
 
-  ; Create folders
+  ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Dbox Tuner"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionDboxTuner}
-  DetailPrint "Attempting to remove Dbox Tuner ..."
+  ${LOG_TEXT} "INFO" "Removing Dreambox Tuner..."
 
   ; remove files
   RMDir /R /REBOOTOK "$DIR_INSTALL\Dbox Tuner"
@@ -896,58 +941,22 @@ ${MementoSectionEnd}
 
 ;======================================
 
-${MementoSection} "HCW PVR Tuner" SectionHcwPvrTuner
+${MementoSection} "Hauppauge PVR Tuner" SectionHcwPvrTuner
+  ${LOG_TEXT} "INFO" "Installing Hauppauge PVR Tuner..."
 
-  DetailPrint "Installing HCW PVR Tuner ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing IR Server
-  CreateDirectory "$DIR_INSTALL\HCW PVR Tuner"
+  ; install files
   SetOutPath "$DIR_INSTALL\HCW PVR Tuner"
-  SetOverwrite ifnewer
   File "..\Applications\HCW PVR Tuner\bin\${Build_Type}\*.*"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionHcwPvrTuner}
-  DetailPrint "Attempting to remove HCW PVR Tuner ..."
+  ${LOG_TEXT} "INFO" "Removing Hauppauge PVR Tuner..."
 
   ; remove files
   RMDir /R /REBOOTOK "$DIR_INSTALL\HCW PVR Tuner"
 !macroend
 
-;======================================
-
-${MementoSection} "Debug Client" SectionDebugClient
-
-  DetailPrint "Installing Debug Client ..."
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing Debug Client
-  CreateDirectory "$DIR_INSTALL\Debug Client"
-  SetOutPath "$DIR_INSTALL\Debug Client"
-  SetOverwrite ifnewer
-  File "..\Applications\Debug Client\bin\${Build_Type}\*.*"
-
-  ; Create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Debug Client"
-
-  ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk" "$DIR_INSTALL\Debug Client\DebugClient.exe" "" "$DIR_INSTALL\Debug Client\DebugClient.exe" 0
-
-${MementoSectionEnd}
-!macro Remove_${SectionDebugClient}
-  DetailPrint "Attempting to remove Debug Client ..."
-
-  ; remove Start Menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk"
-
-  ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Debug Client"
-!macroend
+SectionGroupEnd
 
 ;======================================
 
@@ -1005,19 +1014,6 @@ Section "Uninstall"
 
   ; Use the all users context
   SetShellVarContext all
-
-  ; Kill running Programs
-  DetailPrint "Terminating processes ..."
-  ${KILLPROCESS} "Translator.exe"
-  ${KILLPROCESS} "TrayLauncher.exe"
-  ${KILLPROCESS} "WebRemote.exe"
-  ${KILLPROCESS} "VirtualRemote.exe"
-  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
-  ${KILLPROCESS} "IRFileTool.exe"
-  ${KILLPROCESS} "DebugClient.exe"
-  ${KILLPROCESS} "KeyboardInputRelay.exe"
-  ${KILLPROCESS} "MediaCenterBlaster.exe"
-  ${KILLPROCESS} "Input Service Configuration.exe"
 
   ;First removes all optional components
   !insertmacro SectionList "RemoveSection"
@@ -1087,7 +1083,7 @@ Function .onSelChange
     !insertmacro SelectSection ${SectionMPCommon}
   ${EndIf}
 
-  ; disable/remove common files for MediaPortal plugins if all MediaPortal plugins are unselected
+  ; disable/remove common files for TVServer plugins if all TVServer plugins are unselected
   ${IfNot} ${SectionIsSelected} ${SectionTV3BlasterPlugin}
     !insertmacro UnselectSection ${SectionTV3Common}
   ${Else}
