@@ -190,7 +190,6 @@ Page custom PageReinstall PageLeaveReinstall
 
   !insertmacro "${MacroName}" "SectionTV3Common"
     !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
-  !insertmacro "${MacroName}" "SectionTV3PostInstall"
 
 ;  !insertmacro "${MacroName}" "SectionMCEBlaster"
 
@@ -542,16 +541,18 @@ SectionGroupEnd
 ;======================================
 Var RestartTvService
 !macro StopTVService
+  ${If} $RestartTvService != 0
 
   ; stopping TV Service
   ; if TV service was Running, and has been stopped correctly   $RestartTvService = 0 , otherwise 1 or 2 ............
   ${LOG_TEXT} "INFO" "Stopping TV Service..."
   nsExec::ExecToLog 'net stop TVservice'
   Pop $RestartTvService
-  
+
   ${KILLPROCESS} "TVService.exe"
   ${KILLPROCESS} "SetupTv.exe"
 
+  ${EndIf}
 !macroend
 !macro StartTVService
   ; only if TVService was stopped by the installer before, correctly, start it now
@@ -618,13 +619,6 @@ ${MementoSectionEnd}
 ;======================================
 
 SectionGroupEnd
-
-Section "-TV3PostInstall" SectionTV3PostInstall
-  !insertmacro StartTVService  
-SectionEnd
-!macro Remove_${SectionTV3PostInstall}
-  !insertmacro StartTVService
-!macroend
 
 ;======================================
 /*
@@ -973,6 +967,9 @@ Section "-Complete"
   ;writes component status to registry
   ${MementoSectionSave}
 
+  ; start tvservice, if it was closed before
+  !insertmacro StartTVService
+
   ; Use the all users context
   SetShellVarContext all
 
@@ -1017,6 +1014,9 @@ Section "Uninstall"
 
   ;First removes all optional components
   !insertmacro SectionList "RemoveSection"
+
+  ; start tvservice, if it was closed before
+  !insertmacro StartTVService
 
   ; Remove files and uninstaller
   DetailPrint "Removing Set Top Box presets ..."
