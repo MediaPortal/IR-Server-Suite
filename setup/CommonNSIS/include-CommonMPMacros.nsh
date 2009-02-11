@@ -112,7 +112,7 @@ Var TempInstallLog
   !endif
 
   ${${UNINSTALL_PREFIX}GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  CopyFiles "$TempInstallLog" "${COMMON_APPDATA}\log\${UNINSTALL_PREFIX}install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}_$2-$1-$0_$4-$5-$6.log"
+  CopyFiles "$TempInstallLog" "${COMMON_APPDATA}\logs\${UNINSTALL_PREFIX}install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}_$2-$1-$0_$4-$5-$6.log"
 
   Delete "$TempInstallLog"
 
@@ -740,7 +740,7 @@ FunctionEnd
   StrCpy $MPdir.Config              "$CommonAppData\Team MediaPortal\MediaPortal"
 
   StrCpy $MPdir.Plugins             "$MPdir.Base\plugins"
-  StrCpy $MPdir.Log                 "$MPdir.Config\log"
+  StrCpy $MPdir.Log                 "$MPdir.Config\logs"
   StrCpy $MPdir.CustomInputDevice   "$MPdir.Config\InputDeviceMappings"
   StrCpy $MPdir.CustomInputDefault  "$MPdir.Base\InputDeviceMappings\defaults"
   StrCpy $MPdir.Skin                "$MPdir.Base\skin"
