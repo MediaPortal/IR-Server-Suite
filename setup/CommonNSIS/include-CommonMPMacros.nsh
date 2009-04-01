@@ -38,7 +38,7 @@
   !define URL "www.team-mediaportal.com"
 !endif
 !ifndef WEB_REQUIREMENTS
-  !define WEB_REQUIREMENTS "http://wiki.team-mediaportal.com/GeneralRequirements/OperatingSystems"
+  !define WEB_REQUIREMENTS "http://wiki.team-mediaportal.com/GeneralRequirements"
 !endif
 
 
@@ -63,6 +63,10 @@
 #
 #           enable it by defining         USE_INSTALL_LOG      in parent script
 #---------------------------------------------------------------------------
+!define prefixERROR "[ERROR     !!!]   "
+!define prefixDEBUG "[    DEBUG    ]   "
+!define prefixINFO  "[         INFO]   "
+
 !ifdef USE_INSTALL_LOG
 
 !include FileFunc.nsh
@@ -72,9 +76,6 @@
 Var LogFile
 Var TempInstallLog
 
-!define prefixERROR "[ERROR     !!!]   "
-!define prefixDEBUG "[    DEBUG    ]   "
-!define prefixINFO  "[         INFO]   "
 
 
 !define LOG_OPEN `!insertmacro LOG_OPEN ""`
@@ -151,6 +152,7 @@ Var TempInstallLog
 
 !define LOG_TEXT `!insertmacro LOG_TEXT`
 !macro LOG_TEXT LEVEL TEXT
+      DetailPrint "${prefix${LEVEL}}${TEXT}"
 !macroend
 
 !endif
@@ -158,24 +160,99 @@ Var TempInstallLog
 #---------------------------------------------------------------------------
 #   KILL Process       macro for common usage
 #---------------------------------------------------------------------------
-!define KILLPROCESS `!insertmacro KILLPROCESS`
-!macro KILLPROCESS PROCESS
-/*
-!if ${KILLMODE} == "1"
-  ExecShell "" "Cmd.exe" '/C "taskkill /F /IM "${PROCESS}""' SW_HIDE
-  Sleep 300
-!else if ${KILLMODE} == "2"
-  ExecWait '"taskkill" /F /IM "${PROCESS}"'
-!else if ${KILLMODE} == "3"
-  nsExec::ExecToLog '"taskkill" /F /IM "${PROCESS}"'
-!else
-*/
-  ${LOG_TEXT} "DEBUG" "KILLPROCESS: ${PROCESS}"
-  nsExec::ExecToLog '"taskkill" /F /IM "${PROCESS}"'
+!define KillProcess `!insertmacro KillProcess`
+!macro KillProcess Process
+  ${LOG_TEXT} "INFO" "KillProcess: ${Process}"
 
-  Pop $0
-  ${LOG_TEXT} "DEBUG" "KILLPROCESS result: $0"
+  StrCpy $R1 1  ; set counter to 1
+  ${Do}
 
+    nsExec::Exec '"taskkill" /F /IM "${Process}"'
+
+    Pop $0
+
+    ${Select} $0
+      ${Case} "0"
+        ${LOG_TEXT} "INFO" "KillProcess: ${Process} was killed successfully."
+        ${ExitDo}
+      ${Case} "128"
+        ${LOG_TEXT} "INFO" "KillProcess: ${Process} is not running."
+        ${ExitDo}
+      ${CaseElse}
+
+        ${LOG_TEXT} "ERROR" "KillProcess: Unknown result: $0"
+        IntOp $R1 $R1 + 1  ; increase retry-counter +1
+        ${If} $R1 > 5  ; try max. 5 times
+          ${ExitDo}
+        ${Else}
+          ${LOG_TEXT} "INFO" "KillProcess: Trying again. $R1/5"
+        ${EndIf}
+
+      ${EndSelect}
+  ${Loop}
+!macroend
+
+!define StopService `!insertmacro StopService`
+!macro StopService Service
+  ${LOG_TEXT} "INFO" "StopService: ${Service}"
+
+  StrCpy $R1 1  ; set counter to 1
+  ${Do}
+
+    nsExec::Exec 'net stop "${Service}"'
+
+    Pop $0
+
+    ${Select} $0
+      ${Case} "0"
+        ${LOG_TEXT} "INFO" "StopService: ${Service} was stopped successfully."
+        ${ExitDo}
+      ${Case} "2"
+        ${LOG_TEXT} "INFO" "StopService: ${Service} is not started."
+        ${ExitDo}
+      ${CaseElse}
+
+        ${LOG_TEXT} "ERROR" "StopService: Unknown result: $0"
+        IntOp $R1 $R1 + 1  ; increase retry-counter +1
+        ${If} $R1 > 5  ; try max. 5 times
+          ${ExitDo}
+        ${Else}
+          ${LOG_TEXT} "INFO" "StopService: Trying again. $R1/5"
+        ${EndIf}
+
+      ${EndSelect}
+  ${Loop}
+!macroend
+
+!macro RenameDirectory DirPath NewDirPath
+  ${LOG_TEXT} "INFO" "RenameDirectory: Old path: ${DirPath}"
+  ${LOG_TEXT} "INFO" "RenameDirectory: New path: ${NewDirPath}"
+
+  ${If} ${FileExists} "${DirPath}\*.*"
+    ${LOG_TEXT} "INFO" "RenameDirectory: Directory exists. Trying to rename."
+
+    StrCpy $R1 1  ; set counter to 1
+    ${Do}
+
+      ClearErrors
+      Rename "${DirPath}" "${NewDirPath}"
+
+      IntOp $R1 $R1 + 1  ; increase retry-counter +1
+      ${IfNot} ${Errors}
+        ${LOG_TEXT} "INFO" "RenameDirectory: Renamed directory successfully."
+        ${ExitDo}
+      ${ElseIf} $R1 > 5  ; try max. 5 times
+        ${LOG_TEXT} "ERROR" "RenameDirectory: Renaming directory failed for some reason."
+        ${ExitDo}
+      ${Else}
+        ${LOG_TEXT} "INFO" "RenameDirectory: Trying again. $R1/5"
+      ${EndIf}
+
+    ${Loop}
+  
+  ${Else}
+    ${LOG_TEXT} "INFO" "RenameDirectory: Directory does not exist. No need to rename: ${DirPath}"
+  ${EndIf}
 !macroend
 
 
@@ -420,31 +497,39 @@ Var TempInstallLog
 # Get MP infos
 !macro MP_GET_INSTALL_DIR _var
   SetRegView 32
+  ;${LOG_TEXT} "DEBUG" "MACRO:MP_GET_INSTALL_DIR"
 
   ${If} ${MP023IsInstalled}
     ReadRegStr ${_var} HKLM "SOFTWARE\Team MediaPortal\MediaPortal" "ApplicationDir"
+    ${LOG_TEXT} "INFO" "MediaPortal v0.2.3 installation dir found: ${_var}"
   ${ElseIf} ${MPIsInstalled}
     ReadRegStr ${_var} HKLM "${MP_REG_UNINSTALL}" "InstallPath"
+    ${LOG_TEXT} "INFO" "MediaPortal installation dir found: ${_var}"
   ${Else}
     StrCpy ${_var} ""
+    ${LOG_TEXT} "INFO" "No MediaPortal installation found: _var will be empty"
   ${EndIf}
 
 !macroend
 
 !macro TVSERVER_GET_INSTALL_DIR _var
   SetRegView 32
+  ;${LOG_TEXT} "DEBUG" "MACRO:TVSERVER_GET_INSTALL_DIR"
 
   ${If} ${TVServerIsInstalled}
   ${OrIf} ${TVClientIsInstalled}
     ReadRegStr ${_var} HKLM "${TV3_REG_UNINSTALL}" "InstallPath"
+    ${LOG_TEXT} "INFO" "TVServer/Client installation dir found: ${_var}"
   ${Else}
     StrCpy ${_var} ""
+    ${LOG_TEXT} "INFO" "No TVServer/Client installation found: _var will be empty"
   ${EndIf}
 
 !macroend
 
 !macro MP_GET_VERSION _var
   SetRegView 32
+  ${LOG_TEXT} "DEBUG" "MACRO:MP_GET_VERSION"
 
   ${If} ${MPIsInstalled}
     ReadRegDWORD $R0 HKLM "${MP_REG_UNINSTALL}" "VersionMajor"
@@ -460,6 +545,7 @@ Var TempInstallLog
 
 !macro TVSERVER_GET_VERSION _var
   SetRegView 32
+  ${LOG_TEXT} "DEBUG" "MACRO:TVSERVER_GET_VERSION"
 
   ${If} ${TVServerIsInstalled}
   ${OrIf} ${TVClientIsInstalled}
@@ -509,11 +595,16 @@ LangString TEXT_MSGBOX_ERROR_WIN                  ${LANG_ENGLISH} "Your operatin
 LangString TEXT_MSGBOX_ERROR_WIN_NOT_RECOMMENDED  ${LANG_ENGLISH} "Your operating system is not recommended by $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
 LangString TEXT_MSGBOX_ERROR_ADMIN                ${LANG_ENGLISH} "You need administration rights to install $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)"
 LangString TEXT_MSGBOX_ERROR_VCREDIST             ${LANG_ENGLISH} "Microsoft Visual C++ 2005 SP1 Redistributable Package (x86) is not installed.$\r$\nIt is a requirement for $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
-LangString TEXT_MSGBOX_ERROR_DOTNET               ${LANG_ENGLISH} "Microsoft .Net Framework 2 is not installed.$\r$\nIt is a requirement for $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+LangString TEXT_MSGBOX_ERROR_DOTNET20             ${LANG_ENGLISH} "Microsoft .Net Framework 2.0 SP2 is not installed.$\r$\nIt is a requirement for $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+LangString TEXT_MSGBOX_ERROR_DOTNET20_SP          ${LANG_ENGLISH} "Microsoft .Net Framework 2.0 is installed.$\r$\nBut Service Pack 2 is a requirement for $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+LangString TEXT_MSGBOX_ERROR_DOTNET35             ${LANG_ENGLISH} "Microsoft .Net Framework 3.5 SP1 is not installed.$\r$\nIt is a requirement for $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+LangString TEXT_MSGBOX_ERROR_DOTNET35_SP          ${LANG_ENGLISH} "Microsoft .Net Framework 3.5 is installed.$\r$\nBut Service Pack 1 is a requirement for $(^Name).$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
 
 LangString TEXT_MSGBOX_ERROR_IS_INSTALLED         ${LANG_ENGLISH} "$(^Name) is already installed. You need to uninstall it, before you continue with the installation.$\r$\nUninstall will be lunched when pressing OK."
 LangString TEXT_MSGBOX_ERROR_ON_UNINSTALL         ${LANG_ENGLISH} "An error occured while trying to uninstall old version!$\r$\nDo you still want to continue the installation?"
 LangString TEXT_MSGBOX_ERROR_REBOOT_REQUIRED      ${LANG_ENGLISH} "A reboot is required after a previous action. Reboot you system and try it again."
+LangString TEXT_MSGBOX_ERROR_UPDATE_BUT_NOT_INSTALLED ${LANG_ENGLISH} "$(^Name) is not installed. It is not possible to install this update.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)"
+
 
 LangString UPDATE_ERROR_WRONGEXE                  ${LANG_ENGLISH} "updating $(^Name) is only allowed by starting MediaPortalUpdater!"
 LangString UPDATE_ERROR_UNKNOWN                   ${LANG_ENGLISH} "strange / unknown error, please use full installer"
@@ -652,14 +743,14 @@ FunctionEnd
 !insertmacro WordReplace
 !insertmacro un.WordReplace
 !macro ReadMPdir UNINSTALL_PREFIX DIR
-  ${LOG_TEXT} "DEBUG" "macro: ReadMPdir | DIR: ${DIR}"
+  ;${LOG_TEXT} "DEBUG" "macro: ReadMPdir | DIR: ${DIR}"
 
   Push "${DIR}"
   Call ${UNINSTALL_PREFIX}GET_PATH_TEXT
   Pop $0
   ${IfThen} $0 == -1 ${|} Goto error ${|}
 
-  ${LOG_TEXT} "DEBUG" "macro: ReadMPdir | text found in xml: '$0'"
+  ;${LOG_TEXT} "DEBUG" "macro: ReadMPdir | text found in xml: '$0'"
   ${${UNINSTALL_PREFIX}WordReplace} "$0" "%APPDATA%" "$UserAppData" "+" $0
   ${${UNINSTALL_PREFIX}WordReplace} "$0" "%PROGRAMDATA%" "$CommonAppData" "+" $0
 
@@ -687,7 +778,7 @@ FunctionEnd
 #***************************
 
 !macro ReadConfig UNINSTALL_PREFIX PATH_TO_XML
-  ${LOG_TEXT} "DEBUG" "macro: ReadConfig | UNINSTALL_PREFIX: ${UNINSTALL_PREFIX} | PATH_TO_XML: ${PATH_TO_XML}"
+  ;${LOG_TEXT} "DEBUG" "macro: ReadConfig | UNINSTALL_PREFIX: ${UNINSTALL_PREFIX} | PATH_TO_XML: ${PATH_TO_XML}"
 
   IfFileExists "${PATH_TO_XML}\MediaPortalDirs.xml" 0 error
 
@@ -740,7 +831,7 @@ FunctionEnd
   StrCpy $MPdir.Config              "$CommonAppData\Team MediaPortal\MediaPortal"
 
   StrCpy $MPdir.Plugins             "$MPdir.Base\plugins"
-  StrCpy $MPdir.Log                 "$MPdir.Config\logs"
+  StrCpy $MPdir.Log                 "$MPdir.Config\log"
   StrCpy $MPdir.CustomInputDevice   "$MPdir.Config\InputDeviceMappings"
   StrCpy $MPdir.CustomInputDefault  "$MPdir.Base\InputDeviceMappings\defaults"
   StrCpy $MPdir.Skin                "$MPdir.Base\skin"
@@ -756,7 +847,7 @@ FunctionEnd
 !define ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirs ""`
 !define un.ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirs "un."`
 !macro ReadMediaPortalDirs UNINSTALL_PREFIX INSTDIR
-  ${LOG_TEXT} "DEBUG" "macro ReadMediaPortalDirs"
+  ;${LOG_TEXT} "DEBUG" "macro ReadMediaPortalDirs"
 
   StrCpy $MPdir.Base "${INSTDIR}"
   SetShellVarContext current
@@ -772,23 +863,23 @@ FunctionEnd
   Call ${UNINSTALL_PREFIX}ReadConfig
   Pop $0
   ${If} $0 != 0   ; an error occured
-    ${LOG_TEXT} "ERROR" "could not read '$MyDocs\Team MediaPortal\MediaPortalDirs.xml'"
+    ${LOG_TEXT} "ERROR" "Loading MediaPortalDirectories from MyDocs failed. ('$MyDocs\Team MediaPortal\MediaPortalDirs.xml')"
+    ${LOG_TEXT} "INFO"  "Trying to load from installation directory now."
 
     Push "$MPdir.Base"
     Call ${UNINSTALL_PREFIX}ReadConfig
     Pop $0
     ${If} $0 != 0   ; an error occured
-      ${LOG_TEXT} "ERROR" "could not read '$MPdir.Base\MediaPortalDirs.xml'"
-
-      ${LOG_TEXT} "INFO" "no MediaPortalDirs.xml read. using LoadDefaultDirs"
+      ${LOG_TEXT} "ERROR" "Loading MediaPortalDirectories from InstallDir failed. ('$MPdir.Base\MediaPortalDirs.xml')"
+      ${LOG_TEXT} "INFO"  "Using default paths for MediaPortalDirectories now."
       !insertmacro LoadDefaultDirs
 
     ${Else}
-      ${LOG_TEXT} "INFO" "read '$MPdir.Base\MediaPortalDirs.xml' successfully"
+      ${LOG_TEXT} "INFO" "Loaded MediaPortalDirectories from InstallDir successfully. ('$MPdir.Base\MediaPortalDirs.xml')"
     ${EndIf}
 
   ${Else}
-    ${LOG_TEXT} "INFO" "read '$MyDocs\Team MediaPortal\MediaPortalDirs.xml' successfully"
+    ${LOG_TEXT} "INFO" "Loaded MediaPortalDirectories from MyDocs successfully. ('$MyDocs\Team MediaPortal\MediaPortalDirs.xml')"
   ${EndIf}
 
   ${LOG_TEXT} "INFO" "Installer will use the following directories:"
@@ -808,7 +899,6 @@ FunctionEnd
 !macroend
 
 !endif # !USE_READ_MP_DIRS
-
 
 #---------------------------------------------------------------------------
 #   COMPLETE MEDIAPORTAL CLEANUP
@@ -886,6 +976,31 @@ DeleteRegKey HKCU "Software\MediaPortal"
     */
   ${EndIf}
 !macroend
+!macro NsisSilentUinstall REG_KEY
+!if "${REG_KEY}" == "${TV3_REG_UNINSTALL}"
+  ${StopService} "TVservice"
+!endif
+
+  ReadRegStr $R0 HKLM "${REG_KEY}" UninstallString
+  ${If} ${FileExists} "$R0"
+    ; get parent folder of uninstallation EXE (RO) and save it to R1
+    ${un.GetParent} $R0 $R1
+    ; start uninstallation of installed MP, from tmp folder, so it will delete itself
+    ;HideWindow
+    ClearErrors
+    CopyFiles $R0 "$TEMP\uninstall-temp.exe"
+    ExecWait '"$TEMP\uninstall-temp.exe" /S _?=$R1'
+    ;BringToFront
+
+    /*
+    ; if an error occured, ask to cancel installation
+    ${If} ${Errors}
+      MessageBox MB_YESNO|MB_ICONEXCLAMATION "$(TEXT_MSGBOX_ERROR_ON_UNINSTALL)" IDYES +2
+      Quit
+    ${EndIf}
+    */
+  ${EndIf}
+!macroend
 
 
 #---------------------------------------------------------------------------
@@ -893,6 +1008,15 @@ DeleteRegKey HKCU "Software\MediaPortal"
 #---------------------------------------------------------------------------
 !macro MediaPortalOperatingSystemCheck HideWarnings
 # HideWarnings   is used to disable some Warning MessageBoxes if needed, for example:     if $DeployMode = 1
+  ${LOG_TEXT} "INFO" ".: Operating System Check :."
+
+  GetVersion::WindowsName
+  Pop $R0
+  ${LOG_TEXT} "INFO" "GetVersion::WindowsName: $R0"
+  !insertmacro GetServicePack $R1 $R2
+  ${LOG_TEXT} "INFO" "GetServicePack major: $R1"
+  ${LOG_TEXT} "INFO" "GetServicePack minor: $R2"
+
 
   ; show error that the OS is not supported and abort the installation
   ${If} ${AtMostWin2000Srv}
@@ -949,6 +1073,12 @@ DeleteRegKey HKCU "Software\MediaPortal"
     ; do nothing
   ${EndIf}
 
+  ${LOG_TEXT} "INFO" "============================"
+!macroend
+
+!macro MediaPortalAdminCheck HideWarnings
+  ${LOG_TEXT} "INFO" ".: Administration Rights Check :."
+
   ; check if current user is admin
   UserInfo::GetOriginalAccountType
   Pop $0
@@ -958,6 +1088,12 @@ DeleteRegKey HKCU "Software\MediaPortal"
     Abort
   ${EndIf}
 
+  ${LOG_TEXT} "INFO" "============================"
+!macroend
+
+!macro MediaPortalVCRedistCheck HideWarnings
+  ${LOG_TEXT} "INFO" ".: Microsoft Visual C++ Redistributable Check :."
+
   ; check if VC Redist 2005 SP1 is installed
   ${IfNot} ${VCRedistIsInstalled}
     MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_VCREDIST)" IDNO +2
@@ -965,6 +1101,56 @@ DeleteRegKey HKCU "Software\MediaPortal"
     Abort
   ${EndIf}
 
+  ${LOG_TEXT} "INFO" "============================"
+!macroend
+
+!macro MediaPortalNetFrameworkCheck HideWarnings
+  ${LOG_TEXT} "INFO" ".: Microsoft .Net Framework Check :."
+
+  ; check if .Net Framework 2.0 is installed
+  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727" "Install"
+  ; check if .Net Framework 2.0 SP2 is installed
+  ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727" "SP"
+
+  ; check if .Net Framework 3.5 is installed
+  ReadRegDWORD $2 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "Install"
+  ; check if .Net Framework 3.5 SP1 is installed
+  ReadRegDWORD $3 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "SP"
+
+  ${LOG_TEXT} "INFO" ".Net 2.0 installed? $0"
+  ${LOG_TEXT} "INFO" ".Net 2.0 ServicePack: $1"
+  ${LOG_TEXT} "INFO" ".Net 3.5 installed? $2"
+  ${LOG_TEXT} "INFO" ".Net 3.5 ServicePack: $3"
+
+  ${If} ${IsWinVISTA}
+  ${AndIf} ${RunningX64} ; 3.5 is installed, check for sp1
+    ${LOG_TEXT} "INFO" "OS is Vista64, .Net 3.5 is installed."
+
+    ${If} $3 < 1  ; if 3.5, but no sp1
+      MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET35_SP)" IDNO +2
+      ExecShell open "${WEB_REQUIREMENTS}"
+      Abort
+    ${EndIf}
+
+  ${ElseIf} $0 != 1  ; if no 2.0
+
+    ${If} $2 != 1  ; if no 3.5
+      MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET20)" IDNO +2
+      ExecShell open "${WEB_REQUIREMENTS}"
+      Abort
+    ${ElseIf} $3 < 1  ; if 3.5, but no sp1
+      MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET35_SP)" IDNO +2
+      ExecShell open "${WEB_REQUIREMENTS}"
+      Abort
+    ${EndIf}
+
+  ${ElseIf} $1 < 2  ; if 2.0, but no sp2
+    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET20_SP)" IDNO +2
+    ExecShell open "${WEB_REQUIREMENTS}"
+    Abort
+  ${EndIf}
+
+  ${LOG_TEXT} "INFO" "============================"
 !macroend
 
 !endif # !___COMMON_MP_MACROS__NSH___

@@ -675,7 +675,7 @@ ${MementoSection} "Abstractor" SectionAbstractor
   File "..\Applications\Abstractor\bin\${Build_Type}\*.*"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator\Translator.exe" "" "$DIR_INSTALL\Translator\Translator.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk" "$DIR_INSTALL\Abstractor\Abstractor.exe" "" "$DIR_INSTALL\Abstractor\Abstractor.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionAbstractor}
