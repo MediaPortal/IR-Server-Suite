@@ -76,13 +76,16 @@ SetCompressor /SOLID /FINAL lzma
 !include Memento.nsh
 !include WinVer.nsh
 
+!include include\LanguageMacros.nsh
 
 !define USE_READ_MP_DIRS ; defines if MediaPortal's special directories needs to be read from config
 !define USE_INSTALL_LOG  ; enables logging during installation and uninstallation
 !include "${svn_InstallScripts}\include-CommonMPMacros.nsh"
 
-!include "${svn_InstallScripts}\include-AddRemovePage.nsh"
-!include setup-languages.nsh
+!include pages\AddRemovePage.nsh
+!insertmacro AddRemovePage "${REG_UNINSTALL}"
+
+!include pages\ServerServiceMode.nsh
 
 ; FileFunc macros
 !insertmacro GetParent
@@ -132,6 +135,7 @@ Var DIR_TVSERVER
 # INSTALLER INTERFACE
 #---------------------------------------------------------------------------
 !insertmacro MUI_PAGE_WELCOME
+;Page custom PageServerServiceMode
 Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_LICENSE "..\Documentation\LICENSE.GPL"
 !insertmacro MUI_PAGE_COMPONENTS
@@ -173,7 +177,8 @@ Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
-!insertmacro MUI_LANGUAGE "English"
+# Installer languages
+!insertmacro LANG_LOAD "English"
 
 ;======================================
 ;======================================
