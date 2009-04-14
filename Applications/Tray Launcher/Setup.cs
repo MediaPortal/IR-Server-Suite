@@ -44,7 +44,11 @@ namespace TrayLauncher
     public bool OneInstanceOnly
     {
       get { return checkBoxOneInstance.Checked; }
-      set { checkBoxOneInstance.Checked = value; }
+      set
+      {
+        checkBoxOneInstance.Checked = value;
+        checkBoxRepeatsFocus.Enabled = value;
+      }
     }
 
     public bool RepeatsFocus

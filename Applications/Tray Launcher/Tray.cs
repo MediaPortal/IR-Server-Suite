@@ -38,15 +38,16 @@ namespace TrayLauncher
     private readonly Container _container;
     private readonly NotifyIcon _notifyIcon;
 
-    private bool _autoRun;
     private Client _client;
     private bool _inConfiguration;
-    private string _launchKeyCode;
+
+    private string _serverHost;
+    private string _programFile;
+    private bool _autoRun;
     private bool _launchOnLoad;
     private bool _oneInstanceOnly;
-    private string _programFile;
     private bool _repeatsFocus;
-    private string _serverHost;
+    private string _launchKeyCode;
 
     #endregion Variables
 
@@ -461,6 +462,7 @@ namespace TrayLauncher
       setup.ServerHost = _serverHost;
       setup.ProgramFile = _programFile;
       setup.LaunchOnLoad = _launchOnLoad;
+      setup.OneInstanceOnly = _oneInstanceOnly;
       setup.RepeatsFocus = _repeatsFocus;
       setup.LaunchKeyCode = _launchKeyCode;
 
@@ -470,6 +472,7 @@ namespace TrayLauncher
         _serverHost = setup.ServerHost;
         _programFile = setup.ProgramFile;
         _launchOnLoad = setup.LaunchOnLoad;
+        _oneInstanceOnly = setup.OneInstanceOnly;
         _repeatsFocus = setup.RepeatsFocus;
         _launchKeyCode = setup.LaunchKeyCode;
 
