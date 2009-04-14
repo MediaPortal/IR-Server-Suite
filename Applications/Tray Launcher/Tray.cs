@@ -486,7 +486,11 @@ namespace TrayLauncher
 
     private void ClickSetup(object sender, EventArgs e)
     {
-      IrssLog.Info("Setup");
+      if (_inConfiguration)
+      {
+        IrssLog.Info("Setup clicked, but configuration is already open.");
+        return;
+      }
 
       _inConfiguration = true;
 
@@ -509,11 +513,9 @@ namespace TrayLauncher
 
     private void ClickQuit(object sender, EventArgs e)
     {
-      IrssLog.Info("Quit");
-
       if (_inConfiguration)
       {
-        IrssLog.Info("In Configuration");
+        IrssLog.Info("Can't close application, because configuration is still open.");
         return;
       }
 
