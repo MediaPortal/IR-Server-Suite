@@ -23,8 +23,10 @@ namespace TrayLauncher
 
     private const string ProcessCommandThreadName = "ProcessCommand";
 
-    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
-                                                                    "Tray Launcher\\Tray Launcher.xml");
+    private static readonly string ConfigurationDir = Path.Combine(Common.FolderAppData,
+                                                                    "Tray Launcher");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationDir,
+                                                                    "Tray Launcher.xml");
 
     #endregion Constants
 
@@ -277,6 +279,15 @@ namespace TrayLauncher
 
       try
       {
+        Directory.CreateDirectory(ConfigurationDir);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+
+      try
+      {
         using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
         {
           writer.Formatting = Formatting.Indented;
@@ -450,6 +461,7 @@ namespace TrayLauncher
       setup.ServerHost = _serverHost;
       setup.ProgramFile = _programFile;
       setup.LaunchOnLoad = _launchOnLoad;
+      setup.RepeatsFocus = _repeatsFocus;
       setup.LaunchKeyCode = _launchKeyCode;
 
       if (setup.ShowDialog() == DialogResult.OK)
@@ -458,6 +470,7 @@ namespace TrayLauncher
         _serverHost = setup.ServerHost;
         _programFile = setup.ProgramFile;
         _launchOnLoad = setup.LaunchOnLoad;
+        _repeatsFocus = setup.RepeatsFocus;
         _launchKeyCode = setup.LaunchKeyCode;
 
         SaveSettings();
