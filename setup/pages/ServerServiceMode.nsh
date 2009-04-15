@@ -32,37 +32,50 @@
 !insertmacro VersionCompare
 !insertmacro GetParent
 
-#####    Add/Remove/Reinstall page
+#####    Server/Service Mode page
+; $ServerServiceMode 0 = InputService
+; $ServerServiceMode 1 = IRServer
 Var ServerServiceMode
 Var ServerServiceModePage.optBtn0
 Var ServerServiceModePage.optBtn0.state
 Var ServerServiceModePage.optBtn1
 Var ServerServiceModePage.optBtn1.state
 
+
 Function PageServerServiceMode
+
+  ; if input service is unselected, skip page
+  ${IfNot} ${SectionIsSelected} ${SectionInputService}
+    Abort
+  ${EndIf}
+
   !insertmacro MUI_HEADER_TEXT "$(ServerServiceModePage_HEADER)" "$(ServerServiceModePage_HEADER2)"
 
   nsDialogs::Create /NOUNLOAD 1018
 
-  ${NSD_CreateLabel} 0 0 100% 24u "$(ServerServiceModePage_INFO)"
+  ${NSD_CreateLabel} 0 0 300u 24u "$(ServerServiceModePage_INFO)"
   Pop $R1
 
 
-  ${NSD_CreateRadioButton} 20u 30u -30u 8u "$(ServerServiceModePage_OPT0)"
+  ${NSD_CreateRadioButton} 10u 30u -30u 8u "$(ServerServiceModePage_OPT0)"
   Pop $ServerServiceModePage.optBtn0
   ${NSD_OnClick} $ServerServiceModePage.optBtn0 PageServerServiceModeUpdateSelection
 
-  ${NSD_CreateLabel} 30u 45u 100% 24u "$(ServerServiceModePage_OPT0_DESC)"
+  ${NSD_CreateLabel} 20u 45u -20u 24u "$(ServerServiceModePage_OPT0_DESC)"
 
 
-  ${NSD_CreateRadioButton} 20u 70u -30u 8u "$(ServerServiceModePage_OPT1)"
+  ${NSD_CreateRadioButton} 10u 70u -30u 8u "$(ServerServiceModePage_OPT1)"
   Pop $ServerServiceModePage.optBtn1
   ${NSD_OnClick} $ServerServiceModePage.optBtn1 PageServerServiceModeUpdateSelection
 
-  ${NSD_CreateLabel} 30u 85u 100% 24u "$(ServerServiceModePage_OPT1_DESC)"
+  ${NSD_CreateLabel} 20u 85u -20u 24u "$(ServerServiceModePage_OPT1_DESC)"
 
-
-  SendMessage $ServerServiceModePage.optBtn0 ${BM_SETCHECK} ${BST_CHECKED} 0
+  ; set current ServerServiceMode to option buttons
+  ${If} $ServerServiceMode == 1
+    ${NSD_Check} $ServerServiceModePage.optBtn1
+  ${Else}
+    ${NSD_Check} $ServerServiceModePage.optBtn0
+  ${EndIf}
 
   nsDialogs::Show
 FunctionEnd

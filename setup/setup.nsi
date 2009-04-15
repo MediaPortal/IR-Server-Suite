@@ -24,7 +24,7 @@
 # path definitions
 ;!define svn_ROOT_IRSS ".."
 ;!define svn_InstallScripts "${svn_ROOT_IRSS}\setup\CommonNSIS"
-!define svn_InstallScripts ".\CommonNSIS"
+!define svn_InstallScripts "."
 
 
 #---------------------------------------------------------------------------
@@ -76,16 +76,7 @@ SetCompressor /SOLID /FINAL lzma
 !include Memento.nsh
 !include WinVer.nsh
 
-!include include\LanguageMacros.nsh
-
-!define USE_READ_MP_DIRS ; defines if MediaPortal's special directories needs to be read from config
-!define USE_INSTALL_LOG  ; enables logging during installation and uninstallation
-!include "${svn_InstallScripts}\include-CommonMPMacros.nsh"
-
-!include pages\AddRemovePage.nsh
-!insertmacro AddRemovePage "${REG_UNINSTALL}"
-
-!include pages\ServerServiceMode.nsh
+!include "include\*"
 
 ; FileFunc macros
 !insertmacro GetParent
@@ -135,10 +126,10 @@ Var DIR_TVSERVER
 # INSTALLER INTERFACE
 #---------------------------------------------------------------------------
 !insertmacro MUI_PAGE_WELCOME
-;Page custom PageServerServiceMode
-Page custom PageReinstall PageLeaveReinstall
 !insertmacro MUI_PAGE_LICENSE "..\Documentation\LICENSE.GPL"
+Page custom PageReinstall
 !insertmacro MUI_PAGE_COMPONENTS
+Page custom PageServerServiceMode
 
 ; MediaPortal install path
 !define MUI_PAGE_HEADER_TEXT "Choose MediaPortal Location"
@@ -319,14 +310,13 @@ ${MementoSection} "Input Service" SectionInputService
   ; Use the all users context
   SetShellVarContext all
 
-  ; Uninstall current Input Service ...
-  IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" UninstallInputService SkipUninstallInputService
 
-UninstallInputService:
+
+  ${LOG_TEXT} "INFO" "Removing current IRServer from Autostart..."
+  !insertmacro RemoveAutoRun "IR Server"
+  ${LOG_TEXT} "INFO" "Uninstalling current InputService..."
   ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
 
-SkipUninstallInputService:
-  Sleep 100
 
 
   ${LOG_TEXT} "INFO" "Installing Input Service..."
@@ -396,16 +386,14 @@ SkipUninstallInputService:
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" "" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" 0
 
-  ; Launch Input Service
-  DetailPrint "Starting Input Service ..."
-  ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /install'
-
 ${MementoSectionEnd}
 !macro Remove_${SectionInputService}
   ${LOG_TEXT} "INFO" "Removing Input Service..."
   ${KILLPROCESS} "Input Service Configuration.exe"
 
-  ; remove Input Service
+  ${LOG_TEXT} "INFO" "Removing IRServer from Autostart..."
+  !insertmacro RemoveAutoRun "IR Server"
+  ${LOG_TEXT} "INFO" "Uninstalling InputService..."
   ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
 
   ; remove start menu shortcuts
@@ -1042,6 +1030,19 @@ SectionEnd
 
 ;======================================
 ;======================================
+;=======   Additional Pages   =========
+;======================================
+;======================================
+
+
+!include pages\AddRemovePage.nsh
+!insertmacro AddRemovePage "${REG_UNINSTALL}"
+
+!include pages\ServerServiceMode.nsh
+
+
+;======================================
+;======================================
 
 Function .onInit
   ${LOG_OPEN}
@@ -1065,12 +1066,32 @@ FunctionEnd
 
 Function .onInstSuccess
 
-  IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StartInputService SkipStartInputService
+${IfNot} ${SectionIsSelected} ${SectionInputService}
 
-StartInputService:
-  Exec '"$DIR_INSTALL\Input Service\Input Service.exe" /start'
+  ; Install Server/Service
+  ; $ServerServiceMode 0 = InputService
+  ; $ServerServiceMode 1 = IRServer
+  ${If} $ServerServiceMode == 1
+    ${LOG_TEXT} "INFO" "Adding IRServer to Autostart..."
+    !insertmacro SetAutoRun "IR Server" "$DIR_INSTALL\Input Service\IRServer.exe"
+  ${Else}
+    ${LOG_TEXT} "INFO" "Installing InputService..."
+    ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /install'
+  ${EndIf}
 
-SkipStartInputService:
+  ; start Server/Service
+  ; $ServerServiceMode 0 = InputService
+  ; $ServerServiceMode 1 = IRServer
+  ${If} $ServerServiceMode == 1
+    ${LOG_TEXT} "INFO" "Starting IRServer..."
+    Exec "$DIR_INSTALL\Input Service\IRServer.exe"
+  ${Else}
+    ${LOG_TEXT} "INFO" "Starting InputService..."
+    Exec '"$DIR_INSTALL\Input Service\Input Service.exe" /start'
+  ${EndIf}
+
+${EndIf}
+
 
   ${LOG_CLOSE}
 FunctionEnd

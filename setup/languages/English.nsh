@@ -4,6 +4,8 @@
 
 !insertmacro LANG_STRING TEXT_MSGBOX_REMOVE_ALL              "Do you want to remove your User settings?$\r$\nAttention: This will remove all your customised settings including Skins and Databases."
 
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_ON_UNINSTALL               "An error occured while trying to uninstall old version!$\r$\nDo you still want to continue the installation?"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_REBOOT_REQUIRED            "A reboot is required after a previous action. Reboot you system and try it again."
 
 
 # Descriptions for components (sections)
@@ -30,7 +32,7 @@
 !insertmacro LANG_STRING DESC_SectionHcwPvrTuner         "Command line tuner for Hauppauge PVR devices."
 !insertmacro LANG_STRING DESC_SectionMCEBlaster          "For tuning external channels (on Set Top Boxes) with Windows Media Center."
 
-# Strings for ÂddRemove-Page
+# Strings for AddRemove-Page
 !insertmacro LANG_STRING TEXT_ADDREMOVE_HEADER          "Already Installed"
 !insertmacro LANG_STRING TEXT_ADDREMOVE_HEADER2_REPAIR  "Choose the maintenance option to perform."
 !insertmacro LANG_STRING TEXT_ADDREMOVE_HEADER2_UPDOWN  "Choose how you want to install $(^Name)."
@@ -43,13 +45,13 @@
 !insertmacro LANG_STRING TEXT_ADDREMOVE_UPDOWN_OPT2     "Do not uninstall"
 
 # Strings for ServerServiceMode-Page
-!insertmacro LANG_STRING ServerServiceModePage_HEADER    "TEXT_ServerServiceMode_HEADER"
-!insertmacro LANG_STRING ServerServiceModePage_HEADER2   "TEXT_ServerServiceMode_HEADER2"
-!insertmacro LANG_STRING ServerServiceModePage_INFO      "TEXT_ServerServiceMode_INFO"
+!insertmacro LANG_STRING ServerServiceModePage_HEADER    "Choose the Server/Service Mode"
+!insertmacro LANG_STRING ServerServiceModePage_HEADER2   "Choose whether you want to use InputService or IRServer"
+!insertmacro LANG_STRING ServerServiceModePage_INFO      "Some Plugins doesn't work together with a windows service. If you have such a remote listed below, choose IRServer."
 
-!insertmacro LANG_STRING ServerServiceModePage_OPT0      "TEXT_ServerServiceMode_OPT0"
-!insertmacro LANG_STRING ServerServiceModePage_OPT0_DESC "TEXT_ServerServiceMode_OPT0_DESC"
+!insertmacro LANG_STRING ServerServiceModePage_OPT0      "InputService (recommended)"
+!insertmacro LANG_STRING ServerServiceModePage_OPT0_DESC "The InputService is a windows service. If you don't know what to choose and you don't have a remote listed below, choose this option."
 
-!insertmacro LANG_STRING ServerServiceModePage_OPT1      "TEXT_ServerServiceMode_OPT1"
-!insertmacro LANG_STRING ServerServiceModePage_OPT1_DESC "TEXT_ServerServiceMode_OPT1_DESC"
+!insertmacro LANG_STRING ServerServiceModePage_OPT1      "IRServer"
+!insertmacro LANG_STRING ServerServiceModePage_OPT1_DESC "IRServer is a windows application. Choose this if you have one of the following remotes:$\r$\n     Example remote"
 

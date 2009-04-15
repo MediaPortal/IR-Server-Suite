@@ -23,32 +23,18 @@
 
 #endregion
 
-/*
-_____________________________________________________________________________
 
-                       LanguageMacros
-_____________________________________________________________________________
+!ifndef IrssSystemRegistry_INCLUDED
+!define IrssSystemRegistry_INCLUDED
 
-  These macros are used to simplify the translation files
-  so that translators have to deal with as little with the
-  scripting language as possible.
-*/
+!define AutoRunPath 'HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"'
 
-
-!ifndef ___LanguageMacros__NSH___
-!define ___LanguageMacros__NSH___
-
-
-!macro LANG_LOAD LANGLOAD
-!ifdef MUI_INCLUDED
-  !insertmacro MUI_LANGUAGE "${LANGLOAD}"
-!endif
-  !include "${svn_InstallScripts}\languages\${LANGLOAD}.nsh"
-  !undef LANG
-!macroend
- 
-!macro LANG_STRING NAME VALUE
-  LangString "${NAME}" "${LANG_${LANG}}" "${VALUE}"
+!macro SetAutoRun name executablePath
+  WriteRegStr ${AutoRunPath} '${name}' '${executablePath}'
 !macroend
 
-!endif # !___LanguageMacros__NSH___
+!macro RemoveAutoRun name
+  WriteRegStr ${AutoRunPath} '${name}' ''
+!macroend
+
+!endif # !IrssSystemRegistry_INCLUDED
