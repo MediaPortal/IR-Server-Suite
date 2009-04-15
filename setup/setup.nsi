@@ -1053,6 +1053,9 @@ Function .onInit
   ; first read the old installation status
   ${MementoSectionRestore}
   Call .onSelChange
+  
+  ; on default set mode to service
+  StrCpy $ServerServiceMode 0
 
 FunctionEnd
 
