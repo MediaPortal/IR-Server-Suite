@@ -33,8 +33,8 @@ setup\DeployVersionSVN.exe /svn="%CD%"  >> %LOG%
 
 echo.
 echo Building IR Server Suite...
-rem "%progpath%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "IR Server Suite.sln" >> %LOG%
-"%WINDIR%\Microsoft.NET\Framework\v3.5\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE% "IR Server Suite.sln" >> %LOG%
+"%progpath%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "IR Server Suite.sln" >> %LOG%
+rem "%WINDIR%\Microsoft.NET\Framework\v3.5\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE% "IR Server Suite.sln" >> %LOG%
 
 echo.
 echo Reverting assemblies...
