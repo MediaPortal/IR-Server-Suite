@@ -53,5 +53,5 @@
 !insertmacro LANG_STRING ServerServiceModePage_OPT0_DESC "The InputService is a windows service. If you don't know what to choose and you don't have a remote listed below, choose this option."
 
 !insertmacro LANG_STRING ServerServiceModePage_OPT1      "IRServer"
-!insertmacro LANG_STRING ServerServiceModePage_OPT1_DESC "IRServer is a windows application. Choose this if you have one of the following remotes:$\r$\n     Example remote"
+!insertmacro LANG_STRING ServerServiceModePage_OPT1_DESC "IRServer is a windows application. Choose this if you have one of the following remotes:$\r$\n     - HID and some iMON devices"
 
