@@ -78,8 +78,12 @@ SetCompressor /SOLID /FINAL lzma
 
 !include "include\*"
 
-; FileFunc macros
-!insertmacro GetParent
+
+!include pages\AddRemovePage.nsh
+!insertmacro AddRemovePage "${REG_UNINSTALL}"
+
+!include pages\ServerServiceMode.nsh
+
 
 ;======================================
 
@@ -160,7 +164,7 @@ Page custom PageServerServiceMode
 !insertmacro MUI_PAGE_DIRECTORY
 
 !insertmacro MUI_PAGE_INSTFILES
-!define MUI_PAGE_CUSTOMFUNCTION_SHOW FinishShow
+;!define MUI_PAGE_CUSTOMFUNCTION_SHOW FinishShow
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_WELCOME
@@ -385,6 +389,17 @@ ${MementoSection} "Input Service" SectionInputService
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" "" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" 0
+
+  ; Install Server/Service
+  ; $ServerServiceMode 0 = InputService
+  ; $ServerServiceMode 1 = IRServer
+  ${If} $ServerServiceMode == 1
+    ${LOG_TEXT} "INFO" "Adding IRServer to Autostart..."
+    !insertmacro SetAutoRun "IR Server" "$DIR_INSTALL\Input Service\IRServer.exe"
+  ${Else}
+    ${LOG_TEXT} "INFO" "Installing InputService..."
+    ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /install'
+  ${EndIf}
 
 ${MementoSectionEnd}
 !macro Remove_${SectionInputService}
@@ -1030,19 +1045,6 @@ SectionEnd
 
 ;======================================
 ;======================================
-;=======   Additional Pages   =========
-;======================================
-;======================================
-
-
-!include pages\AddRemovePage.nsh
-!insertmacro AddRemovePage "${REG_UNINSTALL}"
-
-!include pages\ServerServiceMode.nsh
-
-
-;======================================
-;======================================
 
 Function .onInit
   ${LOG_OPEN}
@@ -1069,18 +1071,7 @@ FunctionEnd
 
 Function .onInstSuccess
 
-${IfNot} ${SectionIsSelected} ${SectionInputService}
-
-  ; Install Server/Service
-  ; $ServerServiceMode 0 = InputService
-  ; $ServerServiceMode 1 = IRServer
-  ${If} $ServerServiceMode == 1
-    ${LOG_TEXT} "INFO" "Adding IRServer to Autostart..."
-    !insertmacro SetAutoRun "IR Server" "$DIR_INSTALL\Input Service\IRServer.exe"
-  ${Else}
-    ${LOG_TEXT} "INFO" "Installing InputService..."
-    ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /install'
-  ${EndIf}
+${If} ${SectionIsSelected} ${SectionInputService}
 
   ; start Server/Service
   ; $ServerServiceMode 0 = InputService
@@ -1207,7 +1198,7 @@ Function DumpLog
 FunctionEnd
 
 ;======================================
-
+/*
 Function FinishShow
   ; This function is called, after the Finish Page creation is finished
 
@@ -1217,6 +1208,7 @@ Function FinishShow
       ShowWindow  $mui.FinishPage.Run ${SW_HIDE}
   ${EndIf}
 FunctionEnd
+*/
 
 ;======================================
 ;======================================

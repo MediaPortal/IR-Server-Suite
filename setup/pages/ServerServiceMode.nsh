@@ -45,7 +45,7 @@ Var ServerServiceModePage.optBtn1.state
 Function PageServerServiceMode
 
   ; if input service is unselected, skip page
-  ${IfNot} ${SectionIsSelected} ${SectionInputService}
+  ${IfNot} ${SectionIsSelected} SectionInputService
     Abort
   ${EndIf}
 
