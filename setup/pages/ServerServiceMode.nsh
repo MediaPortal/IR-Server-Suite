@@ -57,14 +57,14 @@ Function PageServerServiceMode
   Pop $R1
 
 
-  ${NSD_CreateRadioButton} 10u 30u -30u 8u "$(ServerServiceModePage_OPT0)"
+  ${NSD_CreateRadioButton} 10u 30u -10u 8u "$(ServerServiceModePage_OPT0)"
   Pop $ServerServiceModePage.optBtn0
   ${NSD_OnClick} $ServerServiceModePage.optBtn0 PageServerServiceModeUpdateSelection
 
   ${NSD_CreateLabel} 20u 45u -20u 24u "$(ServerServiceModePage_OPT0_DESC)"
 
 
-  ${NSD_CreateRadioButton} 10u 70u -30u 8u "$(ServerServiceModePage_OPT1)"
+  ${NSD_CreateRadioButton} 10u 70u -10u 8u "$(ServerServiceModePage_OPT1)"
   Pop $ServerServiceModePage.optBtn1
   ${NSD_OnClick} $ServerServiceModePage.optBtn1 PageServerServiceModeUpdateSelection
 

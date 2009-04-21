@@ -1,7 +1,7 @@
-#region Copyright (C) 2005-2008 Team MediaPortal
+#region Copyright (C) 2005-2009 Team MediaPortal
 
 /* 
- *	Copyright (C) 2005-2008 Team MediaPortal
+ *	Copyright (C) 2005-2009 Team MediaPortal
  *	http://www.team-mediaportal.com
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -23,23 +23,24 @@
 
 #endregion
 
-#**********************************************************************************************************#
-#
-# This original header file is taken from:           http://nsis.sourceforge.net/Add/Remove_Functionality
-#     and modified for our needs.
-#
-#**********************************************************************************************************#
+/*
+_____________________________________________________________________________
 
-!ifndef ___ADD_REMOVE_PAGE__NSH___
+                       AddRemovePage
+_____________________________________________________________________________
+
+  The original header file is taken from:
+              http://nsis.sourceforge.net/Add/Remove_Functionality
+  and modified for our needs.
+*/
+
+!ifndef UninstallModePage
 !define ___ADD_REMOVE_PAGE__NSH___
 
 !macro AddRemovePage RegKey
 
 !include WordFunc.nsh
 !include FileFunc.nsh
-
-!insertmacro VersionCompare
-!insertmacro GetParent
 
 #####    Add/Remove/Reinstall page
 Var ReinstallPageCheck
