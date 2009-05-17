@@ -184,14 +184,21 @@ namespace WebRemote
       string command = String.Empty;
       bool first = true;
 
-      while ((buf = _networkReader.ReadLine()) != null && buf.Length > 0)
-      {
-        if (first)
-        {
-          command = buf;
-          first = false;
-        }
-      }
+	  try
+	  {
+		  while ((buf = _networkReader.ReadLine()) != null && buf.Length > 0)
+		  {
+			  if (first)
+			  {
+				  command = buf;
+				  first = false;
+			  }
+		  }
+	  }
+	  catch (Exception ex)
+	  {
+		  IrssLog.Error(ex);
+	  }
 
       return command;
     }
