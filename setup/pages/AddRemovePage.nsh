@@ -151,7 +151,7 @@ Function PageLeaveReinstallMode
   ${If} $PREVIOUS_VERSION_STATE != "same"
   ${AndIf} $ReinstallMode == 1
 
-    StrCpy $EXPRESS_UPDATE 1  !insertmacro LoadPreviousSettings
+    StrCpy $EXPRESS_UPDATE 1
     Call LoadPreviousSettings
 
   ${EndIf}

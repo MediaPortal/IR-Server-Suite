@@ -335,6 +335,8 @@ SectionEnd
 
 ${MementoSection} "Input Service" SectionInputService
   ${LOG_TEXT} "INFO" "Installing Input Service..."
+  ${StopService} "Input Service"
+  ${KILLPROCESS} "IRServer.exe"
   ${KILLPROCESS} "Input Service Configuration.exe"
 
   ; Use the all users context
@@ -428,6 +430,8 @@ ${MementoSection} "Input Service" SectionInputService
 ${MementoSectionEnd}
 !macro Remove_${SectionInputService}
   ${LOG_TEXT} "INFO" "Removing Input Service..."
+  ${StopService} "Input Service"
+  ${KILLPROCESS} "IRServer.exe"
   ${KILLPROCESS} "Input Service Configuration.exe"
 
   ${LOG_TEXT} "INFO" "Removing IRServer from Autostart..."
