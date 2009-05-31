@@ -186,7 +186,7 @@ Page custom PageServerServiceMode
   !insertmacro "${MacroName}" "SectionMPCommon"
     !insertmacro "${MacroName}" "SectionMPControlPlugin"
     !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
-    !insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
+    #!insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
 
   !insertmacro "${MacroName}" "SectionTV3Common"
     !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
@@ -523,7 +523,7 @@ ${MementoSectionEnd}
 !macroend
 
 ;======================================
-
+/*
 ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
   ${LOG_TEXT} "INFO" "Installing TV2 Blaster Plugin..."
 
@@ -541,7 +541,7 @@ ${MementoSectionEnd}
 
   Delete /REBOOTOK "$MPdir.Plugins\Process\TV2BlasterPlugin.*"
 !macroend
-
+*/
 ;======================================
 
 SectionGroupEnd
@@ -1097,7 +1097,7 @@ Function .onSelChange
   ; disable/remove common files for MediaPortal plugins if all MediaPortal plugins are unselected
   ${IfNot} ${SectionIsSelected} ${SectionMPControlPlugin}
   ${AndIfNot} ${SectionIsSelected} ${SectionMPBlastZonePlugin}
-  ${AndIfNot} ${SectionIsSelected} ${SectionTV2BlasterPlugin}
+#  ${AndIfNot} ${SectionIsSelected} ${SectionTV2BlasterPlugin}
     !insertmacro UnselectSection ${SectionMPCommon}
   ${Else}
     !insertmacro SelectSection ${SectionMPCommon}
@@ -1238,7 +1238,7 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMP}             "$(DESC_SectionGroupMP)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPControlPlugin}     "$(DESC_SectionMPControlPlugin)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPBlastZonePlugin}   "$(DESC_SectionMPBlastZonePlugin)"
-    !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
+#    !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupTV3}            "$(DESC_SectionGroupTV3)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMCE}            "$(DESC_SectionGroupMCE)"

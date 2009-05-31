@@ -33,7 +33,6 @@ using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Player;
 using MediaPortal.Profile;
-using MediaPortal.TV.Recording;
 using MediaPortal.Util;
 using MPUtils;
 
@@ -434,7 +433,7 @@ namespace MediaPortal.Plugins
                   switch (map.ConProperty)
                   {
                     case "TV":
-                      if (Recorder.IsViewing())
+                      if (g_Player.IsTV)
                         found = map;
                       break;
                     case "DVD":
