@@ -26,6 +26,8 @@
 ;!define svn_InstallScripts "${svn_ROOT_IRSS}\setup\CommonNSIS"
 !define svn_InstallScripts "."
 
+SetCompressor /SOLID /FINAL lzma
+
 
 #---------------------------------------------------------------------------
 # DEFINES
@@ -54,9 +56,6 @@
   !define VERSION "Test Build ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
 !endif
 
-BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
-SetCompressor /SOLID /FINAL lzma
-
 ; enable logging
 !define INSTALL_LOG
 
@@ -65,8 +64,25 @@ SetCompressor /SOLID /FINAL lzma
 ; if you want to set custom path to logfile, uncomment the following line
 #!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
 
-;======================================
 
+#---------------------------------------------------------------------------
+# VARIABLES
+#---------------------------------------------------------------------------
+Var DIR_INSTALL
+Var DIR_MEDIAPORTAL
+Var DIR_TVSERVER
+
+Var PREVIOUS_INSTALLDIR
+Var PREVIOUS_VERSION
+Var PREVIOUS_VERSION_STATE
+Var EXPRESS_UPDATE
+
+Var frominstall
+
+
+#---------------------------------------------------------------------------
+# INCLUDES
+#---------------------------------------------------------------------------
 !include x64.nsh
 !include MUI2.nsh
 !include Sections.nsh
@@ -78,15 +94,13 @@ SetCompressor /SOLID /FINAL lzma
 
 !include "include\*"
 
-
 !include pages\AddRemovePage.nsh
-!insertmacro AddRemovePage "${REG_UNINSTALL}"
-
 !include pages\ServerServiceMode.nsh
 
 
-;======================================
-
+#---------------------------------------------------------------------------
+# INSTALLER ATTRIBUTES
+#---------------------------------------------------------------------------
 Name "${PRODUCT_NAME}"
 OutFile "..\${PRODUCT_NAME} - ${VERSION}.exe"
 InstallDir ""
@@ -95,10 +109,8 @@ ShowInstDetails show
 ShowUninstDetails show
 CRCCheck On
 
-; Variables
-Var DIR_INSTALL
-Var DIR_MEDIAPORTAL
-Var DIR_TVSERVER
+BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
+
 
 #---------------------------------------------------------------------------
 # INSTALLER INTERFACE settings
@@ -126,15 +138,21 @@ Var DIR_TVSERVER
 
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
+
 #---------------------------------------------------------------------------
 # INSTALLER INTERFACE
 #---------------------------------------------------------------------------
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "..\Documentation\LICENSE.GPL"
-Page custom PageReinstall
-!insertmacro MUI_PAGE_COMPONENTS
-Page custom PageServerServiceMode
 
+Page custom PageReinstallMode PageLeaveReinstallMode
+
+!define MUI_PAGE_CUSTOMFUNCTION_PRE PageComponentsPre
+!insertmacro MUI_PAGE_COMPONENTS
+
+Page custom PageServerServiceMode PageLeaveServerServiceMode
+
+/*
 ; MediaPortal install path
 !define MUI_PAGE_HEADER_TEXT "Choose MediaPortal Location"
 !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install MediaPortal plugins."
@@ -154,30 +172,34 @@ Page custom PageServerServiceMode
 !define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreTV
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveTV
 !insertmacro MUI_PAGE_DIRECTORY
+*/
 
 ; Main app install path
-!define MUI_PAGE_HEADER_TEXT "Choose ${PRODUCT_NAME} Location"
-!define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install ${PRODUCT_NAME}."
-!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install ${PRODUCT_NAME} in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Install to start the installation."
-!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "${PRODUCT_NAME} Folder"
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_INSTALL"
+!define MUI_PAGE_CUSTOMFUNCTION_PRE PageDirectoryPre
 !insertmacro MUI_PAGE_DIRECTORY
 
+!define MUI_PAGE_CUSTOMFUNCTION_PRE PageInstfilesShow
 !insertmacro MUI_PAGE_INSTFILES
+
 ;!define MUI_PAGE_CUSTOMFUNCTION_SHOW FinishShow
 !insertmacro MUI_PAGE_FINISH
 
+
+!define MUI_PAGE_CUSTOMFUNCTION_PRE un.WelcomePagePre
 !insertmacro MUI_UNPAGE_WELCOME
+!define MUI_PAGE_CUSTOMFUNCTION_PRE un.ConfirmPagePre
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
+!define MUI_PAGE_CUSTOMFUNCTION_PRE un.FinishPagePre
 !insertmacro MUI_UNPAGE_FINISH
 
 # Installer languages
 !insertmacro LANG_LOAD "English"
 
-;======================================
-;======================================
-
+#---------------------------------------------------------------------------
+# INSTALLER SETTINGS
+#---------------------------------------------------------------------------
 !macro SectionList MacroName
   ; This macro used to perform operation on multiple sections.
   ; List all of your components in following manner here.
@@ -186,7 +208,7 @@ Page custom PageServerServiceMode
   !insertmacro "${MacroName}" "SectionMPCommon"
     !insertmacro "${MacroName}" "SectionMPControlPlugin"
     !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
-    #!insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
+;    !insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
 
   !insertmacro "${MacroName}" "SectionTV3Common"
     !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
@@ -210,49 +232,63 @@ Page custom PageServerServiceMode
 
 ;======================================
 
-!macro Initialize
+!macro RunUninstaller SILENT
 
-  ${If} ${RunningX64}
-    SetRegView 64
-    ${DisableX64FSRedirection}
-  ${Endif}
+  ReadRegStr $R0 HKLM "${REG_UNINSTALL}" "UninstallString"
+  ${If} ${FileExists} "$R0"
 
-  ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
-  ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
-  ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
+!if "${SILENT}" != "silent"
+    ; Run uninstaller nonsilent, hide the installer windows
+    HideWindow
+!endif
 
-  ${If} ${RunningX64}
-    SetRegView 32
-    ${EnableX64FSRedirection}
-  ${Endif}
+    ; get installation dir from uninstaller.exe path
+    ${GetParent} $R0 $R1
 
-  ; Get MediaPortal installation directory ...
-  ${If} $DIR_MEDIAPORTAL == ""
-    !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
-  ${Endif}
+    ; clearerrors, to catch if uninstall fails
+    ClearErrors
+    ; copy uninstaller to temp, to make sure uninstaller.exe in instdir is deleted, too
+    CopyFiles $R0 "$TEMP\uninstall-temp.exe"
 
-  ; Get MediaPortal TV Server installation directory ...
-  ${If} $DIR_TVSERVER == ""
-    !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
-  ${Endif}
+    ; launch uninstaller
+    ${If} $PREVIOUS_VERSION_STATE == "same"
+    ${AndIf} $EXPRESS_UPDATE == "1"
+      ExecWait '"$TEMP\uninstall-temp.exe" _?=$R1'
+    ${Else}
 
-  ${If} ${RunningX64}
-    SetRegView 64
-    ${DisableX64FSRedirection}
-  ${Endif}
+!if "${SILENT}" != "silent"
+      ExecWait '"$TEMP\uninstall-temp.exe" /frominstall _?=$R1'
+!else
+      ExecWait '"$TEMP\uninstall-temp.exe" /S _?=$R1'
+!endif
 
-  ; Get IR Server Suite installation directory ...
-  ${If} $DIR_INSTALL == ""
-    StrCpy '$DIR_INSTALL' '$PROGRAMFILES\${PRODUCT_NAME}'
-  ${Endif}
+    ${EndIf}
+
+  ${EndIf}
 
 !macroend
+Function RunUninstaller
 
-;======================================
-;======================================
+  ; old (un)installers should be called silently
+  ${If} $PREVIOUS_VERSION == ""
+    !insertmacro RunUninstaller "silent"
+  ${Else}
+    !insertmacro RunUninstaller "NoSilent"
+  ${EndIf}
 
-Section "-Prepare"
+FunctionEnd
 
+Section "-prepare"
+
+  ; uninstall old version if necessary
+  ${If} ${Silent}
+
+    !insertmacro RunUninstaller "silent"
+
+  ${EndIf}
+  
+  
+/* OBSOLETE since irss is uninstalled before
   DetailPrint "Preparing to install ..."
 
   IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StopInputService SkipStopInputService
@@ -262,7 +298,7 @@ StopInputService:
 
 SkipStopInputService:
   Sleep 100
-
+*/
 SectionEnd
 
 ;======================================
@@ -273,14 +309,6 @@ Section "-Core"
 
   ; Use the all users context
   SetShellVarContext all
-
-  ; Create install directory
-  CreateDirectory "$DIR_INSTALL"
-
-  ; Write the installation paths into the registry
-  WriteRegStr HKLM "Software\${PRODUCT_NAME}" "Install_Dir" "$DIR_INSTALL"
-  WriteRegStr HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir" "$DIR_MEDIAPORTAL"
-  WriteRegStr HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir" "$DIR_TVSERVER"
 
 
   ; Create app data directories
@@ -300,8 +328,6 @@ Section "-Core"
   File /r /x .svn "..\Set Top Boxes\*.*"
   SetOverwrite on
 
-  ; Create a start menu shortcut folder
-  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
 
 SectionEnd
 
@@ -315,11 +341,11 @@ ${MementoSection} "Input Service" SectionInputService
   SetShellVarContext all
 
 
-
-  ${LOG_TEXT} "INFO" "Removing current IRServer from Autostart..."
-  !insertmacro RemoveAutoRun "IR Server"
-  ${LOG_TEXT} "INFO" "Uninstalling current InputService..."
-  ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
+  ;not needed anymore since uninstall is launched before
+  ;${LOG_TEXT} "INFO" "Removing current IRServer from Autostart..."
+  ;!insertmacro RemoveAutoRun "IR Server"
+  ;${LOG_TEXT} "INFO" "Uninstalling current InputService..."
+  ;ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
 
 
 
@@ -391,9 +417,7 @@ ${MementoSection} "Input Service" SectionInputService
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" "" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" 0
 
   ; Install Server/Service
-  ; $ServerServiceMode 0 = InputService
-  ; $ServerServiceMode 1 = IRServer
-  ${If} $ServerServiceMode == 1
+  ${If} $ServerServiceMode == "IRServer"
     ${LOG_TEXT} "INFO" "Adding IRServer to Autostart..."
     !insertmacro SetAutoRun "IR Server" "$DIR_INSTALL\Input Service\IRServer.exe"
   ${Else}
@@ -541,12 +565,13 @@ ${MementoSectionEnd}
 
   Delete /REBOOTOK "$MPdir.Plugins\Process\TV2BlasterPlugin.*"
 !macroend
-*/
 ;======================================
+*/
 
 SectionGroupEnd
 
 ;======================================
+
 Var RestartTvService
 !macro StopTVService
   ${If} $RestartTvService != 0
@@ -669,8 +694,9 @@ ${MementoSectionEnd}
 ;======================================
 
 SectionGroupEnd
-*/
+
 ;======================================
+*/
 
 SectionGroup "Tools" SectionGroupTools
 
@@ -984,8 +1010,6 @@ Section "-Complete"
   ; Create website link file
   WriteIniStr "$DIR_INSTALL\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
 
-  ; Write the uninstaller
-  WriteUninstaller "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
 
   ; Create start menu shortcuts
 !if ${VER_BUILD} == 0
@@ -995,15 +1019,33 @@ Section "-Complete"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Log Files.lnk" "$APPDATA\${PRODUCT_NAME}\Logs"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe" "" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
 
+  
+  ; Write registry settings
+  WriteRegStr HKLM "${REG_UNINSTALL}" "ServerServiceMode" "$ServerServiceMode"
+
+  ; Write the installation paths into the registry
+  WriteRegStr HKLM "Software\${PRODUCT_NAME}" "Install_Dir" "$DIR_INSTALL"
+  WriteRegStr HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir" "$DIR_MEDIAPORTAL"
+  WriteRegStr HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir" "$DIR_TVSERVER"
+
+  ; Write the product version into the registry
+  WriteRegDWORD HKLM "${REG_UNINSTALL}" "VersionMajor"    "${VER_MAJOR}"
+  WriteRegDWORD HKLM "${REG_UNINSTALL}" "VersionMinor"    "${VER_MINOR}"
+  WriteRegDWORD HKLM "${REG_UNINSTALL}" "VersionRevision" "${VER_REVISION}"
+  WriteRegDWORD HKLM "${REG_UNINSTALL}" "VersionBuild"    "${VER_BUILD}"
+
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayName" "${PRODUCT_NAME}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "UninstallString" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayIcon" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayVersion" "${VERSION}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "Publisher" "${PRODUCT_PUBLISHER}"
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "NoRepair" 1
+  WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayName"     "${PRODUCT_NAME}"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayVersion"  "${VERSION}"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "Publisher"       "${PRODUCT_PUBLISHER}"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "URLInfoAbout"    "${PRODUCT_WEB_SITE}"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayIcon"     "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "UninstallString" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
+  WriteRegDWORD HKLM "${REG_UNINSTALL}" "NoModify" 1
+  WriteRegDWORD HKLM "${REG_UNINSTALL}" "NoRepair" 1
+
+  ; Write the uninstaller
+  WriteUninstaller "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
 
   ; Store the install log
   StrCpy $0 "$APPDATA\${PRODUCT_NAME}\Logs\Install.log"
@@ -1013,23 +1055,23 @@ Section "-Complete"
 SectionEnd
 
 ;======================================
-;======================================
 
 Section "Uninstall"
 
   ; Use the all users context
   SetShellVarContext all
 
-  ;First removes all optional components
+  ; First removes all optional components
   !insertmacro SectionList "RemoveSection"
 
   ; start tvservice, if it was closed before
   !insertmacro StartTVService
 
-  ; Remove files and uninstaller
-  DetailPrint "Removing Set Top Box presets ..."
-  RMDir /R "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
+  ; do not remove anything in appdata
+  ;DetailPrint "Removing Set Top Box presets ..."
+  ;RMDir /R "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
 
+  ; Remove files and uninstaller
   DetailPrint "Removing program files ..."
   RMDir /R /REBOOTOK "$DIR_INSTALL"
 
@@ -1041,42 +1083,141 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
   DeleteRegKey HKLM "Software\${PRODUCT_NAME}"
 
+
+  ${If} $frominstall == 1
+    Quit
+  ${EndIf}
 SectionEnd
 
-;======================================
-;======================================
+#---------------------------------------------------------------------------
+# SOME MACROS AND FUNCTIONS
+#---------------------------------------------------------------------------
 
-Function .onInit
-  ${LOG_OPEN}
+!macro CheckMediaPortalPaths
 
-  !insertmacro Initialize
-  ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
+  ${If} ${RunningX64}
+    SetRegView 32
+    ${EnableX64FSRedirection}
+  ${Endif}
 
-  ; first read the old installation status
-  ${MementoSectionRestore}
-  Call .onSelChange
+  ; Get MediaPortal installation directory ...
+  ${If} $DIR_MEDIAPORTAL == ""
+    !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
+  ${Endif}
+
+  ; Get MediaPortal TV Server installation directory ...
+  ${If} $DIR_TVSERVER == ""
+    !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
+  ${Endif}
+
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
+
+!macroend
+
+!macro ReadPreviousVersion
+  Push $R0
+  Push $R1
+  Push $R2
+  Push $R3
+
+  ReadRegDWORD $R0 HKLM "${REG_UNINSTALL}" "VersionMajor"
+  ReadRegDWORD $R1 HKLM "${REG_UNINSTALL}" "VersionMinor"
+  ReadRegDWORD $R2 HKLM "${REG_UNINSTALL}" "VersionRevision"
+  ReadRegDWORD $R3 HKLM "${REG_UNINSTALL}" "VersionBuild"
+  ${If} $R0 == ""
+  ${OrIf} $R1 == ""
+  ${OrIf} $R2 == ""
+  ${OrIf} $R3 == ""
+    StrCpy $PREVIOUS_VERSION ""
+  ${Else}
+    StrCpy $PREVIOUS_VERSION $R0.$R1.$R2.$R3
+  ${EndIf}
+
+  ${VersionCompare} ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD} $PREVIOUS_VERSION $R0
+  ${If} $R0 == 0
+    StrCpy $PREVIOUS_VERSION_STATE "same"
+  ${ElseIf} $R0 == 1
+    StrCpy $PREVIOUS_VERSION_STATE "newer"
+  ${ElseIf} $R0 == 2
+    StrCpy $PREVIOUS_VERSION_STATE "older"
+  ${Else}
+    StrCpy $PREVIOUS_VERSION_STATE ""
+  ${EndIf}
+
+  Pop $R3
+  Pop $R2
+  Pop $R1
+  Pop $R0
+!macroend
+
+!macro ReadPreviousSettings
+
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
+
+  ; read and analyze previous version
+  !insertmacro ReadPreviousVersion
+
+  ; read previous used directories
+  ReadRegStr $PREVIOUS_INSTALLDIR HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
+  #ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
+  #ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
+  !insertmacro CheckMediaPortalPaths    ; if not installed, path == ""
   
-  ; on default set mode to service
-  StrCpy $ServerServiceMode 0
+  ; read previous settings
+  ReadRegStr $PREVIOUS_ServerServiceMode HKLM "${REG_UNINSTALL}" "ServerServiceMode"
+!macroend
+
+Function LoadPreviousSettings
+  ; reset DIR_INSTALL
+  ${If} $PREVIOUS_INSTALLDIR != ""
+    StrCpy '$DIR_INSTALL' '$PREVIOUS_INSTALLDIR'
+  ${Else}
+    StrCpy '$DIR_INSTALL' '$PROGRAMFILES\${PRODUCT_NAME}'
+  ${EndIf}
+
+  ; reset ServerServiceMode
+  ${If} $PREVIOUS_ServerServiceMode == "InputService"
+  ${OrIf} $PREVIOUS_ServerServiceMode == "IRServer"
+    StrCpy $ServerServiceMode $PREVIOUS_ServerServiceMode
+  ${Else}
+    StrCpy $ServerServiceMode "InputService"
+  ${EndIf}
+
+  ; reset previous component selection from registry
+  ${MementoSectionRestore}
+  ; update component selection, according to possible selections
+  Call .onSelChange
 
 FunctionEnd
 
-;======================================
+#---------------------------------------------------------------------------
+# INSTALLER CALLBACKS
+#---------------------------------------------------------------------------
+Function .onInit
+  ${LOG_OPEN}
+
+  !insertmacro ReadPreviousSettings
+  Call LoadPreviousSettings
+  ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
+
+FunctionEnd
 
 Function .onInstFailed
   ${LOG_CLOSE}
 FunctionEnd
-
-;======================================
 
 Function .onInstSuccess
 
 ${If} ${SectionIsSelected} ${SectionInputService}
 
   ; start Server/Service
-  ; $ServerServiceMode 0 = InputService
-  ; $ServerServiceMode 1 = IRServer
-  ${If} $ServerServiceMode == 1
+  ${If} $ServerServiceMode == "IRServer"
     ${LOG_TEXT} "INFO" "Starting IRServer..."
     Exec "$DIR_INSTALL\Input Service\IRServer.exe"
   ${Else}
@@ -1090,14 +1231,12 @@ ${EndIf}
   ${LOG_CLOSE}
 FunctionEnd
 
-;======================================
-
 Function .onSelChange
 
   ; disable/remove common files for MediaPortal plugins if all MediaPortal plugins are unselected
   ${IfNot} ${SectionIsSelected} ${SectionMPControlPlugin}
   ${AndIfNot} ${SectionIsSelected} ${SectionMPBlastZonePlugin}
-#  ${AndIfNot} ${SectionIsSelected} ${SectionTV2BlasterPlugin}
+;  ${AndIfNot} ${SectionIsSelected} ${SectionTV2BlasterPlugin}
     !insertmacro UnselectSection ${SectionMPCommon}
   ${Else}
     !insertmacro SelectSection ${SectionMPCommon}
@@ -1114,90 +1253,78 @@ FunctionEnd
 
 ;======================================
 
+Function PageComponentsPre
+  ; skip page if previous settings are used for update
+  ${If} $EXPRESS_UPDATE == 1
+    Abort
+  ${EndIf}
+FunctionEnd
+
+/*
 Function DirectoryPreMP
+  ; skip page if no MediaPortal plugins are selected
   ${IfNot} ${SectionIsSelected} ${SectionGroupMP}
+    Abort
+  ${EndIf}
+
+  ; skip page if previous settings are used for update and DIR_MEDIAPORTAL is valid
+  ${If} $EXPRESS_UPDATE == 1
+  ${AndIf} $DIR_MEDIAPORTAL != ""
     Abort
   ${EndIf}
 FunctionEnd
 
 Function DirectoryLeaveMP
-  /*
   ; verify if the dir is valid
   ${IfNot} ${FileExists} "$DIR_MEDIAPORTAL\MediaPortal.exe"
     MessageBox MB_OK|MB_ICONEXCLAMATION "MediaPortal is not found in this directory. Please specify the correct path to MediaPortal."
     Abort
   ${EndIf}
-  */
 
-  ; refresh MP subdirs, if it user has changed the path again
+  ; refresh MP subdirs, if user has changed the path again
   ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
 FunctionEnd
 
-;======================================
-
 Function DirectoryPreTV
+  ; skip page if no TvServer plugins are selected
   ${IfNot} ${SectionIsSelected} ${SectionGroupTV3}
+    Abort
+  ${EndIf}
+
+  ; skip page if previous settings are used for update and DIR_TVSERVER is valid
+  ${If} $EXPRESS_UPDATE == 1
+  ${AndIf} $DIR_TVSERVER != ""
     Abort
   ${EndIf}
 FunctionEnd
 
 Function DirectoryLeaveTV
-  /*
   ; verify if the dir is valid
-  ${IfNot} ${FileExists} "$DIR_MEDIAPORTAL\MediaPortal.exe"
-    MessageBox MB_OK|MB_ICONEXCLAMATION "MediaPortal is not found in this directory. Please specify the correct path to MediaPortal."
+  ${IfNot} ${FileExists} "$DIR_TVSERVER\TvService.exe"
+    MessageBox MB_OK|MB_ICONEXCLAMATION "TvServer is not found in this directory. Please specify the correct path to TVServer."
     Abort
   ${EndIf}
-  */
+FunctionEnd
+*/
+
+Function PageDirectoryPre
+  ; skip page if previous settings are used for update
+  ${If} $EXPRESS_UPDATE == 1
+    Abort
+  ${EndIf}
 FunctionEnd
 
-;======================================
+Function PageInstfilesShow
 
-!define LVM_GETITEMCOUNT 0x1004
-!define LVM_GETITEMTEXT 0x102D
- 
-Function DumpLog
-  Exch $5
-  Push $0
-  Push $1
-  Push $2
-  Push $3
-  Push $4
-  Push $6
- 
-  FindWindow $0 "#32770" "" $HWNDPARENT
-  GetDlgItem $0 $0 1016
-  StrCmp $0 0 exit
-  FileOpen $5 $5 "w"
-  StrCmp $5 "" exit
-    SendMessage $0 ${LVM_GETITEMCOUNT} 0 0 $6
-    System::Alloc ${NSIS_MAX_STRLEN}
-    Pop $3
-    StrCpy $2 0
-    System::Call "*(i, i, i, i, i, i, i, i, i) i \
-      (0, 0, 0, 0, 0, r3, ${NSIS_MAX_STRLEN}) .r1"
-    loop: StrCmp $2 $6 done
-      System::Call "User32::SendMessageA(i, i, i, i) i \
-        ($0, ${LVM_GETITEMTEXT}, $2, r1)"
-      System::Call "*$3(&t${NSIS_MAX_STRLEN} .r4)"
-      FileWrite $5 "$4$\r$\n"
-      IntOp $2 $2 + 1
-      Goto loop
-    done:
-      FileClose $5
-      System::Free $1
-      System::Free $3
-  exit:
-    Pop $6
-    Pop $4
-    Pop $3
-    Pop $2
-    Pop $1
-    Pop $0
-    Exch $5
+  ${If} $EXPRESS_UPDATE != ""
+
+    Call RunUninstaller
+    BringToFront
+
+  ${EndIf}
+
 FunctionEnd
 
-;======================================
 /*
 Function FinishShow
   ; This function is called, after the Finish Page creation is finished
@@ -1210,35 +1337,60 @@ Function FinishShow
 FunctionEnd
 */
 
-;======================================
-;======================================
-
-Function un.onUninstSuccess
-  HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
-FunctionEnd
-
-;======================================
-
+#---------------------------------------------------------------------------
+# UNINSTALLER CALLBACKS
+#---------------------------------------------------------------------------
 Function un.onInit
 
-  !insertmacro Initialize
+  !insertmacro ReadPreviousSettings
   ${un.ReadMediaPortalDirs} $DIR_MEDIAPORTAL
 
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
-  Abort
+  ; parse parameters
+  ClearErrors
+  ${un.GetParameters} $R0
+
+  ${un.GetOptions} $R0 "/frominstall" $R1
+  ${Unless} ${Errors}
+    StrCpy $frominstall 1
+  ${EndUnless}
 FunctionEnd
 
 ;======================================
-;======================================
 
-; Section descriptions
+Function un.WelcomePagePre
+
+  ${If} $frominstall == 1
+    Abort
+  ${EndIf}
+
+FunctionEnd
+
+Function un.ConfirmPagePre
+
+  ${If} $frominstall == 1
+    Abort
+  ${EndIf}
+
+FunctionEnd
+
+Function un.FinishPagePre
+
+  ${If} $frominstall == 1
+    SetRebootFlag false
+    Abort
+  ${EndIf}
+
+FunctionEnd
+
+#---------------------------------------------------------------------------
+# SECTION DESCRIPTIONS
+#---------------------------------------------------------------------------
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionInputService}        "$(DESC_SectionInputService)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMP}             "$(DESC_SectionGroupMP)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPControlPlugin}     "$(DESC_SectionMPControlPlugin)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPBlastZonePlugin}   "$(DESC_SectionMPBlastZonePlugin)"
-#    !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
+;    !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupTV3}            "$(DESC_SectionGroupTV3)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMCE}            "$(DESC_SectionGroupMCE)"
@@ -1253,6 +1405,3 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionHcwPvrTuner}         "$(DESC_SectionHcwPvrTuner)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionDebugClient}         "$(DESC_SectionDebugClient)"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
-
-;======================================
-;======================================

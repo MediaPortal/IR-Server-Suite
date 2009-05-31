@@ -33,63 +33,80 @@
 !insertmacro GetParent
 
 #####    Server/Service Mode page
-; $ServerServiceMode 0 = InputService
-; $ServerServiceMode 1 = IRServer
+; $ServerServiceMode "InputService" = InputService
+; $ServerServiceMode "IRServer" = IRServer
+Var PREVIOUS_ServerServiceMode
 Var ServerServiceMode
-Var ServerServiceModePage.optBtn0
-Var ServerServiceModePage.optBtn0.state
-Var ServerServiceModePage.optBtn1
-Var ServerServiceModePage.optBtn1.state
+Var ServerServiceModePage.optBtnInputService
+Var ServerServiceModePage.optBtnInputService.state
+Var ServerServiceModePage.optBtnIRServer
+Var ServerServiceModePage.optBtnIRServer.state
 
 
 Function PageServerServiceMode
+  Push $R0
 
-  ; if input service is unselected, skip page
+  ; skip page if InputService/IRServer is unselected
   ${IfNot} ${SectionIsSelected} SectionInputService
+    Abort
+  ${EndIf}
+
+  ; skip page if previous settings are used for update
+  ${If} $EXPRESS_UPDATE == 1
     Abort
   ${EndIf}
 
   !insertmacro MUI_HEADER_TEXT "$(ServerServiceModePage_HEADER)" "$(ServerServiceModePage_HEADER2)"
 
   nsDialogs::Create /NOUNLOAD 1018
+  Pop $R0
 
   ${NSD_CreateLabel} 0 0 300u 24u "$(ServerServiceModePage_INFO)"
-  Pop $R1
+  Pop $R0
 
 
   ${NSD_CreateRadioButton} 10u 30u -10u 8u "$(ServerServiceModePage_OPT0)"
-  Pop $ServerServiceModePage.optBtn0
-  ${NSD_OnClick} $ServerServiceModePage.optBtn0 PageServerServiceModeUpdateSelection
+  Pop $ServerServiceModePage.optBtnInputService
+  ${NSD_OnClick} $ServerServiceModePage.optBtnInputService PageServerServiceModeUpdateSelection
 
   ${NSD_CreateLabel} 20u 45u -20u 24u "$(ServerServiceModePage_OPT0_DESC)"
+  Pop $R0
 
 
   ${NSD_CreateRadioButton} 10u 70u -10u 8u "$(ServerServiceModePage_OPT1)"
-  Pop $ServerServiceModePage.optBtn1
-  ${NSD_OnClick} $ServerServiceModePage.optBtn1 PageServerServiceModeUpdateSelection
+  Pop $ServerServiceModePage.optBtnIRServer
+  ${NSD_OnClick} $ServerServiceModePage.optBtnIRServer PageServerServiceModeUpdateSelection
 
   ${NSD_CreateLabel} 20u 85u -20u 24u "$(ServerServiceModePage_OPT1_DESC)"
+  Pop $R0
+
 
   ; set current ServerServiceMode to option buttons
-  ${If} $ServerServiceMode == 1
-    ${NSD_Check} $ServerServiceModePage.optBtn1
+  ${If} $ServerServiceMode == "IRServer"
+    ${NSD_Check} $ServerServiceModePage.optBtnIRServer
   ${Else}
-    ${NSD_Check} $ServerServiceModePage.optBtn0
+    ${NSD_Check} $ServerServiceModePage.optBtnInputService
   ${EndIf}
 
   nsDialogs::Show
+
+  Pop $R0
 FunctionEnd
 
 Function PageServerServiceModeUpdateSelection
 
-  ${NSD_GetState} $ServerServiceModePage.optBtn0 $ServerServiceModePage.optBtn0.state
-  ${NSD_GetState} $ServerServiceModePage.optBtn1 $ServerServiceModePage.optBtn1.state
+  ${NSD_GetState} $ServerServiceModePage.optBtnInputService $ServerServiceModePage.optBtnInputService.state
+  ${NSD_GetState} $ServerServiceModePage.optBtnIRServer     $ServerServiceModePage.optBtnIRServer.state
 
-  ${If} $ServerServiceModePage.optBtn1.state == ${BST_CHECKED}
-    StrCpy $ServerServiceMode 1
+  ${If} $ServerServiceModePage.optBtnIRServer.state == ${BST_CHECKED}
+    StrCpy $ServerServiceMode "IRServer"
   ${Else}
-    StrCpy $ServerServiceMode 0
+    StrCpy $ServerServiceMode "InputService"
   ${EndIf}
+
+FunctionEnd
+
+Function PageLeaveServerServiceMode
 
 FunctionEnd
 
