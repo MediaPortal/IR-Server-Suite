@@ -243,10 +243,11 @@ namespace InputService.Plugin
 
     public struct DeviceInfoHID
     {
-      public uint ProductID;
-      public ushort Usage;
-      public ushort UsagePage;
       public uint VendorID;
+      public uint ProductID;
+      public uint Revision;
+      public ushort UsagePage;
+      public ushort Usage;
       public uint VersionNumber;
     }
 

@@ -238,7 +238,7 @@ namespace InputService.Plugin
 
       DeviceType DevType;
 
-      iMonUSBReceiver device = new iMonUSBReceiver();
+      iMonUSBReceivers device = new iMonUSBReceiver();
 
       try
       {
@@ -1735,7 +1735,7 @@ namespace InputService.Plugin
 #if DEBUG
       DebugWriteLine("RegisterForRawInput(): Registering {0} device(s).", devices.Length);
 #endif
-      if (RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTDEVICE))))
+      if (!RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTDEVICE))))
       {
         int dwError = Marshal.GetLastWin32Error();
 #if DEBUG
@@ -3748,7 +3748,7 @@ namespace InputService.Plugin
         DebugWriteLine("HID_SetMode({0}): waiting for iMon Manager termination",
                        Enum.GetName(typeof (RemoteMode), mode));
 #if TEST_APPLICATION
-        Console.WriteLine("HID_SetMode({0}): waiting for iMon Manager termination", Enum.GetName(typeof (RemoteMode), mode);
+        Console.WriteLine("HID_SetMode({0}): waiting for iMon Manager termination", Enum.GetName(typeof (RemoteMode), mode));
 #endif
 #endif
         KilliMonManager();
@@ -4003,7 +4003,7 @@ namespace InputService.Plugin
     /// <value>The name.</value>
     public override string Name
     {
-      get { return "iMon"; }
+      get { return "iMon USB"; }
     }
 
     /// <summary>
