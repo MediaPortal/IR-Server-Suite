@@ -868,11 +868,22 @@ namespace Translator
           return null;
         }
 
-        string fileName = Path.GetFileName(process.MainModule.FileName);
-
+        string fileName = string.Empty;
+        string processName = string.Empty;
+        try
+        {
+          fileName = Path.GetFileName(process.MainModule.FileName);
+        }catch
+        {
+          processName = Path.GetFileName(process.ProcessName);
+        }
         foreach (ProgramSettings progSettings in Config.Programs)
         {
           if (fileName.Equals(Path.GetFileName(progSettings.FileName), StringComparison.OrdinalIgnoreCase))
+          {
+            return progSettings;
+          }
+          if (processName.Equals(Path.GetFileName(progSettings.Name), StringComparison.OrdinalIgnoreCase))
           {
             return progSettings;
           }

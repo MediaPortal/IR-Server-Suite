@@ -1,6 +1,10 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices.ComTypes;
+using System.Text;
+using System.Windows.Forms;
+using System.Xml;
 using InputService.Plugin.Properties;
 using X10;
 
@@ -9,8 +13,14 @@ namespace InputService.Plugin
   /// <summary>
   /// IR Server Plugin for X10 Transceiver devices.
   /// </summary>
-  public class X10Transceiver : PluginBase, IRemoteReceiver, _DIX10InterfaceEvents
+  public class X10Transceiver : PluginBase, IRemoteReceiver, _DIX10InterfaceEvents, IConfigure
   {
+    #region Constants
+
+    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "X10 Transceiver.xml");
+
+    #endregion Constants
+
     #region Variables
 
     private static RemoteHandler _remoteButtonHandler;
@@ -19,6 +29,9 @@ namespace InputService.Plugin
     private IConnectionPoint icp;
     private IConnectionPointContainer icpc;
     private X10Interface X10Inter;
+    bool useChannelControl;
+    int channelNumber;
+    bool getChannelNumber;
 
     #endregion Variables
 
@@ -87,6 +100,17 @@ namespace InputService.Plugin
       {
         try
         {
+          if (getChannelNumber)
+          {
+            channelNumber = lAddress;
+            getChannelNumber = false;
+            return;
+          }
+          if (useChannelControl && (lAddress != channelNumber))
+          {
+            return;
+          }
+
           string keyCode = Enum.GetName(typeof (EX10Command), eCommand);
 
           if (RemoteCallback != null)
@@ -162,6 +186,7 @@ namespace InputService.Plugin
     /// </summary>
     public override void Start()
     {
+      LoadSettings();
       X10Inter = new X10Interface();
       if (X10Inter == null)
         throw new InvalidOperationException("Failed to start X10 interface");
@@ -201,5 +226,110 @@ namespace InputService.Plugin
         X10Inter = null;
       }
     }
+
+    /// <summary>
+    /// Starts to wait for the channel number
+    /// </summary>
+    public void StartGetChannelNumber()
+    {
+      Start();
+      getChannelNumber = true;
+      channelNumber = -1;
+    }
+
+    /// <summary>
+    /// Get the found channel number
+    /// </summary>
+    public int GetChannelNumber()
+    {
+      return channelNumber;
+    }
+
+    /// <summary>
+    /// Stops to wait for the channel number
+    /// </summary>
+    public void StopGetChannelNumber()
+    {
+      getChannelNumber = false;
+      LoadSettings();
+      Stop();
+    }
+
+    void LoadSettings()
+    {
+      try
+      {
+        getChannelNumber = false;
+        XmlDocument doc = new XmlDocument();
+        doc.Load(ConfigurationFile);
+
+        useChannelControl = bool.Parse(doc.DocumentElement.Attributes["useChannelControl"].Value);
+        channelNumber = int.Parse(doc.DocumentElement.Attributes["channelNumber"].Value);
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+#else
+ catch
+      {
+#endif
+        useChannelControl = false;
+        channelNumber = 0;
+      }
+    }
+
+    void SaveSettings()
+    {
+      try
+      {
+        XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
+        writer.Formatting = Formatting.Indented;
+        writer.Indentation = 1;
+        writer.IndentChar = (char)9;
+        writer.WriteStartDocument(true);
+        writer.WriteStartElement("settings"); // <settings>
+
+        writer.WriteAttributeString("useChannelControl", useChannelControl.ToString());
+        writer.WriteAttributeString("channelNumber", channelNumber.ToString());
+
+        writer.WriteEndElement(); // </settings>
+        writer.WriteEndDocument();
+        writer.Close();
+      }
+#if TRACE
+      catch (Exception ex)
+      {
+        Trace.WriteLine(ex.ToString());
+      }
+#else
+ catch
+      {
+      }
+#endif
+    }
+
+    /// <summary>
+    /// Configure the IR Server plugin.
+    /// </summary>
+    /// <param name="owner">The owner window to use for creating modal dialogs.</param>
+    public void Configure(IWin32Window owner)
+    {
+      LoadSettings();
+
+      Configure config = new Configure();
+
+      config.UseChannelControl = useChannelControl;
+      config.ChannelNumber = channelNumber;
+      config.X10Transceiver = this;
+      if (config.ShowDialog(owner) == DialogResult.OK)
+      {
+        useChannelControl = config.UseChannelControl;
+        channelNumber = config.ChannelNumber;
+        SaveSettings();
+      }
+    }
+
+
   }
 }

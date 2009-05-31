@@ -433,7 +433,7 @@ namespace MediaPortal.Plugins
                   switch (map.ConProperty)
                   {
                     case "TV":
-                      if (g_Player.IsTV)
+                      if (g_Player.IsTimeShifting || g_Player.IsTV || g_Player.IsTVRecording)
                         found = map;
                       break;
                     case "DVD":
