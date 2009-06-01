@@ -2,6 +2,9 @@
 
 !insertmacro LANG_STRING ^UninstallLink                      "Uninstall $(^Name)"
 
+!insertmacro LANG_STRING TEXT_MP_NOT_INSTALLED        "MediaPortal not installed"
+!insertmacro LANG_STRING TEXT_TVSERVER_NOT_INSTALLED  "TVServer not installed"
+
 !insertmacro LANG_STRING TEXT_MSGBOX_REMOVE_ALL              "Do you want to remove your User settings?$\r$\nAttention: This will remove all your customised settings including Skins and Databases."
 
 !insertmacro LANG_STRING TEXT_MSGBOX_ERROR_ON_UNINSTALL               "An error occured while trying to uninstall old version!$\r$\nDo you still want to continue the installation?"
@@ -44,6 +47,7 @@
 !insertmacro LANG_STRING TEXT_ADDREMOVE_REPAIR_OPT2     "Uninstall $(^Name)"
 !insertmacro LANG_STRING TEXT_ADDREMOVE_UPDOWN_OPT1     "Upgrade $(^Name) using previous settings (recommended)"
 !insertmacro LANG_STRING TEXT_ADDREMOVE_UPDOWN_OPT2     "Change settings (advanced)"
+
 
 # Strings for ServerServiceMode-Page
 !insertmacro LANG_STRING ServerServiceModePage_HEADER    "Choose the Server/Service Mode"

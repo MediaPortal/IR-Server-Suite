@@ -26,8 +26,6 @@
 ;!define svn_InstallScripts "${svn_ROOT_IRSS}\setup\CommonNSIS"
 !define svn_InstallScripts "."
 
-SetCompressor /SOLID /FINAL lzma
-
 
 #---------------------------------------------------------------------------
 # DEFINES
@@ -56,6 +54,8 @@ SetCompressor /SOLID /FINAL lzma
   !define VERSION "Test Build ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
 !endif
 
+SetCompressor /SOLID /FINAL lzma
+
 ; enable logging
 !define INSTALL_LOG
 
@@ -81,7 +81,7 @@ Var frominstall
 
 
 #---------------------------------------------------------------------------
-# INCLUDES
+# INCLUDE FILES
 #---------------------------------------------------------------------------
 !include x64.nsh
 !include MUI2.nsh
@@ -179,13 +179,11 @@ Page custom PageServerServiceMode PageLeaveServerServiceMode
 !define MUI_PAGE_CUSTOMFUNCTION_PRE PageDirectoryPre
 !insertmacro MUI_PAGE_DIRECTORY
 
-!define MUI_PAGE_CUSTOMFUNCTION_PRE PageInstfilesShow
 !insertmacro MUI_PAGE_INSTFILES
-
-;!define MUI_PAGE_CUSTOMFUNCTION_SHOW FinishShow
 !insertmacro MUI_PAGE_FINISH
 
 
+; UnInstaller Interface
 !define MUI_PAGE_CUSTOMFUNCTION_PRE un.WelcomePagePre
 !insertmacro MUI_UNPAGE_WELCOME
 !define MUI_PAGE_CUSTOMFUNCTION_PRE un.ConfirmPagePre
@@ -194,11 +192,15 @@ Page custom PageServerServiceMode PageLeaveServerServiceMode
 !define MUI_PAGE_CUSTOMFUNCTION_PRE un.FinishPagePre
 !insertmacro MUI_UNPAGE_FINISH
 
-# Installer languages
-!insertmacro LANG_LOAD "English"
 
 #---------------------------------------------------------------------------
-# INSTALLER SETTINGS
+# INSTALLER LANGUAGES
+#---------------------------------------------------------------------------
+!insertmacro LANG_LOAD "English"
+
+
+#---------------------------------------------------------------------------
+# USEFUL MACROS
 #---------------------------------------------------------------------------
 !macro SectionList MacroName
   ; This macro used to perform operation on multiple sections.
@@ -232,41 +234,6 @@ Page custom PageServerServiceMode PageLeaveServerServiceMode
 
 ;======================================
 
-!macro RunUninstaller SILENT
-
-  ReadRegStr $R0 HKLM "${REG_UNINSTALL}" "UninstallString"
-  ${If} ${FileExists} "$R0"
-
-!if "${SILENT}" != "silent"
-    ; Run uninstaller nonsilent, hide the installer windows
-    HideWindow
-!endif
-
-    ; get installation dir from uninstaller.exe path
-    ${GetParent} $R0 $R1
-
-    ; clearerrors, to catch if uninstall fails
-    ClearErrors
-    ; copy uninstaller to temp, to make sure uninstaller.exe in instdir is deleted, too
-    CopyFiles $R0 "$TEMP\uninstall-temp.exe"
-
-    ; launch uninstaller
-    ${If} $PREVIOUS_VERSION_STATE == "same"
-    ${AndIf} $EXPRESS_UPDATE == "1"
-      ExecWait '"$TEMP\uninstall-temp.exe" _?=$R1'
-    ${Else}
-
-!if "${SILENT}" != "silent"
-      ExecWait '"$TEMP\uninstall-temp.exe" /frominstall _?=$R1'
-!else
-      ExecWait '"$TEMP\uninstall-temp.exe" /S _?=$R1'
-!endif
-
-    ${EndIf}
-
-  ${EndIf}
-
-!macroend
 Function RunUninstaller
 
   ; old (un)installers should be called silently
@@ -278,12 +245,22 @@ Function RunUninstaller
 
 FunctionEnd
 
+
+#---------------------------------------------------------------------------
+# SECTIONS and REMOVEMACROS
+#---------------------------------------------------------------------------
 Section "-prepare"
+  DetailPrint "Uninstalling old version ..."
 
   ; uninstall old version if necessary
   ${If} ${Silent}
 
     !insertmacro RunUninstaller "silent"
+
+  ${ElseIf} $EXPRESS_UPDATE != ""
+
+    Call RunUninstaller
+    BringToFront
 
   ${EndIf}
   
@@ -315,6 +292,8 @@ Section "-Core"
   SetOutPath "$DIR_INSTALL"
   File "..\Documentation\${PRODUCT_NAME}.chm"
 
+  
+  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
 
   ; Create app data directories
   CreateDirectory "$APPDATA\${PRODUCT_NAME}"
@@ -1093,11 +1072,11 @@ Section "Uninstall"
   ${EndIf}
 SectionEnd
 
+
 #---------------------------------------------------------------------------
 # SOME MACROS AND FUNCTIONS
 #---------------------------------------------------------------------------
-
-!macro CheckMediaPortalPaths
+!macro GetMediaPortalPaths
 
   ${If} ${RunningX64}
     SetRegView 32
@@ -1105,14 +1084,13 @@ SectionEnd
   ${Endif}
 
   ; Get MediaPortal installation directory ...
-  ${If} $DIR_MEDIAPORTAL == ""
-    !insertmacro MP_GET_INSTALL_DIR "$DIR_MEDIAPORTAL"
+  !insertmacro MP_GET_INSTALL_DIR $DIR_MEDIAPORTAL
+  ${If} $DIR_MEDIAPORTAL != ""
+    ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
   ${Endif}
 
   ; Get MediaPortal TV Server installation directory ...
-  ${If} $DIR_TVSERVER == ""
-    !insertmacro TVSERVER_GET_INSTALL_DIR "$DIR_TVSERVER"
-  ${Endif}
+  !insertmacro TVSERVER_GET_INSTALL_DIR $DIR_TVSERVER
 
   ${If} ${RunningX64}
     SetRegView 64
@@ -1121,44 +1099,7 @@ SectionEnd
 
 !macroend
 
-!macro ReadPreviousVersion
-  Push $R0
-  Push $R1
-  Push $R2
-  Push $R3
-
-  ReadRegDWORD $R0 HKLM "${REG_UNINSTALL}" "VersionMajor"
-  ReadRegDWORD $R1 HKLM "${REG_UNINSTALL}" "VersionMinor"
-  ReadRegDWORD $R2 HKLM "${REG_UNINSTALL}" "VersionRevision"
-  ReadRegDWORD $R3 HKLM "${REG_UNINSTALL}" "VersionBuild"
-  ${If} $R0 == ""
-  ${OrIf} $R1 == ""
-  ${OrIf} $R2 == ""
-  ${OrIf} $R3 == ""
-    StrCpy $PREVIOUS_VERSION ""
-  ${Else}
-    StrCpy $PREVIOUS_VERSION $R0.$R1.$R2.$R3
-  ${EndIf}
-
-  ${VersionCompare} ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD} $PREVIOUS_VERSION $R0
-  ${If} $R0 == 0
-    StrCpy $PREVIOUS_VERSION_STATE "same"
-  ${ElseIf} $R0 == 1
-    StrCpy $PREVIOUS_VERSION_STATE "newer"
-  ${ElseIf} $R0 == 2
-    StrCpy $PREVIOUS_VERSION_STATE "older"
-  ${Else}
-    StrCpy $PREVIOUS_VERSION_STATE ""
-  ${EndIf}
-
-  Pop $R3
-  Pop $R2
-  Pop $R1
-  Pop $R0
-!macroend
-
-!macro ReadPreviousSettings
-
+Function ReadPreviousSettings
   ${If} ${RunningX64}
     SetRegView 64
     ${DisableX64FSRedirection}
@@ -1171,18 +1112,18 @@ SectionEnd
   ReadRegStr $PREVIOUS_INSTALLDIR HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
   #ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
   #ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
-  !insertmacro CheckMediaPortalPaths    ; if not installed, path == ""
+  !insertmacro GetMediaPortalPaths    ; if not installed, path == ""
   
   ; read previous settings
   ReadRegStr $PREVIOUS_ServerServiceMode HKLM "${REG_UNINSTALL}" "ServerServiceMode"
-!macroend
+FunctionEnd
 
 Function LoadPreviousSettings
   ; reset DIR_INSTALL
   ${If} $PREVIOUS_INSTALLDIR != ""
-    StrCpy '$DIR_INSTALL' '$PREVIOUS_INSTALLDIR'
+    StrCpy $DIR_INSTALL "$PREVIOUS_INSTALLDIR"
   ${Else}
-    StrCpy '$DIR_INSTALL' '$PROGRAMFILES\${PRODUCT_NAME}'
+    StrCpy $DIR_INSTALL "$PROGRAMFILES\${PRODUCT_NAME}"
   ${EndIf}
 
   ; reset ServerServiceMode
@@ -1193,12 +1134,35 @@ Function LoadPreviousSettings
     StrCpy $ServerServiceMode "InputService"
   ${EndIf}
 
+
   ; reset previous component selection from registry
   ${MementoSectionRestore}
-  ; update component selection, according to possible selections
-  Call .onSelChange
 
+  ; set sections, according to possible selections
+  ${If} "$DIR_MEDIAPORTAL" != ""
+    !insertmacro EnableSection "${SectionMPControlPlugin}" "MP Control Plugin"
+    !insertmacro EnableSection "${SectionMPBlastZonePlugin}" "MP Blast Zone Plugin"
+    ;!insertmacro EnableSection "${SectionTV2BlasterPlugin}" "TV2 Blaster Plugin"
+    !insertmacro EnableSection "${SectionGroupMP}" "MediaPortal plugins"
+  ${else}
+    !insertmacro DisableSection "${SectionMPControlPlugin}" "MP Control Plugin" " "
+    !insertmacro DisableSection "${SectionMPBlastZonePlugin}" "MP Blast Zone Plugin" " "
+    ;!insertmacro DisableSection "${SectionTV2BlasterPlugin}" "TV2 Blaster Plugin" " "
+    !insertmacro DisableSection "${SectionGroupMP}" "MediaPortal plugins" " ($(TEXT_MP_NOT_INSTALLED))"
+  ${Endif}
+
+  ${If} "$DIR_TVSERVER" != ""
+    !insertmacro EnableSection "${SectionTV3BlasterPlugin}" "TV Server Blaster Plugin"
+    !insertmacro EnableSection "${SectionGroupTV3}" "TV Server plugins"
+  ${else}
+    !insertmacro DisableSection "${SectionTV3BlasterPlugin}" "TV Server Blaster Plugin" " "
+    !insertmacro DisableSection "${SectionGroupTV3}" "TV Server plugins" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
+  ${Endif}
+
+  ; update component selection
+  Call .onSelChange
 FunctionEnd
+
 
 #---------------------------------------------------------------------------
 # INSTALLER CALLBACKS
@@ -1206,9 +1170,8 @@ FunctionEnd
 Function .onInit
   ${LOG_OPEN}
 
-  !insertmacro ReadPreviousSettings
+  Call ReadPreviousSettings
   Call LoadPreviousSettings
-  ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
 
 FunctionEnd
 
@@ -1318,17 +1281,6 @@ Function PageDirectoryPre
   ${EndIf}
 FunctionEnd
 
-Function PageInstfilesShow
-
-  ${If} $EXPRESS_UPDATE != ""
-
-    Call RunUninstaller
-    BringToFront
-
-  ${EndIf}
-
-FunctionEnd
-
 /*
 Function FinishShow
   ; This function is called, after the Finish Page creation is finished
@@ -1341,22 +1293,20 @@ Function FinishShow
 FunctionEnd
 */
 
+
 #---------------------------------------------------------------------------
 # UNINSTALLER CALLBACKS
 #---------------------------------------------------------------------------
 Function un.onInit
 
-  !insertmacro ReadPreviousSettings
+  ReadRegStr $PREVIOUS_INSTALLDIR HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
+  ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
+  ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
   ${un.ReadMediaPortalDirs} $DIR_MEDIAPORTAL
 
-  ; parse parameters
-  ClearErrors
-  ${un.GetParameters} $R0
+  ${un.InitCommandlineParameter}
+  ${un.ReadCommandlineParameter} "frominstall"
 
-  ${un.GetOptions} $R0 "/frominstall" $R1
-  ${Unless} ${Errors}
-    StrCpy $frominstall 1
-  ${EndUnless}
 FunctionEnd
 
 ;======================================
@@ -1385,6 +1335,7 @@ Function un.FinishPagePre
   ${EndIf}
 
 FunctionEnd
+
 
 #---------------------------------------------------------------------------
 # SECTION DESCRIPTIONS

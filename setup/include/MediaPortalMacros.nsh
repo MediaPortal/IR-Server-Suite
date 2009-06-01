@@ -30,16 +30,11 @@
 
 !include LogicLib.nsh
 !include x64.nsh
+!include "${svn_InstallScripts}\include\WinVerEx.nsh"
 !include "${svn_InstallScripts}\include\LanguageMacros.nsh"
 !include "${svn_InstallScripts}\include\LoggingMacros.nsh"
 
 
-!ifndef COMPANY
-  !define COMPANY "Team MediaPortal"
-!endif
-!ifndef URL
-  !define URL "www.team-mediaportal.com"
-!endif
 !ifndef WEB_REQUIREMENTS
   !define WEB_REQUIREMENTS "http://wiki.team-mediaportal.com/GeneralRequirements"
 !endif
@@ -94,6 +89,10 @@
 !macroend
 */
 
+
+#---------------------------------------------------------------------------
+# SECTION MACROS
+#---------------------------------------------------------------------------
 !macro FinishSection SecName
   ;This macro reads section flag set by user and removes the section
   ;if it is not selected.
@@ -118,14 +117,56 @@
   !insertmacro "Remove_${${SecName}}"
 !macroend
 
-!macro DisableComponent SectionName AddText
-  !insertmacro UnselectSection "${SectionName}"
-  ; Make the unselected section read only
-  !insertmacro SetSectionFlag "${SectionName}" 16
-  SectionGetText ${SectionName} $R0
-  SectionSetText ${SectionName} "$R0${AddText}"
+
+
+!macro EnableSection SectionName SectionTitle
+/*
+    ; check the component
+    ;!insertmacro SelectSection "${SectionName}"
+    ; remove the read only flag to the section, see Sections.nsh of official NSIS header files
+    ;!insertmacro ClearSectionFlag "${SectionName}" "${SF_RO}"
+    ${If} ${SectionIsSectionGroup} "${SectionName}"
+      !insertmacro SetSectionFlag "${SectionName}" "${SF_EXPAND}"
+    ${EndIf}
+    ; set new text for the component
+    SectionSetText "${SectionName}" "${SectionTitle}"
+*/
 !macroend
 
+!macro DisableSection SectionName SectionTitle AddText
+    ; uncheck the component, so that it won't be installed
+    !insertmacro UnselectSection "${SectionName}"
+    ; add the read only flag to the section, see Sections.nsh of official NSIS header files
+    !insertmacro SetSectionFlag "${SectionName}" ${SF_RO}
+    ${If} ${SectionIsSectionGroup} "${SectionName}"
+      !insertmacro ClearSectionFlag "${SectionName}" ${SF_EXPAND}
+    ${EndIf}
+    ; set new text for the component
+    SectionSetText "${SectionName}" "${SectionTitle}${AddText}"
+!macroend
+
+
+#---------------------------------------------------------------------------
+# COMMANDLINE PARAMETERS
+#---------------------------------------------------------------------------
+; gets comandline parameter
+!macro InitCommandlineParameterCall UNINSTALL
+  ${${UNINSTALL}GetParameters} $R0
+  ${LOG_TEXT} "DEBUG" "commandline parameters: $R0"
+!macroend
+!define InitCommandlineParameter `!insertmacro InitCommandlineParameterCall ""`
+!define un.InitCommandlineParameter `!insertmacro InitCommandlineParameterCall "un."`
+
+; check for special parameter and set the their variables, need InitCommandlineParameter first
+!macro ReadCommandlineParameterCall UNINSTALL Parameter
+  ClearErrors
+  ${${UNINSTALL}GetOptions} $R0 "/${Parameter}" $R1
+  ${IfNot} ${Errors}
+    StrCpy $${Parameter} 1
+  ${EndUnless}
+!macroend
+!define ReadCommandlineParameter `!insertmacro ReadCommandlineParameterCall ""`
+!define un.ReadCommandlineParameter `!insertmacro ReadCommandlineParameterCall "un."`
 
 
 #**********************************************************************************************************#
@@ -143,30 +184,27 @@
 # old installations < 0.2.3.0 RC 3
 !macro _MP022IsInstalled _a _b _t _f
   SetRegView 32
-
   !insertmacro _LOGICLIB_TEMP
-  ClearErrors
+
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{87819CFA-1786-484D-B0DE-10B5FBF2625D}" "UninstallString"
-  IfErrors `${_f}` `${_t}`
+  IfFileExists $_LOGICLIB_TEMP `${_t}` `${_f}`
 !macroend
 !define MP022IsInstalled `"" MP022IsInstalled ""`
 
 !macro _MP023RC3IsInstalled _a _b _t _f
   SetRegView 32
-
   !insertmacro _LOGICLIB_TEMP
-  ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal 0.2.3.0 RC3" "UninstallString"
 
+  ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal 0.2.3.0 RC3" "UninstallString"
   IfFileExists $_LOGICLIB_TEMP `${_t}` `${_f}`
 !macroend
 !define MP023RC3IsInstalled `"" MP023RC3IsInstalled ""`
 
 !macro _MP023IsInstalled _a _b _t _f
   SetRegView 32
-
   !insertmacro _LOGICLIB_TEMP
-  ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal 0.2.3.0" "UninstallString"
 
+  ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal 0.2.3.0" "UninstallString"
   IfFileExists $_LOGICLIB_TEMP `${_t}` `${_f}`
 !macroend
 !define MP023IsInstalled `"" MP023IsInstalled ""`
@@ -175,23 +213,22 @@
 
 !macro _MSI_TVServerIsInstalled _a _b _t _f
   SetRegView 32
-
   !insertmacro _LOGICLIB_TEMP
-  ClearErrors
+
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4B738773-EE07-413D-AFB7-BB0AB04A5488}" "UninstallString"
-  IfErrors `${_f}` `${_t}`
+  IfFileExists $_LOGICLIB_TEMP `${_t}` `${_f}`
 !macroend
 !define MSI_TVServerIsInstalled `"" MSI_TVServerIsInstalled ""`
 
 !macro _MSI_TVClientIsInstalled _a _b _t _f
   SetRegView 32
-
   !insertmacro _LOGICLIB_TEMP
-  ClearErrors
+
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{F7444E89-5BC0-497E-9650-E50539860DE0}" "UninstallString"
-  IfErrors 0 `${_t}`
+  IfFileExists $_LOGICLIB_TEMP `${_t}`
+
   ReadRegStr $_LOGICLIB_TEMP HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{FD9FD453-1C0C-4EDA-AEE6-D7CF0E9951CA}" "UninstallString"
-  IfErrors `${_f}` `${_t}`
+  IfFileExists $_LOGICLIB_TEMP `${_t}` `${_f}`
 !macroend
 !define MSI_TVClientIsInstalled `"" MSI_TVClientIsInstalled ""`
 
@@ -199,20 +236,18 @@
 
 !macro _MPIsInstalled _a _b _t _f
   SetRegView 32
-
   !insertmacro _LOGICLIB_TEMP
-  ReadRegStr $_LOGICLIB_TEMP HKLM "${MP_REG_UNINSTALL}" "UninstallString"
 
+  ReadRegStr $_LOGICLIB_TEMP HKLM "${MP_REG_UNINSTALL}" "UninstallString"
   IfFileExists $_LOGICLIB_TEMP `${_t}` `${_f}`
 !macroend
 !define MPIsInstalled `"" MPIsInstalled ""`
 
 !macro _TVServerIsInstalled _a _b _t _f
   SetRegView 32
-
   !insertmacro _LOGICLIB_TEMP
-  ReadRegStr $_LOGICLIB_TEMP HKLM "${TV3_REG_UNINSTALL}" "UninstallString"
 
+  ReadRegStr $_LOGICLIB_TEMP HKLM "${TV3_REG_UNINSTALL}" "UninstallString"
   IfFileExists $_LOGICLIB_TEMP 0 `${_f}`
 
   ReadRegStr $_LOGICLIB_TEMP HKLM "${TV3_REG_UNINSTALL}" "MementoSection_SecServer"
@@ -222,10 +257,9 @@
 
 !macro _TVClientIsInstalled _a _b _t _f
   SetRegView 32
-
   !insertmacro _LOGICLIB_TEMP
-  ReadRegStr $_LOGICLIB_TEMP HKLM "${TV3_REG_UNINSTALL}" "UninstallString"
 
+  ReadRegStr $_LOGICLIB_TEMP HKLM "${TV3_REG_UNINSTALL}" "UninstallString"
   IfFileExists $_LOGICLIB_TEMP 0 `${_f}`
 
   ReadRegStr $_LOGICLIB_TEMP HKLM "${TV3_REG_UNINSTALL}" "MementoSection_SecClient"
@@ -279,14 +313,14 @@
   lbl_winnt_vista:
   IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.crt_1fc8b3b9a1e18e3b_9.0.30729.1_none_e163563597edeada.manifest" 0 `${_f}`
   IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.mfc_1fc8b3b9a1e18e3b_9.0.30729.1_none_dcc7eae99ad0d9cf.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.atl_1fc8b3b9a1e18e3b_9.0.21022.8_none_bdf22a22ab9e15d5.manifest" 0 `${_f}`
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.atl_1fc8b3b9a1e18e3b_9.0.30729.1_none_e29d1181971ae11e.manifest" 0 `${_f}`
   Goto `${_t}`
 
   lbl_winnt_2003:
   lbl_winnt_XP:
   IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.CRT_1fc8b3b9a1e18e3b_9.0.30729.1_x-ww_6f74963e.manifest" 0 `${_f}`
   IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.MFC_1fc8b3b9a1e18e3b_9.0.30729.1_x-ww_405b0943.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.ATL_1fc8b3b9a1e18e3b_9.0.21022.8_x-ww_312cf0e9.manifest" 0 `${_f}`
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.ATL_1fc8b3b9a1e18e3b_9.0.30729.1_x-ww_d01483b2.manifest" 0 `${_f}`
   Goto `${_t}`
 !macroend
 !define VCRedist2008IsInstalled `"" VCRedist2008IsInstalled ""`
@@ -409,6 +443,42 @@
 !macroend
 
 
+!macro ReadPreviousVersion
+  Push $R0
+  Push $R1
+  Push $R2
+  Push $R3
+
+  ReadRegDWORD $R0 HKLM "${REG_UNINSTALL}" "VersionMajor"
+  ReadRegDWORD $R1 HKLM "${REG_UNINSTALL}" "VersionMinor"
+  ReadRegDWORD $R2 HKLM "${REG_UNINSTALL}" "VersionRevision"
+  ReadRegDWORD $R3 HKLM "${REG_UNINSTALL}" "VersionBuild"
+  ${If} $R0 == ""
+  ${OrIf} $R1 == ""
+  ${OrIf} $R2 == ""
+  ${OrIf} $R3 == ""
+    StrCpy $PREVIOUS_VERSION ""
+  ${Else}
+    StrCpy $PREVIOUS_VERSION $R0.$R1.$R2.$R3
+  ${EndIf}
+
+  ${VersionCompare} ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD} $PREVIOUS_VERSION $R0
+  ${If} $R0 == 0
+    StrCpy $PREVIOUS_VERSION_STATE "same"
+  ${ElseIf} $R0 == 1
+    StrCpy $PREVIOUS_VERSION_STATE "newer"
+  ${ElseIf} $R0 == 2
+    StrCpy $PREVIOUS_VERSION_STATE "older"
+  ${Else}
+    StrCpy $PREVIOUS_VERSION_STATE ""
+  ${EndIf}
+
+  Pop $R3
+  Pop $R2
+  Pop $R1
+  Pop $R0
+!macroend
+
   /*
 ; Section flag test
 !macro _MPIsInstalled _a _b _t _f
@@ -438,7 +508,82 @@
   
   #!define MPIsInstalled `${SF_SELECTED} SectionFlagIsSet`
 !define MPIsInstalled "!insertmacro _MPIsInstalled"
-  */
+*/
+
+
+!macro UpdateBackupSections
+  ${If} ${FileExists} "$MPdir.Base\*.*"
+    !insertmacro EnableSection "${SecBackupInstDir}" "Installation directory"
+  ${Else}
+    !insertmacro DisableSection "${SecBackupInstDir}" "Installation directory" " "
+  ${EndIf}
+
+  ${If} ${FileExists} "$MPdir.Config\*.*"
+    !insertmacro EnableSection "${SecBackupConfig}" "Configuration directory"
+  ${Else}
+    !insertmacro DisableSection "${SecBackupConfig}" "Configuration directory" " "
+  ${EndIf}
+
+  ${If} ${FileExists} "$MPdir.Thumbs\*.*"
+    !insertmacro EnableSection "${SecBackupThumbs}" "Thumbs directory"
+  ${Else}
+    !insertmacro DisableSection "${SecBackupThumbs}" "Thumbs directory" " "
+  ${EndIf}
+
+  ${If} ${SectionIsReadOnly} ${SecBackupInstDir}
+  ${AndIf} ${SectionIsReadOnly} ${SecBackupConfig}
+  ${AndIf} ${SectionIsReadOnly} ${SecBackupThumbs}
+    !insertmacro DisableSection "${SecBackup}" "Backup" " "
+  ${Else}
+    !insertmacro EnableSection "${SecBackup}" "Backup"
+  ${EndIf}
+!macroend
+
+
+!macro BackupConfigDir
+  ${LOG_TEXT} "INFO" "Creating backup of configuration dir"
+
+  ${WordReplace} "$MPdir.Thumbs" "$MPdir.Config\" "" "+" $R1  ; is thumbs a subdir of config?
+  ${If} "$R1" == "$MPdir.Thumbs"  ; no replace >> thumbs is not a subdir of config
+    ${LOG_TEXT} "INFO" "BackupConfigDir: Thumbs is NOT a subdir of config"
+
+    ${LOG_TEXT} "INFO" "BackupConfigDir: Copying complete config-dir"
+    CreateDirectory "$MPdir.Config_$R0"
+    CopyFiles /SILENT "$MPdir.Config\*.*" "$MPdir.Config_$R0"
+  ${Else}
+    ${LOG_TEXT} "INFO" "BackupConfigDir: Thumbs is a subdir of config"
+
+    ${LOG_TEXT} "INFO" "BackupConfigDir: Rename thumbs-dir to get it out of config-dir"
+    Rename "$MPdir.Thumbs" "$MPdir.Config$R0$R1"
+
+    ${LOG_TEXT} "INFO" "BackupConfigDir: Copying complete config-dir"
+    CreateDirectory "$MPdir.Config_$R0"
+    CopyFiles /SILENT "$MPdir.Config\*.*" "$MPdir.Config_$R0"
+
+    ${LOG_TEXT} "INFO" "BackupConfigDir: Rename thumbs-dir to get it back in config-dir"
+    Rename "$MPdir.Config$R0$R1" "$MPdir.Thumbs"
+  ${EndIf}
+!macroend
+
+!macro BackupThumbsDir
+  ${LOG_TEXT} "INFO" "Creating backup of thumbs dir"
+
+  ${WordReplace} "$MPdir.Thumbs" "$MPdir.Config\" "" "+" $R1  ; is thumbs a subdir of config?
+  ${If} "$R1" == "$MPdir.Thumbs"  ; no replace >> thumbs is not a subdir of config
+    ${LOG_TEXT} "INFO" "BackupThumbsDir: Thumbs is NOT a subdir of config"
+
+    ${LOG_TEXT} "INFO" "BackupThumbsDir: Copying complete thumbs-dir"
+    CreateDirectory "$MPdir.Thumbs_$R0"
+    CopyFiles /SILENT "$MPdir.Thumbs\*.*" "$MPdir.Thumbs_$R0"
+  ${Else}
+    ${LOG_TEXT} "INFO" "BackupThumbsDir: Thumbs is a subdir of config"
+
+    ${LOG_TEXT} "INFO" "BackupThumbsDir: Copying complete thumbs-dir"
+    CreateDirectory "$MPdir.Config_$R0\$R1"  ; create thumbsdir in config-backupdir
+    CopyFiles /SILENT "$MPdir.Thumbs\*.*" "$MPdir.Config_$R0\$R1"
+  ${EndIf}
+!macroend
+
 
 #---------------------------------------------------------------------------
 #   COMPLETE MEDIAPORTAL CLEANUP
@@ -446,12 +591,11 @@
 !macro CompleteMediaPortalCleanup
 
 # make and uninstallation of the other app, which may be still installed
-!if "${NAME}" == "MediaPortal"
+!if "${PRODUCT_NAME}" == "MediaPortal"
   !insertmacro NSISuninstall "${TV3_REG_UNINSTALL}"
-!else
-  !if "${NAME}" == "MediaPortal TV Server / Client"
-    !insertmacro NSISuninstall "${MP_REG_UNINSTALL}"
-  !endif
+!endif
+!if "${PRODUCT_NAME}" == "MediaPortal TV Server / Client"
+  !insertmacro NSISuninstall "${MP_REG_UNINSTALL}"
 !endif
 
 SetShellVarContext all
@@ -484,6 +628,12 @@ RMDir /r /REBOOTOK "$LOCALAPPDATA\Microsoft\Windows\Start Menu\Programs\Team Med
 RMDir /r /REBOOTOK "$LOCALAPPDATA\Microsoft\Windows\Start Menu\Programs\MediaPortal"
 
 # Remove registry keys
+DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal"
+DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal TV Server"
+
+DeleteRegKey HKLM "Software\Team MediaPortal"
+DeleteRegKey HKCU "Software\Team MediaPortal"
+
 DeleteRegKey HKLM "Software\Team MediaPortal"
 DeleteRegKey HKCU "Software\Team MediaPortal"
 
@@ -542,26 +692,66 @@ DeleteRegKey HKCU "Software\MediaPortal"
   ${EndIf}
 !macroend
 
+!macro RunUninstaller SILENT
+
+  ReadRegStr $R0 HKLM "${REG_UNINSTALL}" "UninstallString"
+  ${If} ${FileExists} "$R0"
+
+!if "${SILENT}" != "silent"
+    ; Run uninstaller nonsilent, hide the installer windows
+    HideWindow
+!endif
+
+    ; get installation dir from uninstaller.exe path
+    ${GetParent} $R0 $R1
+
+    ; clearerrors, to catch if uninstall fails
+    ClearErrors
+    ; copy uninstaller to temp, to make sure uninstaller.exe in instdir is deleted, too
+    CopyFiles $R0 "$TEMP\uninstall-temp.exe"
+
+    ; launch uninstaller
+    ${If} $PREVIOUS_VERSION_STATE == "same"
+    ${AndIf} $EXPRESS_UPDATE == "1"
+      ExecWait '"$TEMP\uninstall-temp.exe" _?=$R1'
+    ${Else}
+
+!if "${SILENT}" != "silent"
+      ExecWait '"$TEMP\uninstall-temp.exe" /frominstall _?=$R1'
+!else
+      ExecWait '"$TEMP\uninstall-temp.exe" /S _?=$R1'
+!endif
+
+    ${EndIf}
+
+  ${EndIf}
+
+!macroend
+
 
 #---------------------------------------------------------------------------
 #   MediaPortal specific OS SystemCheck
 #---------------------------------------------------------------------------
-!macro MediaPortalOperatingSystemCheck HideWarnings
-# HideWarnings   is used to disable some Warning MessageBoxes if needed, for example:     if $DeployMode = 1
+!macro MediaPortalOperatingSystemCheck
   ${LOG_TEXT} "INFO" ".: Operating System Check :."
+
+
+  !insertmacro GetServicePack $R1 $R2
+  ${LOG_TEXT} "INFO" "GetServicePack-Macro:: major: $R1"
+  ${LOG_TEXT} "INFO" "GetServicePack-Macro:: minor: $R2"
 
   GetVersion::WindowsName
   Pop $R0
-  ${LOG_TEXT} "INFO" "GetVersion::WindowsName: $R0"
-  !insertmacro GetServicePack $R1 $R2
-  ${LOG_TEXT} "INFO" "GetServicePack major: $R1"
-  ${LOG_TEXT} "INFO" "GetServicePack minor: $R2"
+  ${LOG_TEXT} "INFO" "GetVersion-Plugin::WindowsName: $R0"
 
 
   ; show error that the OS is not supported and abort the installation
-  ${If} ${AtMostWin2000Srv}
+  ${If} ${AtMostWin2000}
+    ${LOG_TEXT} "INFO" "OSTest::AtMostWin2000"
     StrCpy $0 "OSabort"
+
   ${ElseIf} ${IsWinXP}
+    ${LOG_TEXT} "INFO" "OSTest::IsWinXP"
     !insertmacro GetServicePack $R1 $R2
     ${If} $R2 > 0
       StrCpy $0 "OSwarnBetaSP"
@@ -571,13 +761,18 @@ DeleteRegKey HKCU "Software\MediaPortal"
       StrCpy $0 "OSok"
     ${EndIf}
 
-  ${ElseIf} ${IsWinXP64}
-    StrCpy $0 "OSabort"
+  ;${ElseIf} ${IsWinXP64}
+    ${If} ${RunningX64}
+      ${LOG_TEXT} "INFO" "OSTest::IsWinXP::x64"
+      StrCpy $0 "OSabort"
+    ${EndIf}
 
   ${ElseIf} ${IsWin2003}
+    ${LOG_TEXT} "INFO" "OSTest::IsWin2003"
     StrCpy $0 "OSwarn"
 
   ${ElseIf} ${IsWinVISTA}
+    ${LOG_TEXT} "INFO" "OSTest::IsWinVISTA"
     !insertmacro GetServicePack $R1 $R2
     ${If} $R2 > 0
       StrCpy $0 "OSwarnBetaSP"
@@ -588,9 +783,11 @@ DeleteRegKey HKCU "Software\MediaPortal"
     ${EndIf}
 
   ${ElseIf} ${IsWin2008}
+    ${LOG_TEXT} "INFO" "OSTest::IsWin2008"
     StrCpy $0 "OSwarn"
 
   ${Else}
+    ${LOG_TEXT} "INFO" "OSTest::unknown OS"
     StrCpy $0 "OSabort"
   ${EndIf}
 
@@ -600,15 +797,11 @@ DeleteRegKey HKCU "Software\MediaPortal"
     ExecShell open "${WEB_REQUIREMENTS}"
     Abort
   ${ElseIf} $0 == "OSwarn"
-    ${If} ${HideWarnings} == 0
-      MessageBox MB_YESNO|MB_ICONEXCLAMATION "$(TEXT_MSGBOX_ERROR_WIN_NOT_RECOMMENDED)" IDNO +2
-      ExecShell open "${WEB_REQUIREMENTS}"
-    ${EndIf}
+    MessageBox MB_YESNO|MB_ICONEXCLAMATION "$(TEXT_MSGBOX_ERROR_WIN_NOT_RECOMMENDED)" IDNO +2
+    ExecShell open "${WEB_REQUIREMENTS}"
   ${ElseIf} $0 == "OSwarnBetaSP"
-    ${If} ${HideWarnings} == 0
-      MessageBox MB_YESNO|MB_ICONEXCLAMATION "You are using a beta Service Pack! $(TEXT_MSGBOX_ERROR_WIN_NOT_RECOMMENDED)" IDNO +2
-      ExecShell open "${WEB_REQUIREMENTS}"
-    ${EndIf}
+    MessageBox MB_YESNO|MB_ICONEXCLAMATION "You are using a beta Service Pack! $(TEXT_MSGBOX_ERROR_WIN_NOT_RECOMMENDED)" IDNO +2
+    ExecShell open "${WEB_REQUIREMENTS}"
   ${Else}
     ; do nothing
   ${EndIf}
@@ -616,7 +809,7 @@ DeleteRegKey HKCU "Software\MediaPortal"
   ${LOG_TEXT} "INFO" "============================"
 !macroend
 
-!macro MediaPortalAdminCheck HideWarnings
+!macro MediaPortalAdminCheck
   ${LOG_TEXT} "INFO" ".: Administration Rights Check :."
 
   ; check if current user is admin
@@ -631,14 +824,9 @@ DeleteRegKey HKCU "Software\MediaPortal"
   ${LOG_TEXT} "INFO" "============================"
 !macroend
 
-!macro MediaPortalVCRedistCheck HideWarnings
+!macro MediaPortalVCRedistCheck
   ${LOG_TEXT} "INFO" ".: Microsoft Visual C++ Redistributable Check :."
 
-  ; check if VC Redist 2005 SP1 is installed
-  #${IfNot} ${VCRedist2005IsInstalled}
-  #  MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_VCREDIST_2005)" IDNO +2
-  #  ExecShell open "${WEB_REQUIREMENTS}"
-  #  Abort
   ; check if VC Redist 2008 SP1 is installed
   ${IfNot} ${VCRedist2008IsInstalled}
     MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_VCREDIST_2008)" IDNO +2
@@ -649,54 +837,101 @@ DeleteRegKey HKCU "Software\MediaPortal"
   ${LOG_TEXT} "INFO" "============================"
 !macroend
 
-!macro MediaPortalNetFrameworkCheck HideWarnings
+!macro MediaPortalNetFrameworkCheck
   ${LOG_TEXT} "INFO" ".: Microsoft .Net Framework Check :."
 
-  ; check if .Net Framework 2.0 is installed
-  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727" "Install"
-  ; check if .Net Framework 2.0 SP2 is installed
-  ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727" "SP"
-
   ; check if .Net Framework 3.5 is installed
-  ReadRegDWORD $2 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "Install"
+  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "Install"
   ; check if .Net Framework 3.5 SP1 is installed
-  ReadRegDWORD $3 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "SP"
+  ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "SP"
 
-  ${LOG_TEXT} "INFO" ".Net 2.0 installed? $0"
-  ${LOG_TEXT} "INFO" ".Net 2.0 ServicePack: $1"
-  ${LOG_TEXT} "INFO" ".Net 3.5 installed? $2"
-  ${LOG_TEXT} "INFO" ".Net 3.5 ServicePack: $3"
+  ${LOG_TEXT} "INFO" ".Net 3.5 installed? $0"
+  ${LOG_TEXT} "INFO" ".Net 3.5 ServicePack: $1"
 
-  ${If} ${IsWinVISTA}
-  ${AndIf} ${RunningX64} ; 3.5 is installed, check for sp1
-    ${LOG_TEXT} "INFO" "OS is Vista64, .Net 3.5 is installed."
-
-    ${If} $3 < 1  ; if 3.5, but no sp1
-      MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET35_SP)" IDNO +2
-      ExecShell open "${WEB_REQUIREMENTS}"
-      Abort
-    ${EndIf}
-
-  ${ElseIf} $0 != 1  ; if no 2.0
-
-    ${If} $2 != 1  ; if no 3.5
-      MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET20)" IDNO +2
-      ExecShell open "${WEB_REQUIREMENTS}"
-      Abort
-    ${ElseIf} $3 < 1  ; if 3.5, but no sp1
-      MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET35_SP)" IDNO +2
-      ExecShell open "${WEB_REQUIREMENTS}"
-      Abort
-    ${EndIf}
-
-  ${ElseIf} $1 < 2  ; if 2.0, but no sp2
-    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET20_SP)" IDNO +2
+  ${If} $0 != 1  ; if no 3.5
+    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET35)" IDNO +2
+    ExecShell open "${WEB_REQUIREMENTS}"
+    Abort
+  ${ElseIf} $1 < 1  ; if 3.5, but no sp1
+    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET35_SP)" IDNO +2
     ExecShell open "${WEB_REQUIREMENTS}"
     Abort
   ${EndIf}
 
   ${LOG_TEXT} "INFO" "============================"
 !macroend
+
+
+!if "${PRODUCT_NAME}" == "MediaPortal"
+
+!macro DoPreInstallChecks
+
+  ; OS and other common initialization checks are done in the following NSIS header file
+  !insertmacro MediaPortalOperatingSystemCheck
+  !insertmacro MediaPortalAdminCheck
+  !insertmacro MediaPortalVCRedistCheck
+  !insertmacro MediaPortalNetFrameworkCheck
+
+  ; check if old mp 0.2.2 is installed
+  ${If} ${MP022IsInstalled}
+    MessageBox MB_OK|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_MP022)"
+    Abort
+  ${EndIf}
+
+  ; check if old mp 0.2.3 RC3 is installed
+  ${If} ${MP023RC3IsInstalled}
+    MessageBox MB_OK|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_MP023RC3)"
+    Abort
+  ${EndIf}
+
+  ; check if old mp 0.2.3 is installed.
+  ${If} ${MP023IsInstalled}
+    MessageBox MB_OK|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_MP023)"
+    Abort
+  ${EndIf}
+
+  ; check if reboot is required
+  ${If} ${FileExists} "$MPdir.Base\rebootflag"
+    MessageBox MB_OK|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_REBOOT_REQUIRED)"
+    Abort
+  ${EndIf}
+
+!macroend
+
+!endif
+
+!if "${PRODUCT_NAME}" == "MediaPortal TV Server / Client"
+
+!macro DoPreInstallChecks
+
+  ; OS and other common initialization checks are done in the following NSIS header file
+  !insertmacro MediaPortalOperatingSystemCheck
+  !insertmacro MediaPortalAdminCheck
+  !insertmacro MediaPortalVCRedistCheck
+  !insertmacro MediaPortalNetFrameworkCheck
+
+  ; check if old msi based client plugin is installed.
+  ${If} ${MSI_TVClientIsInstalled}
+    MessageBox MB_OK|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_MSI_CLIENT)"
+    Abort
+  ${EndIf}
+
+  ; check if old msi based server is installed.
+  ${If} ${MSI_TVServerIsInstalled}
+    MessageBox MB_OK|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_MSI_SERVER)"
+    Abort
+  ${EndIf}
+
+  ; check if reboot is required
+  ${If} ${FileExists} "$INSTDIR\rebootflag"
+    MessageBox MB_OK|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_REBOOT_REQUIRED)"
+    Abort
+  ${EndIf}
+
+!macroend
+
+!endif
+
 
 !endif # !___COMMON_MP_MACROS__NSH___
 
