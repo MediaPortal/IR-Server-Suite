@@ -1,168 +1,167 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <remotes>
-	<remote name="Microsoft MCE">
+	<remote name="Abstract Remote Model">
 		<button name="PowerTV">
-			<code value="31642" />
+			<code value="Power" />
 		</button>
 		<button name="Power2">
-			<code value="31731" />
+			<code value="Power2" />
 		</button>
 		<button name="Stop">
-			<code value="31718" />
+			<code value="Stop" />
 		</button>
 		<button name="Record">
-			<code value="31720" />
+			<code value="Record" />
 		</button>
 		<button name="Pause">
-			<code value="31719" />
+			<code value="Pause" />
 		</button>
 		<button name="Play">
-			<code value="31721" />
+			<code value="Play" />
 		</button>
 		<button name="Rewind">
-			<code value="31722" />
+			<code value="Rewind" />
 		</button>
 		<button name="Forward">
-			<code value="31723" />
+			<code value="FastForward" />
 		</button>
 		<button name="Replay">
-			<code value="31716" />
+			<code value="PreviousChapter" />
 		</button>
 		<button name="Skip">
-			<code value="31717" />
+			<code value="NextChapter" />
 		</button>
 		<button name="Back">
-			<code value="31708" />
+			<code value="Back" />
 		</button>
 		<button name="Info">
-			<code value="31728" />
-		</button>		
+			<code value="Info" />
+		</button>
 		<button name="Up">
-			<code value="31713" />
+			<code value="Up" />
 		</button>
 		<button name="Left">
-			<code value="31711" />
+			<code value="Left" />
 		</button>
 		<button name="Ok">
-			<code value="31709" />
+			<code value="OK" />
 		</button>
 		<button name="Right">
-			<code value="31710" />
+			<code value="Right" />
 		</button>
 		<button name="Down">
-			<code value="31712" />
+			<code value="Down" />
 		</button>
 		<button name="VolumeUp">
-			<code value="31727" />
+			<code value="VolumeUp" />
 		</button>
 		<button name="VolumeDown">
-			<code value="31726" />
+			<code value="VolumeDown" />
 		</button>
 		<button name="Start">
-			<code value="31730" />
+			<code value="Start" />
 		</button>
 		<button name="ChannelUp">
-			<code value="31725" />
+			<code value="ChannelUp" />
 		</button>
 		<button name="ChannelDown">
-			<code value="31724" />
+			<code value="ChannelDown" />
 		</button>
 		<button name="Mute">
-			<code value="31729" />
+			<code value="Mute" />
 		</button>
 		<button name="RecordedTV">
-			<code value="31671" />
+			<code value="RecordedTV" />
 		</button>
 		<button name="Guide">
-			<code value="31705" />
+			<code value="Guide" />
 		</button>
 		<button name="LiveTV">
-			<code value="31706" />
+			<code value="LiveTV" />
 		</button>
 		<button name="DVDMenu">
-			<code value="31707" />
+			<code value="DVD" />
 		</button>
 		<button name="NumPad1">
-			<code value="31742" />
+			<code value="Number1" />
 		</button>
 		<button name="NumPad2">
-			<code value="31741" />
+			<code value="Number2" />
 		</button>
 		<button name="NumPad3">
-			<code value="31740" />
+			<code value="Number3" />
 		</button>
 		<button name="NumPad4">
-			<code value="31739" />
+			<code value="Number4" />
 		</button>
 		<button name="NumPad5">
-			<code value="31738" />
+			<code value="Number5" />
 		</button>
 		<button name="NumPad6">
-			<code value="31737" />
+			<code value="Number6" />
 		</button>
 		<button name="NumPad7">
-			<code value="31736" />
+			<code value="Number7" />
 		</button>
 		<button name="NumPad8">
-			<code value="31735" />
+			<code value="Number8" />
 		</button>
 		<button name="NumPad9">
-			<code value="31734" />
+			<code value="Number9" />
 		</button>
 		<button name="NumPad0">
-			<code value="31743" />
+			<code value="Number0" />
 		</button>
 		<button name="Oem8">
-			<code value="31714" />
+			<code value="Star" />
 		</button>
 		<button name="OemGate">
-			<code value="31715" />
-		</button>		
+			<code value="Hash" />
+		</button>
 		<button name="Clear">
-			<code value="31733" />
+			<code value="Clear" />
 		</button>
 		<button name="Enter">
-			<code value="31732" />
+			<code value="Enter" />
 		</button>
 		<button name="Teletext">
-			<code value="31653" />
-		</button>		
+			<code value="Teletext" />
+		</button>
 		<button name="Red">
-			<code value="31652" />
+			<code value="Red" />
 		</button>
 		<button name="Green">
-			<code value="31651" />
+			<code value="Green" />
 		</button>
 		<button name="Yellow">
-			<code value="31650" />
+			<code value="Yellow" />
 		</button>
 		<button name="Blue">
-			<code value="31649" />
+			<code value="Blue" />
 		</button>
 		<button name="MyMusic">
-			<code value="31672" />
+			<code value="Music" />
 		</button>
 		<button name="MyPictures">
-			<code value="31670" />
+			<code value="Pictures" />
 		</button>
 		<button name="MyRadio">
-			<code value="31663" />
+			<code value="Radio" />
 		</button>
 		<button name="MyTV">
-			<code value="31673" />
+			<code value="TV" />
 		</button>
 		<button name="MyVideos">
-			<code value="31669" />
+			<code value="Video" />
 		</button>
 		<button name="Print">
-			<code value="31665" />
+			<code value="Print" />
 		</button>
 		<button name="AspectRatio">
-			<code value="31704" />
+			<code value="AspectRatio" />
 		</button>
 		<button name="Messenger">
-			<code value="31638" />
+			<code value="Messenger" />
 		</button>
-		<button name="Power1" />
 	</remote>
 </remotes>

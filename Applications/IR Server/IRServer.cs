@@ -1715,7 +1715,7 @@ namespace IRServer
 
     private void LoadSettings()
     {
-      _abstractRemoteMode = false;
+      _abstractRemoteMode = true;
       _mode = IRServerMode.ServerMode;
       _hostComputer = String.Empty;
       _processPriority = "No Change";

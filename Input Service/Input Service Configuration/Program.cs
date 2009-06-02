@@ -144,7 +144,7 @@ namespace InputService.Configuration
     {
       IrssLog.Info("Loading settings ...");
 
-      _abstractRemoteMode = false;
+      _abstractRemoteMode = true;
       _mode = InputServiceMode.ServerMode;
       _hostComputer = String.Empty;
       _processPriority = "No Change";

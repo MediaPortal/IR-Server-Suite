@@ -1630,7 +1630,7 @@ namespace InputService
 
     private void LoadSettings()
     {
-      _abstractRemoteMode = false;
+      _abstractRemoteMode = true;
       _mode = InputServiceMode.ServerMode;
       _hostComputer = String.Empty;
       _processPriority = "No Change";
