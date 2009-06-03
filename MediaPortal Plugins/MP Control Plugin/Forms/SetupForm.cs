@@ -825,9 +825,8 @@ namespace MediaPortal.Plugins
 
     private void buttonLoadPreset_Click(object sender, EventArgs e)
     {
-      string fileName = Path.Combine(MPControlPlugin.RemotePresetsFolder, comboBoxRemotePresets.SelectedItem as string +
-                        ".xml")
-      ;
+      string fileName = Path.Combine(MPControlPlugin.RemotePresetsFolder,
+        (comboBoxRemotePresets.SelectedItem as string) + ".xml");
       LoadRemotes(fileName);
     }
 
