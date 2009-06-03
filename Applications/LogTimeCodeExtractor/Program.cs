@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace LogTimeCodeExtractor
 {
-
-  class Program
+  internal class Program
   {
-
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
       if (args.Length != 1)
       {
@@ -26,7 +23,7 @@ namespace LogTimeCodeExtractor
       {
         if (line.StartsWith("+") || line.StartsWith("-"))
         {
-          string[] timesStrings = line.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+          string[] timesStrings = line.Split(new char[] {',', ' '}, StringSplitOptions.RemoveEmptyEntries);
 
           foreach (string time in timesStrings)
           {
@@ -42,7 +39,5 @@ namespace LogTimeCodeExtractor
         Console.Write(", ");
       }
     }
-
   }
-
 }

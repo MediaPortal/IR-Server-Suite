@@ -873,7 +873,8 @@ namespace Translator
         try
         {
           fileName = Path.GetFileName(process.MainModule.FileName);
-        }catch
+        }
+        catch
         {
           processName = Path.GetFileName(process.ProcessName);
         }

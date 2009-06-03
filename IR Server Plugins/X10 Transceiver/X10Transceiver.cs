@@ -17,7 +17,7 @@ namespace InputService.Plugin
   {
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "X10 Transceiver.xml");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "X10 Transceiver.xml");
 
     #endregion Constants
 
@@ -29,9 +29,9 @@ namespace InputService.Plugin
     private IConnectionPoint icp;
     private IConnectionPointContainer icpc;
     private X10Interface X10Inter;
-    bool useChannelControl;
-    int channelNumber;
-    bool getChannelNumber;
+    private bool useChannelControl;
+    private int channelNumber;
+    private bool getChannelNumber;
 
     #endregion Variables
 
@@ -255,7 +255,7 @@ namespace InputService.Plugin
       Stop();
     }
 
-    void LoadSettings()
+    private void LoadSettings()
     {
       try
       {
@@ -271,7 +271,7 @@ namespace InputService.Plugin
       {
         Trace.WriteLine(ex.ToString());
 #else
- catch
+      catch
       {
 #endif
         useChannelControl = false;
@@ -279,14 +279,14 @@ namespace InputService.Plugin
       }
     }
 
-    void SaveSettings()
+    private void SaveSettings()
     {
       try
       {
         XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char)9;
+        writer.IndentChar = (char) 9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("settings"); // <settings>
 
@@ -303,7 +303,7 @@ namespace InputService.Plugin
         Trace.WriteLine(ex.ToString());
       }
 #else
- catch
+      catch
       {
       }
 #endif
@@ -329,7 +329,5 @@ namespace InputService.Plugin
         SaveSettings();
       }
     }
-
-
   }
 }

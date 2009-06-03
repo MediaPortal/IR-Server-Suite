@@ -1,21 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// Configure the HCW Transceiver plugin.
   /// </summary>
-  partial class Configure : Form
+  internal partial class Configure : Form
   {
     #region variables
-    X10Transceiver x10Transceiver;
-    int count;
+
+    private X10Transceiver x10Transceiver;
+    private int count;
+
     #endregion variables
 
     #region Properties
@@ -26,10 +23,9 @@ namespace InputService.Plugin
     /// <value>Use channel control</value>
     public bool UseChannelControl
     {
-      get { 
-        return checkBoxUseChannelControl.Checked; 
-      }
-      set { 
+      get { return checkBoxUseChannelControl.Checked; }
+      set
+      {
         checkBoxUseChannelControl.Checked = value;
         numericUpDownButtonChannelNumber.Enabled = checkBoxUseChannelControl.Checked;
         buttonGetChannelNumber.Enabled = checkBoxUseChannelControl.Checked;
@@ -42,14 +38,10 @@ namespace InputService.Plugin
     /// <value>The channel number</value>
     public int ChannelNumber
     {
-      get { 
-        return Decimal.ToInt32(numericUpDownButtonChannelNumber.Value); 
-      }
-      set { 
-        numericUpDownButtonChannelNumber.Value = new Decimal(value);
-      }
+      get { return Decimal.ToInt32(numericUpDownButtonChannelNumber.Value); }
+      set { numericUpDownButtonChannelNumber.Value = new Decimal(value); }
     }
-    
+
     /// <summary>
     /// Sets the corresponding X10Transceiver
     /// </summary>
@@ -57,6 +49,7 @@ namespace InputService.Plugin
     {
       set { x10Transceiver = value; }
     }
+
     #endregion Properties
 
     #region Constructor
@@ -75,14 +68,14 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void checkBoxUseChannelControl_CheckedChanged(object sender, EventArgs e)
@@ -90,6 +83,7 @@ namespace InputService.Plugin
       numericUpDownButtonChannelNumber.Enabled = checkBoxUseChannelControl.Checked;
       buttonGetChannelNumber.Enabled = checkBoxUseChannelControl.Checked;
     }
+
     #endregion Buttons
 
     private void buttonGetChannelNumber_Click(object sender, EventArgs e)
@@ -104,9 +98,11 @@ namespace InputService.Plugin
         checkBoxUseChannelControl.Enabled = false;
         count = 0;
         timer1.Start();
-      } catch
+      }
+      catch
       {
-        MessageBox.Show("Error while starting X10 device", "X10 Configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("Error while starting X10 device", "X10 Configuration", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
     }
 
@@ -122,7 +118,8 @@ namespace InputService.Plugin
           try
           {
             x10Transceiver.StopGetChannelNumber();
-          } finally
+          }
+          finally
           {
             buttonOK.Enabled = true;
             buttonCancel.Enabled = true;
@@ -131,13 +128,15 @@ namespace InputService.Plugin
             checkBoxUseChannelControl.Enabled = true;
           }
         }
-      } else
+      }
+      else
       {
         timer1.Stop();
         try
         {
           x10Transceiver.StopGetChannelNumber();
-        } finally
+        }
+        finally
         {
           checkBoxUseChannelControl.Enabled = true;
           numericUpDownButtonChannelNumber.Enabled = true;
@@ -148,8 +147,5 @@ namespace InputService.Plugin
         }
       }
     }
-
-
   }
-
 }

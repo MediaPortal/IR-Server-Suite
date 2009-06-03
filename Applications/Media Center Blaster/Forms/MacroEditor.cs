@@ -1,24 +1,19 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssUtils;
+using IrssUtils.Exceptions;
 using IrssUtils.Forms;
+#if TRACE
+using System.Diagnostics;
+#endif
 
 namespace MediaCenterBlaster
 {
-
-  partial class MacroEditor : Form
+  internal partial class MacroEditor : Form
   {
-
     #region Constructor
 
     /// <summary>
@@ -28,7 +23,7 @@ namespace MediaCenterBlaster
     {
       InitializeComponent();
 
-      textBoxName.Text    = "New";
+      textBoxName.Text = "New";
       textBoxName.Enabled = true;
     }
 
@@ -42,7 +37,7 @@ namespace MediaCenterBlaster
       if (String.IsNullOrEmpty(name))
         throw new ArgumentNullException("name");
 
-      textBoxName.Text    = name;
+      textBoxName.Text = name;
       textBoxName.Enabled = false;
 
       string fileName = Path.Combine(Tray.FolderMacros, name + Common.FileExtensionMacro);
@@ -53,7 +48,7 @@ namespace MediaCenterBlaster
 
     #region Implementation
 
-    void RefreshCommandList()
+    private void RefreshCommandList()
     {
       comboBoxCommands.Items.Clear();
 
@@ -88,7 +83,7 @@ namespace MediaCenterBlaster
     /// Write the macro in the listBox to a macro name provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
-    void WriteToFile(string fileName)
+    private void WriteToFile(string fileName)
     {
       try
       {
@@ -119,7 +114,7 @@ namespace MediaCenterBlaster
     /// Read a macro into the listBox from the macro name provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to read (macro name, not file path).</param>
-    void ReadFromFile(string fileName)
+    private void ReadFromFile(string fileName)
     {
       try
       {
@@ -214,7 +209,7 @@ namespace MediaCenterBlaster
           if (popupMessage.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
         }
-        /*
+          /*
         else if (selected.Equals(Common.UITextWindowState, StringComparison.OrdinalIgnoreCase))
         {
           newCommand = Common.CmdPrefixWindowState;
@@ -261,7 +256,7 @@ namespace MediaCenterBlaster
         }
         else
         {
-          throw new IrssUtils.Exceptions.CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
+          throw new CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
         }
 
         if (!String.IsNullOrEmpty(newCommand))
@@ -285,6 +280,7 @@ namespace MediaCenterBlaster
         listBoxMacro.SelectedIndex = selected - 1;
       }
     }
+
     private void buttonMoveDown_Click(object sender, EventArgs e)
     {
       int selected = listBoxMacro.SelectedIndex;
@@ -309,14 +305,16 @@ namespace MediaCenterBlaster
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -337,8 +335,8 @@ namespace MediaCenterBlaster
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     private void buttonOK_Click(object sender, EventArgs e)
@@ -347,14 +345,16 @@ namespace MediaCenterBlaster
 
       if (name.Length == 0)
       {
-        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a name for this Macro", "Name missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
 
       if (!Common.IsValidFileName(name))
       {
-        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        MessageBox.Show(this, "You must supply a valid name for this Macro", "Invalid name", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         textBoxName.Focus();
         return;
       }
@@ -370,8 +370,8 @@ namespace MediaCenterBlaster
         MessageBox.Show(this, ex.Message, "Failed writing macro to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void listBoxCommandSequence_DoubleClick(object sender, EventArgs e)
@@ -425,7 +425,7 @@ namespace MediaCenterBlaster
         else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
-        
+
           HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
           if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
@@ -486,7 +486,5 @@ namespace MediaCenterBlaster
     }
 
     #endregion Implementation
-
   }
-
 }

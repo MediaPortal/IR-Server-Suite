@@ -1735,7 +1735,9 @@ namespace InputService.Plugin
 #if DEBUG
       DebugWriteLine("RegisterForRawInput(): Registering {0} device(s).", devices.Length);
 #endif
-      if (!RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTDEVICE))))
+      if (
+        !RawInput.RegisterRawInputDevices(devices, (uint) devices.Length,
+                                          (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTDEVICE))))
       {
         int dwError = Marshal.GetLastWin32Error();
 #if DEBUG

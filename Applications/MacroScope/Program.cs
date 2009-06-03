@@ -1,21 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace MacroScope
 {
-
-  static class Program
+  internal static class Program
   {
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    private static void Main()
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
@@ -41,11 +37,9 @@ namespace MacroScope
     /// </summary>
     /// <param name="sender">Sender.</param>
     /// <param name="e">Event args.</param>
-    static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
       IrssLog.Error(e.Exception);
     }
-
   }
-
 }

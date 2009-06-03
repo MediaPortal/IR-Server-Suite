@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.ServiceProcess;
 using System.Text;
@@ -8,7 +9,6 @@ using System.Windows.Forms;
 using System.Xml;
 using InputService.Plugin.Properties;
 using Microsoft.Win32;
-using System.Globalization;
 
 namespace InputService.Plugin
 {
@@ -488,14 +488,16 @@ namespace InputService.Plugin
       }
       try
       {
-        _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value, CultureInfo.InvariantCulture);
+        _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value,
+                                       CultureInfo.InvariantCulture);
       }
       catch
       {
       }
       try
       {
-        _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value, CultureInfo.InvariantCulture);
+        _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value,
+                                       CultureInfo.InvariantCulture);
       }
       catch
       {
@@ -524,14 +526,16 @@ namespace InputService.Plugin
       }
       try
       {
-        _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value, CultureInfo.InvariantCulture);
+        _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value,
+                                         CultureInfo.InvariantCulture);
       }
       catch
       {
       }
       try
       {
-        _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value, CultureInfo.InvariantCulture);
+        _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value,
+                                         CultureInfo.InvariantCulture);
       }
       catch
       {
@@ -567,7 +571,8 @@ namespace InputService.Plugin
       }
       try
       {
-        _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value, CultureInfo.InvariantCulture);
+        _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value,
+                                         CultureInfo.InvariantCulture);
       }
       catch
       {

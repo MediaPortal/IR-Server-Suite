@@ -1,6 +1,6 @@
 using System;
-using System.Text;
 using System.Diagnostics;
+using System.Text;
 
 namespace IrssComms
 {
@@ -175,10 +175,8 @@ namespace IrssComms
     #region Members
 
     private byte[] _data;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private MessageFlags _flags;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private MessageType _type;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)] private MessageFlags _flags;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)] private MessageType _type;
 
     #endregion Members
 

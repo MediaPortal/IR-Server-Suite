@@ -149,7 +149,7 @@ namespace VirtualRemote
       _client = new Client(endPoint, new ClientMessageSink(ReceivedMessage));
       _client.CommsFailureCallback = new WaitCallback(CommsFailure);
       _client.ConnectCallback = new WaitCallback(Connected);
-      _client.DisconnectCallback =  new WaitCallback(Disconnected);
+      _client.DisconnectCallback = new WaitCallback(Disconnected);
 
       if (_client.Start())
       {

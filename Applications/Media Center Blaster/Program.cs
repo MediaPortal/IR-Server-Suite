@@ -2,20 +2,17 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
-
 using IrssUtils;
 
 namespace MediaCenterBlaster
 {
-
-  static class Program
+  internal static class Program
   {
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    private static void Main()
     {
       // Check for multiple instances.
       if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
@@ -52,7 +49,5 @@ namespace MediaCenterBlaster
     {
       IrssLog.Error(e.Exception);
     }
-
   }
-
 }

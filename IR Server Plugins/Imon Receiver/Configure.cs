@@ -1,22 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
 {
-
-  partial class Configure : Form
+  internal partial class Configure : Form
   {
-
     #region Properties
 
     public ImonReceiver.RcMode HardwareMode
     {
-      get { return (ImonReceiver.RcMode)Enum.Parse(typeof(ImonReceiver.RcMode), comboBoxHardwareMode.SelectedItem as string); }
-      set { comboBoxHardwareMode.SelectedItem = Enum.GetName(typeof(ImonReceiver.RcMode), value); }
+      get
+      {
+        return
+          (ImonReceiver.RcMode) Enum.Parse(typeof (ImonReceiver.RcMode), comboBoxHardwareMode.SelectedItem as string);
+      }
+      set { comboBoxHardwareMode.SelectedItem = Enum.GetName(typeof (ImonReceiver.RcMode), value); }
     }
 
     public bool EnableRemote
@@ -24,16 +22,19 @@ namespace InputService.Plugin
       get { return checkBoxEnableRemote.Checked; }
       set { checkBoxEnableRemote.Checked = value; }
     }
+
     public bool UseSystemRatesForRemote
     {
       get { return checkBoxUseSystemRatesRemote.Checked; }
       set { checkBoxUseSystemRatesRemote.Checked = value; }
     }
+
     public int RemoteRepeatDelay
     {
       get { return Decimal.ToInt32(numericUpDownButtonRepeatDelay.Value); }
       set { numericUpDownButtonRepeatDelay.Value = new Decimal(value); }
     }
+
     public int RemoteHeldDelay
     {
       get { return Decimal.ToInt32(numericUpDownButtonHeldDelay.Value); }
@@ -45,21 +46,25 @@ namespace InputService.Plugin
       get { return checkBoxEnableKeyboard.Checked; }
       set { checkBoxEnableKeyboard.Checked = value; }
     }
+
     public bool UseSystemRatesForKeyboard
     {
       get { return checkBoxUseSystemRatesKeyboard.Checked; }
       set { checkBoxUseSystemRatesKeyboard.Checked = value; }
     }
+
     public int KeyboardRepeatDelay
     {
       get { return Decimal.ToInt32(numericUpDownKeyRepeatDelay.Value); }
       set { numericUpDownKeyRepeatDelay.Value = new Decimal(value); }
     }
+
     public int KeyboardHeldDelay
     {
       get { return Decimal.ToInt32(numericUpDownKeyHeldDelay.Value); }
       set { numericUpDownKeyHeldDelay.Value = new Decimal(value); }
     }
+
     public bool HandleKeyboardLocal
     {
       get { return checkBoxHandleKeyboardLocal.Checked; }
@@ -71,11 +76,13 @@ namespace InputService.Plugin
       get { return checkBoxEnableMouse.Checked; }
       set { checkBoxEnableMouse.Checked = value; }
     }
+
     public double MouseSensitivity
     {
       get { return Decimal.ToDouble(numericUpDownMouseSensitivity.Value); }
       set { numericUpDownMouseSensitivity.Value = new Decimal(value); }
     }
+
     public bool HandleMouseLocal
     {
       get { return checkBoxHandleMouseLocal.Checked; }
@@ -93,7 +100,7 @@ namespace InputService.Plugin
     {
       InitializeComponent();
 
-      comboBoxHardwareMode.Items.AddRange(Enum.GetNames(typeof(ImonReceiver.RcMode)));
+      comboBoxHardwareMode.Items.AddRange(Enum.GetNames(typeof (ImonReceiver.RcMode)));
     }
 
     #endregion Constructor
@@ -102,13 +109,14 @@ namespace InputService.Plugin
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
+
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
@@ -117,11 +125,10 @@ namespace InputService.Plugin
     {
       groupBoxRemoteTiming.Enabled = !checkBoxUseSystemRatesRemote.Checked;
     }
+
     private void checkBoxUseSystemRatesKeyboard_CheckedChanged(object sender, EventArgs e)
     {
       groupBoxKeypressTiming.Enabled = !checkBoxUseSystemRatesKeyboard.Checked;
     }
-
   }
-
 }

@@ -1,30 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.IO;
+using System.Threading;
+using System.Windows.Forms;
+using IrssUtils;
 #if TRACE
 using System.Diagnostics;
 #endif
-using System.Drawing;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
-using System.Xml;
-
-using IrssUtils;
 
 namespace MediaCenterBlaster
 {
-
-  partial class ExternalChannels : Form
+  internal partial class ExternalChannels : Form
   {
-
     #region Variables
 
-    TabPage _tvCardTab;
-    StbSetup _tvCardStbSetup;
-    
+    private TabPage _tvCardTab;
+    private StbSetup _tvCardStbSetup;
+
     #endregion Variables
 
     #region Constructor
@@ -45,7 +36,7 @@ namespace MediaCenterBlaster
       _tvCardTab = new TabPage("STB");
       _tvCardTab.Controls.Add(_tvCardStbSetup);
 
-      this.tabControlTVCards.TabPages.Add(_tvCardTab);
+      tabControlTVCards.TabPages.Add(_tvCardTab);
 
       // Setup quick setup combo box
       string[] quickSetupFiles = Directory.GetFiles(Common.FolderSTB, "*.xml", SearchOption.TopDirectoryOnly);
@@ -55,7 +46,8 @@ namespace MediaCenterBlaster
       comboBoxQuickSetup.Items.Add("Clear all");
     }
 
-    static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit, string fullChannelString)
+    private static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit,
+                                                      string fullChannelString)
     {
       string[] commands = Common.SplitRunCommand(runCommand);
 
@@ -65,7 +57,7 @@ namespace MediaCenterBlaster
       Common.ProcessRunCommand(commands);
     }
 
-    static void ProcessSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
+    private static void ProcessSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
     {
       string[] commands = Common.SplitSerialCommand(serialCommand);
 
@@ -86,11 +78,12 @@ namespace MediaCenterBlaster
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.ToString(), "Failed to save external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to save external channel setup", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
 
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void buttonTest_Click(object sender, EventArgs e)
@@ -135,7 +128,7 @@ namespace MediaCenterBlaster
             if (setup.PauseTime > 0)
               Thread.Sleep(setup.PauseTime);
           }
-          
+
           foreach (char digit in channel)
           {
             charVal = digit - 48;
@@ -183,18 +176,17 @@ namespace MediaCenterBlaster
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.ToString(), "Failed to quick-set external channel setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(ex.ToString(), "Failed to quick-set external channel setup", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
       }
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
     #endregion Buttons
-
   }
-
 }

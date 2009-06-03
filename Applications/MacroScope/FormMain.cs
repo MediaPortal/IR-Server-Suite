@@ -1,31 +1,22 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
 using IrssUtils;
 using IrssUtils.Forms;
+using VariableList=Commands.VariableList;
 
 namespace MacroScope
 {
-
-
   public partial class FormMain : Form
   {
-
     #region Variables
 
-    string _macroFile;
-    Commands.VariableList _variables;
+    private string _macroFile;
+    private readonly VariableList _variables;
 
-    bool _isDebugging;
-    int _debugLine;
+    private bool _isDebugging;
+    private int _debugLine;
 
     #endregion Variables
 
@@ -37,17 +28,16 @@ namespace MacroScope
 
       PopulateCommandList();
 
-      _variables = new Commands.VariableList();
+      _variables = new VariableList();
     }
 
     #endregion Constructor
-
 
     /// <summary>
     /// Write the macro in the RichTextBox to a macro name provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to write (macro name, not file path).</param>
-    void WriteToFile(string fileName)
+    private void WriteToFile(string fileName)
     {
       _macroFile = fileName;
 
@@ -83,7 +73,7 @@ namespace MacroScope
     /// Read a macro into the listBox from the macro name provided.
     /// </summary>
     /// <param name="fileName">Name of Macro to read (macro name, not file path).</param>
-    void ReadFromFile(string fileName)
+    private void ReadFromFile(string fileName)
     {
       _macroFile = fileName;
 
@@ -106,29 +96,27 @@ namespace MacroScope
     }
 
 
-    void ResetVariables()
+    private void ResetVariables()
     {
       _variables.VariableClear();
       listViewVariables.Clear();
     }
 
-    void LoadVariables(string fileName)
+    private void LoadVariables(string fileName)
     {
       //      Dictionary<string, string>.Enumerator enumerator = _variables.GetEnumerator();
     }
 
-    void SaveVariables(string fileName)
+    private void SaveVariables(string fileName)
     {
-
     }
 
-    void ProcessCurrentLine()
+    private void ProcessCurrentLine()
     {
-
     }
 
 
-    void DebugStep()
+    private void DebugStep()
     {
       if (_isDebugging)
       {
@@ -137,9 +125,6 @@ namespace MacroScope
 
         _debugLine++;
         HighlightDebugLine();
-
-
-
       }
       else
       {
@@ -150,7 +135,7 @@ namespace MacroScope
       }
     }
 
-    void DebugReset()
+    private void DebugReset()
     {
       _isDebugging = true;
       _debugLine = 0;
@@ -158,7 +143,7 @@ namespace MacroScope
       HighlightDebugLine();
     }
 
-    void DebugEnd()
+    private void DebugEnd()
     {
       _isDebugging = false;
 
@@ -166,21 +151,18 @@ namespace MacroScope
     }
 
 
-    void HighlightDebugLine()
+    private void HighlightDebugLine()
     {
       if (_isDebugging)
       {
-
       }
       else
       {
-
       }
-
     }
 
 
-    void PopulateCommandList()
+    private void PopulateCommandList()
     {
       TreeNode macroCommands = new TreeNode("Macro Commands");
       macroCommands.Nodes.Add(Common.UITextSetVar);
@@ -222,11 +204,11 @@ namespace MacroScope
       mediaPortalCommands.Nodes.Add(Common.UITextMultiMap);
       mediaPortalCommands.Nodes.Add(Common.UITextSendMPAction);
       mediaPortalCommands.Nodes.Add(Common.UITextSendMPMsg);
-      treeViewCommandList.Nodes.Add(mediaPortalCommands);      
+      treeViewCommandList.Nodes.Add(mediaPortalCommands);
     }
 
 
-    void InsertCommand(string commandUiText)
+    private void InsertCommand(string commandUiText)
     {
       string newCommand = String.Empty;
 
@@ -238,22 +220,18 @@ namespace MacroScope
             InsertText(beepCommand.CommandString);
 
           break;
-
-
-
-
       }
 
       if (!String.IsNullOrEmpty(newCommand))
         InsertText(newCommand);
     }
 
-    void InsertText(string text)
+    private void InsertText(string text)
     {
       richTextBoxMacro.Text.Insert(richTextBoxMacro.SelectionStart, text);
     }
 
-    void UpdateStatus(string text)
+    private void UpdateStatus(string text)
     {
       toolStripStatusLabel.Text = text;
     }
@@ -273,17 +251,14 @@ namespace MacroScope
 
     private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
     }
 
     private void saveToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
     }
 
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
     }
 
     private void quitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -293,12 +268,10 @@ namespace MacroScope
 
     private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
     }
 
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
     }
 
     private void treeViewCommandList_DoubleClick(object sender, EventArgs e)
@@ -321,8 +294,5 @@ namespace MacroScope
     {
       DebugEnd();
     }
-
-
   }
-
 }

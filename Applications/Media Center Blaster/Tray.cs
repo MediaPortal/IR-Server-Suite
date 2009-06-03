@@ -1,63 +1,59 @@
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
-using Microsoft.MediaCenter.Samples.MediaState;
-
 using IrssComms;
 using IrssUtils;
+using IrssUtils.Forms;
+using Microsoft.MediaCenter.Samples.MediaState;
 
 namespace MediaCenterBlaster
 {
-
   /// <summary>
   /// Media Center Blaster main class.
   /// </summary>
-  class Tray
+  internal class Tray
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "Media Center Blaster\\Media Center Blaster.xml");
+    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
+                                                                    "Media Center Blaster\\Media Center Blaster.xml");
 
     internal static readonly string FolderMacros = Path.Combine(Common.FolderAppData, "Media Center Blaster\\Macro");
 
     internal static readonly string ExtCfgFolder = Path.Combine(Common.FolderAppData, "Media Center Blaster");
 
-    const string ProcessCommandThreadName = "ProcessCommand";
+    private const string ProcessCommandThreadName = "ProcessCommand";
 
     #endregion Constants
 
     #region Variables
 
-    static ClientMessageSink _handleMessage;
+    private static ClientMessageSink _handleMessage;
 
-    static Client _client;
+    private static Client _client;
 
-    static bool _registered;
+    private static bool _registered;
 
-    static string _serverHost;
-    static bool _autoRun;
-    static bool _logVerbose;
+    private static string _serverHost;
+    private static bool _autoRun;
+    private static bool _logVerbose;
 
-    static ExternalChannelConfig _externalChannelConfig;
+    private static ExternalChannelConfig _externalChannelConfig;
 
-    static bool _inConfiguration;
-    static string _learnIRFilename;
+    private static bool _inConfiguration;
+    private static string _learnIRFilename;
 
-    static IRServerInfo _irServerInfo = new IRServerInfo();
+    private static IRServerInfo _irServerInfo = new IRServerInfo();
 
-    static Container _container;
-    static NotifyIcon _notifyIcon;
-    static MediaState _mediaState;
+    private static Container _container;
+    private static NotifyIcon _notifyIcon;
+    private static MediaState _mediaState;
 
     #endregion Variables
 
@@ -147,22 +143,22 @@ namespace MediaCenterBlaster
 
     #region Implementation
 
-    void OnMSASEvent(object state, MediaStatusEventArgs args)
+    private void OnMSASEvent(object state, MediaStatusEventArgs args)
     {
       //MediaState typedState = (MediaState)state;
       IrssLog.Info("OnMSASEvent: {0} {1} {2} {3}", args.Session, args.SessionID, args.Tag, args.Value);
     }
 
-    void TV_MediaChanged(object sender, EventArgs e)
+    private void TV_MediaChanged(object sender, EventArgs e)
     {
       IrssLog.Info("TV_MediaChanged");
 
-      MediaStatusEventArgs mediaStatusEventArgs = (MediaStatusEventArgs)e;
+      MediaStatusEventArgs mediaStatusEventArgs = (MediaStatusEventArgs) e;
 
       // MSPROPTAG_TrackNumber
 
       IrssLog.Info("Channel: {0}", mediaStatusEventArgs.Value);
-      
+
       /*
       if (_externalChannelConfig == null)
         throw new ApplicationException("Cannot process tune request, no STB settings are loaded");
@@ -182,7 +178,7 @@ namespace MediaCenterBlaster
     }
 
 
-    static void UpdateTrayIcon(string text, Icon icon)
+    private static void UpdateTrayIcon(string text, Icon icon)
     {
       if (String.IsNullOrEmpty(text))
         throw new ArgumentNullException("text");
@@ -213,14 +209,15 @@ namespace MediaCenterBlaster
         try
         {
           IPAddress serverIP = Client.GetIPFromName(_serverHost);
-          IPEndPoint endPoint = new IPEndPoint(serverIP, IrssComms.Server.DefaultPort);
+          IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
           clientStarted = StartClient(endPoint);
         }
         catch (Exception ex)
         {
           IrssLog.Error(ex);
-          MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.", "Media Center Blaster - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          MessageBox.Show("Failed to start IR Server communications, refer to log file for more details.",
+                          "Media Center Blaster - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
           clientStarted = false;
         }
 
@@ -251,7 +248,7 @@ namespace MediaCenterBlaster
       return false;
     }
 
-    void Stop()
+    private void Stop()
     {
       _notifyIcon.Visible = false;
 
@@ -265,8 +262,10 @@ namespace MediaCenterBlaster
           _client.Send(message);
         }
       }
-      catch { }
-      
+      catch
+      {
+      }
+
       StopClient();
 
       if (_mediaState != null)
@@ -276,7 +275,7 @@ namespace MediaCenterBlaster
       }
     }
 
-    void LoadSettings()
+    private void LoadSettings()
     {
       try
       {
@@ -310,7 +309,8 @@ namespace MediaCenterBlaster
         CreateDefaultSettings();
       }
     }
-    void SaveSettings()
+
+    private void SaveSettings()
     {
       try
       {
@@ -330,7 +330,7 @@ namespace MediaCenterBlaster
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -346,7 +346,8 @@ namespace MediaCenterBlaster
         IrssLog.Error(ex);
       }
     }
-    void CreateDefaultSettings()
+
+    private void CreateDefaultSettings()
     {
       _serverHost = "localhost";
       _logVerbose = true;
@@ -357,7 +358,7 @@ namespace MediaCenterBlaster
     /// <summary>
     /// Load external channel configuration.
     /// </summary>
-    static void LoadExternalConfig()
+    private static void LoadExternalConfig()
     {
       string fileName = Path.Combine(ExtCfgFolder, "ExternalChannelConfig.xml");
 
@@ -379,7 +380,7 @@ namespace MediaCenterBlaster
     /// Processes the external channel.
     /// </summary>
     /// <param name="args">String array of parameters.</param>
-    static void ProcessExternalChannel(object args)
+    private static void ProcessExternalChannel(object args)
     {
       try
       {
@@ -544,7 +545,7 @@ namespace MediaCenterBlaster
         commands[1] = commands[1].Replace("%1", channelDigit.ToString());
         commands[1] = commands[1].Replace("%2", channelFull);
 
-        IrssUtils.Forms.ShowPopupMessage showPopupMessage = new IrssUtils.Forms.ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
+        ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
         showPopupMessage.ShowDialog();
       }
       else
@@ -611,14 +612,15 @@ namespace MediaCenterBlaster
       using (FileStream file = File.OpenRead(fileName))
       {
         if (file.Length == 0)
-          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure", fileName));
+          throw new IOException(String.Format("Cannot Blast. IR file \"{0}\" has no data, possible IR learn failure",
+                                              fileName));
 
         byte[] outData = new byte[4 + port.Length + file.Length];
 
         BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
         Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-        file.Read(outData, 4 + port.Length, (int)file.Length);
+        file.Read(outData, 4 + port.Length, (int) file.Length);
 
         IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
         _client.Send(message);
@@ -658,7 +660,7 @@ namespace MediaCenterBlaster
     /// Can be called Synchronously or as a Parameterized Thread.
     /// </summary>
     /// <param name="commandObj">Command string to process.</param>
-    static void ProcCommand(object commandObj)
+    private static void ProcCommand(object commandObj)
     {
       try
       {
@@ -731,7 +733,7 @@ namespace MediaCenterBlaster
         else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
         {
           string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
-          IrssUtils.Forms.ShowPopupMessage showPopupMessage = new IrssUtils.Forms.ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
+          ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
           showPopupMessage.ShowDialog();
         }
         else
@@ -741,7 +743,8 @@ namespace MediaCenterBlaster
       }
       catch (Exception ex)
       {
-        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) && Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
+            Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
           IrssLog.Error(ex);
         else
           throw;
@@ -752,7 +755,7 @@ namespace MediaCenterBlaster
     /// Called by ProcCommand to process the supplied Macro file.
     /// </summary>
     /// <param name="fileName">Macro file to process (absolute path).</param>
-    static void ProcMacro(string fileName)
+    private static void ProcMacro(string fileName)
     {
       XmlDocument doc = new XmlDocument();
       doc.Load(fileName);
@@ -817,10 +820,7 @@ namespace MediaCenterBlaster
     }
 
 
-
-
-
-    static void CommsFailure(object obj)
+    private static void CommsFailure(object obj)
     {
       Exception ex = obj as Exception;
 
@@ -831,9 +831,11 @@ namespace MediaCenterBlaster
 
       StopClient();
 
-      MessageBox.Show("Please report this error.", "Media Center Blaster - Communications failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      MessageBox.Show("Please report this error.", "Media Center Blaster - Communications failure", MessageBoxButtons.OK,
+                      MessageBoxIcon.Error);
     }
-    static void Connected(object obj)
+
+    private static void Connected(object obj)
     {
       IrssLog.Info("Connected to server");
 
@@ -842,7 +844,8 @@ namespace MediaCenterBlaster
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
     }
-    static void Disconnected(object obj)
+
+    private static void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
@@ -851,7 +854,7 @@ namespace MediaCenterBlaster
       Thread.Sleep(1000);
     }
 
-    static internal bool StartClient(IPEndPoint endPoint)
+    internal static bool StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
         return false;
@@ -859,10 +862,10 @@ namespace MediaCenterBlaster
       ClientMessageSink sink = new ClientMessageSink(ReceivedMessage);
 
       _client = new Client(endPoint, sink);
-      _client.CommsFailureCallback  = new WaitCallback(CommsFailure);
-      _client.ConnectCallback       = new WaitCallback(Connected);
-      _client.DisconnectCallback    = new WaitCallback(Disconnected);
-      
+      _client.CommsFailureCallback = new WaitCallback(CommsFailure);
+      _client.ConnectCallback = new WaitCallback(Connected);
+      _client.DisconnectCallback = new WaitCallback(Disconnected);
+
       if (_client.Start())
       {
         return true;
@@ -873,7 +876,8 @@ namespace MediaCenterBlaster
         return false;
       }
     }
-    static internal void StopClient()
+
+    internal static void StopClient()
     {
       if (_client == null)
         return;
@@ -884,7 +888,7 @@ namespace MediaCenterBlaster
       _registered = false;
     }
 
-    static void ReceivedMessage(IrssMessage received)
+    private static void ReceivedMessage(IrssMessage received)
     {
       IrssLog.Debug("Received Message \"{0}\"", received.Type);
 
@@ -971,26 +975,26 @@ namespace MediaCenterBlaster
       }
     }
 
-    static void RemoteHandlerCallback(string deviceName, string keyCode)
+    private static void RemoteHandlerCallback(string deviceName, string keyCode)
     {
       IrssLog.Info("Remote Event: {0}", keyCode);
     }
 
-    bool Configure()
+    private bool Configure()
     {
       SetupForm setup = new SetupForm();
 
       if (setup.ShowDialog() == DialogResult.OK)
       {
         SaveSettings();
-        
+
         return true;
       }
 
       return false;
     }
 
-    void ClickSetup(object sender, EventArgs e)
+    private void ClickSetup(object sender, EventArgs e)
     {
       IrssLog.Info("Setup");
 
@@ -1002,10 +1006,11 @@ namespace MediaCenterBlaster
         Thread.Sleep(500);
         Start();
       }
-      
+
       _inConfiguration = false;
     }
-    void ClickQuit(object sender, EventArgs e)
+
+    private void ClickQuit(object sender, EventArgs e)
     {
       IrssLog.Info("Quit");
 
@@ -1021,7 +1026,5 @@ namespace MediaCenterBlaster
     }
 
     #endregion Implementation
-
   }
-
 }

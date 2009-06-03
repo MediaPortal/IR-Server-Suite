@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -27,7 +27,7 @@ namespace TvEngine
 
     private void ExternalChannels_Load(object sender, EventArgs e)
     {
-      System.Collections.Generic.IList<TvDatabase.Card> cards = Card.ListAll();
+      IList<Card> cards = Card.ListAll();
 
       if (cards.Count == 0)
       {

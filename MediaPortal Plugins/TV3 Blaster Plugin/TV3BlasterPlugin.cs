@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -384,7 +384,7 @@ namespace TvEngine
     /// </summary>
     internal static void LoadExternalConfigs()
     {
-      System.Collections.Generic.IList<TvDatabase.Card> cards = Card.ListAll();
+      IList<Card> cards = Card.ListAll();
 
       if (cards.Count == 0)
       {

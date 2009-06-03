@@ -1,24 +1,21 @@
 using System;
+using System.Drawing;
+using System.Windows.Forms;
+using InputService.Plugin.Properties;
 #if TRACE
 using System.Diagnostics;
 #endif
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using System.Xml;
 
 namespace InputService.Plugin
 {
-
   /// <summary>
   /// IR Server Plugin for the receiving speech commands.
   /// </summary>
   public class SpeechReceiver : PluginBase, IRemoteReceiver, IConfigure
   {
-
     #region Constants
 
-    static readonly string ConfigurationFile =
+    private static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
       "\\IR Server Suite\\Input Service\\Speech Receiver.xml";
 
@@ -26,8 +23,7 @@ namespace InputService.Plugin
 
     #region Variables
 
-    RemoteHandler _remoteButtonHandler;
-
+    private RemoteHandler _remoteButtonHandler;
 
     #endregion Variables
 
@@ -37,27 +33,46 @@ namespace InputService.Plugin
     /// Name of the IR Server plugin.
     /// </summary>
     /// <value>The name.</value>
-    public override string Name         { get { return "Speech Receiver"; } }
+    public override string Name
+    {
+      get { return "Speech Receiver"; }
+    }
+
     /// <summary>
     /// IR Server plugin version.
     /// </summary>
     /// <value>The version.</value>
-    public override string Version      { get { return "1.4.2.0"; } }
+    public override string Version
+    {
+      get { return "1.4.2.0"; }
+    }
+
     /// <summary>
     /// The IR Server plugin's author.
     /// </summary>
     /// <value>The author.</value>
-    public override string Author       { get { return "and-81"; } }
+    public override string Author
+    {
+      get { return "and-81"; }
+    }
+
     /// <summary>
     /// A description of the IR Server plugin.
     /// </summary>
     /// <value>The description.</value>
-    public override string Description  { get { return "Support using voice commands to control IR Server Suite"; } }
+    public override string Description
+    {
+      get { return "Support using voice commands to control IR Server Suite"; }
+    }
+
     /// <summary>
     /// Gets a display icon for the plugin.
     /// </summary>
     /// <value>The icon.</value>
-    public override Icon DeviceIcon     { get { return Properties.Resources.Icon; } }
+    public override Icon DeviceIcon
+    {
+      get { return Resources.Icon; }
+    }
 
     /// <summary>
     /// Start the IR Server plugin.
@@ -65,26 +80,27 @@ namespace InputService.Plugin
     public override void Start()
     {
       LoadSettings();
-
     }
+
     /// <summary>
     /// Suspend the IR Server plugin when computer enters standby.
     /// </summary>
     public override void Suspend()
     {
     }
+
     /// <summary>
     /// Resume the IR Server plugin when the computer returns from standby.
     /// </summary>
     public override void Resume()
     {
     }
+
     /// <summary>
     /// Stop the IR Server plugin.
     /// </summary>
     public override void Stop()
     {
-
     }
 
     /// <summary>
@@ -92,7 +108,8 @@ namespace InputService.Plugin
     /// </summary>
     /// <param name="owner">The owner window to use for creating modal dialogs.</param>
     public void Configure(IWin32Window owner)
-    {/*
+    {
+/*
       LoadSettings();
 
       Setup setup = new Setup();
@@ -129,8 +146,9 @@ namespace InputService.Plugin
       set { _remoteButtonHandler = value; }
     }
 
-    void LoadSettings()
-    {/*
+    private void LoadSettings()
+    {
+/*
       XmlDocument doc = new XmlDocument();
 
       try { doc.Load(ConfigurationFile); }
@@ -154,8 +172,10 @@ namespace InputService.Plugin
       try { _led4 = bool.Parse(doc.DocumentElement.Attributes["LED4"].Value); }
       catch { }*/
     }
-    void SaveSettings()
-    {/*
+
+    private void SaveSettings()
+    {
+/*
       try
       {
         using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
@@ -192,7 +212,5 @@ namespace InputService.Plugin
     }
 
     #endregion Implementation
-
   }
-
 }
