@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8ADDE1CB-2D23-4AB1-88B1-A241C60C16BA}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -114,10 +114,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Abstract Remote Maps\iMon\Imon Front Panel.xml" />
-    <Content Include="Abstract Remote Maps\iMon\Imon PAD.xml" />
-    <Content Include="Abstract Remote Maps\iMon\Imon Volume Knob.xml" />
-    <Content Include="Abstract Remote Maps\iMon\Microsoft MCE.xml" />
+    <Content Include="Abstract Remote Maps\iMon USB\Imon Front Panel.xml" />
+    <Content Include="Abstract Remote Maps\iMon USB\Imon PAD.xml" />
+    <Content Include="Abstract Remote Maps\iMon USB\Imon Volume Knob.xml" />
+    <Content Include="Abstract Remote Maps\iMon USB\Microsoft MCE.xml" />
     <Content Include="Input Service.exe.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
