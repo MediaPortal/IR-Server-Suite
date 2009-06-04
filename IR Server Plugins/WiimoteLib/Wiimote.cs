@@ -178,9 +178,9 @@ namespace WiimoteLib
         // actually get the detail struct
         if (HIDImports.SetupDiGetDeviceInterfaceDetail(hDevInfo, ref diData, ref diDetail, size, out size, IntPtr.Zero))
         {
-#if TRACE
-					Trace.WriteLine(index + " " + diDetail.DevicePath + " " + Marshal.GetLastWin32Error());
-#endif
+//#if TRACE
+//          Trace.WriteLine(index + " " + diDetail.DevicePath + " " + Marshal.GetLastWin32Error());
+//#endif
 
           // open a read/write handle to our device using the DevicePath returned
           mHandle = HIDImports.CreateFile(diDetail.DevicePath, FileAccess.ReadWrite, FileShare.ReadWrite, IntPtr.Zero,
@@ -196,9 +196,9 @@ namespace WiimoteLib
             // if the vendor and product IDs match up
             if (attrib.VendorID == VID && attrib.ProductID == PID)
             {
-#if TRACE
-							Trace.WriteLine("Found it!");
-#endif
+//#if TRACE
+//              Trace.WriteLine("Found it!");
+//#endif
               found = true;
 
               // create a nice .NET FileStream wrapping the handle above
@@ -303,9 +303,9 @@ namespace WiimoteLib
       }
       catch (OperationCanceledException)
       {
-#if TRACE
-				Trace.WriteLine("OperationCanceledException");
-#endif
+//#if TRACE
+//        Trace.WriteLine("OperationCanceledException");
+//#endif
       }
     }
 
@@ -359,9 +359,9 @@ namespace WiimoteLib
 
           // extension connected?
           bool extension = (buff[3] & 0x02) != 0;
-#if TRACE
-					Trace.WriteLine("Extension: " + extension);
-#endif
+//#if TRACE
+//          Trace.WriteLine("Extension: " + extension);
+//#endif
 
           if (mWiimoteState.Extension != extension)
           {
@@ -389,9 +389,9 @@ namespace WiimoteLib
           ParseReadData(buff);
           break;
         default:
-#if TRACE
-					Trace.WriteLine("Unknown report type: " + type.ToString("x"));
-#endif
+//#if TRACE
+//          Trace.WriteLine("Unknown report type: " + type.ToString("x"));
+//#endif
           return false;
       }
 
