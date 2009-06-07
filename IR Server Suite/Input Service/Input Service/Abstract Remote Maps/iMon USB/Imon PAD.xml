@@ -1,4 +1,4 @@
-<?xml version="1.0" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <DocumentElement>
   <RemoteTable RawCode="1002" AbstractButton="Power" />
   <RemoteTable RawCode="1016" AbstractButton="Power2" />
@@ -29,9 +29,9 @@
   <RemoteTable RawCode="1214" AbstractButton="Number7" />
   <RemoteTable RawCode="1136" AbstractButton="Number8" />
   <RemoteTable RawCode="1160" AbstractButton="Number9" />
-  <RemoteTable RawCode="1034" AbstractButton="Enter" />
-  <RemoteTable RawCode="1096" AbstractButton="Hash" />
-  <RemoteTable RawCode="1056" AbstractButton="Star" />
+  <RemoteTable RawCode="1034" AbstractButton="OK" />
+  <RemoteTable RawCode="1096" AbstractButton="Imon" />
+  <RemoteTable RawCode="1056" AbstractButton="Imon" />
   <RemoteTable RawCode="1082" AbstractButton="Music" />
   <RemoteTable RawCode="1224" AbstractButton="Pictures" />
   <RemoteTable RawCode="1200" AbstractButton="Videos" />
@@ -39,15 +39,18 @@
   <RemoteTable RawCode="1040" AbstractButton="TV" />
   <RemoteTable RawCode="1106" AbstractButton="AspectRatio" />
   <RemoteTable RawCode="1086" AbstractButton="Eject" />
-  <RemoteTable RawCode="1166" AbstractButton="Fullscreen" /> 
+  <RemoteTable RawCode="1166" AbstractButton="Red" />
   <RemoteTable RawCode="1250" AbstractButton="Up" />
   <RemoteTable RawCode="1248" AbstractButton="Down" />
   <RemoteTable RawCode="1246" AbstractButton="Left" />
   <RemoteTable RawCode="1244" AbstractButton="Right" />
   <RemoteTable RawCode="1230" AbstractButton="Menu" />
-  <RemoteTable RawCode="1124" AbstractButton="Teletext" />
+  <RemoteTable RawCode="1074" AbstractButton="Yellow" />
+  <RemoteTable RawCode="1202" AbstractButton="Green" />
   <RemoteTable RawCode="1198" AbstractButton="Guide" />
   <RemoteTable RawCode="1150" AbstractButton="Home" />
   <RemoteTable RawCode="1226" AbstractButton="LeftClick" />
   <RemoteTable RawCode="1228" AbstractButton="RightClick" />
+  <RemoteTable RawCode="1060" AbstractButton="Info" />
+  <RemoteTable RawCode="1124" AbstractButton="Teletext" />
 </DocumentElement>
