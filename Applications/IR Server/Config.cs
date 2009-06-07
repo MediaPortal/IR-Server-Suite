@@ -7,9 +7,9 @@ using IrssUtils;
 using SourceGrid;
 using SourceGrid.Cells;
 using SourceGrid.Cells.Controllers;
-using Button=SourceGrid.Cells.Button;
-using CheckBox=SourceGrid.Cells.CheckBox;
-using ColumnHeader=SourceGrid.Cells.ColumnHeader;
+using Button = SourceGrid.Cells.Button;
+using CheckBox = SourceGrid.Cells.CheckBox;
+using ColumnHeader = SourceGrid.Cells.ColumnHeader;
 
 namespace IRServer
 {
@@ -195,8 +195,8 @@ namespace IRServer
 
     private void buttonClickEvent_Executed(object sender, EventArgs e)
     {
-      CellContext context = (CellContext) sender;
-      Button cell = (Button) context.Cell;
+      CellContext context = (CellContext)sender;
+      Button cell = (Button)context.Cell;
 
       try
       {
@@ -214,8 +214,8 @@ namespace IRServer
 
     private void TransmitChanged(object sender, EventArgs e)
     {
-      CellContext context = (CellContext) sender;
-      CheckBox cell = (CheckBox) context.Cell;
+      CellContext context = (CellContext)sender;
+      CheckBox cell = (CheckBox)context.Cell;
 
       if (cell.Checked != true)
         return;
@@ -234,8 +234,8 @@ namespace IRServer
 
     private void PluginDoubleClick(object sender, EventArgs e)
     {
-      CellContext context = (CellContext) sender;
-      Cell cell = (Cell) context.Cell;
+      CellContext context = (CellContext)sender;
+      Cell cell = (Cell)context.Cell;
 
       CheckBox checkBoxReceive = gridPlugins[cell.Row.Index, ColReceive] as CheckBox;
       if (checkBoxReceive != null)
@@ -388,6 +388,7 @@ namespace IRServer
         {
           PluginBase plugin = gridPlugins.Rows[row].Tag as PluginBase;
 
+          IrssLog.Info("Checking: {0}", plugin.Name);
           bool detected = plugin.Detect();
 
           if (detected)
