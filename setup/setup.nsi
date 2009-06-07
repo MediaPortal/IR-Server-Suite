@@ -26,6 +26,9 @@
 ;!define svn_InstallScripts "${svn_ROOT_IRSS}\setup\CommonNSIS"
 !define svn_InstallScripts "."
 
+!define svn_IRSS "..\IR Server Suite"
+!define svn_MPplugins "..\MediaPortal Plugins"
+
 
 #---------------------------------------------------------------------------
 # DEFINES
@@ -69,8 +72,10 @@ SetCompressor /SOLID /FINAL lzma
 # VARIABLES
 #---------------------------------------------------------------------------
 Var DIR_INSTALL
+!ifdef MPplugins
 Var DIR_MEDIAPORTAL
 Var DIR_TVSERVER
+!endif
 
 Var PREVIOUS_INSTALLDIR
 Var PREVIOUS_VERSION
@@ -92,7 +97,19 @@ Var frominstall
 !include Memento.nsh
 !include WinVer.nsh
 
-!include "include\*"
+
+
+!include "include\DumpLog.nsh"
+;!include "include\FileAssociation.nsh"
+!include "include\IrssSystemRegistry.nsh"
+!include "include\LanguageMacros.nsh"
+!include "include\LoggingMacros.nsh"
+!ifdef MPplugins
+!include "include\MediaPortalDirectories.nsh"
+!endif
+!include "include\MediaPortalMacros.nsh"
+!include "include\ProcessMacros.nsh"
+!include "include\WinVerEx.nsh"
 
 !include pages\AddRemovePage.nsh
 !include pages\ServerServiceMode.nsh
@@ -143,7 +160,7 @@ BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 # INSTALLER INTERFACE
 #---------------------------------------------------------------------------
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "..\Documentation\LICENSE.GPL"
+!insertmacro MUI_PAGE_LICENSE "${svn_IRSS}\Documentation\LICENSE.GPL"
 
 Page custom PageReinstallMode PageLeaveReinstallMode
 
@@ -207,6 +224,7 @@ Page custom PageServerServiceMode PageLeaveServerServiceMode
   ; List all of your components in following manner here.
   !insertmacro "${MacroName}" "SectionInputService"
 
+!ifdef MPplugins
   !insertmacro "${MacroName}" "SectionMPCommon"
     !insertmacro "${MacroName}" "SectionMPControlPlugin"
     !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
@@ -216,6 +234,7 @@ Page custom PageServerServiceMode PageLeaveServerServiceMode
     !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
 
 ;  !insertmacro "${MacroName}" "SectionMCEBlaster"
+!endif
 
   #SectionGroupTools
   !insertmacro "${MacroName}" "SectionAbstractor"
@@ -290,7 +309,7 @@ Section "-Core"
 
   ; Create app data directories
   SetOutPath "$DIR_INSTALL"
-  File "..\Documentation\${PRODUCT_NAME}.chm"
+  File "${svn_IRSS}\Documentation\${PRODUCT_NAME}.chm"
 
   
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
@@ -304,7 +323,7 @@ Section "-Core"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
   SetOverwrite ifnewer
-  File /r /x .svn "..\Set Top Boxes\*.*"
+  File /r /x .svn "${svn_IRSS}\Set Top Boxes\*.*"
   SetOverwrite on
 
 
@@ -329,60 +348,59 @@ ${MementoSection} "Input Service" SectionInputService
   ;ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
 
 
-
   ${LOG_TEXT} "INFO" "Installing Input Service..."
   SetOutPath "$DIR_INSTALL\Input Service"
-  File "..\Input Service\Input Service\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Input Service\Input Service\bin\${Build_Type}\*.*"
 
   ${LOG_TEXT} "INFO" "Installing Input Service Configuration..."
   SetOutPath "$DIR_INSTALL\Input Service Configuration"
-  File "..\Input Service\Input Service Configuration\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Input Service\Input Service Configuration\bin\${Build_Type}\*.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server..."
   SetOutPath "$DIR_INSTALL\Input Service"
-  File "..\Applications\IR Server\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\IR Server\bin\${Build_Type}\*.*"
 
 
   ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
   SetOutPath "$DIR_INSTALL\IR Server Plugins"
 
-  File "..\IR Server Plugins\Ads Tech PTV-335 Receiver\bin\${Build_Type}\Ads Tech PTV-335 Receiver.*"
-  File "..\IR Server Plugins\CoolCommand Receiver\bin\${Build_Type}\CoolCommand Receiver.*"
-  File "..\IR Server Plugins\Custom HID Receiver\bin\${Build_Type}\Custom HID Receiver.*"
-  File "..\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Direct Input Receiver.*"
-  File "..\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Microsoft.DirectX.DirectInput.dll"
-  File "..\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Microsoft.DirectX.dll"
-  File "..\IR Server Plugins\FusionRemote Receiver\bin\${Build_Type}\FusionRemote Receiver.*"
-  File "..\IR Server Plugins\Girder Plugin\bin\${Build_Type}\Girder Plugin.*"
-  File "..\IR Server Plugins\HCW Receiver\bin\${Build_Type}\HCW Receiver.*"
-  File "..\IR Server Plugins\IgorPlug Receiver\bin\${Build_Type}\IgorPlug Receiver.*"
-  ;File "..\IR Server Plugins\Imon Receiver\bin\${Build_Type}\Imon Receiver.*"
-  File "..\IR Server Plugins\Imon USB Receivers\bin\${Build_Type}\Imon USB Receivers.*"
-  ;File "..\IR Server Plugins\IR501 Receiver\bin\${Build_Type}\IR501 Receiver.*"
-  File "..\IR Server Plugins\IR507 Receiver\bin\${Build_Type}\IR507 Receiver.*"
-  ;File "..\IR Server Plugins\Ira Transceiver\bin\${Build_Type}\Ira Transceiver.*"
-  File "..\IR Server Plugins\IRMan Receiver\bin\${Build_Type}\IRMan Receiver.*"
-  File "..\IR Server Plugins\IRTrans Transceiver\bin\${Build_Type}\IRTrans Transceiver.*"
-  ;File "..\IR Server Plugins\Keyboard Input\bin\${Build_Type}\Keyboard Input.*"
-  File "..\IR Server Plugins\LiveDrive Receiver\bin\${Build_Type}\LiveDrive Receiver.*"
-  File "..\IR Server Plugins\MacMini Receiver\bin\${Build_Type}\MacMini Receiver.*"
-  File "..\IR Server Plugins\Microsoft MCE Transceiver\bin\${Build_Type}\Microsoft MCE Transceiver.*"
-  File "..\IR Server Plugins\Pinnacle Serial Receiver\bin\${Build_Type}\Pinnacle Serial Receiver.*"
-  ;File "..\IR Server Plugins\RC102 Receiver\bin\${Build_Type}\RC102 Receiver.*"
-  File "..\IR Server Plugins\RedEye Blaster\bin\${Build_Type}\RedEye Blaster.*"
-  File "..\IR Server Plugins\Serial IR Blaster\bin\${Build_Type}\Serial IR Blaster.*"
-  ;File "..\IR Server Plugins\Speech Receiver\bin\${Build_Type}\Speech Receiver.*"
-  File "..\IR Server Plugins\Technotrend Receiver\bin\${Build_Type}\Technotrend Receiver.*"
-  File "..\IR Server Plugins\Technotrend Receiver\bin\${Build_Type}\ttBdaDrvApi_Dll.dll"
-  ;File "..\IR Server Plugins\Tira Transceiver\bin\${Build_Type}\Tira Transceiver.*"
-  File "..\IR Server Plugins\USB-UIRT Transceiver\bin\${Build_Type}\USB-UIRT Transceiver.*"
-  File "..\IR Server Plugins\Wii Remote Receiver\bin\${Build_Type}\Wii Remote Receiver.*"
-  File "..\IR Server Plugins\WiimoteLib\bin\${Build_Type}\WiimoteLib.*"
-  File "..\IR Server Plugins\Windows Message Receiver\bin\${Build_Type}\Windows Message Receiver.*"
-  File "..\IR Server Plugins\WinLirc Transceiver\bin\${Build_Type}\WinLirc Transceiver.*"
-  File "..\IR Server Plugins\X10 Transceiver\bin\${Build_Type}\X10 Transceiver.*"
-  File "..\IR Server Plugins\X10 Transceiver\bin\${Build_Type}\Interop.X10.dll"
-  File "..\IR Server Plugins\XBCDRC Receiver\bin\${Build_Type}\XBCDRC Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Ads Tech PTV-335 Receiver\bin\${Build_Type}\Ads Tech PTV-335 Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\CoolCommand Receiver\bin\${Build_Type}\CoolCommand Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Custom HID Receiver\bin\${Build_Type}\Custom HID Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Direct Input Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Microsoft.DirectX.DirectInput.dll"
+  File "${svn_IRSS}\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Microsoft.DirectX.dll"
+  File "${svn_IRSS}\IR Server Plugins\FusionRemote Receiver\bin\${Build_Type}\FusionRemote Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Girder Plugin\bin\${Build_Type}\Girder Plugin.*"
+  File "${svn_IRSS}\IR Server Plugins\HCW Receiver\bin\${Build_Type}\HCW Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\IgorPlug Receiver\bin\${Build_Type}\IgorPlug Receiver.*"
+  ;File "${svn_IRSS}\IR Server Plugins\Imon Receiver\bin\${Build_Type}\Imon Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Imon USB Receivers\bin\${Build_Type}\Imon USB Receivers.*"
+  ;File "${svn_IRSS}\IR Server Plugins\IR501 Receiver\bin\${Build_Type}\IR501 Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\IR507 Receiver\bin\${Build_Type}\IR507 Receiver.*"
+  ;File "${svn_IRSS}\IR Server Plugins\Ira Transceiver\bin\${Build_Type}\Ira Transceiver.*"
+  File "${svn_IRSS}\IR Server Plugins\IRMan Receiver\bin\${Build_Type}\IRMan Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\IRTrans Transceiver\bin\${Build_Type}\IRTrans Transceiver.*"
+  ;File "${svn_IRSS}\IR Server Plugins\Keyboard Input\bin\${Build_Type}\Keyboard Input.*"
+  File "${svn_IRSS}\IR Server Plugins\LiveDrive Receiver\bin\${Build_Type}\LiveDrive Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\MacMini Receiver\bin\${Build_Type}\MacMini Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Microsoft MCE Transceiver\bin\${Build_Type}\Microsoft MCE Transceiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Pinnacle Serial Receiver\bin\${Build_Type}\Pinnacle Serial Receiver.*"
+  ;File "${svn_IRSS}\IR Server Plugins\RC102 Receiver\bin\${Build_Type}\RC102 Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\RedEye Blaster\bin\${Build_Type}\RedEye Blaster.*"
+  File "${svn_IRSS}\IR Server Plugins\Serial IR Blaster\bin\${Build_Type}\Serial IR Blaster.*"
+  ;File "${svn_IRSS}\IR Server Plugins\Speech Receiver\bin\${Build_Type}\Speech Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Technotrend Receiver\bin\${Build_Type}\Technotrend Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Technotrend Receiver\bin\${Build_Type}\ttBdaDrvApi_Dll.dll"
+  ;File "${svn_IRSS}\IR Server Plugins\Tira Transceiver\bin\${Build_Type}\Tira Transceiver.*"
+  File "${svn_IRSS}\IR Server Plugins\USB-UIRT Transceiver\bin\${Build_Type}\USB-UIRT Transceiver.*"
+  File "${svn_IRSS}\IR Server Plugins\Wii Remote Receiver\bin\${Build_Type}\Wii Remote Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\WiimoteLib\bin\${Build_Type}\WiimoteLib.*"
+  File "${svn_IRSS}\IR Server Plugins\Windows Message Receiver\bin\${Build_Type}\Windows Message Receiver.*"
+  File "${svn_IRSS}\IR Server Plugins\WinLirc Transceiver\bin\${Build_Type}\WinLirc Transceiver.*"
+  File "${svn_IRSS}\IR Server Plugins\X10 Transceiver\bin\${Build_Type}\X10 Transceiver.*"
+  File "${svn_IRSS}\IR Server Plugins\X10 Transceiver\bin\${Build_Type}\Interop.X10.dll"
+  File "${svn_IRSS}\IR Server Plugins\XBCDRC Receiver\bin\${Build_Type}\XBCDRC Receiver.*"
 
   ; Create App Data Folder for IR Server configuration files
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service"
@@ -390,8 +408,8 @@ ${MementoSection} "Input Service" SectionInputService
   ; Copy Abstract Remote maps
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
   SetOverwrite ifnewer
-  File /r /x .svn "..\Input Service\Input Service\Abstract Remote Maps\*.*"
-  File "..\Input Service\Input Service\RemoteTable.xsd"
+  File /r /x .svn "${svn_IRSS}\Input Service\Input Service\Abstract Remote Maps\*.*"
+  File "${svn_IRSS}\Input Service\Input Service\RemoteTable.xsd"
   SetOverwrite on
 
   ; Create start menu shortcut
@@ -430,6 +448,8 @@ ${MementoSectionEnd}
 
 ;======================================
 
+!ifdef MPplugins
+
 SectionGroup "MediaPortal plugins" SectionGroupMP
 
 Section "-commonMP" SectionMPCommon
@@ -439,15 +459,15 @@ Section "-commonMP" SectionMPCommon
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
-  File "..\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
-  File "..\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
-  File "..\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
+  File "${svn_MPplugins}\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
+  File "${svn_IRSS}\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
+  File "${svn_IRSS}\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Windows"
-  File "..\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
-  File "..\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
-  File "..\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
+  File "${svn_MPplugins}\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
+  File "${svn_IRSS}\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
+  File "${svn_IRSS}\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
 SectionEnd
 !macro Remove_${SectionMPCommon}
   ${LOG_TEXT} "INFO" "Removing common files for MediaPortal plugins..."
@@ -470,17 +490,17 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
-  File "..\MediaPortal Plugins\MP Control Plugin\bin\${Build_Type}\MPControlPlugin.*"
+  File "${svn_MPplugins}\MediaPortal Plugins\MP Control Plugin\bin\${Build_Type}\MPControlPlugin.*"
 
   ; Write input mapping
   SetOutPath "$MPdir.CustomInputDefault"
-  File "..\MediaPortal Plugins\MP Control Plugin\InputMapping\MPControlPlugin.xml"
+  File "${svn_MPplugins}\MediaPortal Plugins\MP Control Plugin\InputMapping\MPControlPlugin.xml"
 
   ; Write app data
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Control Plugin"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\MP Control Plugin"
   SetOverwrite ifnewer
-  File /r /x .svn "..\MediaPortal Plugins\MP Control Plugin\AppData\*.*"
+  File /r /x .svn "${svn_MPplugins}\MediaPortal Plugins\MP Control Plugin\AppData\*.*"
   SetOverwrite on
 
   ; Create Macro folder
@@ -503,21 +523,21 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Windows"
-  File "..\MediaPortal Plugins\MP Blast Zone Plugin\bin\${Build_Type}\MPBlastZonePlugin.*"
+  File "${svn_MPplugins}\MediaPortal Plugins\MP Blast Zone Plugin\bin\${Build_Type}\MPBlastZonePlugin.*"
 
   ; Write app data
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin"
   SetOutPath "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin"
   SetOverwrite off
-  File "..\MediaPortal Plugins\MP Blast Zone Plugin\AppData\Menu.xml"
+  File "${svn_MPplugins}\MediaPortal Plugins\MP Blast Zone Plugin\AppData\Menu.xml"
   SetOverwrite on
 
   ; Write skin files
   SetOutPath "$MPdir.Skin\Blue3"
-  File /r /x .svn "..\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
+  File /r /x .svn "${svn_MPplugins}\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   SetOutPath "$MPdir.Skin\Blue3wide"
-  File /r /x .svn "..\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
+  File /r /x .svn "${svn_MPplugins}\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   ; Create Macro folder
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin\Macro"
@@ -536,7 +556,7 @@ ${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
-  File "..\MediaPortal Plugins\TV2 Blaster Plugin\bin\${Build_Type}\TV2BlasterPlugin.*"
+  File "${svn_MPplugins}\MediaPortal Plugins\TV2 Blaster Plugin\bin\${Build_Type}\TV2BlasterPlugin.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV2 Blaster Plugin"
@@ -587,9 +607,9 @@ Section "-commonTV3" SectionTV3Common
 
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
-  File "..\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
-  File "..\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
-  File "..\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
+  File "${svn_MPplugins}\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
+  File "${svn_IRSS}\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
+  File "${svn_IRSS}\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
 SectionEnd
 !macro Remove_${SectionTV3Common}
   ${If} ${FileExists} "$DIR_TVSERVER\Plugins\MPUtils.*"
@@ -614,7 +634,7 @@ ${MementoSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
 
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
-  File "..\MediaPortal Plugins\TV3 Blaster Plugin\bin\${Build_Type}\TV3BlasterPlugin.*"
+  File "${svn_MPplugins}\MediaPortal Plugins\TV3 Blaster Plugin\bin\${Build_Type}\TV3BlasterPlugin.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV3 Blaster Plugin"
@@ -650,7 +670,7 @@ ${MementoUnselectedSection} "Media Center Blaster (experimental)" SectionMCEBlas
   ; Installing Translator
   CreateDirectory "$DIR_INSTALL\Media Center Blaster"
   SetOutPath "$DIR_INSTALL\Media Center Blaster"
-  File "..\Applications\Media Center Blaster\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\Media Center Blaster\bin\${Build_Type}\*.*"
 
   ; Create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Media Center Blaster"
@@ -681,6 +701,8 @@ SectionGroupEnd
 ;======================================
 */
 
+!endif
+
 SectionGroup "Tools" SectionGroupTools
 
 ${MementoSection} "Abstractor" SectionAbstractor
@@ -689,7 +711,7 @@ ${MementoSection} "Abstractor" SectionAbstractor
 
   ; install files
   SetOutPath "$DIR_INSTALL\Abstractor"
-  File "..\Applications\Abstractor\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\Abstractor\bin\${Build_Type}\*.*"
 
   ; create start menu shortcuts
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk" "$DIR_INSTALL\Abstractor\Abstractor.exe" "" "$DIR_INSTALL\Abstractor\Abstractor.exe" 0
@@ -714,7 +736,7 @@ ${MementoSection} "Debug Client" SectionDebugClient
 
   ; install files
   SetOutPath "$DIR_INSTALL\Debug Client"
-  File "..\Applications\Debug Client\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\Debug Client\bin\${Build_Type}\*.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Debug Client"
@@ -742,7 +764,7 @@ ${MementoSection} "IR File Tool" SectionIRFileTool
 
   ; install files
   SetOutPath "$DIR_INSTALL\IR File Tool"
-  File "..\Applications\IR File Tool\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\IR File Tool\bin\${Build_Type}\*.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR File Tool"
@@ -770,7 +792,7 @@ ${MementoSection} "Keyboard Input Relay" SectionKeyboardInputRelay
 
   ; install files
   SetOutPath "$DIR_INSTALL\Keyboard Input Relay"
-  File "..\Applications\Keyboard Input Relay\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\Keyboard Input Relay\bin\${Build_Type}\*.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
@@ -801,7 +823,7 @@ ${MementoSection} "Translator" SectionTranslator
 
   ; install files
   SetOutPath "$DIR_INSTALL\Translator"
-  File "..\Applications\Translator\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\Translator\bin\${Build_Type}\*.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator"
@@ -810,7 +832,7 @@ ${MementoSection} "Translator" SectionTranslator
 
   ; Copy in default settings files  
   SetOutPath "$APPDATA\${PRODUCT_NAME}\Translator\Default Settings"
-  File "..\Applications\Translator\Default Settings\*.xml"
+  File "${svn_IRSS}\Applications\Translator\Default Settings\*.xml"
 
   ; create start menu shortcuts
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator\Translator.exe" "" "$DIR_INSTALL\Translator\Translator.exe" 0
@@ -838,7 +860,7 @@ ${MementoSection} "Tray Launcher" SectionTrayLauncher
 
   ; install files
   SetOutPath "$DIR_INSTALL\Tray Launcher"
-  File "..\Applications\Tray Launcher\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\Tray Launcher\bin\${Build_Type}\*.*"
 
   ; create start menu shortcuts
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe" "" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe" 0
@@ -868,19 +890,19 @@ ${MementoSection} "Virtual Remote" SectionVirtualRemote
 
   ; Installing Virtual Remote and Web Remote
   SetOutPath "$DIR_INSTALL\Virtual Remote"
-  File "..\Applications\Virtual Remote\bin\${Build_Type}\*.*"
-  File "..\Applications\Web Remote\bin\${Build_Type}\WebRemote.*"
-  File "..\Applications\Virtual Remote Skin Editor\bin\${Build_Type}\VirtualRemoteSkinEditor.*"
+  File "${svn_IRSS}\Applications\Virtual Remote\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\Web Remote\bin\${Build_Type}\WebRemote.*"
+  File "${svn_IRSS}\Applications\Virtual Remote Skin Editor\bin\${Build_Type}\VirtualRemoteSkinEditor.*"
 
   ; Installing skins
   SetOutPath "$DIR_INSTALL\Virtual Remote\Skins"
-  File "..\Applications\Virtual Remote\Skins\*.*"
+  File "${svn_IRSS}\Applications\Virtual Remote\Skins\*.*"
 
   ; Installing Virtual Remote for Smart Devices
   SetOutPath "$DIR_INSTALL\Virtual Remote\Smart Devices"
-  File "..\Applications\Virtual Remote (PocketPC2003) Installer\${Build_Type}\*.cab"
-  File "..\Applications\Virtual Remote (Smartphone2003) Installer\${Build_Type}\*.cab"
-  File "..\Applications\Virtual Remote (WinCE5) Installer\${Build_Type}\*.cab"
+  File "${svn_IRSS}\Applications\Virtual Remote (PocketPC2003) Installer\${Build_Type}\*.cab"
+  File "${svn_IRSS}\Applications\Virtual Remote (Smartphone2003) Installer\${Build_Type}\*.cab"
+  File "${svn_IRSS}\Applications\Virtual Remote (WinCE5) Installer\${Build_Type}\*.cab"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Virtual Remote"
@@ -919,8 +941,8 @@ ${MementoSection} "IR Blast" SectionIRBlast
 
   ; install files
   SetOutPath "$DIR_INSTALL\IR Blast"
-  File "..\Applications\IR Blast (No Window)\bin\${Build_Type}\*.*"
-  File "..\Applications\IR Blast\bin\${Build_Type}\IRBlast.exe"
+  File "${svn_IRSS}\Applications\IR Blast (No Window)\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\IR Blast\bin\${Build_Type}\IRBlast.exe"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRBlast}
@@ -937,7 +959,7 @@ ${MementoSection} "Dreambox Tuner" SectionDboxTuner
 
   ; install files
   SetOutPath "$DIR_INSTALL\Dbox Tuner"
-  File "..\Applications\Dbox Tuner\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\Dbox Tuner\bin\${Build_Type}\*.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Dbox Tuner"
@@ -957,7 +979,7 @@ ${MementoSection} "Hauppauge PVR Tuner" SectionHcwPvrTuner
 
   ; install files
   SetOutPath "$DIR_INSTALL\HCW PVR Tuner"
-  File "..\Applications\HCW PVR Tuner\bin\${Build_Type}\*.*"
+  File "${svn_IRSS}\Applications\HCW PVR Tuner\bin\${Build_Type}\*.*"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionHcwPvrTuner}
@@ -984,8 +1006,10 @@ Section "-Complete"
   ;writes component status to registry
   ${MementoSectionSave}
 
+!ifdef MPplugins
   ; start tvservice, if it was closed before
   !insertmacro StartTVService
+!endif
 
   ; Use the all users context
   SetShellVarContext all
@@ -1008,8 +1032,10 @@ Section "-Complete"
 
   ; Write the installation paths into the registry
   WriteRegStr HKLM "Software\${PRODUCT_NAME}" "Install_Dir" "$DIR_INSTALL"
+!ifdef MPplugins
   WriteRegStr HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir" "$DIR_MEDIAPORTAL"
   WriteRegStr HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir" "$DIR_TVSERVER"
+!endif
 
   ; Write the product version into the registry
   WriteRegDWORD HKLM "${REG_UNINSTALL}" "VersionMajor"    "${VER_MAJOR}"
@@ -1047,8 +1073,10 @@ Section "Uninstall"
   ; First removes all optional components
   !insertmacro SectionList "RemoveSection"
 
+!ifdef MPplugins
   ; start tvservice, if it was closed before
   !insertmacro StartTVService
+!endif
 
   ; do not remove anything in appdata
   ;DetailPrint "Removing Set Top Box presets ..."
@@ -1076,6 +1104,7 @@ SectionEnd
 #---------------------------------------------------------------------------
 # SOME MACROS AND FUNCTIONS
 #---------------------------------------------------------------------------
+!ifdef MPplugins
 !macro GetMediaPortalPaths
 
   ${If} ${RunningX64}
@@ -1098,6 +1127,7 @@ SectionEnd
   ${Endif}
 
 !macroend
+!endif
 
 Function ReadPreviousSettings
   ${If} ${RunningX64}
@@ -1110,9 +1140,11 @@ Function ReadPreviousSettings
 
   ; read previous used directories
   ReadRegStr $PREVIOUS_INSTALLDIR HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
+!ifdef MPplugins
   #ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
   #ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
   !insertmacro GetMediaPortalPaths    ; if not installed, path == ""
+!endif
   
   ; read previous settings
   ReadRegStr $PREVIOUS_ServerServiceMode HKLM "${REG_UNINSTALL}" "ServerServiceMode"
@@ -1138,6 +1170,7 @@ Function LoadPreviousSettings
   ; reset previous component selection from registry
   ${MementoSectionRestore}
 
+!ifdef MPplugins
   ; set sections, according to possible selections
   ${If} "$DIR_MEDIAPORTAL" != ""
     !insertmacro EnableSection "${SectionMPControlPlugin}" "MP Control Plugin"
@@ -1158,6 +1191,7 @@ Function LoadPreviousSettings
     !insertmacro DisableSection "${SectionTV3BlasterPlugin}" "TV Server Blaster Plugin" " "
     !insertmacro DisableSection "${SectionGroupTV3}" "TV Server plugins" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
   ${Endif}
+!endif
 
   ; update component selection
   Call .onSelChange
@@ -1200,6 +1234,7 @@ FunctionEnd
 
 Function .onSelChange
 
+!ifdef MPplugins
   ; disable/remove common files for MediaPortal plugins if all MediaPortal plugins are unselected
   ${IfNot} ${SectionIsSelected} ${SectionMPControlPlugin}
   ${AndIfNot} ${SectionIsSelected} ${SectionMPBlastZonePlugin}
@@ -1215,6 +1250,7 @@ Function .onSelChange
   ${Else}
     !insertmacro SelectSection ${SectionTV3Common}
   ${EndIf}
+!endif
 
 FunctionEnd
 
@@ -1300,9 +1336,11 @@ FunctionEnd
 Function un.onInit
 
   ReadRegStr $PREVIOUS_INSTALLDIR HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
+!ifdef MPplugins
   ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
   ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
   ${un.ReadMediaPortalDirs} $DIR_MEDIAPORTAL
+!endif
 
   ${un.InitCommandlineParameter}
   ${un.ReadCommandlineParameter} "frominstall"
@@ -1342,6 +1380,8 @@ FunctionEnd
 #---------------------------------------------------------------------------
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionInputService}        "$(DESC_SectionInputService)"
+
+!ifdef MPplugins
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMP}             "$(DESC_SectionGroupMP)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPControlPlugin}     "$(DESC_SectionMPControlPlugin)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPBlastZonePlugin}   "$(DESC_SectionMPBlastZonePlugin)"
@@ -1350,6 +1390,8 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMCE}            "$(DESC_SectionGroupMCE)"
 ;    !insertmacro MUI_DESCRIPTION_TEXT ${SectionMCEBlaster}          "$(DESC_SectionMCEBlaster)"
+!endif
+
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator}          "$(DESC_SectionTranslator)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher}        "$(DESC_SectionTrayLauncher)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote}       "$(DESC_SectionVirtualRemote)"
