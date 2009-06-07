@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{966281F9-3898-4CB7-9940-99D49C21F170}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -41,15 +41,21 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Core, Version=0.2.3.0, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="CommandBase, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Core.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\IR Server Suite\Commands\Command\bin\Release\CommandBase.dll</HintPath>
     </Reference>
-    <Reference Include="Dialogs, Version=0.2.3.0, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="Core, Version=1.0.2.20620, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\plugins\Windows\Dialogs.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Core\bin\Release\Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Dialogs, Version=1.0.2.20629, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Dialogs\bin\Release\Dialogs.dll</HintPath>
+    </Reference>
+    <Reference Include="IrssUtils, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IR Server Suite\Common\IrssUtils\bin\Release\IrssUtils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -58,8 +64,12 @@
     <Reference Include="System.Xml" />
     <Reference Include="Utils, Version=2.2.4.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Utils.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Utils\bin\Release\Utils.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="VariableList, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IR Server Suite\Commands\VariableList\bin\Release\VariableList.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -99,23 +109,6 @@
       <DependentUpon>EditPopup.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
-      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
-      <Name>IrssUtils</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Command\Command.csproj">
-      <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
-      <Name>Command</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\VariableList\VariableList.csproj">
-      <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
-      <Name>VariableList</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\EditSendMessage.resx">

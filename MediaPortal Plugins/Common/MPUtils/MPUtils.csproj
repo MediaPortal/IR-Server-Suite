@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -45,13 +45,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Core, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Core\bin\Release\Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="Dialogs, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\plugins\windows\Dialogs.DLL</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Dialogs\bin\Release\Dialogs.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -61,7 +61,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Utils, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Utils.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Utils\bin\Release\Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

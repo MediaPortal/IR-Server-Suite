@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -83,18 +83,26 @@
   <ItemGroup>
     <Reference Include="Core, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Core\bin\Release\Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Databases, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Databases.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Databases\bin\Release\Databases.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Dialogs, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\plugins\windows\Dialogs.DLL</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Dialogs\bin\Release\Dialogs.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="IrssComms, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IR Server Suite\Common\IrssComms\bin\Release\IrssComms.dll</HintPath>
+    </Reference>
+    <Reference Include="IrssUtils, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IR Server Suite\Common\IrssUtils\bin\Release\IrssUtils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -102,16 +110,16 @@
     <Reference Include="System.Xml" />
     <Reference Include="TVCapture, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\TvEngine2\Core\TvCapture\bin\Release\TVCapture.DLL</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine2\Core\TVCapture\bin\Release\TVCapture.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="TVCapture-Databases, Version=1.0.2.22074, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="TVCapture-Databases, Version=1.0.2.35455, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\MediaPortal\trunk\TvEngine2\Core\Databases\bin\Release\TVCapture-Databases.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine2\Core\Databases\bin\Release\TVCapture-Databases.dll</HintPath>
     </Reference>
     <Reference Include="Utils, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Utils.DLL</HintPath>
+      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Utils\bin\Release\Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -138,14 +146,6 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">
-      <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
-      <Name>IrssComms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\irssUtils\IrssUtils.csproj">
-      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
-      <Name>IrssUtils</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Common\MPUtils\MPUtils.csproj">
       <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
       <Name>MPUtils</Name>
