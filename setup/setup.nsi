@@ -81,6 +81,9 @@ Var PREVIOUS_VERSION
 Var PREVIOUS_VERSION_STATE
 Var EXPRESS_UPDATE
 
+Var AutoRunTranslator
+Var AutoRunTrayLauncher
+
 Var frominstall
 
 
@@ -836,6 +839,11 @@ ${MementoSection} "Translator" SectionTranslator
   ; create start menu shortcuts
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator\Translator.exe" "" "$DIR_INSTALL\Translator\Translator.exe" 0
 
+
+  ; check if Translator is an autorun app
+  ${If} $AutoRunTranslator == 1
+    !insertmacro SetAutoRun "Translator" "$DIR_INSTALL\Translator\Translator.exe"
+  ${EndIf}
 ${MementoSectionEnd}
 !macro Remove_${SectionTranslator}
   ${LOG_TEXT} "INFO" "Removing Translator..."
@@ -864,6 +872,11 @@ ${MementoSection} "Tray Launcher" SectionTrayLauncher
   ; create start menu shortcuts
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe" "" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe" 0
 
+
+  ; check if TrayLauncher is an autorun app
+  ${If} $AutoRunTrayLauncher == 1
+    !insertmacro SetAutoRun "Tray Launcher" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe"
+  ${EndIf}
 ${MementoSectionEnd}
 !macro Remove_${SectionTrayLauncher}
   ${LOG_TEXT} "INFO" "Removing Tray Launcher..."
@@ -1147,6 +1160,21 @@ Function ReadPreviousSettings
   
   ; read previous settings
   ReadRegStr $PREVIOUS_ServerServiceMode HKLM "${REG_UNINSTALL}" "ServerServiceMode"
+
+
+  ; check if Translator is an autorun app
+  ${If} ${IsAutoRun} "Translator"
+    StrCpy $AutoRunTranslator 1
+  ${Else}
+    StrCpy $AutoRunTranslator 0
+  ${EndIf}
+
+  ; check if TrayLauncher is an autorun app
+  ${If} ${IsAutoRun} "Tray Launcher"
+    StrCpy $AutoRunTrayLauncher 1
+  ${Else}
+    StrCpy $AutoRunTrayLauncher 0
+  ${EndIf}
 FunctionEnd
 
 Function LoadPreviousSettings

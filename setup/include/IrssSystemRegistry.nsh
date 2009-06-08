@@ -37,4 +37,16 @@
   WriteRegStr ${AutoRunPath} '${name}' ''
 !macroend
 
+!macro GetAutoRun name variable
+  ReadRegStr ${variable} ${AutoRunPath} '${name}'
+!macroend
+
+!macro _IsAutoRun _a _b _t _f
+  !insertmacro _LOGICLIB_TEMP
+
+  !insertmacro GetAutoRun `${_b}` $_LOGICLIB_TEMP
+  IfFileExists $_LOGICLIB_TEMP `${_t}` `${_f}`
+!macroend
+!define IsAutoRun `"" IsAutoRun`
+
 !endif # !IrssSystemRegistry_INCLUDED
