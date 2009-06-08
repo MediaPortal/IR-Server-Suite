@@ -54,7 +54,7 @@ echo Reverting assemblies...
 echo.
 echo Reading the svn revision...
 echo $WCREV$>template.txt
-"%ProgramDir%\TortoiseSVN\bin\SubWCRev.exe" "." template.txt version.txt >> %LOG%
+"%ProgramFiles%\TortoiseSVN\bin\SubWCRev.exe" "." template.txt version.txt >> %LOG%
 SET /p version=<version.txt >> %LOG%
 DEL template.txt >> %LOG%
 DEL version.txt >> %LOG%
