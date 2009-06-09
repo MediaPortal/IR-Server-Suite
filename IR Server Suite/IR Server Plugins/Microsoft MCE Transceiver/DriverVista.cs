@@ -331,6 +331,12 @@ namespace InputService.Plugin
     private const int PacketTimeout = 100;
     //private const int WriteSyncTimeout = 10000;
 
+    const int ReadThreadTimeout = 200;
+    const int MaxReadThreadTries = 10;
+
+    const int ErrorBadCommand = 22;
+    const int ErrorOperationAborted = 995;
+
     #endregion Constants
 
     #region Variables
@@ -353,6 +359,8 @@ namespace InputService.Plugin
 
     private Thread _readThread;
     private ReadThreadMode _readThreadMode;
+	private ReadThreadMode _readThreadModeNext;
+	private bool _deviceReceiveStarted;
 
     #endregion Variables
 
@@ -590,17 +598,43 @@ namespace InputService.Plugin
 
           if (!deviceIoControl)
           {
-            if (lastError != ErrorIoPending)
-              throw new Win32Exception(lastError);
-
+            // Now also handles Operation Aborted and Bad Command errors.
+            switch (lastError)
+            {
+              case ErrorIoPending:
             waitHandle.WaitOne();
 
             bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesReturned, false);
             lastError = Marshal.GetLastWin32Error();
 
             if (!getOverlapped)
+                {
+                  if (lastError == ErrorBadCommand)
+                    goto case ErrorBadCommand;
+                  if (lastError == ErrorOperationAborted)
+                    goto case ErrorOperationAborted;
+                  throw new Win32Exception(lastError);
+                }
+                break;
+
+              case ErrorBadCommand:
+                if (Thread.CurrentThread == _readThread)
+                  //Cause receive restart
+                  _deviceReceiveStarted = false;
+                break;
+
+              case ErrorOperationAborted:
+                if (Thread.CurrentThread != _readThread)
+                  throw new Win32Exception(lastError);
+
+                //Cause receive restart
+                _deviceReceiveStarted = false;
+                break;
+
+              default:
               throw new Win32Exception(lastError);
           }
+        }
         }
         catch
         {
@@ -642,7 +676,6 @@ namespace InputService.Plugin
         OpenDevice();
         InitializeDevice();
 
-        StartReceive(_receivePort, PacketTimeout);
         StartReadThread(ReadThreadMode.Receiving);
 
         _notifyWindow.DeviceArrival += OnDeviceArrival;
@@ -706,9 +739,6 @@ namespace InputService.Plugin
 #if DEBUG
       DebugWriteLine("Suspend()");
 #endif
-
-      StopReadThread();
-      CloseDevice();
     }
 
     /// <summary>
@@ -729,12 +759,6 @@ namespace InputService.Plugin
 #endif
           return;
         }
-
-        OpenDevice();
-        InitializeDevice();
-
-        StartReceive(_receivePort, PacketTimeout);
-        StartReadThread(ReadThreadMode.Receiving);
       }
 #if DEBUG
       catch (Exception ex)
@@ -762,13 +786,10 @@ namespace InputService.Plugin
       DebugWriteLine("Learn()");
 #endif
 
-      StopReadThread();
+      RestartReadThread(ReadThreadMode.Learning);
 
       learned = null;
       _learningCode = new IrCode();
-
-      StartReceive(_learnPort, PacketTimeout);
-      StartReadThread(ReadThreadMode.Learning);
 
       int learnStartTick = Environment.TickCount;
 
@@ -782,10 +803,7 @@ namespace InputService.Plugin
 
       ReadThreadMode modeWas = _readThreadMode;
 
-      StopReadThread();
-
-      StartReceive(_receivePort, PacketTimeout);
-      StartReadThread(ReadThreadMode.Receiving);
+      RestartReadThread(ReadThreadMode.Receiving);
 
       LearnStatus status = LearnStatus.Failure;
 
@@ -830,16 +848,17 @@ namespace InputService.Plugin
       byte[] data = DataPacket(code);
 
       int portMask = 0;
+      // Hardware ports map to bits in mask with Port 1 at left, ascending to right
       switch ((BlasterPort) port)
       {
         case BlasterPort.Both:
           portMask = _txPortMask;
           break;
         case BlasterPort.Port_1:
-          portMask = GetHighBit(_txPortMask, 1);
+          portMask = GetHighBit(_txPortMask, _numTxPorts);
           break;
         case BlasterPort.Port_2:
-          portMask = GetHighBit(_txPortMask, 2);
+          portMask = GetHighBit(_txPortMask, _numTxPorts - 1);
           break;
       }
 
@@ -911,12 +930,36 @@ namespace InputService.Plugin
         return;
       }
 
-      _readThreadMode = mode;
+      _deviceReceiveStarted = false;
+      _readThreadModeNext = mode;
 
       _readThread = new Thread(ReadThread);
       _readThread.Name = "MicrosoftMceTransceiver.DriverVista.ReadThread";
       _readThread.IsBackground = true;
       _readThread.Start();
+    }
+
+    /// <summary>
+    /// Restart the device read thread.
+    /// </summary>
+    void RestartReadThread(ReadThreadMode mode)
+    {
+      // Alternative to StopReadThread() ... StartReadThread(). Avoids Thread.Abort.
+      int numTriesLeft;
+
+      _readThreadModeNext = mode;
+      numTriesLeft = MaxReadThreadTries;
+
+      // Simple, optimistic wait for read thread to respond. Has room for improvement, but tends to work first time in practice.
+      while (_readThreadMode != _readThreadModeNext && numTriesLeft-- != 0)
+      {
+        // Unblocks read thread, typically with Operation Aborted error. May cause Bad Command error in either thread.
+        StopReceive();
+        Thread.Sleep(ReadThreadTimeout);
+      }
+
+      if (numTriesLeft == 0)
+        throw new InvalidOperationException("Failed to cycle read thread");
     }
 
     /// <summary>
@@ -1040,7 +1083,6 @@ namespace InputService.Plugin
       OpenDevice();
       InitializeDevice();
 
-      StartReceive(_receivePort, PacketTimeout);
       StartReadThread(ReadThreadMode.Receiving);
     }
 
@@ -1075,6 +1117,19 @@ namespace InputService.Plugin
 
         while (_readThreadMode != ReadThreadMode.Stop)
         {
+          // Cycle thread if device stopped reading.
+          if (!_deviceReceiveStarted)
+          {
+            if (_readThreadModeNext == ReadThreadMode.Receiving)
+              StartReceive(_receivePort, PacketTimeout);
+            else
+            {
+              StartReceive(_learnPort, PacketTimeout);
+            }
+            _readThreadMode = _readThreadModeNext;
+            _deviceReceiveStarted = true;
+          }
+
           int bytesRead;
           IoControl(IoCtrl.Receive, IntPtr.Zero, 0, receiveParamsPtr, receiveParamsSize, out bytesRead);
 
