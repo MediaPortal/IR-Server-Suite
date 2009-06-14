@@ -23,6 +23,9 @@
 
 #endregion
 
+!if "${NSIS_VERSION}" != "v2.45"
+  !error "$\r$\n$\r$\nPlease update your NSIS installation to latest version. http://nsis.sourceforge.net$\r$\n$\r$\n"
+!endif
 
 !ifndef ___COMMON_MP_MACROS__NSH___
 !define ___COMMON_MP_MACROS__NSH___
@@ -755,7 +758,7 @@ DeleteRegKey HKCU "Software\MediaPortal"
     !insertmacro GetServicePack $R1 $R2
     ${If} $R2 > 0
       StrCpy $0 "OSwarnBetaSP"
-    ${ElseIf} $R1 < 2
+    ${ElseIf} $R1 < 3
       StrCpy $0 "OSabort"
     ${Else}
       StrCpy $0 "OSok"
@@ -784,6 +787,14 @@ DeleteRegKey HKCU "Software\MediaPortal"
 
   ${ElseIf} ${IsWin2008}
     ${LOG_TEXT} "INFO" "OSTest::IsWin2008"
+    StrCpy $0 "OSwarn"
+
+  ${ElseIf} ${IsWin7}
+    ${LOG_TEXT} "INFO" "OSTest::IsWin7"
+    StrCpy $0 "OSok"
+
+  ${ElseIf} ${IsWin2008R2}
+    ${LOG_TEXT} "INFO" "OSTest::IsWin2008R2"
     StrCpy $0 "OSwarn"
 
   ${Else}

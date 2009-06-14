@@ -113,8 +113,9 @@ Var frominstall
 !include "include\ProcessMacros.nsh"
 !include "include\WinVerEx.nsh"
 
-!include pages\AddRemovePage.nsh
-!include pages\ServerServiceMode.nsh
+!include "pages\AddRemovePage.nsh"
+!include "pages\ServerServiceMode.nsh"
+;!include "pages\UninstallModePage.nsh"
 
 
 #---------------------------------------------------------------------------
