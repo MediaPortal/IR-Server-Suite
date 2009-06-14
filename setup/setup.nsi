@@ -1363,7 +1363,7 @@ FunctionEnd
 #---------------------------------------------------------------------------
 Function un.onInit
 
-  ReadRegStr $PREVIOUS_INSTALLDIR HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
+  ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
 !ifdef MPplugins
   ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
   ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
