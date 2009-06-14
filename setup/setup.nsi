@@ -1079,6 +1079,12 @@ SectionEnd
 ;======================================
 
 Section "Uninstall"
+  DetailPrint "DIR_INSTALL: $DIR_INSTALL"
+!ifdef MPplugins
+  DetailPrint "DIR_MEDIAPORTAL: $DIR_MEDIAPORTAL"
+  DetailPrint "DIR_TVSERVER: $DIR_TVSERVER"
+!endif
+
 
   ; Use the all users context
   SetShellVarContext all
@@ -1362,6 +1368,10 @@ FunctionEnd
 # UNINSTALLER CALLBACKS
 #---------------------------------------------------------------------------
 Function un.onInit
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
 
   ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
 !ifdef MPplugins
