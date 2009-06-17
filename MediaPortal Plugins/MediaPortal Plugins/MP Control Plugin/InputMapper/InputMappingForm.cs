@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -42,6 +43,7 @@ namespace MediaPortal.Plugins
   internal class InputMappingForm : Form
   {
     private readonly ArrayList actionList = new ArrayList();
+    private readonly List<string> _pluginList = new List<string>();
 
     private readonly string[] fullScreenList = new string[] {"Fullscreen", "No Fullscreen"};
     private readonly string inputClassName;
@@ -70,6 +72,7 @@ namespace MediaPortal.Plugins
     private readonly ArrayList windowsListFiltered = new ArrayList();
 
     private bool changedSettings;
+    private MPRadioButton radioButtonPlugin;
 
 
     /// <summary>
@@ -143,6 +146,8 @@ namespace MediaPortal.Plugins
 
       foreach (Action.ActionType actn in nativeActionList)
         actionList.Add(GetFriendlyName(actn.ToString()));
+
+      LoadPluginList();
 
       comboBoxSound.DataSource = soundList;
       comboBoxLayer.DataSource = layerList;
@@ -229,7 +234,7 @@ namespace MediaPortal.Plugins
               string commandString = String.Empty;
 
               string condition = nodeAction.Attributes["condition"].Value.ToUpper();
-              string conProperty = nodeAction.Attributes["conproperty"].Value.ToUpper();
+              string conProperty = nodeAction.Attributes["conproperty"].Value; // .ToUpper()
               string command = nodeAction.Attributes["command"].Value.ToUpper();
               string cmdProperty = nodeAction.Attributes["cmdproperty"].Value; // .ToUpper()
               string sound = String.Empty;
@@ -248,6 +253,7 @@ namespace MediaPortal.Plugins
               {
                 case "WINDOW":
                   {
+                    conProperty = conProperty.ToUpper();
                     try
                     {
                       conditionString =
@@ -260,13 +266,18 @@ namespace MediaPortal.Plugins
                     break;
                   }
                 case "FULLSCREEN":
+                  conProperty = conProperty.ToUpper();
                   if (conProperty == "TRUE")
                     conditionString = "Fullscreen";
                   else
                     conditionString = "No Fullscreen";
                   break;
                 case "PLAYER":
+                  conProperty = conProperty.ToUpper();
                   conditionString = playerList[Array.IndexOf(nativePlayerList, conProperty)];
+                  break;
+                case "PLUGIN":
+                  conditionString = conProperty;
                   break;
                 case "*":
                   conditionString = "No Condition";
@@ -502,6 +513,51 @@ namespace MediaPortal.Plugins
 #endif
     }
 
+    private void LoadPluginList()
+    {
+      _pluginList.Clear();
+
+      string path = Config.GetFile(Config.Dir.Config, "MediaPortal.xml");
+
+      if (!File.Exists(path))
+      {
+        _pluginList.Add("Music");
+        return;
+      }
+
+      XmlDocument doc = new XmlDocument();
+      doc.Load(path);
+
+
+
+      //TreeNode remoteNode = new TreeNode(nodeRemote.Attributes["family"].Value);
+      //remoteNode.Tag = new Data("REMOTE", null, nodeRemote.Attributes["family"].Value);
+      //XmlNodeList listButtons = nodeRemote.SelectNodes("button");
+      //foreach (XmlNode nodeButton in listButtons)
+      //{
+      //  TreeNode buttonNode = new TreeNode(nodeButton.Attributes["name"].Value);
+      //  buttonNode.Tag = new Data("BUTTON", nodeButton.Attributes["name"].Value, nodeButton.Attributes["code"].Value);
+      //  remoteNode.Nodes.Add(buttonNode);
+
+      XmlNode plugins = null;
+      XmlNodeList listSections = doc.DocumentElement.SelectNodes("/profile/section");
+      foreach (XmlNode nodeSection in listSections)
+        if (nodeSection.Attributes["name"].Value == "plugins")
+        {
+          plugins = nodeSection;
+          break;
+        }
+
+      if (plugins == null)
+      {
+        _pluginList.Add("Music");
+        return;
+      }
+
+      foreach (XmlNode nodePlugin in plugins.ChildNodes)
+        _pluginList.Add(nodePlugin.Attributes["name"].Value);
+    }
+
     private TreeNode getNode(string type)
     {
       TreeNode node = treeMapping.SelectedNode;
@@ -672,7 +728,14 @@ namespace MediaPortal.Plugins
                 radioButtonPlaying.Checked = true;
                 comboBoxCondProperty.Enabled = true;
                 UpdateCombo(ref comboBoxCondProperty, playerList,
-                            playerList[Array.IndexOf(nativePlayerList, (string) data.Value)]);
+                            playerList[Array.IndexOf(nativePlayerList, (string)data.Value)]);
+                break;
+              case "PLUGIN":
+                comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
+
+                radioButtonPlugin.Checked = true;
+                comboBoxCondProperty.Enabled = true;
+                UpdateCombo(ref comboBoxCondProperty, _pluginList.ToArray(), (string)data.Value);
                 break;
               case "*":
                 comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -909,6 +972,17 @@ namespace MediaPortal.Plugins
       node.Tag = new Data("CONDITION", "PLAYER", "TV");
       node.Text = playerList[0];
       UpdateCombo(ref comboBoxCondProperty, playerList, playerList[0]);
+      changedSettings = true;
+    }
+
+    private void radioButtonPlugin_Click(object sender, EventArgs e)
+    {
+      comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
+      comboBoxCondProperty.Enabled = true;
+      TreeNode node = getNode("CONDITION");
+      node.Tag = new Data("CONDITION", "PLUGIN", _pluginList[0]);
+      UpdateCombo(ref comboBoxCondProperty, _pluginList.ToArray(), _pluginList[0]);
+      node.Text = comboBoxCondProperty.Text;
       changedSettings = true;
     }
 
@@ -1209,8 +1283,9 @@ namespace MediaPortal.Plugins
 
     private void comboBoxCondProperty_SelectionChangeCommitted(object sender, EventArgs e)
     {
-      if (comboBoxCondProperty.DropDownStyle == ComboBoxStyle.DropDownList)
-        ConditionPropChanged();
+      //FIXME: chefkoch 2009-06-17 : not sure why this should be done only for DropDownList
+      //if (comboBoxCondProperty.DropDownStyle == ComboBoxStyle.DropDownList)
+      ConditionPropChanged();
     }
 
     private void comboBoxCmdProperty_SelectionChangeCommitted(object sender, EventArgs e)
@@ -1287,7 +1362,9 @@ namespace MediaPortal.Plugins
 
     private void comboBoxCondProperty_KeyUp(object sender, KeyEventArgs e)
     {
-      if (e.KeyCode == Keys.Enter && comboBoxCondProperty.DropDownStyle == ComboBoxStyle.DropDown)
+      //FIXME: chefkoch 2009-06-17 : not sure why this should be done only for DropDownList
+      //if (e.KeyCode == Keys.Enter && comboBoxCondProperty.DropDownStyle == ComboBoxStyle.DropDown)
+      if (e.KeyCode == Keys.Enter)
         ConditionPropChanged();
     }
 
@@ -1417,8 +1494,14 @@ namespace MediaPortal.Plugins
         case "PLAYER":
           {
             node.Tag = new Data("CONDITION", "PLAYER",
-                                nativePlayerList[Array.IndexOf(playerList, (string) comboBoxCondProperty.SelectedItem)]);
-            node.Text = (string) comboBoxCondProperty.SelectedItem;
+                                nativePlayerList[Array.IndexOf(playerList, (string)comboBoxCondProperty.SelectedItem)]);
+            node.Text = (string)comboBoxCondProperty.SelectedItem;
+            break;
+          }
+        case "PLUGIN":
+          {
+            node.Tag = new Data("CONDITION", "PLUGIN", comboBoxCondProperty.Text);
+            node.Text = comboBoxCondProperty.Text;
             break;
           }
         case "*":
@@ -1435,8 +1518,7 @@ namespace MediaPortal.Plugins
     /// </summary>
     private void InitializeComponent()
     {
-      System.ComponentModel.ComponentResourceManager resources =
-        new System.ComponentModel.ComponentResourceManager(typeof (InputMappingForm));
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InputMappingForm));
       this.treeMapping = new System.Windows.Forms.TreeView();
       this.labelExpand = new MediaPortal.UserInterface.Controls.MPLabel();
       this.buttonDefault = new MediaPortal.UserInterface.Controls.MPButton();
@@ -1463,6 +1545,7 @@ namespace MediaPortal.Plugins
       this.radioButtonPower = new MediaPortal.UserInterface.Controls.MPRadioButton();
       this.comboBoxCmdProperty = new MediaPortal.UserInterface.Controls.MPComboBox();
       this.groupBoxCondition = new MediaPortal.UserInterface.Controls.MPGroupBox();
+      this.radioButtonPlugin = new MediaPortal.UserInterface.Controls.MPRadioButton();
       this.radioButtonWindow = new MediaPortal.UserInterface.Controls.MPRadioButton();
       this.radioButtonFullscreen = new MediaPortal.UserInterface.Controls.MPRadioButton();
       this.radioButtonPlaying = new MediaPortal.UserInterface.Controls.MPRadioButton();
@@ -1480,26 +1563,22 @@ namespace MediaPortal.Plugins
       // treeMapping
       // 
       this.treeMapping.AllowDrop = true;
-      this.treeMapping.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-           | System.Windows.Forms.AnchorStyles.Right)));
+      this.treeMapping.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
       this.treeMapping.FullRowSelect = true;
       this.treeMapping.HideSelection = false;
       this.treeMapping.Location = new System.Drawing.Point(16, 56);
       this.treeMapping.Name = "treeMapping";
-      this.treeMapping.Size = new System.Drawing.Size(312, 335);
+      this.treeMapping.Size = new System.Drawing.Size(312, 347);
       this.treeMapping.TabIndex = 0;
       this.treeMapping.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeMapping_AfterSelect);
       // 
       // labelExpand
       // 
-      this.labelExpand.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.labelExpand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.labelExpand.AutoSize = true;
-      this.labelExpand.Location = new System.Drawing.Point(328, 374);
+      this.labelExpand.Location = new System.Drawing.Point(328, 386);
       this.labelExpand.Name = "labelExpand";
       this.labelExpand.Size = new System.Drawing.Size(13, 13);
       this.labelExpand.TabIndex = 5;
@@ -1508,10 +1587,8 @@ namespace MediaPortal.Plugins
       // 
       // buttonDefault
       // 
-      this.buttonDefault.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonDefault.Location = new System.Drawing.Point(268, 442);
+      this.buttonDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonDefault.Location = new System.Drawing.Point(268, 454);
       this.buttonDefault.Name = "buttonDefault";
       this.buttonDefault.Size = new System.Drawing.Size(75, 23);
       this.buttonDefault.TabIndex = 11;
@@ -1521,10 +1598,8 @@ namespace MediaPortal.Plugins
       // 
       // buttonRemove
       // 
-      this.buttonRemove.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonRemove.Location = new System.Drawing.Point(272, 397);
+      this.buttonRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonRemove.Location = new System.Drawing.Point(272, 409);
       this.buttonRemove.Name = "buttonRemove";
       this.buttonRemove.Size = new System.Drawing.Size(56, 20);
       this.buttonRemove.TabIndex = 4;
@@ -1534,10 +1609,8 @@ namespace MediaPortal.Plugins
       // 
       // buttonDown
       // 
-      this.buttonDown.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonDown.Location = new System.Drawing.Point(97, 397);
+      this.buttonDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonDown.Location = new System.Drawing.Point(97, 409);
       this.buttonDown.Name = "buttonDown";
       this.buttonDown.Size = new System.Drawing.Size(56, 20);
       this.buttonDown.TabIndex = 2;
@@ -1547,10 +1620,8 @@ namespace MediaPortal.Plugins
       // 
       // buttonUp
       // 
-      this.buttonUp.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonUp.Location = new System.Drawing.Point(16, 397);
+      this.buttonUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonUp.Location = new System.Drawing.Point(16, 409);
       this.buttonUp.Name = "buttonUp";
       this.buttonUp.Size = new System.Drawing.Size(56, 20);
       this.buttonUp.TabIndex = 1;
@@ -1560,21 +1631,17 @@ namespace MediaPortal.Plugins
       // 
       // beveledLine1
       // 
-      this.beveledLine1.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-           | System.Windows.Forms.AnchorStyles.Right)));
-      this.beveledLine1.Location = new System.Drawing.Point(8, 432);
+      this.beveledLine1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.beveledLine1.Location = new System.Drawing.Point(8, 444);
       this.beveledLine1.Name = "beveledLine1";
       this.beveledLine1.Size = new System.Drawing.Size(328, 2);
       this.beveledLine1.TabIndex = 9;
       // 
       // buttonApply
       // 
-      this.buttonApply.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonApply.Location = new System.Drawing.Point(346, 442);
+      this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonApply.Location = new System.Drawing.Point(346, 454);
       this.buttonApply.Name = "buttonApply";
       this.buttonApply.Size = new System.Drawing.Size(75, 23);
       this.buttonApply.TabIndex = 12;
@@ -1584,10 +1651,8 @@ namespace MediaPortal.Plugins
       // 
       // buttonOk
       // 
-      this.buttonOk.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOk.Location = new System.Drawing.Point(426, 442);
+      this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonOk.Location = new System.Drawing.Point(426, 454);
       this.buttonOk.Name = "buttonOk";
       this.buttonOk.Size = new System.Drawing.Size(75, 23);
       this.buttonOk.TabIndex = 13;
@@ -1597,11 +1662,9 @@ namespace MediaPortal.Plugins
       // 
       // buttonCancel
       // 
-      this.buttonCancel.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(505, 442);
+      this.buttonCancel.Location = new System.Drawing.Point(505, 454);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(75, 23);
       this.buttonCancel.TabIndex = 14;
@@ -1610,14 +1673,11 @@ namespace MediaPortal.Plugins
       // 
       // headerLabel
       // 
-      this.headerLabel.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-           | System.Windows.Forms.AnchorStyles.Right)));
+      this.headerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
       this.headerLabel.Caption = "";
       this.headerLabel.FirstColor = System.Drawing.SystemColors.InactiveCaption;
-      this.headerLabel.Font = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Regular,
-                                                      System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+      this.headerLabel.Font = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.headerLabel.LastColor = System.Drawing.Color.WhiteSmoke;
       this.headerLabel.Location = new System.Drawing.Point(16, 16);
       this.headerLabel.Name = "headerLabel";
@@ -1625,14 +1685,11 @@ namespace MediaPortal.Plugins
       this.headerLabel.Size = new System.Drawing.Size(558, 24);
       this.headerLabel.TabIndex = 15;
       this.headerLabel.TextColor = System.Drawing.Color.WhiteSmoke;
-      this.headerLabel.TextFont = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Regular,
-                                                          System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+      this.headerLabel.TextFont = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       // 
       // groupBoxAction
       // 
-      this.groupBoxAction.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxAction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxAction.Controls.Add(this.radioButtonBlast);
       this.groupBoxAction.Controls.Add(this.checkBoxGainFocus);
       this.groupBoxAction.Controls.Add(this.textBoxKeyCode);
@@ -1648,7 +1705,7 @@ namespace MediaPortal.Plugins
       this.groupBoxAction.Controls.Add(this.comboBoxCmdProperty);
       this.groupBoxAction.Enabled = false;
       this.groupBoxAction.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.groupBoxAction.Location = new System.Drawing.Point(350, 221);
+      this.groupBoxAction.Location = new System.Drawing.Point(350, 233);
       this.groupBoxAction.Name = "groupBoxAction";
       this.groupBoxAction.Size = new System.Drawing.Size(224, 211);
       this.groupBoxAction.TabIndex = 8;
@@ -1802,13 +1859,13 @@ namespace MediaPortal.Plugins
       this.comboBoxCmdProperty.Size = new System.Drawing.Size(176, 21);
       this.comboBoxCmdProperty.Sorted = true;
       this.comboBoxCmdProperty.TabIndex = 7;
-      this.comboBoxCmdProperty.SelectionChangeCommitted +=
-        new System.EventHandler(this.comboBoxCmdProperty_SelectionChangeCommitted);
+      this.comboBoxCmdProperty.SelectionChangeCommitted += new System.EventHandler(this.comboBoxCmdProperty_SelectionChangeCommitted);
       this.comboBoxCmdProperty.KeyUp += new System.Windows.Forms.KeyEventHandler(this.comboBoxCmdProperty_KeyUp);
       // 
       // groupBoxCondition
       // 
       this.groupBoxCondition.Anchor = System.Windows.Forms.AnchorStyles.Right;
+      this.groupBoxCondition.Controls.Add(this.radioButtonPlugin);
       this.groupBoxCondition.Controls.Add(this.radioButtonWindow);
       this.groupBoxCondition.Controls.Add(this.radioButtonFullscreen);
       this.groupBoxCondition.Controls.Add(this.radioButtonPlaying);
@@ -1816,12 +1873,24 @@ namespace MediaPortal.Plugins
       this.groupBoxCondition.Controls.Add(this.comboBoxCondProperty);
       this.groupBoxCondition.Enabled = false;
       this.groupBoxCondition.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.groupBoxCondition.Location = new System.Drawing.Point(350, 110);
+      this.groupBoxCondition.Location = new System.Drawing.Point(350, 106);
       this.groupBoxCondition.Name = "groupBoxCondition";
-      this.groupBoxCondition.Size = new System.Drawing.Size(224, 100);
+      this.groupBoxCondition.Size = new System.Drawing.Size(224, 120);
       this.groupBoxCondition.TabIndex = 7;
       this.groupBoxCondition.TabStop = false;
       this.groupBoxCondition.Text = "Condition";
+      // 
+      // radioButtonPlugin
+      // 
+      this.radioButtonPlugin.AutoSize = true;
+      this.radioButtonPlugin.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+      this.radioButtonPlugin.Location = new System.Drawing.Point(24, 67);
+      this.radioButtonPlugin.Name = "radioButtonPlugin";
+      this.radioButtonPlugin.Size = new System.Drawing.Size(104, 17);
+      this.radioButtonPlugin.TabIndex = 5;
+      this.radioButtonPlugin.Text = "Plugin is enabled";
+      this.radioButtonPlugin.UseVisualStyleBackColor = true;
+      this.radioButtonPlugin.Click += new System.EventHandler(this.radioButtonPlugin_Click);
       // 
       // radioButtonWindow
       // 
@@ -1876,20 +1945,17 @@ namespace MediaPortal.Plugins
       this.comboBoxCondProperty.BorderColor = System.Drawing.Color.Empty;
       this.comboBoxCondProperty.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxCondProperty.ForeColor = System.Drawing.Color.Blue;
-      this.comboBoxCondProperty.Location = new System.Drawing.Point(24, 68);
+      this.comboBoxCondProperty.Location = new System.Drawing.Point(24, 90);
       this.comboBoxCondProperty.Name = "comboBoxCondProperty";
       this.comboBoxCondProperty.Size = new System.Drawing.Size(176, 21);
       this.comboBoxCondProperty.Sorted = true;
       this.comboBoxCondProperty.TabIndex = 4;
-      this.comboBoxCondProperty.SelectionChangeCommitted +=
-        new System.EventHandler(this.comboBoxCondProperty_SelectionChangeCommitted);
+      this.comboBoxCondProperty.SelectionChangeCommitted += new System.EventHandler(this.comboBoxCondProperty_SelectionChangeCommitted);
       this.comboBoxCondProperty.KeyUp += new System.Windows.Forms.KeyEventHandler(this.comboBoxCondProperty_KeyUp);
       // 
       // groupBoxLayer
       // 
-      this.groupBoxLayer.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxLayer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxLayer.Controls.Add(this.comboBoxLayer);
       this.groupBoxLayer.Controls.Add(this.labelLayer);
       this.groupBoxLayer.Enabled = false;
@@ -1923,10 +1989,8 @@ namespace MediaPortal.Plugins
       // 
       // buttonNew
       // 
-      this.buttonNew.Anchor =
-        ((System.Windows.Forms.AnchorStyles)
-         ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonNew.Location = new System.Drawing.Point(189, 397);
+      this.buttonNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonNew.Location = new System.Drawing.Point(189, 409);
       this.buttonNew.Name = "buttonNew";
       this.buttonNew.Size = new System.Drawing.Size(56, 20);
       this.buttonNew.TabIndex = 3;
@@ -1938,7 +2002,7 @@ namespace MediaPortal.Plugins
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
       this.AutoScroll = true;
-      this.ClientSize = new System.Drawing.Size(590, 475);
+      this.ClientSize = new System.Drawing.Size(590, 487);
       this.Controls.Add(this.labelExpand);
       this.Controls.Add(this.treeMapping);
       this.Controls.Add(this.buttonDefault);
@@ -1954,7 +2018,7 @@ namespace MediaPortal.Plugins
       this.Controls.Add(this.groupBoxAction);
       this.Controls.Add(this.groupBoxCondition);
       this.Controls.Add(this.groupBoxLayer);
-      this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MinimumSize = new System.Drawing.Size(598, 509);
       this.Name = "InputMappingForm";
       this.ShowInTaskbar = false;
@@ -1968,6 +2032,7 @@ namespace MediaPortal.Plugins
       this.groupBoxLayer.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
+
     }
 
     #endregion

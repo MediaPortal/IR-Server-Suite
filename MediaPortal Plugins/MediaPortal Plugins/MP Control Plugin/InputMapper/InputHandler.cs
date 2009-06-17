@@ -159,7 +159,10 @@ namespace MediaPortal.Plugins
             int cmdKeyChar = 0;
             int cmdKeyCode = 0;
             string condition = nodeAction.Attributes["condition"].Value.ToUpper();
-            string conProperty = nodeAction.Attributes["conproperty"].Value.ToUpper();
+            string conProperty = nodeAction.Attributes["conproperty"].Value;
+            // conProperty of  PLUGIN is case sensitive, chefkoch
+            if (condition != "PLUGIN")
+              conProperty = conProperty.ToUpper();
             string command = nodeAction.Attributes["command"].Value.ToUpper();
             string cmdProperty = nodeAction.Attributes["cmdproperty"].Value.ToUpper();
             if ((command == "ACTION") && (cmdProperty == "93"))
@@ -442,6 +445,11 @@ namespace MediaPortal.Plugins
                         found = map;
                       break;
                   }
+                break;
+              case "PLUGIN":  // plugin name: ISetupForm.PluginName()
+                Log.Error(map.ConProperty);
+                if (PluginManager.IsPluginNameEnabled2(map.ConProperty))
+                  found = map;
                 break;
             }
             if (found != null)
