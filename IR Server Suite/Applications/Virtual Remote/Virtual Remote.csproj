@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -74,6 +74,7 @@
     </Content>
     <Content Include="Skins\Hauppauge34.xml" />
     <Content Include="Skins\Hauppauge45.xml" />
+    <Content Include="Skins\Abstract.xml" />
     <Content Include="Skins\MCE.xml">
     </Content>
     <Content Include="Skins\Medion.xml" />
