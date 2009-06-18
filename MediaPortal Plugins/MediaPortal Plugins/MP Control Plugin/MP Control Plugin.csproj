@@ -53,6 +53,12 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="InputMapper\InputMappingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InputMapper\InputMappingForm.Designer.cs">
+      <DependentUpon>InputMappingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MacroEditor.cs">
       <SubType>Form</SubType>
@@ -67,9 +73,6 @@
       <DependentUpon>SetupForm.cs</DependentUpon>
     </Compile>
     <Compile Include="InputMapper\InputHandler.cs" />
-    <Compile Include="InputMapper\InputMappingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="MappedEvent.cs" />
     <Compile Include="MappedKeyCode.cs" />
     <Compile Include="MPControlPlugin.cs" />
@@ -113,6 +116,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
