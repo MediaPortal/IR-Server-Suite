@@ -308,6 +308,7 @@ Section "-Core"
 
   ; Use the all users context
   SetShellVarContext all
+  SetOverwrite on
 
 
   ; Create app data directories
