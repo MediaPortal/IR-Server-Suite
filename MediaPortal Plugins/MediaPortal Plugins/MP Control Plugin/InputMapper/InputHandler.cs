@@ -21,7 +21,7 @@
 #endregion
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -45,8 +45,8 @@ namespace MediaPortal.Plugins
     private readonly bool _basicHome;
     private int _currentLayer = 1;
     private bool _isLoaded;
-    private ArrayList _remote;
-    private int _xmlVersion = 3;
+    private readonly List<RemoteMap> _remoteMaps = new List<RemoteMap>();
+    private const int XML_VERSION = 3;
 
     /// <summary>
     /// Constructor: Initializes mappings from XML file
@@ -101,7 +101,7 @@ namespace MediaPortal.Plugins
     ///                      ApplicationException("XML version mismatch")
     public bool CheckXmlFile(string xmlPath)
     {
-      if (!File.Exists(xmlPath) || (GetXmlVersion(xmlPath) != _xmlVersion))
+      if (!File.Exists(xmlPath) || (GetXmlVersion(xmlPath) != XML_VERSION))
         return false;
       return true;
     }
@@ -143,7 +143,7 @@ namespace MediaPortal.Plugins
     {
       if (xmlPath != string.Empty)
       {
-        _remote = new ArrayList();
+        _remoteMaps.Clear();
         XmlDocument doc = new XmlDocument();
         doc.Load(xmlPath);
         XmlNodeList listButtons = doc.DocumentElement.SelectNodes("/mappings/remote/button");
@@ -152,7 +152,7 @@ namespace MediaPortal.Plugins
           string name = nodeButton.Attributes["name"].Value;
           string value = nodeButton.Attributes["code"].Value;
 
-          ArrayList mapping = new ArrayList();
+          List<Mapping> mappings = new List<Mapping>();
           XmlNodeList listActions = nodeButton.SelectNodes("action");
           foreach (XmlNode nodeAction in listActions)
           {
@@ -181,10 +181,10 @@ namespace MediaPortal.Plugins
             int layer = Convert.ToInt32(nodeAction.Attributes["layer"].Value);
             Mapping conditionMap = new Mapping(layer, condition, conProperty, command, cmdProperty, cmdKeyChar,
                                                cmdKeyCode, sound, focus);
-            mapping.Add(conditionMap);
+            mappings.Add(conditionMap);
           }
-          RemoteMap remoteMap = new RemoteMap(value, name, mapping);
-          _remote.Add(remoteMap);
+          RemoteMap remoteMap = new RemoteMap(value, name, mappings);
+          _remoteMaps.Add(remoteMap);
         }
         _isLoaded = true;
       }
@@ -402,14 +402,14 @@ namespace MediaPortal.Plugins
       RemoteMap button = null;
       Mapping found = null;
 
-      foreach (RemoteMap btn in _remote)
+      foreach (RemoteMap btn in _remoteMaps)
         if (btnCode == btn.Code)
         {
           button = btn;
           break;
         }
       if (button != null)
-        foreach (Mapping map in button.Mapping)
+        foreach (Mapping map in button.Mappings)
           if ((map.Layer == 0) || (map.Layer == _currentLayer))
           {
             switch (map.Condition)
@@ -465,74 +465,29 @@ namespace MediaPortal.Plugins
     /// </summary>
     public class Mapping
     {
-      private readonly int cmdKeyChar;
-      private readonly int cmdKeyCode;
-      private readonly string cmdProperty;
-      private readonly string command;
-      private readonly string condition;
-      private readonly string conProperty;
-      private readonly bool focus;
-      private readonly int layer;
-      private readonly string sound;
-
       public Mapping(int newLayer, string newCondition, string newConProperty, string newCommand,
                      string newCmdProperty, int newCmdKeyChar, int newCmdKeyCode, string newSound, bool newFocus)
       {
-        layer = newLayer;
-        condition = newCondition;
-        conProperty = newConProperty;
-        command = newCommand;
-        cmdProperty = newCmdProperty;
-        cmdKeyChar = newCmdKeyChar;
-        cmdKeyCode = newCmdKeyCode;
-        sound = newSound;
-        focus = newFocus;
+        Layer = newLayer;
+        Condition = newCondition;
+        ConProperty = newConProperty;
+        Command = newCommand;
+        CmdProperty = newCmdProperty;
+        CmdKeyChar = newCmdKeyChar;
+        CmdKeyCode = newCmdKeyCode;
+        Sound = newSound;
+        Focus = newFocus;
       }
 
-      public int Layer
-      {
-        get { return layer; }
-      }
-
-      public string Condition
-      {
-        get { return condition; }
-      }
-
-      public string ConProperty
-      {
-        get { return conProperty; }
-      }
-
-      public string Command
-      {
-        get { return command; }
-      }
-
-      public string CmdProperty
-      {
-        get { return cmdProperty; }
-      }
-
-      public int CmdKeyChar
-      {
-        get { return cmdKeyChar; }
-      }
-
-      public int CmdKeyCode
-      {
-        get { return cmdKeyCode; }
-      }
-
-      public string Sound
-      {
-        get { return sound; }
-      }
-
-      public bool Focus
-      {
-        get { return focus; }
-      }
+      public int Layer { get; private set; }
+      public string Condition { get; private set; }
+      public string ConProperty { get; private set; }
+      public string Command { get; private set; }
+      public string CmdProperty { get; private set; }
+      public int CmdKeyChar { get; private set; }
+      public int CmdKeyCode { get; private set; }
+      public string Sound { get; private set; }
+      public bool Focus { get; private set; }
     }
 
     #endregion
@@ -544,31 +499,16 @@ namespace MediaPortal.Plugins
     /// </summary>
     private class RemoteMap
     {
-      private readonly string code;
-      private readonly ArrayList mapping = new ArrayList();
-      private readonly string name;
-
-      public RemoteMap(string newCode, string newName, ArrayList newMapping)
+      public RemoteMap(string newCode, string newName, List<Mapping> newMappings)
       {
-        code = newCode;
-        name = newName;
-        mapping = newMapping;
+        Code = newCode;
+        Name = newName;
+        Mappings = newMappings;
       }
 
-      public string Code
-      {
-        get { return code; }
-      }
-
-      public string Name
-      {
-        get { return name; }
-      }
-
-      public ArrayList Mapping
-      {
-        get { return mapping; }
-      }
+      public string Code { get; private set; }
+      public string Name { get; private set; }
+      public List<Mapping> Mappings { get; private set; }
     }
 
     #endregion

@@ -43,36 +43,36 @@ namespace MediaPortal.Plugins
   [CLSCompliant(false)]
   public partial class InputMappingForm : MPConfigForm
   {
-    private readonly ArrayList actionList = new ArrayList();
+    private readonly List<string> _actionList = new List<string>();
     private readonly List<string> _pluginList = new List<string>();
 
-    private readonly string[] fullScreenList = new string[] {"Fullscreen", "No Fullscreen"};
-    private readonly string inputClassName;
-    private readonly string[] layerList = new string[] {"all", "1", "2"};
-    private readonly Array nativeActionList = Enum.GetValues(typeof (Action.ActionType));
+    private readonly string[] _fullScreenList = new string[] {"Fullscreen", "No Fullscreen"};
+    private readonly string _inputClassName;
+    private readonly string[] _layerList = new string[] {"all", "1", "2"};
+    private readonly Array _nativeActionList = Enum.GetValues(typeof (Action.ActionType));
 
-    private readonly string[] nativePlayerList = new string[] {"TV", "DVD", "MEDIA"};
+    private readonly string[] _nativePlayerList = new string[] {"TV", "DVD", "MEDIA"};
 
-    private readonly string[] nativePowerList = new string[] {"EXIT", "REBOOT", "SHUTDOWN", "STANDBY", "HIBERNATE"};
+    private readonly string[] _nativePowerList = new string[] {"EXIT", "REBOOT", "SHUTDOWN", "STANDBY", "HIBERNATE"};
 
-    private readonly string[] nativeProcessList = new string[] {"CLOSE", "KILL"};
-    private readonly Array nativeWindowsList = Enum.GetValues(typeof (GUIWindow.Window));
-    private readonly string[] playerList = new string[] {"TV is running", "DVD is playing", "Media is playing"};
+    private readonly string[] _nativeProcessList = new string[] {"CLOSE", "KILL"};
+    private readonly Array _nativeWindowsList = Enum.GetValues(typeof (GUIWindow.Window));
+    private readonly string[] _playerList = new string[] {"TV is running", "DVD is playing", "Media is playing"};
 
-    private readonly string[] powerList = new string[]
+    private readonly string[] _powerList = new string[]
                                             {
                                               "Exit MediaPortal", "Reboot Windows", "Shutdown Windows",
                                               "Standby Windows"
                                               , "Hibernate Windows"
                                             };
 
-    private readonly string[] processList = new string[] {"Close Process", "Kill Process"};
+    private readonly string[] _processList = new string[] {"Close Process", "Kill Process"};
 
-    private readonly string[] soundList = new string[] {"none", "back.wav", "click.wav", "cursor.wav"};
-    private readonly ArrayList windowsList = new ArrayList();
-    private readonly ArrayList windowsListFiltered = new ArrayList();
+    private readonly string[] _soundList = new string[] {"none", "back.wav", "click.wav", "cursor.wav"};
+    private readonly ArrayList _windowsList = new ArrayList();
+    private readonly ArrayList _windowsListFiltered = new ArrayList();
 
-    private bool changedSettings;
+    private bool _changedSettings;
 
 
     /// <summary>
@@ -98,7 +98,7 @@ namespace MediaPortal.Plugins
     {
       InitializeComponent();
 
-      foreach (GUIWindow.Window wnd in nativeWindowsList)
+      foreach (GUIWindow.Window wnd in _nativeWindowsList)
       {
         if (wnd.ToString().IndexOf("DIALOG") == -1)
           switch ((int) Enum.Parse(typeof (GUIWindow.Window), wnd.ToString()))
@@ -138,22 +138,23 @@ namespace MediaPortal.Plugins
             case (int) GUIWindow.Window.WINDOW_VIRTUAL_WEB_KEYBOARD:
               break;
             default:
-              windowsListFiltered.Add(GetFriendlyName(wnd.ToString()));
+              _windowsListFiltered.Add(GetFriendlyName(wnd.ToString()));
               break;
           }
-        windowsList.Add(GetFriendlyName(wnd.ToString()));
+        _windowsList.Add(GetFriendlyName(wnd.ToString()));
       }
 
-      foreach (Action.ActionType actn in nativeActionList)
-        actionList.Add(GetFriendlyName(actn.ToString()));
+      _actionList.Clear();
+      foreach (Action.ActionType actn in _nativeActionList)
+        _actionList.Add(GetFriendlyName(actn.ToString()));
 
       LoadPluginList();
 
-      comboBoxSound.DataSource = soundList;
-      comboBoxLayer.DataSource = layerList;
-      inputClassName = name;
-      LoadMapping(inputClassName + ".xml", false);
-      headerLabel.Caption = inputClassName;
+      comboBoxSound.DataSource = _soundList;
+      comboBoxLayer.DataSource = _layerList;
+      _inputClassName = name;
+      LoadMapping(_inputClassName + ".xml", false);
+      headerLabel.Caption = _inputClassName;
     }
 
     /// <summary>
@@ -274,7 +275,7 @@ namespace MediaPortal.Plugins
                   break;
                 case "PLAYER":
                   conProperty = conProperty.ToUpper();
-                  conditionString = playerList[Array.IndexOf(nativePlayerList, conProperty)];
+                  conditionString = _playerList[Array.IndexOf(_nativePlayerList, conProperty)];
                   break;
                 case "PLUGIN":
                   conditionString = conProperty;
@@ -316,10 +317,10 @@ namespace MediaPortal.Plugins
                   commandString = "Toggle Layer";
                   break;
                 case "POWER":
-                  commandString = powerList[Array.IndexOf(nativePowerList, cmdProperty)];
+                  commandString = _powerList[Array.IndexOf(_nativePowerList, cmdProperty)];
                   break;
                 case "PROCESS":
-                  commandString = processList[Array.IndexOf(nativeProcessList, cmdProperty)];
+                  commandString = _processList[Array.IndexOf(_nativeProcessList, cmdProperty)];
                   break;
                 case "BLAST":
                   commandString = cmdProperty;
@@ -371,7 +372,7 @@ namespace MediaPortal.Plugins
           if (listRemotes.Count == 1)
             remoteNode.Expand();
         }
-        changedSettings = false;
+        _changedSettings = false;
       }
       catch (Exception ex)
       {
@@ -501,7 +502,7 @@ namespace MediaPortal.Plugins
           writer.WriteEndElement(); // </mapping>
           writer.WriteEndDocument();
         }
-        changedSettings = false;
+        _changedSettings = false;
         return true;
       }
 #if !DEBUG
@@ -708,7 +709,7 @@ namespace MediaPortal.Plugins
                   {
                     friendlyName = Convert.ToInt32(data.Value).ToString();
                   }
-                  UpdateCombo(ref comboBoxCondProperty, windowsList, friendlyName);
+                  UpdateCombo(ref comboBoxCondProperty, _windowsList, friendlyName);
                   break;
                 }
               case "FULLSCREEN":
@@ -717,17 +718,17 @@ namespace MediaPortal.Plugins
                 radioButtonFullscreen.Checked = true;
                 comboBoxCondProperty.Enabled = true;
                 if (Convert.ToBoolean(data.Value))
-                  UpdateCombo(ref comboBoxCondProperty, fullScreenList, "Fullscreen");
+                  UpdateCombo(ref comboBoxCondProperty, _fullScreenList, "Fullscreen");
                 else
-                  UpdateCombo(ref comboBoxCondProperty, fullScreenList, "No Fullscreen");
+                  UpdateCombo(ref comboBoxCondProperty, _fullScreenList, "No Fullscreen");
                 break;
               case "PLAYER":
                 comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
 
                 radioButtonPlaying.Checked = true;
                 comboBoxCondProperty.Enabled = true;
-                UpdateCombo(ref comboBoxCondProperty, playerList,
-                            playerList[Array.IndexOf(nativePlayerList, (string) data.Value)]);
+                UpdateCombo(ref comboBoxCondProperty, _playerList,
+                            _playerList[Array.IndexOf(_nativePlayerList, (string) data.Value)]);
                 break;
               case "PLUGIN":
                 comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
@@ -767,7 +768,7 @@ namespace MediaPortal.Plugins
                       comboBoxCmdProperty.Enabled = true;
                       textBoxKeyChar.Enabled = textBoxKeyCode.Enabled = false;
                       textBoxKeyChar.Text = textBoxKeyCode.Text = String.Empty;
-                      UpdateCombo(ref comboBoxCmdProperty, actionList,
+                      UpdateCombo(ref comboBoxCmdProperty, _actionList.ToArray(),
                                   GetFriendlyName(Enum.GetName(typeof (Action.ActionType), Convert.ToInt32(data.Value))));
                       break;
                     case "KEY":
@@ -777,7 +778,7 @@ namespace MediaPortal.Plugins
                       textBoxKeyChar.Text = ((Key) data.Value).KeyChar.ToString();
                       textBoxKeyCode.Text = ((Key) data.Value).KeyCode.ToString();
                       comboBoxCmdProperty.Enabled = true;
-                      UpdateCombo(ref comboBoxCmdProperty, actionList, "Key Pressed");
+                      UpdateCombo(ref comboBoxCmdProperty, _actionList.ToArray(), "Key Pressed");
                       break;
                     case "WINDOW":
                       {
@@ -798,7 +799,7 @@ namespace MediaPortal.Plugins
                         {
                           friendlyName = Convert.ToInt32(data.Value).ToString();
                         }
-                        UpdateCombo(ref comboBoxCmdProperty, windowsListFiltered, friendlyName);
+                        UpdateCombo(ref comboBoxCmdProperty, _windowsListFiltered, friendlyName);
                         break;
                       }
                     case "TOGGLE":
@@ -817,8 +818,8 @@ namespace MediaPortal.Plugins
                       comboBoxCmdProperty.Enabled = true;
                       textBoxKeyChar.Enabled = textBoxKeyCode.Enabled = false;
                       textBoxKeyChar.Text = textBoxKeyCode.Text = String.Empty;
-                      UpdateCombo(ref comboBoxCmdProperty, powerList,
-                                  powerList[Array.IndexOf(nativePowerList, (string) data.Value)]);
+                      UpdateCombo(ref comboBoxCmdProperty, _powerList,
+                                  _powerList[Array.IndexOf(_nativePowerList, (string) data.Value)]);
                       break;
                     case "PROCESS":
                       comboBoxCmdProperty.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -827,8 +828,8 @@ namespace MediaPortal.Plugins
                       comboBoxCmdProperty.Enabled = true;
                       textBoxKeyChar.Enabled = textBoxKeyCode.Enabled = false;
                       textBoxKeyChar.Text = textBoxKeyCode.Text = String.Empty;
-                      UpdateCombo(ref comboBoxCmdProperty, processList,
-                                  processList[Array.IndexOf(nativeProcessList, (string) data.Value)]);
+                      UpdateCombo(ref comboBoxCmdProperty, _processList,
+                                  _processList[Array.IndexOf(_nativeProcessList, (string) data.Value)]);
                       break;
                     case "BLAST":
                       comboBoxCmdProperty.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -943,46 +944,46 @@ namespace MediaPortal.Plugins
 
     private void radioButtonWindow_CheckedChanged(object sender, EventArgs e)
     {
-      if (!((Control)sender).Focused) return;
+      if (!((Control) sender).Focused) return;
 
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
       comboBoxCondProperty.Enabled = true;
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "WINDOW", "0");
-      UpdateCombo(ref comboBoxCondProperty, windowsList, GetFriendlyName(Enum.GetName(typeof(GUIWindow.Window), 0)));
-      node.Text = (string)comboBoxCondProperty.SelectedItem;
-      changedSettings = true;
+      UpdateCombo(ref comboBoxCondProperty, _windowsList, GetFriendlyName(Enum.GetName(typeof (GUIWindow.Window), 0)));
+      node.Text = (string) comboBoxCondProperty.SelectedItem;
+      _changedSettings = true;
     }
 
     private void radioButtonFullscreen_CheckedChanged(object sender, EventArgs e)
     {
-      if (!((Control)sender).Focused) return;
+      if (!((Control) sender).Focused) return;
 
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCondProperty.Enabled = true;
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "FULLSCREEN", "true");
-      UpdateCombo(ref comboBoxCondProperty, fullScreenList, "Fullscreen");
-      node.Text = (string)comboBoxCondProperty.SelectedItem;
-      changedSettings = true;
+      UpdateCombo(ref comboBoxCondProperty, _fullScreenList, "Fullscreen");
+      node.Text = (string) comboBoxCondProperty.SelectedItem;
+      _changedSettings = true;
     }
 
     private void radioButtonPlaying_CheckedChanged(object sender, EventArgs e)
     {
-      if (!((Control)sender).Focused) return;
+      if (!((Control) sender).Focused) return;
 
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCondProperty.Enabled = true;
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "PLAYER", "TV");
-      node.Text = playerList[0];
-      UpdateCombo(ref comboBoxCondProperty, playerList, playerList[0]);
-      changedSettings = true;
+      node.Text = _playerList[0];
+      UpdateCombo(ref comboBoxCondProperty, _playerList, _playerList[0]);
+      _changedSettings = true;
     }
 
     private void radioButtonNoCondition_CheckedChanged(object sender, EventArgs e)
     {
-      if (!((Control)sender).Focused) return;
+      if (!((Control) sender).Focused) return;
 
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCondProperty.Enabled = false;
@@ -991,12 +992,12 @@ namespace MediaPortal.Plugins
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "*", null);
       node.Text = "No Condition";
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void radioButtonPlugin_CheckedChanged(object sender, EventArgs e)
     {
-      if (!((Control)sender).Focused) return;
+      if (!((Control) sender).Focused) return;
 
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
       comboBoxCondProperty.Enabled = true;
@@ -1004,7 +1005,7 @@ namespace MediaPortal.Plugins
       node.Tag = new Data("CONDITION", "PLUGIN", _pluginList[0]);
       UpdateCombo(ref comboBoxCondProperty, _pluginList.ToArray(), _pluginList[0]);
       node.Text = comboBoxCondProperty.Text;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void radioButtonAction_Click(object sender, EventArgs e)
@@ -1017,11 +1018,11 @@ namespace MediaPortal.Plugins
       TreeNode node = getNode("COMMAND");
       Data data = new Data("COMMAND", "ACTION", "7");
       node.Tag = data;
-      UpdateCombo(ref comboBoxCmdProperty, actionList,
+      UpdateCombo(ref comboBoxCmdProperty, _actionList.ToArray(),
                   GetFriendlyName(Enum.GetName(typeof (Action.ActionType), Convert.ToInt32(data.Value))));
       node.Text = "Action \"" + (string) comboBoxCmdProperty.SelectedItem + "\"";
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void radioButtonActWindow_Click(object sender, EventArgs e)
@@ -1042,11 +1043,11 @@ namespace MediaPortal.Plugins
       {
         friendlyName = Convert.ToInt32(data.Value).ToString();
       }
-      UpdateCombo(ref comboBoxCmdProperty, windowsListFiltered, friendlyName);
+      UpdateCombo(ref comboBoxCmdProperty, _windowsListFiltered, friendlyName);
 
       node.Text = "Window \"" + comboBoxCmdProperty.Text + "\"";
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void radioButtonToggle_Click(object sender, EventArgs e)
@@ -1062,7 +1063,7 @@ namespace MediaPortal.Plugins
       node.Tag = data;
       node.Text = "Toggle Layer";
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void radioButtonPower_Click(object sender, EventArgs e)
@@ -1074,10 +1075,10 @@ namespace MediaPortal.Plugins
       comboBoxCmdProperty.Enabled = true;
       TreeNode node = getNode("COMMAND");
       node.Tag = new Data("COMMAND", "POWER", "EXIT");
-      node.Text = powerList[0];
-      UpdateCombo(ref comboBoxCmdProperty, powerList, powerList[0]);
+      node.Text = _powerList[0];
+      UpdateCombo(ref comboBoxCmdProperty, _powerList, _powerList[0]);
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void radioButtonProcess_Click(object sender, EventArgs e)
@@ -1089,23 +1090,23 @@ namespace MediaPortal.Plugins
       comboBoxCmdProperty.Enabled = true;
       TreeNode node = getNode("COMMAND");
       node.Tag = new Data("COMMAND", "PROCESS", "CLOSE");
-      node.Text = processList[0];
-      UpdateCombo(ref comboBoxCmdProperty, processList, processList[0]);
+      node.Text = _processList[0];
+      UpdateCombo(ref comboBoxCmdProperty, _processList, _processList[0]);
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void buttonOk_Click(object sender, EventArgs e)
     {
-      if (changedSettings)
-        SaveMapping(inputClassName + ".xml");
+      if (_changedSettings)
+        SaveMapping(_inputClassName + ".xml");
       Close();
     }
 
     private void buttonApply_Click(object sender, EventArgs e)
     {
-      if (changedSettings)
-        SaveMapping(inputClassName + ".xml");
+      if (_changedSettings)
+        SaveMapping(_inputClassName + ".xml");
     }
 
     private void buttonUp_Click(object sender, EventArgs e)
@@ -1132,7 +1133,7 @@ namespace MediaPortal.Plugins
         parentNode.Nodes.Insert(index, tmpNode);
         treeMapping.SelectedNode = tmpNode;
       }
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void buttonDown_Click(object sender, EventArgs e)
@@ -1159,7 +1160,7 @@ namespace MediaPortal.Plugins
         parentNode.Nodes.Insert(index, tmpNode);
         treeMapping.SelectedNode = tmpNode;
       }
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void buttonRemove_Click(object sender, EventArgs e)
@@ -1178,7 +1179,7 @@ namespace MediaPortal.Plugins
       if (result == DialogResult.Yes)
       {
         node.Remove();
-        changedSettings = true;
+        _changedSettings = true;
       }
     }
 
@@ -1247,14 +1248,14 @@ namespace MediaPortal.Plugins
           //}
           break;
       }
-      changedSettings = true;
+      _changedSettings = true;
 
       treeMapping_AfterSelect(this, new TreeViewEventArgs(treeMapping.SelectedNode, TreeViewAction.ByKeyboard));
     }
 
     private void buttonDefault_Click(object sender, EventArgs e)
     {
-      string fileName = inputClassName + ".xml";
+      string fileName = _inputClassName + ".xml";
       string filePath = Config.GetFile(Config.Dir.CustomInputDevice, fileName);
 
       if (File.Exists(filePath))
@@ -1287,19 +1288,19 @@ namespace MediaPortal.Plugins
         node.Text = "All Layers";
       else
         node.Text = "Layer " + comboBoxLayer.SelectedIndex;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void comboBoxCondProperty_TextChanged(object sender, EventArgs e)
     {
-      if (!((Control)sender).Focused) return;
+      if (!((Control) sender).Focused) return;
 
       ConditionPropChanged();
     }
 
     private void comboBoxCmdProperty_TextChanged(object sender, EventArgs e)
     {
-      if (!((Control)sender).Focused) return;
+      if (!((Control) sender).Focused) return;
 
       CommandPropChanged();
     }
@@ -1331,7 +1332,7 @@ namespace MediaPortal.Plugins
       }
       else
         node.Tag = new Data("SOUND", null, comboBoxSound.SelectedItem);
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void textBoxKeyChar_KeyUp(object sender, KeyEventArgs e)
@@ -1347,7 +1348,7 @@ namespace MediaPortal.Plugins
       node.Tag = new Data("COMMAND", "KEY", key);
       node.Text = String.Format("Key Pressed: {0} [{1}]", keyChar, keyCode);
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void textBoxKeyCode_KeyUp(object sender, KeyEventArgs e)
@@ -1366,7 +1367,7 @@ namespace MediaPortal.Plugins
     {
       TreeNode node = getNode("COMMAND");
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void radioButtonBlast_Click(object sender, EventArgs e)
@@ -1383,7 +1384,7 @@ namespace MediaPortal.Plugins
       node.Text = "";
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
       UpdateCombo(ref comboBoxCmdProperty, MPControlPlugin.GetFileList(true), String.Empty);
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void CommandPropChanged()
@@ -1436,12 +1437,12 @@ namespace MediaPortal.Plugins
           }
         case "POWER":
           node.Tag = new Data("COMMAND", "POWER",
-                              nativePowerList[Array.IndexOf(powerList, (string) comboBoxCmdProperty.SelectedItem)]);
+                              _nativePowerList[Array.IndexOf(_powerList, (string) comboBoxCmdProperty.SelectedItem)]);
           node.Text = (string) comboBoxCmdProperty.SelectedItem;
           break;
         case "PROCESS":
           node.Tag = new Data("COMMAND", "PROCESS",
-                              nativeProcessList[Array.IndexOf(processList, (string) comboBoxCmdProperty.SelectedItem)]);
+                              _nativeProcessList[Array.IndexOf(_processList, (string) comboBoxCmdProperty.SelectedItem)]);
           node.Text = (string) comboBoxCmdProperty.SelectedItem;
           break;
         case "BLAST":
@@ -1471,7 +1472,7 @@ namespace MediaPortal.Plugins
           }
       }
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     private void ConditionPropChanged()
@@ -1506,7 +1507,7 @@ namespace MediaPortal.Plugins
         case "PLAYER":
           {
             node.Tag = new Data("CONDITION", "PLAYER",
-                                nativePlayerList[Array.IndexOf(playerList, (string) comboBoxCondProperty.SelectedItem)]);
+                                _nativePlayerList[Array.IndexOf(_playerList, (string) comboBoxCondProperty.SelectedItem)]);
             node.Text = (string) comboBoxCondProperty.SelectedItem;
             break;
           }
@@ -1519,7 +1520,7 @@ namespace MediaPortal.Plugins
         case "*":
           break;
       }
-      changedSettings = true;
+      _changedSettings = true;
     }
 
     #region Nested type: Data
@@ -1579,11 +1580,6 @@ namespace MediaPortal.Plugins
     }
 
     #endregion
-
-
-
-
-
 
     //    private TreeNode tn;
     //
