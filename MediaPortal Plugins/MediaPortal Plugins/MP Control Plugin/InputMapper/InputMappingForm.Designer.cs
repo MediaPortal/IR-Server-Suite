@@ -371,8 +371,8 @@ namespace MediaPortal.Plugins
       this.comboBoxCmdProperty.Size = new System.Drawing.Size(176, 21);
       this.comboBoxCmdProperty.Sorted = true;
       this.comboBoxCmdProperty.TabIndex = 7;
-      this.comboBoxCmdProperty.SelectionChangeCommitted += new System.EventHandler(this.comboBoxCmdProperty_SelectionChangeCommitted);
-      this.comboBoxCmdProperty.KeyUp += new System.Windows.Forms.KeyEventHandler(this.comboBoxCmdProperty_KeyUp);
+      this.comboBoxCmdProperty.SelectedIndexChanged += new System.EventHandler(this.comboBoxCmdProperty_SelectedIndexChanged);
+      this.comboBoxCmdProperty.TextChanged += new System.EventHandler(this.comboBoxCmdProperty_TextChanged);
       // 
       // groupBoxCondition
       // 
@@ -402,7 +402,7 @@ namespace MediaPortal.Plugins
       this.radioButtonPlugin.TabIndex = 5;
       this.radioButtonPlugin.Text = "Plugin is enabled";
       this.radioButtonPlugin.UseVisualStyleBackColor = true;
-      this.radioButtonPlugin.Click += new System.EventHandler(this.radioButtonPlugin_Click);
+      this.radioButtonPlugin.CheckedChanged += new System.EventHandler(this.radioButtonPlugin_CheckedChanged);
       // 
       // radioButtonWindow
       // 
@@ -414,7 +414,7 @@ namespace MediaPortal.Plugins
       this.radioButtonWindow.TabIndex = 0;
       this.radioButtonWindow.Text = "Window";
       this.radioButtonWindow.UseVisualStyleBackColor = true;
-      this.radioButtonWindow.Click += new System.EventHandler(this.radioButtonWindow_Click);
+      this.radioButtonWindow.CheckedChanged += new System.EventHandler(this.radioButtonWindow_CheckedChanged);
       // 
       // radioButtonFullscreen
       // 
@@ -426,7 +426,7 @@ namespace MediaPortal.Plugins
       this.radioButtonFullscreen.TabIndex = 1;
       this.radioButtonFullscreen.Text = "Fullscreen";
       this.radioButtonFullscreen.UseVisualStyleBackColor = true;
-      this.radioButtonFullscreen.Click += new System.EventHandler(this.radioButtonFullscreen_Click);
+      this.radioButtonFullscreen.CheckedChanged += new System.EventHandler(this.radioButtonFullscreen_CheckedChanged);
       // 
       // radioButtonPlaying
       // 
@@ -438,7 +438,7 @@ namespace MediaPortal.Plugins
       this.radioButtonPlaying.TabIndex = 2;
       this.radioButtonPlaying.Text = "Playing";
       this.radioButtonPlaying.UseVisualStyleBackColor = true;
-      this.radioButtonPlaying.Click += new System.EventHandler(this.radioButtonPlaying_Click);
+      this.radioButtonPlaying.CheckedChanged += new System.EventHandler(this.radioButtonPlaying_CheckedChanged);
       // 
       // radioButtonNoCondition
       // 
@@ -450,7 +450,7 @@ namespace MediaPortal.Plugins
       this.radioButtonNoCondition.TabIndex = 3;
       this.radioButtonNoCondition.Text = "No Condition";
       this.radioButtonNoCondition.UseVisualStyleBackColor = true;
-      this.radioButtonNoCondition.Click += new System.EventHandler(this.radioButtonNoCondition_Click);
+      this.radioButtonNoCondition.CheckedChanged += new System.EventHandler(this.radioButtonNoCondition_CheckedChanged);
       // 
       // comboBoxCondProperty
       // 
@@ -462,8 +462,8 @@ namespace MediaPortal.Plugins
       this.comboBoxCondProperty.Size = new System.Drawing.Size(176, 21);
       this.comboBoxCondProperty.Sorted = true;
       this.comboBoxCondProperty.TabIndex = 4;
-      this.comboBoxCondProperty.SelectionChangeCommitted += new System.EventHandler(this.comboBoxCondProperty_SelectionChangeCommitted);
-      this.comboBoxCondProperty.KeyUp += new System.Windows.Forms.KeyEventHandler(this.comboBoxCondProperty_KeyUp);
+      this.comboBoxCondProperty.SelectedIndexChanged += new System.EventHandler(this.comboBoxCondProperty_SelectedIndexChanged);
+      this.comboBoxCondProperty.TextChanged += new System.EventHandler(this.comboBoxCondProperty_TextChanged);
       // 
       // groupBoxLayer
       // 
@@ -512,8 +512,10 @@ namespace MediaPortal.Plugins
       // 
       // InputMappingForm
       // 
-      this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+      this.AcceptButton = this.buttonOk;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScroll = true;
+      this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(590, 487);
       this.Controls.Add(this.labelExpand);
       this.Controls.Add(this.treeMapping);

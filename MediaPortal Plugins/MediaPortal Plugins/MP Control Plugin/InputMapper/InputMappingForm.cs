@@ -941,30 +941,36 @@ namespace MediaPortal.Plugins
         name = name.Substring(0, index) + abbreviation + name.Substring(index + abbreviation.Length);
     }
 
-    private void radioButtonWindow_Click(object sender, EventArgs e)
+    private void radioButtonWindow_CheckedChanged(object sender, EventArgs e)
     {
+      if (!((Control)sender).Focused) return;
+
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
       comboBoxCondProperty.Enabled = true;
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "WINDOW", "0");
-      UpdateCombo(ref comboBoxCondProperty, windowsList, GetFriendlyName(Enum.GetName(typeof (GUIWindow.Window), 0)));
-      node.Text = (string) comboBoxCondProperty.SelectedItem;
+      UpdateCombo(ref comboBoxCondProperty, windowsList, GetFriendlyName(Enum.GetName(typeof(GUIWindow.Window), 0)));
+      node.Text = (string)comboBoxCondProperty.SelectedItem;
       changedSettings = true;
     }
 
-    private void radioButtonFullscreen_Click(object sender, EventArgs e)
+    private void radioButtonFullscreen_CheckedChanged(object sender, EventArgs e)
     {
+      if (!((Control)sender).Focused) return;
+
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCondProperty.Enabled = true;
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "FULLSCREEN", "true");
       UpdateCombo(ref comboBoxCondProperty, fullScreenList, "Fullscreen");
-      node.Text = (string) comboBoxCondProperty.SelectedItem;
+      node.Text = (string)comboBoxCondProperty.SelectedItem;
       changedSettings = true;
     }
 
-    private void radioButtonPlaying_Click(object sender, EventArgs e)
+    private void radioButtonPlaying_CheckedChanged(object sender, EventArgs e)
     {
+      if (!((Control)sender).Focused) return;
+
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCondProperty.Enabled = true;
       TreeNode node = getNode("CONDITION");
@@ -974,19 +980,10 @@ namespace MediaPortal.Plugins
       changedSettings = true;
     }
 
-    private void radioButtonPlugin_Click(object sender, EventArgs e)
+    private void radioButtonNoCondition_CheckedChanged(object sender, EventArgs e)
     {
-      comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
-      comboBoxCondProperty.Enabled = true;
-      TreeNode node = getNode("CONDITION");
-      node.Tag = new Data("CONDITION", "PLUGIN", _pluginList[0]);
-      UpdateCombo(ref comboBoxCondProperty, _pluginList.ToArray(), _pluginList[0]);
-      node.Text = comboBoxCondProperty.Text;
-      changedSettings = true;
-    }
+      if (!((Control)sender).Focused) return;
 
-    private void radioButtonNoCondition_Click(object sender, EventArgs e)
-    {
       comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCondProperty.Enabled = false;
       comboBoxCondProperty.Items.Clear();
@@ -994,6 +991,19 @@ namespace MediaPortal.Plugins
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "*", null);
       node.Text = "No Condition";
+      changedSettings = true;
+    }
+
+    private void radioButtonPlugin_CheckedChanged(object sender, EventArgs e)
+    {
+      if (!((Control)sender).Focused) return;
+
+      comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
+      comboBoxCondProperty.Enabled = true;
+      TreeNode node = getNode("CONDITION");
+      node.Tag = new Data("CONDITION", "PLUGIN", _pluginList[0]);
+      UpdateCombo(ref comboBoxCondProperty, _pluginList.ToArray(), _pluginList[0]);
+      node.Text = comboBoxCondProperty.Text;
       changedSettings = true;
     }
 
@@ -1280,17 +1290,34 @@ namespace MediaPortal.Plugins
       changedSettings = true;
     }
 
-    private void comboBoxCondProperty_SelectionChangeCommitted(object sender, EventArgs e)
+    private void comboBoxCondProperty_TextChanged(object sender, EventArgs e)
     {
-      //FIXME: chefkoch 2009-06-17 : not sure why this should be done only for DropDownList
-      //if (comboBoxCondProperty.DropDownStyle == ComboBoxStyle.DropDownList)
+      if (!((Control)sender).Focused) return;
+
       ConditionPropChanged();
     }
 
-    private void comboBoxCmdProperty_SelectionChangeCommitted(object sender, EventArgs e)
+    private void comboBoxCmdProperty_TextChanged(object sender, EventArgs e)
     {
-      if (comboBoxCmdProperty.DropDownStyle == ComboBoxStyle.DropDownList)
-        CommandPropChanged();
+      if (!((Control)sender).Focused) return;
+
+      CommandPropChanged();
+    }
+
+    private void comboBoxCondProperty_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (!comboBoxCondProperty.Focused) return;
+      if (comboBoxCondProperty.DropDownStyle != ComboBoxStyle.DropDownList) return;
+
+      ConditionPropChanged();
+    }
+
+    private void comboBoxCmdProperty_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (!comboBoxCmdProperty.Focused) return;
+      if (comboBoxCmdProperty.DropDownStyle != ComboBoxStyle.DropDownList) return;
+
+      CommandPropChanged();
     }
 
     private void comboBoxSound_SelectionChangeCommitted(object sender, EventArgs e)
@@ -1357,20 +1384,6 @@ namespace MediaPortal.Plugins
       ((Data) node.Tag).Focus = checkBoxGainFocus.Checked;
       UpdateCombo(ref comboBoxCmdProperty, MPControlPlugin.GetFileList(true), String.Empty);
       changedSettings = true;
-    }
-
-    private void comboBoxCondProperty_KeyUp(object sender, KeyEventArgs e)
-    {
-      //FIXME: chefkoch 2009-06-17 : not sure why this should be done only for DropDownList
-      //if (e.KeyCode == Keys.Enter && comboBoxCondProperty.DropDownStyle == ComboBoxStyle.DropDown)
-      if (e.KeyCode == Keys.Enter)
-        ConditionPropChanged();
-    }
-
-    private void comboBoxCmdProperty_KeyUp(object sender, KeyEventArgs e)
-    {
-      if (e.KeyCode == Keys.Enter && comboBoxCmdProperty.DropDownStyle == ComboBoxStyle.DropDown)
-        CommandPropChanged();
     }
 
     private void CommandPropChanged()
@@ -1566,6 +1579,11 @@ namespace MediaPortal.Plugins
     }
 
     #endregion
+
+
+
+
+
 
     //    private TreeNode tn;
     //
