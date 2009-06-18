@@ -1,4 +1,4 @@
-#region Copyright (C) 2005-2009 Team MediaPortal
+ï»¿#region Copyright (C) 2005-2009 Team MediaPortal
 
 // Copyright (C) 2005-2009 Team MediaPortal
 // http://www.team-mediaportal.com
@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("IrssScheduler")]
-[assembly: AssemblyCopyright("Copyright ©  2008")]
+[assembly: AssemblyCopyright("Copyright ï¿½  2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

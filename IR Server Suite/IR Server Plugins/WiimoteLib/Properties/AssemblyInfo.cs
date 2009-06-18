@@ -1,4 +1,4 @@
-#region Copyright (C) 2005-2009 Team MediaPortal
+ï»¿#region Copyright (C) 2005-2009 Team MediaPortal
 
 // Copyright (C) 2005-2009 Team MediaPortal
 // http://www.team-mediaportal.com
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Brian Peek (www.brianpeek.com)")]
 [assembly: AssemblyProduct("WiimoteLib")]
-[assembly: AssemblyCopyright("Copyright © 2007 Brian Peek (www.brianpeek.com)")]
+[assembly: AssemblyCopyright("Copyright ï¿½ 2007 Brian Peek (www.brianpeek.com)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
