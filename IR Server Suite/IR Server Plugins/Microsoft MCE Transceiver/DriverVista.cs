@@ -1,3 +1,25 @@
+#region Copyright (C) 2005-2009 Team MediaPortal
+
+// Copyright (C) 2005-2009 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// This Program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+// 
+// This Program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with GNU Make; see the file COPYING.  If not, write to
+// the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+// http://www.gnu.org/copyleft/gpl.html
+
+#endregion
+
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -331,11 +353,11 @@ namespace InputService.Plugin
     private const int PacketTimeout = 100;
     //private const int WriteSyncTimeout = 10000;
 
-    const int ReadThreadTimeout = 200;
-    const int MaxReadThreadTries = 10;
+    private const int ReadThreadTimeout = 200;
+    private const int MaxReadThreadTries = 10;
 
-    const int ErrorBadCommand = 22;
-    const int ErrorOperationAborted = 995;
+    private const int ErrorBadCommand = 22;
+    private const int ErrorOperationAborted = 995;
 
     #endregion Constants
 
@@ -359,8 +381,8 @@ namespace InputService.Plugin
 
     private Thread _readThread;
     private ReadThreadMode _readThreadMode;
-	private ReadThreadMode _readThreadModeNext;
-	private bool _deviceReceiveStarted;
+    private ReadThreadMode _readThreadModeNext;
+    private bool _deviceReceiveStarted;
 
     #endregion Variables
 
@@ -602,12 +624,12 @@ namespace InputService.Plugin
             switch (lastError)
             {
               case ErrorIoPending:
-            waitHandle.WaitOne();
+                waitHandle.WaitOne();
 
-            bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesReturned, false);
-            lastError = Marshal.GetLastWin32Error();
+                bool getOverlapped = GetOverlappedResult(_eHomeHandle, overlapped.Overlapped, out bytesReturned, false);
+                lastError = Marshal.GetLastWin32Error();
 
-            if (!getOverlapped)
+                if (!getOverlapped)
                 {
                   if (lastError == ErrorBadCommand)
                     goto case ErrorBadCommand;
@@ -632,9 +654,9 @@ namespace InputService.Plugin
                 break;
 
               default:
-              throw new Win32Exception(lastError);
+                throw new Win32Exception(lastError);
+            }
           }
-        }
         }
         catch
         {
@@ -942,7 +964,7 @@ namespace InputService.Plugin
     /// <summary>
     /// Restart the device read thread.
     /// </summary>
-    void RestartReadThread(ReadThreadMode mode)
+    private void RestartReadThread(ReadThreadMode mode)
     {
       // Alternative to StopReadThread() ... StartReadThread(). Avoids Thread.Abort.
       int numTriesLeft;

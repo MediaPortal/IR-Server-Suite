@@ -82,6 +82,10 @@ http://www.gnu.org/copyleft/gpl.html]]></FileHeader>
       <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AA_BB" ElementKind="Constants" />
       <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="StaticReadonly" />
       <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="Other" />
+      <Abbreviation Text="MP" />
+      <Abbreviation Text="XP" />
+      <Abbreviation Text="MCE" />
+      <Abbreviation Text="SVN" />
     </Naming2>
   </CodeStyleSettings>
 </Configuration>

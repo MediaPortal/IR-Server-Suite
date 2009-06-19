@@ -60,11 +60,11 @@ namespace MediaPortal.Plugins
     private readonly string[] _playerList = new string[] {"TV is running", "DVD is playing", "Media is playing"};
 
     private readonly string[] _powerList = new string[]
-                                            {
-                                              "Exit MediaPortal", "Reboot Windows", "Shutdown Windows",
-                                              "Standby Windows"
-                                              , "Hibernate Windows"
-                                            };
+                                             {
+                                               "Exit MediaPortal", "Reboot Windows", "Shutdown Windows",
+                                               "Standby Windows"
+                                               , "Hibernate Windows"
+                                             };
 
     private readonly string[] _processList = new string[] {"Close Process", "Kill Process"};
 
@@ -1507,7 +1507,8 @@ namespace MediaPortal.Plugins
         case "PLAYER":
           {
             node.Tag = new Data("CONDITION", "PLAYER",
-                                _nativePlayerList[Array.IndexOf(_playerList, (string) comboBoxCondProperty.SelectedItem)]);
+                                _nativePlayerList[Array.IndexOf(_playerList, (string) comboBoxCondProperty.SelectedItem)
+                                  ]);
             node.Text = (string) comboBoxCondProperty.SelectedItem;
             break;
           }
