@@ -240,7 +240,7 @@ Page custom PageServerServiceMode PageLeaveServerServiceMode
 !endif
 
   #SectionGroupTools
-  !insertmacro "${MacroName}" "SectionAbstractor"
+  ;!insertmacro "${MacroName}" "SectionAbstractor"
   !insertmacro "${MacroName}" "SectionDebugClient"
   !insertmacro "${MacroName}" "SectionIRFileTool"
   !insertmacro "${MacroName}" "SectionKeyboardInputRelay"
@@ -708,7 +708,7 @@ SectionGroupEnd
 !endif
 
 SectionGroup "Tools" SectionGroupTools
-
+/*
 ${MementoSection} "Abstractor" SectionAbstractor
   ${LOG_TEXT} "INFO" "Installing Abstractor..."
   ${KILLPROCESS} "Abstractor.exe"
@@ -731,7 +731,7 @@ ${MementoSectionEnd}
   ; remove files
   RMDir /R /REBOOTOK "$DIR_INSTALL\Abstractor"
 !macroend
-
+*/
 ;======================================
 
 ${MementoSection} "Debug Client" SectionDebugClient
