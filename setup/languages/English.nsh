@@ -49,6 +49,20 @@
 !insertmacro LANG_STRING TEXT_ADDREMOVE_UPDOWN_OPT2     "Change settings (advanced)"
 
 
+# Strings for UninstallMode-Page
+!insertmacro LANG_STRING TEXT_UNMODE_HEADER       "Uninstallation Mode"
+!insertmacro LANG_STRING TEXT_UNMODE_HEADER2      "Please choose the mode, you want to do the uninstallation."
+!insertmacro LANG_STRING TEXT_UNMODE_OPT0         "Standard Uninstall (recommended)"
+!insertmacro LANG_STRING TEXT_UNMODE_OPT1         "Complete Uninstallation for ${PRODUCT_NAME}"
+;!insertmacro LANG_STRING TEXT_UNMODE_OPT2         "Full MediaPortal Products cleanup"
+!insertmacro LANG_STRING TEXT_UNMODE_OPT0_DESC    "Only the main application will be uninstalled. Userfiles and settings won't be deleted (recommended)"
+!insertmacro LANG_STRING TEXT_UNMODE_OPT1_DESC    "This will uninstall ${PRODUCT_NAME} and remove all userfiles"
+;!insertmacro LANG_STRING TEXT_UNMODE_OPT2_DESC    "This will also remove all files, folders, databases, settings and registry keys which might be leftovers from older MediaPortal versions."
+!insertmacro LANG_STRING TEXT_UNMODE_OPT1_MSGBOX  "Are you sure that you want to do a Complete Uninstallation? This can not be undone!"
+;!insertmacro LANG_STRING TEXT_UNMODE_OPT2_MSGBOX  "Are you sure that you want to do a Full MediaPortal Products cleanup? This can not be undone!"
+
+
+
 # Strings for ServerServiceMode-Page
 !insertmacro LANG_STRING ServerServiceModePage_HEADER    "Choose the Server/Service Mode"
 !insertmacro LANG_STRING ServerServiceModePage_HEADER2   "Choose whether you want to use InputService or IRServer"

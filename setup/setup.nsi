@@ -115,7 +115,7 @@ Var frominstall
 
 !include "pages\AddRemovePage.nsh"
 !include "pages\ServerServiceMode.nsh"
-;!include "pages\UninstallModePage.nsh"
+!include "pages\UninstallModePage.nsh"
 
 
 #---------------------------------------------------------------------------
@@ -206,8 +206,9 @@ Page custom PageServerServiceMode PageLeaveServerServiceMode
 ; UnInstaller Interface
 !define MUI_PAGE_CUSTOMFUNCTION_PRE un.WelcomePagePre
 !insertmacro MUI_UNPAGE_WELCOME
-!define MUI_PAGE_CUSTOMFUNCTION_PRE un.ConfirmPagePre
-!insertmacro MUI_UNPAGE_CONFIRM
+UninstPage custom un.UninstallModePage un.UninstallModePageLeave
+;!define MUI_PAGE_CUSTOMFUNCTION_PRE un.ConfirmPagePre
+;!insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 !define MUI_PAGE_CUSTOMFUNCTION_PRE un.FinishPagePre
 !insertmacro MUI_UNPAGE_FINISH
@@ -1025,6 +1026,9 @@ Section "-Complete"
   !insertmacro StartTVService
 !endif
 
+  ; removing tve2 blaster
+  Delete "$MPdir.Plugins\Process\TV2BlasterPlugin.dll"
+
   ; Use the all users context
   SetShellVarContext all
 
@@ -1114,6 +1118,12 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
   DeleteRegKey HKLM "Software\${PRODUCT_NAME}"
 
+  ${If} $UnInstallMode == 1
+
+    ${LOG_TEXT} "INFO" "Removing User Settings"
+    RMDir /r "$APPDATA\${PRODUCT_NAME}"
+
+  ${EndIf}
 
   ${If} $frominstall == 1
     Quit
