@@ -86,6 +86,7 @@ http://www.gnu.org/copyleft/gpl.html]]></FileHeader>
       <Abbreviation Text="XP" />
       <Abbreviation Text="MCE" />
       <Abbreviation Text="SVN" />
+      <Abbreviation Text="ID" />
     </Naming2>
   </CodeStyleSettings>
 </Configuration>
