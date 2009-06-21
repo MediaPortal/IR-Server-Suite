@@ -241,7 +241,7 @@ namespace InputService.Plugin
 
         TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
 
-        StringBuilder keyCode = new StringBuilder(2*DeviceBufferSize);
+        StringBuilder keyCode = new StringBuilder(2 * DeviceBufferSize);
         for (int index = 0; index < DeviceBufferSize; index++)
           keyCode.Append(_deviceBuffer[index].ToString("X2"));
 

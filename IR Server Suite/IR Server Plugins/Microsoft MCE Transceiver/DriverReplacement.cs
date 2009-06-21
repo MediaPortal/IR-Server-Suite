@@ -484,7 +484,7 @@ namespace InputService.Plugin
       WriteSync(new byte[] {0x9F, 0x0D});
       WriteSync(new byte[] {0x9F, 0x13});
 
-      Thread.Sleep(4*PacketTimeout);
+      Thread.Sleep(4 * PacketTimeout);
 
       SetTimeout(PacketTimeout);
       SetInputPort(InputPort.Receive);
@@ -511,11 +511,11 @@ namespace InputService.Plugin
       {
         double time = code.TimingData[index];
 
-        byte duration = (byte) Math.Abs(Math.Round(time/TimingResolution));
+        byte duration = (byte) Math.Abs(Math.Round(time / TimingResolution));
         bool pulse = (time > 0);
 
 #if DEBUG
-        DebugWrite("{0}{1}, ", pulse ? '+' : '-', duration*TimingResolution);
+        DebugWrite("{0}{1}, ", pulse ? '+' : '-', duration * TimingResolution);
 #endif
 
         while (duration > 0x7F)
@@ -533,7 +533,7 @@ namespace InputService.Plugin
 #endif
 
       // Insert byte count markers into packet data bytes ...
-      int subpackets = (int) Math.Ceiling(packet.Count/(double) 4);
+      int subpackets = (int) Math.Ceiling(packet.Count / (double) 4);
 
       byte[] output = new byte[packet.Count + subpackets + 1];
 
@@ -563,7 +563,7 @@ namespace InputService.Plugin
       byte[] timeoutPacket = new byte[SetTimeoutPacket.Length];
       SetTimeoutPacket.CopyTo(timeoutPacket, 0);
 
-      int timeoutSamples = 1000*timeout/TimingResolution; // Timeout as a multiple of the timing resolution
+      int timeoutSamples = 1000 * timeout / TimingResolution; // Timeout as a multiple of the timing resolution
 
       timeoutPacket[2] = (byte) (timeoutSamples >> 8);
       timeoutPacket[3] = (byte) (timeoutSamples & 0xFF);
@@ -634,7 +634,7 @@ namespace InputService.Plugin
       {
         for (int scaler = 1; scaler <= 4; scaler++)
         {
-          int divisor = (10000000 >> (2*scaler))/carrier;
+          int divisor = (10000000 >> (2 * scaler)) / carrier;
 
           if (divisor <= 0xFF)
           {
@@ -696,7 +696,7 @@ namespace InputService.Plugin
         _readThreadMode = ReadThreadMode.Stop;
         _stopReadThread.Set();
         if (Thread.CurrentThread != _readThread)
-          _readThread.Join(PacketTimeout*2);
+          _readThread.Join(PacketTimeout * 2);
 
         //_readThread.Abort();
       }
@@ -877,7 +877,7 @@ namespace InputService.Plugin
 
             while (true)
             {
-              int handle = WaitHandle.WaitAny(waitHandles, 2*PacketTimeout, false);
+              int handle = WaitHandle.WaitAny(waitHandles, 2 * PacketTimeout, false);
 
               if (handle == ErrorWaitTimeout)
                 continue;
@@ -927,7 +927,7 @@ namespace InputService.Plugin
               {
                 byte b1 = packetBytes[indexOfFF + 2];
 
-                firmware += (b1 >> 4) + (0.1*(b1 & 0x0F));
+                firmware += (b1 >> 4) + (0.1 * (b1 & 0x0F));
                 DebugWriteLine("Firmware: {0}", firmware);
               }
 
@@ -935,7 +935,7 @@ namespace InputService.Plugin
               {
                 byte b1 = packetBytes[indexOfFF + 2];
 
-                firmware += (0.01*(b1 >> 4)) + (0.001*(b1 & 0x0F));
+                firmware += (0.01 * (b1 >> 4)) + (0.001 * (b1 & 0x0F));
                 DebugWriteLine("Firmware: {0}", firmware);
               }
 
@@ -984,20 +984,20 @@ namespace InputService.Plugin
                     int onTime, onCount;
                     GetIrCodeLengths(_learningCode, out onTime, out onCount);
 
-                    double carrierCount = (b1*256) + b2;
+                    double carrierCount = (b1 * 256) + b2;
 
-                    if (carrierCount/onCount < 2.0)
+                    if (carrierCount / onCount < 2.0)
                     {
                       _learningCode.Carrier = IrCode.CarrierFrequencyDCMode;
                     }
                     else
                     {
-                      double carrier = 1000000*carrierCount/onTime;
+                      double carrier = 1000000 * carrierCount / onTime;
 
                       // TODO: Double-Check this calculation.
                       if (carrier > 32000)
                       {
-                        _learningCode.Carrier = (int) (carrier + 0.05*carrier - 0.666667);
+                        _learningCode.Carrier = (int) (carrier + 0.05 * carrier - 0.666667);
                         // was: _learningCode.Carrier = (int) (carrier + 0.05*carrier - 32000/48000);
                       }
                       else
@@ -1198,7 +1198,7 @@ namespace InputService.Plugin
 
             if ((curByte & 0x7F) != 0x7F)
             {
-              timingData.Add(len*TimingResolution);
+              timingData.Add(len * TimingResolution);
               len = 0;
             }
           }
@@ -1207,7 +1207,7 @@ namespace InputService.Plugin
         }
 
         if (len != 0)
-          timingData.Add(len*TimingResolution);
+          timingData.Add(len * TimingResolution);
 
 #if DEBUG
         DebugWrite("Received timing:    ");

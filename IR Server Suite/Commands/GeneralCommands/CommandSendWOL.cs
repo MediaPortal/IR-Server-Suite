@@ -147,7 +147,7 @@ namespace Commands.General
       if (pass != null && pass.Length != 4 && pass.Length != 6)
         throw new ArgumentException("Not a valid password (must be null, 4 or 6 bytes)", "password");
 
-      int packetLength = Header.Length + (16*macAddress.Length);
+      int packetLength = Header.Length + (16 * macAddress.Length);
       if (pass != null)
         packetLength += pass.Length;
 

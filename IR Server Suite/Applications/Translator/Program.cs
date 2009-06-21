@@ -606,7 +606,7 @@ namespace Translator
               Win32.GetDesktopWindowHandle(),
               (int) Win32.WindowsMessage.WM_APPCOMMAND,
               0,
-              65536*(int) Win32.AppCommand.APPCOMMAND_VOLUME_UP);
+              65536 * (int) Win32.AppCommand.APPCOMMAND_VOLUME_UP);
             break;
 
           case "Volume Down":
@@ -614,7 +614,7 @@ namespace Translator
               Win32.GetDesktopWindowHandle(),
               (int) Win32.WindowsMessage.WM_APPCOMMAND,
               0,
-              65536*(int) Win32.AppCommand.APPCOMMAND_VOLUME_DOWN);
+              65536 * (int) Win32.AppCommand.APPCOMMAND_VOLUME_DOWN);
             break;
 
           case "Volume Mute":
@@ -622,7 +622,7 @@ namespace Translator
               Win32.GetDesktopWindowHandle(),
               (int) Win32.WindowsMessage.WM_APPCOMMAND,
               0,
-              65536*(int) Win32.AppCommand.APPCOMMAND_VOLUME_MUTE);
+              65536 * (int) Win32.AppCommand.APPCOMMAND_VOLUME_MUTE);
             break;
 
           default:

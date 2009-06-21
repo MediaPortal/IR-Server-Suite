@@ -109,7 +109,7 @@ namespace IrssUtils
         {
           for (int i = 0; i < totalEntries; i++)
           {
-            tmpBuffer = new IntPtr((int) buffer + (i*sizeofINFO));
+            tmpBuffer = new IntPtr((int) buffer + (i * sizeofINFO));
             _SERVER_INFO_100 svrInfo = (_SERVER_INFO_100) Marshal.PtrToStructure(tmpBuffer, typeof (_SERVER_INFO_100));
 
             if (includeLocalMachine ||

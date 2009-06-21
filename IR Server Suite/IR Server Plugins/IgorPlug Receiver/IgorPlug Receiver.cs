@@ -425,7 +425,7 @@ namespace InputService.Plugin
 
       foreach (byte dataByte in data)
       {
-        timingData.Add((int) Math.Round(dataByte*TimeCodeMultiplier*multiplier));
+        timingData.Add((int) Math.Round(dataByte * TimeCodeMultiplier * multiplier));
 
         multiplier *= -1;
       }
@@ -535,7 +535,7 @@ namespace InputService.Plugin
         i += OutLength;
       }
 
-      j = LastWrittenIndex%BytesToRead;
+      j = LastWrittenIndex % BytesToRead;
       k = 0;
       for (i = j; i < BytesToRead; i++)
         TimeCodeDiagram[k++] = OutputData[i];

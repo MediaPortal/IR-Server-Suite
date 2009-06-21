@@ -226,13 +226,13 @@ namespace InputService.Plugin
 
         if ((curByte & 0x7F) != 0x7F)
         {
-          timingData.Add(len*50);
+          timingData.Add(len * 50);
           len = 0;
         }
       }
 
       if (len != 0)
-        timingData.Add(len*50);
+        timingData.Add(len * 50);
 
       IrCode newCode = new IrCode(timingData.ToArray());
       newCode.FinalizeData();

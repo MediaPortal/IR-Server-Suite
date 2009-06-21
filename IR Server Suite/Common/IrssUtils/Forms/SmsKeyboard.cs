@@ -208,7 +208,7 @@ namespace IrssUtils.Forms
         _repeated = 0;
       }
 
-      int chrIdx = _repeated%keys.Length;
+      int chrIdx = _repeated % keys.Length;
 
       string chr = keys[chrIdx].ToString();
 

@@ -528,7 +528,7 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
       {
         double time = code.TimingData[index];
 
-        byte duration = (byte) Math.Abs(Math.Round(time/50));
+        byte duration = (byte) Math.Abs(Math.Round(time / 50));
         bool pulse = (time > 0);
 
         while (duration > 0x7F)
@@ -542,7 +542,7 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
       }
 
       // Insert byte count markers into packet data bytes ...
-      int subpackets = (int) Math.Ceiling(packet.Count/(double) 4);
+      int subpackets = (int) Math.Ceiling(packet.Count / (double) 4);
 
       byte[] output = new byte[packet.Count + subpackets + 1];
 

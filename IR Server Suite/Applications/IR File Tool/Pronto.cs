@@ -158,10 +158,10 @@ namespace IrFileTool
       if (prontoCarrier == 0x0000)
         prontoCarrier = ConvertToProntoCarrier(IrCode.CarrierFrequencyDefault);
 
-      double carrier = prontoCarrier*ProntoClock;
+      double carrier = prontoCarrier * ProntoClock;
 
-      int firstSeq = 2*prontoData[2];
-      int repeatSeq = 2*prontoData[3];
+      int firstSeq = 2 * prontoData[2];
+      int repeatSeq = 2 * prontoData[3];
 
       List<int> timingData = new List<int>();
 
@@ -184,7 +184,7 @@ namespace IrFileTool
 
       while (!done)
       {
-        int time = (int) (prontoData[index]*carrier);
+        int time = (int) (prontoData[index] * carrier);
 
         if (pulse)
           timingData.Add(time);
@@ -603,18 +603,18 @@ namespace IrFileTool
       }
 
       prontoCarrier = ConvertToProntoCarrier(irCodeCarrier);
-      carrier = prontoCarrier*ProntoClock;
+      carrier = prontoCarrier * ProntoClock;
 
       for (int index = 0; index < irCode.TimingData.Length; index++)
       {
         int duration = Math.Abs(irCode.TimingData[index]);
-        prontoData.Add((ushort) Math.Round(duration/carrier));
+        prontoData.Add((ushort) Math.Round(duration / carrier));
       }
 
-      if (prontoData.Count%2 != 0)
+      if (prontoData.Count % 2 != 0)
         prontoData.Add(SignalFree);
 
-      ushort burstPairs = (ushort) (prontoData.Count/2);
+      ushort burstPairs = (ushort) (prontoData.Count / 2);
 
       prontoData.Insert(0, (ushort) codeType); // Pronto Code Type
       prontoData.Insert(1, prontoCarrier); // IR Frequency
@@ -631,7 +631,7 @@ namespace IrFileTool
     /// <returns>The carrier frequency as an integer number.</returns>
     public static int ConvertFromProntoCarrier(ushort prontoCarrier)
     {
-      return (int) (1000000/(prontoCarrier*ProntoClock));
+      return (int) (1000000 / (prontoCarrier * ProntoClock));
     }
 
     /// <summary>
@@ -641,7 +641,7 @@ namespace IrFileTool
     /// <returns>The carrier frequency in Pronto format.</returns>
     public static ushort ConvertToProntoCarrier(int carrierFrequency)
     {
-      return (ushort) (1000000/(carrierFrequency*ProntoClock));
+      return (ushort) (1000000 / (carrierFrequency * ProntoClock));
     }
 
     #endregion Public Methods

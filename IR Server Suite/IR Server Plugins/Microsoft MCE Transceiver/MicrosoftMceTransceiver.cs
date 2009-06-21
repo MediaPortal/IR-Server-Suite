@@ -708,8 +708,8 @@ namespace InputService.Plugin
         int heldRepeats = _remoteHeldRepeats;
         if (_useSystemRatesRemote)
         {
-          firstRepeat = 250 + (SystemInformation.KeyboardDelay*250);
-          heldRepeats = (int) (1000.0/(2.5 + (SystemInformation.KeyboardSpeed*0.888)));
+          firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
+          heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
         }
 
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < firstRepeat)
@@ -815,8 +815,8 @@ namespace InputService.Plugin
         int heldRepeats = _keyboardHeldRepeats;
         if (_useSystemRatesRemote)
         {
-          firstRepeat = 250 + (SystemInformation.KeyboardDelay*250);
-          heldRepeats = (int) (1000.0/(2.5 + (SystemInformation.KeyboardSpeed*0.888)));
+          firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
+          heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
         }
 
         if (!_keyboardKeyRepeated && timeBetween.TotalMilliseconds < firstRepeat)
@@ -897,8 +897,8 @@ namespace InputService.Plugin
 
       #region Movement Delta
 
-      deltaX = (int) (deltaX*_mouseSensitivity);
-      deltaY = (int) (deltaY*_mouseSensitivity);
+      deltaX = (int) (deltaX * _mouseSensitivity);
+      deltaY = (int) (deltaY * _mouseSensitivity);
 
       if (deltaX != 0 || deltaY != 0)
       {

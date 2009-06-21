@@ -521,13 +521,13 @@ namespace WiimoteLib
       mWiimoteState.AccelState.RawY = buff[4];
       mWiimoteState.AccelState.RawZ = buff[5];
 
-      mWiimoteState.AccelState.X = ((float) mWiimoteState.AccelState.RawX - mWiimoteState.AccelCalibrationInfo.X0)/
+      mWiimoteState.AccelState.X = ((float) mWiimoteState.AccelState.RawX - mWiimoteState.AccelCalibrationInfo.X0) /
                                    ((float) mWiimoteState.AccelCalibrationInfo.XG -
                                     mWiimoteState.AccelCalibrationInfo.X0);
-      mWiimoteState.AccelState.Y = ((float) mWiimoteState.AccelState.RawY - mWiimoteState.AccelCalibrationInfo.Y0)/
+      mWiimoteState.AccelState.Y = ((float) mWiimoteState.AccelState.RawY - mWiimoteState.AccelCalibrationInfo.Y0) /
                                    ((float) mWiimoteState.AccelCalibrationInfo.YG -
                                     mWiimoteState.AccelCalibrationInfo.Y0);
-      mWiimoteState.AccelState.Z = ((float) mWiimoteState.AccelState.RawZ - mWiimoteState.AccelCalibrationInfo.Z0)/
+      mWiimoteState.AccelState.Z = ((float) mWiimoteState.AccelState.RawZ - mWiimoteState.AccelCalibrationInfo.Z0) /
                                    ((float) mWiimoteState.AccelCalibrationInfo.ZG -
                                     mWiimoteState.AccelCalibrationInfo.Z0);
     }
@@ -565,18 +565,18 @@ namespace WiimoteLib
           break;
       }
 
-      mWiimoteState.IRState.X1 = (mWiimoteState.IRState.RawX1/1023.5f);
-      mWiimoteState.IRState.X2 = (mWiimoteState.IRState.RawX2/1023.5f);
-      mWiimoteState.IRState.Y1 = (mWiimoteState.IRState.RawY1/767.5f);
-      mWiimoteState.IRState.Y2 = (mWiimoteState.IRState.RawY2/767.5f);
+      mWiimoteState.IRState.X1 = (mWiimoteState.IRState.RawX1 / 1023.5f);
+      mWiimoteState.IRState.X2 = (mWiimoteState.IRState.RawX2 / 1023.5f);
+      mWiimoteState.IRState.Y1 = (mWiimoteState.IRState.RawY1 / 767.5f);
+      mWiimoteState.IRState.Y2 = (mWiimoteState.IRState.RawY2 / 767.5f);
 
       if (mWiimoteState.IRState.Found1 && mWiimoteState.IRState.Found2)
       {
-        mWiimoteState.IRState.RawMidX = (mWiimoteState.IRState.RawX2 + mWiimoteState.IRState.RawX1)/2;
-        mWiimoteState.IRState.RawMidY = (mWiimoteState.IRState.RawY2 + mWiimoteState.IRState.RawY1)/2;
+        mWiimoteState.IRState.RawMidX = (mWiimoteState.IRState.RawX2 + mWiimoteState.IRState.RawX1) / 2;
+        mWiimoteState.IRState.RawMidY = (mWiimoteState.IRState.RawY2 + mWiimoteState.IRState.RawY1) / 2;
 
-        mWiimoteState.IRState.MidX = (mWiimoteState.IRState.X2 + mWiimoteState.IRState.X1)/2.0f;
-        mWiimoteState.IRState.MidY = (mWiimoteState.IRState.Y2 + mWiimoteState.IRState.Y1)/2.0f;
+        mWiimoteState.IRState.MidX = (mWiimoteState.IRState.X2 + mWiimoteState.IRState.X1) / 2.0f;
+        mWiimoteState.IRState.MidY = (mWiimoteState.IRState.Y2 + mWiimoteState.IRState.Y1) / 2.0f;
       }
       else
         mWiimoteState.IRState.MidX = mWiimoteState.IRState.MidY = 0.0f;
@@ -602,30 +602,30 @@ namespace WiimoteLib
           mWiimoteState.NunchukState.Z = (buff[offset + 5] & 0x01) == 0;
 
           mWiimoteState.NunchukState.AccelState.X = ((float) mWiimoteState.NunchukState.AccelState.RawX -
-                                                     mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.X0)/
+                                                     mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.X0) /
                                                     ((float)
                                                      mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.XG -
                                                      mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.X0);
           mWiimoteState.NunchukState.AccelState.Y = ((float) mWiimoteState.NunchukState.AccelState.RawY -
-                                                     mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.Y0)/
+                                                     mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.Y0) /
                                                     ((float)
                                                      mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.YG -
                                                      mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.Y0);
           mWiimoteState.NunchukState.AccelState.Z = ((float) mWiimoteState.NunchukState.AccelState.RawZ -
-                                                     mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.Z0)/
+                                                     mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.Z0) /
                                                     ((float)
                                                      mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.ZG -
                                                      mWiimoteState.NunchukState.CalibrationInfo.AccelCalibration.Z0);
 
           if (mWiimoteState.NunchukState.CalibrationInfo.MaxX != 0x00)
             mWiimoteState.NunchukState.X = ((float) mWiimoteState.NunchukState.RawX -
-                                            mWiimoteState.NunchukState.CalibrationInfo.MidX)/
+                                            mWiimoteState.NunchukState.CalibrationInfo.MidX) /
                                            ((float) mWiimoteState.NunchukState.CalibrationInfo.MaxX -
                                             mWiimoteState.NunchukState.CalibrationInfo.MinX);
 
           if (mWiimoteState.NunchukState.CalibrationInfo.MaxY != 0x00)
             mWiimoteState.NunchukState.Y = ((float) mWiimoteState.NunchukState.RawY -
-                                            mWiimoteState.NunchukState.CalibrationInfo.MidY)/
+                                            mWiimoteState.NunchukState.CalibrationInfo.MidY) /
                                            ((float) mWiimoteState.NunchukState.CalibrationInfo.MaxY -
                                             mWiimoteState.NunchukState.CalibrationInfo.MinY);
 
@@ -660,30 +660,30 @@ namespace WiimoteLib
 
           if (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxXL != 0x00)
             mWiimoteState.ClassicControllerState.XL = ((float) mWiimoteState.ClassicControllerState.RawXL -
-                                                       mWiimoteState.ClassicControllerState.CalibrationInfo.MidXL)/
+                                                       mWiimoteState.ClassicControllerState.CalibrationInfo.MidXL) /
                                                       (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxXL -
                                                        mWiimoteState.ClassicControllerState.CalibrationInfo.MinXL);
 
           if (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxYL != 0x00)
             mWiimoteState.ClassicControllerState.YL = ((float) mWiimoteState.ClassicControllerState.RawYL -
-                                                       mWiimoteState.ClassicControllerState.CalibrationInfo.MidYL)/
+                                                       mWiimoteState.ClassicControllerState.CalibrationInfo.MidYL) /
                                                       (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxYL -
                                                        mWiimoteState.ClassicControllerState.CalibrationInfo.MinYL);
 
           if (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxXR != 0x00)
             mWiimoteState.ClassicControllerState.XR = ((float) mWiimoteState.ClassicControllerState.RawXR -
-                                                       mWiimoteState.ClassicControllerState.CalibrationInfo.MidXR)/
+                                                       mWiimoteState.ClassicControllerState.CalibrationInfo.MidXR) /
                                                       (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxXR -
                                                        mWiimoteState.ClassicControllerState.CalibrationInfo.MinXR);
 
           if (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxYR != 0x00)
             mWiimoteState.ClassicControllerState.YR = ((float) mWiimoteState.ClassicControllerState.RawYR -
-                                                       mWiimoteState.ClassicControllerState.CalibrationInfo.MidYR)/
+                                                       mWiimoteState.ClassicControllerState.CalibrationInfo.MidYR) /
                                                       (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxYR -
                                                        mWiimoteState.ClassicControllerState.CalibrationInfo.MinYR);
 
           if (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxTriggerL != 0x00)
-            mWiimoteState.ClassicControllerState.TriggerL = (mWiimoteState.ClassicControllerState.RawTriggerL)/
+            mWiimoteState.ClassicControllerState.TriggerL = (mWiimoteState.ClassicControllerState.RawTriggerL) /
                                                             (float)
                                                             (mWiimoteState.ClassicControllerState.CalibrationInfo.
                                                                MaxTriggerL -
@@ -691,7 +691,7 @@ namespace WiimoteLib
                                                                MinTriggerL);
 
           if (mWiimoteState.ClassicControllerState.CalibrationInfo.MaxTriggerR != 0x00)
-            mWiimoteState.ClassicControllerState.TriggerR = (mWiimoteState.ClassicControllerState.RawTriggerR)/
+            mWiimoteState.ClassicControllerState.TriggerR = (mWiimoteState.ClassicControllerState.RawTriggerR) /
                                                             (float)
                                                             (mWiimoteState.ClassicControllerState.CalibrationInfo.
                                                                MaxTriggerR -

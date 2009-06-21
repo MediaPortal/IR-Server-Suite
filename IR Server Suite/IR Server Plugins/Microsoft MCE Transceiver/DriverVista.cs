@@ -918,12 +918,12 @@ namespace InputService.Plugin
       if (code.TimingData.Length == 0)
         return null;
 
-      byte[] data = new byte[code.TimingData.Length*4];
+      byte[] data = new byte[code.TimingData.Length * 4];
 
       int dataIndex = 0;
       for (int timeIndex = 0; timeIndex < code.TimingData.Length; timeIndex++)
       {
-        uint time = (uint) (50*(int) Math.Round((double) code.TimingData[timeIndex]/50));
+        uint time = (uint) (50 * (int) Math.Round((double) code.TimingData[timeIndex] / 50));
 
         for (int timeShift = 0; timeShift < 4; timeShift++)
         {
@@ -1294,7 +1294,7 @@ namespace InputService.Plugin
 
     private static int GetCarrierPeriod(int carrier)
     {
-      return (int) Math.Round(1000000.0/carrier);
+      return (int) Math.Round(1000000.0 / carrier);
     }
 
     private static TransmitMode GetTransmitMode(int carrier)
@@ -1307,7 +1307,7 @@ namespace InputService.Plugin
 
     private static int[] GetTimingDataFromPacket(byte[] packetBytes)
     {
-      int[] timingData = new int[packetBytes.Length/4];
+      int[] timingData = new int[packetBytes.Length / 4];
 
       int timingDataIndex = 0;
 

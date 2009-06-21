@@ -816,7 +816,7 @@ namespace InputService.Plugin
         bool right = ((dataBytes[1] & 0x04) != 0);
         bool left = ((dataBytes[1] & 0x01) != 0);
 
-        MouseEvent(xSign*xSize, ySign*ySize, right, left);
+        MouseEvent(xSign * xSize, ySign * ySize, right, left);
       }
       else if (dataBytes[7] == 0xAE)
       {
@@ -849,7 +849,7 @@ namespace InputService.Plugin
         bool right = (dataBytes[3] & 0x40) != 0;
         bool left = (dataBytes[3] & 0x20) != 0;
 
-        MouseEvent(xSign*xSize, ySign*ySize, right, left);
+        MouseEvent(xSign * xSize, ySign * ySize, right, left);
       }
       else if (dataBytes[7] == 0xEE)
       {
@@ -1070,8 +1070,8 @@ namespace InputService.Plugin
         int heldRepeats = _remoteHeldRepeats;
         if (_useSystemRatesRemote)
         {
-          firstRepeat = 250 + (SystemInformation.KeyboardDelay*250);
-          heldRepeats = (int) (1000.0/(2.5 + (SystemInformation.KeyboardSpeed*0.888)));
+          firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
+          heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
         }
 
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < firstRepeat)
@@ -1176,8 +1176,8 @@ namespace InputService.Plugin
         int heldRepeats = _keyboardHeldRepeats;
         if (_useSystemRatesRemote)
         {
-          firstRepeat = 250 + (SystemInformation.KeyboardDelay*250);
-          heldRepeats = (int) (1000.0/(2.5 + (SystemInformation.KeyboardSpeed*0.888)));
+          firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
+          heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
         }
 
         if (!_keyboardKeyRepeated && timeBetween.TotalMilliseconds < firstRepeat)
@@ -1258,8 +1258,8 @@ namespace InputService.Plugin
 
       #region Movement Delta
 
-      deltaX = (int) ((double) deltaX*_mouseSensitivity);
-      deltaY = (int) ((double) deltaY*_mouseSensitivity);
+      deltaX = (int) ((double) deltaX * _mouseSensitivity);
+      deltaY = (int) ((double) deltaY * _mouseSensitivity);
 
       if (deltaX != 0 || deltaY != 0)
       {

@@ -165,7 +165,7 @@ namespace VirtualRemote
             {
               if (button.StartsWith("~", StringComparison.OrdinalIgnoreCase))
               {
-                Thread.Sleep(button.Length*500);
+                Thread.Sleep(button.Length * 500);
               }
               else
               {

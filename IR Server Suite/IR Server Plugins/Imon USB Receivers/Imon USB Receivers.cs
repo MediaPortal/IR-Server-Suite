@@ -858,7 +858,7 @@ namespace InputService.Plugin
         bool right = ((dataBytes[3] & 0x40) != 0);
         bool left = ((dataBytes[3] & 0x20) != 0);
 
-        MouseEvent(xSign*xSize, ySign*ySize, right, left);
+        MouseEvent(xSign * xSize, ySign * ySize, right, left);
       }
       else if (dataBytes[7] == 0xEE)
       {
@@ -2069,7 +2069,7 @@ namespace InputService.Plugin
       }
       else
       {
-        MouseEvent(xSign*xSize, ySign*ySize, rightButton, leftButton);
+        MouseEvent(xSign * xSize, ySign * ySize, rightButton, leftButton);
         //if (_mouseHandler != null) _mouseHandler(this.Name, raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
       }
     }
@@ -2228,7 +2228,7 @@ namespace InputService.Plugin
                 bool right = (newArray[4] & 0x40) != 0;
                 bool left = (newArray[4] & 0x20) != 0;
 
-                MouseEvent(xSign*xSize, ySign*ySize, right, left);
+                MouseEvent(xSign * xSize, ySign * ySize, right, left);
               }
               else if (newArray[8] == 0xEE) // Front panel buttons/volume knob
               {
@@ -2702,8 +2702,8 @@ namespace InputService.Plugin
         int heldRepeats = _remoteHeldRepeats;
         if (_useSystemRatesRemote)
         {
-          firstRepeat = 250 + (SystemInformation.KeyboardDelay*250);
-          heldRepeats = (int) (1000.0/(2.5 + (SystemInformation.KeyboardSpeed*0.888)));
+          firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
+          heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
         }
 
         if (!_remoteButtonRepeated && timeBetween.TotalMilliseconds < firstRepeat)
@@ -2821,8 +2821,8 @@ namespace InputService.Plugin
         int heldRepeats = _keyboardHeldRepeats;
         if (_useSystemRatesRemote)
         {
-          firstRepeat = 250 + (SystemInformation.KeyboardDelay*250);
-          heldRepeats = (int) (1000.0/(2.5 + (SystemInformation.KeyboardSpeed*0.888)));
+          firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
+          heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
         }
 
         if (!_keyboardKeyRepeated && timeBetween.TotalMilliseconds < firstRepeat)
@@ -3036,8 +3036,8 @@ namespace InputService.Plugin
 
       #region Movement Delta
 
-      deltaX = (int) (deltaX*_mouseSensitivity);
-      deltaY = (int) (deltaY*_mouseSensitivity);
+      deltaX = (int) (deltaX * _mouseSensitivity);
+      deltaY = (int) (deltaY * _mouseSensitivity);
 
       if (deltaX != 0 || deltaY != 0)
       {

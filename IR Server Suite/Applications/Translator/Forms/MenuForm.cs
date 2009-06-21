@@ -711,8 +711,8 @@ namespace Translator
 
       Location =
         new Point(
-          workingArea.X + (workingArea.Width/2) - (newWidth/2),
-          workingArea.Y + (workingArea.Height/2) - (newHeight/2));
+          workingArea.X + (workingArea.Width / 2) - (newWidth / 2),
+          workingArea.Y + (workingArea.Height / 2) - (newHeight / 2));
     }
 
     private void Launch(string programFile)

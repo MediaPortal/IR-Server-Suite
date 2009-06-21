@@ -523,7 +523,7 @@ namespace MediaPortal.Plugins
         int distance = MouseModeStep;
 
         if (MouseModeAcceleration)
-          distance += (2*_mouseModeRepeatCount);
+          distance += (2 * _mouseModeRepeatCount);
 
         switch (button)
         {
@@ -905,7 +905,7 @@ namespace MediaPortal.Plugins
     private static void ChangeMultiMapping()
     {
       // Cycle through Multi-Mappings ...
-      _multiMappingSet = (_multiMappingSet + 1)%MultiMaps.Length;
+      _multiMappingSet = (_multiMappingSet + 1) % MultiMaps.Length;
 
       // Show the mapping set name on screen ...
       string setName = MultiMaps[_multiMappingSet];

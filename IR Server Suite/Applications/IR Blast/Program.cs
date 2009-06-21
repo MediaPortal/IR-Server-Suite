@@ -167,7 +167,7 @@ namespace IRBlast
                   }
                   else if (command.StartsWith("~", StringComparison.OrdinalIgnoreCase))
                   {
-                    Thread.Sleep(command.Length*500);
+                    Thread.Sleep(command.Length * 500);
                   }
                   else
                   {

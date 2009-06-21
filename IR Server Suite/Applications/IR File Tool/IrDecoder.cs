@@ -1310,7 +1310,7 @@ namespace IrFileTool
             #region Data
 
           case RemoteDetectionState.Data:
-            if ((RC6_Data.HalfBit%2) == 0)
+            if ((RC6_Data.HalfBit % 2) == 0)
             {
               if (pulse && IsBetween(duration, 300, 600))
               {
@@ -1584,7 +1584,7 @@ namespace IrFileTool
             #region Data
 
           case RemoteDetectionState.Data:
-            if ((RECS80_Data.HalfBit%2) == 0)
+            if ((RECS80_Data.HalfBit % 2) == 0)
             {
               if (!pulse)
                 break;

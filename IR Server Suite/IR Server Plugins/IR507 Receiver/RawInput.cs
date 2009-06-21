@@ -404,7 +404,7 @@ namespace InputService.Plugin
       // then allocate sufficient memory and get the entire list
       if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, (uint) dwSize) == 0)
       {
-        IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int) (dwSize*deviceCount));
+        IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int) (dwSize * deviceCount));
         GetRawInputDeviceList(pRawInputDeviceList, ref deviceCount, (uint) dwSize);
 
         List<DeviceDetails> devices = new List<DeviceDetails>((int) deviceCount);
@@ -419,7 +419,7 @@ namespace InputService.Plugin
           RAWINPUTDEVICELIST rid;
 
           IntPtr location;
-          int offset = dwSize*i;
+          int offset = dwSize * i;
 
           if (IntPtr.Size == 4)
             location = new IntPtr(pRawInputDeviceList.ToInt32() + offset);

@@ -240,7 +240,7 @@ namespace InputService.Plugin
         }
         else
         {
-          StringBuilder keyCode = new StringBuilder(2*bytes);
+          StringBuilder keyCode = new StringBuilder(2 * bytes);
           for (int index = 0; index < bytes; index++)
             keyCode.Append(_deviceBuffer[index].ToString("X2"));
 

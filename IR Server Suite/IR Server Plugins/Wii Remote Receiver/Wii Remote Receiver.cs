@@ -376,8 +376,8 @@ namespace InputService.Plugin
             if (ws.NunchukState.Z != _previousState.NunchukState.Z)
               mouseButtons |= ws.NunchukState.Z ? Mouse.MouseEvents.LeftDown : Mouse.MouseEvents.LeftUp;
 
-            int deltaX = (int) (ws.NunchukState.X*10*_mouseSensitivity);
-            int deltaY = (int) (ws.NunchukState.Y*-10*_mouseSensitivity);
+            int deltaX = (int) (ws.NunchukState.X * 10 * _mouseSensitivity);
+            int deltaY = (int) (ws.NunchukState.Y * -10 * _mouseSensitivity);
 
             if (_handleMouseLocally)
             {
@@ -439,8 +439,8 @@ namespace InputService.Plugin
 
         if (ws.IRState.Found1 && ws.IRState.Found2)
         {
-          int x = (int) (ScreenWidth - (ws.IRState.X1 + ws.IRState.X2)/2*ScreenWidth);
-          int y = (int) ((ws.IRState.Y1 + ws.IRState.Y2)/2*ScreenHeight);
+          int x = (int) (ScreenWidth - (ws.IRState.X1 + ws.IRState.X2) / 2 * ScreenWidth);
+          int y = (int) ((ws.IRState.Y1 + ws.IRState.Y2) / 2 * ScreenHeight);
 
           if (_handleMouseLocally)
           {
@@ -448,8 +448,8 @@ namespace InputService.Plugin
           }
           else
           {
-            int prevX = (int) (ScreenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2)/2*ScreenWidth);
-            int prevY = (int) ((_previousState.IRState.Y1 + _previousState.IRState.Y2)/2*ScreenHeight);
+            int prevX = (int) (ScreenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * ScreenWidth);
+            int prevY = (int) ((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * ScreenHeight);
 
             int deltaX = x - prevX;
             int deltaY = y - prevY;

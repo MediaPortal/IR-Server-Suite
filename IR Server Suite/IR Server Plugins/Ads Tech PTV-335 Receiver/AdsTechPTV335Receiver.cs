@@ -202,7 +202,7 @@ namespace InputService.Plugin
 
       _processReadThread = false;
 
-      if (!_readThread.Join(PacketTimeout*2))
+      if (!_readThread.Join(PacketTimeout * 2))
         _readThread.Abort();
 
       _readThread = null;

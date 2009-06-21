@@ -138,8 +138,8 @@ namespace IrssUtils
     {
       if (absolute)
       {
-        int x = (int) (dx*(65536.0/Screen.PrimaryScreen.Bounds.Width));
-        int y = (int) (dy*(65536.0/Screen.PrimaryScreen.Bounds.Height));
+        int x = (int) (dx * (65536.0 / Screen.PrimaryScreen.Bounds.Width));
+        int y = (int) (dy * (65536.0 / Screen.PrimaryScreen.Bounds.Height));
 
         mouse_event((int) (MouseEvents.Move | MouseEvents.Absolute), x, y, 0, IntPtr.Zero);
       }
