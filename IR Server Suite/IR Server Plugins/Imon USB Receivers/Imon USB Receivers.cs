@@ -2011,10 +2011,12 @@ namespace InputService.Plugin
       if ((Report2 & 0x01) == ((Report3 & 0x80) >> 7)) return; // invalid left click
       if (((Report1 & 0xFC) != 0x68) | (Report4 != 0xB7)) return;
 
-      int xSign = (((Report1 & 0x02) != 0) ? -1 : 1);
-      int ySign = (((Report1 & 0x01) != 0) ? -1 : 1);
-      int xSize = ((Report2 & 0x78) >> 3);
-      int ySize = ((Report3 & 0x78) >> 3);
+      int xSign = ((Report1 & 0x02) == 2) ? -1 : 1;
+      int ySign = ((Report1 & 0x01) == 1) ? -1 : 1;
+      int xSize = (xSign == 1) ? iMonMouseDataTurnToInteger(Report2) : -16 + iMonMouseDataTurnToInteger(Report2);
+      int ySize = (ySign == 1) ? iMonMouseDataTurnToInteger(Report3) : -16 + iMonMouseDataTurnToInteger(Report3);
+      xSign = 0;
+      ySign = 0;
 
       bool rightButton = ((Report2 & 0x04) != 0);
       bool leftButton = ((Report2 & 0x01) != 0);
@@ -2036,10 +2038,19 @@ namespace InputService.Plugin
         uint KeyMode = ((_hardwareMode == RcMode.iMon) ? IMON_PAD_BUTTON : IMON_MCE_BUTTON);
         uint KeyCode = 0;
         uint KeyCode1 = 0;
-        if ((xSize != 0) || (ySize != 0))
+        if ((xSize > 13) || (xSize < -13))
         {
-          KeyCode = (uint) TranslateMouseToKeypress(xSign, xSize, ySign, ySize);
-          if (KeyCode != 0) RemoteEvent((KeyCode + KeyMode), false);
+            xSign = ((xSize < 0) ? -1 : 1);
+        }
+
+        if ((ySize > 13) || (ySize < -13))
+        {
+            ySign = ((ySize < 0) ? -1 : 1);
+        }
+        if ((xSign != 0) || (ySign != 0))
+        {
+            KeyCode = (uint)TranslateMouseToKeypress(xSign, xSize, ySign, ySize);
+            if (KeyCode != 0) RemoteEvent((KeyCode + KeyMode), false);
         }
         KeyCode1 = 0;
         switch (ulButtons)
@@ -2069,9 +2080,20 @@ namespace InputService.Plugin
       }
       else
       {
-        MouseEvent(xSign * xSize, ySign * ySize, rightButton, leftButton);
+        MouseEvent(xSize, ySize, rightButton, leftButton);
         //if (_mouseHandler != null) _mouseHandler(this.Name, raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
       }
+    }
+
+    private int iMonMouseDataTurnToInteger(byte ReportX)
+    {
+        int result = 0;
+        byte mask = 0x01;
+        for (int x = 0; x < 4; x++)
+        {
+            result = (result | ((ReportX & (mask << (6 - x))) >> (6 - 2 * x)));
+        }
+        return result;
     }
 
     private void ProcessInputCommand(ref Message message)
@@ -2247,65 +2269,6 @@ namespace InputService.Plugin
               else if ((newArray[1] & 0xFC) == 0x68)
               {
                 ProcessiMonMouseReport(newArray[1], newArray[2], newArray[3], newArray[4]);
-
-                /*
-                int xSign = (((newArray[1] & 0x02) != 0) ? 1 : -1);
-                int ySign = (((newArray[1] & 0x01) != 0) ? 1 : -1);
-                int xSize = ((newArray[2] & 0x78) >> 3);
-                int ySize = ((newArray[3] & 0x78) >> 3);
-
-                bool rightButton = ((newArray[2] & 0x04) != 0);
-                bool leftButton = ((newArray[2] & 0x01) != 0);
-                uint ulButtons = (uint)((newArray[2] & 0x04) + (newArray[2] & 0x01));
-#if DEBUG
-                DebugWriteLine("iMon PAD mouse move/button:    (xSign = {0}, xSize = {1}, ySign = {2}, ySize = {3} - lButton = {4}, rButton = {5}", xSign, xSize, ySign, ySize, leftButton, rightButton);
-#endif
-                //MouseEvent(xSign * xSize, ySign * ySize, right, left);
-
-                // X movement is horizontal (negative towards left), y movement is vertical (negative towards top)
-                if (_CurrentRemoteMode == RemoteMode.Keyboard)
-                {
-                    // convert the mouse movement into direction keys
-                    uint KeyMode = ((_hardwareMode == RcMode.iMon) ? IMON_PAD_BUTTON : IMON_MCE_BUTTON);
-                    uint KeyCode = 0;
-                    uint KeyCode1 = 0;
-                    if ((xSize!= 0) && (ySize != 0))
-                    {
-                        KeyCode = (uint)TranslateMouseToKeypress(xSign, xSize, ySign, ySize);
-                        if (KeyCode != 0) RemoteEvent((KeyCode + KeyMode), false);
-                    }
-                    KeyCode1 = 0;
-                    switch (ulButtons)
-                    {
-                        case 1:   // Left click down
-                        case 2:   // Left click up
-                            KeyCode1 = IMON_PAD_BUTTON_LCLICK;
-                            break;
-                        case 4:   // Right click down
-                        case 8:   // Right click up
-                            KeyCode1 = IMON_PAD_BUTTON_RCLICK;
-                            break;
-                    }
-                    if (KeyCode1 != 0)
-                    {
-                        RemoteEvent((KeyCode1 + KeyMode), false);
-                    }
-#if DEBUG
-                    if ((KeyCode == 0) & (KeyCode1 == 0))
-                    {
-                        DebugWriteLine("RAW IMON HID (MOUSE REPORT) - Ignoring");
-#if TEST_APPLICATION
-                        Console.WriteLine("RAW IMON HID (MOUSE REPORT) - Ignoring");
-#endif
-                    }
-#endif
-                }
-                else
-                {
-                    MouseEvent(xSign * xSize, ySign * ySize, rightButton, leftButton);
-                    //if (_mouseHandler != null) _mouseHandler(this.Name, raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
-                }
-            */
               }
 #if TRACE
               Trace.WriteLine(code);
@@ -2341,10 +2304,20 @@ namespace InputService.Plugin
                 uint KeyMode = ((_hardwareMode == RcMode.iMon) ? IMON_PAD_BUTTON : IMON_MCE_BUTTON);
                 uint KeyCode = 0;
                 uint KeyCode1 = 0;
-                if ((raw.mouse.lLastX != 0) || (raw.mouse.lLastY != 0))
+                int xDir = 0;
+                int yDir = 0;
+
+                if ((raw.mouse.lLastX > 13) || (raw.mouse.lLastX < -13))
                 {
-                  int xDir = ((raw.mouse.lLastX < 0) ? -1 : 1);
-                  int yDir = ((raw.mouse.lLastY < 0) ? -1 : 1);
+                  xDir = ((raw.mouse.lLastX < 0) ? -1 : 1);
+                }    
+                    
+                if ((raw.mouse.lLastY > 13) || (raw.mouse.lLastY < -13))
+                {
+                  yDir = ((raw.mouse.lLastY < 0) ? -1 : 1);
+                }
+                if ((xDir != 0) || (yDir != 0))
+                {
                   KeyCode = (uint) TranslateMouseToKeypress(xDir, raw.mouse.lLastX, yDir, raw.mouse.lLastY);
                   if (KeyCode != 0) RemoteEvent((KeyCode + KeyMode), false);
                 }
@@ -3061,21 +3034,7 @@ namespace InputService.Plugin
     /// <returns>Remote key code.</returns>
     public int TranslateMouseToKeypress(int xDir, int xDelta, int yDir, int yDelta)
     {
-      /*
-      int xDelta = Math.Abs(xVal);
-      int yDelta = Math.Abs(yVal);
-      int xDir = ((xVal == 0) ? 0 : ((xVal > 0) ? 1 : -1));
-      int yDir = ((yVal == 0) ? 0 : ((yVal > 0) ? 1 : -1));
-      */
-
-      // make sure that we don't get false readings do to mouse acceleration
-      /*
-      if (xDelta < 6) xDelta = 0;
-      if (yDelta < 6) yDelta = 0;
-      if ((xDelta > 5) && (yDelta > 5)) return 0;
-      */
-
-      if (xDelta > yDelta)
+      if (Math.Abs(xDelta) > Math.Abs(yDelta))
       {
         // horizontal movement is larger, so it has preference
         if (xDir == 1)
@@ -3103,7 +3062,7 @@ namespace InputService.Plugin
           }
         }
       }
-      else if (yDelta > xDelta)
+      else if (Math.Abs(yDelta) > Math.Abs(xDelta))
       {
         // vertical movement is larger, so it has preference
         if (yDir == 1)
