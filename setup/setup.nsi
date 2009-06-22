@@ -379,7 +379,6 @@ ${MementoSection} "Input Service" SectionInputService
   File "..\IR Server Suite\IR Server Plugins\Girder Plugin\bin\${Build_Type}\Girder Plugin.*"
   File "..\IR Server Suite\IR Server Plugins\HCW Receiver\bin\${Build_Type}\HCW Receiver.*"
   File "..\IR Server Suite\IR Server Plugins\IgorPlug Receiver\bin\${Build_Type}\IgorPlug Receiver.*"
-  ;File "..\IR Server Suite\IR Server Plugins\Imon Receiver\bin\${Build_Type}\Imon Receiver.*"
   File "..\IR Server Suite\IR Server Plugins\Imon USB Receivers\bin\${Build_Type}\Imon USB Receivers.*"
   ;File "..\IR Server Suite\IR Server Plugins\IR501 Receiver\bin\${Build_Type}\IR501 Receiver.*"
   File "..\IR Server Suite\IR Server Plugins\IR507 Receiver\bin\${Build_Type}\IR507 Receiver.*"
