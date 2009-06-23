@@ -674,6 +674,7 @@ namespace InputService.Plugin
     private RemoteMode _RemoteMode = RemoteMode.Keyboard;
     private bool _useSystemRatesKeyboard = true;
     private bool _useSystemRatesRemote;
+    private int _keyPadSensitivity = 8;
 
     #endregion Configuration
 
@@ -1653,6 +1654,7 @@ namespace InputService.Plugin
         _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value);
         _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value);
         _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value);
+        _keyPadSensitivity = int.Parse(doc.DocumentElement.Attributes["KeyPadSensitivity"].Value);
       }
 #if DEBUG
       catch (Exception ex)
@@ -1717,6 +1719,7 @@ namespace InputService.Plugin
         writer.WriteAttributeString("EnableMouseInput", _enableMouseInput.ToString());
         writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
         writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString());
+        writer.WriteAttributeString("KeyPadSensitivity", _keyPadSensitivity.ToString());
 
 
         writer.WriteEndElement(); // </settings>
@@ -2038,12 +2041,12 @@ namespace InputService.Plugin
         uint KeyMode = ((_hardwareMode == RcMode.iMon) ? IMON_PAD_BUTTON : IMON_MCE_BUTTON);
         uint KeyCode = 0;
         uint KeyCode1 = 0;
-        if ((xSize > 13) || (xSize < -13))
+        if ((xSize > _keyPadSensitivity) || (xSize < -_keyPadSensitivity))
         {
             xSign = ((xSize < 0) ? -1 : 1);
         }
 
-        if ((ySize > 13) || (ySize < -13))
+        if ((ySize > _keyPadSensitivity) || (ySize < -_keyPadSensitivity))
         {
             ySign = ((ySize < 0) ? -1 : 1);
         }
@@ -2307,12 +2310,12 @@ namespace InputService.Plugin
                 int xDir = 0;
                 int yDir = 0;
 
-                if ((raw.mouse.lLastX > 13) || (raw.mouse.lLastX < -13))
+                if ((raw.mouse.lLastX > _keyPadSensitivity) || (raw.mouse.lLastX < -_keyPadSensitivity))
                 {
                   xDir = ((raw.mouse.lLastX < 0) ? -1 : 1);
-                }    
-                    
-                if ((raw.mouse.lLastY > 13) || (raw.mouse.lLastY < -13))
+                }
+
+                if ((raw.mouse.lLastY > _keyPadSensitivity) || (raw.mouse.lLastY < -_keyPadSensitivity))
                 {
                   yDir = ((raw.mouse.lLastY < 0) ? -1 : 1);
                 }
@@ -4170,6 +4173,7 @@ namespace InputService.Plugin
       config.EnableMouse = _enableMouseInput;
       config.HandleMouseLocal = _handleMouseLocally;
       config.MouseSensitivity = _mouseSensitivity;
+      config.KeyPadSensitivity = _keyPadSensitivity;
 
       if (config.ShowDialog(owner) == DialogResult.OK)
       {
@@ -4194,6 +4198,7 @@ namespace InputService.Plugin
         _enableMouseInput = config.EnableMouse;
         _handleMouseLocally = config.HandleMouseLocal;
         _mouseSensitivity = config.MouseSensitivity;
+        _keyPadSensitivity = config.KeyPadSensitivity;
 
         SaveSettings();
       }

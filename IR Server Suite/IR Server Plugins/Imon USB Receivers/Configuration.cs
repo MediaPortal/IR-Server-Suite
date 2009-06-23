@@ -128,6 +128,12 @@ namespace InputService.Plugin
       set { checkBoxHandleMouseLocal.Checked = value; }
     }
 
+    public int KeyPadSensitivity
+    {
+        get { return trackBarKeyPadSensitivity.Value; }
+        set { trackBarKeyPadSensitivity.Value = value; }
+    }
+
     private void buttonOK_Click(object sender, EventArgs e)
     {
       DialogResult = DialogResult.OK;
