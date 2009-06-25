@@ -1096,16 +1096,20 @@ namespace IRServer
 
     private bool UnregisterClient(ClientManager removeClient)
     {
-      lock (_registeredClients)
-      {
-        if (!_registeredClients.Contains(removeClient))
-          return false;
+        if (_registeredClients != null)
+        {
+            lock (_registeredClients)
+            {
+                if (!_registeredClients.Contains(removeClient))
+                    return false;
 
-        _registeredClients.Remove(removeClient);
-      }
+                _registeredClients.Remove(removeClient);
+            }
 
-      IrssLog.Info("Unregistered a client");
-      return true;
+            IrssLog.Info("Unregistered a client");
+            return true;
+        }
+        else return false;
     }
 
     private bool RegisterRepeater(ClientManager addRepeater)
@@ -1122,16 +1126,20 @@ namespace IRServer
 
     private bool UnregisterRepeater(ClientManager removeRepeater)
     {
-      lock (_registeredRepeaters)
-      {
-        if (!_registeredRepeaters.Contains(removeRepeater))
-          return false;
+        if (_registeredRepeaters != null)
+        {
+            lock (_registeredRepeaters)
+            {
+                if (!_registeredRepeaters.Contains(removeRepeater))
+                    return false;
 
-        _registeredRepeaters.Remove(removeRepeater);
-      }
+                _registeredRepeaters.Remove(removeRepeater);
+            }
 
-      IrssLog.Info("Unregistered a repeater");
-      return true;
+            IrssLog.Info("Unregistered a repeater");
+            return true;
+        }
+        else return false;
     }
 
     private bool BlastIR(byte[] data)

@@ -1,0 +1,100 @@
+﻿    [Serializable, StructLayout(LayoutKind.Sequential)]
+    private struct RECT
+    {
+      public readonly int Left;
+      public readonly int Top;
+      public readonly int Right;
+      public readonly int Bottom;
+
+      public RECT(int left_, int top_, int right_, int bottom_)
+      {
+        Left = left_;
+        Top = top_;
+        Right = right_;
+        Bottom = bottom_;
+      }
+
+      public int Height
+      {
+        get { return Bottom - Top; }
+      }
+
+      public int Width
+      {
+        get { return Right - Left; }
+      }
+
+      public Size Size
+      {
+        get { return new Size(Width, Height); }
+      }
+
+      public Point Location
+      {
+        get { return new Point(Left, Top); }
+      }
+
+      // Handy method for converting to a System.Drawing.Rectangle
+      public Rectangle ToRectangle()
+      {
+        return Rectangle.FromLTRB(Left, Top, Right, Bottom);
+      }
+
+      public static RECT FromRectangle(Rectangle rectangle)
+      {
+        return new RECT(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
+      }
+
+      public override int GetHashCode()
+      {
+        return Left ^ ((Top << 13) | (Top >> 0x13))
+               ^ ((Width << 0x1a) | (Width >> 6))
+               ^ ((Height << 7) | (Height >> 0x19));
+      }
+
+      #region Operator overloads
+
+      public static implicit operator Rectangle(RECT rect)
+      {
+        return rect.ToRectangle();
+      }
+
+      public static implicit operator RECT(Rectangle rect)
+      {
+        return FromRectangle(rect);
+      }
+
+      #endregion
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+ private static void RedrawNotificationArea()
+    {
+      IntPtr hNotificationArea = GetNotificationAreaHandle();
+      RECT r;
+      GetClientRect(hNotificationArea, out r);
+      for (int x = 0; x < r.Right; x += 5)
+        for (int y = 0; y < r.Bottom; y += 5)
+          SendMessage(hNotificationArea, WM_MOUSEMOVE, 0, ((y << 16) + x));
+    }
+
+    private static IntPtr GetNotificationAreaHandle()
+    {
+      IntPtr hwnd = FindWindowEx(IntPtr.Zero, IntPtr.Zero, "Shell_TrayWnd", null);
+      hwnd = FindWindowEx(hwnd, IntPtr.Zero, "TrayNotifyWnd", null);
+      hwnd = FindWindowEx(hwnd, IntPtr.Zero, "SysPager", null);
+      if (hwnd != IntPtr.Zero) hwnd = FindWindowEx(hwnd, IntPtr.Zero, null, "Notification Area");
+      return hwnd;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass,
+                                              string lpszWindow);
+
+        // refresh the notification area
+        RedrawNotificationArea();

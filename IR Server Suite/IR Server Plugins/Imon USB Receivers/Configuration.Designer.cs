@@ -43,45 +43,57 @@ namespace InputService.Plugin
             this.numericUpDownKeyRepeatDelay = new System.Windows.Forms.NumericUpDown();
             this.checkBoxHandleKeyboardLocal = new System.Windows.Forms.CheckBox();
             this.checkBoxHandleMouseLocal = new System.Windows.Forms.CheckBox();
-            this.numericUpDownMouseSensitivity = new System.Windows.Forms.NumericUpDown();
             this.checkBoxEnableRemote = new System.Windows.Forms.CheckBox();
             this.checkBoxEnableKeyboard = new System.Windows.Forms.CheckBox();
             this.checkBoxEnableMouse = new System.Windows.Forms.CheckBox();
             this.checkBoxUseSystemRatesRemote = new System.Windows.Forms.CheckBox();
             this.checkBoxUseSystemRatesKeyboard = new System.Windows.Forms.CheckBox();
-            this.comboBoxHardwareMode = new System.Windows.Forms.ComboBox();
             this.comboBoxRemoteMode = new System.Windows.Forms.ComboBox();
-            this.labelHardwareMode = new System.Windows.Forms.Label();
+            this.comboBoxPadMode = new System.Windows.Forms.ComboBox();
+            this.labelRemoteMode = new System.Windows.Forms.Label();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageRemote = new System.Windows.Forms.TabPage();
-            this.labelRemoteMode = new System.Windows.Forms.Label();
+            this.labelPadMode = new System.Windows.Forms.Label();
             this.tabPageKeyboard = new System.Windows.Forms.TabPage();
             this.groupBoxKeypressTiming = new System.Windows.Forms.GroupBox();
             this.labelKeyRepeatDelay = new System.Windows.Forms.Label();
             this.labelKeyHeldDelay = new System.Windows.Forms.Label();
             this.tabPageMouse = new System.Windows.Forms.TabPage();
-            this.labelMouseSensitivity = new System.Windows.Forms.Label();
+            this.checkBoxUsePadSwitch = new System.Windows.Forms.CheckBox();
             this.trackBarKeyPadSensitivity = new System.Windows.Forms.TrackBar();
-            this.labelKeyPadSensitivity = new System.Windows.Forms.Label();
-            this.labelKpsSoft = new System.Windows.Forms.Label();
-            this.labelKpsHard = new System.Windows.Forms.Label();
+            this.labelKeyPadHarder = new System.Windows.Forms.Label();
+            this.labelKeyPadSofter = new System.Windows.Forms.Label();
+            this.groupBoxKeyPadSensitivity = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.groupBoxMouseSensitivity = new System.Windows.Forms.GroupBox();
+            this.labelMouseFaster = new System.Windows.Forms.Label();
+            this.labelMouseSlower = new System.Windows.Forms.Label();
+            this.trackBarMouseSensitivity = new System.Windows.Forms.TrackBar();
+            this.labelMouseSensitivity = new System.Windows.Forms.Label();
+            this.groupBoxHardwareConfig = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).BeginInit();
             this.groupBoxRemoteTiming.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyHeldDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyRepeatDelay)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseSensitivity)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabPageRemote.SuspendLayout();
             this.tabPageKeyboard.SuspendLayout();
             this.groupBoxKeypressTiming.SuspendLayout();
             this.tabPageMouse.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarKeyPadSensitivity)).BeginInit();
+            this.groupBoxKeyPadSensitivity.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            this.groupBoxMouseSensitivity.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarMouseSensitivity)).BeginInit();
+            this.groupBoxHardwareConfig.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelButtonRepeatDelay
             // 
-            this.labelButtonRepeatDelay.Location = new System.Drawing.Point(8, 24);
+            this.labelButtonRepeatDelay.Location = new System.Drawing.Point(6, 17);
             this.labelButtonRepeatDelay.Name = "labelButtonRepeatDelay";
             this.labelButtonRepeatDelay.Size = new System.Drawing.Size(128, 20);
             this.labelButtonRepeatDelay.TabIndex = 0;
@@ -90,7 +102,7 @@ namespace InputService.Plugin
             // 
             // labelButtonHeldDelay
             // 
-            this.labelButtonHeldDelay.Location = new System.Drawing.Point(8, 56);
+            this.labelButtonHeldDelay.Location = new System.Drawing.Point(6, 43);
             this.labelButtonHeldDelay.Name = "labelButtonHeldDelay";
             this.labelButtonHeldDelay.Size = new System.Drawing.Size(128, 20);
             this.labelButtonHeldDelay.TabIndex = 2;
@@ -104,7 +116,7 @@ namespace InputService.Plugin
             0,
             0,
             0});
-            this.numericUpDownButtonRepeatDelay.Location = new System.Drawing.Point(144, 24);
+            this.numericUpDownButtonRepeatDelay.Location = new System.Drawing.Point(150, 19);
             this.numericUpDownButtonRepeatDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -130,7 +142,7 @@ namespace InputService.Plugin
             0,
             0,
             0});
-            this.numericUpDownButtonHeldDelay.Location = new System.Drawing.Point(144, 56);
+            this.numericUpDownButtonHeldDelay.Location = new System.Drawing.Point(150, 45);
             this.numericUpDownButtonHeldDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -151,7 +163,7 @@ namespace InputService.Plugin
             // buttonOK
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOK.Location = new System.Drawing.Point(128, 263);
+            this.buttonOK.Location = new System.Drawing.Point(128, 275);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(64, 24);
             this.buttonOK.TabIndex = 1;
@@ -163,7 +175,7 @@ namespace InputService.Plugin
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(200, 263);
+            this.buttonCancel.Location = new System.Drawing.Point(200, 275);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(64, 24);
             this.buttonCancel.TabIndex = 2;
@@ -177,9 +189,9 @@ namespace InputService.Plugin
             this.groupBoxRemoteTiming.Controls.Add(this.numericUpDownButtonHeldDelay);
             this.groupBoxRemoteTiming.Controls.Add(this.labelButtonHeldDelay);
             this.groupBoxRemoteTiming.Controls.Add(this.numericUpDownButtonRepeatDelay);
-            this.groupBoxRemoteTiming.Location = new System.Drawing.Point(8, 72);
+            this.groupBoxRemoteTiming.Location = new System.Drawing.Point(6, 154);
             this.groupBoxRemoteTiming.Name = "groupBoxRemoteTiming";
-            this.groupBoxRemoteTiming.Size = new System.Drawing.Size(232, 88);
+            this.groupBoxRemoteTiming.Size = new System.Drawing.Size(236, 73);
             this.groupBoxRemoteTiming.TabIndex = 2;
             this.groupBoxRemoteTiming.TabStop = false;
             this.groupBoxRemoteTiming.Text = "Remote button timing (in milliseconds)";
@@ -191,7 +203,7 @@ namespace InputService.Plugin
             0,
             0,
             0});
-            this.numericUpDownKeyHeldDelay.Location = new System.Drawing.Point(144, 56);
+            this.numericUpDownKeyHeldDelay.Location = new System.Drawing.Point(150, 45);
             this.numericUpDownKeyHeldDelay.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -216,7 +228,7 @@ namespace InputService.Plugin
             0,
             0,
             0});
-            this.numericUpDownKeyRepeatDelay.Location = new System.Drawing.Point(144, 24);
+            this.numericUpDownKeyRepeatDelay.Location = new System.Drawing.Point(150, 19);
             this.numericUpDownKeyRepeatDelay.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -239,7 +251,7 @@ namespace InputService.Plugin
             this.checkBoxHandleKeyboardLocal.AutoSize = true;
             this.checkBoxHandleKeyboardLocal.Checked = true;
             this.checkBoxHandleKeyboardLocal.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxHandleKeyboardLocal.Location = new System.Drawing.Point(8, 168);
+            this.checkBoxHandleKeyboardLocal.Location = new System.Drawing.Point(6, 29);
             this.checkBoxHandleKeyboardLocal.Name = "checkBoxHandleKeyboardLocal";
             this.checkBoxHandleKeyboardLocal.Size = new System.Drawing.Size(139, 17);
             this.checkBoxHandleKeyboardLocal.TabIndex = 2;
@@ -252,7 +264,7 @@ namespace InputService.Plugin
             this.checkBoxHandleMouseLocal.AutoSize = true;
             this.checkBoxHandleMouseLocal.Checked = true;
             this.checkBoxHandleMouseLocal.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxHandleMouseLocal.Location = new System.Drawing.Point(8, 40);
+            this.checkBoxHandleMouseLocal.Location = new System.Drawing.Point(6, 29);
             this.checkBoxHandleMouseLocal.Name = "checkBoxHandleMouseLocal";
             this.checkBoxHandleMouseLocal.Size = new System.Drawing.Size(126, 17);
             this.checkBoxHandleMouseLocal.TabIndex = 1;
@@ -260,42 +272,12 @@ namespace InputService.Plugin
             this.toolTips.SetToolTip(this.checkBoxHandleMouseLocal, "Act on mouse locally (on the machine Input Service is running on)");
             this.checkBoxHandleMouseLocal.UseVisualStyleBackColor = true;
             // 
-            // numericUpDownMouseSensitivity
-            // 
-            this.numericUpDownMouseSensitivity.DecimalPlaces = 1;
-            this.numericUpDownMouseSensitivity.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.numericUpDownMouseSensitivity.Location = new System.Drawing.Point(160, 80);
-            this.numericUpDownMouseSensitivity.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericUpDownMouseSensitivity.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDownMouseSensitivity.Name = "numericUpDownMouseSensitivity";
-            this.numericUpDownMouseSensitivity.Size = new System.Drawing.Size(80, 20);
-            this.numericUpDownMouseSensitivity.TabIndex = 3;
-            this.numericUpDownMouseSensitivity.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTips.SetToolTip(this.numericUpDownMouseSensitivity, "Multiply mouse movements by this number");
-            this.numericUpDownMouseSensitivity.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            65536});
-            // 
             // checkBoxEnableRemote
             // 
             this.checkBoxEnableRemote.AutoSize = true;
             this.checkBoxEnableRemote.Checked = true;
             this.checkBoxEnableRemote.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxEnableRemote.Location = new System.Drawing.Point(8, 8);
+            this.checkBoxEnableRemote.Location = new System.Drawing.Point(6, 6);
             this.checkBoxEnableRemote.Name = "checkBoxEnableRemote";
             this.checkBoxEnableRemote.Size = new System.Drawing.Size(155, 17);
             this.checkBoxEnableRemote.TabIndex = 0;
@@ -308,7 +290,7 @@ namespace InputService.Plugin
             this.checkBoxEnableKeyboard.AutoSize = true;
             this.checkBoxEnableKeyboard.Checked = true;
             this.checkBoxEnableKeyboard.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxEnableKeyboard.Location = new System.Drawing.Point(8, 8);
+            this.checkBoxEnableKeyboard.Location = new System.Drawing.Point(6, 6);
             this.checkBoxEnableKeyboard.Name = "checkBoxEnableKeyboard";
             this.checkBoxEnableKeyboard.Size = new System.Drawing.Size(132, 17);
             this.checkBoxEnableKeyboard.TabIndex = 0;
@@ -321,7 +303,7 @@ namespace InputService.Plugin
             this.checkBoxEnableMouse.AutoSize = true;
             this.checkBoxEnableMouse.Checked = true;
             this.checkBoxEnableMouse.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxEnableMouse.Location = new System.Drawing.Point(8, 8);
+            this.checkBoxEnableMouse.Location = new System.Drawing.Point(6, 6);
             this.checkBoxEnableMouse.Name = "checkBoxEnableMouse";
             this.checkBoxEnableMouse.Size = new System.Drawing.Size(119, 17);
             this.checkBoxEnableMouse.TabIndex = 0;
@@ -332,7 +314,7 @@ namespace InputService.Plugin
             // checkBoxUseSystemRatesRemote
             // 
             this.checkBoxUseSystemRatesRemote.AutoSize = true;
-            this.checkBoxUseSystemRatesRemote.Location = new System.Drawing.Point(8, 40);
+            this.checkBoxUseSystemRatesRemote.Location = new System.Drawing.Point(6, 131);
             this.checkBoxUseSystemRatesRemote.Name = "checkBoxUseSystemRatesRemote";
             this.checkBoxUseSystemRatesRemote.Size = new System.Drawing.Size(187, 17);
             this.checkBoxUseSystemRatesRemote.TabIndex = 1;
@@ -343,7 +325,7 @@ namespace InputService.Plugin
             // checkBoxUseSystemRatesKeyboard
             // 
             this.checkBoxUseSystemRatesKeyboard.AutoSize = true;
-            this.checkBoxUseSystemRatesKeyboard.Location = new System.Drawing.Point(8, 40);
+            this.checkBoxUseSystemRatesKeyboard.Location = new System.Drawing.Point(6, 131);
             this.checkBoxUseSystemRatesKeyboard.Name = "checkBoxUseSystemRatesKeyboard";
             this.checkBoxUseSystemRatesKeyboard.Size = new System.Drawing.Size(187, 17);
             this.checkBoxUseSystemRatesKeyboard.TabIndex = 0;
@@ -351,36 +333,36 @@ namespace InputService.Plugin
             this.toolTips.SetToolTip(this.checkBoxUseSystemRatesKeyboard, "Use the system keyboard repeat rate settings for remote keyboard repeat rates");
             this.checkBoxUseSystemRatesKeyboard.UseVisualStyleBackColor = true;
             // 
-            // comboBoxHardwareMode
-            // 
-            this.comboBoxHardwareMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxHardwareMode.FormattingEnabled = true;
-            this.comboBoxHardwareMode.Location = new System.Drawing.Point(152, 168);
-            this.comboBoxHardwareMode.Name = "comboBoxHardwareMode";
-            this.comboBoxHardwareMode.Size = new System.Drawing.Size(89, 21);
-            this.comboBoxHardwareMode.TabIndex = 4;
-            this.toolTips.SetToolTip(this.comboBoxHardwareMode, "Choose between MCE and iMon remote types");
-            // 
             // comboBoxRemoteMode
             // 
             this.comboBoxRemoteMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxRemoteMode.FormattingEnabled = true;
-            this.comboBoxRemoteMode.Location = new System.Drawing.Point(152, 194);
+            this.comboBoxRemoteMode.Location = new System.Drawing.Point(141, 19);
             this.comboBoxRemoteMode.Name = "comboBoxRemoteMode";
             this.comboBoxRemoteMode.Size = new System.Drawing.Size(89, 21);
-            this.comboBoxRemoteMode.TabIndex = 6;
+            this.comboBoxRemoteMode.TabIndex = 4;
             this.toolTips.SetToolTip(this.comboBoxRemoteMode, "Choose between MCE and iMon remote types");
             // 
-            // labelHardwareMode
+            // comboBoxPadMode
             // 
-            this.labelHardwareMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelHardwareMode.Location = new System.Drawing.Point(8, 168);
-            this.labelHardwareMode.Name = "labelHardwareMode";
-            this.labelHardwareMode.Size = new System.Drawing.Size(136, 21);
-            this.labelHardwareMode.TabIndex = 3;
-            this.labelHardwareMode.Text = "Hardware mode:";
-            this.labelHardwareMode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.toolTips.SetToolTip(this.labelHardwareMode, "IMPORTANT: Set the hardware mode here");
+            this.comboBoxPadMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxPadMode.FormattingEnabled = true;
+            this.comboBoxPadMode.Location = new System.Drawing.Point(141, 46);
+            this.comboBoxPadMode.Name = "comboBoxPadMode";
+            this.comboBoxPadMode.Size = new System.Drawing.Size(89, 21);
+            this.comboBoxPadMode.TabIndex = 6;
+            this.toolTips.SetToolTip(this.comboBoxPadMode, "Choose between MCE and iMon remote types");
+            // 
+            // labelRemoteMode
+            // 
+            this.labelRemoteMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelRemoteMode.Location = new System.Drawing.Point(6, 18);
+            this.labelRemoteMode.Name = "labelRemoteMode";
+            this.labelRemoteMode.Size = new System.Drawing.Size(129, 21);
+            this.labelRemoteMode.TabIndex = 3;
+            this.labelRemoteMode.Text = "Remote:";
+            this.labelRemoteMode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.toolTips.SetToolTip(this.labelRemoteMode, "IMPORTANT: Set the hardware mode here");
             // 
             // tabControl
             // 
@@ -393,37 +375,36 @@ namespace InputService.Plugin
             this.tabControl.Location = new System.Drawing.Point(8, 8);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(256, 247);
+            this.tabControl.Size = new System.Drawing.Size(256, 259);
             this.tabControl.TabIndex = 0;
             // 
             // tabPageRemote
             // 
-            this.tabPageRemote.Controls.Add(this.comboBoxRemoteMode);
-            this.tabPageRemote.Controls.Add(this.labelRemoteMode);
-            this.tabPageRemote.Controls.Add(this.comboBoxHardwareMode);
-            this.tabPageRemote.Controls.Add(this.labelHardwareMode);
+            this.tabPageRemote.Controls.Add(this.groupBoxHardwareConfig);
+            this.tabPageRemote.Controls.Add(this.checkBoxUsePadSwitch);
             this.tabPageRemote.Controls.Add(this.checkBoxUseSystemRatesRemote);
             this.tabPageRemote.Controls.Add(this.checkBoxEnableRemote);
             this.tabPageRemote.Controls.Add(this.groupBoxRemoteTiming);
             this.tabPageRemote.Location = new System.Drawing.Point(4, 22);
             this.tabPageRemote.Name = "tabPageRemote";
             this.tabPageRemote.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageRemote.Size = new System.Drawing.Size(248, 221);
+            this.tabPageRemote.Size = new System.Drawing.Size(248, 233);
             this.tabPageRemote.TabIndex = 1;
             this.tabPageRemote.Text = "Remote";
             this.tabPageRemote.UseVisualStyleBackColor = true;
             // 
-            // labelRemoteMode
+            // labelPadMode
             // 
-            this.labelRemoteMode.Location = new System.Drawing.Point(8, 194);
-            this.labelRemoteMode.Name = "labelRemoteMode";
-            this.labelRemoteMode.Size = new System.Drawing.Size(136, 21);
-            this.labelRemoteMode.TabIndex = 5;
-            this.labelRemoteMode.Text = "Remote MouseStick mode:";
-            this.labelRemoteMode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelPadMode.Location = new System.Drawing.Point(6, 45);
+            this.labelPadMode.Name = "labelPadMode";
+            this.labelPadMode.Size = new System.Drawing.Size(129, 21);
+            this.labelPadMode.TabIndex = 5;
+            this.labelPadMode.Text = "Remote Pad mode:";
+            this.labelPadMode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tabPageKeyboard
             // 
+            this.tabPageKeyboard.Controls.Add(this.groupBoxKeyPadSensitivity);
             this.tabPageKeyboard.Controls.Add(this.checkBoxUseSystemRatesKeyboard);
             this.tabPageKeyboard.Controls.Add(this.checkBoxHandleKeyboardLocal);
             this.tabPageKeyboard.Controls.Add(this.checkBoxEnableKeyboard);
@@ -431,7 +412,7 @@ namespace InputService.Plugin
             this.tabPageKeyboard.Location = new System.Drawing.Point(4, 22);
             this.tabPageKeyboard.Name = "tabPageKeyboard";
             this.tabPageKeyboard.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageKeyboard.Size = new System.Drawing.Size(248, 221);
+            this.tabPageKeyboard.Size = new System.Drawing.Size(248, 233);
             this.tabPageKeyboard.TabIndex = 2;
             this.tabPageKeyboard.Text = "Keyboard";
             this.tabPageKeyboard.UseVisualStyleBackColor = true;
@@ -442,16 +423,16 @@ namespace InputService.Plugin
             this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyHeldDelay);
             this.groupBoxKeypressTiming.Controls.Add(this.labelKeyHeldDelay);
             this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyRepeatDelay);
-            this.groupBoxKeypressTiming.Location = new System.Drawing.Point(8, 72);
+            this.groupBoxKeypressTiming.Location = new System.Drawing.Point(6, 154);
             this.groupBoxKeypressTiming.Name = "groupBoxKeypressTiming";
-            this.groupBoxKeypressTiming.Size = new System.Drawing.Size(232, 88);
+            this.groupBoxKeypressTiming.Size = new System.Drawing.Size(236, 73);
             this.groupBoxKeypressTiming.TabIndex = 1;
             this.groupBoxKeypressTiming.TabStop = false;
             this.groupBoxKeypressTiming.Text = "Key press timing (in milliseconds)";
             // 
             // labelKeyRepeatDelay
             // 
-            this.labelKeyRepeatDelay.Location = new System.Drawing.Point(8, 24);
+            this.labelKeyRepeatDelay.Location = new System.Drawing.Point(6, 17);
             this.labelKeyRepeatDelay.Name = "labelKeyRepeatDelay";
             this.labelKeyRepeatDelay.Size = new System.Drawing.Size(128, 20);
             this.labelKeyRepeatDelay.TabIndex = 1;
@@ -460,7 +441,7 @@ namespace InputService.Plugin
             // 
             // labelKeyHeldDelay
             // 
-            this.labelKeyHeldDelay.Location = new System.Drawing.Point(8, 56);
+            this.labelKeyHeldDelay.Location = new System.Drawing.Point(6, 43);
             this.labelKeyHeldDelay.Name = "labelKeyHeldDelay";
             this.labelKeyHeldDelay.Size = new System.Drawing.Size(128, 20);
             this.labelKeyHeldDelay.TabIndex = 3;
@@ -469,68 +450,161 @@ namespace InputService.Plugin
             // 
             // tabPageMouse
             // 
-            this.tabPageMouse.Controls.Add(this.labelKpsHard);
-            this.tabPageMouse.Controls.Add(this.labelKpsSoft);
-            this.tabPageMouse.Controls.Add(this.labelKeyPadSensitivity);
-            this.tabPageMouse.Controls.Add(this.trackBarKeyPadSensitivity);
-            this.tabPageMouse.Controls.Add(this.labelMouseSensitivity);
-            this.tabPageMouse.Controls.Add(this.numericUpDownMouseSensitivity);
+            this.tabPageMouse.Controls.Add(this.groupBoxMouseSensitivity);
             this.tabPageMouse.Controls.Add(this.checkBoxHandleMouseLocal);
             this.tabPageMouse.Controls.Add(this.checkBoxEnableMouse);
             this.tabPageMouse.Location = new System.Drawing.Point(4, 22);
             this.tabPageMouse.Name = "tabPageMouse";
             this.tabPageMouse.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMouse.Size = new System.Drawing.Size(248, 221);
+            this.tabPageMouse.Size = new System.Drawing.Size(248, 233);
             this.tabPageMouse.TabIndex = 3;
             this.tabPageMouse.Text = "Mouse";
             this.tabPageMouse.UseVisualStyleBackColor = true;
             // 
-            // labelMouseSensitivity
+            // checkBoxUsePadSwitch
             // 
-            this.labelMouseSensitivity.Location = new System.Drawing.Point(8, 80);
-            this.labelMouseSensitivity.Name = "labelMouseSensitivity";
-            this.labelMouseSensitivity.Size = new System.Drawing.Size(144, 20);
-            this.labelMouseSensitivity.TabIndex = 2;
-            this.labelMouseSensitivity.Text = "Mouse sensitivity:";
-            this.labelMouseSensitivity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.checkBoxUsePadSwitch.AutoSize = true;
+            this.checkBoxUsePadSwitch.Location = new System.Drawing.Point(6, 29);
+            this.checkBoxUsePadSwitch.Name = "checkBoxUsePadSwitch";
+            this.checkBoxUsePadSwitch.Size = new System.Drawing.Size(236, 17);
+            this.checkBoxUsePadSwitch.TabIndex = 8;
+            this.checkBoxUsePadSwitch.Text = "Enable mouse/keyboard switch (iMON PAD)";
+            this.checkBoxUsePadSwitch.UseVisualStyleBackColor = true;
             // 
             // trackBarKeyPadSensitivity
             // 
             this.trackBarKeyPadSensitivity.BackColor = System.Drawing.Color.White;
             this.trackBarKeyPadSensitivity.LargeChange = 4;
-            this.trackBarKeyPadSensitivity.Location = new System.Drawing.Point(6, 148);
-            this.trackBarKeyPadSensitivity.Maximum = 15;
+            this.trackBarKeyPadSensitivity.Location = new System.Drawing.Point(6, 19);
+            this.trackBarKeyPadSensitivity.Maximum = 14;
             this.trackBarKeyPadSensitivity.Name = "trackBarKeyPadSensitivity";
-            this.trackBarKeyPadSensitivity.Size = new System.Drawing.Size(236, 45);
-            this.trackBarKeyPadSensitivity.TabIndex = 4;
-            this.trackBarKeyPadSensitivity.Value = 8;
+            this.trackBarKeyPadSensitivity.Size = new System.Drawing.Size(224, 45);
+            this.trackBarKeyPadSensitivity.TabIndex = 5;
+            this.trackBarKeyPadSensitivity.Value = 7;
             // 
-            // labelKeyPadSensitivity
+            // labelKeyPadHarder
             // 
-            this.labelKeyPadSensitivity.AutoSize = true;
-            this.labelKeyPadSensitivity.Location = new System.Drawing.Point(6, 132);
-            this.labelKeyPadSensitivity.Name = "labelKeyPadSensitivity";
-            this.labelKeyPadSensitivity.Size = new System.Drawing.Size(229, 13);
-            this.labelKeyPadSensitivity.TabIndex = 5;
-            this.labelKeyPadSensitivity.Text = "KeyPad Sensitivity (if Pad works as arrow keys)";
+            this.labelKeyPadHarder.AutoSize = true;
+            this.labelKeyPadHarder.Location = new System.Drawing.Point(193, 51);
+            this.labelKeyPadHarder.Name = "labelKeyPadHarder";
+            this.labelKeyPadHarder.Size = new System.Drawing.Size(37, 13);
+            this.labelKeyPadHarder.TabIndex = 10;
+            this.labelKeyPadHarder.Text = "harder";
             // 
-            // labelKpsSoft
+            // labelKeyPadSofter
             // 
-            this.labelKpsSoft.AutoSize = true;
-            this.labelKpsSoft.Location = new System.Drawing.Point(6, 180);
-            this.labelKpsSoft.Name = "labelKpsSoft";
-            this.labelKpsSoft.Size = new System.Drawing.Size(33, 13);
-            this.labelKpsSoft.TabIndex = 6;
-            this.labelKpsSoft.Text = "softer";
+            this.labelKeyPadSofter.AutoSize = true;
+            this.labelKeyPadSofter.Location = new System.Drawing.Point(6, 51);
+            this.labelKeyPadSofter.Name = "labelKeyPadSofter";
+            this.labelKeyPadSofter.Size = new System.Drawing.Size(33, 13);
+            this.labelKeyPadSofter.TabIndex = 9;
+            this.labelKeyPadSofter.Text = "softer";
             // 
-            // labelKpsHard
+            // groupBoxKeyPadSensitivity
             // 
-            this.labelKpsHard.AutoSize = true;
-            this.labelKpsHard.Location = new System.Drawing.Point(205, 180);
-            this.labelKpsHard.Name = "labelKpsHard";
-            this.labelKpsHard.Size = new System.Drawing.Size(37, 13);
-            this.labelKpsHard.TabIndex = 7;
-            this.labelKpsHard.Text = "harder";
+            this.groupBoxKeyPadSensitivity.Controls.Add(this.labelKeyPadHarder);
+            this.groupBoxKeyPadSensitivity.Controls.Add(this.labelKeyPadSofter);
+            this.groupBoxKeyPadSensitivity.Controls.Add(this.trackBarKeyPadSensitivity);
+            this.groupBoxKeyPadSensitivity.Location = new System.Drawing.Point(6, 52);
+            this.groupBoxKeyPadSensitivity.Name = "groupBoxKeyPadSensitivity";
+            this.groupBoxKeyPadSensitivity.Size = new System.Drawing.Size(236, 73);
+            this.groupBoxKeyPadSensitivity.TabIndex = 11;
+            this.groupBoxKeyPadSensitivity.TabStop = false;
+            this.groupBoxKeyPadSensitivity.Text = "KeyPad sensitivity (Pad in keyboard mode)";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(193, 51);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "harder";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 51);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(33, 13);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "softer";
+            // 
+            // trackBar1
+            // 
+            this.trackBar1.BackColor = System.Drawing.Color.White;
+            this.trackBar1.LargeChange = 4;
+            this.trackBar1.Location = new System.Drawing.Point(6, 19);
+            this.trackBar1.Maximum = 15;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(224, 45);
+            this.trackBar1.TabIndex = 5;
+            this.trackBar1.Value = 8;
+            // 
+            // groupBoxMouseSensitivity
+            // 
+            this.groupBoxMouseSensitivity.Controls.Add(this.labelMouseFaster);
+            this.groupBoxMouseSensitivity.Controls.Add(this.labelMouseSlower);
+            this.groupBoxMouseSensitivity.Controls.Add(this.labelMouseSensitivity);
+            this.groupBoxMouseSensitivity.Controls.Add(this.trackBarMouseSensitivity);
+            this.groupBoxMouseSensitivity.Location = new System.Drawing.Point(6, 52);
+            this.groupBoxMouseSensitivity.Name = "groupBoxMouseSensitivity";
+            this.groupBoxMouseSensitivity.Size = new System.Drawing.Size(236, 73);
+            this.groupBoxMouseSensitivity.TabIndex = 12;
+            this.groupBoxMouseSensitivity.TabStop = false;
+            this.groupBoxMouseSensitivity.Text = "Mouse sensitivity";
+            // 
+            // labelMouseFaster
+            // 
+            this.labelMouseFaster.AutoSize = true;
+            this.labelMouseFaster.Location = new System.Drawing.Point(197, 51);
+            this.labelMouseFaster.Name = "labelMouseFaster";
+            this.labelMouseFaster.Size = new System.Drawing.Size(33, 13);
+            this.labelMouseFaster.TabIndex = 10;
+            this.labelMouseFaster.Text = "faster";
+            // 
+            // labelMouseSlower
+            // 
+            this.labelMouseSlower.AutoSize = true;
+            this.labelMouseSlower.Location = new System.Drawing.Point(6, 51);
+            this.labelMouseSlower.Name = "labelMouseSlower";
+            this.labelMouseSlower.Size = new System.Drawing.Size(37, 13);
+            this.labelMouseSlower.TabIndex = 9;
+            this.labelMouseSlower.Text = "slower";
+            // 
+            // trackBarMouseSensitivity
+            // 
+            this.trackBarMouseSensitivity.BackColor = System.Drawing.Color.White;
+            this.trackBarMouseSensitivity.Cursor = System.Windows.Forms.Cursors.Default;
+            this.trackBarMouseSensitivity.Location = new System.Drawing.Point(6, 19);
+            this.trackBarMouseSensitivity.Maximum = 50;
+            this.trackBarMouseSensitivity.Name = "trackBarMouseSensitivity";
+            this.trackBarMouseSensitivity.Size = new System.Drawing.Size(224, 45);
+            this.trackBarMouseSensitivity.TabIndex = 5;
+            this.trackBarMouseSensitivity.TickFrequency = 5;
+            this.trackBarMouseSensitivity.Value = 10;
+            this.trackBarMouseSensitivity.Scroll += new System.EventHandler(this.trackBarMouseSensitivity_Scroll);
+            // 
+            // labelMouseSensitivity
+            // 
+            this.labelMouseSensitivity.Location = new System.Drawing.Point(6, 51);
+            this.labelMouseSensitivity.Name = "labelMouseSensitivity";
+            this.labelMouseSensitivity.Size = new System.Drawing.Size(224, 20);
+            this.labelMouseSensitivity.TabIndex = 11;
+            this.labelMouseSensitivity.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // groupBoxHardwareConfig
+            // 
+            this.groupBoxHardwareConfig.Controls.Add(this.labelRemoteMode);
+            this.groupBoxHardwareConfig.Controls.Add(this.comboBoxRemoteMode);
+            this.groupBoxHardwareConfig.Controls.Add(this.comboBoxPadMode);
+            this.groupBoxHardwareConfig.Controls.Add(this.labelPadMode);
+            this.groupBoxHardwareConfig.Location = new System.Drawing.Point(6, 52);
+            this.groupBoxHardwareConfig.Name = "groupBoxHardwareConfig";
+            this.groupBoxHardwareConfig.Size = new System.Drawing.Size(236, 73);
+            this.groupBoxHardwareConfig.TabIndex = 9;
+            this.groupBoxHardwareConfig.TabStop = false;
+            this.groupBoxHardwareConfig.Text = "Hardware configuration";
             // 
             // Configuration
             // 
@@ -538,13 +612,13 @@ namespace InputService.Plugin
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(272, 295);
+            this.ClientSize = new System.Drawing.Size(272, 307);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(280, 306);
+            this.MinimumSize = new System.Drawing.Size(280, 320);
             this.Name = "Configuration";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -554,7 +628,6 @@ namespace InputService.Plugin
             this.groupBoxRemoteTiming.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyHeldDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyRepeatDelay)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseSensitivity)).EndInit();
             this.tabControl.ResumeLayout(false);
             this.tabPageRemote.ResumeLayout(false);
             this.tabPageRemote.PerformLayout();
@@ -564,6 +637,13 @@ namespace InputService.Plugin
             this.tabPageMouse.ResumeLayout(false);
             this.tabPageMouse.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarKeyPadSensitivity)).EndInit();
+            this.groupBoxKeyPadSensitivity.ResumeLayout(false);
+            this.groupBoxKeyPadSensitivity.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            this.groupBoxMouseSensitivity.ResumeLayout(false);
+            this.groupBoxMouseSensitivity.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarMouseSensitivity)).EndInit();
+            this.groupBoxHardwareConfig.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -590,20 +670,28 @@ namespace InputService.Plugin
         private System.Windows.Forms.CheckBox checkBoxHandleKeyboardLocal;
         private System.Windows.Forms.CheckBox checkBoxEnableKeyboard;
         private System.Windows.Forms.TabPage tabPageMouse;
-        private System.Windows.Forms.Label labelMouseSensitivity;
-        private System.Windows.Forms.NumericUpDown numericUpDownMouseSensitivity;
         private System.Windows.Forms.CheckBox checkBoxHandleMouseLocal;
         private System.Windows.Forms.CheckBox checkBoxEnableMouse;
         private System.Windows.Forms.CheckBox checkBoxUseSystemRatesRemote;
         private System.Windows.Forms.CheckBox checkBoxUseSystemRatesKeyboard;
-        private System.Windows.Forms.ComboBox comboBoxHardwareMode;
-        private System.Windows.Forms.Label labelHardwareMode;
         private System.Windows.Forms.ComboBox comboBoxRemoteMode;
         private System.Windows.Forms.Label labelRemoteMode;
+        private System.Windows.Forms.ComboBox comboBoxPadMode;
+        private System.Windows.Forms.Label labelPadMode;
+        private System.Windows.Forms.CheckBox checkBoxUsePadSwitch;
         private System.Windows.Forms.TrackBar trackBarKeyPadSensitivity;
-        private System.Windows.Forms.Label labelKpsSoft;
-        private System.Windows.Forms.Label labelKeyPadSensitivity;
-        private System.Windows.Forms.Label labelKpsHard;
+        private System.Windows.Forms.GroupBox groupBoxKeyPadSensitivity;
+        private System.Windows.Forms.Label labelKeyPadHarder;
+        private System.Windows.Forms.Label labelKeyPadSofter;
+        private System.Windows.Forms.GroupBox groupBoxMouseSensitivity;
+        private System.Windows.Forms.Label labelMouseFaster;
+        private System.Windows.Forms.Label labelMouseSlower;
+        private System.Windows.Forms.TrackBar trackBarMouseSensitivity;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.Label labelMouseSensitivity;
+        private System.Windows.Forms.GroupBox groupBoxHardwareConfig;
 
     }
 

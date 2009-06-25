@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EC37743A-64B2-472A-9EB6-CB052AD2B35C}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -56,8 +56,11 @@
     <Compile Include="Configuration.Designer.cs">
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Debug.cs" />
+    <Compile Include="FileIO.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="Mouse.cs" />
+    <Compile Include="PluginBaseInterfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Imon USB Receivers.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -67,6 +70,7 @@
     </Compile>
     <Compile Include="RawInput.cs" />
     <Compile Include="ReceiverWindow.cs" />
+    <Compile Include="TestApplication.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
@@ -88,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="Exclusions.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
