@@ -8,9 +8,9 @@
   <RemoteTable RawCode="1130" AbstractButton="Rewind" />
   <RemoteTable RawCode="1144" AbstractButton="Pause" />
   <RemoteTable RawCode="1192" AbstractButton="FastForward" />
-  <RemoteTable RawCode="1208" AbstractButton="NextChapter" />
+  <RemoteTable RawCode="1066" AbstractButton="NextChapter" />
   <RemoteTable RawCode="1220" AbstractButton="Stop" />
-  <RemoteTable RawCode="1066" AbstractButton="PreviousChapter" />
+  <RemoteTable RawCode="1208" AbstractButton="PreviousChapter" />
   <RemoteTable RawCode="1148" AbstractButton="OK" />
   <RemoteTable RawCode="1038" AbstractButton="VolumeUp" />
   <RemoteTable RawCode="1042" AbstractButton="VolumeDown" />
