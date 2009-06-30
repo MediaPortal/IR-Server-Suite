@@ -1395,6 +1395,9 @@ namespace InputService.Plugin
                     if ((MouseDevice > 0) & (raw.header.dwType == RawInput.RawInputType.Mouse))
                         if (!deviceName.Equals(MouseDeviceName)) return;
                 }
+
+                
+                
                 DebugWriteLine("Received Input Command ({0})", Enum.GetName(typeof(RawInput.RawInputType), raw.header.dwType));
                 DebugWriteLine("RAW HID DEVICE: {0}", deviceName);
 
@@ -1551,69 +1554,145 @@ namespace InputService.Plugin
 
                     case RawInput.RawInputType.Keyboard:
                         {
-                            DebugWriteLine("RAW IMON HID KEYBOARD- CODE: {0}  FLAGS: {1}  MESSAGE: {2}", raw.keyboard.VKey,
-                                           raw.keyboard.Flags, raw.keyboard.Message);
-                            bool ConsumeKeypress = false;
-                            bool SendToKeyboard = false;
-                            uint KeyCode = 0;
-
-                            switch (raw.keyboard.Flags)
+                            if (_enableKeyboardInput)
                             {
-                                case RawInput.RawKeyboardFlags.KeyE0:
-                                    DebugWriteLine(String.Format("KEYBOARD FLAG E0: {0}", raw.keyboard.MakeCode));
-                                    KeyCode = 0;
-                                    uint KeyBase = ((_remoteMode == RemoteMode.iMON) ? IMON_PAD_BUTTON : IMON_MCE_BUTTON);
-                                    if (_remoteMode == RemoteMode.iMON)
-                                    {
-                                        if (raw.keyboard.VKey == 92)
-                                        {
-                                            KeyCode = IMON_PAD_BUTTON_WINKEY;
-                                        }
-                                        if (raw.keyboard.VKey == 93)
-                                        {
-                                            KeyCode = IMON_PAD_BUTTON_MENUKEY;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (raw.keyboard.VKey == 37)
-                                        {
-                                            KeyCode = IMON_MCE_BUTTON_UP;
-                                        }
-                                        if (raw.keyboard.VKey == 38)
-                                        {
-                                            KeyCode = IMON_MCE_BUTTON_LEFT;
-                                        }
-                                        if (raw.keyboard.VKey == 39)
-                                        {
-                                            KeyCode = IMON_MCE_BUTTON_RIGHT;
-                                        }
-                                        if (raw.keyboard.VKey == 40)
-                                        {
-                                            KeyCode = IMON_MCE_BUTTON_DOWN;
-                                        }
-                                    }
-                                    if (KeyCode != 0) RemoteEvent(KeyCode + KeyBase, false);
-                                    //if (_keyboardHandler != null)
-                                    //  _keyboardHandler(this.Name, 0xE000 | raw.keyboard.MakeCode, true);
+                                DebugWriteLine("RAW IMON HID KEYBOARD- CODE: {0}  FLAGS: {1}  MESSAGE: {2}", raw.keyboard.VKey,
+                                               raw.keyboard.Flags, raw.keyboard.Message);
+                                bool ConsumeKeypress = false;
+                                bool SendToKeyboard = false;
+                                uint KeyCode = 0;
 
-                                    break;
-
-                                case RawInput.RawKeyboardFlags.KeyE1:
-                                    DebugWriteLine(String.Format("KEYBOARD FLAG E1: {0}", raw.keyboard.MakeCode));
-                                    //if (_keyboardHandler != null)
-                                    //  _keyboardHandler(this.Name, 0xE100, true);
-                                    break;
-
-                                case RawInput.RawKeyboardFlags.KeyMake:
-                                    //#if DEBUG
-                                    //                                  DebugWriteLine("RAW IMON HID KEYBOARD CODE: {0}  FLAGS: {1}  MESSAGE: {2}", raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message);
-                                    //                                  Console.WriteLine("RAW IMON HID KEYBOARD CODE: {0}  FLAGS: {1}  MESSAGE: {2}  EXTRA: {3}", raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message, raw.keyboard.ExtraInformation);
-                                    //#endif
-                                    if (_keyboardHandler != null)
-                                    {
+                                switch (raw.keyboard.Flags)
+                                {
+                                    case RawInput.RawKeyboardFlags.KeyE0:
+                                        DebugWriteLine(String.Format("KEYBOARD FLAG E0: {0}", raw.keyboard.MakeCode));
                                         KeyCode = 0;
-                                        // convert the keyboard code into an iMon code
+                                        uint KeyBase = ((_remoteMode == RemoteMode.iMON) ? IMON_PAD_BUTTON : IMON_MCE_BUTTON);
+                                        if (_remoteMode == RemoteMode.iMON)
+                                        {
+                                            if (raw.keyboard.VKey == 92)
+                                            {
+                                                KeyCode = IMON_PAD_BUTTON_WINKEY;
+                                            }
+                                            if (raw.keyboard.VKey == 93)
+                                            {
+                                                KeyCode = IMON_PAD_BUTTON_MENUKEY;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (raw.keyboard.VKey == 37)
+                                            {
+                                                KeyCode = IMON_MCE_BUTTON_UP;
+                                            }
+                                            if (raw.keyboard.VKey == 38)
+                                            {
+                                                KeyCode = IMON_MCE_BUTTON_LEFT;
+                                            }
+                                            if (raw.keyboard.VKey == 39)
+                                            {
+                                                KeyCode = IMON_MCE_BUTTON_RIGHT;
+                                            }
+                                            if (raw.keyboard.VKey == 40)
+                                            {
+                                                KeyCode = IMON_MCE_BUTTON_DOWN;
+                                            }
+                                        }
+                                        if (KeyCode != 0) RemoteEvent(KeyCode + KeyBase, false);
+                                        //if (_keyboardHandler != null)
+                                        //  _keyboardHandler(this.Name, 0xE000 | raw.keyboard.MakeCode, true);
+
+                                        break;
+
+                                    case RawInput.RawKeyboardFlags.KeyE1:
+                                        DebugWriteLine(String.Format("KEYBOARD FLAG E1: {0}", raw.keyboard.MakeCode));
+                                        //if (_keyboardHandler != null)
+                                        //  _keyboardHandler(this.Name, 0xE100, true);
+                                        break;
+
+                                    case RawInput.RawKeyboardFlags.KeyMake:
+                                        //#if DEBUG
+                                        //                                  DebugWriteLine("RAW IMON HID KEYBOARD CODE: {0}  FLAGS: {1}  MESSAGE: {2}", raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message);
+                                        //                                  Console.WriteLine("RAW IMON HID KEYBOARD CODE: {0}  FLAGS: {1}  MESSAGE: {2}  EXTRA: {3}", raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message, raw.keyboard.ExtraInformation);
+                                        //#endif
+                                        if (_keyboardHandler != null)
+                                        {
+                                            KeyCode = 0;
+                                            // convert the keyboard code into an iMon code
+                                            if ((raw.keyboard.VKey == 16) | (raw.keyboard.VKey == 17) | (raw.keyboard.VKey == 18))
+                                            {
+                                                ModifierState.LastKeydownWasShift = false;
+                                                ModifierState.LastKeyupWasShift = false;
+                                                ModifierState.LastKeydownWasCtrl = false;
+                                                ModifierState.LastKeyupWasCtrl = false;
+                                                ModifierState.LastKeydownWasAlt = false;
+                                                ModifierState.LastKeyupWasAlt = false;
+                                                if (raw.keyboard.VKey == 16)
+                                                {
+                                                    ModifierState.ShiftOn = true;
+                                                    ModifierState.LastKeydownWasShift = true;
+                                                }
+                                                if (raw.keyboard.VKey == 17)
+                                                {
+                                                    ModifierState.CtrlOn = true;
+                                                    ModifierState.LastKeydownWasCtrl = true;
+                                                }
+                                                if (raw.keyboard.VKey == 18)
+                                                {
+                                                    ModifierState.AltOn = true;
+                                                    ModifierState.LastKeydownWasAlt = true;
+                                                }
+                                                ConsumeKeypress = true;
+                                            }
+                                            else
+                                            {
+                                                if (_remoteMode == RemoteMode.iMON)
+                                                {
+                                                    if (ConvertVKeyToiMonKeyCode((Keyboard.VKey)raw.keyboard.VKey, ModifierState) != 0)
+                                                    {
+                                                        KeyCode = IMON_PAD_BUTTON +
+                                                                  ConvertVKeyToiMonKeyCode((Keyboard.VKey)raw.keyboard.VKey, ModifierState);
+                                                    }
+                                                    else
+                                                    {
+                                                        KeyCode = raw.keyboard.VKey;
+                                                        SendToKeyboard = true;
+                                                    }
+                                                    ModifierState.LastKeydownWasShift = false;
+                                                    ModifierState.LastKeydownWasCtrl = false;
+                                                    ModifierState.LastKeydownWasAlt = false;
+                                                }
+                                                else
+                                                {
+                                                    KeyCode = IMON_MCE_BUTTON +
+                                                              ConvertVKeyToiMonMceKeyCode((Keyboard.VKey)raw.keyboard.VKey, ModifierState);
+                                                    ModifierState.LastKeydownWasShift = false;
+                                                    ModifierState.LastKeydownWasCtrl = false;
+                                                    ModifierState.LastKeydownWasAlt = false;
+                                                }
+                                            }
+                                            if (!ConsumeKeypress & !SendToKeyboard)
+                                            {
+                                                RemoteEvent(KeyCode, false);
+                                            }
+                                            else if (!ConsumeKeypress)
+                                            {
+                                                _keyboardHandler(Name, (int)KeyCode, false);
+                                            }
+                                            else
+                                            {
+                                                DebugWriteLine("CONSUMED HID KEYBOARD - CODE: {0}  FLAGS: {1}  MESSAGE: {2}", raw.keyboard.VKey,
+                                                               raw.keyboard.Flags, raw.keyboard.Message);
+                                            }
+                                            //_keyboardHandler(this.Name, (int)KeyCode, false);
+                                        }
+                                        break;
+
+                                    case RawInput.RawKeyboardFlags.KeyBreak:
+                                        KeyCode = 0;
+                                        ConsumeKeypress = false;
+                                        SendToKeyboard = false;
+                                        //convert the keyboard code into an iMon code
                                         if ((raw.keyboard.VKey == 16) | (raw.keyboard.VKey == 17) | (raw.keyboard.VKey == 18))
                                         {
                                             ModifierState.LastKeydownWasShift = false;
@@ -1624,18 +1703,18 @@ namespace InputService.Plugin
                                             ModifierState.LastKeyupWasAlt = false;
                                             if (raw.keyboard.VKey == 16)
                                             {
-                                                ModifierState.ShiftOn = true;
-                                                ModifierState.LastKeydownWasShift = true;
+                                                ModifierState.ShiftOn = false;
+                                                ModifierState.LastKeyupWasShift = true;
                                             }
                                             if (raw.keyboard.VKey == 17)
                                             {
-                                                ModifierState.CtrlOn = true;
-                                                ModifierState.LastKeydownWasCtrl = true;
+                                                ModifierState.CtrlOn = false;
+                                                ModifierState.LastKeyupWasAlt = true;
                                             }
                                             if (raw.keyboard.VKey == 18)
                                             {
-                                                ModifierState.AltOn = true;
-                                                ModifierState.LastKeydownWasAlt = true;
+                                                ModifierState.AltOn = false;
+                                                ModifierState.LastKeyupWasAlt = true;
                                             }
                                             ConsumeKeypress = true;
                                         }
@@ -1651,19 +1730,20 @@ namespace InputService.Plugin
                                                 else
                                                 {
                                                     KeyCode = raw.keyboard.VKey;
+                                                    //_keyboardHandler(this.Name, (int)KeyCode, true);
                                                     SendToKeyboard = true;
                                                 }
-                                                ModifierState.LastKeydownWasShift = false;
-                                                ModifierState.LastKeydownWasCtrl = false;
-                                                ModifierState.LastKeydownWasAlt = false;
+                                                ModifierState.LastKeyupWasShift = false;
+                                                ModifierState.LastKeyupWasCtrl = false;
+                                                ModifierState.LastKeyupWasAlt = false;
                                             }
                                             else
                                             {
                                                 KeyCode = IMON_MCE_BUTTON +
                                                           ConvertVKeyToiMonMceKeyCode((Keyboard.VKey)raw.keyboard.VKey, ModifierState);
-                                                ModifierState.LastKeydownWasShift = false;
-                                                ModifierState.LastKeydownWasCtrl = false;
-                                                ModifierState.LastKeydownWasAlt = false;
+                                                ModifierState.LastKeyupWasShift = false;
+                                                ModifierState.LastKeyupWasCtrl = false;
+                                                ModifierState.LastKeyupWasAlt = false;
                                             }
                                         }
                                         if (!ConsumeKeypress & !SendToKeyboard)
@@ -1672,100 +1752,28 @@ namespace InputService.Plugin
                                         }
                                         else if (!ConsumeKeypress)
                                         {
-                                            _keyboardHandler(Name, (int)KeyCode, false);
+                                            _keyboardHandler(Name, (int)KeyCode, true);
                                         }
                                         else
                                         {
-                                            DebugWriteLine("CONSUMED HID KEYBOARD - CODE: {0}  FLAGS: {1}  MESSAGE: {2}", raw.keyboard.VKey,
+                                            DebugWriteLine("CONSUMED HID KEYBOARD - CODE: {0}  FLAGS: {1}  MESSAGE: {2}\n", raw.keyboard.VKey,
                                                            raw.keyboard.Flags, raw.keyboard.Message);
                                         }
-                                        //_keyboardHandler(this.Name, (int)KeyCode, false);
-                                    }
-                                    break;
+                                        break;
 
-                                case RawInput.RawKeyboardFlags.KeyBreak:
-                                    KeyCode = 0;
-                                    ConsumeKeypress = false;
-                                    SendToKeyboard = false;
-                                    //convert the keyboard code into an iMon code
-                                    if ((raw.keyboard.VKey == 16) | (raw.keyboard.VKey == 17) | (raw.keyboard.VKey == 18))
-                                    {
-                                        ModifierState.LastKeydownWasShift = false;
-                                        ModifierState.LastKeyupWasShift = false;
-                                        ModifierState.LastKeydownWasCtrl = false;
-                                        ModifierState.LastKeyupWasCtrl = false;
-                                        ModifierState.LastKeydownWasAlt = false;
-                                        ModifierState.LastKeyupWasAlt = false;
-                                        if (raw.keyboard.VKey == 16)
-                                        {
-                                            ModifierState.ShiftOn = false;
-                                            ModifierState.LastKeyupWasShift = true;
-                                        }
-                                        if (raw.keyboard.VKey == 17)
-                                        {
-                                            ModifierState.CtrlOn = false;
-                                            ModifierState.LastKeyupWasAlt = true;
-                                        }
-                                        if (raw.keyboard.VKey == 18)
-                                        {
-                                            ModifierState.AltOn = false;
-                                            ModifierState.LastKeyupWasAlt = true;
-                                        }
-                                        ConsumeKeypress = true;
-                                    }
-                                    else
-                                    {
-                                        if (_remoteMode == RemoteMode.iMON)
-                                        {
-                                            if (ConvertVKeyToiMonKeyCode((Keyboard.VKey)raw.keyboard.VKey, ModifierState) != 0)
-                                            {
-                                                KeyCode = IMON_PAD_BUTTON +
-                                                          ConvertVKeyToiMonKeyCode((Keyboard.VKey)raw.keyboard.VKey, ModifierState);
-                                            }
-                                            else
-                                            {
-                                                KeyCode = raw.keyboard.VKey;
-                                                //_keyboardHandler(this.Name, (int)KeyCode, true);
-                                                SendToKeyboard = true;
-                                            }
-                                            ModifierState.LastKeyupWasShift = false;
-                                            ModifierState.LastKeyupWasCtrl = false;
-                                            ModifierState.LastKeyupWasAlt = false;
-                                        }
-                                        else
-                                        {
-                                            KeyCode = IMON_MCE_BUTTON +
-                                                      ConvertVKeyToiMonMceKeyCode((Keyboard.VKey)raw.keyboard.VKey, ModifierState);
-                                            ModifierState.LastKeyupWasShift = false;
-                                            ModifierState.LastKeyupWasCtrl = false;
-                                            ModifierState.LastKeyupWasAlt = false;
-                                        }
-                                    }
-                                    if (!ConsumeKeypress & !SendToKeyboard)
-                                    {
-                                        RemoteEvent(KeyCode, false);
-                                    }
-                                    else if (!ConsumeKeypress)
-                                    {
-                                        _keyboardHandler(Name, (int)KeyCode, true);
-                                    }
-                                    else
-                                    {
-                                        DebugWriteLine("CONSUMED HID KEYBOARD - CODE: {0}  FLAGS: {1}  MESSAGE: {2}\n", raw.keyboard.VKey,
-                                                       raw.keyboard.Flags, raw.keyboard.Message);
-                                    }
-                                    break;
+                                    case RawInput.RawKeyboardFlags.TerminalServerSetLED:
+                                        DebugWriteLine("RAW IMON HID KEYBOARD - TerminalServerSetLED - CODE: {0}  FLAGS: {1}  MESSAGE: {2}",
+                                                       raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message);
+                                        break;
 
-                                case RawInput.RawKeyboardFlags.TerminalServerSetLED:
-                                    DebugWriteLine("RAW IMON HID KEYBOARD - TerminalServerSetLED - CODE: {0}  FLAGS: {1}  MESSAGE: {2}",
-                                                   raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message);
-                                    break;
-
-                                case RawInput.RawKeyboardFlags.TerminalServerShadow:
-                                    DebugWriteLine("RAW IMON HID KEYBOARD - TerminalServerShadow - CODE: {0}  FLAGS: {1}  MESSAGE: {2}",
-                                                   raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message);
-                                    break;
+                                    case RawInput.RawKeyboardFlags.TerminalServerShadow:
+                                        DebugWriteLine("RAW IMON HID KEYBOARD - TerminalServerShadow - CODE: {0}  FLAGS: {1}  MESSAGE: {2}",
+                                                       raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message);
+                                        break;
+                                }
                             }
+                            else DebugWriteLine("RAW IMON HID KEYBOARD (ignoring) - CODE: {0}  FLAGS: {1}  MESSAGE: {2}",
+                                                raw.keyboard.VKey, raw.keyboard.Flags, raw.keyboard.Message);
                             break;
                         }
                 }
