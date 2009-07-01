@@ -1205,7 +1205,7 @@ namespace IrssUtils
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool Reboot()
     {
-      return Win32.WindowsExit(Win32.ExitWindows.Reboot, Win32.ShutdownReasons.FlagUserDefined);
+      return Win32.WindowsExit(Win32.ExitWindows.Reboot, 0);
     }
 
     /// <summary>
@@ -1214,7 +1214,7 @@ namespace IrssUtils
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool LogOff()
     {
-      return Win32.WindowsExit(Win32.ExitWindows.LogOff, Win32.ShutdownReasons.FlagUserDefined);
+      return Win32.WindowsExit(Win32.ExitWindows.LogOff, 0);
     }
 
     /// <summary>
@@ -1223,7 +1223,7 @@ namespace IrssUtils
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool ShutDown()
     {
-      return Win32.WindowsExit(Win32.ExitWindows.ShutDown, Win32.ShutdownReasons.FlagUserDefined);
+      return Win32.WindowsExit(Win32.ExitWindows.ShutDown, 0);
     }
 
     /*

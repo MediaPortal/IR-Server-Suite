@@ -22,6 +22,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -56,6 +57,19 @@ namespace IrssUtils
     private const int MINIMIZE_ALL = 419;
     private const int MINIMIZE_ALL_UNDO = 416;
     private const int WPF_RESTORETOMAXIMIZED = 2;
+
+
+    /// <summary>Required to enable or disable the privileges in an access token.</summary>
+    private const int TOKEN_ADJUST_PRIVILEGES = 0x20;
+    /// <summary>Required to query an access token.</summary>
+    private const int TOKEN_QUERY = 0x8;
+    /// <summary>The privilege is enabled.</summary>
+    private const int SE_PRIVILEGE_ENABLED = 0x2;
+    /// <summary>Specifies that the function should search the system message-table resource(s) for the requested message.</summary>
+    private const int FORMAT_MESSAGE_FROM_SYSTEM = 0x1000;
+    /// <summary>Forces processes to terminate. When this flag is set, the system does not send the WM_QUERYENDSESSION and WM_ENDSESSION messages. This can cause the applications to lose data. Therefore, you should only use this flag in an emergency.</summary>
+    private const int EWX_FORCE = 4;
+
 
     #endregion Constants
 
@@ -167,32 +181,19 @@ namespace IrssUtils
       /// <summary>
       /// LogOff
       /// </summary>
-      LogOff = 0x00,
+      LogOff = 0,
       /// <summary>
       /// ShutDown
       /// </summary>
-      ShutDown = 0x01,
+      ShutDown = 1,
       /// <summary>
       /// Reboot
       /// </summary>
-      Reboot = 0x02,
+      Reboot = 2,
       /// <summary>
       /// PowerOff
       /// </summary>
-      PowerOff = 0x08,
-      /// <summary>
-      /// RestartApps
-      /// </summary>
-      RestartApps = 0x40,
-
-      /// <summary>
-      /// Force
-      /// </summary>
-      Force = 0x04,
-      /// <summary>
-      /// ForceIfHung
-      /// </summary>
-      ForceIfHung = 0x10,
+      PowerOff = 8,
     }
 
     #endregion
@@ -1807,12 +1808,14 @@ namespace IrssUtils
       /// <summary>
       /// Display Name.
       /// </summary>
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string szDisplayName;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+      public string szDisplayName;
 
       /// <summary>
       /// Type Name.
       /// </summary>
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)] public string szTypeName;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
+      public string szTypeName;
     } ;
 
     #endregion
@@ -1830,6 +1833,51 @@ namespace IrssUtils
       public RECT rcNormalPosition;
     }
 
+    #endregion
+
+    #region Nested type: TOKEN_PRIVILEGES
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    internal struct TOKEN_PRIVILEGES
+    {
+      /// <summary>
+      /// Specifies the number of entries in the Privileges array.
+      /// </summary>
+      public int PrivilegeCount;
+      /// <summary>
+      /// Specifies an array of LUID_AND_ATTRIBUTES structures. Each structure contains the LUID and attributes of a privilege.
+      /// </summary>
+      public LUID_AND_ATTRIBUTES Privileges;
+    }
+    #endregion
+
+    #region Nested type: LUID
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    internal struct LUID
+    {
+      /// <summary>
+      /// The low order part of the 64 bit value.
+      /// </summary>
+      public int LowPart;
+      /// <summary>
+      /// The high order part of the 64 bit value.
+      /// </summary>
+      public int HighPart;
+    }
+    #endregion
+
+    #region Nested type: LUID_AND_ATTRIBUTES
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    internal struct LUID_AND_ATTRIBUTES
+    {
+      /// <summary>
+      /// Specifies an LUID value.
+      /// </summary>
+      public LUID pLuid;
+      /// <summary>
+      /// Specifies attributes of the LUID. This value contains up to 32 one-bit flags. Its meaning is dependent on the definition and use of the LUID.
+      /// </summary>
+      public int Attributes;
+    }
     #endregion
 
     #endregion Structures
@@ -1891,11 +1939,52 @@ namespace IrssUtils
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
 
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool ExitWindowsEx(
-      ExitWindows flags,
-      ShutdownReasons reasons);
+    [DllImport("user32.dll", EntryPoint = "ExitWindowsEx", CharSet = CharSet.Ansi)]
+    private static extern int ExitWindowsEx(
+      int uFlags,
+      int dwReserved);
+
+    [DllImport("advapi32.dll", EntryPoint = "OpenProcessToken", CharSet = CharSet.Ansi)]
+    private static extern int OpenProcessToken(
+      IntPtr ProcessHandle,
+      int DesiredAccess,
+      ref IntPtr TokenHandle);
+
+    [DllImport("advapi32.dll", EntryPoint = "LookupPrivilegeValueA", CharSet = CharSet.Ansi)]
+    private static extern int LookupPrivilegeValue(
+      string lpSystemName,
+      string lpName,
+      ref LUID lpLuid);
+
+    [DllImport("advapi32.dll", EntryPoint = "AdjustTokenPrivileges", CharSet = CharSet.Ansi)]
+    private static extern int AdjustTokenPrivileges(
+      IntPtr TokenHandle,
+      int DisableAllPrivileges,
+      ref TOKEN_PRIVILEGES NewState,
+      int BufferLength,
+      ref TOKEN_PRIVILEGES PreviousState,
+      ref int ReturnLength);
+
+    [DllImport("kernel32.dll", EntryPoint = "LoadLibraryA", CharSet = CharSet.Ansi)]
+    private static extern IntPtr LoadLibrary(string lpLibFileName);
+
+    [DllImport("kernel32.dll", EntryPoint = "FreeLibrary", CharSet = CharSet.Ansi)]
+    private static extern int FreeLibrary(IntPtr hLibModule);
+
+    [DllImport("kernel32.dll", EntryPoint = "GetProcAddress", CharSet = CharSet.Ansi)]
+    private static extern IntPtr GetProcAddress(
+      IntPtr hModule,
+      string lpProcName);
+
+    [DllImport("user32.dll", EntryPoint = "FormatMessageA", CharSet = CharSet.Ansi)]
+    private static extern int FormatMessage(
+      int dwFlags,
+      IntPtr lpSource,
+      int dwMessageId,
+      int dwLanguageId,
+      StringBuilder lpBuffer,
+      int nSize,
+      int Arguments);
 
     [DllImport("user32.dll")]
     private static extern IntPtr FindWindow(
@@ -2060,7 +2149,7 @@ namespace IrssUtils
 
       SHFILEINFO shinfo = new SHFILEINFO();
 
-      SHGetFileInfo(fileName, 0, ref shinfo, (uint) Marshal.SizeOf(shinfo), SHGFI.Icon | SHGFI.LargeIcon);
+      SHGetFileInfo(fileName, 0, ref shinfo, (uint)Marshal.SizeOf(shinfo), SHGFI.Icon | SHGFI.LargeIcon);
 
       Icon icon = null;
 
@@ -2082,14 +2171,14 @@ namespace IrssUtils
     {
       IntPtr icon = IntPtr.Zero;
 
-      SendMessageTimeout(handle, (int) WindowsMessage.WM_GETICON, new IntPtr(ICON_BIG), IntPtr.Zero,
+      SendMessageTimeout(handle, (int)WindowsMessage.WM_GETICON, new IntPtr(ICON_BIG), IntPtr.Zero,
                          SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out icon);
 
       if (icon == IntPtr.Zero)
         icon = GetClassLongPtr(handle, GCL_HICON);
 
       if (icon == IntPtr.Zero)
-        SendMessageTimeout(handle, (int) WindowsMessage.WM_QUERYDRAGICON, IntPtr.Zero, IntPtr.Zero,
+        SendMessageTimeout(handle, (int)WindowsMessage.WM_QUERYDRAGICON, IntPtr.Zero, IntPtr.Zero,
                            SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out icon);
 
       if (icon != IntPtr.Zero)
@@ -2108,8 +2197,8 @@ namespace IrssUtils
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool ExtractIcons(string fileName, int index, out Icon large, out Icon small)
     {
-      IntPtr[] hLarge = new IntPtr[1] {IntPtr.Zero};
-      IntPtr[] hSmall = new IntPtr[1] {IntPtr.Zero};
+      IntPtr[] hLarge = new IntPtr[1] { IntPtr.Zero };
+      IntPtr[] hSmall = new IntPtr[1] { IntPtr.Zero };
 
       large = null;
       small = null;
@@ -2120,8 +2209,8 @@ namespace IrssUtils
 
         if (iconCount > 0)
         {
-          large = (Icon) Icon.FromHandle(hLarge[0]).Clone();
-          small = (Icon) Icon.FromHandle(hSmall[0]).Clone();
+          large = (Icon)Icon.FromHandle(hLarge[0]).Clone();
+          small = (Icon)Icon.FromHandle(hSmall[0]).Clone();
           return true;
         }
       }
@@ -2215,7 +2304,73 @@ namespace IrssUtils
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public static bool WindowsExit(ExitWindows flags, ShutdownReasons reasons)
     {
-      return ExitWindowsEx(flags, reasons);
+      EnableToken("SeShutdownPrivilege");
+      return ExitWindowsEx((int)flags, (int)reasons) != 0;
+    }
+
+    /// <summary>
+    /// Tries to enable the specified privilege.
+    /// </summary>
+    /// <param name="privilege">The privilege to enable.</param>
+    /// <exception cref="PrivilegeException">There was an error while requesting a required privilege.</exception>
+    /// <remarks>Thanks to Michael S. Muegel for notifying us about a bug in this code.</remarks>
+    private static void EnableToken(string privilege)
+    {
+      if (Environment.OSVersion.Platform != PlatformID.Win32NT || !CheckEntryPoint("advapi32.dll", "AdjustTokenPrivileges"))
+        return;
+      IntPtr tokenHandle = IntPtr.Zero;
+      LUID privilegeLUID = new LUID();
+      TOKEN_PRIVILEGES newPrivileges = new TOKEN_PRIVILEGES();
+      TOKEN_PRIVILEGES tokenPrivileges;
+      if (OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref tokenHandle) == 0)
+        throw new PrivilegeException(FormatError(Marshal.GetLastWin32Error()));
+      if (LookupPrivilegeValue("", privilege, ref privilegeLUID) == 0)
+        throw new PrivilegeException(FormatError(Marshal.GetLastWin32Error()));
+      tokenPrivileges.PrivilegeCount = 1;
+      tokenPrivileges.Privileges.Attributes = SE_PRIVILEGE_ENABLED;
+      tokenPrivileges.Privileges.pLuid = privilegeLUID;
+      int size = 4;
+      if (AdjustTokenPrivileges(tokenHandle, 0, ref tokenPrivileges, 4 + (12 * tokenPrivileges.PrivilegeCount), ref newPrivileges, ref size) == 0)
+        throw new PrivilegeException(FormatError(Marshal.GetLastWin32Error()));
+    }
+    /// <summary>
+    /// Checks whether a specified method exists on the local computer.
+    /// </summary>
+    /// <param name="library">The library that holds the method.</param>
+    /// <param name="method">The entry point of the requested method.</param>
+    /// <returns>True if the specified method is present, false otherwise.</returns>
+    private static bool CheckEntryPoint(string library, string method)
+    {
+      IntPtr libPtr = LoadLibrary(library);
+      if (!libPtr.Equals(IntPtr.Zero))
+      {
+        if (!GetProcAddress(libPtr, method).Equals(IntPtr.Zero))
+        {
+          FreeLibrary(libPtr);
+          return true;
+        }
+        FreeLibrary(libPtr);
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Formats an error number into an error message.
+    /// </summary>
+    /// <param name="number">The error number to convert.</param>
+    /// <returns>A string representation of the specified error number.</returns>
+    private static string FormatError(int number)
+    {
+      try
+      {
+        StringBuilder buffer = new StringBuilder(255);
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, IntPtr.Zero, number, 0, buffer, buffer.Capacity, 0);
+        return buffer.ToString();
+      }
+      catch (Exception)
+      {
+        return "Unspecified error [" + number.ToString() + "]";
+      }
     }
 
     /// <summary>
@@ -2437,7 +2592,7 @@ namespace IrssUtils
         return;
 
       IntPtr result;
-      SendMessageTimeout(trayWnd, (int) WindowsMessage.WM_COMMAND, new IntPtr(MINIMIZE_ALL), IntPtr.Zero,
+      SendMessageTimeout(trayWnd, (int)WindowsMessage.WM_COMMAND, new IntPtr(MINIMIZE_ALL), IntPtr.Zero,
                          SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 1000, out result);
     }
 
@@ -2449,7 +2604,7 @@ namespace IrssUtils
     /// <returns>Upper 16 bits or source 32-bit integer.</returns>
     public static Int16 HighWord(Int32 dWord)
     {
-      return (Int16) ((dWord >> 16) & 0xffff);
+      return (Int16)((dWord >> 16) & 0xffff);
     }
 
     /// <summary>
@@ -2459,7 +2614,7 @@ namespace IrssUtils
     /// <returns>Lower 16 bits or source 32-bit integer.</returns>
     public static Int16 LowWord(Int32 dWord)
     {
-      return (Int16) (dWord & 0xffff);
+      return (Int16)(dWord & 0xffff);
     }
 
     /// <summary>
@@ -2469,7 +2624,7 @@ namespace IrssUtils
     /// <returns>Upper 8 bits or source 16-bit integer.</returns>
     public static Byte HighByte(Int16 word)
     {
-      return (Byte) ((word >> 8) & 0xff);
+      return (Byte)((word >> 8) & 0xff);
     }
 
     /// <summary>
@@ -2479,7 +2634,7 @@ namespace IrssUtils
     /// <returns>Lower 8 bits or source 16-bit integer.</returns>
     public static Byte LowByte(Int16 word)
     {
-      return (Byte) (word & 0xff);
+      return (Byte)(word & 0xff);
     }
 
     /// <summary>
@@ -2519,5 +2674,21 @@ namespace IrssUtils
     }
 
     #endregion Methods
+  }
+
+  /// <summary>
+  /// The exception that is thrown when an error occures when requesting a specific privilege.
+  /// </summary>
+  public class PrivilegeException : Exception
+  {
+    /// <summary>
+    /// Initializes a new instance of the PrivilegeException class.
+    /// </summary>
+    public PrivilegeException() : base() { }
+    /// <summary>
+    /// Initializes a new instance of the PrivilegeException class with a specified error message.
+    /// </summary>
+    /// <param name="message">The message that describes the error.</param>
+    public PrivilegeException(string message) : base(message) { }
   }
 }
