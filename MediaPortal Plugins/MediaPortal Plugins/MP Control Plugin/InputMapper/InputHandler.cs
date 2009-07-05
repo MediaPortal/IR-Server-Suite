@@ -259,7 +259,7 @@ namespace MediaPortal.Plugins
       if (map == null)
         return false;
 #if DEBUG
-      Log.Info("{0} / {1} / {2} / {3}", map.Condition, map.ConProperty, map.Command, map.CmdProperty);
+      Log.Debug("{0} / {1} / {2} / {3}", map.Condition, map.ConProperty, map.Command, map.CmdProperty);
 #endif
       Action action;
       if (map.Sound != string.Empty) // && !g_Player.Playing)
@@ -276,7 +276,7 @@ namespace MediaPortal.Plugins
         case "ACTION": // execute Action x
           Key key = new Key(map.CmdKeyChar, map.CmdKeyCode);
 #if DEBUG
-          Log.Info("Executing: key {0} / {1} / Action: {2} / {3}", map.CmdKeyChar, map.CmdKeyCode, map.CmdProperty,
+          Log.Debug("Executing: key {0} / {1} / Action: {2} / {3}", map.CmdKeyChar, map.CmdKeyCode, map.CmdProperty,
                    ((Action.ActionType) Convert.ToInt32(map.CmdProperty)).ToString());
 #endif
           action = new Action(key, (Action.ActionType) Convert.ToInt32(map.CmdProperty), 0, 0);

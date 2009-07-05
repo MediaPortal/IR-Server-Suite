@@ -384,20 +384,16 @@ namespace MediaPortal.Plugins
 
     private bool SaveMapping(string xmlFile)
     {
-#if !DEBUG
       try
-#endif
       {
         Directory.CreateDirectory(Config.GetFolder(Config.Dir.CustomInputDevice));
       }
-#if !DEBUG
       catch
       {
         Log.Info("MAP: Error accessing directory \"InputDeviceMappings\\custom\"");
       }
 
-      //try
-#endif
+      try
       {
         using (
           XmlTextWriter writer = new XmlTextWriter(Config.GetFile(Config.Dir.CustomInputDevice, xmlFile), Encoding.UTF8)
@@ -505,13 +501,11 @@ namespace MediaPortal.Plugins
         _changedSettings = false;
         return true;
       }
-#if !DEBUG
-      //catch (Exception ex)
-      //{
-      //  Log.Info("MAP: Error saving mapping to XML file: {0}", ex.Message);
-      //  return false;
-      //}
-#endif
+      catch (Exception ex)
+      {
+        Log.Error("MAP: Error saving mapping to XML file: {0}", ex.Message);
+        return false;
+      }
     }
 
     private void LoadPluginList()
