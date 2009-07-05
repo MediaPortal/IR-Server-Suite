@@ -280,8 +280,6 @@ namespace MediaCenterBlaster
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      Tray.LogVerbose = checkBoxLogVerbose.Checked;
-
       DialogResult = DialogResult.OK;
       Close();
     }

@@ -64,7 +64,6 @@ namespace MediaCenterBlaster
 
     private static string _serverHost;
     private static bool _autoRun;
-    private static bool _logVerbose;
 
     private static ExternalChannelConfig _externalChannelConfig;
 
@@ -89,16 +88,6 @@ namespace MediaCenterBlaster
     {
       get { return _serverHost; }
       set { _serverHost = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to log verbosely.
-    /// </summary>
-    /// <value><c>true</c> if logging is set to verbose; otherwise, <c>false</c>.</value>
-    internal static bool LogVerbose
-    {
-      get { return _logVerbose; }
-      set { _logVerbose = value; }
     }
 
     /// <summary>
@@ -316,7 +305,6 @@ namespace MediaCenterBlaster
         doc.Load(ConfigurationFile);
 
         _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
-        _logVerbose = bool.Parse(doc.DocumentElement.Attributes["LogVerbose"].Value);
       }
       catch (FileNotFoundException)
       {
@@ -357,7 +345,6 @@ namespace MediaCenterBlaster
           writer.WriteStartElement("settings"); // <settings>
 
           writer.WriteAttributeString("ServerHost", _serverHost);
-          writer.WriteAttributeString("LogVerbose", _logVerbose.ToString());
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
@@ -372,7 +359,6 @@ namespace MediaCenterBlaster
     private void CreateDefaultSettings()
     {
       _serverHost = "localhost";
-      _logVerbose = true;
 
       SaveSettings();
     }
@@ -625,8 +611,7 @@ namespace MediaCenterBlaster
     /// <param name="port">Port to blast to.</param>
     internal static void BlastIR(string fileName, string port)
     {
-      if (LogVerbose)
-        IrssLog.Debug("BlastIR(): {0}, {1}", fileName, port);
+      IrssLog.Debug("BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
         throw new ApplicationException("Cannot Blast, not registered to an active Input Service");
@@ -946,8 +931,7 @@ namespace MediaCenterBlaster
           case MessageType.BlastIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                IrssLog.Info("Blast successful");
+              IrssLog.Debug("Blast successful");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -958,8 +942,7 @@ namespace MediaCenterBlaster
           case MessageType.LearnIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                IrssLog.Info("Learned IR Successfully");
+              IrssLog.Debug("Learned IR Successfully");
 
               byte[] dataBytes = received.GetDataAsBytes();
 
