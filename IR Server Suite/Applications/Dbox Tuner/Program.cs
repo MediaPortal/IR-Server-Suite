@@ -85,11 +85,7 @@ namespace DboxTuner
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
-#else
-      IrssLog.LogLevel = IrssLog.Level.Info;
-#endif
       IrssLog.Append("Dbox Tuner.log");
 
       LoadSettings();

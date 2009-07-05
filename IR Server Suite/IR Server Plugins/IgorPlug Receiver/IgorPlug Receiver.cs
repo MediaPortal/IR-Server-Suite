@@ -259,10 +259,8 @@ namespace InputService.Plugin
     /// </summary>
     public override void Start()
     {
-#if DEBUG
       DebugOpen("IgorPlug Receiver.log");
       DebugWriteLine("Start()");
-#endif
 
       if (!Detect())
         throw new InvalidOperationException("IgorPlug not found");
@@ -278,9 +276,7 @@ namespace InputService.Plugin
     /// </summary>
     public override void Suspend()
     {
-#if DEBUG
       DebugWriteLine("Suspend()");
-#endif
 
       Stop();
     }
@@ -290,9 +286,7 @@ namespace InputService.Plugin
     /// </summary>
     public override void Resume()
     {
-#if DEBUG
       DebugWriteLine("Resume()");
-#endif
 
       Start();
     }
@@ -302,18 +296,14 @@ namespace InputService.Plugin
     /// </summary>
     public override void Stop()
     {
-#if DEBUG
       DebugWriteLine("Stop()");
-#endif
 
       _readThread.Abort();
 
       if (_readThread.IsAlive)
         _readThread.Join();
 
-#if DEBUG
       DebugClose();
-#endif
     }
 
     private void ReadThread()
@@ -553,8 +543,6 @@ namespace InputService.Plugin
 
     #region Debug
 
-#if DEBUG
-
     private static StreamWriter _debugFile;
 
     /// <summary>
@@ -673,8 +661,6 @@ namespace InputService.Plugin
 
       DebugWriteNewLine();
     }
-
-#endif
 
     #endregion Debug
 

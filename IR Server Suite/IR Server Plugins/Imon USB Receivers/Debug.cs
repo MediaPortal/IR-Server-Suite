@@ -7,9 +7,7 @@ namespace InputService.Plugin
 {
     public partial class iMonUSBReceivers
     {
-#if DEBUG
         private static StreamWriter _debugFile;
-#endif
 
         /// <summary>
         /// Opens a debug output file.
@@ -17,7 +15,6 @@ namespace InputService.Plugin
         /// <param name="fileName">Name of the file.</param>
         private static void DebugOpen(string fileName)
         {
-#if DEBUG
             if (_debugFile != null) return;
             try
             {
@@ -30,7 +27,6 @@ namespace InputService.Plugin
             {
                 _debugFile = null;
             }
-#endif
         }
 
         /// <summary>
@@ -38,14 +34,12 @@ namespace InputService.Plugin
         /// </summary>
         private static void DebugClose()
         {
-#if DEBUG
             if (_debugFile != null)
             {
                 _debugFile.Close();
                 _debugFile.Dispose();
                 _debugFile = null;
             }
-#endif
         }
 
         /// <summary>
@@ -55,13 +49,11 @@ namespace InputService.Plugin
         /// <param name="args">Formatting arguments.</param>
         private static void DebugWriteLine(string line, params object[] args)
         {
-#if DEBUG
             if (_debugFile != null)
             {
                 _debugFile.Write("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
                 _debugFile.WriteLine(line, args);
             }
-#endif
 #if TEST_APPLICATION
             Console.Write("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
             Console.WriteLine(line, args);
@@ -75,12 +67,10 @@ namespace InputService.Plugin
         /// <param name="args">Formatting arguments.</param>
         private static void DebugWrite(string text, params object[] args)
         {
-#if DEBUG
             if (_debugFile != null)
             {
                 _debugFile.Write(text, args);
             }
-#endif
 #if TEST_APPLICATION
             Console.Write(text, args);
 #endif
@@ -91,12 +81,10 @@ namespace InputService.Plugin
         /// </summary>
         private static void DebugWriteNewLine()
         {
-#if DEBUG
             if (_debugFile != null)
             {
                 _debugFile.WriteLine();
             }
-#endif
 #if TEST_APPLICATION
             Console.WriteLine();
 #endif

@@ -38,11 +38,7 @@ namespace MacroScope
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
-#else
-      IrssLog.LogLevel = IrssLog.Level.Info;
-#endif
       IrssLog.Open(Common.FolderIrssLogs + "MacroScope.log");
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);

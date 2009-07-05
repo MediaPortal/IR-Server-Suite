@@ -346,10 +346,8 @@ namespace TvEngine
       {
         TvServerEventArgs tvEvent = (TvServerEventArgs) eventArgs;
 
-#if DEBUG
         Log.Debug("TV3BlasterPlugin: Received TV Server Event \"{0}\"",
                   Enum.GetName(typeof (TvServerEventType), tvEvent.EventType));
-#endif
 
         if (tvEvent.EventType != TvServerEventType.StartZapChannel)
           return;
@@ -358,10 +356,8 @@ namespace TvEngine
         if (analogChannel == null)
           return;
 
-#if DEBUG
         Log.Debug("TV3BlasterPlugin: Analog channel input source \"{0}\"",
                   Enum.GetName(typeof (AnalogChannel.VideoInputType), analogChannel.VideoSource));
-#endif
 
         //if (analogChannel.VideoSource == AnalogChannel.VideoInputType.Tuner)
         //return;
@@ -533,9 +529,7 @@ namespace TvEngine
     /// <param name="channelFull">The channel full ID.</param>
     internal static void ProcessExternalCommand(string command, int channelDigit, string channelFull)
     {
-#if DEBUG
       Log.Debug("TV3BlasterPlugin: ProcessExternalCommand(\"{0}\", {1}, {2})", command, channelDigit, channelFull);
-#endif
 
       if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {

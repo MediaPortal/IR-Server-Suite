@@ -107,11 +107,7 @@ namespace InputService.Configuration
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
-#else
-      IrssLog.LogLevel = IrssLog.Level.Info;
-#endif
       IrssLog.Open("Input Service Configuration.log");
 
       LoadSettings();

@@ -425,8 +425,6 @@ namespace InputService.Plugin
 
     #region Debug
 
-#if DEBUG
-
     protected static StreamWriter _debugFile;
 
     /// <summary>
@@ -545,8 +543,6 @@ namespace InputService.Plugin
 
       DebugWriteNewLine();
     }
-
-#endif
 
     #endregion Debug
   }

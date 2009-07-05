@@ -38,11 +38,7 @@ namespace IrFileTool
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
-#else
-      IrssLog.LogLevel = IrssLog.Level.Info;
-#endif
       IrssLog.Open("IR File Tool.log");
 
       Application.ThreadException += Application_ThreadException;

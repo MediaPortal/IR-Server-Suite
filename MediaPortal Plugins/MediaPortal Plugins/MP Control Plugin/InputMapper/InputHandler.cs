@@ -258,9 +258,9 @@ namespace MediaPortal.Plugins
       map = GetMapping(btnCode);
       if (map == null)
         return false;
-#if DEBUG
+
       Log.Debug("{0} / {1} / {2} / {3}", map.Condition, map.ConProperty, map.Command, map.CmdProperty);
-#endif
+
       Action action;
       if (map.Sound != string.Empty) // && !g_Player.Playing)
         Util.Utils.PlaySound(map.Sound, false, true);
@@ -275,10 +275,10 @@ namespace MediaPortal.Plugins
       {
         case "ACTION": // execute Action x
           Key key = new Key(map.CmdKeyChar, map.CmdKeyCode);
-#if DEBUG
+
           Log.Debug("Executing: key {0} / {1} / Action: {2} / {3}", map.CmdKeyChar, map.CmdKeyCode, map.CmdProperty,
                    ((Action.ActionType) Convert.ToInt32(map.CmdProperty)).ToString());
-#endif
+
           action = new Action(key, (Action.ActionType) Convert.ToInt32(map.CmdProperty), 0, 0);
           GUIGraphicsContext.OnAction(action);
           break;

@@ -476,9 +476,7 @@ namespace MediaCenterBlaster
     /// <param name="channelFull">The channel full ID.</param>
     internal static void ProcessExternalCommand(string command, int channelDigit, string channelFull)
     {
-#if DEBUG
       IrssLog.Debug("ProcessExternalCommand(\"{0}\", {1}, {2})", command, channelDigit, channelFull);
-#endif
 
       if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {

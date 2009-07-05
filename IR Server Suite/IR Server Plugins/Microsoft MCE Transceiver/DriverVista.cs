@@ -478,7 +478,6 @@ namespace InputService.Plugin
       //_legacyDevice = (int)(flags & DeviceCapabilityFlags.Legacy) != 0;
       //_canFlashLed = (int)(flags & DeviceCapabilityFlags.FlashLed) != 0;
 
-#if DEBUG
       DebugWriteLine("Device Capabilities:");
       DebugWriteLine("NumTxPorts:     {0}", _numTxPorts);
       DebugWriteLine("NumRxPorts:     {0}", structure.ReceivePorts.ToInt32());
@@ -486,7 +485,6 @@ namespace InputService.Plugin
       DebugWriteLine("ReceivePort:    {0}", _receivePort);
       DebugWriteLine("LearnPort:      {0}", _learnPort);
       DebugWriteLine("DetailsFlags:   {0}", structure.DetailsFlags.ToInt32());
-#endif
     }
 
     private void GetBlasters()
@@ -520,16 +518,12 @@ namespace InputService.Plugin
 
       _txPortMask = structure.Blasters.ToInt32();
 
-#if DEBUG
       DebugWriteLine("TxPortMask:     {0}", _txPortMask);
-#endif
     }
 
     private void TransmitIR(byte[] irData, int carrier, int transmitPortMask)
     {
-#if DEBUG
       DebugWriteLine("TransmitIR({0} bytes, carrier: {1}, port: {2})", irData.Length, carrier, transmitPortMask);
-#endif
 
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
@@ -683,12 +677,10 @@ namespace InputService.Plugin
     {
       try
       {
-#if DEBUG
         DebugOpen("MicrosoftMceTransceiver_DriverVista.log");
         DebugWriteLine("Start()");
         DebugWriteLine("Device Guid: {0}", _deviceGuid);
         DebugWriteLine("Device Path: {0}", _devicePath);
-#endif
 
         _notifyWindow = new NotifyWindow();
         _notifyWindow.Create();
@@ -705,9 +697,7 @@ namespace InputService.Plugin
       }
       catch
       {
-#if DEBUG
         DebugClose();
-#endif
         throw;
       }
     }
@@ -717,9 +707,7 @@ namespace InputService.Plugin
     /// </summary>
     public override void Stop()
     {
-#if DEBUG
       DebugWriteLine("Stop()");
-#endif
 
       try
       {
@@ -729,27 +717,18 @@ namespace InputService.Plugin
         StopReadThread();
         CloseDevice();
       }
-#if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
         throw;
       }
-#else
-      catch
-      {
-        throw;
-      }
-#endif
       finally
       {
         _notifyWindow.UnregisterDeviceArrival();
         _notifyWindow.Dispose();
         _notifyWindow = null;
 
-#if DEBUG
         DebugClose();
-#endif
       }
     }
 
@@ -758,9 +737,7 @@ namespace InputService.Plugin
     /// </summary>
     public override void Suspend()
     {
-#if DEBUG
       DebugWriteLine("Suspend()");
-#endif
     }
 
     /// <summary>
@@ -768,32 +745,21 @@ namespace InputService.Plugin
     /// </summary>
     public override void Resume()
     {
-#if DEBUG
       DebugWriteLine("Resume()");
-#endif
 
       try
       {
         if (String.IsNullOrEmpty(Find(_deviceGuid)))
         {
-#if DEBUG
           DebugWriteLine("Device not found");
-#endif
           return;
         }
       }
-#if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
         throw;
       }
-#else
-      catch
-      {
-        throw;
-      }
-#endif
     }
 
     /// <summary>
@@ -804,9 +770,7 @@ namespace InputService.Plugin
     /// <returns>Learn status.</returns>
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
-#if DEBUG
       DebugWriteLine("Learn()");
-#endif
 
       RestartReadThread(ReadThreadMode.Learning);
 
@@ -819,9 +783,7 @@ namespace InputService.Plugin
       while (_readThreadMode == ReadThreadMode.Learning && Environment.TickCount < learnStartTick + learnTimeout)
         Thread.Sleep(PacketTimeout);
 
-#if DEBUG
       DebugWriteLine("End Learn");
-#endif
 
       ReadThreadMode modeWas = _readThreadMode;
 
@@ -840,9 +802,7 @@ namespace InputService.Plugin
           break;
 
         case ReadThreadMode.LearningDone:
-#if DEBUG
           DebugDump(_learningCode.TimingData);
-#endif
           if (_learningCode.FinalizeData())
           {
             learned = _learningCode;
@@ -862,10 +822,8 @@ namespace InputService.Plugin
     /// <param name="port">IR port to send to.</param>
     public override void Send(IrCode code, int port)
     {
-#if DEBUG
       DebugWrite("Send(): ");
       DebugDump(code.TimingData);
-#endif
 
       byte[] data = DataPacket(code);
 
@@ -896,9 +854,7 @@ namespace InputService.Plugin
     /// </summary>
     private void InitializeDevice()
     {
-#if DEBUG
       DebugWriteLine("InitializeDevice()");
-#endif
 
       GetDeviceCapabilities();
       GetBlasters();
@@ -911,9 +867,7 @@ namespace InputService.Plugin
     /// <returns>Raw device data.</returns>
     private static byte[] DataPacket(IrCode code)
     {
-#if DEBUG
       DebugWriteLine("DataPacket()");
-#endif
 
       if (code.TimingData.Length == 0)
         return null;
@@ -940,15 +894,11 @@ namespace InputService.Plugin
     /// </summary>
     private void StartReadThread(ReadThreadMode mode)
     {
-#if DEBUG
       DebugWriteLine("StartReadThread({0})", Enum.GetName(typeof (ReadThreadMode), mode));
-#endif
 
       if (_readThread != null)
       {
-#if DEBUG
         DebugWriteLine("Read thread already started");
-#endif
         return;
       }
 
@@ -989,15 +939,11 @@ namespace InputService.Plugin
     /// </summary>
     private void StopReadThread()
     {
-#if DEBUG
       DebugWriteLine("StopReadThread()");
-#endif
 
       if (_readThread == null)
       {
-#if DEBUG
         DebugWriteLine("Read thread already stopped");
-#endif
         return;
       }
 
@@ -1022,15 +968,11 @@ namespace InputService.Plugin
     /// </summary>
     private void OpenDevice()
     {
-#if DEBUG
       DebugWriteLine("OpenDevice()");
-#endif
 
       if (_eHomeHandle != null)
       {
-#if DEBUG
         DebugWriteLine("Device already open");
-#endif
         return;
       }
 
@@ -1053,12 +995,10 @@ namespace InputService.Plugin
         //_notifyWindow.UnregisterDeviceArrival();  // If the device is present then we don't want to monitor arrival.
         _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
       }
-#if DEBUG
       else
       {
         DebugWriteLine("Warning: Failed to initialize device removal notification");
       }
-#endif
 
       Thread.Sleep(PacketTimeout);
       // Hopefully improves compatibility with Zalman remote which times out retrieving device capabilities. (2008-01-01)
@@ -1071,17 +1011,13 @@ namespace InputService.Plugin
     /// </summary>
     private void CloseDevice()
     {
-#if DEBUG
       DebugWriteLine("CloseDevice()");
-#endif
 
       _deviceAvailable = false;
 
       if (_eHomeHandle == null)
       {
-#if DEBUG
         DebugWriteLine("Device already closed");
-#endif
         return;
       }
 
@@ -1098,9 +1034,7 @@ namespace InputService.Plugin
     /// </summary>
     private void OnDeviceArrival()
     {
-#if DEBUG
       DebugWriteLine("OnDeviceArrival()");
-#endif
 
       OpenDevice();
       InitializeDevice();
@@ -1113,9 +1047,7 @@ namespace InputService.Plugin
     /// </summary>
     private void OnDeviceRemoval()
     {
-#if DEBUG
       DebugWriteLine("OnDeviceRemoval()");
-#endif
 
       StopReadThread();
       CloseDevice();
@@ -1169,10 +1101,8 @@ namespace InputService.Plugin
 
             int[] timingData = GetTimingDataFromPacket(packetBytes);
 
-#if DEBUG
             DebugWrite("Received timing:    ");
             DebugDump(timingData);
-#endif
 
             if (_readThreadMode == ReadThreadMode.Learning)
               _learningCode.AddTimingData(timingData);
@@ -1194,14 +1124,9 @@ namespace InputService.Plugin
           }
         }
       }
-#if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
-#else
-      catch (Exception)
-      {
-#endif
 
         if (_eHomeHandle != null)
           CancelIo(_eHomeHandle);
@@ -1216,22 +1141,13 @@ namespace InputService.Plugin
           if (_eHomeHandle != null)
             StopReceive();
         }
-#if DEBUG
         catch (Exception ex)
         {
           DebugWriteLine(ex.ToString());
         }
-#else
-        catch
-        {
-          // Ignore this exception, we're closing it down anyway.
-        }
-#endif
       }
 
-#if DEBUG
       DebugWriteLine("Read Thread Ended");
-#endif
     }
 
     #endregion Implementation

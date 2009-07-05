@@ -54,11 +54,7 @@ namespace IRBlast
     [STAThread]
     private static void Main(string[] args)
     {
-#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
-#else
-      IrssLog.LogLevel = IrssLog.Level.Info;
-#endif
       IrssLog.Append("IR Blast.log");
 
       ShowHeader();

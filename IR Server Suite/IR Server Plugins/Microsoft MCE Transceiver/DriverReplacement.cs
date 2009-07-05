@@ -214,7 +214,6 @@ namespace InputService.Plugin
     /// </summary>
     public override void Start()
     {
-#if DEBUG
       try
       {
         DebugOpen("MicrosoftMceTransceiver_DriverReplacement.log");
@@ -222,7 +221,6 @@ namespace InputService.Plugin
         DebugWriteLine("Device Guid: {0}", _deviceGuid);
         DebugWriteLine("Device Path: {0}", _devicePath);
         DebugWriteLine("Device Type: {0}", Enum.GetName(typeof (DeviceType), _deviceType));
-#endif
 
         _notifyWindow = new NotifyWindow();
         _notifyWindow.Create();
@@ -235,14 +233,12 @@ namespace InputService.Plugin
 
         _notifyWindow.DeviceArrival += OnDeviceArrival;
         _notifyWindow.DeviceRemoval += OnDeviceRemoval;
-#if DEBUG
       }
       catch
       {
         DebugClose();
         throw;
       }
-#endif
     }
 
     /// <summary>
@@ -250,9 +246,7 @@ namespace InputService.Plugin
     /// </summary>
     public override void Stop()
     {
-#if DEBUG
       DebugWriteLine("Stop()");
-#endif
 
       try
       {
@@ -266,27 +260,18 @@ namespace InputService.Plugin
         StopReadThread();
         CloseDevice();
       }
-#if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
         throw;
       }
-#else
-      catch
-      {
-        throw;
-      }
-#endif
       finally
       {
         _notifyWindow.UnregisterDeviceArrival();
         _notifyWindow.Dispose();
         _notifyWindow = null;
 
-#if DEBUG
         DebugClose();
-#endif
       }
     }
 
@@ -295,17 +280,13 @@ namespace InputService.Plugin
     /// </summary>
     public override void Suspend()
     {
-#if DEBUG
       DebugWriteLine("Suspend()");
-#endif
 
       try
       {
         if (_readHandle == null)
         {
-#if DEBUG
           DebugWriteLine("Warning: Device is not active");
-#endif
           return;
         }
 
@@ -314,18 +295,11 @@ namespace InputService.Plugin
         StopReadThread();
         CloseDevice();
       }
-#if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
         throw;
       }
-#else
-      catch
-      {
-        throw;
-      }
-#endif
     }
 
     /// <summary>
@@ -333,17 +307,13 @@ namespace InputService.Plugin
     /// </summary>
     public override void Resume()
     {
-#if DEBUG
       DebugWriteLine("Resume()");
-#endif
 
       try
       {
         if (String.IsNullOrEmpty(Find(_deviceGuid)))
         {
-#if DEBUG
           DebugWriteLine("Device not found");
-#endif
           return;
         }
 
@@ -356,18 +326,11 @@ namespace InputService.Plugin
         StartReadThread();
         InitializeDevice();
       }
-#if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
         throw;
       }
-#else
-      catch
-      {
-        throw;
-      }
-#endif
     }
 
     /// <summary>
@@ -378,9 +341,7 @@ namespace InputService.Plugin
     /// <returns>Learn status.</returns>
     public override LearnStatus Learn(int learnTimeout, out IrCode learned)
     {
-#if DEBUG
       DebugWriteLine("Learn()");
-#endif
 
       learned = null;
       _learningCode = new IrCode();
@@ -394,9 +355,7 @@ namespace InputService.Plugin
       while (_readThreadMode == ReadThreadMode.Learning && Environment.TickCount < learnStartTick + learnTimeout)
         Thread.Sleep(PacketTimeout);
 
-#if DEBUG
       DebugWriteLine("End Learn");
-#endif
 
       ReadThreadMode modeWas = _readThreadMode;
 
@@ -416,9 +375,7 @@ namespace InputService.Plugin
           break;
 
         case ReadThreadMode.LearningDone:
-#if DEBUG
           DebugDump(_learningCode.TimingData);
-#endif
           if (_learningCode.FinalizeData())
           {
             learned = _learningCode;
@@ -438,10 +395,8 @@ namespace InputService.Plugin
     /// <param name="port">IR port to send to.</param>
     public override void Send(IrCode code, int port)
     {
-#if DEBUG
       DebugWrite("Send(): ");
       DebugDump(code.TimingData);
-#endif
 
       // Reset device (hopefully this will stop the blaster from stalling)
       //WriteSync(ResetPacket);
@@ -472,9 +427,7 @@ namespace InputService.Plugin
     /// </summary>
     private void InitializeDevice()
     {
-#if DEBUG
       DebugWriteLine("InitializeDevice()");
-#endif
 
       WriteSync(StartPacket);
 
@@ -497,9 +450,7 @@ namespace InputService.Plugin
     /// <returns>Raw device data.</returns>
     private static byte[] DataPacket(IrCode code)
     {
-#if DEBUG
       DebugWriteLine("DataPacket()");
-#endif
 
       if (code.TimingData.Length == 0)
         return null;
@@ -514,9 +465,7 @@ namespace InputService.Plugin
         byte duration = (byte) Math.Abs(Math.Round(time / TimingResolution));
         bool pulse = (time > 0);
 
-#if DEBUG
         DebugWrite("{0}{1}, ", pulse ? '+' : '-', duration * TimingResolution);
-#endif
 
         while (duration > 0x7F)
         {
@@ -528,9 +477,7 @@ namespace InputService.Plugin
         packet.Add((byte) (pulse ? 0x80 | duration : duration));
       }
 
-#if DEBUG
       DebugWriteNewLine();
-#endif
 
       // Insert byte count markers into packet data bytes ...
       int subpackets = (int) Math.Ceiling(packet.Count / (double) 4);
@@ -616,16 +563,12 @@ namespace InputService.Plugin
       if (carrier == IrCode.CarrierFrequencyUnknown)
       {
         carrier = IrCode.CarrierFrequencyDefault;
-#if DEBUG
         DebugWriteLine("SetCarrierFrequency(): No carrier frequency specificied, using default ({0})", carrier);
-#endif
       }
-#if DEBUG
       else
       {
         DebugWriteLine("SetCarrierFrequency({0})", carrier);
       }
-#endif
 
       byte[] carrierPacket = new byte[SetCarrierFreqPacket.Length];
       SetCarrierFreqPacket.CopyTo(carrierPacket, 0);
@@ -653,15 +596,11 @@ namespace InputService.Plugin
     /// </summary>
     private void StartReadThread()
     {
-#if DEBUG
       DebugWriteLine("StartReadThread()");
-#endif
 
       if (_readThread != null)
       {
-#if DEBUG
         DebugWriteLine("Read thread already started");
-#endif
         return;
       }
 
@@ -679,15 +618,11 @@ namespace InputService.Plugin
     /// </summary>
     private void StopReadThread()
     {
-#if DEBUG
       DebugWriteLine("StopReadThread()");
-#endif
 
       if (_readThread == null)
       {
-#if DEBUG
         DebugWriteLine("Read thread already stopped");
-#endif
         return;
       }
 
@@ -700,17 +635,10 @@ namespace InputService.Plugin
 
         //_readThread.Abort();
       }
-#if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
       }
-#else
-      catch
-      {
-        // Ignore exceptions while terminating read thread
-      }
-#endif
       finally
       {
         _stopReadThread.Close();
@@ -725,15 +653,11 @@ namespace InputService.Plugin
     /// </summary>
     private void OpenDevice()
     {
-#if DEBUG
       DebugWriteLine("OpenDevice()");
-#endif
 
       if (_readHandle != null)
       {
-#if DEBUG
         DebugWriteLine("Device already open");
-#endif
         return;
       }
 
@@ -764,10 +688,8 @@ namespace InputService.Plugin
       _readHandle.DangerousAddRef(ref success);
       if (success)
         _notifyWindow.RegisterDeviceRemoval(_readHandle.DangerousGetHandle());
-#if DEBUG
       else
         DebugWriteLine("Warning: Failed to initialize device removal notification");
-#endif
 
       _deviceAvailable = true;
     }
@@ -777,17 +699,13 @@ namespace InputService.Plugin
     /// </summary>
     private void CloseDevice()
     {
-#if DEBUG
       DebugWriteLine("CloseDevice()");
-#endif
 
       _deviceAvailable = false;
 
       if (_readHandle == null && _writeHandle == null)
       {
-#if DEBUG
         DebugWriteLine("Device already closed");
-#endif
         return;
       }
 
@@ -813,9 +731,7 @@ namespace InputService.Plugin
     /// </summary>
     private void OnDeviceArrival()
     {
-#if DEBUG
       DebugWriteLine("OnDeviceArrival()");
-#endif
 
       OpenDevice();
       StartReadThread();
@@ -827,9 +743,7 @@ namespace InputService.Plugin
     /// </summary>
     private void OnDeviceRemoval()
     {
-#if DEBUG
       DebugWriteLine("OnDeviceRemoval()");
-#endif
 
       StopReadThread();
       CloseDevice();
@@ -904,10 +818,8 @@ namespace InputService.Plugin
           packetBytes = new byte[bytesRead];
           Marshal.Copy(deviceBufferPtr, packetBytes, 0, bytesRead);
 
-#if DEBUG
           DebugWrite("Received bytes ({0}): ", bytesRead);
           DebugDump(packetBytes);
-#endif
 
           int[] timingData = null;
 
@@ -915,7 +827,6 @@ namespace InputService.Plugin
           {
             timingData = GetTimingDataFromPacket(packetBytes);
           }
-#if DEBUG
           else
           {
             double firmware = 0.0;
@@ -945,7 +856,6 @@ namespace InputService.Plugin
                 break;
             }
           }
-#endif
 
           switch (_readThreadMode)
           {
@@ -1026,7 +936,6 @@ namespace InputService.Plugin
           }
         }
       }
-#if DEBUG
       catch (ThreadInterruptedException ex)
       {
         DebugWriteLine(ex.Message);
@@ -1041,13 +950,6 @@ namespace InputService.Plugin
         if (_readHandle != null)
           CancelIo(_readHandle);
       }
-#else
-      catch (Exception)
-      {
-        if (_readHandle != null)
-          CancelIo(_readHandle);
-      }
-#endif
       finally
       {
         if (deviceBufferPtr != IntPtr.Zero)
@@ -1057,9 +959,7 @@ namespace InputService.Plugin
         waitHandle.Close();
       }
 
-#if DEBUG
       DebugWriteLine("Read Thread Ended");
-#endif
     }
 
     /// <summary>
@@ -1068,10 +968,8 @@ namespace InputService.Plugin
     /// <param name="data">Packet to write to device.</param>
     private void WriteSync(byte[] data)
     {
-#if DEBUG
       DebugWrite("WriteSync({0}): ", data.Length);
       DebugDump(data);
-#endif
 
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
@@ -1139,18 +1037,14 @@ namespace InputService.Plugin
     /// <returns>Timing data.</returns>
     private int[] GetTimingDataFromPacket(byte[] packet)
     {
-#if DEBUG
       // TODO: Remove this try/catch block once the IndexOutOfRangeException is corrected...
       try
-#endif
       {
-#if DEBUG
         if (_decodeCarry != 0)
         {
           DebugWriteLine("Decode Carry EXISTS: {0}", _decodeCarry);
           DebugDump(packet);
         }
-#endif
 
         List<int> timingData = new List<int>();
 
@@ -1180,10 +1074,8 @@ namespace InputService.Plugin
             _decodeCarry = (index + bytes + 1) - packet.Length;
             bytes -= _decodeCarry;
 
-#if DEBUG
             DebugWriteLine("Decode Carry SET: {0}", _decodeCarry);
             DebugDump(packet);
-#endif
           }
 
           int j;
@@ -1209,14 +1101,11 @@ namespace InputService.Plugin
         if (len != 0)
           timingData.Add(len * TimingResolution);
 
-#if DEBUG
         DebugWrite("Received timing:    ");
         DebugDump(timingData.ToArray());
-#endif
 
         return timingData.ToArray();
       }
-#if DEBUG
       catch (Exception ex)
       {
         DebugWriteLine(ex.ToString());
@@ -1225,7 +1114,6 @@ namespace InputService.Plugin
 
         return null;
       }
-#endif
     }
 
     /// <summary>

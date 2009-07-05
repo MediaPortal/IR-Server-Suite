@@ -50,11 +50,7 @@ namespace InputService
     /// <param name="args">Command line parameters.</param>
     private static void Main(string[] args)
     {
-#if DEBUG
       IrssLog.LogLevel = IrssLog.Level.Debug;
-#else
-      IrssLog.LogLevel = IrssLog.Level.Info;
-#endif
 
       try
       {

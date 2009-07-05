@@ -38,8 +38,6 @@ namespace InputService.Plugin
   {
     #region Debug
 
-#if DEBUG
-
     private static void Remote(string deviceName, string code)
     {
       Console.WriteLine("Remote: {0}", code);
@@ -67,8 +65,6 @@ namespace InputService.Plugin
       c.Stop();
       c = null;
     }
-
-#endif
 
     #endregion Debug
 
