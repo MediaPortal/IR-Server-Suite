@@ -60,8 +60,6 @@ namespace SetupTv.Sections
       TV3BlasterPlugin.InConfiguration = true;
 
       TvBusinessLayer layer = new TvBusinessLayer();
-      TV3BlasterPlugin.LogVerbose =
-        checkBoxLogVerbose.Checked = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
       TV3BlasterPlugin.ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", String.Empty).Value;
 
       if (String.IsNullOrEmpty(TV3BlasterPlugin.ServerHost))
@@ -94,12 +92,6 @@ namespace SetupTv.Sections
 
       TvBusinessLayer layer = new TvBusinessLayer();
       Setting setting;
-
-      TV3BlasterPlugin.LogVerbose = checkBoxLogVerbose.Checked;
-
-      setting = layer.GetSetting("TV3BlasterPlugin_LogVerbose");
-      setting.Value = TV3BlasterPlugin.LogVerbose.ToString();
-      setting.Persist();
 
       setting = layer.GetSetting("TV3BlasterPlugin_ServerHost");
       setting.Value = TV3BlasterPlugin.ServerHost;

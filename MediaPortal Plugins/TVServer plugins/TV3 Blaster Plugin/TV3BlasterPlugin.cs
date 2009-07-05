@@ -72,7 +72,6 @@ namespace TvEngine
 
     private static IRServerInfo _irServerInfo = new IRServerInfo();
     private static string _learnIRFilename;
-    private static bool _logVerbose;
     private static bool _registered;
     private static string _serverHost;
 
@@ -84,16 +83,6 @@ namespace TvEngine
     {
       get { return _serverHost; }
       set { _serverHost = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to log verbosely.
-    /// </summary>
-    /// <value><c>true</c> if logging is set to verbose; otherwise, <c>false</c>.</value>
-    internal static bool LogVerbose
-    {
-      get { return _logVerbose; }
-      set { _logVerbose = value; }
     }
 
     /// <summary>
@@ -177,8 +166,7 @@ namespace TvEngine
       if (!StartClient(endPoint))
         Log.Error("TV3BlasterPlugin: Failed to start local comms, IR blasting is disabled for this session");
 
-      if (LogVerbose)
-        Log.Info("TV3BlasterPlugin: Started");
+      Log.Debug("TV3BlasterPlugin: Started");
     }
 
     /// <summary>
@@ -191,8 +179,7 @@ namespace TvEngine
 
       StopClient();
 
-      if (LogVerbose)
-        Log.Info("TV3BlasterPlugin: Stopped");
+      Log.Debug("TV3BlasterPlugin: Stopped");
     }
 
     /// <summary>
@@ -273,8 +260,7 @@ namespace TvEngine
 
     private static void ReceivedMessage(IrssMessage received)
     {
-      if (LogVerbose)
-        Log.Debug("TV3BlasterPlugin: Received Message \"{0}\"", received.Type);
+      Log.Debug("TV3BlasterPlugin: Received Message \"{0}\"", received.Type);
 
       try
       {
@@ -283,8 +269,7 @@ namespace TvEngine
           case MessageType.BlastIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                Log.Info("TV3BlasterPlugin: Blast successful");
+              Log.Debug("TV3BlasterPlugin: Blast successful");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -298,8 +283,7 @@ namespace TvEngine
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
-              if (LogVerbose)
-                Log.Info("TV3BlasterPlugin: Registered to IR Server");
+              Log.Debug("TV3BlasterPlugin: Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -311,8 +295,7 @@ namespace TvEngine
           case MessageType.LearnIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                Log.Info("TV3BlasterPlugin: Learned IR Successfully");
+              Log.Debug("TV3BlasterPlugin: Learned IR Successfully");
 
               byte[] dataBytes = received.GetDataAsBytes();
 
@@ -660,8 +643,7 @@ namespace TvEngine
     /// <param name="port">Port to blast to.</param>
     internal static void BlastIR(string fileName, string port)
     {
-      if (LogVerbose)
-        Log.Debug("TV3BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
+      Log.Debug("TV3BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
         throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
@@ -871,7 +853,6 @@ namespace TvEngine
     {
       TvBusinessLayer layer = new TvBusinessLayer();
       ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", "localhost").Value;
-      LogVerbose = Convert.ToBoolean(layer.GetSetting("TV3BlasterPlugin_LogVerbose", "False").Value);
     }
 
     #endregion Implementation

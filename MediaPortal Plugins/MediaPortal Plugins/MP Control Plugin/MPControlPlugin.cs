@@ -81,7 +81,6 @@ namespace MediaPortal.Plugins
 
     private static string _learnIRFilename;
 
-    private static bool _logVerbose;
     private static bool _mouseModeAcceleration;
 
     private static bool _mouseModeActive;
@@ -115,16 +114,6 @@ namespace MediaPortal.Plugins
     {
       get { return _serverHost; }
       set { _serverHost = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to log verbosely.
-    /// </summary>
-    /// <value><c>true</c> if logging is set to verbose; otherwise, <c>false</c>.</value>
-    internal static bool LogVerbose
-    {
-      get { return _logVerbose; }
-      set { _logVerbose = value; }
     }
 
     /// <summary>
@@ -314,8 +303,7 @@ namespace MediaPortal.Plugins
       //SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
       SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
-      if (LogVerbose)
-        Log.Info("MPControlPlugin: Started");
+      Log.Debug("MPControlPlugin: Started");
     }
 
     /// <summary>
@@ -340,8 +328,7 @@ namespace MediaPortal.Plugins
         for (int i = 0; i < _multiInputHandlers.Count; i++)
           _multiInputHandlers[i] = null;
 
-      if (LogVerbose)
-        Log.Info("MPControlPlugin: Stopped");
+      Log.Debug("MPControlPlugin: Stopped");
     }
 
     #endregion IPlugin methods
@@ -428,17 +415,15 @@ namespace MediaPortal.Plugins
 
         _inConfiguration = true;
 
-        if (LogVerbose)
-          Log.Info("MPControlPlugin: ShowPlugin()");
+        Log.Debug("MPControlPlugin: ShowPlugin()");
 
         SetupForm setupForm = new SetupForm();
         if (setupForm.ShowDialog() == DialogResult.OK)
           SaveSettings();
 
         StopClient();
-
-        if (LogVerbose)
-          Log.Info("MPControlPlugin: ShowPlugin() - End");
+        
+        Log.Debug("MPControlPlugin: ShowPlugin() - End");
       }
       catch (Exception ex)
       {
@@ -502,8 +487,7 @@ namespace MediaPortal.Plugins
 
         MPCommon.ShowNotifyDialog("Mouse Mode", notifyMessage, 2);
 
-        if (LogVerbose)
-          Log.Info("MPControlPlugin: {0}", notifyMessage);
+        Log.Debug("MPControlPlugin: {0}", notifyMessage);
 
         return true;
       }
@@ -695,39 +679,35 @@ namespace MediaPortal.Plugins
 
       foreach (MappedKeyCode mapping in _remoteMap)
       {
-        if (mapping.KeyCode.Equals(keyCode, StringComparison.Ordinal))
+        if (!mapping.KeyCode.Equals(keyCode, StringComparison.OrdinalIgnoreCase))
+          continue;
+
+        if (MultiMappingEnabled && mapping.Button == MultiMappingButton)
         {
-          if (MultiMappingEnabled && mapping.Button == MultiMappingButton)
-          {
-            ChangeMultiMapping();
-            return;
-          }
-
-          if (MouseModeEnabled)
-            if (HandleMouseMode(mapping.Button))
-              return;
-
-          // Get & execute Mapping
-          bool gotMapped;
-          if (MultiMappingEnabled)
-            gotMapped = _multiInputHandlers[_multiMappingSet].MapAction((int) mapping.Button);
-          else
-            gotMapped = _defaultInputHandler.MapAction((int) mapping.Button);
-
-          if (LogVerbose)
-          {
-            if (gotMapped)
-              Log.Debug("MPControlPlugin: Command \"{0}\" mapped to remote", mapping.Button);
-            else
-              Log.Debug("MPControlPlugin: Command \"{0}\" not mapped to remote", mapping.Button);
-          }
-
+          ChangeMultiMapping();
           return;
         }
-      }
 
-      if (LogVerbose)
-        Log.Info("MPControlPlugin: keyCode \"{0}\" was not handled", keyCode);
+        if (MouseModeEnabled)
+          if (HandleMouseMode(mapping.Button))
+            return;
+
+        // Get & execute Mapping
+        bool gotMapped;
+        if (MultiMappingEnabled)
+          gotMapped = _multiInputHandlers[_multiMappingSet].MapAction((int) mapping.Button);
+        else
+          gotMapped = _defaultInputHandler.MapAction((int) mapping.Button);
+
+        if (gotMapped)
+          Log.Debug("MPControlPlugin: Command \"{0}\" mapped to remote", mapping.Button);
+        else
+          Log.Debug("MPControlPlugin: Command \"{0}\" not mapped to remote", mapping.Button);
+
+        return;
+      }
+      
+      Log.Debug("MPControlPlugin: keyCode \"{0}\" was not handled", keyCode);
 
       return;
     }
@@ -798,8 +778,7 @@ namespace MediaPortal.Plugins
 
     private static void ReceivedMessage(IrssMessage received)
     {
-      if (LogVerbose)
-        Log.Debug("MPControlPlugin: Received Message \"{0}\"", received.Type);
+      Log.Debug("MPControlPlugin: Received Message \"{0}\"", received.Type);
 
       try
       {
@@ -821,8 +800,7 @@ namespace MediaPortal.Plugins
           case MessageType.BlastIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                Log.Info("MPControlPlugin: Blast successful");
+              Log.Debug("MPControlPlugin: Blast successful");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -836,8 +814,7 @@ namespace MediaPortal.Plugins
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
-              if (LogVerbose)
-                Log.Info("MPControlPlugin: Registered to IR Server");
+              Log.Debug("MPControlPlugin: Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -849,8 +826,7 @@ namespace MediaPortal.Plugins
           case MessageType.LearnIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                Log.Info("MPControlPlugin: Learned IR Successfully");
+              Log.Debug("MPControlPlugin: Learned IR Successfully");
 
               byte[] dataBytes = received.GetDataAsBytes();
 
@@ -910,8 +886,7 @@ namespace MediaPortal.Plugins
       // Show the mapping set name on screen ...
       string setName = MultiMaps[_multiMappingSet];
 
-      if (LogVerbose)
-        Log.Info("MPControlPlugin: Multi-Mapping has cycled to \"{0}\"", setName);
+      Log.Debug("MPControlPlugin: Multi-Mapping has cycled to \"{0}\"", setName);
 
       MPCommon.ShowNotifyDialog("Multi-Mapping", setName, 2);
     }
@@ -939,8 +914,7 @@ namespace MediaPortal.Plugins
           // Show the mapping set name on screen ...
           string setName = MultiMaps[_multiMappingSet];
 
-          if (LogVerbose)
-            Log.Info("MPControlPlugin: Multi-Mapping has changed to \"{0}\"", setName);
+          Log.Debug("MPControlPlugin: Multi-Mapping has changed to \"{0}\"", setName);
 
           MPCommon.ShowNotifyDialog("Multi-Mapping", setName, 2);
           return;
@@ -1085,8 +1059,7 @@ namespace MediaPortal.Plugins
           if (!matched)
             continue;
 
-          if (LogVerbose)
-            Log.Info("MPControlPlugin: Event Mapper - Event \"{0}\"",
+          Log.Debug("MPControlPlugin: Event Mapper - Event \"{0}\"",
                      Enum.GetName(typeof (MappedEvent.MappingEvent), eventType));
 
           try
@@ -1115,8 +1088,7 @@ namespace MediaPortal.Plugins
           if (mappedEvent.MatchParam)
             continue;
 
-          if (LogVerbose)
-            Log.Info("MPControlPlugin: Event Mapper - Event \"{0}\"",
+          Log.Debug("MPControlPlugin: Event Mapper - Event \"{0}\"",
                      Enum.GetName(typeof (MappedEvent.MappingEvent), eventType));
 
           try
@@ -1254,8 +1226,7 @@ namespace MediaPortal.Plugins
     /// <param name="port">Port to blast to.</param>
     internal static void BlastIR(string fileName, string port)
     {
-      if (LogVerbose)
-        Log.Debug("MPControlPlugin - BlastIR(): {0}, {1}", fileName, port);
+      Log.Debug("MPControlPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
         throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
@@ -1608,7 +1579,6 @@ namespace MediaPortal.Plugins
         {
           ServerHost = xmlreader.GetValueAsString("MPControlPlugin", "ServerHost", "localhost");
 
-          LogVerbose = xmlreader.GetValueAsBool("MPControlPlugin", "LogVerbose", false);
           RequireFocus = xmlreader.GetValueAsBool("MPControlPlugin", "RequireFocus", true);
           MultiMappingEnabled = xmlreader.GetValueAsBool("MPControlPlugin", "MultiMappingEnabled", false);
           MultiMappingButton =
@@ -1641,7 +1611,6 @@ namespace MediaPortal.Plugins
         {
           xmlwriter.SetValue("MPControlPlugin", "ServerHost", ServerHost);
 
-          xmlwriter.SetValueAsBool("MPControlPlugin", "LogVerbose", LogVerbose);
           xmlwriter.SetValueAsBool("MPControlPlugin", "RequireFocus", RequireFocus);
           xmlwriter.SetValueAsBool("MPControlPlugin", "MultiMappingEnabled", MultiMappingEnabled);
           xmlwriter.SetValue("MPControlPlugin", "MultiMappingButton", (int) MultiMappingButton);

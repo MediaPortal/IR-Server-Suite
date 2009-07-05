@@ -71,7 +71,6 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.",
                         "MP Control Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-      checkBoxLogVerbose.Checked = MPControlPlugin.LogVerbose;
       checkBoxRequiresFocus.Checked = MPControlPlugin.RequireFocus;
       checkBoxMultiMapping.Checked = MPControlPlugin.MultiMappingEnabled;
       checkBoxEventMapper.Checked = MPControlPlugin.EventMapperEnabled;
@@ -800,7 +799,6 @@ namespace MediaPortal.Plugins
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      MPControlPlugin.LogVerbose = checkBoxLogVerbose.Checked;
       MPControlPlugin.RequireFocus = checkBoxRequiresFocus.Checked;
       MPControlPlugin.MultiMappingEnabled = checkBoxMultiMapping.Checked;
       MPControlPlugin.EventMapperEnabled = checkBoxEventMapper.Checked;

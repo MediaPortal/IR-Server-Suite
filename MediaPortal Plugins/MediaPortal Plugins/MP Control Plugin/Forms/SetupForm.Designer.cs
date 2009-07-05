@@ -40,7 +40,6 @@ namespace MediaPortal.Plugins
       this.buttonDeleteMacro = new System.Windows.Forms.Button();
       this.buttonEditMacro = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
-      this.checkBoxLogVerbose = new System.Windows.Forms.CheckBox();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.checkBoxMultiMapping = new System.Windows.Forms.CheckBox();
       this.checkBoxEventMapper = new System.Windows.Forms.CheckBox();
@@ -231,17 +230,6 @@ namespace MediaPortal.Plugins
       this.buttonCancel.Text = "&Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
-      // 
-      // checkBoxLogVerbose
-      // 
-      this.checkBoxLogVerbose.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.checkBoxLogVerbose.Location = new System.Drawing.Point(192, 344);
-      this.checkBoxLogVerbose.Name = "checkBoxLogVerbose";
-      this.checkBoxLogVerbose.Size = new System.Drawing.Size(120, 24);
-      this.checkBoxLogVerbose.TabIndex = 3;
-      this.checkBoxLogVerbose.Text = "&Extended logging";
-      this.toolTips.SetToolTip(this.checkBoxLogVerbose, "Enable more detailed logging of plugin operations");
-      this.checkBoxLogVerbose.UseVisualStyleBackColor = true;
       // 
       // checkBoxMultiMapping
       // 
@@ -866,7 +854,6 @@ namespace MediaPortal.Plugins
       this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(592, 373);
       this.Controls.Add(this.checkBoxRequiresFocus);
-      this.Controls.Add(this.checkBoxLogVerbose);
       this.Controls.Add(this.buttonChangeServer);
       this.Controls.Add(this.buttonHelp);
       this.Controls.Add(this.tabControl);
@@ -909,7 +896,6 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.Button buttonDeleteMacro;
     private System.Windows.Forms.Button buttonEditMacro;
     private System.Windows.Forms.Button buttonCancel;
-    private System.Windows.Forms.CheckBox checkBoxLogVerbose;
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.TabControl tabControl;
     private System.Windows.Forms.TabPage tabPageIR;
