@@ -65,8 +65,6 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.",
                         "TV2 Blaster Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-      checkBoxLogVerbose.Checked = TV2BlasterPlugin.LogVerbose;
-
       RefreshIRList();
       RefreshMacroList();
 
@@ -298,8 +296,6 @@ namespace MediaPortal.Plugins
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      TV2BlasterPlugin.LogVerbose = checkBoxLogVerbose.Checked;
-
       DialogResult = DialogResult.OK;
       Close();
     }

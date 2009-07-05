@@ -38,7 +38,6 @@ namespace MediaPortal.Plugins
       this.buttonDeleteMacro = new System.Windows.Forms.Button();
       this.buttonEditMacro = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
-      this.checkBoxLogVerbose = new System.Windows.Forms.CheckBox();
       this.buttonExtChannels = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.buttonChangeServer = new System.Windows.Forms.Button();
@@ -162,17 +161,6 @@ namespace MediaPortal.Plugins
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
       // 
-      // checkBoxLogVerbose
-      // 
-      this.checkBoxLogVerbose.AutoSize = true;
-      this.checkBoxLogVerbose.Location = new System.Drawing.Point(8, 8);
-      this.checkBoxLogVerbose.Name = "checkBoxLogVerbose";
-      this.checkBoxLogVerbose.Size = new System.Drawing.Size(108, 17);
-      this.checkBoxLogVerbose.TabIndex = 0;
-      this.checkBoxLogVerbose.Text = "Extended logging";
-      this.toolTips.SetToolTip(this.checkBoxLogVerbose, "Enable more detailed logging of plugin operations");
-      this.checkBoxLogVerbose.UseVisualStyleBackColor = true;
-      // 
       // buttonExtChannels
       // 
       this.buttonExtChannels.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -227,7 +215,6 @@ namespace MediaPortal.Plugins
       // tabPageOptions
       // 
       this.tabPageOptions.Controls.Add(this.buttonHelp);
-      this.tabPageOptions.Controls.Add(this.checkBoxLogVerbose);
       this.tabPageOptions.Controls.Add(this.buttonChangeServer);
       this.tabPageOptions.Controls.Add(this.buttonExtChannels);
       this.tabPageOptions.Location = new System.Drawing.Point(4, 22);
@@ -345,7 +332,6 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.Button buttonEditMacro;
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.Button buttonExtChannels;
-    private System.Windows.Forms.CheckBox checkBoxLogVerbose;
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.TabControl tabControl;
     private System.Windows.Forms.TabPage tabPageIR;

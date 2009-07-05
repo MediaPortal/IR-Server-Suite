@@ -58,7 +58,6 @@ namespace MediaPortal.Plugins
       this.buttonDeleteMacro = new System.Windows.Forms.Button();
       this.buttonEditMacro = new System.Windows.Forms.Button();
       this.buttonNewMacro = new System.Windows.Forms.Button();
-      this.checkBoxLogVerbose = new System.Windows.Forms.CheckBox();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.buttonHelp = new System.Windows.Forms.Button();
       this.tabControl.SuspendLayout();
@@ -427,17 +426,6 @@ namespace MediaPortal.Plugins
       this.buttonNewMacro.UseVisualStyleBackColor = true;
       this.buttonNewMacro.Click += new System.EventHandler(this.buttonNewMacro_Click);
       // 
-      // checkBoxLogVerbose
-      // 
-      this.checkBoxLogVerbose.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.checkBoxLogVerbose.Location = new System.Drawing.Point(216, 376);
-      this.checkBoxLogVerbose.Name = "checkBoxLogVerbose";
-      this.checkBoxLogVerbose.Size = new System.Drawing.Size(120, 24);
-      this.checkBoxLogVerbose.TabIndex = 3;
-      this.checkBoxLogVerbose.Text = "&Extended logging";
-      this.toolTips.SetToolTip(this.checkBoxLogVerbose, "Enable more detailed logging of plugin operations");
-      this.checkBoxLogVerbose.UseVisualStyleBackColor = true;
-      // 
       // buttonHelp
       // 
       this.buttonHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -457,7 +445,6 @@ namespace MediaPortal.Plugins
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(520, 415);
-      this.Controls.Add(this.checkBoxLogVerbose);
       this.Controls.Add(this.buttonHelp);
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonChangeServer);
@@ -496,7 +483,6 @@ namespace MediaPortal.Plugins
     private System.Windows.Forms.Button buttonDeleteMacro;
     private System.Windows.Forms.Button buttonEditMacro;
     private System.Windows.Forms.Button buttonNewMacro;
-    private System.Windows.Forms.CheckBox checkBoxLogVerbose;
     private System.Windows.Forms.Button buttonNewCommand;
     private System.Windows.Forms.GroupBox groupBoxTreeCommands;
     private System.Windows.Forms.Button buttonBottom;

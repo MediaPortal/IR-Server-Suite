@@ -79,7 +79,6 @@ namespace MediaPortal.Plugins
 
     private static IRServerInfo _irServerInfo = new IRServerInfo();
     private static string _learnIRFilename;
-    private static bool _logVerbose;
     private static MenuRoot _menu;
     private static bool _mpBasicHome;
     private static bool _registered;
@@ -103,16 +102,6 @@ namespace MediaPortal.Plugins
     {
       get { return _serverHost; }
       set { _serverHost = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to log verbosely.
-    /// </summary>
-    /// <value><c>true</c> if logging is set to verbose; otherwise, <c>false</c>.</value>
-    internal static bool LogVerbose
-    {
-      get { return _logVerbose; }
-      set { _logVerbose = value; }
     }
 
     /// <summary>
@@ -241,8 +230,7 @@ namespace MediaPortal.Plugins
       {
         _inConfiguration = true;
 
-        if (LogVerbose)
-          Log.Info("MPBlastZonePlugin: ShowPlugin()");
+        Log.Debug("MPBlastZonePlugin: ShowPlugin()");
 
         SetupForm setupForm = new SetupForm();
         if (setupForm.ShowDialog() == DialogResult.OK)
@@ -250,8 +238,7 @@ namespace MediaPortal.Plugins
 
         StopClient();
 
-        if (LogVerbose)
-          Log.Info("MPBlastZonePlugin: ShowPlugin() - End");
+        Log.Debug("MPBlastZonePlugin: ShowPlugin() - End");
       }
       catch (Exception ex)
       {
@@ -309,8 +296,7 @@ namespace MediaPortal.Plugins
 
       if (Load(skinFile))
       {
-        if (LogVerbose)
-          Log.Info("MPBlastZonePlugin: Started");
+        Log.Debug("MPBlastZonePlugin: Started");
 
         return true;
       }
@@ -328,8 +314,7 @@ namespace MediaPortal.Plugins
 
       base.DeInit();
 
-      if (LogVerbose)
-        Log.Info("MPBlastZonePlugin: Stopped");
+      Log.Debug("MPBlastZonePlugin: Stopped");
     }
 
     /// <summary>
@@ -509,8 +494,7 @@ namespace MediaPortal.Plugins
 
     private static void ReceivedMessage(IrssMessage received)
     {
-      if (LogVerbose)
-        Log.Debug("MPBlastZonePlugin: Received Message \"{0}\"", received.Type);
+      Log.Debug("MPBlastZonePlugin: Received Message \"{0}\"", received.Type);
 
       try
       {
@@ -519,8 +503,7 @@ namespace MediaPortal.Plugins
           case MessageType.BlastIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                Log.Info("MPBlastZonePlugin: Blast successful");
+              Log.Debug("MPBlastZonePlugin: Blast successful");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -534,8 +517,7 @@ namespace MediaPortal.Plugins
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
-              if (LogVerbose)
-                Log.Info("MPBlastZonePlugin: Registered to IR Server");
+              Log.Debug("MPBlastZonePlugin: Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -547,8 +529,7 @@ namespace MediaPortal.Plugins
           case MessageType.LearnIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                Log.Info("MPBlastZonePlugin: Learned IR Successfully");
+              Log.Debug("MPBlastZonePlugin: Learned IR Successfully");
 
               byte[] dataBytes = received.GetDataAsBytes();
 
@@ -637,8 +618,7 @@ namespace MediaPortal.Plugins
     /// <param name="port">Port to blast to.</param>
     internal static void BlastIR(string fileName, string port)
     {
-      if (LogVerbose)
-        Log.Debug("MPControlPlugin - BlastIR(): {0}, {1}", fileName, port);
+      Log.Debug("MPControlPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
         throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
@@ -966,8 +946,6 @@ namespace MediaPortal.Plugins
         {
           ServerHost = xmlreader.GetValueAsString("MPBlastZonePlugin", "ServerHost", "localhost");
 
-          LogVerbose = xmlreader.GetValueAsBool("MPBlastZonePlugin", "LogVerbose", false);
-
           // MediaPortal settings ...
           _mpBasicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
         }
@@ -988,8 +966,6 @@ namespace MediaPortal.Plugins
         using (Settings xmlwriter = new Settings(MPCommon.MPConfigFile))
         {
           xmlwriter.SetValue("MPBlastZonePlugin", "ServerHost", ServerHost);
-
-          xmlwriter.SetValueAsBool("MPBlastZonePlugin", "LogVerbose", LogVerbose);
         }
       }
       catch (Exception ex)

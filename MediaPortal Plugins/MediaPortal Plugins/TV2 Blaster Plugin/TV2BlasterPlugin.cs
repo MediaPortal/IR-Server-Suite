@@ -67,7 +67,6 @@ namespace MediaPortal.Plugins
 
     private static IRServerInfo _irServerInfo = new IRServerInfo();
     private static string _learnIRFilename;
-    private static bool _logVerbose;
     private static bool _mpBasicHome;
     private static bool _registered;
     private static string _serverHost;
@@ -80,16 +79,6 @@ namespace MediaPortal.Plugins
     {
       get { return _serverHost; }
       set { _serverHost = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to log verbosely.
-    /// </summary>
-    /// <value><c>true</c> if logging is set to verbose; otherwise, <c>false</c>.</value>
-    internal static bool LogVerbose
-    {
-      get { return _logVerbose; }
-      set { _logVerbose = value; }
     }
 
     /// <summary>
@@ -140,8 +129,7 @@ namespace MediaPortal.Plugins
       // Register with MediaPortal to receive GUI Messages ...
       GUIWindowManager.Receivers += OnMessage;
 
-      if (LogVerbose)
-        Log.Info("TV2BlasterPlugin: Started");
+      Log.Debug("TV2BlasterPlugin: Started");
     }
 
     /// <summary>
@@ -153,8 +141,7 @@ namespace MediaPortal.Plugins
 
       StopClient();
 
-      if (LogVerbose)
-        Log.Info("TV2BlasterPlugin: Stopped");
+      Log.Debug("TV2BlasterPlugin: Stopped");
     }
 
     #endregion IPlugin methods
@@ -240,8 +227,7 @@ namespace MediaPortal.Plugins
 
         _inConfiguration = true;
 
-        if (LogVerbose)
-          Log.Info("TV2BlasterPlugin: ShowPlugin()");
+        Log.Debug("TV2BlasterPlugin: ShowPlugin()");
 
         SetupForm setupForm = new SetupForm();
         if (setupForm.ShowDialog() == DialogResult.OK)
@@ -254,8 +240,7 @@ namespace MediaPortal.Plugins
         Log.Error(ex);
       }
 
-      if (LogVerbose)
-        Log.Info("TV2BlasterPlugin: ShowPlugin() - End");
+      Log.Debug("TV2BlasterPlugin: ShowPlugin() - End");
     }
 
     /// <summary>
@@ -341,8 +326,7 @@ namespace MediaPortal.Plugins
 
     private static void ReceivedMessage(IrssMessage received)
     {
-      if (LogVerbose)
-        Log.Debug("TV2BlasterPlugin: Received Message \"{0}\"", received.Type);
+      Log.Debug("TV2BlasterPlugin: Received Message \"{0}\"", received.Type);
 
       try
       {
@@ -351,8 +335,7 @@ namespace MediaPortal.Plugins
           case MessageType.BlastIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                Log.Info("TV2BlasterPlugin: Blast successful");
+              Log.Debug("TV2BlasterPlugin: Blast successful");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -366,8 +349,7 @@ namespace MediaPortal.Plugins
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
-              if (LogVerbose)
-                Log.Info("TV2BlasterPlugin: Registered to IR Server");
+              Log.Debug("TV2BlasterPlugin: Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
@@ -379,8 +361,7 @@ namespace MediaPortal.Plugins
           case MessageType.LearnIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              if (LogVerbose)
-                Log.Info("TV2BlasterPlugin: Learned IR Successfully");
+              Log.Debug("TV2BlasterPlugin: Learned IR Successfully");
 
               byte[] dataBytes = received.GetDataAsBytes();
 
@@ -747,8 +728,7 @@ namespace MediaPortal.Plugins
     /// <param name="port">Port to blast to.</param>
     internal static void BlastIR(string fileName, string port)
     {
-      if (LogVerbose)
-        Log.Debug("TV2BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
+      Log.Debug("TV2BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
         throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
@@ -1010,7 +990,6 @@ namespace MediaPortal.Plugins
         using (Settings xmlreader = new Settings(MPCommon.MPConfigFile))
         {
           ServerHost = xmlreader.GetValueAsString("TV2BlasterPlugin", "ServerHost", "localhost");
-          LogVerbose = xmlreader.GetValueAsBool("TV2BlasterPlugin", "LogVerbose", false);
 
           // MediaPortal settings ...
           _mpBasicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
@@ -1032,7 +1011,6 @@ namespace MediaPortal.Plugins
         using (Settings xmlwriter = new Settings(MPCommon.MPConfigFile))
         {
           xmlwriter.SetValue("TV2BlasterPlugin", "ServerHost", ServerHost);
-          xmlwriter.SetValueAsBool("TV2BlasterPlugin", "LogVerbose", LogVerbose);
         }
       }
       catch (Exception ex)

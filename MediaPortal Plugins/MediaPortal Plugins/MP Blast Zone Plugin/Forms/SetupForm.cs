@@ -67,8 +67,6 @@ namespace MediaPortal.Plugins
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.",
                         "MP Blast Zone Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-      checkBoxLogVerbose.Checked = MPBlastZonePlugin.LogVerbose;
-
       RefreshIRList();
       RefreshMacroList();
       RefreshCommandsCombo();
@@ -634,8 +632,6 @@ namespace MediaPortal.Plugins
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      MPBlastZonePlugin.LogVerbose = checkBoxLogVerbose.Checked;
-
       // Save menu ...
       MPBlastZonePlugin.Menu.Clear();
       foreach (TreeNode collectionNode in treeViewMenu.Nodes)

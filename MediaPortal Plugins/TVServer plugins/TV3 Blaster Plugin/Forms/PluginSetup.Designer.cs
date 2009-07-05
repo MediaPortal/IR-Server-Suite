@@ -29,7 +29,6 @@ namespace SetupTv.Sections
     /// </summary>
     private void InitializeComponent()
     {
-      this.checkBoxLogVerbose = new System.Windows.Forms.CheckBox();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageSetup = new System.Windows.Forms.TabPage();
       this.buttonHelp = new System.Windows.Forms.Button();
@@ -52,16 +51,6 @@ namespace SetupTv.Sections
       this.tabPageMacros.SuspendLayout();
       this.SuspendLayout();
       // 
-      // checkBoxLogVerbose
-      // 
-      this.checkBoxLogVerbose.AutoSize = true;
-      this.checkBoxLogVerbose.Location = new System.Drawing.Point(8, 8);
-      this.checkBoxLogVerbose.Name = "checkBoxLogVerbose";
-      this.checkBoxLogVerbose.Size = new System.Drawing.Size(108, 17);
-      this.checkBoxLogVerbose.TabIndex = 0;
-      this.checkBoxLogVerbose.Text = "Extended logging";
-      this.checkBoxLogVerbose.UseVisualStyleBackColor = true;
-      // 
       // tabControl
       // 
       this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -80,7 +69,6 @@ namespace SetupTv.Sections
       // 
       this.tabPageSetup.Controls.Add(this.buttonHelp);
       this.tabPageSetup.Controls.Add(this.buttonHostSetup);
-      this.tabPageSetup.Controls.Add(this.checkBoxLogVerbose);
       this.tabPageSetup.Controls.Add(this.buttonSTB);
       this.tabPageSetup.Location = new System.Drawing.Point(4, 22);
       this.tabPageSetup.Name = "tabPageSetup";
@@ -285,7 +273,6 @@ namespace SetupTv.Sections
 
     #endregion
 
-    private System.Windows.Forms.CheckBox checkBoxLogVerbose;
     private System.Windows.Forms.TabControl tabControl;
     private System.Windows.Forms.TabPage tabPageIR;
     private System.Windows.Forms.TabPage tabPageMacros;
