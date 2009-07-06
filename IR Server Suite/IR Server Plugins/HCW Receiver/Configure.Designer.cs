@@ -34,6 +34,7 @@ namespace InputService.Plugin
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.numericUpDownButtonRepeatDelay = new System.Windows.Forms.NumericUpDown();
       this.labelButtonRepeatDelay = new System.Windows.Forms.Label();
+      this.linkHCWDriverDownload = new System.Windows.Forms.LinkLabel();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       this.SuspendLayout();
       // 
@@ -99,11 +100,23 @@ namespace InputService.Plugin
       this.labelButtonRepeatDelay.Text = "Button repeat delay:";
       this.labelButtonRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
+      // linkHCWDriverDownload
+      // 
+      this.linkHCWDriverDownload.AutoSize = true;
+      this.linkHCWDriverDownload.Location = new System.Drawing.Point(21, 56);
+      this.linkHCWDriverDownload.Name = "linkHCWDriverDownload";
+      this.linkHCWDriverDownload.Size = new System.Drawing.Size(191, 26);
+      this.linkHCWDriverDownload.TabIndex = 6;
+      this.linkHCWDriverDownload.TabStop = true;
+      this.linkHCWDriverDownload.Text = "Click here for the latest \"IR.exe\" driver \r\n(inside WinTV cd).";
+      this.linkHCWDriverDownload.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkHCWDriverDownload_LinkClicked);
+      // 
       // Configure
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(248, 137);
+      this.Controls.Add(this.linkHCWDriverDownload);
       this.Controls.Add(this.labelButtonRepeatDelay);
       this.Controls.Add(this.numericUpDownButtonRepeatDelay);
       this.Controls.Add(this.buttonCancel);
@@ -118,6 +131,7 @@ namespace InputService.Plugin
       this.Text = "HCW Configuration";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).EndInit();
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
@@ -128,5 +142,6 @@ namespace InputService.Plugin
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.NumericUpDown numericUpDownButtonRepeatDelay;
     private System.Windows.Forms.Label labelButtonRepeatDelay;
+    private System.Windows.Forms.LinkLabel linkHCWDriverDownload;
   }
 }

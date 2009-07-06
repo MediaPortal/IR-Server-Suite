@@ -21,6 +21,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace InputService.Plugin
@@ -71,5 +72,13 @@ namespace InputService.Plugin
     }
 
     #endregion Buttons
+
+    #region Downlaod link
+    private void linkHCWDriverDownload_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+      Process.Start("http://www.hauppauge.co.uk/site/support/downloadcounter.php/");
+    }
+    #endregion
+
   }
 }
