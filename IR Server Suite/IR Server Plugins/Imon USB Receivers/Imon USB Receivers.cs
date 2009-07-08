@@ -57,12 +57,31 @@ namespace InputService.Plugin
         private const uint IOCTL_IMON_READ2 = 0x00222034; // function 0x80D - ??? read (8 bytes)
         private const uint IOCTL_IMON_WRITE = 0x00222018; // function 0x806 - write data (8 bytes) to device
 
-        private static readonly byte[][] SetDosRemotePAD = new byte[][]
+        private static readonly byte[][] SetDosRemotePADold = new byte[][]
+        {
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x02},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x04},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x06},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x08},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x0A}     
+        };
+        private static readonly byte[][] SetDosRemoteMCEold = new byte[][]
+        {
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x02},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x04},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x06},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x01, 0x00, 0x00, 0x08},
+            new byte[] {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x0A}     
+        };
+
+        private static readonly byte[][] SetDosRemotePADnew = new byte[][]
         {
             new byte[] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02}
         };
 
-        private static readonly byte[][] SetDosRemoteMCE = new byte[][]
+        private static readonly byte[][] SetDosRemoteMCEnew = new byte[][]
         {
             new byte[] {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02}
         };
@@ -389,6 +408,7 @@ namespace InputService.Plugin
         private RemoteHandler _remoteHandler;
 
         private byte _remoteToggle;
+        private uint firmwareVersion = 0;
 
         #endregion Global Variables
 
@@ -506,6 +526,14 @@ namespace InputService.Plugin
                         byte[] dataBytes = new byte[bytesRead];
                         Marshal.Copy(deviceBufferPtr, dataBytes, 0, bytesRead);
 
+                        if ((dataBytes[0] == 0xFF) &&
+                            (dataBytes[1] == 0xFF) &&
+                            (dataBytes[2] == 0xFF) &&
+                            (dataBytes[3] == 0xFF) &&
+                            (dataBytes[4] == 0xFF) &&
+                            (dataBytes[5] == 0xFF))
+                            firmwareVersion = (uint)dataBytes[6] + 2;
+                        
                         // Rubbish data:
                         // FF, FF, FF, FF, FF, FF, 9F, FF, 
                         // 00, 00, 00, 00, 00, 00, 00, F0, 
@@ -556,11 +584,11 @@ namespace InputService.Plugin
             switch (mode)
             {
                 case RemoteMode.iMON:
-                    modeData = SetDosRemotePAD;
+                    modeData = (firmwareVersion < 0x9a) ? SetDosRemotePADold : SetDosRemotePADnew;
                     break;
 
                 case RemoteMode.MCE:
-                    modeData = SetDosRemoteMCE;
+                    modeData = (firmwareVersion < 0x9a) ? SetDosRemoteMCEold : SetDosRemoteMCEnew;
                     break;
             }
             SetDos(modeData);
@@ -876,6 +904,12 @@ namespace InputService.Plugin
             }
             else
             {
+                _processReceiveThread = true;
+                _receiveThread = new Thread(ReceiveThread);
+                _receiveThread.Name = "iMon Receive Thread";
+                _receiveThread.IsBackground = true;
+                _receiveThread.Start();
+
                 if (_remoteMode == RemoteMode.iMON)
                 {
                     DebugWriteLine("Configured Hardware Mode: {0}", _remoteMode);
@@ -886,13 +920,7 @@ namespace InputService.Plugin
                     DebugWriteLine("Configured Hardware Mode: {0}\n", _remoteMode);
                 }
 
-                SetDos(_remoteMode);
-
-                _processReceiveThread = true;
-                _receiveThread = new Thread(ReceiveThread);
-                _receiveThread.Name = "iMon Receive Thread";
-                _receiveThread.IsBackground = true;
-                _receiveThread.Start();
+                SetDos(_remoteMode);                
             }
         }
 

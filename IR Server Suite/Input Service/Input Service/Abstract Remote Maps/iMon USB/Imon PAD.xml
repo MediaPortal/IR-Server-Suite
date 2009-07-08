@@ -30,8 +30,8 @@
   <RemoteTable RawCode="1136" AbstractButton="Number8" />
   <RemoteTable RawCode="1160" AbstractButton="Number9" />
   <RemoteTable RawCode="1034" AbstractButton="OK" />
-  <RemoteTable RawCode="1096" AbstractButton="Imon" />
-  <RemoteTable RawCode="1056" AbstractButton="Imon" />
+  <RemoteTable RawCode="1096" AbstractButton="Star" />
+  <RemoteTable RawCode="1056" AbstractButton="Hash" />
   <RemoteTable RawCode="1082" AbstractButton="Music" />
   <RemoteTable RawCode="1224" AbstractButton="Pictures" />
   <RemoteTable RawCode="1200" AbstractButton="Videos" />
@@ -52,5 +52,7 @@
   <RemoteTable RawCode="1226" AbstractButton="LeftClick" />
   <RemoteTable RawCode="1228" AbstractButton="RightClick" />
   <RemoteTable RawCode="1060" AbstractButton="Info" />
-  <RemoteTable RawCode="1124" AbstractButton="Teletext" />
+  <RemoteTable RawCode="1124" AbstractButton="Info" />
+  <RemoteTable RawCode="1008" AbstractButton="Teletext" />
+  <RemoteTable RawCode="1188" AbstractButton="Snapshot" />
 </DocumentElement>
