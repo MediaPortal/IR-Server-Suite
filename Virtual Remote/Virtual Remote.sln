@@ -1,0 +1,114 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{0C209E91-5AD5-4662-AD0E-976A940D4806}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote (PocketPC2003)", "Applications\Virtual Remote (PocketPC2003)\Virtual Remote (PocketPC2003).csproj", "{48839540-780F-4323-8F50-68E2A2385502}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote (WinCE5)", "Applications\Virtual Remote (WinCE5)\Virtual Remote (WinCE5).csproj", "{3BB1C204-D08E-43E5-AC68-DCDD624404A5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote (Smartphone2003)", "Applications\Virtual Remote (Smartphone2003)\Virtual Remote (Smartphone2003).csproj", "{BA322C1E-D7C6-4673-80E2-123B7714B0DB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "Virtual Remote (PocketPC2003) Installer", "Applications\Virtual Remote (PocketPC2003) Installer\Virtual Remote (PocketPC2003) Installer.vddproj", "{FEB70334-6F8E-41D5-9B0A-D5714A296830}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "Virtual Remote (Smartphone2003) Installer", "Applications\Virtual Remote (Smartphone2003) Installer\Virtual Remote (Smartphone2003) Installer.vddproj", "{4C18B138-BF94-4224-9085-4D3EDA680EDA}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "Virtual Remote (WinCE5) Installer", "Applications\Virtual Remote (WinCE5) Installer\Virtual Remote (WinCE5) Installer.vddproj", "{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48839540-780F-4323-8F50-68E2A2385502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48839540-780F-4323-8F50-68E2A2385502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48839540-780F-4323-8F50-68E2A2385502}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{48839540-780F-4323-8F50-68E2A2385502}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{48839540-780F-4323-8F50-68E2A2385502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48839540-780F-4323-8F50-68E2A2385502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48839540-780F-4323-8F50-68E2A2385502}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{48839540-780F-4323-8F50-68E2A2385502}.Release|x86.ActiveCfg = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5}.Release|x86.ActiveCfg = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB}.Release|x86.ActiveCfg = Release|Any CPU
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830}.Debug|Any CPU.ActiveCfg = Debug
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830}.Debug|Any CPU.Build.0 = Debug
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830}.Debug|x86.ActiveCfg = Debug
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830}.Debug|x86.Build.0 = Debug
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830}.Release|Any CPU.ActiveCfg = Release
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830}.Release|Any CPU.Build.0 = Release
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830}.Release|x86.ActiveCfg = Release
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830}.Release|x86.Build.0 = Release
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA}.Debug|Any CPU.ActiveCfg = Debug
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA}.Debug|Any CPU.Build.0 = Debug
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA}.Debug|x86.ActiveCfg = Debug
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA}.Debug|x86.Build.0 = Debug
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA}.Release|Any CPU.ActiveCfg = Release
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA}.Release|Any CPU.Build.0 = Release
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA}.Release|x86.ActiveCfg = Release
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA}.Release|x86.Build.0 = Release
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}.Debug|Any CPU.ActiveCfg = Debug
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}.Debug|Any CPU.Build.0 = Debug
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}.Debug|x86.ActiveCfg = Debug
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}.Debug|x86.Build.0 = Debug
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}.Release|Any CPU.ActiveCfg = Release
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}.Release|Any CPU.Build.0 = Release
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}.Release|x86.ActiveCfg = Release
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D}.Release|x86.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{48839540-780F-4323-8F50-68E2A2385502} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{3BB1C204-D08E-43E5-AC68-DCDD624404A5} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{BA322C1E-D7C6-4673-80E2-123B7714B0DB} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{FEB70334-6F8E-41D5-9B0A-D5714A296830} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{4C18B138-BF94-4224-9085-4D3EDA680EDA} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{DCE0C464-3843-45F1-A48B-C1A3FF532C1D} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+	EndGlobalSection
+EndGlobal

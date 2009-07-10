@@ -914,9 +914,9 @@ ${MementoSection} "Virtual Remote" SectionVirtualRemote
 
   ; Installing Virtual Remote for Smart Devices
   SetOutPath "$DIR_INSTALL\Virtual Remote\Smart Devices"
-  File "..\IR Server Suite\Applications\Virtual Remote (PocketPC2003) Installer\${Build_Type}\*.cab"
-  File "..\IR Server Suite\Applications\Virtual Remote (Smartphone2003) Installer\${Build_Type}\*.cab"
-  File "..\IR Server Suite\Applications\Virtual Remote (WinCE5) Installer\${Build_Type}\*.cab"
+  File "..\Virtual Remote\Applications\Virtual Remote (PocketPC2003) Installer\${Build_Type}\*.cab"
+  File "..\Virtual Remote\Applications\Virtual Remote (Smartphone2003) Installer\${Build_Type}\*.cab"
+  File "..\Virtual Remote\Applications\Virtual Remote (WinCE5) Installer\${Build_Type}\*.cab"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Virtual Remote"
