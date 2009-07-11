@@ -366,6 +366,7 @@ namespace InputService.Plugin
           IrssLog.Error("{0} exception: {1}", Name, ex.NativeErrorCode);
           return DetectionResult.DeviceException;
         }
+        IrssLog.Debug("{0} exception: {1}", Name, ex.NativeErrorCode);
       }
       catch (Exception ex)
       {
