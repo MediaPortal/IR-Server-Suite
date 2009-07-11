@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using InputService.Plugin.Properties;
+using IrssUtils;
 
 namespace InputService.Plugin
 {
@@ -303,10 +304,9 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       IntPtr handle;
       TYPE_RET_VAL error;
@@ -327,7 +327,7 @@ namespace InputService.Plugin
                 bdaapiClose(handle);
 
                 if (error == TYPE_RET_VAL.RET_SUCCESS)
-                  return true;
+                  return DetectionResult.DevicePresent;
               }
             }
             catch
@@ -337,11 +337,13 @@ namespace InputService.Plugin
           }
         }
       }
-      catch
+      catch (Exception ex)
       {
+        IrssLog.Error("{0} exception: {1}", Name, ex.Message);
+        return DetectionResult.DeviceException;
       }
 
-      return false;
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>

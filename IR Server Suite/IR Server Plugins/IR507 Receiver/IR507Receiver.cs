@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using InputService.Plugin.Properties;
+using IrssUtils;
 
 namespace InputService.Plugin
 {
@@ -120,7 +121,8 @@ namespace InputService.Plugin
     private struct DeviceInterfaceDetailData
     {
       public int Size;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string DevicePath;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+      public string DevicePath;
     }
 
     #endregion
@@ -203,12 +205,9 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       try
       {
@@ -217,12 +216,26 @@ namespace InputService.Plugin
 
         string devicePath = FindDevice(guid);
 
-        return (devicePath != null);
+        if (devicePath != null)
+        {
+          return DetectionResult.DevicePresent;
+        }
       }
-      catch
+      catch (Win32Exception ex)
       {
-        return false;
+        if (ex.NativeErrorCode != 2)
+        {
+          IrssLog.Error("{0} exception: {1}", Name, ex.NativeErrorCode);
+          return DetectionResult.DeviceException;
+        }
       }
+      catch (Exception ex)
+      {
+        IrssLog.Error("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        return DetectionResult.DeviceException;
+      }
+
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>
@@ -281,7 +294,7 @@ namespace InputService.Plugin
 
     private bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
     {
-      return RawInput.RegisterRawInputDevices(devices, (uint) devices.Length, (uint) Marshal.SizeOf(devices[0]));
+      return RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(devices[0]));
     }
 
     private void ProcMessage(ref Message m)
@@ -292,9 +305,9 @@ namespace InputService.Plugin
       uint dwSize = 0;
 
       RawInput.GetRawInputData(m.LParam, RawInput.RawInputCommand.Input, IntPtr.Zero, ref dwSize,
-                               (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)));
+                               (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)));
 
-      IntPtr buffer = Marshal.AllocHGlobal((int) dwSize);
+      IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
       try
       {
         if (buffer == IntPtr.Zero)
@@ -302,14 +315,14 @@ namespace InputService.Plugin
 
         if (
           RawInput.GetRawInputData(m.LParam, RawInput.RawInputCommand.Input, buffer, ref dwSize,
-                                   (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER))) != dwSize)
+                                   (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER))) != dwSize)
           return;
 
-        RawInput.RAWINPUT raw = (RawInput.RAWINPUT) Marshal.PtrToStructure(buffer, typeof (RawInput.RAWINPUT));
+        RawInput.RAWINPUT raw = (RawInput.RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RawInput.RAWINPUT));
 
         if (raw.header.dwType == RawInput.RawInputType.HID)
         {
-          int offset = Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof (RawInput.RAWHID));
+          int offset = Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof(RawInput.RAWHID));
 
           byte[] bRawData = new byte[offset + raw.hid.dwSizeHid];
           Marshal.Copy(buffer, bRawData, 0, bRawData.Length);
@@ -351,7 +364,7 @@ namespace InputService.Plugin
 
       string devicePath = null;
 
-      for (int deviceIndex = 0;; deviceIndex++)
+      for (int deviceIndex = 0; ; deviceIndex++)
       {
         DeviceInfoData deviceInfoData = new DeviceInfoData();
         deviceInfoData.Size = Marshal.SizeOf(deviceInfoData);

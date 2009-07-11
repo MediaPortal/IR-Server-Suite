@@ -443,7 +443,7 @@ namespace InputService.Configuration
       {
         try
         {
-          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect())
+          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
             receivers.Add(plugin.Name);
         }
         catch (Exception ex)
@@ -476,7 +476,7 @@ namespace InputService.Configuration
       {
         try
         {
-          if (plugin is ITransmitIR && plugin.Detect())
+          if (plugin is ITransmitIR && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
             blasters.Add(plugin.Name);
         }
         catch (Exception ex)

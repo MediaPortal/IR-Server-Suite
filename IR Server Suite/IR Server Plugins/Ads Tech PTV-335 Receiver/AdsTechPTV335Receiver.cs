@@ -25,6 +25,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
 using InputService.Plugin.Properties;
+using IrssUtils;
 
 namespace InputService.Plugin
 {
@@ -125,21 +126,28 @@ namespace InputService.Plugin
     #endregion
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       try
       {
-        return (Init() != 0);
+        if (Init() != 0)
+        {
+          return DetectionResult.DevicePresent;
+        }
       }
-      catch
+      catch (DllNotFoundException)
       {
-        return false;
+        return DetectionResult.DeviceNotFound;
       }
+      catch (Exception ex)
+      {
+        IrssLog.Error("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        return DetectionResult.DeviceException;
+      }
+
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>

@@ -26,6 +26,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using InputService.Plugin.Properties;
+using IrssUtils;
 using Microsoft.Win32.SafeHandles;
 
 namespace InputService.Plugin
@@ -150,7 +151,8 @@ namespace InputService.Plugin
     private struct DeviceInterfaceDetailData
     {
       public int Size;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string DevicePath;
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+      public string DevicePath;
     }
 
     #endregion
@@ -341,12 +343,9 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       try
       {
@@ -355,12 +354,26 @@ namespace InputService.Plugin
 
         string devicePath = FindDevice(guid);
 
-        return (devicePath != null);
+        if (devicePath != null)
+        {
+          return DetectionResult.DevicePresent;
+        }
       }
-      catch
+      catch (Win32Exception ex)
       {
-        return false;
+        if (ex.NativeErrorCode != 13)
+        {
+          IrssLog.Error("{0} exception: {1}", Name, ex.NativeErrorCode);
+          return DetectionResult.DeviceException;
+        }
       }
+      catch (Exception ex)
+      {
+        IrssLog.Error("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        return DetectionResult.DeviceException;
+      }
+
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>
@@ -447,7 +460,7 @@ namespace InputService.Plugin
 
       string devicePath = null;
 
-      for (int deviceIndex = 0;; deviceIndex++)
+      for (int deviceIndex = 0; ; deviceIndex++)
       {
         DeviceInfoData deviceInfoData = new DeviceInfoData();
         deviceInfoData.Size = Marshal.SizeOf(deviceInfoData);
@@ -529,7 +542,7 @@ namespace InputService.Plugin
 
             TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
 
-            string keyCode = ((int) _deviceBuffer[3]).ToString();
+            string keyCode = ((int)_deviceBuffer[3]).ToString();
 
             if (keyCode != _lastCode || timeSpan.Milliseconds >= 250)
             {

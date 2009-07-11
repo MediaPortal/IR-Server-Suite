@@ -31,9 +31,9 @@ using IrssUtils;
 using SourceGrid;
 using SourceGrid.Cells;
 using SourceGrid.Cells.Controllers;
-using Button=SourceGrid.Cells.Button;
-using CheckBox=SourceGrid.Cells.CheckBox;
-using ColumnHeader=SourceGrid.Cells.ColumnHeader;
+using Button = SourceGrid.Cells.Button;
+using CheckBox = SourceGrid.Cells.CheckBox;
+using ColumnHeader = SourceGrid.Cells.ColumnHeader;
 
 namespace InputService.Configuration
 {
@@ -240,33 +240,46 @@ namespace InputService.Configuration
       CheckBox checkBox;
       for (int row = 1; row < gridPlugins.RowsCount; row++)
       {
+        PluginBase plugin = gridPlugins.Rows[row].Tag as PluginBase;
+
         try
         {
-          PluginBase plugin = gridPlugins.Rows[row].Tag as PluginBase;
           if (plugin == null)
             throw new InvalidOperationException(String.Format("Invalid grid data, row {0} contains no plugin in tag",
                                                               row));
 
-          bool detected = plugin.Detect();
+          PluginBase.DetectionResult detected = plugin.Detect();
 
-          if (detected)
-            IrssLog.Info("Found: {0}", plugin.Name);
+          if (detected == PluginBase.DetectionResult.DevicePresent)
+          {
+            IrssLog.Info("Plugin {0}: detected", plugin.Name);
+          }
+          if (detected == PluginBase.DetectionResult.DeviceException)
+          {
+            IrssLog.Warn("Plugin {0}: exception during Detect()", plugin.Name);
+          }
 
           // Receive
           checkBox = gridPlugins[row, ColReceive] as CheckBox;
           if (checkBox != null)
-            checkBox.Checked = detected;
+            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent ? true : false);
 
           // Transmit
           checkBox = gridPlugins[row, ColTransmit] as CheckBox;
           if (checkBox != null)
-            checkBox.Checked = detected;
+            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent ? true : false);
+        }
+        catch (BadImageFormatException)
+        {
+          IrssLog.Warn("Plugin {0}: not available on current OS architecture ({1})", plugin.Name, IntPtr.Size == 8 ? "x64" : "x86");
         }
         catch (Exception ex)
         {
           IrssLog.Error(ex);
         }
       }
+
+      IrssLog.Info("Input Plugins detection completed...");
     }
 
     private void Advanced()
@@ -498,8 +511,8 @@ namespace InputService.Configuration
 
     private void buttonClickEvent_Executed(object sender, EventArgs e)
     {
-      CellContext context = (CellContext) sender;
-      Button cell = (Button) context.Cell;
+      CellContext context = (CellContext)sender;
+      Button cell = (Button)context.Cell;
 
       try
       {
@@ -517,8 +530,8 @@ namespace InputService.Configuration
 
     private void TransmitChanged(object sender, EventArgs e)
     {
-      CellContext context = (CellContext) sender;
-      CheckBox cell = (CheckBox) context.Cell;
+      CellContext context = (CellContext)sender;
+      CheckBox cell = (CheckBox)context.Cell;
 
       if (cell.Checked != true)
         return;
@@ -539,8 +552,8 @@ namespace InputService.Configuration
 
     private void PluginDoubleClick(object sender, EventArgs e)
     {
-      CellContext context = (CellContext) sender;
-      Cell cell = (Cell) context.Cell;
+      CellContext context = (CellContext)sender;
+      Cell cell = (Cell)context.Cell;
 
       CheckBox checkBoxReceive = gridPlugins[cell.Row.Index, ColReceive] as CheckBox;
       if (checkBoxReceive != null)

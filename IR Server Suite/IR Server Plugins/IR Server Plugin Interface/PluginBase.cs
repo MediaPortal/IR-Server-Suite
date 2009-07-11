@@ -79,16 +79,35 @@ namespace InputService.Plugin
 
     #endregion Properties
 
+    #region Enums
+    ///<summary>
+    /// Store the result of Detect() in PluginBase 
+    ///</summary>
+    public enum DetectionResult
+    {
+      ///<summary>
+      /// Device is not installed
+      ///</summary>
+      DeviceNotFound,
+      ///<summary>
+      /// Device is working
+      ///</summary>
+      DevicePresent,
+      ///<summary>
+      /// Init call fails
+      ///</summary>
+      DeviceException
+    }
+    #endregion
+
     #region Methods
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
-    /// This method should not throw exceptions.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
-    public virtual bool Detect()
+    public virtual DetectionResult Detect()
     {
-      return false;
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>

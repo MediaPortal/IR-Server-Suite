@@ -28,6 +28,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using InputService.Plugin.Properties;
+using IrssUtils;
 using Microsoft.Win32.SafeHandles;
 
 namespace InputService.Plugin
@@ -226,11 +227,9 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
-    /// This method should not throw exceptions.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns><c>true</c> if the device is present, otherwise <c>false</c>.</returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       try
       {
@@ -241,17 +240,19 @@ namespace InputService.Plugin
                                                  IntPtr.Zero);
         int lastError = Marshal.GetLastWin32Error();
 
-        if (deviceHandle.IsInvalid)
-          throw new Win32Exception(lastError, "Failed to open device");
-
-        deviceHandle.Dispose();
-
-        return true;
+        if (!deviceHandle.IsInvalid)
+        {
+          deviceHandle.Dispose();
+          return DetectionResult.DevicePresent;
+        }
       }
-      catch
+      catch (Exception ex)
       {
-        return false;
+        IrssLog.Error("{0} exception: {1}", Name, ex.Message);
+        return DetectionResult.DeviceException;
       }
+
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>
@@ -262,7 +263,7 @@ namespace InputService.Plugin
       DebugOpen("IgorPlug Receiver.log");
       DebugWriteLine("Start()");
 
-      if (!Detect())
+      if (Detect() != DetectionResult.DevicePresent)
         throw new InvalidOperationException("IgorPlug not found");
 
       _readThread = new Thread(ReadThread);
@@ -415,7 +416,7 @@ namespace InputService.Plugin
 
       foreach (byte dataByte in data)
       {
-        timingData.Add((int) Math.Round(dataByte * TimeCodeMultiplier * multiplier));
+        timingData.Add((int)Math.Round(dataByte * TimeCodeMultiplier * multiplier));
 
         multiplier *= -1;
       }
@@ -651,9 +652,9 @@ namespace InputService.Plugin
     {
       foreach (object item in array)
       {
-        if (item is byte) DebugWrite("{0:X2}", (byte) item);
-        else if (item is ushort) DebugWrite("{0:X4}", (ushort) item);
-        else if (item is int) DebugWrite("{1}{0}", (int) item, (int) item > 0 ? "+" : String.Empty);
+        if (item is byte) DebugWrite("{0:X2}", (byte)item);
+        else if (item is ushort) DebugWrite("{0:X4}", (ushort)item);
+        else if (item is int) DebugWrite("{1}{0}", (int)item, (int)item > 0 ? "+" : String.Empty);
         else DebugWrite("{0}", item);
 
         DebugWrite(", ");

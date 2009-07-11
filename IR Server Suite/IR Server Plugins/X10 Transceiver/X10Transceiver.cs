@@ -23,11 +23,13 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using InputService.Plugin.Properties;
+using IrssUtils;
 using X10;
 
 namespace InputService.Plugin
@@ -133,7 +135,7 @@ namespace InputService.Plugin
             return;
           }
 
-          string keyCode = Enum.GetName(typeof (EX10Command), eCommand);
+          string keyCode = Enum.GetName(typeof(EX10Command), eCommand);
 
           if (RemoteCallback != null)
             RemoteCallback(Name, keyCode);
@@ -177,30 +179,28 @@ namespace InputService.Plugin
     #endregion
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
-      X10Interface test;
-
       try
       {
-        test = new X10Interface();
-        if (test != null)
-          return true;
+        new X10Interface();
+        return DetectionResult.DevicePresent;
       }
-      catch
+      catch (COMException ex)
       {
+        if (ex.ErrorCode != -2147221164)
+        {
+          IrssLog.Warn("{0} exception: {1}", Name, ex.ErrorCode);
+        }
+        return DetectionResult.DeviceNotFound;
       }
-      finally
+      catch (Exception ex)
       {
-        test = null;
+        IrssLog.Error("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        return DetectionResult.DeviceException;
       }
-
-      return false;
     }
 
     /// <summary>
@@ -214,8 +214,8 @@ namespace InputService.Plugin
         throw new InvalidOperationException("Failed to start X10 interface");
 
       // Bind the interface using a connection point
-      icpc = (IConnectionPointContainer) X10Inter;
-      Guid IID_InterfaceEvents = typeof (_DIX10InterfaceEvents).GUID;
+      icpc = (IConnectionPointContainer)X10Inter;
+      Guid IID_InterfaceEvents = typeof(_DIX10InterfaceEvents).GUID;
       icpc.FindConnectionPoint(ref IID_InterfaceEvents, out icp);
       icp.Advise(this, out cookie);
     }
@@ -308,7 +308,7 @@ namespace InputService.Plugin
         XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char) 9;
+        writer.IndentChar = (char)9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("settings"); // <settings>
 

@@ -57,12 +57,9 @@ namespace InputService.Plugin
         }
 
         /// <summary>
-        /// Detect the presence of iMon devices.  Devices that cannot be detected will always return false.
+        /// Detect the presence of iMon devices.
         /// </summary>
-        /// <returns>
-        /// <c>true</c> if a DOS or HID device is present, otherwise <c>false</c>.
-        /// </returns>
-        public override bool Detect()
+        public override DetectionResult Detect()
         {
             DebugWriteLine("Detect()");
             bool HasDOS = Detect_DOS();
@@ -70,18 +67,18 @@ namespace InputService.Plugin
             {
                 _DriverMode = DeviceType.DOS;
                 DebugWriteLine("Detect(): completed - found DOS device");
-                return true;
+                return DetectionResult.DevicePresent;
             }
             bool HasHID = Detect_HID();
             if (HasHID)
             {
                 _DriverMode = DeviceType.HID;
                 DebugWriteLine("Detect(): completed - found HID device");
-                return true;
+                return DetectionResult.DevicePresent;
             }
             _DriverMode = DeviceType.None;
             DebugWriteLine("Detect(): completed - device not found");
-            return false;
+            return DetectionResult.DeviceNotFound;
         }
 
         /// <summary>

@@ -26,6 +26,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using InputService.Plugin.Properties;
+using IrssUtils;
 using Microsoft.Win32.SafeHandles;
 
 namespace InputService.Plugin
@@ -252,12 +253,9 @@ namespace InputService.Plugin
     }
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       try
       {
@@ -266,12 +264,18 @@ namespace InputService.Plugin
 
         string devicePath = FindDevice(guid);
 
-        return (devicePath != null);
+        if (devicePath != null)
+        {
+          return DetectionResult.DevicePresent;
+        }
       }
-      catch
+      catch (Exception ex)
       {
-        return false;
+        IrssLog.Error("{0} exception: {1}", Name, ex.Message);
+        return DetectionResult.DeviceException;
       }
+
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>

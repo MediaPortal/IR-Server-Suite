@@ -21,6 +21,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -28,6 +29,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using InputService.Plugin.Properties;
+using IrssUtils;
 
 namespace InputService.Plugin
 {
@@ -49,7 +51,7 @@ namespace InputService.Plugin
     private const int UUIRTDRV_IRFMT_UUIRT = 0x0000;
     private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "USB-UIRT Transceiver.xml");
 
-    private static readonly string[] Ports = new string[] {"Default", "Port 1", "Port 2", "Port 3"};
+    private static readonly string[] Ports = new string[] { "Default", "Port 1", "Port 2", "Port 3" };
 
     #endregion Constants
 
@@ -288,7 +290,7 @@ namespace InputService.Plugin
 
       try
       {
-        _abortLearn = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (Int32)));
+        _abortLearn = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Int32)));
         Marshal.WriteInt32(_abortLearn, AllowLearn);
 
         result = UUIRTLearnIR(
@@ -396,12 +398,9 @@ namespace InputService.Plugin
     #endregion
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       try
       {
@@ -410,14 +409,20 @@ namespace InputService.Plugin
         if (handle != new IntPtr(-1) && handle != IntPtr.Zero)
         {
           UUIRTClose(handle);
-          return true;
+          return DetectionResult.DevicePresent;
         }
       }
-      catch
+      catch (DllNotFoundException)
       {
+        return DetectionResult.DeviceNotFound;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        return DetectionResult.DeviceException;
       }
 
-      return false;
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>
@@ -513,7 +518,7 @@ namespace InputService.Plugin
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char) 9;
+          writer.IndentChar = (char)9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -586,7 +591,7 @@ namespace InputService.Plugin
 
       _learnTimedOut = true;
 
-      ((Timer) sender).Stop();
+      ((Timer)sender).Stop();
     }
 
     #endregion Implementation

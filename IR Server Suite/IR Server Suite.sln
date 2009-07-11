@@ -2,741 +2,369 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{0C209E91-5AD5-4662-AD0E-976A940D4806}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IR Server Plugins", "IR Server Plugins", "{0D1620EE-01B9-43B5-9FAA-E983BD9EBDBD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E757F80C-23C5-4AD6-B178-16799E337E03}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Input Service", "Input Service", "{DEE5AAD1-0110-4681-8FF9-662CEA72FD94}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Commands", "Commands", "{F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Server", "Applications\IR Server\IR Server.csproj", "{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tray Launcher", "Applications\Tray Launcher\Tray Launcher.csproj", "{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debug Client", "Applications\Debug Client\Debug Client.csproj", "{4CD051F4-F2B5-47B3-8647-F47C2E4DC131}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translator", "Applications\Translator\Translator.csproj", "{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote", "Applications\Virtual Remote\Virtual Remote.csproj", "{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtual Remote Skin Editor", "Applications\Virtual Remote Skin Editor\Virtual Remote Skin Editor.csproj", "{D871AB9A-71B3-4D63-8320-084BAD75064E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRMan Receiver", "IR Server Plugins\IRMan Receiver\IRMan Receiver.csproj", "{7C686499-7517-4338-8837-7E8617549D9A}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft MCE Transceiver", "IR Server Plugins\Microsoft MCE Transceiver\Microsoft MCE Transceiver.csproj", "{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USB-UIRT Transceiver", "IR Server Plugins\USB-UIRT Transceiver\USB-UIRT Transceiver.csproj", "{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows Message Receiver", "IR Server Plugins\Windows Message Receiver\Windows Message Receiver.csproj", "{4CBA81F9-F0C2-4242-8D72-204597285042}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XBCDRC Receiver", "IR Server Plugins\XBCDRC Receiver\XBCDRC Receiver.csproj", "{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRTrans Transceiver", "IR Server Plugins\IRTrans Transceiver\IRTrans Transceiver.csproj", "{883913F6-F4A7-4DE2-846A-C2102FAF499E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "X10 Transceiver", "IR Server Plugins\X10 Transceiver\X10 Transceiver.csproj", "{253FFB14-AB8E-49AB-A005-A42428C3F452}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FusionREMOTE Receiver", "IR Server Plugins\FusionRemote Receiver\FusionREMOTE Receiver.csproj", "{9FDD649E-0502-4FED-9AC1-AA0346394375}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssUtils", "Common\IrssUtils\IrssUtils.csproj", "{CA15769C-232E-4CA7-94FD-206A06CA3ABB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Server Plugin Interface", "IR Server Plugins\IR Server Plugin Interface\IR Server Plugin Interface.csproj", "{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Custom HID Receiver", "IR Server Plugins\Custom HID Receiver\Custom HID Receiver.csproj", "{0F6576B4-C88E-4E79-B7E9-9480498C5A32}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Blast", "Applications\IR Blast\IR Blast.csproj", "{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Blast (No Window)", "Applications\IR Blast (No Window)\IR Blast (No Window).csproj", "{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssComms", "Common\IrssComms\IrssComms.csproj", "{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinLirc Transceiver", "IR Server Plugins\WinLirc Transceiver\WinLirc Transceiver.csproj", "{E6A68244-8C31-44A9-9F85-B4A102B5F209}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Girder Plugin", "IR Server Plugins\Girder Plugin\Girder Plugin.csproj", "{0C291BE9-5D15-4097-9119-4FFE19C23113}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serial IR Blaster", "IR Server Plugins\Serial IR Blaster\Serial IR Blaster.csproj", "{1D4B9ABE-F37D-4C38-9BC5-EDD43F271F4E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Input Service", "Input Service\Input Service\Input Service.csproj", "{8ADDE1CB-2D23-4AB1-88B1-A241C60C16BA}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration", "Input Service\Input Service Configuration\Configuration.csproj", "{DC79E2EC-7D1B-4359-A285-38AC8154166B}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IgorPlug Receiver", "IR Server Plugins\IgorPlug Receiver\IgorPlug Receiver.csproj", "{A4023992-CCD6-461E-8E14-219A496734C5}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedEye Blaster", "IR Server Plugins\RedEye Blaster\RedEye Blaster.csproj", "{5A9954F8-344C-489C-B8DA-8E8927271A02}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web Remote", "Applications\Web Remote\Web Remote.csproj", "{CCDBA239-8E8E-4F5F-A098-7132EED5F160}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wii Remote Receiver", "IR Server Plugins\Wii Remote Receiver\Wii Remote Receiver.csproj", "{A50080F4-53D1-41CC-9C5F-500AFDDE9E8B}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiimoteLib", "IR Server Plugins\WiimoteLib\WiimoteLib.csproj", "{37A555DF-7012-4B99-8A47-1C922A361E52}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Direct Input Receiver", "IR Server Plugins\Direct Input Receiver\Direct Input Receiver.csproj", "{732CDF64-D047-4D3C-91DA-E2FF27D84179}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ads Tech PTV-335 Receiver", "IR Server Plugins\Ads Tech PTV-335 Receiver\Ads Tech PTV-335 Receiver.csproj", "{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Command", "Commands\Command\Command.csproj", "{21E04B17-D850-43E7-AAD3-876C0E062BDB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VariableList", "Commands\VariableList\VariableList.csproj", "{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneralCommands", "Commands\GeneralCommands\GeneralCommands.csproj", "{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellLink", "Common\ShellLink\ShellLink.csproj", "{28923F6E-8A68-4BC8-A507-825B09C3F64E}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR File Tool", "Applications\IR File Tool\IR File Tool.csproj", "{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCW Receiver", "IR Server Plugins\HCW Receiver\HCW Receiver.csproj", "{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech Receiver", "IR Server Plugins\Speech Receiver\Speech Receiver.csproj", "{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveDrive Receiver", "IR Server Plugins\LiveDrive Receiver\LiveDrive Receiver.csproj", "{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC102 Receiver", "IR Server Plugins\RC102 Receiver\RC102 Receiver.csproj", "{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacroScope", "Applications\MacroScope\MacroScope.csproj", "{2F296C09-627B-4D6E-A041-1601A8C030C7}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage Setup", "Applications\SageSetup\Sage Setup.csproj", "{905131F8-F8AC-4A65-A722-37783902D7B8}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dbox Tuner", "Applications\Dbox Tuner\Dbox Tuner.csproj", "{F8CC05AA-6306-459E-BD32-40C02489EFEC}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR501 Receiver", "IR Server Plugins\IR501 Receiver\IR501 Receiver.csproj", "{C7BF555E-638F-4E1B-9D5A-D2D226C77676}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR507 Receiver", "IR Server Plugins\IR507 Receiver\IR507 Receiver.csproj", "{1DD4B652-DBF4-47E2-B46C-C810EEE3B7C3}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoolCommand Receiver", "IR Server Plugins\CoolCommand Receiver\CoolCommand Receiver.csproj", "{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abstractor", "Applications\Abstractor\Abstractor.csproj", "{66F37FF9-0398-4954-812D-065C2D153746}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacMini Receiver", "IR Server Plugins\MacMini Receiver\MacMini Receiver.csproj", "{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCW PVR Tuner", "Applications\HCW PVR Tuner\HCW PVR Tuner.csproj", "{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keyboard Input Relay", "Applications\Keyboard Input Relay\Keyboard Input Relay.csproj", "{097F7027-77A1-4623-8D6C-3D2020769EFD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Technotrend Receiver", "IR Server Plugins\Technotrend Receiver\Technotrend Receiver.csproj", "{E83E5C73-5F70-4B52-B6BD-E906BAE90DF6}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keyboard Input", "IR Server Plugins\Keyboard Input\Keyboard Input.csproj", "{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogTimeCodeExtractor", "Applications\LogTimeCodeExtractor\LogTimeCodeExtractor.csproj", "{58BFF250-541B-4AA4-A62D-ACB819AD317B}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssScheduler", "Common\IrssScheduler\IrssScheduler.csproj", "{28098574-D22E-457C-AFFA-560554499EAC}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media Center Blaster", "Applications\Media Center Blaster\Media Center Blaster.csproj", "{349D0A5D-BF1F-4E3E-AF92-5A3D54AD1EB4}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imon USB Receivers", "IR Server Plugins\Imon USB Receivers\Imon USB Receivers.csproj", "{EC37743A-64B2-472A-9EB6-CB052AD2B35C}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinnacle Serial Receiver", "IR Server Plugins\Pinnacle Serial Receiver\Pinnacle Serial Receiver.csproj", "{EBFA0F67-1EB6-4282-8475-C397B9852B3F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2A1F8D6-A9D3-4BFA-913B-8806642BD0DA}.Release|x86.ActiveCfg = Release|Any CPU
 		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C894165-4BE8-4CF7-8F92-2B6DF68EB43A}.Release|x86.ActiveCfg = Release|Any CPU
 		{4CD051F4-F2B5-47B3-8647-F47C2E4DC131}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4CD051F4-F2B5-47B3-8647-F47C2E4DC131}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4CD051F4-F2B5-47B3-8647-F47C2E4DC131}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{4CD051F4-F2B5-47B3-8647-F47C2E4DC131}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CD051F4-F2B5-47B3-8647-F47C2E4DC131}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4CD051F4-F2B5-47B3-8647-F47C2E4DC131}.Release|x86.ActiveCfg = Release|Any CPU
 		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Release|x86.ActiveCfg = Release|Any CPU
 		{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46C08F6B-F3C8-461B-9B6F-3BFD4AAAFD63}.Release|x86.ActiveCfg = Release|Any CPU
 		{D871AB9A-71B3-4D63-8320-084BAD75064E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D871AB9A-71B3-4D63-8320-084BAD75064E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D871AB9A-71B3-4D63-8320-084BAD75064E}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{D871AB9A-71B3-4D63-8320-084BAD75064E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D871AB9A-71B3-4D63-8320-084BAD75064E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D871AB9A-71B3-4D63-8320-084BAD75064E}.Release|x86.ActiveCfg = Release|Any CPU
 		{7C686499-7517-4338-8837-7E8617549D9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7C686499-7517-4338-8837-7E8617549D9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C686499-7517-4338-8837-7E8617549D9A}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{7C686499-7517-4338-8837-7E8617549D9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C686499-7517-4338-8837-7E8617549D9A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C686499-7517-4338-8837-7E8617549D9A}.Release|x86.ActiveCfg = Release|Any CPU
 		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BABC30EB-7D0F-4398-9FCB-E517EA8D2AA9}.Release|x86.ActiveCfg = Release|Any CPU
 		{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99B5CA78-3E0B-477F-A7D3-EE1B65E85DE4}.Release|x86.ActiveCfg = Release|Any CPU
 		{4CBA81F9-F0C2-4242-8D72-204597285042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4CBA81F9-F0C2-4242-8D72-204597285042}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4CBA81F9-F0C2-4242-8D72-204597285042}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{4CBA81F9-F0C2-4242-8D72-204597285042}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CBA81F9-F0C2-4242-8D72-204597285042}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4CBA81F9-F0C2-4242-8D72-204597285042}.Release|x86.ActiveCfg = Release|Any CPU
 		{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}.Release|x86.ActiveCfg = Release|Any CPU
 		{883913F6-F4A7-4DE2-846A-C2102FAF499E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{883913F6-F4A7-4DE2-846A-C2102FAF499E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{883913F6-F4A7-4DE2-846A-C2102FAF499E}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{883913F6-F4A7-4DE2-846A-C2102FAF499E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{883913F6-F4A7-4DE2-846A-C2102FAF499E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{883913F6-F4A7-4DE2-846A-C2102FAF499E}.Release|x86.ActiveCfg = Release|Any CPU
 		{253FFB14-AB8E-49AB-A005-A42428C3F452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{253FFB14-AB8E-49AB-A005-A42428C3F452}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{253FFB14-AB8E-49AB-A005-A42428C3F452}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{253FFB14-AB8E-49AB-A005-A42428C3F452}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{253FFB14-AB8E-49AB-A005-A42428C3F452}.Release|Any CPU.Build.0 = Release|Any CPU
-		{253FFB14-AB8E-49AB-A005-A42428C3F452}.Release|x86.ActiveCfg = Release|Any CPU
 		{9FDD649E-0502-4FED-9AC1-AA0346394375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9FDD649E-0502-4FED-9AC1-AA0346394375}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9FDD649E-0502-4FED-9AC1-AA0346394375}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{9FDD649E-0502-4FED-9AC1-AA0346394375}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FDD649E-0502-4FED-9AC1-AA0346394375}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9FDD649E-0502-4FED-9AC1-AA0346394375}.Release|x86.ActiveCfg = Release|Any CPU
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Release|x86.ActiveCfg = Release|Any CPU
 		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}.Release|x86.ActiveCfg = Release|Any CPU
 		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F6576B4-C88E-4E79-B7E9-9480498C5A32}.Release|x86.ActiveCfg = Release|Any CPU
 		{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6B0CF12-01D3-439A-9FB4-DEFD5B32F6FB}.Release|x86.ActiveCfg = Release|Any CPU
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54E0E8FA-09C3-4755-B9CE-E7E5DDA3E932}.Release|x86.ActiveCfg = Release|Any CPU
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|x86.ActiveCfg = Release|Any CPU
 		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E6A68244-8C31-44A9-9F85-B4A102B5F209}.Release|x86.ActiveCfg = Release|Any CPU
 		{0C291BE9-5D15-4097-9119-4FFE19C23113}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0C291BE9-5D15-4097-9119-4FFE19C23113}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C291BE9-5D15-4097-9119-4FFE19C23113}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{0C291BE9-5D15-4097-9119-4FFE19C23113}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C291BE9-5D15-4097-9119-4FFE19C23113}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C291BE9-5D15-4097-9119-4FFE19C23113}.Release|x86.ActiveCfg = Release|Any CPU
 		{1D4B9ABE-F37D-4C38-9BC5-EDD43F271F4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D4B9ABE-F37D-4C38-9BC5-EDD43F271F4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D4B9ABE-F37D-4C38-9BC5-EDD43F271F4E}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{1D4B9ABE-F37D-4C38-9BC5-EDD43F271F4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D4B9ABE-F37D-4C38-9BC5-EDD43F271F4E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D4B9ABE-F37D-4C38-9BC5-EDD43F271F4E}.Release|x86.ActiveCfg = Release|Any CPU
 		{8ADDE1CB-2D23-4AB1-88B1-A241C60C16BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8ADDE1CB-2D23-4AB1-88B1-A241C60C16BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8ADDE1CB-2D23-4AB1-88B1-A241C60C16BA}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{8ADDE1CB-2D23-4AB1-88B1-A241C60C16BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ADDE1CB-2D23-4AB1-88B1-A241C60C16BA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8ADDE1CB-2D23-4AB1-88B1-A241C60C16BA}.Release|x86.ActiveCfg = Release|Any CPU
 		{DC79E2EC-7D1B-4359-A285-38AC8154166B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DC79E2EC-7D1B-4359-A285-38AC8154166B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC79E2EC-7D1B-4359-A285-38AC8154166B}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{DC79E2EC-7D1B-4359-A285-38AC8154166B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC79E2EC-7D1B-4359-A285-38AC8154166B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC79E2EC-7D1B-4359-A285-38AC8154166B}.Release|x86.ActiveCfg = Release|Any CPU
 		{A4023992-CCD6-461E-8E14-219A496734C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4023992-CCD6-461E-8E14-219A496734C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A4023992-CCD6-461E-8E14-219A496734C5}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{A4023992-CCD6-461E-8E14-219A496734C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4023992-CCD6-461E-8E14-219A496734C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A4023992-CCD6-461E-8E14-219A496734C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{5A9954F8-344C-489C-B8DA-8E8927271A02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5A9954F8-344C-489C-B8DA-8E8927271A02}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A9954F8-344C-489C-B8DA-8E8927271A02}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{5A9954F8-344C-489C-B8DA-8E8927271A02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A9954F8-344C-489C-B8DA-8E8927271A02}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A9954F8-344C-489C-B8DA-8E8927271A02}.Release|x86.ActiveCfg = Release|Any CPU
 		{CCDBA239-8E8E-4F5F-A098-7132EED5F160}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CCDBA239-8E8E-4F5F-A098-7132EED5F160}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CCDBA239-8E8E-4F5F-A098-7132EED5F160}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{CCDBA239-8E8E-4F5F-A098-7132EED5F160}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCDBA239-8E8E-4F5F-A098-7132EED5F160}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCDBA239-8E8E-4F5F-A098-7132EED5F160}.Release|x86.ActiveCfg = Release|Any CPU
 		{A50080F4-53D1-41CC-9C5F-500AFDDE9E8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A50080F4-53D1-41CC-9C5F-500AFDDE9E8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A50080F4-53D1-41CC-9C5F-500AFDDE9E8B}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{A50080F4-53D1-41CC-9C5F-500AFDDE9E8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A50080F4-53D1-41CC-9C5F-500AFDDE9E8B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A50080F4-53D1-41CC-9C5F-500AFDDE9E8B}.Release|x86.ActiveCfg = Release|Any CPU
 		{37A555DF-7012-4B99-8A47-1C922A361E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{37A555DF-7012-4B99-8A47-1C922A361E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37A555DF-7012-4B99-8A47-1C922A361E52}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{37A555DF-7012-4B99-8A47-1C922A361E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37A555DF-7012-4B99-8A47-1C922A361E52}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37A555DF-7012-4B99-8A47-1C922A361E52}.Release|x86.ActiveCfg = Release|Any CPU
 		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Release|Any CPU.Build.0 = Release|Any CPU
-		{732CDF64-D047-4D3C-91DA-E2FF27D84179}.Release|x86.ActiveCfg = Release|Any CPU
 		{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}.Release|x86.ActiveCfg = Release|Any CPU
 		{21E04B17-D850-43E7-AAD3-876C0E062BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{21E04B17-D850-43E7-AAD3-876C0E062BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21E04B17-D850-43E7-AAD3-876C0E062BDB}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{21E04B17-D850-43E7-AAD3-876C0E062BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21E04B17-D850-43E7-AAD3-876C0E062BDB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21E04B17-D850-43E7-AAD3-876C0E062BDB}.Release|x86.ActiveCfg = Release|Any CPU
 		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}.Release|x86.ActiveCfg = Release|Any CPU
 		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Release|x86.ActiveCfg = Release|Any CPU
 		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Release|x86.ActiveCfg = Release|Any CPU
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5E711A2-E6D0-4BEA-B66B-7A8B0BCA6A4D}.Release|x86.ActiveCfg = Release|Any CPU
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE8F2C22-8BD3-4832-85F0-E6F67ED3AADB}.Release|x86.ActiveCfg = Release|Any CPU
 		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}.Release|x86.ActiveCfg = Release|Any CPU
 		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABA2DAF3-B4CF-42BF-8686-DD662B0D6406}.Release|x86.ActiveCfg = Release|Any CPU
 		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}.Release|x86.ActiveCfg = Release|Any CPU
 		{2F296C09-627B-4D6E-A041-1601A8C030C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F296C09-627B-4D6E-A041-1601A8C030C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F296C09-627B-4D6E-A041-1601A8C030C7}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{2F296C09-627B-4D6E-A041-1601A8C030C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F296C09-627B-4D6E-A041-1601A8C030C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F296C09-627B-4D6E-A041-1601A8C030C7}.Release|x86.ActiveCfg = Release|Any CPU
 		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{905131F8-F8AC-4A65-A722-37783902D7B8}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{905131F8-F8AC-4A65-A722-37783902D7B8}.Release|x86.ActiveCfg = Release|Any CPU
 		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F8CC05AA-6306-459E-BD32-40C02489EFEC}.Release|x86.ActiveCfg = Release|Any CPU
 		{C7BF555E-638F-4E1B-9D5A-D2D226C77676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C7BF555E-638F-4E1B-9D5A-D2D226C77676}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C7BF555E-638F-4E1B-9D5A-D2D226C77676}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{C7BF555E-638F-4E1B-9D5A-D2D226C77676}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7BF555E-638F-4E1B-9D5A-D2D226C77676}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7BF555E-638F-4E1B-9D5A-D2D226C77676}.Release|x86.ActiveCfg = Release|Any CPU
 		{1DD4B652-DBF4-47E2-B46C-C810EEE3B7C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1DD4B652-DBF4-47E2-B46C-C810EEE3B7C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DD4B652-DBF4-47E2-B46C-C810EEE3B7C3}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{1DD4B652-DBF4-47E2-B46C-C810EEE3B7C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DD4B652-DBF4-47E2-B46C-C810EEE3B7C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DD4B652-DBF4-47E2-B46C-C810EEE3B7C3}.Release|x86.ActiveCfg = Release|Any CPU
 		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9DB6BFE-4AA7-43D6-8B5D-3B27A2FA4B1A}.Release|x86.ActiveCfg = Release|Any CPU
 		{66F37FF9-0398-4954-812D-065C2D153746}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{66F37FF9-0398-4954-812D-065C2D153746}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66F37FF9-0398-4954-812D-065C2D153746}.Debug|x86.ActiveCfg = Debug|x86
-		{66F37FF9-0398-4954-812D-065C2D153746}.Debug|x86.Build.0 = Debug|x86
 		{66F37FF9-0398-4954-812D-065C2D153746}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66F37FF9-0398-4954-812D-065C2D153746}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66F37FF9-0398-4954-812D-065C2D153746}.Release|x86.ActiveCfg = Release|x86
-		{66F37FF9-0398-4954-812D-065C2D153746}.Release|x86.Build.0 = Release|x86
 		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}.Release|x86.ActiveCfg = Release|Any CPU
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EDE4F0AC-CA13-4E4F-8466-EF0519B7B0EF}.Release|x86.ActiveCfg = Release|Any CPU
 		{097F7027-77A1-4623-8D6C-3D2020769EFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{097F7027-77A1-4623-8D6C-3D2020769EFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{097F7027-77A1-4623-8D6C-3D2020769EFD}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{097F7027-77A1-4623-8D6C-3D2020769EFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{097F7027-77A1-4623-8D6C-3D2020769EFD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{097F7027-77A1-4623-8D6C-3D2020769EFD}.Release|x86.ActiveCfg = Release|Any CPU
 		{E83E5C73-5F70-4B52-B6BD-E906BAE90DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E83E5C73-5F70-4B52-B6BD-E906BAE90DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E83E5C73-5F70-4B52-B6BD-E906BAE90DF6}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{E83E5C73-5F70-4B52-B6BD-E906BAE90DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E83E5C73-5F70-4B52-B6BD-E906BAE90DF6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E83E5C73-5F70-4B52-B6BD-E906BAE90DF6}.Release|x86.ActiveCfg = Release|Any CPU
 		{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{58BFF250-541B-4AA4-A62D-ACB819AD317B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{58BFF250-541B-4AA4-A62D-ACB819AD317B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58BFF250-541B-4AA4-A62D-ACB819AD317B}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{58BFF250-541B-4AA4-A62D-ACB819AD317B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58BFF250-541B-4AA4-A62D-ACB819AD317B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{58BFF250-541B-4AA4-A62D-ACB819AD317B}.Release|x86.ActiveCfg = Release|Any CPU
 		{28098574-D22E-457C-AFFA-560554499EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{28098574-D22E-457C-AFFA-560554499EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28098574-D22E-457C-AFFA-560554499EAC}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{28098574-D22E-457C-AFFA-560554499EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28098574-D22E-457C-AFFA-560554499EAC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28098574-D22E-457C-AFFA-560554499EAC}.Release|x86.ActiveCfg = Release|Any CPU
 		{349D0A5D-BF1F-4E3E-AF92-5A3D54AD1EB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{349D0A5D-BF1F-4E3E-AF92-5A3D54AD1EB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{349D0A5D-BF1F-4E3E-AF92-5A3D54AD1EB4}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{349D0A5D-BF1F-4E3E-AF92-5A3D54AD1EB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{349D0A5D-BF1F-4E3E-AF92-5A3D54AD1EB4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{349D0A5D-BF1F-4E3E-AF92-5A3D54AD1EB4}.Release|x86.ActiveCfg = Release|Any CPU
 		{EC37743A-64B2-472A-9EB6-CB052AD2B35C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC37743A-64B2-472A-9EB6-CB052AD2B35C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC37743A-64B2-472A-9EB6-CB052AD2B35C}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{EC37743A-64B2-472A-9EB6-CB052AD2B35C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC37743A-64B2-472A-9EB6-CB052AD2B35C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC37743A-64B2-472A-9EB6-CB052AD2B35C}.Release|x86.ActiveCfg = Release|Any CPU
 		{EBFA0F67-1EB6-4282-8475-C397B9852B3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EBFA0F67-1EB6-4282-8475-C397B9852B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBFA0F67-1EB6-4282-8475-C397B9852B3F}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{EBFA0F67-1EB6-4282-8475-C397B9852B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBFA0F67-1EB6-4282-8475-C397B9852B3F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBFA0F67-1EB6-4282-8475-C397B9852B3F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

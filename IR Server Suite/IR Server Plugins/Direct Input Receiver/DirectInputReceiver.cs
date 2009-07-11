@@ -27,6 +27,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using InputService.Plugin.Properties;
+using IrssUtils;
 using Microsoft.DirectX.DirectInput;
 
 namespace InputService.Plugin
@@ -231,23 +232,26 @@ namespace InputService.Plugin
     #endregion
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns>
-    /// true if the device is present, otherwise false.
-    /// </returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       try
       {
         InitDeviceList();
 
-        return (_deviceList.Count != 0);
+        if (_deviceList.Count != 0)
+        {
+          return DetectionResult.DevicePresent;
+        }
       }
-      catch
+      catch (Exception ex)
       {
-        return false;
+        IrssLog.Error("{0} exception: {1}", Name, ex.Message);
+        return DetectionResult.DeviceException;
       }
+
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>

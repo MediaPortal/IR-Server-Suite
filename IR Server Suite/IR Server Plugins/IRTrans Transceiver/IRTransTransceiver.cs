@@ -29,6 +29,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using InputService.Plugin.Properties;
+using IrssUtils;
 
 namespace InputService.Plugin
 {
@@ -308,12 +309,9 @@ namespace InputService.Plugin
     #endregion
 
     /// <summary>
-    /// Detect the presence of this device.  Devices that cannot be detected will always return false.
+    /// Detect the presence of this device.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> if the device is present, otherwise <c>false</c>.
-    /// </returns>
-    public override bool Detect()
+    public override DetectionResult Detect()
     {
       try
       {
@@ -322,14 +320,16 @@ namespace InputService.Plugin
         if (Connect(_irTransServerAddress, _irTransServerPort))
         {
           _socket.Close();
-          return true;
+          return DetectionResult.DevicePresent;
         }
       }
-      catch
+      catch (Exception ex)
       {
+        IrssLog.Error("{0} exception: {1}", Name, ex.Message);
+        return DetectionResult.DeviceException;
       }
 
-      return false;
+      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>
