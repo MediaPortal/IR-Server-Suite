@@ -314,7 +314,7 @@ Section "-Core"
 
   ; Create app data directories
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Documentation\${PRODUCT_NAME}.chm"
+  ;File "..\IR Server Suite\Documentation\${PRODUCT_NAME}.chm"
 
   
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
@@ -1031,15 +1031,9 @@ Section "-Complete"
   ; Use the all users context
   SetShellVarContext all
 
-  ; Create website link file
-  WriteIniStr "$DIR_INSTALL\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-
-
   ; Create start menu shortcuts
-!if ${VER_BUILD} == 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Documentation.lnk" "$DIR_INSTALL\${PRODUCT_NAME}.chm"
-!endif
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Website.lnk" "$DIR_INSTALL\${PRODUCT_NAME}.url"
+  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation.url"  "InternetShortcut" "URL" "http://www.team-mediaportal.com/manual/IRServerSuite"
+  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Website.url"  "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Log Files.lnk" "$APPDATA\${PRODUCT_NAME}\Logs"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe" "" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
 
