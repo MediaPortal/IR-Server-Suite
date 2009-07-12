@@ -35,15 +35,15 @@ echo Writing SVN revision assemblies...
 
 echo.
 echo Building IR Server Suite...
-"%ProgramDir%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "..\IR Server Suite\IR Server Suite.sln" >> %LOG%
-rem "%WINDIR%\Microsoft.NET\Framework\v3.5\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE% "IR Server Suite.sln" >> %LOG%
+rem "%ProgramDir%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "..\IR Server Suite\IR Server Suite.sln" >> %LOG%
+"%WINDIR%\Microsoft.NET\Framework\v3.5\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86;AllowUnsafeBlocks=true "..\IR Server Suite\IR Server Suite.sln" >> %LOG%
 
 
 if not %2!==MPplugins! goto NoMPplugins
 echo.
 echo Building MediaPortal plugins...
-"%ProgramDir%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
-rem "%WINDIR%\Microsoft.NET\Framework\v3.5\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE% "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
+rem "%ProgramDir%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
+"%WINDIR%\Microsoft.NET\Framework\v3.5\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86 "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
 :NoMPplugins
 
 
