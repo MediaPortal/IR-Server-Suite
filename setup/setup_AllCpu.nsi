@@ -90,6 +90,7 @@ Var frominstall
 #---------------------------------------------------------------------------
 # INCLUDE FILES
 #---------------------------------------------------------------------------
+!include x64.nsh
 !include MUI2.nsh
 !include Sections.nsh
 !include LogicLib.nsh
@@ -1129,6 +1130,11 @@ SectionEnd
 !ifdef MPplugins
 !macro GetMediaPortalPaths
 
+  ${If} ${RunningX64}
+    SetRegView 32
+    ${EnableX64FSRedirection}
+  ${Endif}
+
   ; Get MediaPortal installation directory ...
   !insertmacro MP_GET_INSTALL_DIR $DIR_MEDIAPORTAL
   ${If} $DIR_MEDIAPORTAL != ""
@@ -1138,10 +1144,19 @@ SectionEnd
   ; Get MediaPortal TV Server installation directory ...
   !insertmacro TVSERVER_GET_INSTALL_DIR $DIR_TVSERVER
 
-  !macroend
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
+
+!macroend
 !endif
 
 Function ReadPreviousSettings
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
 
   ; read and analyze previous version
   !insertmacro ReadPreviousVersion
@@ -1357,6 +1372,10 @@ FunctionEnd
 # UNINSTALLER CALLBACKS
 #---------------------------------------------------------------------------
 Function un.onInit
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
 
   ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
 !ifdef MPplugins
