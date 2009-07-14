@@ -51,16 +51,8 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>References\Microsoft.DirectX.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>References\Microsoft.DirectX.DirectInput.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
