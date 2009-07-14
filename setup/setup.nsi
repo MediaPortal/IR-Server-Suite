@@ -337,7 +337,7 @@ SectionEnd
 
 ${MementoSection} "IR Server" SectionIRServer
   ${LOG_TEXT} "INFO" "Installing IR Server..."
-  ${StopService} "IR Server"
+  ${StopService} "IRServer"
   ${KILLPROCESS} "IR Server.exe"
   ${KILLPROCESS} "IR Server Configuration.exe"
 
@@ -426,7 +426,7 @@ ${MementoSection} "IR Server" SectionIRServer
 ${MementoSectionEnd}
 !macro Remove_${SectionIRServer}
   ${LOG_TEXT} "INFO" "Removing IR Server..."
-  ${StopService} "IR Server"
+  ${StopService} "IRServer"
   ${KILLPROCESS} "IR Server.exe"
   ${KILLPROCESS} "IR Server Configuration.exe"
 

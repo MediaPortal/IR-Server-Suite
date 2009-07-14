@@ -86,8 +86,9 @@ namespace IRServer.Configuration
     {
         #region Constants
 
-        internal const string ServerName = "IR Server";
+        internal const string ServerName = "IRServer";
         internal const string ServerWindowName = "IRSS - " + ServerName;
+        internal const string ServerDisplayName = "IR Server";
 
         private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, @"IR Server\IR Server.xml");
         internal static readonly string IRServerFile = Path.Combine(Common.FolderProgramFiles, @"IR Server\IR Server.exe");
@@ -147,13 +148,13 @@ namespace IRServer.Configuration
             _notifyIcon = new NotifyIcon();
 
             _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
-            _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel(ServerName));
+            _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel(ServerDisplayName));
             _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, OpenConfiguration);
             _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, ClickQuit);
             _notifyIcon.DoubleClick += new EventHandler(OpenConfiguration);
             _notifyIcon.Icon = new System.Drawing.Icon(Resources.iconGray, new System.Drawing.Size(16, 16));
-            _notifyIcon.Text = ServerName;
+            _notifyIcon.Text = ServerDisplayName;
             _notifyIcon.Visible = true;
 
             thread = new Thread(new ThreadStart(UpdateIcon));

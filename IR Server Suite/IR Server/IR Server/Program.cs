@@ -41,7 +41,8 @@ namespace IRServer
       "The main component of IR Server Suite, the IR Server provides access to your input devices";
 
     public const string ServiceDisplayName = "IR Server";
-    public const string ServiceName = "IR Server";
+    public const string ServiceName = "IRServer";
+    public const string ServerWindowName = "IRSS - " + ServiceName;
     private static IRServer IRServer;
 
     #endregion Constants
@@ -57,14 +58,14 @@ namespace IRServer
 
       try
       {
+          IrssLog.Open("IR Server.log");
+
           if (args.Length == 0)
           {
-              IrssLog.Open("IR Server.log");
-
               IRServer = new IRServer();
               if (IRServer.DoStart())
               {
-                  ReceiverWindow receiverWindow = new ReceiverWindow("IRSS - IR Server");
+                  ReceiverWindow receiverWindow = new ReceiverWindow(ServerWindowName);
                   Application.Run();
                   receiverWindow.DestroyHandle();
                   receiverWindow = null;
@@ -73,8 +74,6 @@ namespace IRServer
           }
           else
           {
-              IrssLog.Open("IR Server - Command Line.log");
-
               foreach (string parameter in args)
               {
                   switch (parameter.ToUpperInvariant().Replace("-", "/"))
@@ -147,8 +146,6 @@ namespace IRServer
 
                       case "/SERVICE":
                           {
-                              IrssLog.Open("IR Server.log");
-
                               IRServer IRServer = new IRServer();
                               ServiceBase.Run(IRServer);
                           }
