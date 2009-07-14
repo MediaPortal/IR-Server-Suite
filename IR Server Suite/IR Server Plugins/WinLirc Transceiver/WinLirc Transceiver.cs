@@ -27,10 +27,10 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 using IrssUtils;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server Plugin for WinLirc.

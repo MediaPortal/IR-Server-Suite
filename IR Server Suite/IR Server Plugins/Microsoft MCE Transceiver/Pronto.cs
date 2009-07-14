@@ -23,7 +23,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Philips Pronto interface class.

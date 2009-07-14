@@ -24,10 +24,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 using IrssUtils;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server Plugin for the Technotrend Receivers.

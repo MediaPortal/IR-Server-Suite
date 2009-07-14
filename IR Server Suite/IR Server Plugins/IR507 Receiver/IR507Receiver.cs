@@ -25,10 +25,10 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 using IrssUtils;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server Plugin for the IR507 IR receiver.

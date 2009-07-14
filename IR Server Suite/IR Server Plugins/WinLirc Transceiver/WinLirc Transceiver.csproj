@@ -7,7 +7,7 @@
     <ProjectGuid>{E6A68244-8C31-44A9-9F85-B4A102B5F209}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>WinLirc Transceiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <ApplicationIcon>Icon.ico</ApplicationIcon>

@@ -725,7 +725,7 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
     private void buttonBlast_Click(object sender, EventArgs e)
     {
       if (!_registered)
-        MessageBox.Show(this, "Not registered to an active Input Service", "Cannot blast", MessageBoxButtons.OK,
+        MessageBox.Show(this, "Not registered to an active IR Server", "Cannot blast", MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
 
       Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Blasting ..."});
@@ -747,7 +747,7 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
     private void buttonLearn_Click(object sender, EventArgs e)
     {
       if (!_registered)
-        MessageBox.Show(this, "Not registered to an active Input Service", "Cannot learn", MessageBoxButtons.OK,
+        MessageBox.Show(this, "Not registered to an active IR Server", "Cannot learn", MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
 
       Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Learning ..."});

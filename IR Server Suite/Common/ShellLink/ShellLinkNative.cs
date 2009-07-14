@@ -53,9 +53,9 @@ namespace MSjogren.Samples.ShellLink
   public struct WIN32_FIND_DATAA
   {
     public int dwFileAttributes;
-    public FILETIME ftCreationTime;
-    public FILETIME ftLastAccessTime;
-    public FILETIME ftLastWriteTime;
+    public System.Runtime.InteropServices.ComTypes.FILETIME ftCreationTime;
+    public System.Runtime.InteropServices.ComTypes.FILETIME ftLastAccessTime;
+    public System.Runtime.InteropServices.ComTypes.FILETIME ftLastWriteTime;
     public int nFileSizeHigh;
     public int nFileSizeLow;
     public int dwReserved0;
@@ -69,9 +69,9 @@ namespace MSjogren.Samples.ShellLink
   public struct WIN32_FIND_DATAW
   {
     public int dwFileAttributes;
-    public FILETIME ftCreationTime;
-    public FILETIME ftLastAccessTime;
-    public FILETIME ftLastWriteTime;
+    public System.Runtime.InteropServices.ComTypes.FILETIME ftCreationTime;
+    public System.Runtime.InteropServices.ComTypes.FILETIME ftLastAccessTime;
+    public System.Runtime.InteropServices.ComTypes.FILETIME ftLastWriteTime;
     public int nFileSizeHigh;
     public int nFileSizeLow;
     public int dwReserved0;

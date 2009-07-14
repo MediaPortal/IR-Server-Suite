@@ -7,7 +7,7 @@
     <ProjectGuid>{1DD4B652-DBF4-47E2-B46C-C810EEE3B7C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>IR507 Receiver</AssemblyName>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <StartupObject>

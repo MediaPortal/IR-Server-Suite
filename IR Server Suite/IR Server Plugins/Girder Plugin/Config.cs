@@ -24,7 +24,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Config form for selecting and configuring a Girder plugin.

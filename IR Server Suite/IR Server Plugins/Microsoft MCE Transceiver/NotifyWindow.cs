@@ -25,7 +25,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   internal class NotifyWindow : NativeWindow, IDisposable
   {

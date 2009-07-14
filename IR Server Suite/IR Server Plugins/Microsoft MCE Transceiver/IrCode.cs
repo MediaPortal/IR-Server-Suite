@@ -27,7 +27,7 @@ using System.Text;
 
 // Remember: Pulse is Positive, Space is Negative.
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Encapsulates an MCE compatible IR Code.

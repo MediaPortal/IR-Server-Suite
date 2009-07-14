@@ -7,7 +7,7 @@
     <ProjectGuid>{2B9C6BE9-98D0-4D69-B041-57EE5D2DFB97}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>XBCDRC Receiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <ApplicationIcon>Icon.ico</ApplicationIcon>

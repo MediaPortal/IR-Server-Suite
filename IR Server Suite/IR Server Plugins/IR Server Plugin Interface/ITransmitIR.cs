@@ -20,7 +20,7 @@
 
 #endregion
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Plugins that implement this interface can transmit IR commands.

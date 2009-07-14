@@ -22,7 +22,7 @@
 
 using System.Net.Sockets;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Encapsulates a Socket and a Receive Buffer.

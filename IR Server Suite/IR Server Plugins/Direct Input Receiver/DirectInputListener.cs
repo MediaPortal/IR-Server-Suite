@@ -24,7 +24,7 @@ using System;
 using System.Threading;
 using Microsoft.DirectX.DirectInput;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Summary description for DirectInputListener.

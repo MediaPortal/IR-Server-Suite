@@ -7,7 +7,7 @@
     <ProjectGuid>{3778B6E7-F5A4-40A4-90C4-CD19EBC6B039}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>Speech Receiver</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

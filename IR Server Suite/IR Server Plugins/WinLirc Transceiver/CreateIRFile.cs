@@ -25,7 +25,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   internal partial class CreateIRFile : Form
   {

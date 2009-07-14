@@ -116,10 +116,10 @@ namespace Abstractor
     };*/
 
     private static readonly string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData,
-                                                                          "Input Service\\Abstract Remote Maps");
+                                                                          "IR Server\\Abstract Remote Maps");
 
     private static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData,
-                                                                           "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
+                                                                           "IR Server\\Abstract Remote Maps\\RemoteTable.xsd");
 
     #endregion Constants
 

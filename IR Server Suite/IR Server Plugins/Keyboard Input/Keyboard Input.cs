@@ -24,12 +24,12 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
-  /// Input Service Plugin to capture ALL keyboard button presses and basic key combinations and forward as remote control commands.
+  /// IR Server Plugin to capture ALL keyboard button presses and basic key combinations and forward as remote control commands.
   /// </summary>
   public class KeyboardInput : PluginBase, IRemoteReceiver
   {

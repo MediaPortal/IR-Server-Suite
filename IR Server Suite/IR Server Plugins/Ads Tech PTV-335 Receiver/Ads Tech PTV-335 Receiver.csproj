@@ -7,7 +7,7 @@
     <ProjectGuid>{E146C2D8-6842-46C5-B2A9-AFA9D6F1A3BB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>Ads Tech PTV-335 Receiver</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <ApplicationIcon>Icon.ico</ApplicationIcon>

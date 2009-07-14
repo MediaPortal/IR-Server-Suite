@@ -72,7 +72,7 @@ namespace IRServer
     {
       treeViewExclusions.Nodes.Clear();
 
-      string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData, "Input Service\\Abstract Remote Maps");
+      string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData, "IR Server\\Abstract Remote Maps");
 
       string[] folders = Directory.GetDirectories(AbstractRemoteMapFolder, "*", SearchOption.TopDirectoryOnly);
       foreach (string folder in folders)

@@ -27,7 +27,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using InputService.Plugin;
+using IRServer.Plugin;
 using IrssUtils;
 
 namespace IRServer

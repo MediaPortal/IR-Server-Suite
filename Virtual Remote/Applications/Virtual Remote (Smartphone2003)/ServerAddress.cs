@@ -144,7 +144,7 @@ namespace VirtualRemote
       // 
       this.labelDescription.Location = new System.Drawing.Point(8, 8);
       this.labelDescription.Size = new System.Drawing.Size(160, 48);
-      this.labelDescription.Text = "Please enter the Input Service host address:";
+      this.labelDescription.Text = "Please enter the IR Server host address:";
       // 
       // ServerAddress
       // 

@@ -24,7 +24,7 @@ using System;
 using System.IO.Ports;
 using System.Windows.Forms;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   internal partial class Configure : Form
   {

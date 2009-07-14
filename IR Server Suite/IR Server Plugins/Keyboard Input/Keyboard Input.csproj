@@ -7,7 +7,7 @@
     <ProjectGuid>{26DEDF6D-F60D-4311-9A9E-DDF64500D5BF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>Keyboard Input</AssemblyName>
     <StartupObject>
     </StartupObject>

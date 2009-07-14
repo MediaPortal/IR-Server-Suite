@@ -26,9 +26,9 @@ using System.IO.Ports;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server Plugin for Serial IR Blaster device.

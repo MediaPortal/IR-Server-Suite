@@ -23,7 +23,7 @@
 using System;
 using System.Globalization;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Class containing information on a WinLIRC command

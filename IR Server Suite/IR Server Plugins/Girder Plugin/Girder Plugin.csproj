@@ -7,7 +7,7 @@
     <ProjectGuid>{0C291BE9-5D15-4097-9119-4FFE19C23113}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>Girder Plugin</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <ApplicationIcon>Icon.ico</ApplicationIcon>

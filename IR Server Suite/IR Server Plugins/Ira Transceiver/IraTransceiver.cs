@@ -12,7 +12,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
 
   /// <summary>

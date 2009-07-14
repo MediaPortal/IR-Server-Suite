@@ -94,25 +94,25 @@
   <ItemGroup>
     <Reference Include="Core, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Core\bin\Release\Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Core\bin\Debug\Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Databases, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Databases\bin\Release\Databases.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Databases\bin\Debug\Databases.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Dialogs, Version=1.0.2.20629, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Dialogs\bin\Release\Dialogs.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Dialogs\bin\Debug\Dialogs.dll</HintPath>
     </Reference>
     <Reference Include="IrssComms, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\IR Server Suite\Common\IrssComms\bin\Release\IrssComms.dll</HintPath>
+      <HintPath>..\..\..\..\IR Server Suite\IR Server Suite\Common\IrssComms\bin\Debug\IrssComms.dll</HintPath>
     </Reference>
     <Reference Include="IrssUtils, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\IR Server Suite\Common\IrssUtils\bin\Release\IrssUtils.dll</HintPath>
+      <HintPath>..\..\..\..\IR Server Suite\IR Server Suite\Common\IrssUtils\bin\Debug\IrssUtils.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <SpecificVersion>False</SpecificVersion>
@@ -120,7 +120,7 @@
     </Reference>
     <Reference Include="RemotePlugins, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\RemotePlugins\bin\Release\RemotePlugins.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\RemotePlugins\bin\Debug\RemotePlugins.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -130,7 +130,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Utils, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\mediaportal\Utils\bin\Release\Utils.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Utils\bin\Debug\Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

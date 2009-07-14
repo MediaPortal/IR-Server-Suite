@@ -7,7 +7,7 @@
     <ProjectGuid>{6137C390-DDB0-44B0-8ED5-51B45C0D4404}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>Tira Transceiver</AssemblyName>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>

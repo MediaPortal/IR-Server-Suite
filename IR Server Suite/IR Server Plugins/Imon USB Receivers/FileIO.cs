@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
     internal sealed class FileIO
     {

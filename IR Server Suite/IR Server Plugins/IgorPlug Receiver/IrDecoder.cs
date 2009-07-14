@@ -22,7 +22,7 @@
 
 using System;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
 
   #region Enumerations

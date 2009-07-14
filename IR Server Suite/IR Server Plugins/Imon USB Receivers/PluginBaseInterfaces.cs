@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
     public partial class iMonUSBReceivers : PluginBase, IConfigure, IRemoteReceiver, IKeyboardReceiver, IMouseReceiver, IDisposable
     {

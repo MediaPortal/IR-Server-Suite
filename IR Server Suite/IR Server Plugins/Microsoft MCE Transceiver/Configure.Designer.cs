@@ -1,4 +1,4 @@
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   partial class Configure
   {
@@ -289,7 +289,7 @@ namespace InputService.Plugin
       this.checkBoxHandleMouseLocal.Size = new System.Drawing.Size(126, 17);
       this.checkBoxHandleMouseLocal.TabIndex = 1;
       this.checkBoxHandleMouseLocal.Text = "Handle mouse locally";
-      this.toolTips.SetToolTip(this.checkBoxHandleMouseLocal, "Act on mouse locally (on the machine Input Service is running on)");
+      this.toolTips.SetToolTip(this.checkBoxHandleMouseLocal, "Act on mouse locally (on the machine IR Server is running on)");
       this.checkBoxHandleMouseLocal.UseVisualStyleBackColor = true;
       // 
       // numericUpDownMouseSensitivity
@@ -333,7 +333,7 @@ namespace InputService.Plugin
       this.checkBoxDisableMCEServices.TabIndex = 2;
       this.checkBoxDisableMCEServices.Text = "Disable Windows Media Center services";
       this.toolTips.SetToolTip(this.checkBoxDisableMCEServices, "Disable Microsoft Windows Media Center services to prevent interference with the " +
-              "Input Service");
+              "IR Server");
       this.checkBoxDisableMCEServices.UseVisualStyleBackColor = true;
       // 
       // checkBoxEnableRemote

@@ -441,17 +441,17 @@ namespace VirtualRemote
               //_irServerInfo = IRServerInfo.FromBytes(received.DataAsBytes);
               _registered = true;
 
-              IrssLog.Info("Registered to Input Service");
+              IrssLog.Info("Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              IrssLog.Warn("Input Service refused to register");
+              IrssLog.Warn("IR Server refused to register");
             }
             break;
 
           case MessageType.ServerShutdown:
-            IrssLog.Warn("Input Service Shutdown - Virtual Remote disabled until Input Service returns");
+            IrssLog.Warn("IR Server Shutdown - Virtual Remote disabled until IR Server returns");
             _registered = false;
             break;
 

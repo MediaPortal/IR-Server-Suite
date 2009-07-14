@@ -33,21 +33,21 @@
 !insertmacro GetParent
 
 #####    Server/Service Mode page
-; $ServerServiceMode "InputService" = InputService
+; $ServerServiceMode "IRServer" = IRServer
 ; $ServerServiceMode "IRServer" = IRServer
 Var PREVIOUS_ServerServiceMode
 Var ServerServiceMode
-Var ServerServiceModePage.optBtnInputService
-Var ServerServiceModePage.optBtnInputService.state
-Var ServerServiceModePage.optBtnIRServer
-Var ServerServiceModePage.optBtnIRServer.state
+Var ServerServiceModePage.optBtnIRServerAsService
+Var ServerServiceModePage.optBtnIRServerAsService.state
+Var ServerServiceModePage.optBtnIRServerAsApplication
+Var ServerServiceModePage.optBtnIRServerAsApplication.state
 
 
 Function PageServerServiceMode
   Push $R0
 
-  ; skip page if InputService/IRServer is unselected
-  ${IfNot} ${SectionIsSelected} SectionInputService
+  ; skip page if IRServer is unselected
+  ${IfNot} ${SectionIsSelected} SectionIRServer
     Abort
   ${EndIf}
 
@@ -66,26 +66,26 @@ Function PageServerServiceMode
 
 
   ${NSD_CreateRadioButton} 10u 30u -10u 8u "$(ServerServiceModePage_OPT0)"
-  Pop $ServerServiceModePage.optBtnInputService
-  ${NSD_OnClick} $ServerServiceModePage.optBtnInputService PageServerServiceModeUpdateSelection
+  Pop $ServerServiceModePage.optBtnIRServerAsService
+  ${NSD_OnClick} $ServerServiceModePage.optBtnIRServerAsService PageServerServiceModeUpdateSelection
 
   ${NSD_CreateLabel} 20u 45u -20u 24u "$(ServerServiceModePage_OPT0_DESC)"
   Pop $R0
 
 
   ${NSD_CreateRadioButton} 10u 70u -10u 8u "$(ServerServiceModePage_OPT1)"
-  Pop $ServerServiceModePage.optBtnIRServer
-  ${NSD_OnClick} $ServerServiceModePage.optBtnIRServer PageServerServiceModeUpdateSelection
+  Pop $ServerServiceModePage.optBtnIRServerAsApplication
+  ${NSD_OnClick} $ServerServiceModePage.optBtnIRServerAsApplication PageServerServiceModeUpdateSelection
 
   ${NSD_CreateLabel} 20u 85u -20u 24u "$(ServerServiceModePage_OPT1_DESC)"
   Pop $R0
 
 
   ; set current ServerServiceMode to option buttons
-  ${If} $ServerServiceMode == "IRServer"
-    ${NSD_Check} $ServerServiceModePage.optBtnIRServer
+  ${If} $ServerServiceMode == "IRServerAsService"
+    ${NSD_Check} $ServerServiceModePage.optBtnIRServerAsService
   ${Else}
-    ${NSD_Check} $ServerServiceModePage.optBtnInputService
+    ${NSD_Check} $ServerServiceModePage.optBtnIRServerAsApplication
   ${EndIf}
 
   nsDialogs::Show
@@ -95,13 +95,13 @@ FunctionEnd
 
 Function PageServerServiceModeUpdateSelection
 
-  ${NSD_GetState} $ServerServiceModePage.optBtnInputService $ServerServiceModePage.optBtnInputService.state
-  ${NSD_GetState} $ServerServiceModePage.optBtnIRServer     $ServerServiceModePage.optBtnIRServer.state
+  ${NSD_GetState} $ServerServiceModePage.optBtnIRServerAsService $ServerServiceModePage.optBtnIRServerAsService.state
+  ${NSD_GetState} $ServerServiceModePage.optBtnIRServerAsApplication $ServerServiceModePage.optBtnIRServerAsApplication.state
 
-  ${If} $ServerServiceModePage.optBtnIRServer.state == ${BST_CHECKED}
-    StrCpy $ServerServiceMode "IRServer"
+  ${If} $ServerServiceModePage.optBtnIRServerAsService.state == ${BST_CHECKED}
+    StrCpy $ServerServiceMode "IRServerAsService"
   ${Else}
-    StrCpy $ServerServiceMode "InputService"
+    StrCpy $ServerServiceMode "IRServerAsApplication"
   ${EndIf}
 
 FunctionEnd

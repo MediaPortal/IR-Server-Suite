@@ -31,7 +31,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using InputService.Plugin;
+using IRServer.Plugin;
 using IRServer.Properties;
 using IrssComms;
 using IrssUtils;
@@ -71,10 +71,10 @@ namespace IRServer
     #region Constants
 
     private static readonly string AbstractRemoteMapFolder = Path.Combine(Common.FolderAppData,
-                                                                          "Input Service\\Abstract Remote Maps");
+                                                                          "IR Server\\Abstract Remote Maps");
 
     private static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData,
-                                                                           "Input Service\\Abstract Remote Maps\\RemoteTable.xsd");
+                                                                           "IR Server\\Abstract Remote Maps\\RemoteTable.xsd");
 
     private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, "IR Server\\IR Server.xml");
 
@@ -302,7 +302,7 @@ namespace IRServer
       }
       catch (Exception ex)
       {
-        IrssLog.Error("Failed to start Input Service Communications");
+        IrssLog.Error("Failed to start IR Server Communications");
         IrssLog.Error(ex);
       }
 

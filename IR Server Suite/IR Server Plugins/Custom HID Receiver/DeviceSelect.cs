@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   internal partial class DeviceSelect : Form
   {

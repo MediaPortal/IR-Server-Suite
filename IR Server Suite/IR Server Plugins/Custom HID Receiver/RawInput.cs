@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Device Details used to register for raw input.

@@ -24,10 +24,10 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 using IrssUtils;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server plugin to support the Ads Tech PTV-335 Receiver device.

@@ -31,11 +31,11 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
     /// <summary>
     /// IR Server plugin to support iMon USB devices.

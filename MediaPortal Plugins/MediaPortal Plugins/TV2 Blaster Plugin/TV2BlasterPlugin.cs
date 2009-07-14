@@ -354,7 +354,7 @@ namespace MediaPortal.Plugins
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              Log.Error("TV2BlasterPlugin: Input Service refused to register");
+              Log.Error("TV2BlasterPlugin: IR Server refused to register");
             }
             break;
 
@@ -381,7 +381,7 @@ namespace MediaPortal.Plugins
             break;
 
           case MessageType.ServerShutdown:
-            Log.Info("TV2BlasterPlugin: Input Service Shutdown - Plugin disabled until Input Service returns");
+            Log.Info("TV2BlasterPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
             _registered = false;
             break;
 
@@ -694,7 +694,7 @@ namespace MediaPortal.Plugins
 
         if (!_registered)
         {
-          Log.Warn("TV2BlasterPlugin: Not registered to an active Input Service");
+          Log.Warn("TV2BlasterPlugin: Not registered to an active IR Server");
           return false;
         }
 
@@ -729,7 +729,7 @@ namespace MediaPortal.Plugins
       Log.Debug("TV2BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
-        throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
+        throw new InvalidOperationException("Cannot Blast, not registered to an active IR Server");
 
       using (FileStream file = File.OpenRead(fileName))
       {

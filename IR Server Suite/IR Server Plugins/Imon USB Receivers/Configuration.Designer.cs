@@ -1,4 +1,4 @@
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
 
     partial class Configuration
@@ -269,7 +269,7 @@ namespace InputService.Plugin
             this.checkBoxHandleMouseLocal.Size = new System.Drawing.Size(126, 17);
             this.checkBoxHandleMouseLocal.TabIndex = 1;
             this.checkBoxHandleMouseLocal.Text = "Handle mouse locally";
-            this.toolTips.SetToolTip(this.checkBoxHandleMouseLocal, "Act on mouse locally (on the machine Input Service is running on)");
+            this.toolTips.SetToolTip(this.checkBoxHandleMouseLocal, "Act on mouse locally (on the machine IR Server is running on)");
             this.checkBoxHandleMouseLocal.UseVisualStyleBackColor = true;
             // 
             // checkBoxEnableRemote

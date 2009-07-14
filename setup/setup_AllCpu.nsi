@@ -136,8 +136,8 @@ BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 # INSTALLER INTERFACE settings
 #---------------------------------------------------------------------------
 !define MUI_ABORTWARNING
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\win-install.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
+!define MUI_ICON "Icons\iconGreen.ico"
+!define MUI_UNICON "Icons\iconGreen.ico"
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP            "images\header.bmp"
@@ -153,8 +153,8 @@ BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 !define MUI_COMPONENTSPAGE_SMALLDESC
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 ;!define MUI_FINISHPAGE_RUN_NOTCHECKED
-;!define MUI_FINISHPAGE_RUN      "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe"
-;!define MUI_FINISHPAGE_RUN_TEXT "Run Input Service Configuration"
+;!define MUI_FINISHPAGE_RUN      "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe"
+;!define MUI_FINISHPAGE_RUN_TEXT "Run IR Server Configuration"
 
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
@@ -226,7 +226,7 @@ UninstPage custom un.UninstallModePage un.UninstallModePageLeave
 !macro SectionList MacroName
   ; This macro used to perform operation on multiple sections.
   ; List all of your components in following manner here.
-  !insertmacro "${MacroName}" "SectionInputService"
+  !insertmacro "${MacroName}" "SectionIRServer"
 
 !ifdef MPplugins
   !insertmacro "${MacroName}" "SectionMPCommon"
@@ -291,12 +291,12 @@ Section "-prepare"
 /* OBSOLETE since irss is uninstalled before
   DetailPrint "Preparing to install ..."
 
-  IfFileExists "$DIR_INSTALL\Input Service\Input Service.exe" StopInputService SkipStopInputService
+  IfFileExists "$DIR_INSTALL\IR Server\IR Server.exe" StopIRServer SkipStopIRServer
 
-StopInputService:
-  ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /stop'
+StopIRServer:
+  ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /stop'
 
-SkipStopInputService:
+SkipStopIRServer:
   Sleep 100
 */
 SectionEnd
@@ -336,11 +336,11 @@ SectionEnd
 
 ;======================================
 
-${MementoSection} "Input Service" SectionInputService
-  ${LOG_TEXT} "INFO" "Installing Input Service..."
-  ${StopService} "Input Service"
-  ${KILLPROCESS} "IRServer.exe"
-  ${KILLPROCESS} "Input Service Configuration.exe"
+${MementoSection} "IR Server" SectionIRServer
+  ${LOG_TEXT} "INFO" "Installing IR Server..."
+  ${StopService} "IR Server"
+  ${KILLPROCESS} "IR Server.exe"
+  ${KILLPROCESS} "IR Server Configuration.exe"
 
   ; Use the all users context
   SetShellVarContext all
@@ -349,22 +349,17 @@ ${MementoSection} "Input Service" SectionInputService
   ;not needed anymore since uninstall is launched before
   ;${LOG_TEXT} "INFO" "Removing current IRServer from Autostart..."
   ;!insertmacro RemoveAutoRun "IR Server"
-  ;${LOG_TEXT} "INFO" "Uninstalling current InputService..."
-  ;ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
+  ;${LOG_TEXT} "INFO" "Uninstalling current IRServer..."
+  ;ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /uninstall'
 
-
-  ${LOG_TEXT} "INFO" "Installing Input Service..."
-  SetOutPath "$DIR_INSTALL\Input Service"
-  File "..\IR Server Suite\Input Service\Input Service\bin\${Build_Type}\*.*"
-
-  ${LOG_TEXT} "INFO" "Installing Input Service Configuration..."
-  SetOutPath "$DIR_INSTALL\Input Service Configuration"
-  File "..\IR Server Suite\Input Service\Input Service Configuration\bin\${Build_Type}\*.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server..."
-  SetOutPath "$DIR_INSTALL\Input Service"
-  File "..\IR Server Suite\Applications\IR Server\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL\IR Server"
+  File "..\IR Server Suite\IR Server\IR Server\bin\${Build_Type}\*.*"
 
+  ${LOG_TEXT} "INFO" "Installing IR Server Configuration..."
+  SetOutPath "$DIR_INSTALL\IR Server Configuration"
+  File "..\IR Server Suite\IR Server\IR Server Configuration\bin\${Build_Type}\*.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
   SetOutPath "$DIR_INSTALL\IR Server Plugins"
@@ -407,46 +402,47 @@ ${MementoSection} "Input Service" SectionInputService
   File "..\IR Server Suite\IR Server Plugins\XBCDRC Receiver\bin\${Build_Type}\XBCDRC Receiver.*"
 
   ; Create App Data Folder for IR Server configuration files
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Input Service"
+  CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR Server"
   
   ; Copy Abstract Remote maps
-  SetOutPath "$APPDATA\${PRODUCT_NAME}\Input Service\Abstract Remote Maps"
+  SetOutPath "$APPDATA\${PRODUCT_NAME}\IR Server\Abstract Remote Maps"
   SetOverwrite ifnewer
-  File /r /x .svn "..\IR Server Suite\Input Service\Input Service\Abstract Remote Maps\*.*"
-  File "..\IR Server Suite\Input Service\Input Service\RemoteTable.xsd"
+  File /r /x .svn "..\IR Server Suite\IR Server\IR Server\Abstract Remote Maps\*.*"
+  File "..\IR Server Suite\IR Server\IR Server\RemoteTable.xsd"
   SetOverwrite on
 
   ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" "" "$DIR_INSTALL\Input Service Configuration\Input Service Configuration.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk" "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe" "" "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe" 0
 
   ; Install Server/Service
-  ${If} $ServerServiceMode == "IRServer"
-    ${LOG_TEXT} "INFO" "Adding IRServer to Autostart..."
-    !insertmacro SetAutoRun "IR Server" "$DIR_INSTALL\Input Service\IRServer.exe"
+  ${If} $ServerServiceMode == "IRServerAsApplication"
+    ${LOG_TEXT} "INFO" "Adding IR Server to Autostart..."
+    !insertmacro SetAutoRun "IR Server" "$DIR_INSTALL\IR Server\IR Server.exe"
   ${Else}
-    ${LOG_TEXT} "INFO" "Installing InputService..."
-    ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /install'
+    ${LOG_TEXT} "INFO" "Installing IR Server as Service..."
+    ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /install'
   ${EndIf}
+  !insertmacro SetAutoRun "IR Server Configuration" "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe"
 
 ${MementoSectionEnd}
-!macro Remove_${SectionInputService}
-  ${LOG_TEXT} "INFO" "Removing Input Service..."
-  ${StopService} "Input Service"
-  ${KILLPROCESS} "IRServer.exe"
-  ${KILLPROCESS} "Input Service Configuration.exe"
+!macro Remove_${SectionIRServer}
+  ${LOG_TEXT} "INFO" "Removing IR Server..."
+  ${StopService} "IR Server"
+  ${KILLPROCESS} "IR Server.exe"
+  ${KILLPROCESS} "IR Server Configuration.exe"
 
-  ${LOG_TEXT} "INFO" "Removing IRServer from Autostart..."
+  ${LOG_TEXT} "INFO" "Removing IR Server from Autostart..."
   !insertmacro RemoveAutoRun "IR Server"
-  ${LOG_TEXT} "INFO" "Uninstalling InputService..."
-  ExecWait '"$DIR_INSTALL\Input Service\Input Service.exe" /uninstall'
+  ${LOG_TEXT} "INFO" "Uninstalling IR Server as Service..."
+  ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /uninstall'
+  !insertmacro RemoveAutoRun "IR Server Configuration"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Input Service Configuration.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk"
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Input Service"
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Input Service Configuration"
   RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server"
+  RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server Configuration"
   RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server Plugins"
 !macroend
 
@@ -1197,11 +1193,11 @@ Function LoadPreviousSettings
   ${EndIf}
 
   ; reset ServerServiceMode
-  ${If} $PREVIOUS_ServerServiceMode == "InputService"
-  ${OrIf} $PREVIOUS_ServerServiceMode == "IRServer"
+  ${If} $PREVIOUS_ServerServiceMode == "IRServerAsApplication"
+  ${OrIf} $PREVIOUS_ServerServiceMode == "IRServerAsService"
     StrCpy $ServerServiceMode $PREVIOUS_ServerServiceMode
   ${Else}
-    StrCpy $ServerServiceMode "InputService"
+    StrCpy $ServerServiceMode "IRServerAsService"
   ${EndIf}
 
 
@@ -1253,16 +1249,17 @@ FunctionEnd
 
 Function .onInstSuccess
 
-${If} ${SectionIsSelected} ${SectionInputService}
+${If} ${SectionIsSelected} ${SectionIRServer}
 
   ; start Server/Service
-  ${If} $ServerServiceMode == "IRServer"
-    ${LOG_TEXT} "INFO" "Starting IRServer..."
-    Exec "$DIR_INSTALL\Input Service\IRServer.exe"
+  ${If} $ServerServiceMode == "IRServerAsApplication"
+    ${LOG_TEXT} "INFO" "Starting IR Server..."
+    Exec "$DIR_INSTALL\IR Server\IR Server.exe"
   ${Else}
-    ${LOG_TEXT} "INFO" "Starting InputService..."
-    Exec '"$DIR_INSTALL\Input Service\Input Service.exe" /start'
+    ${LOG_TEXT} "INFO" "Starting IR Server..."
+    Exec '"$DIR_INSTALL\IR Server\IR Server.exe" /start'
   ${EndIf}
+  Exec "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe"
 
 ${EndIf}
 
@@ -1360,7 +1357,7 @@ Function FinishShow
   ; This function is called, after the Finish Page creation is finished
 
   ; It checks, if the Server has been selected and only displays the run checkbox in this case
-  ${IfNot} ${SectionIsSelected} SectionInputService
+  ${IfNot} ${SectionIsSelected} SectionIRServer
       SendMessage $mui.FinishPage.Run ${BM_CLICK} 0 0
       ShowWindow  $mui.FinishPage.Run ${SW_HIDE}
   ${EndIf}
@@ -1421,7 +1418,7 @@ FunctionEnd
 # SECTION DESCRIPTIONS
 #---------------------------------------------------------------------------
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionInputService}        "$(DESC_SectionInputService)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRServer}        "$(DESC_SectionIRServer)"
 
 !ifdef MPplugins
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMP}             "$(DESC_SectionGroupMP)"

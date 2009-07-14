@@ -22,7 +22,7 @@
 
 using System.Net.Sockets;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Class containing information for the data callback function

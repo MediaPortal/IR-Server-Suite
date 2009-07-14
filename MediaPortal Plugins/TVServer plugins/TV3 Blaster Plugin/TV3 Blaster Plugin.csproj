@@ -89,30 +89,30 @@
   <ItemGroup>
     <Reference Include="Gentle.Common, Version=1.2.9.1285, Culture=neutral, PublicKeyToken=80b5de62e27be49b">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine3\TVLibrary\TVDatabase\bin\Release\Gentle.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\references\Gentle.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Gentle.Framework, Version=1.2.9.1286, Culture=neutral, PublicKeyToken=80b5de62e27be49b">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine3\TVLibrary\TVDatabase\bin\Release\Gentle.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\references\Gentle.Framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="IrssComms, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\IR Server Suite\Common\IrssComms\bin\Release\IrssComms.dll</HintPath>
+      <HintPath>..\..\..\..\IR Server Suite\IR Server Suite\Common\IrssComms\bin\Debug\IrssComms.dll</HintPath>
     </Reference>
     <Reference Include="IrssUtils, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\IR Server Suite\Common\IrssUtils\bin\Release\IrssUtils.dll</HintPath>
+      <HintPath>..\..\..\..\IR Server Suite\IR Server Suite\Common\IrssUtils\bin\Debug\IrssUtils.dll</HintPath>
     </Reference>
     <Reference Include="PluginBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine3\TVLibrary\Plugins\PluginBase\bin\Release\PluginBase.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\Plugins\PluginBase\bin\Debug\PluginBase.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SetupControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine3\TVLibrary\SetupControls\bin\Release\SetupControls.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\SetupControls\bin\Debug\SetupControls.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System">
@@ -127,22 +127,22 @@
     <Reference Include="System.Xml" />
     <Reference Include="TvBusinessLayer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine3\TVLibrary\TVDatabase\TvBusinessLayer\bin\Release\TvBusinessLayer.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\TvBusinessLayer\bin\Debug\TvBusinessLayer.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TvControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine3\TVLibrary\TvControl\bin\Release\TvControl.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvControl\bin\Debug\TvControl.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TVDatabase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine3\TVLibrary\TVDatabase\bin\Release\TVDatabase.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\bin\Debug\TVDatabase.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TvLibrary.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\MediaPortal\trunk\TvEngine3\TVLibrary\TvLibrary.Interfaces\bin\Release\TvLibrary.Interfaces.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvLibrary.Interfaces\bin\Debug\TvLibrary.Interfaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -1,0 +1,164 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{46F1DB42-F082-4200-B939-6E4B72A8117C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IRServer</RootNamespace>
+    <AssemblyName>IR Server</AssemblyName>
+    <StartupObject>IRServer.Program</StartupObject>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <ApplicationIcon>Resources\iconGreen.ico</ApplicationIcon>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>
+    </DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IR Server Installer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="IR Server.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ReceiverWindow.cs" />
+    <Compile Include="RemoteTable.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RemoteTable.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">
+      <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
+      <Name>IrssComms</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
+      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
+      <Name>IrssUtils</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IR Server Plugins\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
+      <Project>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</Project>
+      <Name>IR Server Plugin Interface</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Install.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Abstract Remote Maps\Direct Input\Direct Input.xml" />
+    <Content Include="Abstract Remote Maps\FireFly\FireFly.xml" />
+    <Content Include="Abstract Remote Maps\FusionREMOTE\FusionHDTV.xml" />
+    <Content Include="Abstract Remote Maps\FusionREMOTE\FusionREMOTE.xml" />
+    <Content Include="Abstract Remote Maps\Hauppauge\Hauppauge34.xml" />
+    <Content Include="Abstract Remote Maps\Hauppauge\Hauppauge45.xml" />
+    <Content Include="Abstract Remote Maps\IgorPlug\Microsoft MCE.xml" />
+    <Content Include="Abstract Remote Maps\IR507\RC102.xml" />
+    <Content Include="Abstract Remote Maps\Medion\Medion.xml" />
+    <Content Include="Abstract Remote Maps\Microsoft MCE\Microsoft MCE.xml" />
+    <Content Include="Abstract Remote Maps\Technotrend\Technotrend.xml" />
+    <Content Include="Abstract Remote Maps\USB-UIRT\Microsoft MCE.xml" />
+    <Content Include="Abstract Remote Maps\Wii Remote\WiiRemote.xml" />
+    <Content Include="Abstract Remote Maps\Windows Messages\Virtual Remote.xml" />
+    <Content Include="Abstract Remote Maps\XBCDRC\Xbox.xml" />
+    <Content Include="Uninstall.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Abstract Remote Maps\iMon USB\Imon Front Panel.xml" />
+    <Content Include="Abstract Remote Maps\iMon USB\Imon PAD.xml" />
+    <Content Include="Abstract Remote Maps\iMon USB\Imon Volume Knob.xml" />
+    <Content Include="Abstract Remote Maps\iMon USB\Microsoft MCE.xml" />
+    <None Include="Resources\iconGreen.ico" />
+    <None Include="RemoteTable.xsc">
+      <DependentUpon>RemoteTable.xsd</DependentUpon>
+    </None>
+    <None Include="RemoteTable.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>RemoteTable.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="RemoteTable.xss">
+      <DependentUpon>RemoteTable.xsd</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

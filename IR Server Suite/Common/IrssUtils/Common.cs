@@ -71,6 +71,12 @@ namespace IrssUtils
       Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IR Server Suite");
 
     /// <summary>
+    /// IR Server Suite "Application Data" folder location (includes trailing '\')
+    /// </summary>
+    public static readonly string FolderProgramFiles =
+      Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "IR Server Suite");
+
+    /// <summary>
     /// IR Server Suite "IR Commands" folder location (includes trailing '\')
     /// </summary>
     public static readonly string FolderIRCommands = Path.Combine(FolderAppData, "IR Commands");

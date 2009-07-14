@@ -28,9 +28,9 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
 
   #region Enumerations

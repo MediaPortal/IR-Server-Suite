@@ -29,11 +29,11 @@ using System.ServiceProcess;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 using IrssUtils;
 using Microsoft.Win32;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
 
   #region Enumerations

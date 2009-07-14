@@ -522,7 +522,7 @@ namespace MediaPortal.Plugins
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              Log.Warn("MPBlastZonePlugin: Input Service refused to register");
+              Log.Warn("MPBlastZonePlugin: IR Server refused to register");
             }
             break;
 
@@ -549,7 +549,7 @@ namespace MediaPortal.Plugins
             break;
 
           case MessageType.ServerShutdown:
-            Log.Warn("MPBlastZonePlugin: Input Service Shutdown - Plugin disabled until Input Service returns");
+            Log.Warn("MPBlastZonePlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
             _registered = false;
             break;
 
@@ -586,7 +586,7 @@ namespace MediaPortal.Plugins
 
         if (!_registered)
         {
-          Log.Warn("MPBlastZonePlugin: Not registered to an active Input Service");
+          Log.Warn("MPBlastZonePlugin: Not registered to an active IR Server");
           return false;
         }
 
@@ -621,7 +621,7 @@ namespace MediaPortal.Plugins
       Log.Debug("MPControlPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
-        throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
+        throw new InvalidOperationException("Cannot Blast, not registered to an active IR Server");
 
       using (FileStream file = File.OpenRead(fileName))
       {

@@ -23,7 +23,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Win32 native method wrapper for Keyboard control functions.

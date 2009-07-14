@@ -288,7 +288,7 @@ namespace TvEngine
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              Log.Error("TV3BlasterPlugin: Input Service refused to register");
+              Log.Error("TV3BlasterPlugin: IR Server refused to register");
             }
             break;
 
@@ -315,7 +315,7 @@ namespace TvEngine
             break;
 
           case MessageType.ServerShutdown:
-            Log.Info("TV3BlasterPlugin: Input Service Shutdown - Plugin disabled until Input Service returns");
+            Log.Info("TV3BlasterPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
             _registered = false;
             break;
 
@@ -605,7 +605,7 @@ namespace TvEngine
 
         if (!_registered)
         {
-          Log.Error("TV3BlasterPlugin: Not registered to an active Input Service");
+          Log.Error("TV3BlasterPlugin: Not registered to an active IR Server");
           return false;
         }
 
@@ -640,7 +640,7 @@ namespace TvEngine
       Log.Debug("TV3BlasterPlugin - BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
-        throw new InvalidOperationException("Cannot Blast, not registered to an active Input Service");
+        throw new InvalidOperationException("Cannot Blast, not registered to an active IR Server");
 
       using (FileStream file = File.OpenRead(fileName))
       {

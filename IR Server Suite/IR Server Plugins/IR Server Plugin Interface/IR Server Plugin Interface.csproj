@@ -7,7 +7,7 @@
     <ProjectGuid>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>IRServerPluginInterface</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <SignAssembly>true</SignAssembly>

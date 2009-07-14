@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" >
   <assemblyIdentity name="KeyboardInputRelay" version="1.4.2.0" publicKeyToken="dc0b77bf2c754d95" processorArchitecture="msil" />
-  <description>Relays keyboard input to the input service to use like remote button presses</description>
+  <description>Relays keyboard input to the IR Server to use like remote button presses</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges>

@@ -24,7 +24,7 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Configure the HCW Transceiver plugin.

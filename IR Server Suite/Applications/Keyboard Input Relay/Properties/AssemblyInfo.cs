@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("Keyboard Input Relay")]
-[assembly: AssemblyDescription("Relays keyboard input to the input service to use like remote button presses")]
+[assembly: AssemblyDescription("Relays keyboard input to the IR Server to use like remote button presses")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("Keyboard Input Relay")]

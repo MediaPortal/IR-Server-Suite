@@ -7,7 +7,7 @@
     <ProjectGuid>{FCE5308F-C451-4113-B7F2-BB6212EA7FAD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>MacMini Receiver</AssemblyName>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <FileUpgradeFlags>

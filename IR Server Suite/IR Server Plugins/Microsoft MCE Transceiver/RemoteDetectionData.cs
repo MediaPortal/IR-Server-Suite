@@ -20,7 +20,7 @@
 
 #endregion
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
 
   #region Enumerations

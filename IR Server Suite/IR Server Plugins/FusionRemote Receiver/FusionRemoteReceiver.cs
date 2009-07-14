@@ -25,11 +25,11 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 using IrssUtils;
 using Microsoft.Win32.SafeHandles;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server Plugin for the DViCO FusionREMOTE USB Receiver device.

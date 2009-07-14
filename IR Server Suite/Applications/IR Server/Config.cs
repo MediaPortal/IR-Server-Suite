@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using InputService.Plugin;
+using IRServer.Plugin;
 using IrssUtils;
 using SourceGrid;
 using SourceGrid.Cells;
@@ -473,7 +473,7 @@ namespace IRServer
       try
       {
         string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this, file, HelpNavigator.Topic, "Input Service\\index.html");
+        Help.ShowHelp(this, file, HelpNavigator.Topic, "IR Server\\index.html");
       }
       catch (Exception ex)
       {

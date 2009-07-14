@@ -24,7 +24,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// Base class for all IR Server Plugins.
@@ -38,7 +38,7 @@ namespace InputService.Plugin
     /// </summary>
     public static readonly string ConfigurationPath =
       Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                   Path.Combine("IR Server Suite", "Input Service"));
+                   Path.Combine("IR Server Suite", "IR Server"));
 
     #endregion Constants
 

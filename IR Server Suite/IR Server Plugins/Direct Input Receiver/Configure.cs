@@ -24,7 +24,7 @@ using System;
 using System.Windows.Forms;
 using Microsoft.DirectX.DirectInput;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   internal partial class Configure : Form
   {

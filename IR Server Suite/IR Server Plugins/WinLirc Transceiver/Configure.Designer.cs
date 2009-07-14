@@ -1,4 +1,4 @@
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   partial class Configure
   {

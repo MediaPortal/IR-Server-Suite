@@ -28,7 +28,7 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
 
   #region Structures

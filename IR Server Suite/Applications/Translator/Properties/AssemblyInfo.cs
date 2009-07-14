@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 //
 
 [assembly: AssemblyTitle("Translator")]
-[assembly: AssemblyDescription("PC control application for use with Input Service")]
+[assembly: AssemblyDescription("PC control application for use with IR Server")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("and-81")]
 [assembly: AssemblyProduct("Translator")]

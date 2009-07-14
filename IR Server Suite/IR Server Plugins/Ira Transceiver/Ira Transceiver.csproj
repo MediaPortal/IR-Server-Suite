@@ -7,7 +7,7 @@
     <ProjectGuid>{0E045E97-EEB2-461C-A416-CFC8E452E044}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>Ira Transceiver</AssemblyName>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>

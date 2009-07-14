@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
     public partial class iMonUSBReceivers
     {

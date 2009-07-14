@@ -577,7 +577,7 @@ namespace MediaCenterBlaster
 
         if (!_registered)
         {
-          IrssLog.Warn("Not registered to an active Input Service");
+          IrssLog.Warn("Not registered to an active IR Server");
           return false;
         }
 
@@ -612,7 +612,7 @@ namespace MediaCenterBlaster
       IrssLog.Debug("BlastIR(): {0}, {1}", fileName, port);
 
       if (!_registered)
-        throw new ApplicationException("Cannot Blast, not registered to an active Input Service");
+        throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
 
       using (FileStream file = File.OpenRead(fileName))
       {
@@ -907,12 +907,12 @@ namespace MediaCenterBlaster
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
-              IrssLog.Info("Registered to Input Service");
+              IrssLog.Info("Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
               _registered = false;
-              IrssLog.Warn("Input Service refused to register");
+              IrssLog.Warn("IR Server refused to register");
             }
             break;
 
@@ -960,7 +960,7 @@ namespace MediaCenterBlaster
             break;
 
           case MessageType.ServerShutdown:
-            IrssLog.Warn("Input Service Shutdown - Media Center Blaster disabled until Input Service returns");
+            IrssLog.Warn("IR Server Shutdown - Media Center Blaster disabled until IR Server returns");
             _registered = false;
             break;
 

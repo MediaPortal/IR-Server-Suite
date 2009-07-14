@@ -26,7 +26,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// WinLIRC server class implementing communication with WinLIRC.

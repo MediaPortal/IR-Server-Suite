@@ -23,13 +23,13 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using InputService.Plugin.Properties;
+using IRServer.Plugin.Properties;
 
 #if TRACE
 using System.Diagnostics;
 #endif
 
-namespace InputService.Plugin
+namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server Plugin for the receiving speech commands.
@@ -40,7 +40,7 @@ namespace InputService.Plugin
 
     private static readonly string ConfigurationFile =
       Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-      "\\IR Server Suite\\Input Service\\Speech Receiver.xml";
+      "\\IR Server Suite\\IR Server\\Speech Receiver.xml";
 
     #endregion Constants
 

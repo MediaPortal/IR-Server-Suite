@@ -7,7 +7,7 @@
     <ProjectGuid>{A2702ACF-C59E-4564-8A4A-5CBFF21C1E66}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InputService.Plugin</RootNamespace>
+    <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>RC102 Receiver</AssemblyName>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <FileUpgradeFlags>
