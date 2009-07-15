@@ -368,8 +368,6 @@ ${MementoSection} "IR Server" SectionIRServer
   File "..\IR Server Suite\IR Server Plugins\CoolCommand Receiver\bin\${Build_Type}\CoolCommand Receiver.*"
   File "..\IR Server Suite\IR Server Plugins\Custom HID Receiver\bin\${Build_Type}\Custom HID Receiver.*"
   File "..\IR Server Suite\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Direct Input Receiver.*"
-  File "..\IR Server Suite\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Microsoft.DirectX.DirectInput.dll"
-  File "..\IR Server Suite\IR Server Plugins\Direct Input Receiver\bin\${Build_Type}\Microsoft.DirectX.dll"
   File "..\IR Server Suite\IR Server Plugins\FusionRemote Receiver\bin\${Build_Type}\FusionRemote Receiver.*"
   File "..\IR Server Suite\IR Server Plugins\Girder Plugin\bin\${Build_Type}\Girder Plugin.*"
   File "..\IR Server Suite\IR Server Plugins\HCW Receiver\bin\${Build_Type}\HCW Receiver.*"

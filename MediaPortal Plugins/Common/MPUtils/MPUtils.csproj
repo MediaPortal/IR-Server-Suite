@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -53,13 +53,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Core, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Core\bin\Debug\Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Core\bin\Release\Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="Dialogs, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Dialogs\bin\Debug\Dialogs.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Dialogs\bin\Release\Dialogs.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -69,7 +69,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Utils, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Utils\bin\Debug\Utils.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Utils\bin\Release\Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
