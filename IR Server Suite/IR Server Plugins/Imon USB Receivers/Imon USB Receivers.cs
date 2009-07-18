@@ -417,6 +417,7 @@ namespace IRServer.Plugin
         private SafeFileHandle _deviceHandle;
         private bool _processReceiveThread;
         private Thread _receiveThread;
+        private IntPtr deviceBufferPtr;
 
         #endregion
 
@@ -511,41 +512,82 @@ namespace IRServer.Plugin
         private void ReceiveThread()
         {
             DebugWriteLine("ReceiveThread()\n\n");
-            IntPtr deviceBufferPtr = IntPtr.Zero;
+            byte[] dataBytes;
+            int col = 0;
 
+            while (_processReceiveThread)
+            {
+                dataBytes = GetData();
+                if (dataBytes.Length == DosDeviceBufferSize)
+                {
+                    if (dataBytes[7] != 0xF0)
+                    {
+                        string temp = "";
+                        foreach (byte x in dataBytes)
+                            temp += String.Format("{0:X2}", x);
+                        if (col == 3)
+                        {
+                            col = 0;
+                            Debug.Write(temp + "\n");
+                        }
+                        else
+                        {
+                            col++;
+                            Debug.Write(temp + "  ");
+                        }
+                    }
+
+                    // Rubbish data:
+                    // FF, FF, FF, FF, FF, FF, 9F, FF, 
+                    // 00, 00, 00, 00, 00, 00, 00, F0, 
+                    if ((dataBytes[0] != 0xFF || dataBytes[1] != 0xFF || dataBytes[2] != 0xFF || dataBytes[3] != 0xFF ||
+                         dataBytes[4] != 0xFF || dataBytes[5] != 0xFF) &&
+                        (dataBytes[0] != 0x00 || dataBytes[1] != 0x00 || dataBytes[2] != 0x00 || dataBytes[3] != 0x00 ||
+                         dataBytes[4] != 0x00 || dataBytes[5] != 0x00))
+                    {
+                        ProcessInput(dataBytes);
+                    }
+                    Thread.Sleep(5);
+                }
+            }
+            
+            if (deviceBufferPtr != IntPtr.Zero)
+                Marshal.FreeHGlobal(deviceBufferPtr);
+        }
+
+        private void FindFirmware()
+        {
+            do
+            {
+                byte[] dataBytes = GetData();
+                if (dataBytes.Length == DosDeviceBufferSize)
+                {
+                    if ((dataBytes[0] == 0xFF) &&
+                                    (dataBytes[1] == 0xFF) &&
+                                    (dataBytes[2] == 0xFF) &&
+                                    (dataBytes[3] == 0xFF) &&
+                                    (dataBytes[4] == 0xFF) &&
+                                    (dataBytes[5] == 0xFF))
+                        firmwareVersion = (uint)dataBytes[6] + 2;
+                }
+            } while (firmwareVersion == 0);
+        }
+
+        private byte[] GetData()
+        {
             try
             {
-                deviceBufferPtr = Marshal.AllocHGlobal(DosDeviceBufferSize);
-
-                while (_processReceiveThread)
+                int bytesRead;
+                IoControl(IOCTL_IMON_READ_RC, IntPtr.Zero, 0, deviceBufferPtr, DosDeviceBufferSize, out bytesRead);
+                if (bytesRead == DosDeviceBufferSize)
                 {
-                    int bytesRead;
-                    IoControl(IOCTL_IMON_READ_RC, IntPtr.Zero, 0, deviceBufferPtr, DosDeviceBufferSize, out bytesRead);
-                    if (bytesRead == DosDeviceBufferSize)
-                    {
-                        byte[] dataBytes = new byte[bytesRead];
-                        Marshal.Copy(deviceBufferPtr, dataBytes, 0, bytesRead);
-
-                        if ((dataBytes[0] == 0xFF) &&
-                            (dataBytes[1] == 0xFF) &&
-                            (dataBytes[2] == 0xFF) &&
-                            (dataBytes[3] == 0xFF) &&
-                            (dataBytes[4] == 0xFF) &&
-                            (dataBytes[5] == 0xFF))
-                            firmwareVersion = (uint)dataBytes[6] + 2;
-                        
-                        // Rubbish data:
-                        // FF, FF, FF, FF, FF, FF, 9F, FF, 
-                        // 00, 00, 00, 00, 00, 00, 00, F0, 
-                        if ((dataBytes[0] != 0xFF || dataBytes[1] != 0xFF || dataBytes[2] != 0xFF || dataBytes[3] != 0xFF ||
-                             dataBytes[4] != 0xFF || dataBytes[5] != 0xFF) &&
-                            (dataBytes[0] != 0x00 || dataBytes[1] != 0x00 || dataBytes[2] != 0x00 || dataBytes[3] != 0x00 ||
-                             dataBytes[4] != 0x00 || dataBytes[5] != 0x00))
-                        {
-                            ProcessInput(dataBytes);
-                        }
-                        Thread.Sleep(5);
-                    }
+                    byte[] dataBytes = new byte[bytesRead];
+                    Marshal.Copy(deviceBufferPtr, dataBytes, 0, bytesRead);
+                    return dataBytes;
+                }
+                else
+                {
+                    return new byte[0];
                 }
             }
             catch (Exception ex)
@@ -553,11 +595,7 @@ namespace IRServer.Plugin
                 DebugWriteLine(ex.ToString());
                 if (_deviceHandle != null)
                     CancelIo(_deviceHandle);
-            }
-            finally
-            {
-                if (deviceBufferPtr != IntPtr.Zero)
-                    Marshal.FreeHGlobal(deviceBufferPtr);
+                return new byte[0];
             }
         }
 
@@ -584,11 +622,11 @@ namespace IRServer.Plugin
             switch (mode)
             {
                 case RemoteMode.iMON:
-                    modeData = (firmwareVersion < 0x9a) ? SetDosRemotePADold : SetDosRemotePADnew;
+                    modeData = (firmwareVersion < 0x98) ? SetDosRemotePADold : SetDosRemotePADnew;
                     break;
 
                 case RemoteMode.MCE:
-                    modeData = (firmwareVersion < 0x9a) ? SetDosRemoteMCEold : SetDosRemoteMCEnew;
+                    modeData = (firmwareVersion < 0x98) ? SetDosRemoteMCEold : SetDosRemoteMCEnew;
                     break;
             }
             SetDos(modeData);
@@ -904,11 +942,9 @@ namespace IRServer.Plugin
             }
             else
             {
-                _processReceiveThread = true;
-                _receiveThread = new Thread(ReceiveThread);
-                _receiveThread.Name = "iMon Receive Thread";
-                _receiveThread.IsBackground = true;
-                _receiveThread.Start();
+                deviceBufferPtr = Marshal.AllocHGlobal(DosDeviceBufferSize);
+                FindFirmware();
+                SetDos(_remoteMode);
 
                 if (_remoteMode == RemoteMode.iMON)
                 {
@@ -919,8 +955,12 @@ namespace IRServer.Plugin
                 {
                     DebugWriteLine("Configured Hardware Mode: {0}\n", _remoteMode);
                 }
-
-                SetDos(_remoteMode);                
+    
+                _processReceiveThread = true;
+                _receiveThread = new Thread(ReceiveThread);
+                _receiveThread.Name = "iMon Receive Thread";
+                _receiveThread.IsBackground = true;
+                _receiveThread.Start();
             }
         }
 
@@ -1372,7 +1412,6 @@ namespace IRServer.Plugin
             else
             {
                 MouseEvent(dx, dy, rightButton, leftButton);
-                //if (_mouseHandler != null) _mouseHandler(this.Name, raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
             }
         }
 
@@ -1424,12 +1463,10 @@ namespace IRServer.Plugin
                         if (!deviceName.Equals(MouseDeviceName)) return;
                 }
 
-                
-                
+                #endregion
+
                 DebugWriteLine("Received Input Command ({0})", Enum.GetName(typeof(RawInput.RawInputType), raw.header.dwType));
                 DebugWriteLine("RAW HID DEVICE: {0}", deviceName);
-
-                #endregion
 
                 switch (raw.header.dwType)
                 {

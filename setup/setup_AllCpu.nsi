@@ -415,12 +415,12 @@ ${MementoSection} "IR Server" SectionIRServer
   ; Install Server/Service
   ${If} $ServerServiceMode == "IRServerAsApplication"
     ${LOG_TEXT} "INFO" "Adding IR Server to Autostart..."
-    !insertmacro SetAutoRun "IR Server" "$DIR_INSTALL\IR Server\IR Server.exe"
+    !insertmacro SetAutoRun "IR Server" '"$DIR_INSTALL\IR Server\IR Server.exe"'
   ${Else}
     ${LOG_TEXT} "INFO" "Installing IR Server as Service..."
     ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /install'
   ${EndIf}
-  !insertmacro SetAutoRun "IR Server Configuration" "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe"
+  !insertmacro SetAutoRun "IR Server Configuration" '"$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe"'
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRServer}
