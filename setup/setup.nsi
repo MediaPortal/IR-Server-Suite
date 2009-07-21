@@ -17,6 +17,15 @@
   !define BUILD_TYPE "Release"
 !endif
 
+##### CPU_TYPE
+# Uncomment the following line to create a setup in AnyCPU mode
+;!define CPU_TYPE "AnyCPU"
+# parameter for command line execution: /DCPU_TYPE=AnyCPU
+# by default BUILD_TYPE is set to "Release"
+!ifndef CPU_TYPE
+  !define CPU_TYPE "x86"
+!endif
+
 
 #---------------------------------------------------------------------------
 # DEVELOPMENT ENVIRONMENT
@@ -90,6 +99,9 @@ Var frominstall
 #---------------------------------------------------------------------------
 # INCLUDE FILES
 #---------------------------------------------------------------------------
+!if ${CPU_TYPE} != "x86"
+!include x64.nsh
+!endif
 !include MUI2.nsh
 !include Sections.nsh
 !include LogicLib.nsh
@@ -1123,6 +1135,13 @@ SectionEnd
 !ifdef MPplugins
 !macro GetMediaPortalPaths
 
+!if ${CPU_TYPE} != "x86"
+  ${If} ${RunningX64}
+    SetRegView 32
+    ${EnableX64FSRedirection}
+  ${Endif}
+!endif
+
   ; Get MediaPortal installation directory ...
   !insertmacro MP_GET_INSTALL_DIR $DIR_MEDIAPORTAL
   ${If} $DIR_MEDIAPORTAL != ""
@@ -1132,10 +1151,23 @@ SectionEnd
   ; Get MediaPortal TV Server installation directory ...
   !insertmacro TVSERVER_GET_INSTALL_DIR $DIR_TVSERVER
 
+!if ${CPU_TYPE} != "x86"
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
+!endif
+
   !macroend
 !endif
 
 Function ReadPreviousSettings
+!if ${CPU_TYPE} != "x86"
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
+!endif
 
   ; read and analyze previous version
   !insertmacro ReadPreviousVersion
@@ -1352,6 +1384,12 @@ FunctionEnd
 # UNINSTALLER CALLBACKS
 #---------------------------------------------------------------------------
 Function un.onInit
+!if ${CPU_TYPE} != "x86"
+  ${If} ${RunningX64}
+    SetRegView 64
+    ${DisableX64FSRedirection}
+  ${Endif}
+!endif
 
   ReadRegStr $DIR_INSTALL HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
 !ifdef MPplugins
