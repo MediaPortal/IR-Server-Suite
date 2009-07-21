@@ -21,7 +21,7 @@
 # Uncomment the following line to create a setup in AnyCPU mode
 ;!define CPU_TYPE "AnyCPU"
 # parameter for command line execution: /DCPU_TYPE=AnyCPU
-# by default BUILD_TYPE is set to "Release"
+# by default CPU_TYPE is set to "x86"
 !ifndef CPU_TYPE
   !define CPU_TYPE "x86"
 !endif
