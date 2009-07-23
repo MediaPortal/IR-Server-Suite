@@ -43,7 +43,7 @@
 #---------------------------------------------------------------------------
 !define PRODUCT_NAME          "IR Server Suite"
 !define PRODUCT_PUBLISHER     "Aaron Dinnage (and-81)"
-!define PRODUCT_WEB_SITE      "http://forum.team-mediaportal.com/mce_replacement_plugin-f165.html"
+!define PRODUCT_WEB_SITE      "http://forum.team-mediaportal.com/ir-server-suite-irss-165/"
 
 !define REG_UNINSTALL         "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define MEMENTO_REGISTRY_ROOT HKLM
@@ -651,7 +651,7 @@ ${MementoSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
 
 ${MementoSectionEnd}
 !macro Remove_${SectionTV3BlasterPlugin}
-  ${If} ${FileExists} "$DIR_TVSERVER\Plugins\MPUtils.*"
+  ${If} ${FileExists} "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.*"
 
     ${LOG_TEXT} "INFO" "Removing TV Server Blaster Plugin..."
     !insertmacro StopTVService
