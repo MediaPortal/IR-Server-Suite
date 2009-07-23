@@ -67,6 +67,52 @@ namespace IRServer.Plugin
 
     #endregion Notes
 
+    #region Nested type: Structures size
+
+    private int[] _availableBlastersSize =
+      {
+        // 1 IntPtr
+        1 * 4,
+        1 * 8
+      };
+
+    private int[] _deviceCapabilitiesSize =
+      {
+        // 5 IntPtr
+        5 * 4,
+        5 * 8
+      };
+
+    private int[] _receiveParamsSize =
+      {
+        // 3 IntPtr
+        3 * 4,
+        3 * 8
+      };
+
+    private int[] _startReceiveParamsSize =
+      {
+        // 2 IntPtr
+        2 * 4,
+        2 * 8
+      };
+
+    private int[] _transmitChunkSize =
+      {
+        // 3 IntPtr
+        3 * 4,
+        3 * 8
+      };
+
+    private int[] _transmitParamsSize =
+      {
+        // 4 IntPtr
+        4 * 4,
+        4 * 8
+      };
+
+    #endregion
+
     #region Nested type: AvailableBlasters
 
     /// <summary>
@@ -384,6 +430,8 @@ namespace IRServer.Plugin
     private ReadThreadMode _readThreadModeNext;
     private bool _deviceReceiveStarted;
 
+    private int _isSystem64Bit;
+
     #endregion Variables
 
     #region Constructor
@@ -411,12 +459,11 @@ namespace IRServer.Plugin
 
       try
       {
-        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
-
+        structPtr = Marshal.AllocHGlobal(_startReceiveParamsSize[_isSystem64Bit]);
         Marshal.StructureToPtr(structure, structPtr, false);
 
         int bytesReturned;
-        IoControl(IoCtrl.StartReceive, structPtr, Marshal.SizeOf(structure), IntPtr.Zero, 0, out bytesReturned);
+        IoControl(IoCtrl.StartReceive, structPtr, _startReceiveParamsSize[_isSystem64Bit], IntPtr.Zero, 0, out bytesReturned);
       }
       finally
       {
@@ -445,14 +492,14 @@ namespace IRServer.Plugin
 
       try
       {
-        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+        structPtr = Marshal.AllocHGlobal(_deviceCapabilitiesSize[_isSystem64Bit]);
 
         Marshal.StructureToPtr(structure, structPtr, false);
 
         int bytesReturned;
-        IoControl(IoCtrl.GetDetails, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
+        IoControl(IoCtrl.GetDetails, IntPtr.Zero, 0, structPtr, _deviceCapabilitiesSize[_isSystem64Bit], out bytesReturned);
 
-        structure = (DeviceCapabilities) Marshal.PtrToStructure(structPtr, typeof (DeviceCapabilities));
+        structure = (DeviceCapabilities)Marshal.PtrToStructure(structPtr, typeof(DeviceCapabilities));
       }
       finally
       {
@@ -469,10 +516,7 @@ namespace IRServer.Plugin
         _receivePort = receivePort;
 
       int learnPort = FirstHighBit(_learnPortMask);
-      if (learnPort != -1)
-        _learnPort = learnPort;
-      else
-        _learnPort = _receivePort;
+      _learnPort = learnPort != -1 ? learnPort : _receivePort;
 
       //DeviceCapabilityFlags flags = (DeviceCapabilityFlags)structure.DetailsFlags.ToInt32();
       //_legacyDevice = (int)(flags & DeviceCapabilityFlags.Legacy) != 0;
@@ -501,14 +545,14 @@ namespace IRServer.Plugin
 
       try
       {
-        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
+        structPtr = Marshal.AllocHGlobal(_availableBlastersSize[_isSystem64Bit]);
 
         Marshal.StructureToPtr(structure, structPtr, false);
 
         int bytesReturned;
-        IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
+        IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, structPtr, _availableBlastersSize[_isSystem64Bit], out bytesReturned);
 
-        structure = (AvailableBlasters) Marshal.PtrToStructure(structPtr, typeof (AvailableBlasters));
+        structure = (AvailableBlasters)Marshal.PtrToStructure(structPtr, typeof(AvailableBlasters));
       }
       finally
       {
@@ -540,14 +584,14 @@ namespace IRServer.Plugin
       else
         transmitParams.PulseSize = new IntPtr(carrier);
 
-      transmitParams.Flags = new IntPtr((int) mode);
+      transmitParams.Flags = new IntPtr((int)mode);
 
       TransmitChunk transmitChunk = new TransmitChunk();
       transmitChunk.OffsetToNextChunk = new IntPtr(0);
       transmitChunk.RepeatCount = new IntPtr(1);
       transmitChunk.ByteCount = new IntPtr(irData.Length);
 
-      int bufferSize = irData.Length + Marshal.SizeOf(typeof (TransmitChunk)) + 8;
+      int bufferSize = irData.Length + _transmitChunkSize[_isSystem64Bit] + 8;
       byte[] buffer = new byte[bufferSize];
 
       byte[] rawTransmitChunk = RawSerialize(transmitChunk);
@@ -560,7 +604,7 @@ namespace IRServer.Plugin
 
       try
       {
-        structurePtr = Marshal.AllocHGlobal(Marshal.SizeOf(transmitParams));
+        structurePtr = Marshal.AllocHGlobal(_transmitParamsSize[_isSystem64Bit]);
         bufferPtr = Marshal.AllocHGlobal(buffer.Length);
 
         Marshal.StructureToPtr(transmitParams, structurePtr, true);
@@ -568,7 +612,7 @@ namespace IRServer.Plugin
         Marshal.Copy(buffer, 0, bufferPtr, buffer.Length);
 
         int bytesReturned;
-        IoControl(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(typeof (TransmitParams)), bufferPtr, bufferSize,
+        IoControl(IoCtrl.Transmit, structurePtr, _transmitParamsSize[_isSystem64Bit], bufferPtr, bufferSize,
                   out bytesReturned);
       }
       finally
@@ -608,6 +652,7 @@ namespace IRServer.Plugin
           DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
           overlapped.ClearAndSetEvent(dangerousWaitHandle);
 
+          IrssUtils.IrssLog.Debug("inBufferSize={0}, outBufferSize={1}", inBufferSize, outBufferSize);
           bool deviceIoControl = DeviceIoControl(_eHomeHandle, ioControlCode, inBuffer, inBufferSize, outBuffer,
                                                  outBufferSize, out bytesReturned, overlapped.Overlapped);
           lastError = Marshal.GetLastWin32Error();
@@ -681,6 +726,9 @@ namespace IRServer.Plugin
         DebugWriteLine("Start()");
         DebugWriteLine("Device Guid: {0}", _deviceGuid);
         DebugWriteLine("Device Path: {0}", _devicePath);
+
+        _isSystem64Bit = IrssUtils.Win32.Check64Bit() ? 1 : 0;
+        DebugWriteLine("Operating system arch is {0}", _isSystem64Bit == 1 ? "x64" : "x86");
 
         _notifyWindow = new NotifyWindow();
         _notifyWindow.Create();
@@ -829,7 +877,7 @@ namespace IRServer.Plugin
 
       int portMask = 0;
       // Hardware ports map to bits in mask with Port 1 at left, ascending to right
-      switch ((BlasterPort) port)
+      switch ((BlasterPort)port)
       {
         case BlasterPort.Both:
           portMask = _txPortMask;
@@ -877,11 +925,11 @@ namespace IRServer.Plugin
       int dataIndex = 0;
       for (int timeIndex = 0; timeIndex < code.TimingData.Length; timeIndex++)
       {
-        uint time = (uint) (50 * (int) Math.Round((double) code.TimingData[timeIndex] / 50));
+        uint time = (uint)(50 * (int)Math.Round((double)code.TimingData[timeIndex] / 50));
 
         for (int timeShift = 0; timeShift < 4; timeShift++)
         {
-          data[dataIndex++] = (byte) (time & 0xFF);
+          data[dataIndex++] = (byte)(time & 0xFF);
           time >>= 8;
         }
       }
@@ -894,7 +942,7 @@ namespace IRServer.Plugin
     /// </summary>
     private void StartReadThread(ReadThreadMode mode)
     {
-      DebugWriteLine("StartReadThread({0})", Enum.GetName(typeof (ReadThreadMode), mode));
+      DebugWriteLine("StartReadThread({0})", Enum.GetName(typeof(ReadThreadMode), mode));
 
       if (_readThread != null)
       {
@@ -905,9 +953,11 @@ namespace IRServer.Plugin
       _deviceReceiveStarted = false;
       _readThreadModeNext = mode;
 
-      _readThread = new Thread(ReadThread);
-      _readThread.Name = "MicrosoftMceTransceiver.DriverVista.ReadThread";
-      _readThread.IsBackground = true;
+      _readThread = new Thread(ReadThread)
+                      {
+                        Name = "MicrosoftMceTransceiver.DriverVista.ReadThread",
+                        IsBackground = true
+                      };
       _readThread.Start();
     }
 
@@ -917,10 +967,9 @@ namespace IRServer.Plugin
     private void RestartReadThread(ReadThreadMode mode)
     {
       // Alternative to StopReadThread() ... StartReadThread(). Avoids Thread.Abort.
-      int numTriesLeft;
 
       _readThreadModeNext = mode;
-      numTriesLeft = MaxReadThreadTries;
+      int numTriesLeft = MaxReadThreadTries;
 
       // Simple, optimistic wait for read thread to respond. Has room for improvement, but tends to work first time in practice.
       while (_readThreadMode != _readThreadModeNext && numTriesLeft-- != 0)
@@ -976,12 +1025,10 @@ namespace IRServer.Plugin
         return;
       }
 
-      int lastError;
-
       _eHomeHandle = CreateFile(_devicePath, CreateFileAccessTypes.GenericRead | CreateFileAccessTypes.GenericWrite,
                                 CreateFileShares.None, IntPtr.Zero, CreateFileDisposition.OpenExisting,
                                 CreateFileAttributes.Overlapped, IntPtr.Zero);
-      lastError = Marshal.GetLastWin32Error();
+      int lastError = Marshal.GetLastWin32Error();
       if (_eHomeHandle.IsInvalid)
       {
         _eHomeHandle = null;
@@ -1062,7 +1109,7 @@ namespace IRServer.Plugin
 
       try
       {
-        int receiveParamsSize = Marshal.SizeOf(typeof (ReceiveParams)) + DeviceBufferSize + 8;
+        int receiveParamsSize = _receiveParamsSize[_isSystem64Bit] + DeviceBufferSize + 8;
         receiveParamsPtr = Marshal.AllocHGlobal(receiveParamsSize);
 
         ReceiveParams receiveParams = new ReceiveParams();
@@ -1087,11 +1134,11 @@ namespace IRServer.Plugin
           int bytesRead;
           IoControl(IoCtrl.Receive, IntPtr.Zero, 0, receiveParamsPtr, receiveParamsSize, out bytesRead);
 
-          if (bytesRead > Marshal.SizeOf(receiveParams))
+          if (bytesRead > _receiveParamsSize[_isSystem64Bit])
           {
             int dataSize = bytesRead;
 
-            bytesRead -= Marshal.SizeOf(receiveParams);
+            bytesRead -= _receiveParamsSize[_isSystem64Bit];
 
             byte[] packetBytes = new byte[bytesRead];
             byte[] dataBytes = new byte[dataSize];
@@ -1111,10 +1158,10 @@ namespace IRServer.Plugin
           }
 
           // Determine carrier frequency when learning ...
-          if (_readThreadMode == ReadThreadMode.Learning && bytesRead >= Marshal.SizeOf(receiveParams))
+          if (_readThreadMode == ReadThreadMode.Learning && bytesRead >= _receiveParamsSize[_isSystem64Bit])
           {
             ReceiveParams receiveParams2 =
-              (ReceiveParams) Marshal.PtrToStructure(receiveParamsPtr, typeof (ReceiveParams));
+              (ReceiveParams)Marshal.PtrToStructure(receiveParamsPtr, typeof(ReceiveParams));
 
             if (receiveParams2.DataEnd.ToInt32() != 0)
             {
@@ -1210,7 +1257,7 @@ namespace IRServer.Plugin
 
     private static int GetCarrierPeriod(int carrier)
     {
-      return (int) Math.Round(1000000.0 / carrier);
+      return (int)Math.Round(1000000.0 / carrier);
     }
 
     private static TransmitMode GetTransmitMode(int carrier)
