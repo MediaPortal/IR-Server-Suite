@@ -327,7 +327,14 @@ Section "-Core"
   SetOutPath "$DIR_INSTALL"
   ;File "..\IR Server Suite\Documentation\${PRODUCT_NAME}.chm"
 
-  
+
+  ; common files
+  File "..\IR Server Suite\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
+  File "..\IR Server Suite\Common\IrssScheduler\bin\${Build_Type}\IrssScheduler.*"
+  File "..\IR Server Suite\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
+  File "..\IR Server Suite\Common\ShellLink\bin\${Build_Type}\ShellLink.*"
+
+
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
 
   ; Create app data directories
@@ -638,7 +645,7 @@ SectionEnd
 
 ;======================================
 
-${MementoSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
+${MementoUnselectedSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
   ${LOG_TEXT} "INFO" "Installing TV Server Blaster Plugin..."
 
   ; Write plugin dll
@@ -713,17 +720,17 @@ SectionGroupEnd
 !endif
 
 SectionGroup "Tools" SectionGroupTools
-/*
+
 ${MementoSection} "Abstractor" SectionAbstractor
   ${LOG_TEXT} "INFO" "Installing Abstractor..."
   ${KILLPROCESS} "Abstractor.exe"
 
   ; install files
-  SetOutPath "$DIR_INSTALL\Abstractor"
-  File "..\IR Server Suite\Applications\Abstractor\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\Abstractor\bin\${Build_Type}\Abstractor.*"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk" "$DIR_INSTALL\Abstractor\Abstractor.exe" "" "$DIR_INSTALL\Abstractor\Abstractor.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk" "$DIR_INSTALL\Abstractor.exe" "" "$DIR_INSTALL\Abstractor.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionAbstractor}
@@ -731,12 +738,12 @@ ${MementoSectionEnd}
   ${KILLPROCESS} "Abstractor.exe"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk""
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Abstractor"
+  Delete "$DIR_INSTALL\Abstractor.*"
 !macroend
-*/
+
 ;======================================
 
 ${MementoSection} "Debug Client" SectionDebugClient
@@ -744,14 +751,14 @@ ${MementoSection} "Debug Client" SectionDebugClient
   ${KILLPROCESS} "DebugClient.exe"
 
   ; install files
-  SetOutPath "$DIR_INSTALL\Debug Client"
-  File "..\IR Server Suite\Applications\Debug Client\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\Debug Client\bin\${Build_Type}\DebugClient.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Debug Client"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk" "$DIR_INSTALL\Debug Client\DebugClient.exe" "" "$DIR_INSTALL\Debug Client\DebugClient.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk" "$DIR_INSTALL\DebugClient.exe" "" "$DIR_INSTALL\DebugClient.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionDebugClient}
@@ -762,7 +769,7 @@ ${MementoSectionEnd}
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk"
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Debug Client"
+  Delete "$DIR_INSTALL\DebugClient.*"
 !macroend
 
 ;======================================
@@ -772,14 +779,14 @@ ${MementoSection} "IR File Tool" SectionIRFileTool
   ${KILLPROCESS} "IRFileTool.exe"
 
   ; install files
-  SetOutPath "$DIR_INSTALL\IR File Tool"
-  File "..\IR Server Suite\Applications\IR File Tool\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\IR File Tool\bin\${Build_Type}\IRFileTool.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR File Tool"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk" "$DIR_INSTALL\IR File Tool\IRFileTool.exe" "" "$DIR_INSTALL\IR File Tool\IRFileTool.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk" "$DIR_INSTALL\IRFileTool.exe" "" "$DIR_INSTALL\IRFileTool.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRFileTool}
@@ -790,7 +797,7 @@ ${MementoSectionEnd}
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk"
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\IR File Tool"
+  Delete "$DIR_INSTALL\IRFileTool.*"
 !macroend
 
 ;======================================
@@ -800,14 +807,14 @@ ${MementoSection} "Keyboard Input Relay" SectionKeyboardInputRelay
   ${KILLPROCESS} "KeyboardInputRelay.exe"
 
   ; install files
-  SetOutPath "$DIR_INSTALL\Keyboard Input Relay"
-  File "..\IR Server Suite\Applications\Keyboard Input Relay\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\Keyboard Input Relay\bin\${Build_Type}\KeyboardInputRelay.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" "" "$DIR_INSTALL\Keyboard Input Relay\KeyboardInputRelay.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\KeyboardInputRelay.exe" "" "$DIR_INSTALL\KeyboardInputRelay.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionKeyboardInputRelay}
@@ -821,7 +828,7 @@ ${MementoSectionEnd}
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk"
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Keyboard Input Relay"
+  Delete "$DIR_INSTALL\KeyboardInputRelay.*"
 !macroend
 
 ;======================================
@@ -831,8 +838,8 @@ ${MementoSection} "Translator" SectionTranslator
   ${KILLPROCESS} "Translator.exe"
 
   ; install files
-  SetOutPath "$DIR_INSTALL\Translator"
-  File "..\IR Server Suite\Applications\Translator\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\Translator\bin\${Build_Type}\Translator.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator"
@@ -844,12 +851,12 @@ ${MementoSection} "Translator" SectionTranslator
   File "..\IR Server Suite\Applications\Translator\Default Settings\*.xml"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator\Translator.exe" "" "$DIR_INSTALL\Translator\Translator.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator.exe" "" "$DIR_INSTALL\Translator.exe" 0
 
 
   ; check if Translator is an autorun app
   ${If} $AutoRunTranslator == 1
-    !insertmacro SetAutoRun "Translator" "$DIR_INSTALL\Translator\Translator.exe"
+    !insertmacro SetAutoRun "Translator" "$DIR_INSTALL\Translator.exe"
   ${EndIf}
 ${MementoSectionEnd}
 !macro Remove_${SectionTranslator}
@@ -863,7 +870,7 @@ ${MementoSectionEnd}
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk"
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Translator"
+  Delete "$DIR_INSTALL\Translator.*"
 !macroend
 
 ;======================================
@@ -873,16 +880,16 @@ ${MementoSection} "Tray Launcher" SectionTrayLauncher
   ${KILLPROCESS} "TrayLauncher.exe"
 
   ; install files
-  SetOutPath "$DIR_INSTALL\Tray Launcher"
-  File "..\IR Server Suite\Applications\Tray Launcher\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\Tray Launcher\bin\${Build_Type}\TrayLauncher.*"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe" "" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk" "$DIR_INSTALL\TrayLauncher.exe" "" "$DIR_INSTALL\TrayLauncher.exe" 0
 
 
   ; check if TrayLauncher is an autorun app
   ${If} $AutoRunTrayLauncher == 1
-    !insertmacro SetAutoRun "Tray Launcher" "$DIR_INSTALL\Tray Launcher\TrayLauncher.exe"
+    !insertmacro SetAutoRun "Tray Launcher" "$DIR_INSTALL\TrayLauncher.exe"
   ${EndIf}
 ${MementoSectionEnd}
 !macro Remove_${SectionTrayLauncher}
@@ -896,22 +903,22 @@ ${MementoSectionEnd}
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk"
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Tray Launcher"
+  Delete "$DIR_INSTALL\TrayLauncher.*"
 !macroend
 
 ;======================================
 
 ${MementoSection} "Virtual Remote" SectionVirtualRemote
   ${LOG_TEXT} "INFO" "Installing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
-  ${KILLPROCESS} "WebRemote.exe"
   ${KILLPROCESS} "VirtualRemote.exe"
   ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
+  ${KILLPROCESS} "WebRemote.exe"
 
   ; Installing Virtual Remote and Web Remote
-  SetOutPath "$DIR_INSTALL\Virtual Remote"
-  File "..\IR Server Suite\Applications\Virtual Remote\bin\${Build_Type}\*.*"
-  File "..\IR Server Suite\Applications\Web Remote\bin\${Build_Type}\WebRemote.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\Virtual Remote\bin\${Build_Type}\VirtualRemote.*"
   File "..\IR Server Suite\Applications\Virtual Remote Skin Editor\bin\${Build_Type}\VirtualRemoteSkinEditor.*"
+  File "..\IR Server Suite\Applications\Web Remote\bin\${Build_Type}\WebRemote.*"
 
   ; Installing skins
   SetOutPath "$DIR_INSTALL\Virtual Remote\Skins"
@@ -927,17 +934,17 @@ ${MementoSection} "Virtual Remote" SectionVirtualRemote
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Virtual Remote"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk" "$DIR_INSTALL\Virtual Remote\VirtualRemote.exe" "" "$DIR_INSTALL\Virtual Remote\VirtualRemote.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk" "$DIR_INSTALL\Virtual Remote\VirtualRemoteSkinEditor.exe" "" "$DIR_INSTALL\Virtual Remote\VirtualRemoteSkinEditor.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk" "$DIR_INSTALL\VirtualRemote.exe" "" "$DIR_INSTALL\VirtualRemote.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk" "$DIR_INSTALL\VirtualRemoteSkinEditor.exe" "" "$DIR_INSTALL\VirtualRemoteSkinEditor.exe" 0
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote for Smart Devices.lnk" "$DIR_INSTALL\Virtual Remote\Smart Devices"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk" "$DIR_INSTALL\Virtual Remote\WebRemote.exe" "" "$DIR_INSTALL\Virtual Remote\WebRemote.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk" "$DIR_INSTALL\WebRemote.exe" "" "$DIR_INSTALL\WebRemote.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionVirtualRemote}
   ${LOG_TEXT} "INFO" "Removing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
-  ${KILLPROCESS} "WebRemote.exe"
   ${KILLPROCESS} "VirtualRemote.exe"
   ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
+  ${KILLPROCESS} "WebRemote.exe"
 
   ; remove start menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk"
@@ -946,6 +953,9 @@ ${MementoSectionEnd}
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk"
 
   ; remove files
+  Delete "$DIR_INSTALL\VirtualRemote.*"
+  Delete "$DIR_INSTALL\VirtualRemoteSkinEditor.*"
+  Delete "$DIR_INSTALL\WebRemote.*"
   RMDir /R /REBOOTOK "$DIR_INSTALL\Virtual Remote"
 !macroend
 
@@ -955,30 +965,31 @@ SectionGroupEnd
 
 SectionGroup "CommandLine Tools" SectionGroupCmdLineTools
 
-${MementoSection} "IR Blast" SectionIRBlast
+${MementoUnselectedSection} "IR Blast" SectionIRBlast
   ${LOG_TEXT} "INFO" "Installing IR Blast..."
 
   ; install files
-  SetOutPath "$DIR_INSTALL\IR Blast"
-  File "..\IR Server Suite\Applications\IR Blast (No Window)\bin\${Build_Type}\*.*"
-  File "..\IR Server Suite\Applications\IR Blast\bin\${Build_Type}\IRBlast.exe"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\IR Blast\bin\${Build_Type}\IRBlast.*"
+  File "..\IR Server Suite\Applications\IR Blast (No Window)\bin\${Build_Type}\IRBlast-NoWindow.*"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRBlast}
   ${LOG_TEXT} "INFO" "Removing IR Blast..."
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\IR Blast"
+  Delete "$DIR_INSTALL\IRBlast.*"
+  Delete "$DIR_INSTALL\IRBlast-NoWindow.*"
 !macroend
 
 ;======================================
 
-${MementoSection} "Dreambox Tuner" SectionDboxTuner
+${MementoUnselectedSection} "Dreambox Tuner" SectionDboxTuner
   ${LOG_TEXT} "INFO" "Installing Dreambox Tuner..."
 
   ; install files
-  SetOutPath "$DIR_INSTALL\Dbox Tuner"
-  File "..\IR Server Suite\Applications\Dbox Tuner\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\Dbox Tuner\bin\${Build_Type}\DboxTuner.*"
 
   ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Dbox Tuner"
@@ -988,24 +999,24 @@ ${MementoSectionEnd}
   ${LOG_TEXT} "INFO" "Removing Dreambox Tuner..."
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Dbox Tuner"
+  Delete "$DIR_INSTALL\DboxTuner.*"
 !macroend
 
 ;======================================
 
-${MementoSection} "Hauppauge PVR Tuner" SectionHcwPvrTuner
+${MementoUnselectedSection} "Hauppauge PVR Tuner" SectionHcwPvrTuner
   ${LOG_TEXT} "INFO" "Installing Hauppauge PVR Tuner..."
 
   ; install files
-  SetOutPath "$DIR_INSTALL\HCW PVR Tuner"
-  File "..\IR Server Suite\Applications\HCW PVR Tuner\bin\${Build_Type}\*.*"
+  SetOutPath "$DIR_INSTALL"
+  File "..\IR Server Suite\Applications\HCW PVR Tuner\bin\${Build_Type}\HcwPvrTuner.*"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionHcwPvrTuner}
   ${LOG_TEXT} "INFO" "Removing Hauppauge PVR Tuner..."
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\HCW PVR Tuner"
+  Delete "$DIR_INSTALL\HcwPvrTuner.*"
 !macroend
 
 SectionGroupEnd
