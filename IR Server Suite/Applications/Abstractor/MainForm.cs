@@ -217,7 +217,7 @@ namespace Abstractor
 
     private DelegateAddStatusLine _addStatusLine;
     private DelegateSetDevices _setDevices;
-
+    private DelegateRemoteEvent _remoteEvent;
     private void AddStatusLine(string status)
     {
       IrssLog.Info(status);
@@ -227,7 +227,7 @@ namespace Abstractor
       listBoxStatus.SetSelected(listBoxStatus.Items.Count - 1, true);
     }
 
-    private void SetDevices(string[] devices)
+    private void SetDevices(string[] devices, string source)
     {
       _devices = devices;
 
@@ -236,7 +236,7 @@ namespace Abstractor
       comboBoxDevice.SelectedIndex = 0;
 
       if (String.IsNullOrEmpty(textBoxRemoteName.Text))
-        textBoxRemoteName.Text = devices[0];
+        textBoxRemoteName.Text = _devices[0];
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -245,6 +245,7 @@ namespace Abstractor
 
       _addStatusLine = null;
       _setDevices = null;
+      _remoteEvent = null;
 
       IrssLog.Close();
     }
@@ -280,10 +281,10 @@ namespace Abstractor
           case MessageType.ActiveReceivers:
             Invoke(_addStatusLine, received.GetDataAsString());
 
-            string[] receivers = received.GetDataAsString().Split(new char[] {','},
+            string[] receivers = received.GetDataAsString().Split(new[] { ',' },
                                                                   StringSplitOptions.RemoveEmptyEntries);
 
-            Invoke(_setDevices, receivers);
+            Invoke(_setDevices, receivers, "ActiveReceivers");
             break;
 
           case MessageType.RemoteEvent:
@@ -330,9 +331,14 @@ namespace Abstractor
       {
         List<string> newDevices = new List<string>(_devices);
         newDevices.Add(deviceName);
-        Invoke(_setDevices, new object[] {newDevices.ToArray()});
+        Invoke(_setDevices, new object[] { newDevices.ToArray() }, "Found Devices");
       }
 
+      Invoke(_remoteEvent, deviceName, keyCode);
+    }
+
+    private void RemoteEvent(string deviceName, string keyCode)
+    {
       // If this remote event matches the criteria then set it to an abstract button in the list view ...
       if (deviceName.Equals(_selectedDevice, StringComparison.OrdinalIgnoreCase))
       {
@@ -365,9 +371,9 @@ namespace Abstractor
       Exception ex = obj as Exception;
 
       if (ex != null)
-        Invoke(_addStatusLine, new Object[] {String.Format("Communications failure: {0}", ex.Message)});
+        Invoke(_addStatusLine, new Object[] { String.Format("Communications failure: {0}", ex.Message) });
       else
-        Invoke(_addStatusLine, new Object[] {"Communications failure"});
+        Invoke(_addStatusLine, new Object[] { "Communications failure" });
 
       StopClient();
     }
@@ -380,17 +386,17 @@ namespace Abstractor
       _client.Send(message);
     }
 
-    private void Disconnected(object obj)
+    private static void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
 
       Thread.Sleep(1000);
     }
 
-    private bool StartClient(IPEndPoint endPoint)
+    private void StartClient(IPEndPoint endPoint)
     {
       if (_client != null)
-        return false;
+        return;
 
       _client = new Client(endPoint, ReceivedMessage);
       _client.CommsFailureCallback = CommsFailure;
@@ -399,13 +405,9 @@ namespace Abstractor
 
       if (_client.Start())
       {
-        return true;
+        return;
       }
-      else
-      {
-        _client = null;
-        return false;
-      }
+      _client = null;
     }
 
     private void StopClient()
@@ -432,8 +434,8 @@ namespace Abstractor
 
         _serverHost = comboBoxComputer.Text;
 
-        IPAddress serverIP = Client.GetIPFromName(_serverHost);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
+        IPAddress serverIp = Client.GetIPFromName(_serverHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIp, Server.DefaultPort);
 
         StartClient(endPoint);
       }
@@ -487,11 +489,11 @@ namespace Abstractor
 
     private void ClearMap()
     {
-      string[] abstractButtons = Enum.GetNames(typeof (AbstractButton));
+      string[] abstractButtons = Enum.GetNames(typeof(AbstractButton));
 
       listViewButtonMap.Items.Clear();
       foreach (string abstractButton in abstractButtons)
-        listViewButtonMap.Items.Add(new ListViewItem(new string[] {abstractButton, String.Empty}));
+        listViewButtonMap.Items.Add(new ListViewItem(new[] { abstractButton, String.Empty }));
     }
 
     private void SaveMap()
@@ -552,12 +554,12 @@ namespace Abstractor
       table.ReadXmlSchema(AbstractRemoteSchemaFile);
       table.ReadXml(path);
 
-      string[] abstractButtons = Enum.GetNames(typeof (AbstractButton));
+      string[] abstractButtons = Enum.GetNames(typeof(AbstractButton));
 
       listViewButtonMap.Items.Clear();
       foreach (string abstractButton in abstractButtons)
       {
-        string[] subitems = new string[] {abstractButton, String.Empty};
+        string[] subitems = new[] { abstractButton, String.Empty };
 
         DataRow[] rows = table.Select(String.Format("AbstractButton = '{0}'", abstractButton));
 
@@ -596,6 +598,7 @@ namespace Abstractor
 
       _addStatusLine = AddStatusLine;
       _setDevices = SetDevices;
+      _remoteEvent = RemoteEvent;
 
       comboBoxComputer.Items.Clear();
       comboBoxComputer.Items.Add("localhost");
@@ -652,7 +655,13 @@ namespace Abstractor
 
     #region Nested type: DelegateSetDevices
 
-    private delegate void DelegateSetDevices(string[] devices);
+    private delegate void DelegateSetDevices(string[] devices, string source);
+
+    #endregion
+
+    #region Nested type: DelegateRemoteEvent
+
+    private delegate void DelegateRemoteEvent(string deviceName, string keyCode);
 
     #endregion
   }
