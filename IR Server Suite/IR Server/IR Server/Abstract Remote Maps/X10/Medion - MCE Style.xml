@@ -1,0 +1,47 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="X10CMD_UP" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_DN" AbstractButton="Down" />
+  <RemoteTable RawCode="X10CMD_LEFT" AbstractButton="Left" />
+  <RemoteTable RawCode="X10CMD_RIGHT" AbstractButton="Right" />
+  <RemoteTable RawCode="X10CMD_ENTER" AbstractButton="OK" />
+  <RemoteTable RawCode="X10CMD_VOL_DN" AbstractButton="VolumeUp" />
+  <RemoteTable RawCode="X10CMD_VOL_UP" AbstractButton="VolumeDown" />
+  <RemoteTable RawCode="X10CMD_CH_UP" AbstractButton="ChannelUp" />
+  <RemoteTable RawCode="X10CMD_CH_DN" AbstractButton="ChannelDown" />
+  <RemoteTable RawCode="X10CMD_BUTTON_A" AbstractButton="Mute" />
+  <RemoteTable RawCode="X10CMD_0" AbstractButton="Number0" />
+  <RemoteTable RawCode="X10CMD_1" AbstractButton="Number1" />
+  <RemoteTable RawCode="X10CMD_2" AbstractButton="Number2" />
+  <RemoteTable RawCode="X10CMD_3" AbstractButton="Number3" />
+  <RemoteTable RawCode="X10CMD_4" AbstractButton="Number4" />
+  <RemoteTable RawCode="X10CMD_5" AbstractButton="Number5" />
+  <RemoteTable RawCode="X10CMD_6" AbstractButton="Number6" />
+  <RemoteTable RawCode="X10CMD_7" AbstractButton="Number7" />
+  <RemoteTable RawCode="X10CMD_8" AbstractButton="Number8" />
+  <RemoteTable RawCode="X10CMD_9" AbstractButton="Number9" />
+  <RemoteTable RawCode="X10CMD_MTARTIST" AbstractButton="Red" />
+  <RemoteTable RawCode="X10CMD_MTGENRE" AbstractButton="Green" />
+  <RemoteTable RawCode="X10CMD_MTTRACK" AbstractButton="Yellow" />
+  <RemoteTable RawCode="X10CMD_MTUP" AbstractButton="Blue" />
+  <RemoteTable RawCode="X10CMD_MTADDDELETE" AbstractButton="Teletext" />
+  <RemoteTable RawCode="X10CMD_PLAY" AbstractButton="Play" />
+  <RemoteTable RawCode="X10CMD_NONE" AbstractButton="Pause" />
+  <RemoteTable RawCode="X10CMD_STOP" AbstractButton="Stop" />
+  <RemoteTable RawCode="X10CMD_FF" AbstractButton="FastForward" />
+  <RemoteTable RawCode="X10CMD_REWIND" AbstractButton="Rewind" />
+  <RemoteTable RawCode="X10CMD_RECORD" AbstractButton="Record" />
+  <RemoteTable RawCode="X10CMD_BUTTON_F" AbstractButton="NextChapter" />
+  <RemoteTable RawCode="X10CMD_BUTTON_E" AbstractButton="PreviousChapter" />
+  <RemoteTable RawCode="X10CMD_POWER" AbstractButton="Power" />
+  <RemoteTable RawCode="X10CMD_MTCHANNELLIST" AbstractButton="Clear" />
+  <RemoteTable RawCode="X10CMD_MTLEFT" AbstractButton="Enter" />
+  <RemoteTable RawCode="X10CMD_MTDOWN" AbstractButton="Star" />
+  <RemoteTable RawCode="X10CMD_MTRIGHT" AbstractButton="Hash" />
+  <RemoteTable RawCode="X10CMD_RESIZE" AbstractButton="Back" />
+  <RemoteTable RawCode="X10CMD_MTPC" AbstractButton="Info" />  
+  <RemoteTable RawCode="X10CMD_BOOKMARK" AbstractButton="LiveTV" />
+  <RemoteTable RawCode="X10CMD_DVDMODE" AbstractButton="DVD" />
+  <RemoteTable RawCode="X10CMD_MTALBUM" AbstractButton="Guide" />
+  <RemoteTable RawCode="X10CMD_MTAB" AbstractButton="TV" />
+</DocumentElement>
