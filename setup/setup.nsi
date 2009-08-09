@@ -738,7 +738,7 @@ ${MementoSectionEnd}
   ${KILLPROCESS} "Abstractor.exe"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk""
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\Abstractor.*"
