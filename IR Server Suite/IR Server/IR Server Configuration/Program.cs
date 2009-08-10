@@ -91,7 +91,7 @@ namespace IRServer.Configuration
         internal const string ServerDisplayName = "IR Server";
 
         private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, @"IR Server\IR Server.xml");
-        internal static readonly string IRServerFile = Path.Combine(Common.FolderProgramFiles, @"IR Server\IR Server.exe");
+        internal static readonly string IRServerFile = Path.Combine(Common.FolderProgramFiles, @"IR Server.exe");
 
         internal static readonly Icon _iconGray = new Icon(Resources.iconGray, new Size(16, 16));
         internal static readonly Icon _iconGreen = new Icon(Resources.iconGreen, new Size(16, 16));
