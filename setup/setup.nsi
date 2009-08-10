@@ -370,14 +370,18 @@ ${MementoSection} "IR Server" SectionIRServer
   ;${LOG_TEXT} "INFO" "Uninstalling current IRServer..."
   ;ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /uninstall'
 
-
+  SetOutPath "$DIR_INSTALL"
   ${LOG_TEXT} "INFO" "Installing IR Server..."
-  SetOutPath "$DIR_INSTALL\IR Server"
-  File "..\IR Server Suite\IR Server\IR Server\bin\${Build_Type}\*.*"
+  File "..\IR Server Suite\IR Server\IR Server\bin\${Build_Type}\IR Server.*"
+  File "..\IR Server Suite\IR Server\IR Server\Install.cmd"
+  File "..\IR Server Suite\IR Server\IR Server\Uninstall.cmd"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Configuration..."
-  SetOutPath "$DIR_INSTALL\IR Server Configuration"
-  File "..\IR Server Suite\IR Server\IR Server Configuration\bin\${Build_Type}\*.*"
+  File "..\IR Server Suite\IR Server\IR Server Configuration\bin\${Build_Type}\IR Server Configuration.*"
+  File "..\IR Server Suite\IR Server\SourceGrid\DevAge*"
+  File "..\IR Server Suite\IR Server\SourceGrid\SourceGrid*"
+
+  File "..\IR Server Suite\IR Server Plugins\IR Server Plugin Interface\bin\${Build_Type}\IRServerPluginInterface.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
   SetOutPath "$DIR_INSTALL\IR Server Plugins"
@@ -457,9 +461,15 @@ ${MementoSectionEnd}
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk"
 
   ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server"
-  RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server Configuration"
-  RMDir /R /REBOOTOK "$DIR_INSTALL\IR Server Plugins"
+  Delete "$DIR_INSTALL\IR Server.*"
+  Delete "$DIR_INSTALL\Install.cmd"
+  Delete "$DIR_INSTALL\Uninstall.cmd"
+
+  Delete "$DIR_INSTALL\IR Server Configuration.*"
+  Delete "$DIR_INSTALL\DevAge*"
+  Delete "$DIR_INSTALL\SourceGrid*"
+
+  Delete "$DIR_INSTALL\IRServerPluginInterface.*"
 !macroend
 
 ;======================================
