@@ -164,7 +164,7 @@ BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 !define MUI_COMPONENTSPAGE_SMALLDESC
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 ;!define MUI_FINISHPAGE_RUN_NOTCHECKED
-;!define MUI_FINISHPAGE_RUN      "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe"
+;!define MUI_FINISHPAGE_RUN      "$DIR_INSTALL\IR Server Configuration.exe"
 ;!define MUI_FINISHPAGE_RUN_TEXT "Run IR Server Configuration"
 
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -302,10 +302,10 @@ Section "-prepare"
 /* OBSOLETE since irss is uninstalled before
   DetailPrint "Preparing to install ..."
 
-  IfFileExists "$DIR_INSTALL\IR Server\IR Server.exe" StopIRServer SkipStopIRServer
+  IfFileExists "$DIR_INSTALL\IR Server.exe" StopIRServer SkipStopIRServer
 
 StopIRServer:
-  ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /stop'
+  ExecWait '"$DIR_INSTALL\IR Server.exe" /stop'
 
 SkipStopIRServer:
   Sleep 100
@@ -368,7 +368,7 @@ ${MementoSection} "IR Server" SectionIRServer
   ;${LOG_TEXT} "INFO" "Removing current IRServer from Autostart..."
   ;!insertmacro RemoveAutoRun "IR Server"
   ;${LOG_TEXT} "INFO" "Uninstalling current IRServer..."
-  ;ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /uninstall'
+  ;ExecWait '"$DIR_INSTALL\IR Server.exe" /uninstall'
 
   SetOutPath "$DIR_INSTALL"
   ${LOG_TEXT} "INFO" "Installing IR Server..."
@@ -433,17 +433,17 @@ ${MementoSection} "IR Server" SectionIRServer
   SetOverwrite on
 
   ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk" "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe" "" "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk" "$DIR_INSTALL\IR Server Configuration.exe" "" "$DIR_INSTALL\IR Server Configuration.exe" 0
 
   ; Install Server/Service
   ${If} $ServerServiceMode == "IRServerAsApplication"
     ${LOG_TEXT} "INFO" "Adding IR Server to Autostart..."
-    !insertmacro SetAutoRun "IR Server" '"$DIR_INSTALL\IR Server\IR Server.exe"'
+    !insertmacro SetAutoRun "IR Server" '"$DIR_INSTALL\IR Server.exe"'
   ${Else}
     ${LOG_TEXT} "INFO" "Installing IR Server as Service..."
-    ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /install'
+    ExecWait '"$DIR_INSTALL\IR Server.exe" /install'
   ${EndIf}
-  !insertmacro SetAutoRun "IR Server Configuration" '"$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe"'
+  !insertmacro SetAutoRun "IR Server Configuration" '"$DIR_INSTALL\IR Server Configuration.exe"'
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRServer}
@@ -455,7 +455,7 @@ ${MementoSectionEnd}
   ${LOG_TEXT} "INFO" "Removing IR Server from Autostart..."
   !insertmacro RemoveAutoRun "IR Server"
   ${LOG_TEXT} "INFO" "Uninstalling IR Server as Service..."
-  ExecWait '"$DIR_INSTALL\IR Server\IR Server.exe" /uninstall'
+  ExecWait '"$DIR_INSTALL\IR Server.exe" /uninstall'
   !insertmacro RemoveAutoRun "IR Server Configuration"
 
   ; remove start menu shortcuts
@@ -1291,12 +1291,12 @@ ${If} ${SectionIsSelected} ${SectionIRServer}
   ; start Server/Service
   ${If} $ServerServiceMode == "IRServerAsApplication"
     ${LOG_TEXT} "INFO" "Starting IR Server..."
-    Exec "$DIR_INSTALL\IR Server\IR Server.exe"
+    Exec "$DIR_INSTALL\IR Server.exe"
   ${Else}
     ${LOG_TEXT} "INFO" "Starting IR Server..."
-    Exec '"$DIR_INSTALL\IR Server\IR Server.exe" /start'
+    Exec '"$DIR_INSTALL\IR Server.exe" /start'
   ${EndIf}
-  Exec "$DIR_INSTALL\IR Server Configuration\IR Server Configuration.exe"
+  Exec "$DIR_INSTALL\IR Server Configuration.exe"
 
 ${EndIf}
 
