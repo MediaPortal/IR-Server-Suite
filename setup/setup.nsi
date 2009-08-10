@@ -420,6 +420,7 @@ ${MementoSection} "IR Server" SectionIRServer
   File "..\IR Server Suite\IR Server Plugins\X10 Transceiver\bin\${Build_Type}\X10 Transceiver.*"
   File "..\IR Server Suite\IR Server Plugins\X10 Transceiver\bin\${Build_Type}\Interop.X10.dll"
   File "..\IR Server Suite\IR Server Plugins\XBCDRC Receiver\bin\${Build_Type}\XBCDRC Receiver.*"
+  File "..\IR Server Suite\IR Server Plugins\FireDTV Receiver\bin\${Build_Type}\FireDTV Receiver.*"
 
   ; Create App Data Folder for IR Server configuration files
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR Server"

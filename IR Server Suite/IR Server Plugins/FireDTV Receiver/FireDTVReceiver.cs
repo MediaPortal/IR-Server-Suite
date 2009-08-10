@@ -48,7 +48,7 @@ namespace IRServer.Plugin
     private string _deviceName;
     private FireDTVControl _fireDTV = null;
     private ReceiverWindow _receiverWindow;
-
+    private bool _running;
     #endregion Variables
 
     /// <summary>
@@ -138,38 +138,41 @@ namespace IRServer.Plugin
     /// </summary>
     public override void Start()
     {
-      LoadSettings();
-
-      _receiverWindow = new ReceiverWindow("FireDTV Receiver");
-      _receiverWindow.ProcMsg += WndProc;
-
-      _fireDTV = new FireDTVControl(_receiverWindow.Handle);
-      if (!_fireDTV.OpenDrivers())
+      if (!_running)
       {
-        throw new InvalidOperationException("Failed to start FireDTV interface");
-      }
+        LoadSettings();
 
-      // Search for the named sourcefilter
+        _receiverWindow = new ReceiverWindow("FireDTV Receiver");
+        _receiverWindow.ProcMsg += WndProc;
 
-      FireDTVSourceFilterInfo sourceFilter = null;
-      if (string.IsNullOrEmpty(_deviceName))
-      {
-        sourceFilter = _fireDTV.SourceFilters.Item(0);
-      }
-      else
-      {
-        sourceFilter = _fireDTV.SourceFilters.ItemByName(_deviceName);
-      }
+        _fireDTV = new FireDTVControl(_receiverWindow.Handle);
+        if (!_fireDTV.OpenDrivers())
+        {
+          throw new InvalidOperationException("Failed to start FireDTV interface");
+        }
 
-      if (sourceFilter != null)
-      {
-        sourceFilter.StartFireDTVRemoteControlSupport();
-      }
-      else
-      {
-        throw new InvalidOperationException("Failed to start FireDTV interface");
-      }
+        // Search for the named sourcefilter
 
+        FireDTVSourceFilterInfo sourceFilter;
+        if (string.IsNullOrEmpty(_deviceName))
+        {
+          sourceFilter = _fireDTV.SourceFilters.Item(0);
+        }
+        else
+        {
+          sourceFilter = _fireDTV.SourceFilters.ItemByName(_deviceName);
+        }
+
+        if (sourceFilter != null)
+        {
+          sourceFilter.StartFireDTVRemoteControlSupport();
+          _running = true;
+        }
+        else
+        {
+          throw new InvalidOperationException("Failed to start FireDTV interface");
+        }
+      }
     }
 
     /// <summary>
@@ -193,14 +196,18 @@ namespace IRServer.Plugin
     /// </summary>
     public override void Stop()
     {
-      if (_fireDTV != null)
+      if (_running)
       {
-        _fireDTV.CloseDrivers();
-      }
-      if (_receiverWindow != null)
-      {
-        _receiverWindow.DestroyHandle();
-        _receiverWindow = null;
+        if (_fireDTV != null)
+        {
+          _fireDTV.CloseDrivers();
+        }
+        if (_receiverWindow != null)
+        {
+          _receiverWindow.DestroyHandle();
+          _receiverWindow = null;
+        }
+        _running = false;
       }
     }
 
