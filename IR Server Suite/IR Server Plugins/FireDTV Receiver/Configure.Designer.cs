@@ -77,7 +77,6 @@ namespace IRServer.Plugin
       this.comboBoxDevice.Name = "comboBoxDevice";
       this.comboBoxDevice.Size = new System.Drawing.Size(258, 21);
       this.comboBoxDevice.TabIndex = 9;
-      this.comboBoxDevice.SelectedIndexChanged += new System.EventHandler(this.comboBoxDevice_SelectedIndexChanged);
       // 
       // labelFireDTV
       // 

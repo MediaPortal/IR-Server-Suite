@@ -138,7 +138,6 @@ namespace IRServer.Plugin
     /// </summary>
     public override void Start()
     {
-      IrssLog.Info("STARTING FIREDTV PLUGIN");
       LoadSettings();
 
       _receiverWindow = new ReceiverWindow("FireDTV Receiver");
@@ -155,11 +154,11 @@ namespace IRServer.Plugin
       FireDTVSourceFilterInfo sourceFilter = null;
       if (string.IsNullOrEmpty(_deviceName))
       {
-        _fireDTV.SourceFilters.Item(0);
+        sourceFilter = _fireDTV.SourceFilters.Item(0);
       }
       else
       {
-        _fireDTV.SourceFilters.ItemByName(_deviceName);
+        sourceFilter = _fireDTV.SourceFilters.ItemByName(_deviceName);
       }
 
       if (sourceFilter != null)
@@ -194,13 +193,15 @@ namespace IRServer.Plugin
     /// </summary>
     public override void Stop()
     {
-      IrssLog.Info("STOPPING FIREDTV PLUGIN");
       if (_fireDTV != null)
       {
         _fireDTV.CloseDrivers();
       }
-      _receiverWindow.DestroyHandle();
-      _receiverWindow = null;
+      if (_receiverWindow != null)
+      {
+        _receiverWindow.DestroyHandle();
+        _receiverWindow = null;
+      }
     }
 
     private void LoadSettings()
