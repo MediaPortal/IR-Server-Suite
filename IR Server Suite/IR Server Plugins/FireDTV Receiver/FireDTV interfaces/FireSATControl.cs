@@ -37,7 +37,7 @@ namespace IRServer.Plugin
   /// <summary>
   /// Summary description for FireDTVControl.
   /// </summary>
-  public class FireDTVControl
+  internal class FireDTVControl
   {
     /// <summary>
     /// The SetDllDirectory function adds a directory to the search path used to locate DLLs for the application.
@@ -55,7 +55,7 @@ namespace IRServer.Plugin
     /// Try to locate the FireDTV API library and initialise the library.
     /// </summary>
     /// <param name="windowHandle"></param>
-    public FireDTVControl(IntPtr windowHandle)
+    internal FireDTVControl(IntPtr windowHandle)
     {
       try
       {
@@ -264,7 +264,7 @@ namespace IRServer.Plugin
 
     #region Properties
 
-    public SourceFilterCollection SourceFilters
+    internal SourceFilterCollection SourceFilters
     {
       get { return _sourceFilterCollection; }
       set { _sourceFilterCollection = value; }
@@ -273,12 +273,12 @@ namespace IRServer.Plugin
     /// <summary>
     /// Get the API version of the FireDTV libary
     /// </summary>
-    public string APIVersion
+    internal string APIVersion
     {
       get { return Marshal.PtrToStringAnsi(FireDTVAPI.FS_GetApiVersion()); }
     }
 
-    public IntPtr WindowsHandle
+    internal IntPtr WindowsHandle
     {
       get
       {
@@ -295,13 +295,13 @@ namespace IRServer.Plugin
 
     #endregion
 
-    #region Public Methods
+    #region Internal Methods
 
     /// <summary>
     /// Open the communication channels with the FireDTV's.
     /// </summary>
     /// <returns>true if success</returns>
-    public bool OpenDrivers()
+    internal bool OpenDrivers()
     {
       if (!LibrayInitialized)
       {
@@ -325,7 +325,7 @@ namespace IRServer.Plugin
       return true;
     }
 
-    public void CloseDrivers()
+    internal void CloseDrivers()
     {
       for (int DeviceCount = 0; DeviceCount < SourceFilters.Count; DeviceCount++)
       {
@@ -334,7 +334,7 @@ namespace IRServer.Plugin
       }
     }
 
-    public bool StopRemoteControlSupport()
+    internal bool StopRemoteControlSupport()
     {
       foreach (FireDTVSourceFilterInfo SourceFilter in _sourceFilterCollection)
       {

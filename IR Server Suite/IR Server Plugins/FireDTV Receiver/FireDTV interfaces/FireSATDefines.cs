@@ -30,17 +30,17 @@ using System.Text;
 
 namespace IRServer.Plugin
 {
-  public class FireDTVConstants
+  internal class FireDTVConstants
   {
     #region Constants
 
-    public const int WM_USER = 0x0400;
+    internal const int WM_USER = 0x0400;
 
     #endregion
 
     #region FireDTV Enumeration
 
-    public enum FireDTVWindowMessages
+    internal enum FireDTVWindowMessages
     {
       DeviceAttached = WM_USER + 1,
       DeviceDetached = WM_USER + 2,
@@ -54,7 +54,7 @@ namespace IRServer.Plugin
       RemoteControlEvent = WM_USER + 10
     }
 
-    public enum FireDTVStatusCodes
+    internal enum FireDTVStatusCodes
     {
       Success = 0,
       Error = 1,
@@ -68,32 +68,32 @@ namespace IRServer.Plugin
 
     #region Structs
 
-    public struct FireDTV_DRIVER_VERSION
+    internal struct FireDTV_DRIVER_VERSION
     {
       [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)] public byte[] DriverVersion;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct FireDTV_FIRMWARE_VERSION
+    internal struct FireDTV_FIRMWARE_VERSION
     {
-      public byte uHWMajor;
-      public byte uHWMiddle;
-      public byte uHWMinor;
-      public byte uSWMajor;
-      public byte uSWMiddle;
-      public byte uSWMinor;
-      public byte uBuildNrMSB;
-      public byte uBuildNrLSB;
+      internal byte uHWMajor;
+      internal byte uHWMiddle;
+      internal byte uHWMinor;
+      internal byte uSWMajor;
+      internal byte uSWMiddle;
+      internal byte uSWMinor;
+      internal byte uBuildNrMSB;
+      internal byte uBuildNrLSB;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct FireDTV_SYSTEM_INFO
+    internal struct FireDTV_SYSTEM_INFO
     {
-      public byte uNrAntennas; //0-3
-      public byte uAntennaInfo; //ANTENNA_FIX, ANTENNA_MOVABLE, ANTENNA_MOBIL
-      public byte uSystem; // 
-      public byte uTransport; //TRANSPORT_SATELLITE, TRANSPORT_CABLE, TRANSPORT_TERRESTRIAL
-      public bool bLists;
+      internal byte uNrAntennas; //0-3
+      internal byte uAntennaInfo; //ANTENNA_FIX, ANTENNA_MOVABLE, ANTENNA_MOBIL
+      internal byte uSystem; // 
+      internal byte uTransport; //TRANSPORT_SATELLITE, TRANSPORT_CABLE, TRANSPORT_TERRESTRIAL
+      internal bool bLists;
     }
 
     #endregion
@@ -101,23 +101,23 @@ namespace IRServer.Plugin
 
   #region FireDTV Exception Class
 
-  public class FireDTVException : Exception
+  internal class FireDTVException : Exception
   {
-    public FireDTVException()
+    internal FireDTVException()
     {
     }
 
-    public FireDTVException(string message)
+    internal FireDTVException(string message)
       : base(message)
     {
     }
 
-    public FireDTVException(SerializationInfo info, StreamingContext context)
+    internal FireDTVException(SerializationInfo info, StreamingContext context)
       : base(info, context)
     {
     }
 
-    public FireDTVException(FireDTVConstants.FireDTVStatusCodes status, string message)
+    internal FireDTVException(FireDTVConstants.FireDTVStatusCodes status, string message)
     {
       friendlyMessage = message;
       statusCode = status;
@@ -127,7 +127,7 @@ namespace IRServer.Plugin
     private FireDTVConstants.FireDTVStatusCodes statusCode;
     private string friendlyMessage;
 
-    public FireDTVConstants.FireDTVStatusCodes StatusCode
+    internal FireDTVConstants.FireDTVStatusCodes StatusCode
     {
       get { return statusCode; }
     }
@@ -172,40 +172,40 @@ namespace IRServer.Plugin
     }
   }
 
-  public class FireDTVInitializationException : FireDTVException
+  internal class FireDTVInitializationException : FireDTVException
   {
-    public FireDTVInitializationException()
+    internal FireDTVInitializationException()
     {
     }
 
-    public FireDTVInitializationException(string message)
+    internal FireDTVInitializationException(string message)
       : base(message)
     {
     }
 
-    public FireDTVInitializationException(SerializationInfo info, StreamingContext context)
+    internal FireDTVInitializationException(SerializationInfo info, StreamingContext context)
       : base(info, context)
     {
     }
   }
 
-  public class FireDTVDeviceOpenException : FireDTVException
+  internal class FireDTVDeviceOpenException : FireDTVException
   {
-    public FireDTVDeviceOpenException()
+    internal FireDTVDeviceOpenException()
     {
     }
 
-    public FireDTVDeviceOpenException(string message)
+    internal FireDTVDeviceOpenException(string message)
       : base(message)
     {
     }
 
-    public FireDTVDeviceOpenException(SerializationInfo info, StreamingContext context)
+    internal FireDTVDeviceOpenException(SerializationInfo info, StreamingContext context)
       : base(info, context)
     {
     }
 
-    public FireDTVDeviceOpenException(FireDTVConstants.FireDTVStatusCodes status, string message)
+    internal FireDTVDeviceOpenException(FireDTVConstants.FireDTVStatusCodes status, string message)
       : base(status, message)
     {
     }
@@ -216,7 +216,7 @@ namespace IRServer.Plugin
   /// <summary>
   /// Summary description for FireDTVDefines.
   /// </summary>
-  public class FireDTVAPI
+  internal class FireDTVAPI
   {
     #region FireDTV API Imports
 
@@ -224,7 +224,7 @@ namespace IRServer.Plugin
       EntryPoint = "?FS_Initialize@@YAKXZ",
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_Initialize();
+    internal static extern uint FS_Initialize();
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_RegisterGeneralNotifications@@YAKPAUHWND__@@@Z",
@@ -233,7 +233,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_RegisterGeneralNotifications(int hWnd);
+    internal static extern uint FS_RegisterGeneralNotifications(int hWnd);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_GetNumberOfWDMDevices@@YAKPAK@Z",
@@ -242,7 +242,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_GetNumberOfWDMDevices(out uint puNumberOfWDMDevices);
+    internal static extern uint FS_GetNumberOfWDMDevices(out uint puNumberOfWDMDevices);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_GetNumberOfBDADevices@@YAKPAK@Z",
@@ -251,7 +251,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_GetNumberOfBDADevices(out uint puNumberOfWDMDevices);
+    internal static extern uint FS_GetNumberOfBDADevices(out uint puNumberOfWDMDevices);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_OpenWDMDeviceHandle@@YAKKPAK@Z",
@@ -260,7 +260,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_OpenWDMDeviceHandle(uint uWDMDeviceNumber, out uint pDeviceHandle);
+    internal static extern uint FS_OpenWDMDeviceHandle(uint uWDMDeviceNumber, out uint pDeviceHandle);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_OpenBDADeviceHandle@@YAKKPAK@Z",
@@ -269,7 +269,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_OpenBDADeviceHandle(uint uBDADeviceNumber, out uint DeviceHandle);
+    internal static extern uint FS_OpenBDADeviceHandle(uint uBDADeviceNumber, out uint DeviceHandle);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_CloseDeviceHandle@@YAKK@Z",
@@ -278,7 +278,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_CloseDeviceHandle(uint DeviceHandle);
+    internal static extern uint FS_CloseDeviceHandle(uint DeviceHandle);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_RegisterNotifications@@YAKKPAUHWND__@@@Z",
@@ -287,7 +287,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_RegisterNotifications(uint DeviceHandle, int hWnd);
+    internal static extern uint FS_RegisterNotifications(uint DeviceHandle, int hWnd);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_UnregisterNotifications@@YAKK@Z",
@@ -296,7 +296,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_UnregisterNotifications(uint DeviceHandle);
+    internal static extern uint FS_UnregisterNotifications(uint DeviceHandle);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_GetApiVersion@@YAPADXZ",
@@ -305,7 +305,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = true,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern IntPtr FS_GetApiVersion();
+    internal static extern IntPtr FS_GetApiVersion();
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_GetFriendlyString@@YAKKPAPAD@Z",
@@ -314,7 +314,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = true,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_GetFriendlyString(uint deviceHandle, out string friendlyName);
+    internal static extern uint FS_GetFriendlyString(uint deviceHandle, out string friendlyName);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_GetDisplayString@@YAKKPAD@Z",
@@ -323,7 +323,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = true,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_GetDisplayString(uint DeviceHandle, StringBuilder strDisplayName);
+    internal static extern uint FS_GetDisplayString(uint DeviceHandle, StringBuilder strDisplayName);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_GetGUIDString@@YAKKPAD@Z",
@@ -332,7 +332,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_GetGUIDString(uint DeviceHandle, StringBuilder strGUIDName);
+    internal static extern uint FS_GetGUIDString(uint DeviceHandle, StringBuilder strGUIDName);
 
     [DllImport("FiresatApi.dll",
       EntryPoint = "?FS_GetDriverVersion@@YAKKPAU_FIRESAT_DRIVER_VERSION@@@Z",
@@ -340,7 +340,7 @@ namespace IRServer.Plugin
       CharSet = CharSet.Ansi,
       ExactSpelling = true,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_GetDriverVersion(uint DeviceHandle,
+    internal static extern uint FS_GetDriverVersion(uint DeviceHandle,
                                                   ref FireDTVConstants.FireDTV_DRIVER_VERSION pDriverVersion);
 
     [DllImport("FireSATApi.dll",
@@ -349,7 +349,7 @@ namespace IRServer.Plugin
       CharSet = CharSet.Ansi,
       ExactSpelling = true,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_GetFirmwareVersion(uint DeviceHandle,
+    internal static extern uint FS_GetFirmwareVersion(uint DeviceHandle,
                                                     ref FireDTVConstants.FireDTV_FIRMWARE_VERSION Version);
 
     [DllImport("FiresatApi.dll",
@@ -358,7 +358,7 @@ namespace IRServer.Plugin
       CharSet = CharSet.Ansi,
       ExactSpelling = true,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_GetSystemInfo(uint DeviceHandle, ref FireDTVConstants.FireDTV_SYSTEM_INFO pSystemInfo);
+    internal static extern uint FS_GetSystemInfo(uint DeviceHandle, ref FireDTVConstants.FireDTV_SYSTEM_INFO pSystemInfo);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_RemoteControl_Start@@YAKK@Z",
@@ -367,7 +367,7 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_RemoteControl_Start(uint DeviceHandle);
+    internal static extern uint FS_RemoteControl_Start(uint DeviceHandle);
 
     [DllImport("FireSATApi.dll",
       EntryPoint = "?FS_RemoteControl_Stop@@YAKK@Z",
@@ -376,14 +376,14 @@ namespace IRServer.Plugin
       ExactSpelling = true,
       PreserveSig = false,
       CallingConvention = CallingConvention.StdCall)]
-    public static extern uint FS_RemoteControl_Stop(uint DeviceHandle);
+    internal static extern uint FS_RemoteControl_Stop(uint DeviceHandle);
 
     #endregion
 
     #region Win32 API Imports
 
     [DllImport("user32.dll", CharSet = CharSet.Ansi)]
-    public static extern int GetActiveWindow();
+    internal static extern int GetActiveWindow();
 
     #endregion
   } ;

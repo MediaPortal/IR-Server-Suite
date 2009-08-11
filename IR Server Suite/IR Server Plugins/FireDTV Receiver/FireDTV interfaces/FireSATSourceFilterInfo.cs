@@ -33,9 +33,9 @@ using System.Text;
 
 namespace IRServer.Plugin
 {
-  public class FireDTVSourceFilterInfo
+  internal class FireDTVSourceFilterInfo
   {
-    public FireDTVSourceFilterInfo(uint deviceHandle, IntPtr activeWindow)
+    internal FireDTVSourceFilterInfo(uint deviceHandle, IntPtr activeWindow)
     {
       _windowHandle = activeWindow;
       _handle = deviceHandle;
@@ -96,7 +96,7 @@ namespace IRServer.Plugin
       Close();
     }
 
-    public void Close()
+    internal void Close()
     {
       if (_handle != 0)
       {
@@ -133,33 +133,33 @@ namespace IRServer.Plugin
 
     #region Properties
 
-    public string Name
+    internal string Name
     {
       get { return _name; }
     }
 
-    public string GUID
+    internal string GUID
     {
       get { return _GUID; }
     }
 
-    public uint Handle
+    internal uint Handle
     {
       get { return _handle; }
       set { _handle = value; }
     }
 
-    public string FriendlyName
+    internal string FriendlyName
     {
       get { return _friendlyName; }
     }
 
-    public bool RemoteRunning
+    internal bool RemoteRunning
     {
       get { return _remoteRunning; }
     }
 
-    public IntPtr WindowHandle
+    internal IntPtr WindowHandle
     {
       get
       {
@@ -202,7 +202,7 @@ namespace IRServer.Plugin
 
     #region FireDTV Register Notifications
 
-    public void RegisterNotifications()
+    internal void RegisterNotifications()
     {
       uint returnCode = FireDTVAPI.FS_RegisterNotifications(Handle, (int) this.WindowHandle);
       if ((FireDTVConstants.FireDTVStatusCodes) returnCode != FireDTVConstants.FireDTVStatusCodes.Success)
@@ -212,7 +212,7 @@ namespace IRServer.Plugin
       _notificationRegistered = true;
     }
 
-    public void UnRegisterNotifications()
+    internal void UnRegisterNotifications()
     {
       uint returnCode = FireDTVAPI.FS_UnregisterNotifications(Handle);
       if ((FireDTVConstants.FireDTVStatusCodes) returnCode != FireDTVConstants.FireDTVStatusCodes.Success)
@@ -226,7 +226,7 @@ namespace IRServer.Plugin
 
     #region Remote Control Management
 
-    public void StartFireDTVRemoteControlSupport()
+    internal void StartFireDTVRemoteControlSupport()
     {
       uint returnCode = FireDTVAPI.FS_RemoteControl_Start(Handle);
       if ((FireDTVConstants.FireDTVStatusCodes) returnCode != FireDTVConstants.FireDTVStatusCodes.Success)
@@ -236,7 +236,7 @@ namespace IRServer.Plugin
       _remoteRunning = true;
     }
 
-    public void StopFireDTVRemoteControlSupport()
+    internal void StopFireDTVRemoteControlSupport()
     {
       uint returnCode = FireDTVAPI.FS_RemoteControl_Stop(Handle);
       if ((FireDTVConstants.FireDTVStatusCodes) returnCode != FireDTVConstants.FireDTVStatusCodes.Success)
@@ -252,9 +252,9 @@ namespace IRServer.Plugin
   /// <summary>
   /// Strongly typed collection of FireDTVSourceFilters
   /// </summary>
-  public class SourceFilterCollection : CollectionBase
+  internal class SourceFilterCollection : CollectionBase
   {
-    public void Add(FireDTVSourceFilterInfo sourceFilter)
+    internal void Add(FireDTVSourceFilterInfo sourceFilter)
     {
       foreach (FireDTVSourceFilterInfo srcFilter in List)
       {
@@ -271,7 +271,7 @@ namespace IRServer.Plugin
     /// Remove a FilterSource but first close it.
     /// </summary>
     /// <param name="index">index of the filter</param>
-    public new void RemoveAt(int index)
+    internal new void RemoveAt(int index)
     {
       if (index > List.Count - 1 || index < 0)
       {
@@ -287,8 +287,8 @@ namespace IRServer.Plugin
     /// <summary>
     /// Remove a FilterSource, but first close it.
     /// </summary>
-    /// <param name="index">index of the filter</param>
-    public void RemoveByHandle(uint deviceHandle)
+    /// <param name="deviceHandle">deviceHandle</param>
+    internal void RemoveByHandle(uint deviceHandle)
     {
       foreach (FireDTVSourceFilterInfo sourceFilter in List)
       {
@@ -300,7 +300,7 @@ namespace IRServer.Plugin
       // TODO <THROW ERROR>
     }
 
-    public FireDTVSourceFilterInfo Item(int index)
+    internal FireDTVSourceFilterInfo Item(int index)
     {
       if (index > List.Count - 1 || index < 0)
       {
@@ -312,7 +312,7 @@ namespace IRServer.Plugin
       }
     }
 
-    public FireDTVSourceFilterInfo ItemByHandle(uint deviceHandle)
+    internal FireDTVSourceFilterInfo ItemByHandle(uint deviceHandle)
     {
       foreach (FireDTVSourceFilterInfo sourceFilter in List)
       {
@@ -324,7 +324,7 @@ namespace IRServer.Plugin
       return null;
     }
 
-    public FireDTVSourceFilterInfo ItemByName(string displayString)
+    internal FireDTVSourceFilterInfo ItemByName(string displayString)
     {
       foreach (FireDTVSourceFilterInfo SourceFilter in List)
       {
@@ -336,7 +336,7 @@ namespace IRServer.Plugin
       return null;
     }
 
-    public FireDTVSourceFilterInfo ItemByGUID(string guidString)
+    internal FireDTVSourceFilterInfo ItemByGUID(string guidString)
     {
       foreach (FireDTVSourceFilterInfo SourceFilter in List)
       {
@@ -348,7 +348,7 @@ namespace IRServer.Plugin
       return null;
     }
 
-    public int IndexByHandle(uint deviceHandle)
+    internal int IndexByHandle(uint deviceHandle)
     {
       for (int iIndex = 0; iIndex < List.Count; iIndex++)
       {
