@@ -157,5 +157,10 @@ namespace TrayLauncher
     {
       checkBoxRepeatsFocus.Enabled = checkBoxOneInstance.Checked;
     }
+
+    private void Setup_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      IrssHelp.Open(sender);
+    }
   }
 }

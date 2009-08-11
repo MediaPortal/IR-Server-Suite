@@ -557,5 +557,10 @@ namespace DebugClient
     private delegate void DelegateAddStatusLine(string status);
 
     #endregion
+
+    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      IrssHelp.Open(sender);
+    }
   }
 }

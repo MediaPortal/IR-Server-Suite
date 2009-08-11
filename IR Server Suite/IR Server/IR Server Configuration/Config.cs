@@ -325,19 +325,6 @@ namespace IRServer.Configuration
             }
         }
 
-        private void ShowHelp()
-        {
-            try
-            {
-                string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-                Help.ShowHelp(this, file, HelpNavigator.Topic, "IR Server\\index.html");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         #region Properties
 
         public bool AbstractRemoteMode
@@ -549,7 +536,12 @@ namespace IRServer.Configuration
 
         private void toolStripButtonHelp_Click(object sender, EventArgs e)
         {
-            ShowHelp();
+          IrssHelp.Open(this);
+        }
+
+        private void Config_HelpRequested(object sender, HelpEventArgs hlpevent)
+        {
+          IrssHelp.Open(sender);
         }
 
         private void toolStripServiceButton_Click(object sender, EventArgs e)

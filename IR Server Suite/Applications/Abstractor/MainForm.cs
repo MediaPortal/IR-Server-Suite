@@ -664,5 +664,10 @@ namespace Abstractor
     private delegate void DelegateRemoteEvent(string deviceName, string keyCode);
 
     #endregion
+
+    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      IrssHelp.Open(sender);
+    }
   }
 }

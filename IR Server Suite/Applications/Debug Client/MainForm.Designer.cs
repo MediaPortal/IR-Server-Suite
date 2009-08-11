@@ -49,7 +49,6 @@ namespace DebugClient
       this.groupBoxCommands = new System.Windows.Forms.GroupBox();
       this.comboBoxPort = new System.Windows.Forms.ComboBox();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
-      this.buttonHelp = new System.Windows.Forms.Button();
       this.groupBoxStatus.SuspendLayout();
       this.groupBoxRemoteButton.SuspendLayout();
       this.groupBoxSetup.SuspendLayout();
@@ -135,7 +134,7 @@ namespace DebugClient
       this.listBoxStatus.Location = new System.Drawing.Point(8, 16);
       this.listBoxStatus.Name = "listBoxStatus";
       this.listBoxStatus.ScrollAlwaysVisible = true;
-      this.listBoxStatus.Size = new System.Drawing.Size(424, 185);
+      this.listBoxStatus.Size = new System.Drawing.Size(424, 211);
       this.listBoxStatus.TabIndex = 0;
       this.toolTips.SetToolTip(this.listBoxStatus, "Status messages");
       // 
@@ -147,7 +146,7 @@ namespace DebugClient
       this.groupBoxStatus.Controls.Add(this.listBoxStatus);
       this.groupBoxStatus.Location = new System.Drawing.Point(8, 192);
       this.groupBoxStatus.Name = "groupBoxStatus";
-      this.groupBoxStatus.Size = new System.Drawing.Size(440, 216);
+      this.groupBoxStatus.Size = new System.Drawing.Size(440, 242);
       this.groupBoxStatus.TabIndex = 3;
       this.groupBoxStatus.TabStop = false;
       this.groupBoxStatus.Text = "Status";
@@ -263,34 +262,26 @@ namespace DebugClient
       this.comboBoxPort.TabIndex = 2;
       this.toolTips.SetToolTip(this.comboBoxPort, "Port for blasting IR");
       // 
-      // buttonHelp
-      // 
-      this.buttonHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonHelp.Location = new System.Drawing.Point(8, 416);
-      this.buttonHelp.Name = "buttonHelp";
-      this.buttonHelp.Size = new System.Drawing.Size(56, 24);
-      this.buttonHelp.TabIndex = 4;
-      this.buttonHelp.Text = "Help";
-      this.buttonHelp.UseVisualStyleBackColor = true;
-      this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
-      // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(464, 455);
-      this.Controls.Add(this.buttonHelp);
+      this.ClientSize = new System.Drawing.Size(464, 446);
       this.Controls.Add(this.groupBoxCommands);
       this.Controls.Add(this.groupBoxSetup);
       this.Controls.Add(this.groupBoxRemoteButton);
       this.Controls.Add(this.groupBoxStatus);
+      this.HelpButton = true;
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.MaximizeBox = false;
+      this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(472, 482);
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Debug Client";
-      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
       this.Load += new System.EventHandler(this.MainForm_Load);
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+      this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.MainForm_HelpRequested);
       this.groupBoxStatus.ResumeLayout(false);
       this.groupBoxRemoteButton.ResumeLayout(false);
       this.groupBoxRemoteButton.PerformLayout();
@@ -317,7 +308,6 @@ namespace DebugClient
     private System.Windows.Forms.ToolTip toolTips;
     private System.Windows.Forms.ComboBox comboBoxPort;
     private System.Windows.Forms.ComboBox comboBoxComputer;
-    private System.Windows.Forms.Button buttonHelp;
     private System.Windows.Forms.Label labelRemoteCode;
     private System.Windows.Forms.Label labelRemoteDevice;
     private System.Windows.Forms.TextBox textBoxRemoteCode;

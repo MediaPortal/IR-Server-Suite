@@ -1190,16 +1190,7 @@ namespace Translator
 
     private void translatorHelpToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      try
-      {
-        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this, file, HelpNavigator.Topic, "Translator\\index.html");
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
+      IrssHelp.Open(this);
     }
 
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1560,6 +1551,11 @@ namespace Translator
 
         RefreshProgramList();
       }
+    }
+
+    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      IrssHelp.Open(sender);
     }
   }
 }

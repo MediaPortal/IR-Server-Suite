@@ -281,6 +281,7 @@ namespace Abstractor
       this.Name = "MainForm";
       this.Text = "Abstract Remote Map Creator";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+      this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.MainForm_HelpRequested);
       this.groupBoxSetup.ResumeLayout(false);
       this.groupBoxStatus.ResumeLayout(false);
       this.groupBoxMapAbstract.ResumeLayout(false);

@@ -217,6 +217,7 @@ namespace TrayLauncher
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.groupBoxApp);
       this.Controls.Add(this.buttonOK);
+      this.HelpButton = true;
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
       this.MinimizeBox = false;
@@ -224,6 +225,7 @@ namespace TrayLauncher
       this.Name = "Setup";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Tray Launcher - Setup";
+      this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.Setup_HelpRequested);
       this.groupBoxApp.ResumeLayout(false);
       this.groupBoxApp.PerformLayout();
       this.groupBoxOptions.ResumeLayout(false);
