@@ -136,8 +136,8 @@ Name "${PRODUCT_NAME}"
 OutFile "..\${PRODUCT_NAME} - ${VERSION}.exe"
 InstallDir ""
 
-ShowInstDetails show
-ShowUninstDetails show
+;ShowInstDetails show
+;ShowUninstDetails show
 CRCCheck On
 
 BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
