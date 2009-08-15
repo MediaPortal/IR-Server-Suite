@@ -65,206 +65,538 @@ namespace IRServer.Plugin
     // sized on 64-bit systems.  And the only thing in C# that sizes
     // differently on 64-bit systems is the IntPtr.
 
+
+    // Chemelli:
+    //
+    // Unfortunately this is how it works :(
+    // documented even at http://stackoverflow.com/questions/732642/using-64-bits-driver-from-32-bits-application
+    //
+    // Created interfaces for each struct and added a 32bit copy and a 64bit copy of those
+
     #endregion Notes
 
-    #region Nested type: Structures size
-
-    private int[] _availableBlastersSize =
-      {
-        // 1 IntPtr
-        1 * 4,
-        1 * 8
-      };
-
-    private int[] _deviceCapabilitiesSize =
-      {
-        // 5 IntPtr
-        5 * 4,
-        5 * 8
-      };
-
-    private int[] _receiveParamsSize =
-      {
-        // 3 IntPtr
-        3 * 4,
-        3 * 8
-      };
-
-    private int[] _startReceiveParamsSize =
-      {
-        // 2 IntPtr
-        2 * 4,
-        2 * 8
-      };
-
-    private int[] _transmitChunkSize =
-      {
-        // 3 IntPtr
-        3 * 4,
-        3 * 8
-      };
-
-    private int[] _transmitParamsSize =
-      {
-        // 4 IntPtr
-        4 * 4,
-        4 * 8
-      };
-
-    #endregion
-
     #region Nested type: AvailableBlasters
+
+    interface IAvailableBlasters
+    {
+      object Blasters { get; set; }
+    }
 
     /// <summary>
     /// Available Blasters data structure.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    private struct AvailableBlasters
+    private struct AvailableBlasters32 : IAvailableBlasters
     {
       /// <summary>
       /// Blaster bit-mask.
       /// </summary>
-      public IntPtr Blasters;
+      private System.Int32 _Blasters;
+
+      public object Blasters
+      {
+        get { return _Blasters; }
+        set { _Blasters = int.Parse((string)value); }
+      }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct AvailableBlasters64 : IAvailableBlasters
+    {
+      /// <summary>
+      /// Blaster bit-mask.
+      /// </summary>
+      private System.Int64 _Blasters;
+
+      public object Blasters
+      {
+        get { return _Blasters; }
+        set { _Blasters = int.Parse(value.ToString()); }
+      }
     }
 
     #endregion
 
     #region Nested type: DeviceCapabilities
 
+    interface IDeviceCapabilities
+    {
+      object ProtocolVersion { get; set; }
+      object TransmitPorts { get; set; }
+      object ReceivePorts { get; set; }
+      object LearningMask { get; set; }
+      object DetailsFlags { get; set; }
+    }
+
     /// <summary>
     /// Device Capabilities data structure.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    private struct DeviceCapabilities
+    private struct DeviceCapabilities32 : IDeviceCapabilities
     {
       /// <summary>
       /// Device protocol version.
       /// </summary>
-      public IntPtr ProtocolVersion;
+      public System.Int32 _ProtocolVersion;
+
+      public object ProtocolVersion
+      {
+        get { return _ProtocolVersion; }
+        set { _ProtocolVersion = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Number of transmit ports – 0-32.
       /// </summary>
-      public IntPtr TransmitPorts;
+      public System.Int32 _TransmitPorts;
 
+      public object TransmitPorts
+      {
+        get { return _TransmitPorts; }
+        set { _TransmitPorts = int.Parse(value.ToString()); }
+      }
       /// <summary>
       /// Number of receive ports – 0-32. For beanbag, this is two (one for learning, one for normal receiving).
       /// </summary>
-      public IntPtr ReceivePorts;
+      public System.Int32 _ReceivePorts;
+
+      public object ReceivePorts
+      {
+        get { return _ReceivePorts; }
+        set { _ReceivePorts = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Bitmask identifying which receivers are learning receivers – low bit is the first receiver, second-low bit is the second receiver, etc ...
       /// </summary>
-      public IntPtr LearningMask;
+      public System.Int32 _LearningMask;
+
+      public object LearningMask
+      {
+        get { return _LearningMask; }
+        set { _LearningMask = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Device flags.
       /// </summary>
-      public IntPtr DetailsFlags;
+      public System.Int32 _DetailsFlags;
+
+      public object DetailsFlags
+      {
+        get { return _DetailsFlags; }
+        set { _DetailsFlags = int.Parse(value.ToString()); }
+      }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DeviceCapabilities64 : IDeviceCapabilities
+    {
+      /// <summary>
+      /// Device protocol version.
+      /// </summary>
+      public System.Int64 _ProtocolVersion;
+
+      public object ProtocolVersion
+      {
+        get { return _ProtocolVersion; }
+        set { _ProtocolVersion = int.Parse((string)value); }
+      }
+
+      /// <summary>
+      /// Number of transmit ports – 0-32.
+      /// </summary>
+      public System.Int64 _TransmitPorts;
+
+      public object TransmitPorts
+      {
+        get { return _TransmitPorts; }
+        set { _TransmitPorts = int.Parse((string)value); }
+      }
+      /// <summary>
+      /// Number of receive ports – 0-32. For beanbag, this is two (one for learning, one for normal receiving).
+      /// </summary>
+      public System.Int64 _ReceivePorts;
+
+      public object ReceivePorts
+      {
+        get { return _ReceivePorts; }
+        set { _ReceivePorts = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Bitmask identifying which receivers are learning receivers – low bit is the first receiver, second-low bit is the second receiver, etc ...
+      /// </summary>
+      public System.Int64 _LearningMask;
+
+      public object LearningMask
+      {
+        get { return _LearningMask; }
+        set { _LearningMask = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Device flags.
+      /// </summary>
+      public System.Int64 _DetailsFlags;
+
+      public object DetailsFlags
+      {
+        get { return _DetailsFlags; }
+        set { _DetailsFlags = int.Parse(value.ToString()); }
+      }
     }
 
     #endregion
 
     #region Nested type: ReceiveParams
 
+    interface IReceiveParams
+    {
+      object DataEnd { get; set; }
+      object ByteCount { get; set; }
+      object CarrierFrequency { get; set; }
+    }
+
     /// <summary>
     /// Receive parameters.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    private struct ReceiveParams
+    private struct ReceiveParams32 : IReceiveParams
     {
       /// <summary>
       /// Last packet in block?
       /// </summary>
-      public IntPtr DataEnd;
+      public System.Int32 _DataEnd;
+
+      public object DataEnd
+      {
+        get { return _DataEnd; }
+        set { _DataEnd = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Number of bytes in block.
       /// </summary>
-      public IntPtr ByteCount;
+      public System.Int32 _ByteCount;
+
+      public object ByteCount
+      {
+        get { return _ByteCount; }
+        set { _ByteCount = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Carrier frequency of IR received.
       /// </summary>
-      public IntPtr CarrierFrequency;
+      public System.Int32 _CarrierFrequency;
+
+      public object CarrierFrequency
+      {
+        get { return _CarrierFrequency; }
+        set { _CarrierFrequency = int.Parse(value.ToString()); }
+      }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ReceiveParams64 : IReceiveParams
+    {
+      /// <summary>
+      /// Last packet in block?
+      /// </summary>
+      public System.Int64 _DataEnd;
+
+      public object DataEnd
+      {
+        get { return _DataEnd; }
+        set { _DataEnd = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Number of bytes in block.
+      /// </summary>
+      public System.Int64 _ByteCount;
+
+      public object ByteCount
+      {
+        get { return _ByteCount; }
+        set { _ByteCount = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Carrier frequency of IR received.
+      /// </summary>
+      public System.Int64 _CarrierFrequency;
+
+      public object CarrierFrequency
+      {
+        get { return _CarrierFrequency; }
+        set { _CarrierFrequency = int.Parse(value.ToString()); }
+      }
     }
 
     #endregion
 
     #region Nested type: StartReceiveParams
 
+    interface IStartReceiveParams
+    {
+      object Receiver { get; set; }
+      object Timeout { get; set; }
+    }
+
     /// <summary>
     /// Parameters for StartReceive.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    private struct StartReceiveParams
+    private struct StartReceiveParams32 : IStartReceiveParams
     {
       /// <summary>
       /// Index of the receiver to use.
       /// </summary>
-      public IntPtr Receiver;
+      public System.Int32 _Receiver;
+
+      public object Receiver
+      {
+        get { return _Receiver; }
+        set { _Receiver = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Receive timeout, in milliseconds.
       /// </summary>
-      public IntPtr Timeout;
+      public System.Int32 _Timeout;
+
+      public object Timeout
+      {
+        get { return _Timeout; }
+        set { _Timeout = int.Parse(value.ToString()); }
+      }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct StartReceiveParams64 : IStartReceiveParams
+    {
+      /// <summary>
+      /// Index of the receiver to use.
+      /// </summary>
+      public System.Int64 _Receiver;
+
+      public object Receiver
+      {
+        get { return _Receiver; }
+        set { _Receiver = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Receive timeout, in milliseconds.
+      /// </summary>
+      public System.Int64 _Timeout;
+
+      public object Timeout
+      {
+        get { return _Timeout; }
+        set { _Timeout = int.Parse(value.ToString()); }
+      }
     }
 
     #endregion
 
     #region Nested type: TransmitChunk
 
+    interface ITransmitChunk
+    {
+      object OffsetToNextChunk { get; set; }
+      object RepeatCount { get; set; }
+      object ByteCount { get; set; }
+    }
+
     /// <summary>
     /// Information for transmitting IR.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    private struct TransmitChunk
+    private struct TransmitChunk32 : ITransmitChunk
     {
       /// <summary>
       /// Next chunk offset.
       /// </summary>
-      public IntPtr OffsetToNextChunk;
+      public System.Int32 _OffsetToNextChunk;
+
+      public object OffsetToNextChunk
+      {
+        get { return _OffsetToNextChunk; }
+        set { _OffsetToNextChunk = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Repeat count.
       /// </summary>
-      public IntPtr RepeatCount;
+      public System.Int32 _RepeatCount;
+
+      public object RepeatCount
+      {
+        get { return _RepeatCount; }
+        set { _RepeatCount = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Number of bytes.
       /// </summary>
-      public IntPtr ByteCount;
+      public System.Int32 _ByteCount;
+
+      public object ByteCount
+      {
+        get { return _ByteCount; }
+        set { _ByteCount = int.Parse(value.ToString()); }
+      }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TransmitChunk64 : ITransmitChunk
+    {
+      /// <summary>
+      /// Next chunk offset.
+      /// </summary>
+      public System.Int64 _OffsetToNextChunk;
+
+      public object OffsetToNextChunk
+      {
+        get { return _OffsetToNextChunk; }
+        set { _OffsetToNextChunk = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Repeat count.
+      /// </summary>
+      public System.Int64 _RepeatCount;
+
+      public object RepeatCount
+      {
+        get { return _RepeatCount; }
+        set { _RepeatCount = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Number of bytes.
+      /// </summary>
+      public System.Int64 _ByteCount;
+
+      public object ByteCount
+      {
+        get { return _ByteCount; }
+        set { _ByteCount = int.Parse(value.ToString()); }
+      }
     }
 
     #endregion
 
     #region Nested type: TransmitParams
 
+    interface ITransmitParams
+    {
+      object TransmitPortMask { get; set; }
+      object CarrierPeriod { get; set; }
+      object Flags { get; set; }
+      object PulseSize { get; set; }
+    }
+
     /// <summary>
     /// Parameters for transmitting IR.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    private struct TransmitParams
+    private struct TransmitParams32 : ITransmitParams
     {
       /// <summary>
       /// Bitmask containing ports to transmit on.
       /// </summary>
-      public IntPtr TransmitPortMask;
+      public System.Int32 _TransmitPortMask;
+
+      public object TransmitPortMask
+      {
+        get { return _TransmitPortMask; }
+        set { _TransmitPortMask = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Carrier period.
       /// </summary>
-      public IntPtr CarrierPeriod;
+      public System.Int32 _CarrierPeriod;
+
+      public object CarrierPeriod
+      {
+        get { return _CarrierPeriod; }
+        set { _CarrierPeriod = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Transmit Flags.
       /// </summary>
-      public IntPtr Flags;
+      public System.Int32 _Flags;
+
+      public object Flags
+      {
+        get { return _Flags; }
+        set { _Flags = int.Parse(value.ToString()); }
+      }
 
       /// <summary>
       /// Pulse Size.  If Pulse Mode Flag set.
       /// </summary>
-      public IntPtr PulseSize;
+      public System.Int32 _PulseSize;
+
+      public object PulseSize
+      {
+        get { return _PulseSize; }
+        set { _PulseSize = int.Parse(value.ToString()); }
+      }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TransmitParams64 : ITransmitParams
+    {
+      /// <summary>
+      /// Bitmask containing ports to transmit on.
+      /// </summary>
+      public System.Int64 _TransmitPortMask;
+
+      public object TransmitPortMask
+      {
+        get { return _TransmitPortMask; }
+        set { _TransmitPortMask = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Carrier period.
+      /// </summary>
+      public System.Int64 _CarrierPeriod;
+
+      public object CarrierPeriod
+      {
+        get { return _CarrierPeriod; }
+        set { _CarrierPeriod = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Transmit Flags.
+      /// </summary>
+      public System.Int64 _Flags;
+
+      public object Flags
+      {
+        get { return _Flags; }
+        set { _Flags = int.Parse(value.ToString()); }
+      }
+
+      /// <summary>
+      /// Pulse Size.  If Pulse Mode Flag set.
+      /// </summary>
+      public System.Int64 _PulseSize;
+
+      public object PulseSize
+      {
+        get { return _PulseSize; }
+        set { _PulseSize = int.Parse(value.ToString()); }
+      }
     }
 
     #endregion
@@ -430,7 +762,7 @@ namespace IRServer.Plugin
     private ReadThreadMode _readThreadModeNext;
     private bool _deviceReceiveStarted;
 
-    private int _isSystem64Bit;
+    private bool _isSystem64Bit;
 
     #endregion Variables
 
@@ -451,19 +783,27 @@ namespace IRServer.Plugin
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
 
-      StartReceiveParams structure;
-      structure.Receiver = new IntPtr(receivePort);
-      structure.Timeout = new IntPtr(timeout);
+      IStartReceiveParams structure;
+      if (_isSystem64Bit)
+      {
+        structure = new StartReceiveParams64();
+      }
+      else
+      {
+        structure = new StartReceiveParams32();
+      }
+      structure.Receiver = receivePort;
+      structure.Timeout = timeout;
 
       IntPtr structPtr = IntPtr.Zero;
 
       try
       {
-        structPtr = Marshal.AllocHGlobal(_startReceiveParamsSize[_isSystem64Bit]);
+        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
         Marshal.StructureToPtr(structure, structPtr, false);
 
         int bytesReturned;
-        IoControl(IoCtrl.StartReceive, structPtr, _startReceiveParamsSize[_isSystem64Bit], IntPtr.Zero, 0, out bytesReturned);
+        IoControl(IoCtrl.StartReceive, structPtr, Marshal.SizeOf(structure), IntPtr.Zero, 0, out bytesReturned);
       }
       finally
       {
@@ -486,20 +826,35 @@ namespace IRServer.Plugin
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
 
-      DeviceCapabilities structure = new DeviceCapabilities();
+      IDeviceCapabilities structure;
+      if (_isSystem64Bit)
+      {
+        structure = new DeviceCapabilities64();
+      }
+      else
+      {
+        structure = new DeviceCapabilities32();
+      }
 
       IntPtr structPtr = IntPtr.Zero;
 
       try
       {
-        structPtr = Marshal.AllocHGlobal(_deviceCapabilitiesSize[_isSystem64Bit]);
+        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
 
         Marshal.StructureToPtr(structure, structPtr, false);
 
         int bytesReturned;
-        IoControl(IoCtrl.GetDetails, IntPtr.Zero, 0, structPtr, _deviceCapabilitiesSize[_isSystem64Bit], out bytesReturned);
+        IoControl(IoCtrl.GetDetails, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
 
-        structure = (DeviceCapabilities)Marshal.PtrToStructure(structPtr, typeof(DeviceCapabilities));
+        if (_isSystem64Bit)
+        {
+          structure = (DeviceCapabilities64)Marshal.PtrToStructure(structPtr, structure.GetType());
+        }
+        else
+        {
+          structure = (DeviceCapabilities32)Marshal.PtrToStructure(structPtr, structure.GetType());
+        }
       }
       finally
       {
@@ -507,9 +862,8 @@ namespace IRServer.Plugin
           Marshal.FreeHGlobal(structPtr);
       }
 
-      _numTxPorts = structure.TransmitPorts.ToInt32();
-      //_numRxPorts = structure.ReceivePorts.ToInt32();
-      _learnPortMask = structure.LearningMask.ToInt32();
+      _numTxPorts = Int32.Parse(structure.TransmitPorts.ToString());
+      _learnPortMask = Int32.Parse(structure.LearningMask.ToString());
 
       int receivePort = FirstLowBit(_learnPortMask);
       if (receivePort != -1)
@@ -524,11 +878,11 @@ namespace IRServer.Plugin
 
       DebugWriteLine("Device Capabilities:");
       DebugWriteLine("NumTxPorts:     {0}", _numTxPorts);
-      DebugWriteLine("NumRxPorts:     {0}", structure.ReceivePorts.ToInt32());
+      DebugWriteLine("NumRxPorts:     {0}", structure.ReceivePorts);
       DebugWriteLine("LearnPortMask:  {0}", _learnPortMask);
       DebugWriteLine("ReceivePort:    {0}", _receivePort);
       DebugWriteLine("LearnPort:      {0}", _learnPort);
-      DebugWriteLine("DetailsFlags:   {0}", structure.DetailsFlags.ToInt32());
+      DebugWriteLine("DetailsFlags:   {0}", structure.DetailsFlags);
     }
 
     private void GetBlasters()
@@ -539,20 +893,36 @@ namespace IRServer.Plugin
       if (_numTxPorts <= 0)
         return;
 
-      AvailableBlasters structure = new AvailableBlasters();
+      IAvailableBlasters structure;
+      if (_isSystem64Bit)
+      {
+        structure = new AvailableBlasters64();
+      }
+      else
+      {
+        structure = new AvailableBlasters32();
+      }
 
       IntPtr structPtr = IntPtr.Zero;
 
       try
       {
-        structPtr = Marshal.AllocHGlobal(_availableBlastersSize[_isSystem64Bit]);
+        structPtr = Marshal.AllocHGlobal(Marshal.SizeOf(structure));
 
         Marshal.StructureToPtr(structure, structPtr, false);
 
         int bytesReturned;
-        IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, structPtr, _availableBlastersSize[_isSystem64Bit], out bytesReturned);
+        IoControl(IoCtrl.GetBlasters, IntPtr.Zero, 0, structPtr, Marshal.SizeOf(structure), out bytesReturned);
 
-        structure = (AvailableBlasters)Marshal.PtrToStructure(structPtr, typeof(AvailableBlasters));
+        if (_isSystem64Bit)
+        {
+          structure = (AvailableBlasters64)Marshal.PtrToStructure(structPtr, structure.GetType());
+        }
+        else
+        {
+          structure = (AvailableBlasters32)Marshal.PtrToStructure(structPtr, structure.GetType());
+        }
+
       }
       finally
       {
@@ -560,7 +930,7 @@ namespace IRServer.Plugin
           Marshal.FreeHGlobal(structPtr);
       }
 
-      _txPortMask = structure.Blasters.ToInt32();
+      _txPortMask = Int32.Parse(structure.Blasters.ToString());
 
       DebugWriteLine("TxPortMask:     {0}", _txPortMask);
     }
@@ -572,26 +942,45 @@ namespace IRServer.Plugin
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
 
-      TransmitParams transmitParams = new TransmitParams();
-      transmitParams.TransmitPortMask = new IntPtr(transmitPortMask);
+      ITransmitParams transmitParams;
+      if (_isSystem64Bit)
+      {
+        transmitParams = new TransmitParams64();
+      }
+      else
+      {
+        transmitParams = new TransmitParams32();
+      }
+
+      transmitParams.TransmitPortMask = transmitPortMask;
 
       if (carrier == IrCode.CarrierFrequencyUnknown)
         carrier = IrCode.CarrierFrequencyDefault;
 
       TransmitMode mode = GetTransmitMode(carrier);
       if (mode == TransmitMode.CarrierMode)
-        transmitParams.CarrierPeriod = new IntPtr(GetCarrierPeriod(carrier));
+        transmitParams.CarrierPeriod = GetCarrierPeriod(carrier);
       else
-        transmitParams.PulseSize = new IntPtr(carrier);
+        transmitParams.PulseSize = carrier;
 
-      transmitParams.Flags = new IntPtr((int)mode);
+      transmitParams.Flags = (int)mode;
 
-      TransmitChunk transmitChunk = new TransmitChunk();
-      transmitChunk.OffsetToNextChunk = new IntPtr(0);
-      transmitChunk.RepeatCount = new IntPtr(1);
-      transmitChunk.ByteCount = new IntPtr(irData.Length);
 
-      int bufferSize = irData.Length + _transmitChunkSize[_isSystem64Bit] + 8;
+      ITransmitChunk transmitChunk;
+      if (_isSystem64Bit)
+      {
+        transmitChunk = new TransmitChunk64();
+      }
+      else
+      {
+        transmitChunk = new TransmitChunk64();
+      }
+
+      transmitChunk.OffsetToNextChunk = 0;
+      transmitChunk.RepeatCount = 1;
+      transmitChunk.ByteCount = irData.Length;
+
+      int bufferSize = irData.Length + Marshal.SizeOf(transmitChunk) + 8;
       byte[] buffer = new byte[bufferSize];
 
       byte[] rawTransmitChunk = RawSerialize(transmitChunk);
@@ -604,7 +993,7 @@ namespace IRServer.Plugin
 
       try
       {
-        structurePtr = Marshal.AllocHGlobal(_transmitParamsSize[_isSystem64Bit]);
+        structurePtr = Marshal.AllocHGlobal(Marshal.SizeOf(transmitChunk));
         bufferPtr = Marshal.AllocHGlobal(buffer.Length);
 
         Marshal.StructureToPtr(transmitParams, structurePtr, true);
@@ -612,7 +1001,7 @@ namespace IRServer.Plugin
         Marshal.Copy(buffer, 0, bufferPtr, buffer.Length);
 
         int bytesReturned;
-        IoControl(IoCtrl.Transmit, structurePtr, _transmitParamsSize[_isSystem64Bit], bufferPtr, bufferSize,
+        IoControl(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(transmitChunk), bufferPtr, bufferSize,
                   out bytesReturned);
       }
       finally
@@ -631,6 +1020,18 @@ namespace IRServer.Plugin
     private void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize,
                            out int bytesReturned)
     {
+      /*
+      IrssUtils.IrssLog.Append("IoControl.log");
+      IrssUtils.IrssLog.Debug("IoControl: Start of [{0}]", ioControlCode.ToString());
+
+      IrssUtils.IrssLog.Debug("IoControl: Thread Name   =[{0}]", System.Threading.Thread.CurrentThread.Name);
+      IrssUtils.IrssLog.Debug("IoControl: ioControlCode =[{0}]", ioControlCode.ToString());
+      IrssUtils.IrssLog.Debug("IoControl: inBuffer      =[{0}]", inBuffer.ToString());
+      IrssUtils.IrssLog.Debug("IoControl: inBufferSize  =[{0}]", inBufferSize.ToString());
+      IrssUtils.IrssLog.Debug("IoControl: outBuffer     =[{0}]", outBuffer.ToString());
+      IrssUtils.IrssLog.Debug("IoControl: outBufferSize =[{0}]", outBufferSize.ToString());
+      */
+
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
 
@@ -652,7 +1053,6 @@ namespace IRServer.Plugin
           DeviceIoOverlapped overlapped = new DeviceIoOverlapped();
           overlapped.ClearAndSetEvent(dangerousWaitHandle);
 
-          IrssUtils.IrssLog.Debug("inBufferSize={0}, outBufferSize={1}", inBufferSize, outBufferSize);
           bool deviceIoControl = DeviceIoControl(_eHomeHandle, ioControlCode, inBuffer, inBufferSize, outBuffer,
                                                  outBufferSize, out bytesReturned, overlapped.Overlapped);
           lastError = Marshal.GetLastWin32Error();
@@ -699,6 +1099,7 @@ namespace IRServer.Plugin
         }
         catch
         {
+          IrssUtils.IrssLog.Debug("IoControl: something went bad with StructToPtr or the other way around");
           if (_eHomeHandle != null)
             CancelIo(_eHomeHandle);
 
@@ -709,6 +1110,8 @@ namespace IRServer.Plugin
           safeWaitHandle.DangerousRelease();
         }
       }
+      //IrssUtils.IrssLog.Debug("IoControl: End  of [{0}]", ioControlCode.ToString());
+      //IrssUtils.IrssLog.Close();
     }
 
     #endregion Device Control Functions
@@ -727,8 +1130,8 @@ namespace IRServer.Plugin
         DebugWriteLine("Device Guid: {0}", _deviceGuid);
         DebugWriteLine("Device Path: {0}", _devicePath);
 
-        _isSystem64Bit = IrssUtils.Win32.Check64Bit() ? 1 : 0;
-        DebugWriteLine("Operating system arch is {0}", _isSystem64Bit == 1 ? "x64" : "x86");
+        _isSystem64Bit = IrssUtils.Win32.Check64Bit();
+        DebugWriteLine("Operating system arch is {0}", _isSystem64Bit ? "x64" : "x86");
 
         _notifyWindow = new NotifyWindow();
         _notifyWindow.Create();
@@ -1109,11 +1512,20 @@ namespace IRServer.Plugin
 
       try
       {
-        int receiveParamsSize = _receiveParamsSize[_isSystem64Bit] + DeviceBufferSize + 8;
+        IReceiveParams receiveParams;
+        if (_isSystem64Bit)
+        {
+          receiveParams = new ReceiveParams64();
+        }
+        else
+        {
+          receiveParams = new ReceiveParams32();
+        }
+
+        int receiveParamsSize = Marshal.SizeOf(receiveParams) + DeviceBufferSize + 8;
         receiveParamsPtr = Marshal.AllocHGlobal(receiveParamsSize);
 
-        ReceiveParams receiveParams = new ReceiveParams();
-        receiveParams.ByteCount = new IntPtr(DeviceBufferSize);
+        receiveParams.ByteCount = DeviceBufferSize;
         Marshal.StructureToPtr(receiveParams, receiveParamsPtr, false);
 
         while (_readThreadMode != ReadThreadMode.Stop)
@@ -1134,11 +1546,11 @@ namespace IRServer.Plugin
           int bytesRead;
           IoControl(IoCtrl.Receive, IntPtr.Zero, 0, receiveParamsPtr, receiveParamsSize, out bytesRead);
 
-          if (bytesRead > _receiveParamsSize[_isSystem64Bit])
+          if (bytesRead > Marshal.SizeOf(receiveParams))
           {
             int dataSize = bytesRead;
 
-            bytesRead -= _receiveParamsSize[_isSystem64Bit];
+            bytesRead -= Marshal.SizeOf(receiveParams);
 
             byte[] packetBytes = new byte[bytesRead];
             byte[] dataBytes = new byte[dataSize];
@@ -1148,6 +1560,7 @@ namespace IRServer.Plugin
 
             int[] timingData = GetTimingDataFromPacket(packetBytes);
 
+            DebugWrite("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
             DebugWrite("Received timing:    ");
             DebugDump(timingData);
 
@@ -1158,14 +1571,20 @@ namespace IRServer.Plugin
           }
 
           // Determine carrier frequency when learning ...
-          if (_readThreadMode == ReadThreadMode.Learning && bytesRead >= _receiveParamsSize[_isSystem64Bit])
+          if (_readThreadMode == ReadThreadMode.Learning && bytesRead >= Marshal.SizeOf(receiveParams))
           {
-            ReceiveParams receiveParams2 =
-              (ReceiveParams)Marshal.PtrToStructure(receiveParamsPtr, typeof(ReceiveParams));
-
-            if (receiveParams2.DataEnd.ToInt32() != 0)
+            IReceiveParams receiveParams2;
+            if (_isSystem64Bit)
             {
-              _learningCode.Carrier = receiveParams2.CarrierFrequency.ToInt32();
+              receiveParams2 = (ReceiveParams64)Marshal.PtrToStructure(receiveParamsPtr, receiveParams.GetType());
+            }
+            else
+            {
+              receiveParams2 = (ReceiveParams32)Marshal.PtrToStructure(receiveParamsPtr, receiveParams.GetType());
+            }
+            if ((long)receiveParams2.DataEnd != 0)
+            {
+              _learningCode.Carrier = (int)receiveParams2.CarrierFrequency;
               _readThreadMode = ReadThreadMode.LearningDone;
             }
           }
