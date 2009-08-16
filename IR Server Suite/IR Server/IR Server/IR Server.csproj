@@ -134,6 +134,7 @@
     <Content Include="Abstract Remote Maps\iMon USB\Imon PAD.xml" />
     <Content Include="Abstract Remote Maps\iMon USB\Imon Volume Knob.xml" />
     <Content Include="Abstract Remote Maps\iMon USB\Microsoft MCE.xml" />
+    <None Include="PostBuild.bat" />
     <None Include="Resources\iconGreen.ico" />
     <None Include="RemoteTable.xsc">
       <DependentUpon>RemoteTable.xsd</DependentUpon>
@@ -162,7 +163,9 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)PostBuild.bat" "$(SolutionDir)" $(ConfigurationName) "$(TargetDir)"
     </PostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
