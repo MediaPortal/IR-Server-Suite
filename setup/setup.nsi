@@ -1094,6 +1094,9 @@ Section "-Complete"
   ; Write the uninstaller
   WriteUninstaller "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
 
+  ; set rights to programmdata directory and reg keys
+  !insertmacro SetRightsIRSS
+
   ; Store the install log
   StrCpy $0 "$APPDATA\${PRODUCT_NAME}\Logs\Install.log"
   Push $0
@@ -1142,6 +1145,8 @@ Section "Uninstall"
 
     ${LOG_TEXT} "INFO" "Removing User Settings"
     RMDir /r "$APPDATA\${PRODUCT_NAME}"
+    RMDir /r "$LOCALAPPDATA\VirtualStore\Program Files\${PRODUCT_NAME}"
+    RMDir /r "$LOCALAPPDATA\VirtualStore\ProgramData\${PRODUCT_NAME}"
 
   ${EndIf}
 
@@ -1452,6 +1457,19 @@ Function un.FinishPagePre
 
 FunctionEnd
 
+
+!macro SetRightsIRSS
+  ${LOG_TEXT} "INFO" "Setting AccessRights to ProgramData dir and reg keys"
+
+  SetOverwrite on
+  SetOutPath "$PLUGINSDIR"
+  File "${svn_ROOT}\Tools\Script & Batch tools\SetRights\bin\Release\SetRights.exe"
+
+  SetShellVarContext all
+  nsExec::ExecToLog '"$PLUGINSDIR\SetRights.exe" FOLDER "$APPDATA\${PRODUCT_NAME}"'
+  nsExec::ExecToLog '"$PLUGINSDIR\SetRights.exe" HKLM "Software\${PRODUCT_NAME}"'
+  ;nsExec::ExecToLog '"$PLUGINSDIR\SetRights.exe" HKCU "Software\Team MediaPortal"'
+!macroend
 
 #---------------------------------------------------------------------------
 # SECTION DESCRIPTIONS
