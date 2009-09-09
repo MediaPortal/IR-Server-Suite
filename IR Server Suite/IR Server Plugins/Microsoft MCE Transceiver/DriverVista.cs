@@ -973,7 +973,7 @@ namespace IRServer.Plugin
       }
       else
       {
-        transmitChunk = new TransmitChunk64();
+        transmitChunk = new TransmitChunk32();
       }
 
       transmitChunk.OffsetToNextChunk = 0;
@@ -993,7 +993,7 @@ namespace IRServer.Plugin
 
       try
       {
-        structurePtr = Marshal.AllocHGlobal(Marshal.SizeOf(transmitChunk));
+        structurePtr = Marshal.AllocHGlobal(Marshal.SizeOf(transmitParams));
         bufferPtr = Marshal.AllocHGlobal(buffer.Length);
 
         Marshal.StructureToPtr(transmitParams, structurePtr, true);
@@ -1001,7 +1001,7 @@ namespace IRServer.Plugin
         Marshal.Copy(buffer, 0, bufferPtr, buffer.Length);
 
         int bytesReturned;
-        IoControl(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(transmitChunk), bufferPtr, bufferSize,
+        IoControl(IoCtrl.Transmit, structurePtr, Marshal.SizeOf(transmitParams), bufferPtr, bufferSize,
                   out bytesReturned);
       }
       finally
