@@ -96,7 +96,11 @@ namespace IRServer.Plugin
       ///<summary>
       /// Init call fails
       ///</summary>
-      DeviceException
+      DeviceException,
+      ///<summary>
+      /// Device is disabled on specific platform
+      ///</summary>
+      DeviceDisabled
     }
     #endregion
 

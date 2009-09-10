@@ -115,15 +115,15 @@ namespace IRServer.Plugin
     /// </summary>
     public override DetectionResult Detect()
     {
+      if (IrssUtils.Win32.Check64Bit())
+      {
+        IrssLog.Warn("Plugin {0}: not available on current OS architecture (x64)", Name);
+        return DetectionResult.DeviceDisabled;
+      }
       try
       {
         new FireDTVControl((IntPtr)0);
         return DetectionResult.DevicePresent;
-      }
-      catch (BadImageFormatException)
-      {
-        IrssLog.Warn("Plugin {0}: not available on current OS architecture ({1})", Name, IntPtr.Size == 8 ? "x64" : "x86");
-        return DetectionResult.DeviceException;
       }
       catch (FileNotFoundException)
       {

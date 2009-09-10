@@ -236,6 +236,11 @@ namespace IRServer.Plugin
     /// </summary>
     public override DetectionResult Detect()
     {
+      if (IrssUtils.Win32.Check64Bit())
+      {
+        IrssLog.Warn("Plugin {0}: not available on current OS architecture (x64)", Name);
+        return DetectionResult.DeviceDisabled;
+      }
       try
       {
         InitDeviceList();
@@ -274,7 +279,7 @@ namespace IRServer.Plugin
 #endif
         _deviceList.Reset(); // Move to the position before the first in the device list.
         _deviceList.MoveNext(); // Move to the first position in the device list.
-        DeviceInstance di = (DeviceInstance) _deviceList.Current; // Retreive the first position in the device list.
+        DeviceInstance di = (DeviceInstance)_deviceList.Current; // Retreive the first position in the device list.
         _selectedDeviceGUID = di.InstanceGuid.ToString();
       }
 
@@ -350,7 +355,7 @@ namespace IRServer.Plugin
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char) 9;
+          writer.IndentChar = (char)9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -453,28 +458,28 @@ namespace IRServer.Plugin
         switch (pov[0])
         {
           case 0:
-            actionCode = (int) joyButton.povN;
+            actionCode = (int)joyButton.povN;
             break;
           case 4500:
-            actionCode = (int) joyButton.povNE;
+            actionCode = (int)joyButton.povNE;
             break;
           case 9000:
-            actionCode = (int) joyButton.povE;
+            actionCode = (int)joyButton.povE;
             break;
           case 13500:
-            actionCode = (int) joyButton.povSE;
+            actionCode = (int)joyButton.povSE;
             break;
           case 18000:
-            actionCode = (int) joyButton.povS;
+            actionCode = (int)joyButton.povS;
             break;
           case 22500:
-            actionCode = (int) joyButton.povSW;
+            actionCode = (int)joyButton.povSW;
             break;
           case 27000:
-            actionCode = (int) joyButton.povW;
+            actionCode = (int)joyButton.povW;
             break;
           case 31500:
-            actionCode = (int) joyButton.povNW;
+            actionCode = (int)joyButton.povNW;
             break;
         }
       }
@@ -487,11 +492,11 @@ namespace IRServer.Plugin
           //curAxisValue = state.X;
           if (state.X > 0)
           {
-            actionCode = (int) joyButton.axisXUp; // right
+            actionCode = (int)joyButton.axisXUp; // right
           }
           else
           {
-            actionCode = (int) joyButton.axisXDown; // left
+            actionCode = (int)joyButton.axisXDown; // left
           }
         }
         else if (Math.Abs(state.Y) > AxisLimit)
@@ -500,12 +505,12 @@ namespace IRServer.Plugin
           if (state.Y > 0)
           {
             // down
-            actionCode = (int) joyButton.axisYUp;
+            actionCode = (int)joyButton.axisYUp;
           }
           else
           {
             // up
-            actionCode = (int) joyButton.axisYDown;
+            actionCode = (int)joyButton.axisYDown;
           }
         }
         else if (Math.Abs(state.Z) > AxisLimit)
@@ -513,11 +518,11 @@ namespace IRServer.Plugin
           //curAxisValue = state.Z;
           if (state.Z > 0)
           {
-            actionCode = (int) joyButton.axisZUp;
+            actionCode = (int)joyButton.axisZUp;
           }
           else
           {
-            actionCode = (int) joyButton.axisZDown;
+            actionCode = (int)joyButton.axisZDown;
           }
         }
       }
@@ -530,11 +535,11 @@ namespace IRServer.Plugin
           //curAxisValue = state.Rx;
           if (state.Rx > 0)
           {
-            actionCode = (int) joyButton.rotationXUp;
+            actionCode = (int)joyButton.rotationXUp;
           }
           else
           {
-            actionCode = (int) joyButton.rotationXDown;
+            actionCode = (int)joyButton.rotationXDown;
           }
         }
         else if (Math.Abs(state.Ry) > AxisLimit)
@@ -542,11 +547,11 @@ namespace IRServer.Plugin
           //curAxisValue = state.Ry;
           if (state.Ry > 0)
           {
-            actionCode = (int) joyButton.rotationYUp;
+            actionCode = (int)joyButton.rotationYUp;
           }
           else
           {
-            actionCode = (int) joyButton.rotationYDown;
+            actionCode = (int)joyButton.rotationYDown;
           }
         }
         else if (Math.Abs(state.Rz) > AxisLimit)
@@ -554,11 +559,11 @@ namespace IRServer.Plugin
           //curAxisValue = state.Rz;
           if (state.Rz > 0)
           {
-            actionCode = (int) joyButton.rotationZUp;
+            actionCode = (int)joyButton.rotationZUp;
           }
           else
           {
-            actionCode = (int) joyButton.rotationZDown;
+            actionCode = (int)joyButton.rotationZDown;
           }
         }
       }
@@ -573,9 +578,9 @@ namespace IRServer.Plugin
 
     private string TranslateActionCode(int actionCode)
     {
-      joyButton j = (joyButton) actionCode;
+      joyButton j = (joyButton)actionCode;
 
-      return Enum.GetName(typeof (joyButton), j);
+      return Enum.GetName(typeof(joyButton), j);
     }
   }
 }
