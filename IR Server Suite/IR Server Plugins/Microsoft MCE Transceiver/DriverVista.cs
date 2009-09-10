@@ -1582,9 +1582,9 @@ namespace IRServer.Plugin
             {
               receiveParams2 = (ReceiveParams32)Marshal.PtrToStructure(receiveParamsPtr, receiveParams.GetType());
             }
-            if ((long)receiveParams2.DataEnd != 0)
+            if (System.Convert.ToInt64(receiveParams2.DataEnd) != 0)
             {
-              _learningCode.Carrier = (int)receiveParams2.CarrierFrequency;
+              _learningCode.Carrier = System.Convert.ToInt32(receiveParams2.CarrierFrequency);
               _readThreadMode = ReadThreadMode.LearningDone;
             }
           }
