@@ -120,17 +120,20 @@ namespace IRServer.Plugin
         new FireDTVControl((IntPtr)0);
         return DetectionResult.DevicePresent;
       }
-      catch (FileNotFoundException ex)
+      catch (BadImageFormatException)
       {
-        IrssLog.Warn("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        IrssLog.Warn("Plugin {0}: not available on current OS architecture ({1})", Name, IntPtr.Size == 8 ? "x64" : "x86");
+        return DetectionResult.DeviceException;
+      }
+      catch (FileNotFoundException)
+      {
+        return DetectionResult.DeviceNotFound;
       }
       catch (Exception ex)
       {
         IrssLog.Error("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
         return DetectionResult.DeviceException;
       }
-
-      return DetectionResult.DeviceNotFound;
     }
 
     /// <summary>
