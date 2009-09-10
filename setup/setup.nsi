@@ -163,9 +163,9 @@ BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-;!define MUI_FINISHPAGE_RUN_NOTCHECKED
-;!define MUI_FINISHPAGE_RUN      "$DIR_INSTALL\IR Server Configuration.exe"
-;!define MUI_FINISHPAGE_RUN_TEXT "Run IR Server Configuration"
+
+!define MUI_FINISHPAGE_RUN      "$DIR_INSTALL\IR Server Configuration.exe"
+!define MUI_FINISHPAGE_RUN_TEXT "Run IR Server Configuration"
 
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
@@ -1298,11 +1298,10 @@ ${If} ${SectionIsSelected} ${SectionIRServer}
     ${LOG_TEXT} "INFO" "Starting IR Server..."
     Exec "$DIR_INSTALL\IR Server.exe"
   ${Else}
-    ${LOG_TEXT} "INFO" "Starting IR Server..."
+    ${LOG_TEXT} "INFO" "Starting IR Server service..."
     Exec '"$DIR_INSTALL\IR Server.exe" /start'
   ${EndIf}
-  Exec "$DIR_INSTALL\IR Server Configuration.exe"
-
+  
 ${EndIf}
 
 
