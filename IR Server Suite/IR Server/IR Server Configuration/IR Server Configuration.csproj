@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1E84C2ED-92FC-43A4-9C12-374B3347F6D7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -149,11 +149,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Graphics\Detect.png" />
-    <None Include="Graphics\Advanced.png" />
-    <Content Include="Graphics\Help.png" />
-    <Content Include="Graphics\Start.png" />
-    <Content Include="Graphics\Stop.png" />
     <None Include="Resources\iconGreen.ico" />
     <None Include="Resources\IconGray.ico" />
   </ItemGroup>

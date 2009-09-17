@@ -122,7 +122,7 @@ namespace IRServer.Configuration
       // 
       // toolStripButtonDetect
       // 
-      this.toolStripButtonDetect.Image = global::IRServer.Configuration.Properties.Resources.Detect;
+      this.toolStripButtonDetect.Image = IrssUtils.Properties.Resources.Detect;
       this.toolStripButtonDetect.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDetect.Name = "toolStripButtonDetect";
       this.toolStripButtonDetect.Size = new System.Drawing.Size(61, 22);
@@ -132,7 +132,7 @@ namespace IRServer.Configuration
       // 
       // toolStripButtonAdvancedSettings
       // 
-      this.toolStripButtonAdvancedSettings.Image = global::IRServer.Configuration.Properties.Resources.Advanced;
+      this.toolStripButtonAdvancedSettings.Image = IrssUtils.Properties.Resources.Advanced;
       this.toolStripButtonAdvancedSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonAdvancedSettings.Name = "toolStripButtonAdvancedSettings";
       this.toolStripButtonAdvancedSettings.Size = new System.Drawing.Size(80, 22);
@@ -143,7 +143,7 @@ namespace IRServer.Configuration
       // toolStripButtonHelp
       // 
       this.toolStripButtonHelp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-      this.toolStripButtonHelp.Image = global::IRServer.Configuration.Properties.Resources.Help;
+      this.toolStripButtonHelp.Image = IrssUtils.Properties.Resources.Help;
       this.toolStripButtonHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonHelp.Name = "toolStripButtonHelp";
       this.toolStripButtonHelp.Size = new System.Drawing.Size(52, 22);

@@ -72,6 +72,12 @@
     <Compile Include="Exceptions\MacroStructureException.cs" />
     <Compile Include="FocusForcer.cs">
     </Compile>
+    <Compile Include="Forms\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\BlastCommand.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -247,6 +253,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\BlastCommand.resx">
       <DependentUpon>BlastCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -353,11 +363,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Graphics\Advanced.png" />
     <Content Include="Graphics\Background.png" />
     <Content Include="Graphics\Bottom.png" />
     <Content Include="Graphics\BottomLeft.png" />
@@ -365,20 +376,35 @@
     <Content Include="Graphics\ClickLeft.png" />
     <Content Include="Graphics\ClickMiddle.png" />
     <Content Include="Graphics\ClickRight.png" />
+    <Content Include="Graphics\Delete.png" />
+    <Content Include="Graphics\DeleteAll.png" />
+    <Content Include="Graphics\Detect.png" />
     <Content Include="Graphics\DoubleClickLeft.png" />
     <Content Include="Graphics\DoubleClickMiddle.png" />
     <Content Include="Graphics\DoubleClickRight.png" />
+    <Content Include="Graphics\Edit.png" />
+    <Content Include="Graphics\Help.png" />
+    <Content Include="Graphics\Help48.png" />
+    <Content Include="Graphics\Info.png" />
+    <Content Include="Graphics\Info48.png" />
     <Content Include="Graphics\Left.png" />
     <Content Include="Graphics\MoveDown.png" />
     <Content Include="Graphics\MoveLeft.png" />
     <Content Include="Graphics\MoveRight.png" />
     <Content Include="Graphics\MoveUp.png" />
+    <Content Include="Graphics\NoIcon.png" />
+    <Content Include="Graphics\Plus.png" />
+    <Content Include="Graphics\Remap.png" />
     <Content Include="Graphics\Right.png" />
     <Content Include="Graphics\ScrollDown.png" />
     <Content Include="Graphics\ScrollUp.png" />
+    <Content Include="Graphics\Shortcut.png" />
+    <Content Include="Graphics\Start.png" />
+    <Content Include="Graphics\Stop.png" />
     <Content Include="Graphics\Top.png" />
     <Content Include="Graphics\TopLeft.png" />
     <Content Include="Graphics\TopRight.png" />
+    <Content Include="Graphics\WinLogo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

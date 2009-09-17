@@ -109,7 +109,7 @@ namespace Translator
     private void RefreshProgramList()
     {
       imageListPrograms.Images.Clear();
-      imageListPrograms.Images.Add(Resources.WinLogo);
+      imageListPrograms.Images.Add(IrssUtils.Properties.Resources.WinLogo);
 
       Icon large;
       Icon small;
@@ -275,11 +275,11 @@ namespace Translator
 
     private void SetupProgramsContextMenu()
     {
-      _addProgramToolStripMenuItem = new ToolStripMenuItem("&Add Program", Resources.Plus,
+      _addProgramToolStripMenuItem = new ToolStripMenuItem("&Add Program", IrssUtils.Properties.Resources.Plus,
                                                            new EventHandler(addProgramToolStripMenuItem_Click));
-      _editProgramToolStripMenuItem = new ToolStripMenuItem("&Edit Program", Resources.Edit,
+      _editProgramToolStripMenuItem = new ToolStripMenuItem("&Edit Program", IrssUtils.Properties.Resources.Edit,
                                                             new EventHandler(editProgramToolStripMenuItem_Click));
-      _removeProgramToolStripMenuItem = new ToolStripMenuItem("&Remove Program", Resources.Delete,
+      _removeProgramToolStripMenuItem = new ToolStripMenuItem("&Remove Program", IrssUtils.Properties.Resources.Delete,
                                                               new EventHandler(removeProgramToolStripMenuItem_Click));
 
       contextMenuStripPrograms.Items.Add(_addProgramToolStripMenuItem);
@@ -1195,8 +1195,9 @@ namespace Translator
 
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      MessageBox.Show(this, "Translator\nVersion 1.4.2.0 for IR Server Suite\nBy Aaron Dinnage, 2008",
-                      "About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      new AboutForm().ShowDialog();
+      //MessageBox.Show(this, "Translator\nVersion 1.4.2.0 for IR Server Suite\nBy Aaron Dinnage, 2008",
+                      //"About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void addProgramToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1257,7 +1258,7 @@ namespace Translator
       string selectedItem = listViewPrograms.Items[_selectedProgram].Text;
 
       if (_selectedProgram > 0)
-        copyButtonsFromToolStripMenuItem.DropDownItems.Add(SystemWide, Resources.WinLogo, ClickCopyFrom);
+        copyButtonsFromToolStripMenuItem.DropDownItems.Add(SystemWide, IrssUtils.Properties.Resources.WinLogo, ClickCopyFrom);
 
       foreach (ProgramSettings programSettings in Program.Config.Programs)
       {

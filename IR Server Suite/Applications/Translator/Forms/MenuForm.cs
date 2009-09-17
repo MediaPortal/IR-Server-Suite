@@ -189,7 +189,7 @@ namespace Translator
       Win32.ExtractIcons(file, IconMacros, out large, out small);
       _listMain.Images.Add(large);
 
-      _listMain.Images.Add(Resources.WinLogo);
+      _listMain.Images.Add(IrssUtils.Properties.Resources.WinLogo);
     }
 
     private void SetToIconStyle()

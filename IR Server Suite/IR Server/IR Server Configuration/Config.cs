@@ -118,25 +118,25 @@ namespace IRServer.Configuration
       {
         case IrsStatus.NotRunning:
           {
-            toolStripButtonApplication.Image = Resources.Start;
+            toolStripButtonApplication.Image = IrssUtils.Properties.Resources.Start;
             toolStripButtonApplication.Enabled = true;
-            toolStripButtonService.Image = Resources.Start;
+            toolStripButtonService.Image = IrssUtils.Properties.Resources.Start;
             toolStripButtonService.Enabled = Program._serviceInstalled;
             break;
           }
         case IrsStatus.RunningApplication:
           {
-            toolStripButtonApplication.Image = Resources.Stop;
+            toolStripButtonApplication.Image = IrssUtils.Properties.Resources.Stop;
             toolStripButtonApplication.Enabled = true;
-            toolStripButtonService.Image = Resources.Start;
+            toolStripButtonService.Image = IrssUtils.Properties.Resources.Start;
             toolStripButtonService.Enabled = false;
             break;
           }
         case IrsStatus.RunningService:
           {
-            toolStripButtonApplication.Image = Resources.Start;
+            toolStripButtonApplication.Image = IrssUtils.Properties.Resources.Start;
             toolStripButtonApplication.Enabled = false;
-            toolStripButtonService.Image = Resources.Stop;
+            toolStripButtonService.Image = IrssUtils.Properties.Resources.Stop;
             toolStripButtonService.Enabled = true;
             break;
           }
