@@ -97,10 +97,14 @@ namespace Translator
       this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-      this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.serverToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
       this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.changeServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.translatorHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -784,7 +788,7 @@ namespace Translator
       this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
       this.newToolStripMenuItem.Name = "newToolStripMenuItem";
       this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-      this.newToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.newToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
       this.newToolStripMenuItem.Text = "&New";
       this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
       // 
@@ -793,7 +797,7 @@ namespace Translator
       this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
       this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
       this.openToolStripMenuItem.Text = "&Open...";
       this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
       // 
@@ -801,7 +805,7 @@ namespace Translator
       // 
       this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
       this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-      this.importToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.importToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
       this.importToolStripMenuItem.Text = "&Import...";
       this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
       // 
@@ -809,40 +813,65 @@ namespace Translator
       // 
       this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
       this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-      this.exportToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.exportToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
       this.exportToolStripMenuItem.Text = "&Export...";
       this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
       // 
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(136, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(154, 6);
       // 
       // serverToolStripMenuItem
       // 
-      this.serverToolStripMenuItem.Name = "serverToolStripMenuItem";
-      this.serverToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-      this.serverToolStripMenuItem.Text = "&Server...";
-      this.serverToolStripMenuItem.Click += new System.EventHandler(this.serverToolStripMenuItem_Click);
+      this.serverToolStripMenuItem2.Name = "serverToolStripMenuItem";
+      this.serverToolStripMenuItem2.Size = new System.Drawing.Size(157, 22);
+      this.serverToolStripMenuItem2.Text = "&Server...";
+      this.serverToolStripMenuItem2.Click += new System.EventHandler(this.serverToolStripMenuItem2_Click);
       // 
       // advancedToolStripMenuItem
       // 
       this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-      this.advancedToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.advancedToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
       this.advancedToolStripMenuItem.Text = "&Advanced...";
       this.advancedToolStripMenuItem.Click += new System.EventHandler(this.advancedToolStripMenuItem_Click);
       // 
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(136, 6);
+      this.toolStripSeparator2.Size = new System.Drawing.Size(154, 6);
       // 
       // quitToolStripMenuItem
       // 
       this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
       this.quitToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-      this.quitToolStripMenuItem.Text = "&Quit";
+      this.quitToolStripMenuItem.Text = "E&xit";
       this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
+      // 
+      // serverToolStripMenuItem
+      // 
+      this.serverToolStripMenuItem.Name = "serverToolStripMenuItem1";
+      this.serverToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
+      this.serverToolStripMenuItem.Text = "&Server";
+      // 
+      // connectToolStripMenuItem
+      // 
+      this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
+      this.connectToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+      this.connectToolStripMenuItem.Text = "&Connect";
+      this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
+      // 
+      // disconnectToolStripMenuItem
+      // 
+      this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
+      this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+      this.disconnectToolStripMenuItem.Text = "&Disconnect";
+      // 
+      // changeServerToolStripMenuItem
+      // 
+      this.changeServerToolStripMenuItem.Name = "changeServerToolStripMenuItem";
+      this.changeServerToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+      this.changeServerToolStripMenuItem.Text = "Change &Server...";
       // 
       // helpToolStripMenuItem
       // 
@@ -857,7 +886,7 @@ namespace Translator
       // 
       this.translatorHelpToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
       this.translatorHelpToolStripMenuItem.Name = "translatorHelpToolStripMenuItem";
-      this.translatorHelpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.translatorHelpToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.translatorHelpToolStripMenuItem.Text = "&Contents";
       this.translatorHelpToolStripMenuItem.Click += new System.EventHandler(this.translatorHelpToolStripMenuItem_Click);
       // 
@@ -865,7 +894,7 @@ namespace Translator
       // 
       this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
       this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
       this.aboutToolStripMenuItem.Text = "&About";
       this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
       // 
@@ -958,7 +987,7 @@ namespace Translator
     private System.Windows.Forms.ToolStripMenuItem translatorHelpToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-    private System.Windows.Forms.ToolStripMenuItem serverToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem serverToolStripMenuItem2;
     private System.Windows.Forms.OpenFileDialog openFileDialog;
     private System.Windows.Forms.SaveFileDialog saveFileDialog;
     private System.Windows.Forms.ListView listViewIR;
@@ -999,6 +1028,10 @@ namespace Translator
     private System.Windows.Forms.Label labelProgramsAdd;
     private System.Windows.Forms.ToolStripMenuItem remapButtonToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem serverToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem changeServerToolStripMenuItem;
   }
 }
 

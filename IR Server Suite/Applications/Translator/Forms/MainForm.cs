@@ -1148,7 +1148,7 @@ namespace Translator
       }
     }
 
-    private void serverToolStripMenuItem_Click(object sender, EventArgs e)
+    private void serverToolStripMenuItem2_Click(object sender, EventArgs e)
     {
       ServerAddress serverAddress = new ServerAddress(Program.Config.ServerHost);
       if (serverAddress.ShowDialog(this) == DialogResult.OK)
@@ -1557,6 +1557,11 @@ namespace Translator
     private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
     {
       IrssHelp.Open(sender);
+    }
+
+    private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
     }
   }
 }
