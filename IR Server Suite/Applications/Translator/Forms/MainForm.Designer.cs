@@ -781,6 +781,7 @@ namespace Translator
       // 
       // newToolStripMenuItem
       // 
+      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
       this.newToolStripMenuItem.Name = "newToolStripMenuItem";
       this.newToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
       this.newToolStripMenuItem.Text = "&New";
@@ -788,6 +789,7 @@ namespace Translator
       // 
       // openToolStripMenuItem
       // 
+      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
       this.openToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
       this.openToolStripMenuItem.Text = "&Open ...";
@@ -795,6 +797,7 @@ namespace Translator
       // 
       // importToolStripMenuItem
       // 
+      this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
       this.importToolStripMenuItem.Name = "importToolStripMenuItem";
       this.importToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
       this.importToolStripMenuItem.Text = "&Import ...";
@@ -802,6 +805,7 @@ namespace Translator
       // 
       // exportToolStripMenuItem
       // 
+      this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
       this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
       this.exportToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
       this.exportToolStripMenuItem.Text = "&Export ...";
@@ -857,6 +861,7 @@ namespace Translator
       // 
       // aboutToolStripMenuItem
       // 
+      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
       this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
       this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.aboutToolStripMenuItem.Text = "&About";

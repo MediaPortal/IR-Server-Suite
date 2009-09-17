@@ -165,9 +165,37 @@ namespace IrssUtils.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap Export {
+            get {
+                object obj = ResourceManager.GetObject("Export", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ExportDocument {
+            get {
+                object obj = ResourceManager.GetObject("ExportDocument", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap Help {
             get {
                 object obj = ResourceManager.GetObject("Help", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap Import {
+            get {
+                object obj = ResourceManager.GetObject("Import", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ImportDocument {
+            get {
+                object obj = ResourceManager.GetObject("ImportDocument", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -214,9 +242,23 @@ namespace IrssUtils.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap NewDocument {
+            get {
+                object obj = ResourceManager.GetObject("NewDocument", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap NoIcon {
             get {
                 object obj = ResourceManager.GetObject("NoIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap OpenDocument {
+            get {
+                object obj = ResourceManager.GetObject("OpenDocument", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
