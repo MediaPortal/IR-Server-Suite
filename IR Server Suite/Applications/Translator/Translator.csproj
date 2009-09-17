@@ -65,7 +65,6 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="AppProfile.cs" />
     <Compile Include="Forms\Advanced.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Advanced.Designer.cs">
       <DependentUpon>Advanced.cs</DependentUpon>
@@ -77,7 +76,6 @@
       <DependentUpon>ButtonMappingForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\EditProgramForm.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\EditProgramForm.Designer.cs">
       <DependentUpon>EditProgramForm.cs</DependentUpon>

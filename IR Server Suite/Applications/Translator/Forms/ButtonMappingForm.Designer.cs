@@ -1491,7 +1491,7 @@ namespace Translator
       // checkBoxMouseScrollDown
       // 
       this.checkBoxMouseScrollDown.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseScrollDown.Image = global::Translator.Properties.Resources.ScrollDown;
+      this.checkBoxMouseScrollDown.Image = IrssUtils.Properties.Resources.ScrollDown;
       this.checkBoxMouseScrollDown.Location = new System.Drawing.Point(48, 96);
       this.checkBoxMouseScrollDown.Name = "checkBoxMouseScrollDown";
       this.checkBoxMouseScrollDown.Size = new System.Drawing.Size(32, 32);
@@ -1503,7 +1503,7 @@ namespace Translator
       // checkBoxMouseScrollUp
       // 
       this.checkBoxMouseScrollUp.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseScrollUp.Image = global::Translator.Properties.Resources.ScrollUp;
+      this.checkBoxMouseScrollUp.Image = IrssUtils.Properties.Resources.ScrollUp;
       this.checkBoxMouseScrollUp.Location = new System.Drawing.Point(48, 40);
       this.checkBoxMouseScrollUp.Name = "checkBoxMouseScrollUp";
       this.checkBoxMouseScrollUp.Size = new System.Drawing.Size(32, 32);
@@ -1528,7 +1528,7 @@ namespace Translator
       // checkBoxMouseClickRight
       // 
       this.checkBoxMouseClickRight.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseClickRight.Image = global::Translator.Properties.Resources.ClickRight;
+      this.checkBoxMouseClickRight.Image = IrssUtils.Properties.Resources.ClickRight;
       this.checkBoxMouseClickRight.Location = new System.Drawing.Point(88, 64);
       this.checkBoxMouseClickRight.Name = "checkBoxMouseClickRight";
       this.checkBoxMouseClickRight.Size = new System.Drawing.Size(32, 32);
@@ -1540,7 +1540,7 @@ namespace Translator
       // checkBoxMouseClickMiddle
       // 
       this.checkBoxMouseClickMiddle.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseClickMiddle.Image = global::Translator.Properties.Resources.ClickMiddle;
+      this.checkBoxMouseClickMiddle.Image = IrssUtils.Properties.Resources.ClickMiddle;
       this.checkBoxMouseClickMiddle.Location = new System.Drawing.Point(48, 64);
       this.checkBoxMouseClickMiddle.Name = "checkBoxMouseClickMiddle";
       this.checkBoxMouseClickMiddle.Size = new System.Drawing.Size(32, 32);
@@ -1552,7 +1552,7 @@ namespace Translator
       // checkBoxMouseClickLeft
       // 
       this.checkBoxMouseClickLeft.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseClickLeft.Image = global::Translator.Properties.Resources.ClickLeft;
+      this.checkBoxMouseClickLeft.Image = IrssUtils.Properties.Resources.ClickLeft;
       this.checkBoxMouseClickLeft.Location = new System.Drawing.Point(8, 64);
       this.checkBoxMouseClickLeft.Name = "checkBoxMouseClickLeft";
       this.checkBoxMouseClickLeft.Size = new System.Drawing.Size(32, 32);
@@ -1580,7 +1580,7 @@ namespace Translator
       // checkBoxMouseMoveLeft
       // 
       this.checkBoxMouseMoveLeft.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveLeft.Image = global::Translator.Properties.Resources.MoveLeft;
+      this.checkBoxMouseMoveLeft.Image = IrssUtils.Properties.Resources.MoveLeft;
       this.checkBoxMouseMoveLeft.Location = new System.Drawing.Point(24, 64);
       this.checkBoxMouseMoveLeft.Name = "checkBoxMouseMoveLeft";
       this.checkBoxMouseMoveLeft.Size = new System.Drawing.Size(32, 32);
@@ -1592,7 +1592,7 @@ namespace Translator
       // checkBoxMouseMoveDown
       // 
       this.checkBoxMouseMoveDown.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveDown.Image = global::Translator.Properties.Resources.MoveDown;
+      this.checkBoxMouseMoveDown.Image = IrssUtils.Properties.Resources.MoveDown;
       this.checkBoxMouseMoveDown.Location = new System.Drawing.Point(56, 96);
       this.checkBoxMouseMoveDown.Name = "checkBoxMouseMoveDown";
       this.checkBoxMouseMoveDown.Size = new System.Drawing.Size(32, 32);
@@ -1604,7 +1604,7 @@ namespace Translator
       // checkBoxMouseMoveRight
       // 
       this.checkBoxMouseMoveRight.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveRight.Image = global::Translator.Properties.Resources.MoveRight;
+      this.checkBoxMouseMoveRight.Image = IrssUtils.Properties.Resources.MoveRight;
       this.checkBoxMouseMoveRight.Location = new System.Drawing.Point(88, 64);
       this.checkBoxMouseMoveRight.Name = "checkBoxMouseMoveRight";
       this.checkBoxMouseMoveRight.Size = new System.Drawing.Size(32, 32);
@@ -1616,7 +1616,7 @@ namespace Translator
       // checkBoxMouseMoveUp
       // 
       this.checkBoxMouseMoveUp.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveUp.Image = global::Translator.Properties.Resources.MoveUp;
+      this.checkBoxMouseMoveUp.Image = IrssUtils.Properties.Resources.MoveUp;
       this.checkBoxMouseMoveUp.Location = new System.Drawing.Point(56, 32);
       this.checkBoxMouseMoveUp.Name = "checkBoxMouseMoveUp";
       this.checkBoxMouseMoveUp.Size = new System.Drawing.Size(32, 32);
