@@ -389,6 +389,8 @@
     <Content Include="Graphics\Import.png" />
     <Content Include="Graphics\ImportDocument.png" />
     <Content Include="Graphics\Info.png" />
+    <Content Include="Graphics\SaveAs.png" />
+    <Content Include="Graphics\SaveAll.png" />
     <Content Include="Graphics\Left.png" />
     <Content Include="Graphics\MoveDown.png" />
     <Content Include="Graphics\MoveLeft.png" />
@@ -400,6 +402,7 @@
     <Content Include="Graphics\Plus.png" />
     <Content Include="Graphics\Remap.png" />
     <Content Include="Graphics\Right.png" />
+    <Content Include="Graphics\Save.png" />
     <Content Include="Graphics\ScrollDown.png" />
     <Content Include="Graphics\ScrollUp.png" />
     <Content Include="Graphics\Shortcut.png" />
