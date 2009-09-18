@@ -30,7 +30,7 @@ using VariableList=Commands.VariableList;
 
 namespace MacroScope
 {
-  public partial class FormMain : Form
+  public partial class MainForm : Form
   {
     #region Variables
 
@@ -44,13 +44,27 @@ namespace MacroScope
 
     #region Constructor
 
-    public FormMain()
+    public MainForm()
     {
       InitializeComponent();
+
+      SetImages();
 
       PopulateCommandList();
 
       _variables = new VariableList();
+    }
+
+    private void SetImages()
+    {
+      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
+      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
+      this.closeToolStripMenuItem.Image = IrssUtils.Properties.Resources.CloseDocument;
+      this.saveToolStripMenuItem.Image = IrssUtils.Properties.Resources.Save;
+      this.saveAsToolStripMenuItem.Image = IrssUtils.Properties.Resources.SaveAs;
+
+      this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
+      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
     }
 
     #endregion Constructor
@@ -258,6 +272,7 @@ namespace MacroScope
       toolStripStatusLabel.Text = text;
     }
 
+    #region Menus
 
     private void newToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -271,7 +286,7 @@ namespace MacroScope
         ReadFromFile(openFileDialog.FileName);
     }
 
-    private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
     {
     }
 
@@ -279,28 +294,15 @@ namespace MacroScope
     {
     }
 
-    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+    private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
     {
     }
-
-    private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+    
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Application.Exit();
     }
 
-    private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-    }
-
-    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-    }
-
-    private void treeViewCommandList_DoubleClick(object sender, EventArgs e)
-    {
-      if (treeViewCommandList.SelectedNode != null && treeViewCommandList.SelectedNode.Level == 1)
-        InsertCommand(treeViewCommandList.SelectedNode.Text);
-    }
 
     private void stepDebugToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -315,6 +317,23 @@ namespace MacroScope
     private void endDebugToolStripMenuItem_Click(object sender, EventArgs e)
     {
       DebugEnd();
+    }
+
+
+    private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    }
+
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    }
+
+    #endregion Menus
+
+    private void treeViewCommandList_DoubleClick(object sender, EventArgs e)
+    {
+      if (treeViewCommandList.SelectedNode != null && treeViewCommandList.SelectedNode.Level == 1)
+        InsertCommand(treeViewCommandList.SelectedNode.Text);
     }
   }
 }

@@ -43,7 +43,7 @@ namespace IrFileTool
 
       Application.ThreadException += Application_ThreadException;
 
-      FormMain main = new FormMain();
+      MainForm main = new MainForm();
 
       Application.Run(main);
 

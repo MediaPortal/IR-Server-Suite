@@ -1,6 +1,6 @@
 namespace MacroScope
 {
-  partial class FormMain
+  partial class MainForm
   {
     /// <summary>
     /// Required designer variable.
@@ -39,7 +39,7 @@ namespace MacroScope
       this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-      this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.stepToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.resetDebugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,6 +59,7 @@ namespace MacroScope
       this.contextMenuStripVariables = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
       this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.statusStrip.SuspendLayout();
       this.menuStrip.SuspendLayout();
       this.splitContainer.Panel1.SuspendLayout();
@@ -82,7 +83,7 @@ namespace MacroScope
       // toolStripStatusLabel
       // 
       this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-      this.toolStripStatusLabel.Size = new System.Drawing.Size(124, 17);
+      this.toolStripStatusLabel.Size = new System.Drawing.Size(140, 17);
       this.toolStripStatusLabel.Text = "Welcome to MacroScope";
       // 
       // menuStrip
@@ -102,61 +103,68 @@ namespace MacroScope
       this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.closeToolStripMenuItem,
+            this.toolStripSeparator2,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
-            this.closeToolStripMenuItem,
             this.toolStripSeparator1,
-            this.quitToolStripMenuItem});
+            this.exitToolStripMenuItem});
       this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-      this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+      this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       this.fileToolStripMenuItem.Text = "&File";
       // 
       // newToolStripMenuItem
       // 
       this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-      this.newToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+      this.newToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
       this.newToolStripMenuItem.Text = "&New";
       this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
       // 
       // openToolStripMenuItem
       // 
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
       this.openToolStripMenuItem.Text = "&Open";
       this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
       // 
       // saveToolStripMenuItem
       // 
       this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-      this.saveToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+      this.saveToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
       this.saveToolStripMenuItem.Text = "&Save";
       this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
       // 
       // saveAsToolStripMenuItem
       // 
       this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-      this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                  | System.Windows.Forms.Keys.S)));
+      this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
       this.saveAsToolStripMenuItem.Text = "Save &As ...";
       this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
       // 
       // closeToolStripMenuItem
       // 
       this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-      this.closeToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+      this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
+      this.closeToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
       this.closeToolStripMenuItem.Text = "&Close";
       this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
       // 
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(136, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
       // 
-      // quitToolStripMenuItem
+      // exitToolStripMenuItem
       // 
-      this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-      this.quitToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-      this.quitToolStripMenuItem.Text = "&Quit";
-      this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
+      this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+      this.exitToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
+      this.exitToolStripMenuItem.Text = "E&xit";
+      this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
       // 
       // debugToolStripMenuItem
       // 
@@ -165,7 +173,7 @@ namespace MacroScope
             this.resetDebugToolStripMenuItem,
             this.endDebugToolStripMenuItem});
       this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-      this.debugToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+      this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
       this.debugToolStripMenuItem.Text = "Debug";
       // 
       // stepToolStripMenuItem
@@ -195,20 +203,20 @@ namespace MacroScope
             this.contentsToolStripMenuItem,
             this.aboutToolStripMenuItem});
       this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-      this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+      this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
       this.helpToolStripMenuItem.Text = "&Help";
       // 
       // contentsToolStripMenuItem
       // 
       this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
-      this.contentsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+      this.contentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.contentsToolStripMenuItem.Text = "&Contents";
       this.contentsToolStripMenuItem.Click += new System.EventHandler(this.contentsToolStripMenuItem_Click);
       // 
       // aboutToolStripMenuItem
       // 
       this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.aboutToolStripMenuItem.Text = "&About";
       this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
       // 
@@ -332,7 +340,12 @@ namespace MacroScope
       this.saveFileDialog.DefaultExt = "Macro";
       this.saveFileDialog.Filter = "Macro Files|*.Macro|All Files|*.*";
       // 
-      // FormMain
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(248, 6);
+      // 
+      // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -341,7 +354,7 @@ namespace MacroScope
       this.Controls.Add(this.statusStrip);
       this.Controls.Add(this.menuStrip);
       this.MainMenuStrip = this.menuStrip;
-      this.Name = "FormMain";
+      this.Name = "MainForm";
       this.Text = "MacroScope";
       this.statusStrip.ResumeLayout(false);
       this.statusStrip.PerformLayout();
@@ -369,7 +382,7 @@ namespace MacroScope
     private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-    private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     private System.Windows.Forms.RichTextBox richTextBoxMacro;
     private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem contentsToolStripMenuItem;
@@ -390,6 +403,7 @@ namespace MacroScope
     private System.Windows.Forms.ColumnHeader columnHeaderVarValue;
     private System.Windows.Forms.ContextMenuStrip contextMenuStripVariables;
     private System.Windows.Forms.ToolStripMenuItem endDebugToolStripMenuItem;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
   }
 }
 

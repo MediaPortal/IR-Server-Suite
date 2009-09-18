@@ -373,12 +373,15 @@
     <Content Include="Graphics\Bottom.png" />
     <Content Include="Graphics\BottomLeft.png" />
     <Content Include="Graphics\BottomRight.png" />
+    <Content Include="Graphics\ChangeServer.png" />
     <Content Include="Graphics\ClickLeft.png" />
     <Content Include="Graphics\ClickMiddle.png" />
     <Content Include="Graphics\ClickRight.png" />
+    <Content Include="Graphics\Connect.png" />
     <Content Include="Graphics\Delete.png" />
     <Content Include="Graphics\DeleteAll.png" />
     <Content Include="Graphics\Detect.png" />
+    <Content Include="Graphics\Disconnect.png" />
     <Content Include="Graphics\DoubleClickLeft.png" />
     <Content Include="Graphics\DoubleClickMiddle.png" />
     <Content Include="Graphics\DoubleClickRight.png" />
@@ -389,6 +392,7 @@
     <Content Include="Graphics\Import.png" />
     <Content Include="Graphics\ImportDocument.png" />
     <Content Include="Graphics\Info.png" />
+    <Content Include="Graphics\CloseDocument.png" />
     <Content Include="Graphics\SaveAs.png" />
     <Content Include="Graphics\SaveAll.png" />
     <Content Include="Graphics\Left.png" />

@@ -43,7 +43,7 @@ namespace MacroScope
 
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
-      Application.Run(new FormMain());
+      Application.Run(new MainForm());
 
       Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
 

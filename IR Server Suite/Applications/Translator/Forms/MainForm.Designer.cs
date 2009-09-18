@@ -97,16 +97,12 @@ namespace Translator
       this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-      this.serverToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+      this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-      this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.changeServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.translatorHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.contentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
       this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -737,7 +733,6 @@ namespace Translator
       // 
       this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.configurationToolStripMenuItem,
-            this.serverToolStripMenuItem,
             this.helpToolStripMenuItem});
       this.menuStrip.Location = new System.Drawing.Point(0, 0);
       this.menuStrip.Name = "menuStrip";
@@ -756,7 +751,7 @@ namespace Translator
             this.serverToolStripMenuItem,
             this.advancedToolStripMenuItem,
             this.toolStripSeparator2,
-            this.quitToolStripMenuItem});
+            this.exitToolStripMenuItem});
       this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
       this.configurationToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       this.configurationToolStripMenuItem.Text = "&File";
@@ -796,12 +791,12 @@ namespace Translator
       this.toolStripSeparator1.Name = "toolStripSeparator1";
       this.toolStripSeparator1.Size = new System.Drawing.Size(154, 6);
       // 
-      // serverToolStripMenuItem
+      // serverToolStripMenuItem2
       // 
-      this.serverToolStripMenuItem2.Name = "serverToolStripMenuItem";
-      this.serverToolStripMenuItem2.Size = new System.Drawing.Size(157, 22);
-      this.serverToolStripMenuItem2.Text = "&Server...";
-      this.serverToolStripMenuItem2.Click += new System.EventHandler(this.serverToolStripMenuItem2_Click);
+      this.serverToolStripMenuItem.Name = "serverToolStripMenuItem2";
+      this.serverToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.serverToolStripMenuItem.Text = "&Server...";
+      this.serverToolStripMenuItem.Click += new System.EventHandler(this.serverToolStripMenuItem2_Click);
       // 
       // advancedToolStripMenuItem
       // 
@@ -815,58 +810,28 @@ namespace Translator
       this.toolStripSeparator2.Name = "toolStripSeparator2";
       this.toolStripSeparator2.Size = new System.Drawing.Size(154, 6);
       // 
-      // quitToolStripMenuItem
+      // exitToolStripMenuItem
       // 
-      this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-      this.quitToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-      this.quitToolStripMenuItem.Text = "E&xit";
-      this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
-      // 
-      // serverToolStripMenuItem
-      // 
-      this.serverToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.connectToolStripMenuItem,
-            this.disconnectToolStripMenuItem,
-            this.changeServerToolStripMenuItem});
-      this.serverToolStripMenuItem.Name = "serverToolStripMenuItem1";
-      this.serverToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
-      this.serverToolStripMenuItem.Text = "&Server";
-      // 
-      // connectToolStripMenuItem
-      // 
-      this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
-      this.connectToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-      this.connectToolStripMenuItem.Text = "&Connect";
-      this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
-      // 
-      // disconnectToolStripMenuItem
-      // 
-      this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
-      this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-      this.disconnectToolStripMenuItem.Text = "&Disconnect";
-      this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.disconnectToolStripMenuItem_Click);
-      // 
-      // changeServerToolStripMenuItem
-      // 
-      this.changeServerToolStripMenuItem.Name = "changeServerToolStripMenuItem";
-      this.changeServerToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-      this.changeServerToolStripMenuItem.Text = "Change &Server...";
+      this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+      this.exitToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.exitToolStripMenuItem.Text = "E&xit";
+      this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
       // 
       // helpToolStripMenuItem
       // 
       this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.translatorHelpToolStripMenuItem,
+            this.contentsToolStripMenuItem,
             this.aboutToolStripMenuItem});
       this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
       this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
       this.helpToolStripMenuItem.Text = "&Help";
       // 
-      // translatorHelpToolStripMenuItem
+      // contentsToolStripMenuItem
       // 
-      this.translatorHelpToolStripMenuItem.Name = "translatorHelpToolStripMenuItem";
-      this.translatorHelpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.translatorHelpToolStripMenuItem.Text = "&Contents";
-      this.translatorHelpToolStripMenuItem.Click += new System.EventHandler(this.translatorHelpToolStripMenuItem_Click);
+      this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
+      this.contentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.contentsToolStripMenuItem.Text = "&Contents";
+      this.contentsToolStripMenuItem.Click += new System.EventHandler(this.contentsToolStripMenuItem_Click);
       // 
       // aboutToolStripMenuItem
       // 
@@ -959,12 +924,12 @@ namespace Translator
     private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-    private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem translatorHelpToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem contentsToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-    private System.Windows.Forms.ToolStripMenuItem serverToolStripMenuItem2;
+    private System.Windows.Forms.ToolStripMenuItem serverToolStripMenuItem;
     private System.Windows.Forms.OpenFileDialog openFileDialog;
     private System.Windows.Forms.SaveFileDialog saveFileDialog;
     private System.Windows.Forms.ListView listViewIR;
@@ -1005,10 +970,6 @@ namespace Translator
     private System.Windows.Forms.Label labelProgramsAdd;
     private System.Windows.Forms.ToolStripMenuItem remapButtonToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem serverToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem changeServerToolStripMenuItem;
   }
 }
 

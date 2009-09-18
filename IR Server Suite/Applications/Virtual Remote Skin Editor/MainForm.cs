@@ -72,6 +72,8 @@ namespace SkinEditor
     {
       InitializeComponent();
 
+      SetImages();
+
       LoadSettings();
 
       _currentButton = new Label();
@@ -95,6 +97,22 @@ namespace SkinEditor
       pictureBoxRemote.Controls.Add(_currentButton);
 
       timerFlash.Start();
+    }
+
+    private void SetImages()
+    {
+      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
+      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
+      this.closeToolStripMenuItem.Image = IrssUtils.Properties.Resources.CloseDocument;
+      this.saveToolStripMenuItem.Image = IrssUtils.Properties.Resources.Save;
+      this.saveAsToolStripMenuItem.Image = IrssUtils.Properties.Resources.SaveAs;
+
+      this.connectToolStripMenuItem.Image = IrssUtils.Properties.Resources.Connect;
+      this.disconnectToolStripMenuItem.Image = IrssUtils.Properties.Resources.Disconnect;
+      this.changeServerToolStripMenuItem.Image = IrssUtils.Properties.Resources.ChangeServer;
+
+      this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
+      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
     }
 
     #endregion Constructor
@@ -145,21 +163,9 @@ namespace SkinEditor
       StopClient();
     }
 
-    #region Controls
 
-    private void helpToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      try
-      {
-        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this, file, HelpNavigator.Topic, "Virtual Remote\\Skin Editor\\index.html");
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
+
+    #region Controls
 
     private void buttonLoadImage_Click(object sender, EventArgs e)
     {
@@ -170,77 +176,6 @@ namespace SkinEditor
 
         LoadImage(openFileDialog.FileName);
       }
-    }
-
-    private void newToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (_unsavedChanges)
-      {
-        if (
-          MessageBox.Show(this, "Are you sure you want to start a new file?", "Unsaved file in memory",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-          return;
-      }
-
-      NewFile();
-    }
-
-    private void openToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (_unsavedChanges)
-      {
-        if (
-          MessageBox.Show(this, "Are you sure you want to close this file and open another?", "Unsaved file in memory",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-          return;
-      }
-
-      OpenFile();
-    }
-
-    private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      SaveSkinFile(_fileName);
-      _unsavedChanges = false;
-      UpdateWindowTitle();
-    }
-
-    private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (saveFileDialog.ShowDialog(this) != DialogResult.OK)
-        return;
-
-      _fileName = saveFileDialog.FileName;
-
-      SaveSkinFile(_fileName);
-      _unsavedChanges = false;
-      UpdateWindowTitle();
-    }
-
-    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (_unsavedChanges)
-      {
-        if (
-          MessageBox.Show(this, "Are you sure you want to close this file?", "Unsaved file in memory",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-          return;
-      }
-
-      NewFile();
-    }
-
-    private void quitToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (_unsavedChanges)
-      {
-        if (
-          MessageBox.Show(this, "Are you sure you want to quit?", "Unsaved file in memory", MessageBoxButtons.YesNo,
-                          MessageBoxIcon.Warning) == DialogResult.No)
-          return;
-      }
-
-      Application.Exit();
     }
 
     private void listViewButtons_SelectedIndexChanged(object sender, EventArgs e)
@@ -349,6 +284,82 @@ namespace SkinEditor
         listViewButtons.SelectedItems[0].SubItems[2].Text = comboBoxShortcut.Text;
     }
 
+    #endregion Controls
+
+    #region Menus
+
+    private void newToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (_unsavedChanges)
+      {
+        if (
+          MessageBox.Show(this, "Are you sure you want to start a new file?", "Unsaved file in memory",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+          return;
+      }
+
+      NewFile();
+    }
+
+    private void openToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (_unsavedChanges)
+      {
+        if (
+          MessageBox.Show(this, "Are you sure you want to close this file and open another?", "Unsaved file in memory",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+          return;
+      }
+
+      OpenFile();
+    }
+
+    private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      SaveSkinFile(_fileName);
+      _unsavedChanges = false;
+      UpdateWindowTitle();
+    }
+
+    private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (saveFileDialog.ShowDialog(this) != DialogResult.OK)
+        return;
+
+      _fileName = saveFileDialog.FileName;
+
+      SaveSkinFile(_fileName);
+      _unsavedChanges = false;
+      UpdateWindowTitle();
+    }
+
+    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (_unsavedChanges)
+      {
+        if (
+          MessageBox.Show(this, "Are you sure you want to close this file?", "Unsaved file in memory",
+                          MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+          return;
+      }
+
+      NewFile();
+    }
+
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (_unsavedChanges)
+      {
+        if (
+          MessageBox.Show(this, "Are you sure you want to quit?", "Unsaved file in memory", MessageBoxButtons.YesNo,
+                          MessageBoxIcon.Warning) == DialogResult.No)
+          return;
+      }
+
+      Application.Exit();
+    }
+
+
     private void connectToolStripMenuItem_Click(object sender, EventArgs e)
     {
       IPAddress serverIP = Client.GetIPFromName(_serverHost);
@@ -380,7 +391,18 @@ namespace SkinEditor
       SaveSettings();
     }
 
-    #endregion Controls
+
+    private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      IrssHelp.Open(this);
+    }
+
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      new AboutForm().ShowDialog();
+    }
+
+    #endregion
 
     #region Implementation
 
@@ -690,5 +712,6 @@ namespace SkinEditor
     }
 
     #endregion Implementation
+
   }
 }

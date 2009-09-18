@@ -115,11 +115,15 @@ namespace Translator
       this.toolStripButtonNewIR.Image = IrssUtils.Properties.Resources.Plus;
       this.toolStripButtonEditIR.Image = IrssUtils.Properties.Resources.Edit;
       this.toolStripButtonDeleteIR.Image = IrssUtils.Properties.Resources.Delete;
+
       this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
       this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
       this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
       this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
-      this.translatorHelpToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
+
+      this.serverToolStripMenuItem.Image = IrssUtils.Properties.Resources.ChangeServer;
+
+      this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
       this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
     }
 
@@ -1218,29 +1222,13 @@ namespace Translator
       }
     }
 
-    private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Application.Exit();
     }
 
 
-    private void connectToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-
-    }
-
-
-    private void translatorHelpToolStripMenuItem_Click(object sender, EventArgs e)
+    private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
     {
       IrssHelp.Open(this);
     }
@@ -1248,9 +1236,8 @@ namespace Translator
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
       new AboutForm().ShowDialog();
-      //MessageBox.Show(this, "Translator\nVersion 1.4.2.0 for IR Server Suite\nBy Aaron Dinnage, 2008",
-                      //"About Translator", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
+
 
     private void addProgramToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -1356,6 +1343,11 @@ namespace Translator
     }
 
     #endregion Menus
+
+    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      IrssHelp.Open(sender);
+    }
 
     //#region Enumerations
 
@@ -1606,10 +1598,7 @@ namespace Translator
       }
     }
 
-    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
-    {
-      IrssHelp.Open(sender);
-    }
+
 
   }
 }

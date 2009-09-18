@@ -95,6 +95,13 @@ namespace IrssUtils.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap ChangeServer {
+            get {
+                object obj = ResourceManager.GetObject("ChangeServer", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap ClickLeft {
             get {
                 object obj = ResourceManager.GetObject("ClickLeft", resourceCulture);
@@ -116,6 +123,20 @@ namespace IrssUtils.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap CloseDocument {
+            get {
+                object obj = ResourceManager.GetObject("CloseDocument", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap Connect {
+            get {
+                object obj = ResourceManager.GetObject("Connect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap Delete {
             get {
                 object obj = ResourceManager.GetObject("Delete", resourceCulture);
@@ -133,6 +154,13 @@ namespace IrssUtils.Properties {
         public static System.Drawing.Bitmap Detect {
             get {
                 object obj = ResourceManager.GetObject("Detect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap Disconnect {
+            get {
+                object obj = ResourceManager.GetObject("Disconnect", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

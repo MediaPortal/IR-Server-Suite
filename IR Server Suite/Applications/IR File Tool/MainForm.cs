@@ -37,7 +37,7 @@ namespace IrFileTool
   /// <summary>
   /// IR File Tool Main Form.
   /// </summary>
-  internal partial class FormMain : Form
+  internal partial class MainForm : Form
   {
     #region Constants
 
@@ -62,9 +62,9 @@ namespace IrFileTool
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FormMain"/> class.
+    /// Initializes a new instance of the <see cref="MainForm"/> class.
     /// </summary>
-    public FormMain()
+    public MainForm()
     {
       InitializeComponent();
 
@@ -79,6 +79,11 @@ namespace IrFileTool
       this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
       this.saveToolStripMenuItem.Image = IrssUtils.Properties.Resources.Save;
       this.saveasToolStripMenuItem.Image = IrssUtils.Properties.Resources.SaveAs;
+
+      this.connectToolStripMenuItem.Image = IrssUtils.Properties.Resources.Connect;
+      this.disconnectToolStripMenuItem.Image = IrssUtils.Properties.Resources.Disconnect;
+      this.changeServerToolStripMenuItem.Image = IrssUtils.Properties.Resources.ChangeServer;
+
       this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
       this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
     }
@@ -373,6 +378,7 @@ namespace IrFileTool
       }
     }
 
+    #region Menus
 
     private void newToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -427,9 +433,63 @@ namespace IrFileTool
         Save();
     }
 
-    private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Close();
+    }
+
+
+    private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Connecting ..." });
+
+      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
+
+      StartClient(endPoint);
+    }
+
+    private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (_registered)
+      {
+        IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
+        _client.Send(message);
+
+        _registered = false;
+      }
+
+      Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Disconnected" });
+
+      StopClient();
+    }
+
+    private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      ServerAddress serverAddress = new ServerAddress(_serverHost);
+      serverAddress.ShowDialog(this);
+
+      _serverHost = serverAddress.ServerHost;
+
+      SaveSettings();
+    }
+    
+    
+    private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      IrssHelp.Open(this);
+    }
+
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      new AboutForm().ShowDialog();
+    }
+
+    #endregion
+
+    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      IrssHelp.Open(sender);
     }
 
     private void buttonAttemptDecode_Click(object sender, EventArgs e)
@@ -700,42 +760,6 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
     }
 
 
-    private void connectToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Connecting ..."});
-
-      IPAddress serverIP = Client.GetIPFromName(_serverHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
-
-      StartClient(endPoint);
-    }
-
-    private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (_registered)
-      {
-        IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
-        _client.Send(message);
-
-        _registered = false;
-      }
-
-      Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Disconnected"});
-
-      StopClient();
-    }
-
-    private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      ServerAddress serverAddress = new ServerAddress(_serverHost);
-      serverAddress.ShowDialog(this);
-
-      _serverHost = serverAddress.ServerHost;
-
-      SaveSettings();
-    }
-
-
     private void buttonBlast_Click(object sender, EventArgs e)
     {
       if (!_registered)
@@ -775,5 +799,8 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
     private delegate void UpdateWindowDel(string status);
 
     #endregion
+
+
+
   }
 }
