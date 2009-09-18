@@ -65,6 +65,8 @@ namespace Translator
     {
       InitializeComponent();
 
+      SetImages();
+
       RefreshProgramList();
       listViewPrograms.Items[0].Selected = true;
 
@@ -86,6 +88,39 @@ namespace Translator
 
         checkBoxAutoRun.Checked = false;
       }
+    }
+
+    private void SetImages()
+    {
+      this.newButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
+      this.editButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
+      this.deleteButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
+      this.clearButtonsToolStripMenuItem.Image = IrssUtils.Properties.Resources.DeleteAll;
+      this.remapButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Remap;
+      this.copyButtonsFromToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
+      this.labelProgramsDelete.Image = IrssUtils.Properties.Resources.Delete;
+      this.labelProgramsEdit.Image = IrssUtils.Properties.Resources.Edit;
+      this.labelProgramsAdd.Image = IrssUtils.Properties.Resources.Plus;
+      this.toolStripButtonNewMapping.Image = IrssUtils.Properties.Resources.Plus;
+      this.toolStripButtonEditMapping.Image = IrssUtils.Properties.Resources.Edit;
+      this.toolStripButtonDeleteMapping.Image = IrssUtils.Properties.Resources.Delete;
+      this.toolStripButtonDeleteAllMappings.Image = IrssUtils.Properties.Resources.DeleteAll;
+      this.toolStripButtonRemapMapping.Image = IrssUtils.Properties.Resources.Remap;
+      this.removeEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
+      this.toolStripButtonNewMacro.Image = IrssUtils.Properties.Resources.Plus;
+      this.toolStripButtonEditMacro.Image = IrssUtils.Properties.Resources.Edit;
+      this.toolStripButtonDeleteMacro.Image = IrssUtils.Properties.Resources.Delete;
+      this.toolStripButtonCreateShortcutForMacro.Image = IrssUtils.Properties.Resources.Shortcut;
+      this.toolStripButtonTestMacro.Image = IrssUtils.Properties.Resources.MoveRight;
+      this.toolStripButtonNewIR.Image = IrssUtils.Properties.Resources.Plus;
+      this.toolStripButtonEditIR.Image = IrssUtils.Properties.Resources.Edit;
+      this.toolStripButtonDeleteIR.Image = IrssUtils.Properties.Resources.Delete;
+      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
+      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
+      this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
+      this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
+      this.translatorHelpToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
+      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
     }
 
     #endregion Constructor
@@ -1188,6 +1223,23 @@ namespace Translator
       Application.Exit();
     }
 
+
+    private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void changeServerToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+    }
+
+
     private void translatorHelpToolStripMenuItem_Click(object sender, EventArgs e)
     {
       IrssHelp.Open(this);
@@ -1559,9 +1611,5 @@ namespace Translator
       IrssHelp.Open(sender);
     }
 
-    private void connectToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-
-    }
   }
 }

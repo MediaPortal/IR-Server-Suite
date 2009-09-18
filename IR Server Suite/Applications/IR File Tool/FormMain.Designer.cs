@@ -93,7 +93,6 @@ namespace IrFileTool
       // 
       // newToolStripMenuItem
       // 
-      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
       this.newToolStripMenuItem.Name = "newToolStripMenuItem";
       this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
       this.newToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
@@ -102,7 +101,6 @@ namespace IrFileTool
       // 
       // openToolStripMenuItem
       // 
-      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
       this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
       this.openToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
@@ -111,7 +109,6 @@ namespace IrFileTool
       // 
       // saveToolStripMenuItem
       // 
-      this.saveToolStripMenuItem.Image = IrssUtils.Properties.Resources.Save;
       this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
       this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
       this.saveToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
@@ -120,7 +117,6 @@ namespace IrFileTool
       // 
       // saveasToolStripMenuItem
       // 
-      this.saveasToolStripMenuItem.Image = IrssUtils.Properties.Resources.SaveAs;
       this.saveasToolStripMenuItem.Name = "saveasToolStripMenuItem";
       this.saveasToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
                   | System.Windows.Forms.Keys.S)));
@@ -331,14 +327,12 @@ namespace IrFileTool
       // 
       // contentsToolStripMenuItem
       // 
-      this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
       this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
       this.contentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.contentsToolStripMenuItem.Text = "&Contents";
       // 
       // aboutToolStripMenuItem
       // 
-      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
       this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
       this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.aboutToolStripMenuItem.Text = "&About";

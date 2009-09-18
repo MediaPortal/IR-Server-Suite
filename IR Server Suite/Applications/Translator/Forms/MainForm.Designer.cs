@@ -217,7 +217,6 @@ namespace Translator
       // 
       // newButtonToolStripMenuItem
       // 
-      this.newButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
       this.newButtonToolStripMenuItem.Name = "newButtonToolStripMenuItem";
       this.newButtonToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.newButtonToolStripMenuItem.Text = "&New";
@@ -225,7 +224,6 @@ namespace Translator
       // 
       // editButtonToolStripMenuItem
       // 
-      this.editButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
       this.editButtonToolStripMenuItem.Name = "editButtonToolStripMenuItem";
       this.editButtonToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.editButtonToolStripMenuItem.Text = "&Edit";
@@ -233,7 +231,6 @@ namespace Translator
       // 
       // deleteButtonToolStripMenuItem
       // 
-      this.deleteButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
       this.deleteButtonToolStripMenuItem.Name = "deleteButtonToolStripMenuItem";
       this.deleteButtonToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.deleteButtonToolStripMenuItem.Text = "&Delete";
@@ -241,7 +238,6 @@ namespace Translator
       // 
       // clearButtonsToolStripMenuItem
       // 
-      this.clearButtonsToolStripMenuItem.Image = IrssUtils.Properties.Resources.DeleteAll;
       this.clearButtonsToolStripMenuItem.Name = "clearButtonsToolStripMenuItem";
       this.clearButtonsToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.clearButtonsToolStripMenuItem.Text = "&Clear";
@@ -249,7 +245,6 @@ namespace Translator
       // 
       // remapButtonToolStripMenuItem
       // 
-      this.remapButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Remap;
       this.remapButtonToolStripMenuItem.Name = "remapButtonToolStripMenuItem";
       this.remapButtonToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.remapButtonToolStripMenuItem.Text = "&Remap";
@@ -262,7 +257,6 @@ namespace Translator
       // 
       // copyButtonsFromToolStripMenuItem
       // 
-      this.copyButtonsFromToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
       this.copyButtonsFromToolStripMenuItem.Name = "copyButtonsFromToolStripMenuItem";
       this.copyButtonsFromToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.copyButtonsFromToolStripMenuItem.Text = "Copy &from ...";
@@ -336,7 +330,6 @@ namespace Translator
       // 
       this.labelProgramsDelete.Anchor = System.Windows.Forms.AnchorStyles.Right;
       this.labelProgramsDelete.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.labelProgramsDelete.Image = IrssUtils.Properties.Resources.Delete;
       this.labelProgramsDelete.Location = new System.Drawing.Point(1, 52);
       this.labelProgramsDelete.Name = "labelProgramsDelete";
       this.labelProgramsDelete.Size = new System.Drawing.Size(24, 24);
@@ -349,7 +342,6 @@ namespace Translator
       // 
       this.labelProgramsEdit.Anchor = System.Windows.Forms.AnchorStyles.Right;
       this.labelProgramsEdit.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.labelProgramsEdit.Image = IrssUtils.Properties.Resources.Edit;
       this.labelProgramsEdit.Location = new System.Drawing.Point(1, 27);
       this.labelProgramsEdit.Name = "labelProgramsEdit";
       this.labelProgramsEdit.Size = new System.Drawing.Size(24, 24);
@@ -362,7 +354,6 @@ namespace Translator
       // 
       this.labelProgramsAdd.Anchor = System.Windows.Forms.AnchorStyles.Right;
       this.labelProgramsAdd.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.labelProgramsAdd.Image = IrssUtils.Properties.Resources.Plus;
       this.labelProgramsAdd.Location = new System.Drawing.Point(1, 2);
       this.labelProgramsAdd.Name = "labelProgramsAdd";
       this.labelProgramsAdd.Size = new System.Drawing.Size(24, 24);
@@ -389,30 +380,27 @@ namespace Translator
       // 
       // toolStripButtonNewMapping
       // 
-      this.toolStripButtonNewMapping.Image = IrssUtils.Properties.Resources.Plus;
       this.toolStripButtonNewMapping.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonNewMapping.Name = "toolStripButtonNewMapping";
-      this.toolStripButtonNewMapping.Size = new System.Drawing.Size(51, 22);
+      this.toolStripButtonNewMapping.Size = new System.Drawing.Size(35, 22);
       this.toolStripButtonNewMapping.Text = "New";
       this.toolStripButtonNewMapping.ToolTipText = "Create a new button mapping";
       this.toolStripButtonNewMapping.Click += new System.EventHandler(this.toolStripButtonNewMapping_Click);
       // 
       // toolStripButtonEditMapping
       // 
-      this.toolStripButtonEditMapping.Image = IrssUtils.Properties.Resources.Edit;
       this.toolStripButtonEditMapping.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonEditMapping.Name = "toolStripButtonEditMapping";
-      this.toolStripButtonEditMapping.Size = new System.Drawing.Size(47, 22);
+      this.toolStripButtonEditMapping.Size = new System.Drawing.Size(31, 22);
       this.toolStripButtonEditMapping.Text = "Edit";
       this.toolStripButtonEditMapping.ToolTipText = "Edit the selected button mapping";
       this.toolStripButtonEditMapping.Click += new System.EventHandler(this.toolStripButtonEditMapping_Click);
       // 
       // toolStripButtonDeleteMapping
       // 
-      this.toolStripButtonDeleteMapping.Image = IrssUtils.Properties.Resources.Delete;
       this.toolStripButtonDeleteMapping.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDeleteMapping.Name = "toolStripButtonDeleteMapping";
-      this.toolStripButtonDeleteMapping.Size = new System.Drawing.Size(60, 22);
+      this.toolStripButtonDeleteMapping.Size = new System.Drawing.Size(44, 22);
       this.toolStripButtonDeleteMapping.Text = "Delete";
       this.toolStripButtonDeleteMapping.ToolTipText = "Delete the selected button mapping";
       this.toolStripButtonDeleteMapping.Click += new System.EventHandler(this.toolStripButtonDeleteMapping_Click);
@@ -420,20 +408,18 @@ namespace Translator
       // toolStripButtonDeleteAllMappings
       // 
       this.toolStripButtonDeleteAllMappings.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-      this.toolStripButtonDeleteAllMappings.Image = IrssUtils.Properties.Resources.DeleteAll;
       this.toolStripButtonDeleteAllMappings.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDeleteAllMappings.Name = "toolStripButtonDeleteAllMappings";
-      this.toolStripButtonDeleteAllMappings.Size = new System.Drawing.Size(77, 22);
+      this.toolStripButtonDeleteAllMappings.Size = new System.Drawing.Size(61, 22);
       this.toolStripButtonDeleteAllMappings.Text = "Delete All";
       this.toolStripButtonDeleteAllMappings.ToolTipText = "Delete all the button mappings";
       this.toolStripButtonDeleteAllMappings.Click += new System.EventHandler(this.toolStripButtonDeleteAllMappings_Click);
       // 
       // toolStripButtonRemapMapping
       // 
-      this.toolStripButtonRemapMapping.Image = IrssUtils.Properties.Resources.Remap;
       this.toolStripButtonRemapMapping.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonRemapMapping.Name = "toolStripButtonRemapMapping";
-      this.toolStripButtonRemapMapping.Size = new System.Drawing.Size(64, 22);
+      this.toolStripButtonRemapMapping.Size = new System.Drawing.Size(48, 22);
       this.toolStripButtonRemapMapping.Text = "Remap";
       this.toolStripButtonRemapMapping.ToolTipText = "Link a new code to the selected mapping";
       this.toolStripButtonRemapMapping.Click += new System.EventHandler(this.toolStripButtonRemapMapping_Click);
@@ -562,7 +548,6 @@ namespace Translator
       // 
       // removeEventToolStripMenuItem
       // 
-      this.removeEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
       this.removeEventToolStripMenuItem.Name = "removeEventToolStripMenuItem";
       this.removeEventToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
       this.removeEventToolStripMenuItem.Text = "&Remove";
@@ -598,30 +583,27 @@ namespace Translator
       // 
       // toolStripButtonNewMacro
       // 
-      this.toolStripButtonNewMacro.Image = IrssUtils.Properties.Resources.Plus;
       this.toolStripButtonNewMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonNewMacro.Name = "toolStripButtonNewMacro";
-      this.toolStripButtonNewMacro.Size = new System.Drawing.Size(51, 22);
+      this.toolStripButtonNewMacro.Size = new System.Drawing.Size(35, 22);
       this.toolStripButtonNewMacro.Text = "New";
       this.toolStripButtonNewMacro.ToolTipText = "Create a new macro";
       this.toolStripButtonNewMacro.Click += new System.EventHandler(this.toolStripButtonNewMacro_Click);
       // 
       // toolStripButtonEditMacro
       // 
-      this.toolStripButtonEditMacro.Image = IrssUtils.Properties.Resources.Edit;
       this.toolStripButtonEditMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonEditMacro.Name = "toolStripButtonEditMacro";
-      this.toolStripButtonEditMacro.Size = new System.Drawing.Size(47, 22);
+      this.toolStripButtonEditMacro.Size = new System.Drawing.Size(31, 22);
       this.toolStripButtonEditMacro.Text = "Edit";
       this.toolStripButtonEditMacro.ToolTipText = "Edit the selected macro";
       this.toolStripButtonEditMacro.Click += new System.EventHandler(this.toolStripButtonEditMacro_Click);
       // 
       // toolStripButtonDeleteMacro
       // 
-      this.toolStripButtonDeleteMacro.Image = IrssUtils.Properties.Resources.Delete;
       this.toolStripButtonDeleteMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDeleteMacro.Name = "toolStripButtonDeleteMacro";
-      this.toolStripButtonDeleteMacro.Size = new System.Drawing.Size(60, 22);
+      this.toolStripButtonDeleteMacro.Size = new System.Drawing.Size(44, 22);
       this.toolStripButtonDeleteMacro.Text = "Delete";
       this.toolStripButtonDeleteMacro.ToolTipText = "Delete the selected macro";
       this.toolStripButtonDeleteMacro.Click += new System.EventHandler(this.toolStripButtonDeleteMacro_Click);
@@ -629,20 +611,18 @@ namespace Translator
       // toolStripButtonCreateShortcutForMacro
       // 
       this.toolStripButtonCreateShortcutForMacro.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-      this.toolStripButtonCreateShortcutForMacro.Image = IrssUtils.Properties.Resources.Shortcut;
       this.toolStripButtonCreateShortcutForMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonCreateShortcutForMacro.Name = "toolStripButtonCreateShortcutForMacro";
-      this.toolStripButtonCreateShortcutForMacro.Size = new System.Drawing.Size(108, 22);
+      this.toolStripButtonCreateShortcutForMacro.Size = new System.Drawing.Size(92, 22);
       this.toolStripButtonCreateShortcutForMacro.Text = "Create shortcut";
       this.toolStripButtonCreateShortcutForMacro.ToolTipText = "Create a shortcut to run the selected macro";
       this.toolStripButtonCreateShortcutForMacro.Click += new System.EventHandler(this.toolStripButtonCreateShortcutForMacro_Click);
       // 
       // toolStripButtonTestMacro
       // 
-      this.toolStripButtonTestMacro.Image = IrssUtils.Properties.Resources.MoveRight;
       this.toolStripButtonTestMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonTestMacro.Name = "toolStripButtonTestMacro";
-      this.toolStripButtonTestMacro.Size = new System.Drawing.Size(49, 22);
+      this.toolStripButtonTestMacro.Size = new System.Drawing.Size(33, 22);
       this.toolStripButtonTestMacro.Text = "Test";
       this.toolStripButtonTestMacro.ToolTipText = "Test the selected macro";
       this.toolStripButtonTestMacro.Click += new System.EventHandler(this.toolStripButtonTestMacro_Click);
@@ -695,30 +675,27 @@ namespace Translator
       // 
       // toolStripButtonNewIR
       // 
-      this.toolStripButtonNewIR.Image = IrssUtils.Properties.Resources.Plus;
       this.toolStripButtonNewIR.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonNewIR.Name = "toolStripButtonNewIR";
-      this.toolStripButtonNewIR.Size = new System.Drawing.Size(51, 22);
+      this.toolStripButtonNewIR.Size = new System.Drawing.Size(35, 22);
       this.toolStripButtonNewIR.Text = "New";
       this.toolStripButtonNewIR.ToolTipText = "Create a new IR Command";
       this.toolStripButtonNewIR.Click += new System.EventHandler(this.toolStripButtonNewIR_Click);
       // 
       // toolStripButtonEditIR
       // 
-      this.toolStripButtonEditIR.Image = IrssUtils.Properties.Resources.Edit;
       this.toolStripButtonEditIR.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonEditIR.Name = "toolStripButtonEditIR";
-      this.toolStripButtonEditIR.Size = new System.Drawing.Size(47, 22);
+      this.toolStripButtonEditIR.Size = new System.Drawing.Size(31, 22);
       this.toolStripButtonEditIR.Text = "Edit";
       this.toolStripButtonEditIR.ToolTipText = "Edit the selected IR Command";
       this.toolStripButtonEditIR.Click += new System.EventHandler(this.toolStripButtonEditIR_Click);
       // 
       // toolStripButtonDeleteIR
       // 
-      this.toolStripButtonDeleteIR.Image = IrssUtils.Properties.Resources.Delete;
       this.toolStripButtonDeleteIR.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDeleteIR.Name = "toolStripButtonDeleteIR";
-      this.toolStripButtonDeleteIR.Size = new System.Drawing.Size(60, 22);
+      this.toolStripButtonDeleteIR.Size = new System.Drawing.Size(44, 22);
       this.toolStripButtonDeleteIR.Text = "Delete";
       this.toolStripButtonDeleteIR.ToolTipText = "Delete the selected IR Command";
       this.toolStripButtonDeleteIR.Click += new System.EventHandler(this.toolStripButtonDeleteIR_Click);
@@ -760,6 +737,7 @@ namespace Translator
       // 
       this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.configurationToolStripMenuItem,
+            this.serverToolStripMenuItem,
             this.helpToolStripMenuItem});
       this.menuStrip.Location = new System.Drawing.Point(0, 0);
       this.menuStrip.Name = "menuStrip";
@@ -785,7 +763,6 @@ namespace Translator
       // 
       // newToolStripMenuItem
       // 
-      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
       this.newToolStripMenuItem.Name = "newToolStripMenuItem";
       this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
       this.newToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
@@ -794,7 +771,6 @@ namespace Translator
       // 
       // openToolStripMenuItem
       // 
-      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
       this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
       this.openToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
@@ -803,7 +779,6 @@ namespace Translator
       // 
       // importToolStripMenuItem
       // 
-      this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
       this.importToolStripMenuItem.Name = "importToolStripMenuItem";
       this.importToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
       this.importToolStripMenuItem.Text = "&Import...";
@@ -811,7 +786,6 @@ namespace Translator
       // 
       // exportToolStripMenuItem
       // 
-      this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
       this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
       this.exportToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
       this.exportToolStripMenuItem.Text = "&Export...";
@@ -850,6 +824,10 @@ namespace Translator
       // 
       // serverToolStripMenuItem
       // 
+      this.serverToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.connectToolStripMenuItem,
+            this.disconnectToolStripMenuItem,
+            this.changeServerToolStripMenuItem});
       this.serverToolStripMenuItem.Name = "serverToolStripMenuItem1";
       this.serverToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
       this.serverToolStripMenuItem.Text = "&Server";
@@ -866,6 +844,7 @@ namespace Translator
       this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
       this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
       this.disconnectToolStripMenuItem.Text = "&Disconnect";
+      this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.disconnectToolStripMenuItem_Click);
       // 
       // changeServerToolStripMenuItem
       // 
@@ -884,17 +863,15 @@ namespace Translator
       // 
       // translatorHelpToolStripMenuItem
       // 
-      this.translatorHelpToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
       this.translatorHelpToolStripMenuItem.Name = "translatorHelpToolStripMenuItem";
-      this.translatorHelpToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+      this.translatorHelpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.translatorHelpToolStripMenuItem.Text = "&Contents";
       this.translatorHelpToolStripMenuItem.Click += new System.EventHandler(this.translatorHelpToolStripMenuItem_Click);
       // 
       // aboutToolStripMenuItem
       // 
-      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
       this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.aboutToolStripMenuItem.Text = "&About";
       this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
       // 

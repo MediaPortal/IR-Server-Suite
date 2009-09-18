@@ -68,7 +68,19 @@ namespace IrFileTool
     {
       InitializeComponent();
 
+      SetImages();
+      
       LoadSettings();
+    }
+
+    private void SetImages()
+    {
+      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
+      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
+      this.saveToolStripMenuItem.Image = IrssUtils.Properties.Resources.Save;
+      this.saveasToolStripMenuItem.Image = IrssUtils.Properties.Resources.SaveAs;
+      this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
+      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
     }
 
     #endregion Constructor
@@ -687,6 +699,7 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
       RefreshForm();
     }
 
+
     private void connectToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Invoke(new UpdateWindowDel(UpdateWindow), new string[] {"Connecting ..."});
@@ -721,6 +734,7 @@ new int[] { 2700, -900, 400, -450, 450, -450, 450, -900, 400, -900, 1350, -900, 
 
       SaveSettings();
     }
+
 
     private void buttonBlast_Click(object sender, EventArgs e)
     {
