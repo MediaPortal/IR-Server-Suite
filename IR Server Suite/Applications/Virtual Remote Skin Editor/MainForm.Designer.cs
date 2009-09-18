@@ -47,9 +47,10 @@ namespace SkinEditor
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,7 +67,6 @@ namespace SkinEditor
       this.buttonSetCode = new System.Windows.Forms.Button();
       this.buttonSetShortcut = new System.Windows.Forms.Button();
       this.comboBoxShortcut = new System.Windows.Forms.ComboBox();
-      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.panelRemote.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRemote)).BeginInit();
       this.menuStrip.SuspendLayout();
@@ -235,6 +235,19 @@ namespace SkinEditor
       this.openToolStripMenuItem.Text = "&Open...";
       this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
       // 
+      // closeToolStripMenuItem
+      // 
+      this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+      this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
+      this.closeToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
+      this.closeToolStripMenuItem.Text = "&Close";
+      this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+      // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(245, 6);
+      // 
       // saveToolStripMenuItem
       // 
       this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
@@ -251,14 +264,6 @@ namespace SkinEditor
       this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
       this.saveAsToolStripMenuItem.Text = "Save &As...";
       this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
-      // 
-      // closeToolStripMenuItem
-      // 
-      this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-      this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
-      this.closeToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
-      this.closeToolStripMenuItem.Text = "&Close";
-      this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
       // 
       // toolStripSeparator1
       // 
@@ -387,11 +392,6 @@ namespace SkinEditor
       this.comboBoxShortcut.Size = new System.Drawing.Size(112, 21);
       this.comboBoxShortcut.TabIndex = 9;
       // 
-      // toolStripSeparator2
-      // 
-      this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(245, 6);
-      // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -414,6 +414,7 @@ namespace SkinEditor
       this.Text = "Virtual Remote Skin Editor";
       this.Load += new System.EventHandler(this.MainForm_Load);
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+      this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.MainForm_HelpRequested);
       this.panelRemote.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRemote)).EndInit();
       this.menuStrip.ResumeLayout(false);

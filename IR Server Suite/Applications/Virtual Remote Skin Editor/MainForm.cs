@@ -404,6 +404,11 @@ namespace SkinEditor
 
     #endregion
 
+    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      IrssHelp.Open(sender);
+    }
+
     #region Implementation
 
     private void UpdateWindowTitle()
