@@ -70,7 +70,6 @@ namespace IrssUtils
     /// <summary>Forces processes to terminate. When this flag is set, the system does not send the WM_QUERYENDSESSION and WM_ENDSESSION messages. This can cause the applications to lose data. Therefore, you should only use this flag in an emergency.</summary>
     private const int EWX_FORCE = 4;
 
-
     #endregion Constants
 
     #region Enumerations
@@ -2695,6 +2694,43 @@ namespace IrssUtils
       }
       return isWow64;
     }
+
+    #region UAC Shield on button
+    /* 
+     * Code is implemented implemented together at place for the beginning.
+     * needs rework, since I do not know exactly where to put which things.
+     */
+
+    #region Interop Command Link Definitions
+
+    internal const int BS_COMMANDLINK = 0x0000000E;
+    internal const uint BCM_SETNOTE = 0x00001609;
+    internal const uint BCM_GETNOTE = 0x0000160A;
+    internal const uint BCM_GETNOTELENGTH = 0x0000160B;
+    internal const uint BCM_SETSHIELD = 0x0000160C;
+
+    #endregion
+
+    /// <summary>
+    /// Adds a Shield-Icon to a button to indicate clicking on it launches a UAC protected action,
+    /// which requires user 
+    /// </summary>
+    /// <param name="button">the button control</param>
+    /// <param name="showShield">Indicates whether the shield should be displayed or not.</param>
+    public static void SetWindowsFormsButtonShield(System.Windows.Forms.Button button, bool showShield)
+    {
+      SendMessage(button.Handle, BCM_SETSHIELD, 0, showShield);
+    }
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    internal static extern int SendMessage(
+        IntPtr hWnd,
+        uint msg,
+        int wParam,
+        bool lParam
+    );
+
+    #endregion
 
     #endregion Methods
   }
