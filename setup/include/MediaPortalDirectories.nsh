@@ -28,7 +28,23 @@
 !define ___MediaPortalDirectories__NSH___
 
 !include LogicLib.nsh
-!include "${svn_InstallScripts}\include\LoggingMacros.nsh"
+
+!ifndef NO_INSTALL_LOG
+  !include "${svn_InstallScripts}\include\LoggingMacros.nsh"
+!else
+
+  !ifndef LOG_TEXT
+    !define prefixERROR "[ERROR     !!!]   "
+    !define prefixDEBUG "[    DEBUG    ]   "
+    !define prefixINFO  "[         INFO]   "
+
+    !define LOG_TEXT `!insertmacro LOG_TEXT`
+    !macro LOG_TEXT LEVEL TEXT
+        DetailPrint "${prefix${LEVEL}}${TEXT}"
+    !macroend
+  !endif
+
+!endif
 
 
 !AddPluginDir "${svn_InstallScripts}\XML-plugin\Plugin"
@@ -224,8 +240,8 @@ FunctionEnd
   StrCpy $MPdir.Log                 "$MPdir.Config\log"
   StrCpy $MPdir.CustomInputDevice   "$MPdir.Config\InputDeviceMappings"
   StrCpy $MPdir.CustomInputDefault  "$MPdir.Base\InputDeviceMappings\defaults"
-  StrCpy $MPdir.Skin                "$MPdir.Base\skin"
-  StrCpy $MPdir.Language            "$MPdir.Base\language"
+  StrCpy $MPdir.Skin                "$MPdir.Config\skin"
+  StrCpy $MPdir.Language            "$MPdir.Config\language"
   StrCpy $MPdir.Database            "$MPdir.Config\database"
   StrCpy $MPdir.Thumbs              "$MPdir.Config\thumbs"
   StrCpy $MPdir.Weather             "$MPdir.Base\weather"

@@ -45,8 +45,6 @@ _____________________________________________________________________________
 !define prefixDEBUG "[    DEBUG    ]   "
 !define prefixINFO  "[         INFO]   "
 
-!ifndef NO_INSTALL_LOG
-
 !include FileFunc.nsh
 
 Var LogFile
@@ -60,7 +58,7 @@ Var TempInstallLog
   FileOpen $LogFile "$TempInstallLog" w
 
   ${${UNINSTALL_PREFIX}GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  ${LOG_TEXT} "INFO" "$(^Name) ${UNINSTALL_PREFIX}installation"
+  ${LOG_TEXT} "INFO" "${PRODUCT_NAME} ${UNINSTALL_PREFIX}installation"
   ${LOG_TEXT} "INFO" "Logging started: $0.$1.$2 $4:$5:$6"
   ${LOG_TEXT} "INFO" "${UNINSTALL_PREFIX}installer version: ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
   ${LOG_TEXT} "INFO" "============================================================================================"
@@ -76,7 +74,7 @@ Var TempInstallLog
   ${LOG_TEXT} "INFO" "============================================================================================"
   ${LOG_TEXT} "INFO" "Logging stopped: $0.$1.$2 $4:$5:$6"
   ${LOG_TEXT} "INFO" "${UNINSTALL_PREFIX}installer version: ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
-  ${LOG_TEXT} "INFO" "$(^Name) ${UNINSTALL_PREFIX}installation"
+  ${LOG_TEXT} "INFO" "${PRODUCT_NAME} ${UNINSTALL_PREFIX}installation"
 
   FileClose $LogFile
 
@@ -114,22 +112,5 @@ Var TempInstallLog
   FileWrite $LogFile "${prefix${LEVEL}}${TEXT}$\r$\n"
 
 !macroend
-
-!else #NO_INSTALL_LOG
-
-!define LOG_OPEN `!insertmacro LOG_OPEN`
-!macro LOG_OPEN
-!macroend
-
-!define LOG_CLOSE `!insertmacro LOG_CLOSE`
-!macro LOG_CLOSE
-!macroend
-
-!define LOG_TEXT `!insertmacro LOG_TEXT`
-!macro LOG_TEXT LEVEL TEXT
-      DetailPrint "${prefix${LEVEL}}${TEXT}"
-!macroend
-
-!endif #NO_INSTALL_LOG
 
 !endif # !LoggingMacros_INCLUDED
