@@ -192,14 +192,14 @@ namespace IRServer.Plugin
       {
         if (ex.ErrorCode != -2147221164)
         {
-          IrssLog.Warn("{0} exception: {1}", Name, ex.ErrorCode);
+          IrssLog.Warn("{0,15} exception: {1}", Name, ex.ErrorCode);
           return DetectionResult.DeviceException;
         }
-        IrssLog.Debug("{0} exception: {1}", Name, ex.ErrorCode);
+        IrssLog.Debug("{0,15} exception: {1}", Name, ex.ErrorCode);
       }
       catch (Exception ex)
       {
-        IrssLog.Error("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        IrssLog.Error("{0,15} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
         return DetectionResult.DeviceException;
       }
 

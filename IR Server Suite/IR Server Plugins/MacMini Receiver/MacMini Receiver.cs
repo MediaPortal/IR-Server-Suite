@@ -326,14 +326,14 @@ namespace IRServer.Plugin
       {
         if (ex.NativeErrorCode != 13)
         {
-          IrssLog.Error("{0} exception: {1}", Name, ex.NativeErrorCode);
+          IrssLog.Error("{0,15} exception: {1}", Name, ex.NativeErrorCode);
           return DetectionResult.DeviceException;
         }
-        IrssLog.Debug("{0} exception: {1}", Name, ex.NativeErrorCode);
+        IrssLog.Debug("{0,15} exception: {1}", Name, ex.NativeErrorCode);
       }
       catch (Exception ex)
       {
-        IrssLog.Error("{0} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        IrssLog.Error("{0,15} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
         return DetectionResult.DeviceException;
       }
 
