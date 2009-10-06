@@ -34,11 +34,11 @@ namespace IRServer.Plugin
   /// <summary>
   /// IR Server Plugin for the IR receiver built into the Mac Mini.
   /// </summary>
-  public class MacMiniReceiver : PluginBase, IRemoteReceiver, IDisposable
+  public class MacMiniReceiver : PluginBase, IRemoteReceiver
   {
     #region Constants
 
-    private const int DeviceBufferSize = 5;
+    private const int DeviceBufferSize = 255;
 
     //New device path verified by "yvos" and "James"
     private const string DevicePathVidPid = "vid_05ac&pid_8242";
@@ -53,64 +53,12 @@ namespace IRServer.Plugin
 
     private byte[] _deviceBuffer;
     private FileStream _deviceStream;
-    private bool _disposed;
 
     private string _lastCode = String.Empty;
     private DateTime _lastCodeTime = DateTime.Now;
     private RemoteHandler _remoteButtonHandler;
 
     #endregion Variables
-
-    #region Destructor
-
-    /// <summary>
-    /// Releases unmanaged resources and performs other cleanup operations before the
-    /// <see cref="MacMiniReceiver"/> is reclaimed by garbage collection.
-    /// </summary>
-    ~MacMiniReceiver()
-    {
-      // Call Dispose with false.  Since we're in the destructor call, the managed resources will be disposed of anyway.
-      Dispose(false);
-    }
-
-    #endregion Destructor
-
-    #region IDisposable Members
-
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources
-    /// </summary>
-    public void Dispose()
-    {
-      // Dispose of the managed and unmanaged resources
-      Dispose(true);
-
-      // Tell the GC that the Finalize process no longer needs to be run for this object.
-      GC.SuppressFinalize(this);
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources
-    /// </summary>
-    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-    protected virtual void Dispose(bool disposing)
-    {
-      // process only if mananged and unmanaged resources have
-      // not been disposed of.
-      if (!_disposed)
-      {
-        if (disposing)
-        {
-          // dispose managed resources
-          Stop();
-        }
-
-        // dispose unmanaged resources
-        _disposed = true;
-      }
-    }
 
     #region Implementation
 
@@ -216,18 +164,16 @@ namespace IRServer.Plugin
       if (String.IsNullOrEmpty(devicePath))
         throw new InvalidOperationException("Device not found");
 
-      SafeFileHandle deviceHandle = Win32.CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero,
-                                               FileMode.Open, Win32.EFileAttributes.Overlapped, IntPtr.Zero);
+      SafeFileHandle deviceHandle = Win32.CreateFile(devicePath, FileAccess.Read, FileShare.Read, IntPtr.Zero, FileMode.Open,
+                                               Win32.EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
 
       if (deviceHandle.IsInvalid)
         throw new Win32Exception(lastError, "Failed to open device");
 
-      // TODO: Add device removal notification.
       //_deviceWatcher.RegisterDeviceRemoval(deviceHandle);
 
       _deviceBuffer = new byte[DeviceBufferSize];
-
       _deviceStream = new FileStream(deviceHandle, FileAccess.Read, _deviceBuffer.Length, true);
       _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, OnReadComplete, null);
     }
@@ -316,8 +262,7 @@ namespace IRServer.Plugin
 
         uint cbData = 0;
 
-        if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) &&
-          cbData == 0)
+        if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) && cbData == 0)
         {
           Win32.SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());

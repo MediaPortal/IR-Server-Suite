@@ -34,14 +34,13 @@ namespace IRServer.Plugin
   /// <summary>
   /// IR Server Plugin for the IR501 IR receiver.
   /// </summary>
-  [CLSCompliant(false)]
   public class IR501Receiver : PluginBase, IRemoteReceiver
   {
     #region Constants
 
     private const int DeviceBufferSize = 255;
 
-    private const string DeviceID = "vid_147a&pid_e001";
+    private const string DevicePathVidPid = "vid_147a&pid_e001";
 
     #endregion Constants
 
@@ -207,13 +206,16 @@ namespace IRServer.Plugin
       }
     }
 
+    /// <summary>
+    /// Finds the device.
+    /// </summary>
+    /// <param name="classGuid">The class GUID.</param>
+    /// <returns>Device path.</returns>
     private static string FindDevice(Guid classGuid)
     {
-      int lastError;
-
       // 0x12 = DIGCF_PRESENT | DIGCF_DEVICEINTERFACE
       IntPtr handle = Win32.SetupDiGetClassDevs(ref classGuid, 0, IntPtr.Zero, 0x12);
-      lastError = Marshal.GetLastWin32Error();
+      int lastError = Marshal.GetLastWin32Error();
 
       if (handle.ToInt32() == -1)
         throw new Win32Exception(lastError);
@@ -232,7 +234,7 @@ namespace IRServer.Plugin
           if (lastError != 0x0103 && lastError != 0x007E)
           {
             Win32.SetupDiDestroyDeviceInfoList(handle);
-            throw new Win32Exception(Marshal.GetLastWin32Error());
+            throw new Win32Exception(lastError);
           }
 
           Win32.SetupDiDestroyDeviceInfoList(handle);
@@ -256,8 +258,10 @@ namespace IRServer.Plugin
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        Win32.DeviceInterfaceDetailData deviceInterfaceDetailData = new Win32.DeviceInterfaceDetailData();
-        deviceInterfaceDetailData.Size = 5;
+        Win32.DeviceInterfaceDetailData deviceInterfaceDetailData = new Win32.DeviceInterfaceDetailData
+                                                                {
+                                                                  Size = Win32.Check64Bit() ? 8 : 5
+                                                                };
 
         if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData,
                                           IntPtr.Zero, IntPtr.Zero))
@@ -266,7 +270,7 @@ namespace IRServer.Plugin
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        if (deviceInterfaceDetailData.DevicePath.IndexOf(DeviceID, StringComparison.InvariantCultureIgnoreCase) != -1)
+        if (deviceInterfaceDetailData.DevicePath.IndexOf(DevicePathVidPid, StringComparison.InvariantCultureIgnoreCase) != -1)
         {
           Win32.SetupDiDestroyDeviceInfoList(handle);
           devicePath = deviceInterfaceDetailData.DevicePath;
@@ -277,6 +281,10 @@ namespace IRServer.Plugin
       return devicePath;
     }
 
+    /// <summary>
+    /// Called when a device read is completed.
+    /// </summary>
+    /// <param name="asyncResult">The async result.</param>
     private void OnReadComplete(IAsyncResult asyncResult)
     {
       try
