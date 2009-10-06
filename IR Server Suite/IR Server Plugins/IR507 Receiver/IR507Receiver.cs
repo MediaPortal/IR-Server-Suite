@@ -23,6 +23,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using IRServer.Plugin.Properties;
@@ -36,99 +37,6 @@ namespace IRServer.Plugin
   [CLSCompliant(false)]
   public class IR507Receiver : PluginBase, IRemoteReceiver
   {
-    #region Interop
-
-    [DllImport("hid")]
-    private static extern void HidD_GetHidGuid(
-      ref Guid guid);
-
-    [DllImport("setupapi", CharSet = CharSet.Auto)]
-    private static extern IntPtr SetupDiGetClassDevs(
-      ref Guid ClassGuid,
-      [MarshalAs(UnmanagedType.LPTStr)] string Enumerator,
-      IntPtr hwndParent,
-      UInt32 Flags);
-
-    [DllImport("setupapi", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiEnumDeviceInfo(
-      IntPtr handle,
-      int Index,
-      ref DeviceInfoData deviceInfoData);
-
-    [DllImport("setupapi", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiEnumDeviceInterfaces(
-      IntPtr handle,
-      ref DeviceInfoData deviceInfoData,
-      ref Guid guidClass,
-      int MemberIndex,
-      ref DeviceInterfaceData deviceInterfaceData);
-
-    [DllImport("setupapi", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiGetDeviceInterfaceDetail(
-      IntPtr handle,
-      ref DeviceInterfaceData deviceInterfaceData,
-      IntPtr unused1,
-      int unused2,
-      ref uint requiredSize,
-      IntPtr unused3);
-
-    [DllImport("setupapi", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiGetDeviceInterfaceDetail(
-      IntPtr handle,
-      ref DeviceInterfaceData deviceInterfaceData,
-      ref DeviceInterfaceDetailData deviceInterfaceDetailData,
-      uint detailSize,
-      IntPtr unused1,
-      IntPtr unused2);
-
-    [DllImport("setupapi")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiDestroyDeviceInfoList(IntPtr handle);
-
-    #region Nested type: DeviceInfoData
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct DeviceInfoData
-    {
-      public int Size;
-      public Guid Class;
-      public uint DevInst;
-      public IntPtr Reserved;
-    }
-
-    #endregion
-
-    #region Nested type: DeviceInterfaceData
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct DeviceInterfaceData
-    {
-      public int Size;
-      public Guid Class;
-      public uint Flags;
-      public uint Reserved;
-    }
-
-    #endregion
-
-    #region Nested type: DeviceInterfaceDetailData
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    private struct DeviceInterfaceDetailData
-    {
-      public int Size;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-      public string DevicePath;
-    }
-
-    #endregion
-
-    #endregion Interop
-
     #region Constants
 
     //const string DeviceID = "vid_0e6a&pid_6002";  // Unknown
@@ -212,7 +120,7 @@ namespace IRServer.Plugin
       try
       {
         Guid guid = new Guid();
-        HidD_GetHidGuid(ref guid);
+        Win32.HidD_GetHidGuid(ref guid);
 
         string devicePath = FindDevice(guid);
 
@@ -221,18 +129,13 @@ namespace IRServer.Plugin
           return DetectionResult.DevicePresent;
         }
       }
-      catch (Win32Exception ex)
-      {
-        if (ex.NativeErrorCode != 2)
+      catch (FileNotFoundException)
         {
-          IrssLog.Error("{0,15} exception: {1}", Name, ex.NativeErrorCode);
-          return DetectionResult.DeviceException;
-        }
-        IrssLog.Debug("{0,15} exception: {1}", Name, ex.NativeErrorCode);
+        //No error if driver is not installed. Handled using default return "DeviceNotFound"
       }
       catch (Exception ex)
       {
-        IrssLog.Error("{0,15} exception: {1} type: {2}", Name, ex.Message, ex.GetType());
+        IrssLog.Error("{0,15} exception: {1}", Name, ex.Message);
         return DetectionResult.DeviceException;
       }
 
@@ -354,11 +257,9 @@ namespace IRServer.Plugin
 
     private static string FindDevice(Guid classGuid)
     {
-      int lastError;
-
       // 0x12 = DIGCF_PRESENT | DIGCF_DEVICEINTERFACE
-      IntPtr handle = SetupDiGetClassDevs(ref classGuid, "", IntPtr.Zero, 0x12);
-      lastError = Marshal.GetLastWin32Error();
+      IntPtr handle = Win32.SetupDiGetClassDevs(ref classGuid, 0, IntPtr.Zero, 0x12);
+      int lastError = Marshal.GetLastWin32Error();
 
       if (handle.ToInt32() == -1)
         throw new Win32Exception(lastError);
@@ -367,55 +268,53 @@ namespace IRServer.Plugin
 
       for (int deviceIndex = 0; ; deviceIndex++)
       {
-        DeviceInfoData deviceInfoData = new DeviceInfoData();
+        Win32.DeviceInfoData deviceInfoData = new Win32.DeviceInfoData();
         deviceInfoData.Size = Marshal.SizeOf(deviceInfoData);
 
-        if (SetupDiEnumDeviceInfo(handle, deviceIndex, ref deviceInfoData) == false)
+        if (!Win32.SetupDiEnumDeviceInfo(handle, deviceIndex, ref deviceInfoData))
         {
           // out of devices or do we have an error?
           lastError = Marshal.GetLastWin32Error();
           if (lastError != 0x0103 && lastError != 0x007E)
           {
-            SetupDiDestroyDeviceInfoList(handle);
+            Win32.SetupDiDestroyDeviceInfoList(handle);
             throw new Win32Exception(Marshal.GetLastWin32Error());
           }
 
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           break;
         }
 
-        DeviceInterfaceData deviceInterfaceData = new DeviceInterfaceData();
+        Win32.DeviceInterfaceData deviceInterfaceData = new Win32.DeviceInterfaceData();
         deviceInterfaceData.Size = Marshal.SizeOf(deviceInterfaceData);
 
-        if (SetupDiEnumDeviceInterfaces(handle, ref deviceInfoData, ref classGuid, 0, ref deviceInterfaceData) == false)
+        if (!Win32.SetupDiEnumDeviceInterfaces(handle, ref deviceInfoData, ref classGuid, 0, ref deviceInterfaceData))
         {
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
         uint cbData = 0;
 
-        if (SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) ==
-            false && cbData == 0)
+        if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) && cbData == 0)
         {
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        DeviceInterfaceDetailData deviceInterfaceDetailData = new DeviceInterfaceDetailData();
+        Win32.DeviceInterfaceDetailData deviceInterfaceDetailData = new Win32.DeviceInterfaceDetailData();
         deviceInterfaceDetailData.Size = 5;
 
-        if (
-          SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData,
-                                          IntPtr.Zero, IntPtr.Zero) == false)
+        if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData,
+                                          IntPtr.Zero, IntPtr.Zero))
         {
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
         if (deviceInterfaceDetailData.DevicePath.IndexOf(DeviceID, StringComparison.InvariantCultureIgnoreCase) != -1)
         {
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           devicePath = deviceInterfaceDetailData.DevicePath;
           break;
         }

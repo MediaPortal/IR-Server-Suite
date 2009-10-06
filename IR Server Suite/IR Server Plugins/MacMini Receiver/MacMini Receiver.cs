@@ -41,7 +41,7 @@ namespace IRServer.Plugin
     private const int DeviceBufferSize = 5;
     private const string DevicePathVidPid = "vid_045e&pid_0284";
     //const string DeviceGuid = "{9DE464EB-5DAC-4498-88BC-5010CFD2F724}";
-
+    
     private static readonly byte[] FlatCode = new byte[] { 0x25, 0x87, 0xE0 };
     private static readonly byte[] KeyCodeTemplate = new byte[] { 0x25, 0x87, 0xEE, 0xFF, 0xFF };
     private static readonly byte[] RepeatCode = new byte[] { 0x26, 0x00, 0x00, 0x00, 0x00 };
@@ -59,143 +59,6 @@ namespace IRServer.Plugin
     private RemoteHandler _remoteButtonHandler;
 
     #endregion Variables
-
-    #region Interop
-
-    [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
-    private static extern SafeFileHandle CreateFile(
-      String fileName,
-      [MarshalAs(UnmanagedType.U4)] FileAccess fileAccess,
-      [MarshalAs(UnmanagedType.U4)] FileShare fileShare,
-      IntPtr securityAttributes,
-      [MarshalAs(UnmanagedType.U4)] FileMode creationDisposition,
-      [MarshalAs(UnmanagedType.U4)] EFileAttributes flags,
-      IntPtr template);
-
-    [DllImport("hid")]
-    private static extern void HidD_GetHidGuid(
-      ref Guid guid);
-
-    [DllImport("setupapi", CharSet = CharSet.Auto, SetLastError = true)]
-    private static extern IntPtr SetupDiGetClassDevs(
-      ref Guid ClassGuid,
-      [MarshalAs(UnmanagedType.LPTStr)] string Enumerator,
-      IntPtr hwndParent,
-      UInt32 Flags);
-
-    [DllImport("setupapi", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiEnumDeviceInfo(
-      IntPtr handle,
-      int Index,
-      ref DeviceInfoData deviceInfoData);
-
-    [DllImport("setupapi", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiEnumDeviceInterfaces(
-      IntPtr handle,
-      ref DeviceInfoData deviceInfoData,
-      ref Guid guidClass,
-      int MemberIndex,
-      ref DeviceInterfaceData deviceInterfaceData);
-
-    [DllImport("setupapi", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiGetDeviceInterfaceDetail(
-      IntPtr handle,
-      ref DeviceInterfaceData deviceInterfaceData,
-      IntPtr unused1,
-      int unused2,
-      ref uint requiredSize,
-      IntPtr unused3);
-
-    [DllImport("setupapi", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiGetDeviceInterfaceDetail(
-      IntPtr handle,
-      ref DeviceInterfaceData deviceInterfaceData,
-      ref DeviceInterfaceDetailData deviceInterfaceDetailData,
-      uint detailSize,
-      IntPtr unused1,
-      IntPtr unused2);
-
-    [DllImport("setupapi")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetupDiDestroyDeviceInfoList(IntPtr handle);
-
-    #region Nested type: DeviceInfoData
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    private struct DeviceInfoData
-    {
-      public int Size;
-      public Guid Class;
-      public int DevInst;
-      public IntPtr Reserved;
-    }
-
-    #endregion
-
-    #region Nested type: DeviceInterfaceData
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    private struct DeviceInterfaceData
-    {
-      public int Size;
-      public Guid Class;
-      public int Flags;
-      public IntPtr Reserved;
-    }
-
-    #endregion
-
-    #region Nested type: DeviceInterfaceDetailData
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    private struct DeviceInterfaceDetailData
-    {
-      public int Size;
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-      public string DevicePath;
-    }
-
-    #endregion
-
-    #region Nested type: EFileAttributes
-
-    [Flags]
-    private enum EFileAttributes : uint
-    {
-      Readonly = 0x00000001,
-      Hidden = 0x00000002,
-      System = 0x00000004,
-      Directory = 0x00000010,
-      Archive = 0x00000020,
-      Device = 0x00000040,
-      Normal = 0x00000080,
-      Temporary = 0x00000100,
-      SparseFile = 0x00000200,
-      ReparsePoint = 0x00000400,
-      Compressed = 0x00000800,
-      Offline = 0x00001000,
-      NotContentIndexed = 0x00002000,
-      Encrypted = 0x00004000,
-      Write_Through = 0x80000000,
-      Overlapped = 0x40000000,
-      NoBuffering = 0x20000000,
-      RandomAccess = 0x10000000,
-      SequentialScan = 0x08000000,
-      DeleteOnClose = 0x04000000,
-      BackupSemantics = 0x02000000,
-      PosixSemantics = 0x01000000,
-      OpenReparsePoint = 0x00200000,
-      OpenNoRecall = 0x00100000,
-      FirstPipeInstance = 0x00080000,
-    }
-
-    #endregion
-
-    #endregion Interop
 
     #region Destructor
 
@@ -313,7 +176,7 @@ namespace IRServer.Plugin
       try
       {
         Guid guid = new Guid();
-        HidD_GetHidGuid(ref guid);
+        Win32.HidD_GetHidGuid(ref guid);
 
         string devicePath = FindDevice(guid);
 
@@ -346,14 +209,14 @@ namespace IRServer.Plugin
     public override void Start()
     {
       Guid guid = new Guid();
-      HidD_GetHidGuid(ref guid);
+      Win32.HidD_GetHidGuid(ref guid);
 
       string devicePath = FindDevice(guid);
       if (String.IsNullOrEmpty(devicePath))
         throw new InvalidOperationException("Device not found");
 
-      SafeFileHandle deviceHandle = CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero,
-                                               FileMode.Open, EFileAttributes.Overlapped, IntPtr.Zero);
+      SafeFileHandle deviceHandle = Win32.CreateFile(devicePath, FileAccess.Read, FileShare.ReadWrite, IntPtr.Zero,
+                                               FileMode.Open, Win32.EFileAttributes.Overlapped, IntPtr.Zero);
       int lastError = Marshal.GetLastWin32Error();
 
       if (deviceHandle.IsInvalid)
@@ -413,11 +276,9 @@ namespace IRServer.Plugin
     /// <returns>Device path.</returns>
     private static string FindDevice(Guid classGuid)
     {
-      int lastError;
-
       // 0x12 = DIGCF_PRESENT | DIGCF_DEVICEINTERFACE
-      IntPtr handle = SetupDiGetClassDevs(ref classGuid, "", IntPtr.Zero, 0x12);
-      lastError = Marshal.GetLastWin32Error();
+      IntPtr handle = Win32.SetupDiGetClassDevs(ref classGuid, 0, IntPtr.Zero, 0x12);
+      int lastError = Marshal.GetLastWin32Error();
 
       if (handle.ToInt32() == -1)
         throw new Win32Exception(lastError);
@@ -426,59 +287,56 @@ namespace IRServer.Plugin
 
       for (int deviceIndex = 0; ; deviceIndex++)
       {
-        DeviceInfoData deviceInfoData = new DeviceInfoData();
+        Win32.DeviceInfoData deviceInfoData = new Win32.DeviceInfoData();
         deviceInfoData.Size = Marshal.SizeOf(deviceInfoData);
 
-        if (!SetupDiEnumDeviceInfo(handle, deviceIndex, ref deviceInfoData))
+        if (!Win32.SetupDiEnumDeviceInfo(handle, deviceIndex, ref deviceInfoData))
         {
           // out of devices or do we have an error?
           lastError = Marshal.GetLastWin32Error();
           if (lastError != 0x0103 && lastError != 0x007E)
           {
-            SetupDiDestroyDeviceInfoList(handle);
+            Win32.SetupDiDestroyDeviceInfoList(handle);
             throw new Win32Exception(lastError);
           }
 
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           break;
         }
 
-        DeviceInterfaceData deviceInterfaceData = new DeviceInterfaceData();
+        Win32.DeviceInterfaceData deviceInterfaceData = new Win32.DeviceInterfaceData();
         deviceInterfaceData.Size = Marshal.SizeOf(deviceInterfaceData);
 
-        if (!SetupDiEnumDeviceInterfaces(handle, ref deviceInfoData, ref classGuid, 0, ref deviceInterfaceData))
+        if (!Win32.SetupDiEnumDeviceInterfaces(handle, ref deviceInfoData, ref classGuid, 0, ref deviceInterfaceData))
         {
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
         uint cbData = 0;
 
-        if (
-          !SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) &&
+        if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, IntPtr.Zero, 0, ref cbData, IntPtr.Zero) &&
           cbData == 0)
         {
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        DeviceInterfaceDetailData deviceInterfaceDetailData = new DeviceInterfaceDetailData();
-        if (IntPtr.Size == 8)
-          deviceInterfaceDetailData.Size = 8;
-        else
-          deviceInterfaceDetailData.Size = 5;
+        Win32.DeviceInterfaceDetailData deviceInterfaceDetailData = new Win32.DeviceInterfaceDetailData
+                                                                {
+                                                                  Size = Win32.Check64Bit() ? 8 : 5
+                                                                };
 
-        if (
-          !SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData,
+        if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData,
                                            IntPtr.Zero, IntPtr.Zero))
         {
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
         if (deviceInterfaceDetailData.DevicePath.IndexOf(DevicePathVidPid, StringComparison.OrdinalIgnoreCase) != -1)
         {
-          SetupDiDestroyDeviceInfoList(handle);
+          Win32.SetupDiDestroyDeviceInfoList(handle);
           devicePath = deviceInterfaceDetailData.DevicePath;
           break;
         }
@@ -536,16 +394,9 @@ namespace IRServer.Plugin
 
         _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, OnReadComplete, null);
       }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
+      catch (Exception)
       {
       }
-#endif
     }
 
     #endregion Implementation
