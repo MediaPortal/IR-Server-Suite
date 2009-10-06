@@ -312,7 +312,7 @@ namespace IRServer.Plugin
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        if (deviceInterfaceDetailData.DevicePath.IndexOf(DeviceID, StringComparison.InvariantCultureIgnoreCase) != -1)
+        if (deviceInterfaceDetailData.DevicePath.IndexOf(DeviceID, StringComparison.OrdinalIgnoreCase) != -1)
         {
           Win32.SetupDiDestroyDeviceInfoList(handle);
           devicePath = deviceInterfaceDetailData.DevicePath;
