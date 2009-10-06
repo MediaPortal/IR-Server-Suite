@@ -39,9 +39,10 @@ namespace IRServer.Plugin
     #region Constants
 
     private const int DeviceBufferSize = 5;
-    private const string DevicePathVidPid = "vid_045e&pid_0284";
-    //const string DeviceGuid = "{9DE464EB-5DAC-4498-88BC-5010CFD2F724}";
-    
+
+    //New device path verified by "yvos" and "James"
+    private const string DevicePathVidPid = "vid_05ac&pid_8242";
+
     private static readonly byte[] FlatCode = new byte[] { 0x25, 0x87, 0xE0 };
     private static readonly byte[] KeyCodeTemplate = new byte[] { 0x25, 0x87, 0xEE, 0xFF, 0xFF };
     private static readonly byte[] RepeatCode = new byte[] { 0x26, 0x00, 0x00, 0x00, 0x00 };
