@@ -28,6 +28,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using IRServer.Plugin.Properties;
+using IrssUtils;
 
 namespace IRServer.Plugin
 {
@@ -233,6 +234,16 @@ namespace IRServer.Plugin
     }
 
     #endregion
+
+    public override DetectionResult Detect()
+    {
+      if (Environment.UserInteractive)
+      {
+        IrssLog.Error("{0,15}: not available on \"service\" installation mode", Name);
+        return DetectionResult.DeviceDisabled;
+      }
+      return DetectionResult.DevicePresent;
+    }
 
     /// <summary>
     /// Start the IR Server plugin.

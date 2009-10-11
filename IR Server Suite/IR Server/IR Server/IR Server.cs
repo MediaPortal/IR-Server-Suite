@@ -1472,7 +1472,7 @@ namespace IRServer
             {
               IrssMessage response = new IrssMessage(MessageType.AvailableBlasters, MessageFlags.Response);
 
-              PluginBase[] plugins = Program.AvailablePlugins();
+              PluginBase[] plugins = BasicFunctions.AvailablePlugins();
               StringBuilder blasters = new StringBuilder();
 
               for (int index = 0; index < plugins.Length; index++)
@@ -1508,7 +1508,7 @@ namespace IRServer
             {
               IrssMessage response = new IrssMessage(MessageType.AvailableReceivers, MessageFlags.Response);
 
-              PluginBase[] plugins = Program.AvailablePlugins();
+              PluginBase[] plugins = BasicFunctions.AvailablePlugins();
               StringBuilder receivers = new StringBuilder();
 
               for (int index = 0; index < plugins.Length; index++)

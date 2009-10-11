@@ -432,7 +432,7 @@ namespace IRServer.Configuration
 
       try
       {
-        _transceivers = Program.AvailablePlugins();
+        _transceivers = BasicFunctions.AvailablePlugins();
       }
       catch (Exception ex)
       {

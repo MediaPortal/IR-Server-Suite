@@ -486,7 +486,7 @@ namespace IRServer.Configuration
       if (exitCode != 0)
       {
         IrssLog.Error("RunAdminHelper exitcode = " + exitCode);
-        MessageBox.Show("There occured an issue when trying to run AdminHelper." + Environment.NewLine + 
+        MessageBox.Show("There occured an issue when trying to run AdminHelper." + Environment.NewLine +
           "Do you have administration rights?" + Environment.NewLine +
           "Did you accept the request for Administration rights?" + Environment.NewLine + Environment.NewLine +
           "If you think you did everything right, please report the issue to the devlopers.",
@@ -592,56 +592,6 @@ namespace IRServer.Configuration
     }
 
     /// <summary>
-    /// Retreives a list of available IR Server plugins.
-    /// </summary>
-    /// <returns>Array of plugin instances.</returns>
-    internal static PluginBase[] AvailablePlugins()
-    {
-      List<PluginBase> plugins = new List<PluginBase>();
-
-      string installFolder = SystemRegistry.GetInstallFolder();
-      if (String.IsNullOrEmpty(installFolder))
-        return null;
-
-      string path = Path.Combine(installFolder, "IR Server Plugins");
-      string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-
-      // TODO: Return a Type[], don't instantiate unless required
-
-      foreach (string file in files)
-      {
-        try
-        {
-          Assembly assembly = Assembly.LoadFrom(file);
-
-          Type[] types = assembly.GetExportedTypes();
-
-          foreach (Type type in types)
-          {
-            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
-            {
-              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
-
-              if (plugin != null && plugin.Detect() != PluginBase.DetectionResult.DeviceDisabled)
-                plugins.Add(plugin);
-            }
-          }
-        }
-        catch (BadImageFormatException)
-        {
-        } // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
-        catch (TypeLoadException)
-        {
-        } // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
-        catch (FileNotFoundException)
-        {
-        } // Ignore File Not Found Exceptions, just keep checking for IR Server Plugins
-      }
-
-      return plugins.ToArray();
-    }
-
-    /// <summary>
     /// Retreives a list of detected Receiver plugins.
     /// </summary>
     /// <returns>String array of plugin names.</returns>
@@ -649,7 +599,7 @@ namespace IRServer.Configuration
     {
       IrssLog.Info("Detect Receivers ...");
 
-      PluginBase[] plugins = AvailablePlugins();
+      PluginBase[] plugins = BasicFunctions.AvailablePlugins();
       if (plugins == null || plugins.Length == 0)
         return null;
 
@@ -682,7 +632,7 @@ namespace IRServer.Configuration
     {
       IrssLog.Info("Detect Blasters ...");
 
-      PluginBase[] plugins = AvailablePlugins();
+      PluginBase[] plugins = BasicFunctions.AvailablePlugins();
       if (plugins == null || plugins.Length == 0)
         return null;
 

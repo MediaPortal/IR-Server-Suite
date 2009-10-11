@@ -21,8 +21,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
+using IrssUtils;
 
 namespace IRServer.Plugin
 {
@@ -139,5 +143,57 @@ namespace IRServer.Plugin
     public abstract void Stop();
 
     #endregion Methods
+  }
+
+  public class BasicFunctions
+  {
+    /// <summary>
+    /// Retreives a list of available IR Server plugins.
+    /// </summary>
+    /// <returns>Array of plugin instances.</returns>
+    public static PluginBase[] AvailablePlugins()
+    {
+      List<PluginBase> plugins = new List<PluginBase>();
+
+      string path = Path.Combine(Application.StartupPath, "IR Server Plugins");
+      string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+
+      // TODO: Return a Type[], don't instantiate unless required
+
+      foreach (string file in files)
+      {
+        try
+        {
+          Assembly assembly = Assembly.LoadFrom(file);
+
+          Type[] types = assembly.GetExportedTypes();
+
+          foreach (Type type in types)
+          {
+            if (type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(PluginBase)))
+            {
+
+              PluginBase plugin = (PluginBase)assembly.CreateInstance(type.FullName);
+
+              if (plugin != null && plugin.Detect() != PluginBase.DetectionResult.DeviceDisabled)
+              {
+                plugins.Add(plugin);
+              }
+            }
+          }
+        }
+        catch (BadImageFormatException)
+        {
+        } // Ignore Bad Image Format Exceptions, just keep checking for IR Server Plugins
+        catch (TypeLoadException)
+        {
+        } // Ignore Type Load Exceptions, just keep checking for IR Server Plugins
+        catch (FileNotFoundException)
+        {
+        } // Ignore File Not Found Exceptions, just keep checking for IR Server Plugins
+      }
+
+      return plugins.ToArray();
+    }
   }
 }
