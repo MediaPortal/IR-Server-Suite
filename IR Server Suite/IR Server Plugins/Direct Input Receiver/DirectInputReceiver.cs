@@ -238,7 +238,7 @@ namespace IRServer.Plugin
     {
       if (IrssUtils.Win32.Check64Bit())
       {
-        IrssLog.Warn("Plugin {0}: not available on current OS architecture (x64)", Name);
+        IrssLog.Warn("{0,15}: not available on current OS architecture (x64)", Name);
         return DetectionResult.DeviceDisabled;
       }
       try

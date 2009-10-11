@@ -115,9 +115,9 @@ namespace IRServer.Plugin
     /// </summary>
     public override DetectionResult Detect()
     {
-      if (IrssUtils.Win32.Check64Bit())
+      if (Win32.Check64Bit())
       {
-        IrssLog.Warn("Plugin {0}: not available on current OS architecture (x64)", Name);
+        IrssLog.Warn("{0,15}: not available on current OS architecture (x64)", Name);
         return DetectionResult.DeviceDisabled;
       }
       try
@@ -155,16 +155,7 @@ namespace IRServer.Plugin
         }
 
         // Search for the named sourcefilter
-
-        FireDTVSourceFilterInfo sourceFilter;
-        if (string.IsNullOrEmpty(_deviceName))
-        {
-          sourceFilter = _fireDTV.SourceFilters.Item(0);
-        }
-        else
-        {
-          sourceFilter = _fireDTV.SourceFilters.ItemByName(_deviceName);
-        }
+        FireDTVSourceFilterInfo sourceFilter = string.IsNullOrEmpty(_deviceName) ? _fireDTV.SourceFilters.Item(0) : _fireDTV.SourceFilters.ItemByName(_deviceName);
 
         if (sourceFilter != null)
         {

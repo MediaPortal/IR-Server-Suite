@@ -30,7 +30,7 @@ using IrssUtils.Forms;
 using TvDatabase;
 using TvEngine;
 using TvLibrary.Log;
-using Server=IrssComms.Server;
+using Server = IrssComms.Server;
 
 namespace SetupTv.Sections
 {
@@ -60,13 +60,7 @@ namespace SetupTv.Sections
       TV3BlasterPlugin.InConfiguration = true;
 
       TvBusinessLayer layer = new TvBusinessLayer();
-      TV3BlasterPlugin.ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", String.Empty).Value;
-
-      if (String.IsNullOrEmpty(TV3BlasterPlugin.ServerHost))
-      {
-        buttonHostSetup_Click(null, null);
-      }
-
+      TV3BlasterPlugin.ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", "localhost").Value;
       IPAddress serverIP = Client.GetIPFromName(TV3BlasterPlugin.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
