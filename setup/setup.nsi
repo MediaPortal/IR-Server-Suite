@@ -1065,7 +1065,7 @@ Section "-Complete"
   WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation.url"  "InternetShortcut" "URL" "http://www.team-mediaportal.com/manual/IRServerSuite"
   WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Website.url"  "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Log Files.lnk" "$APPDATA\${PRODUCT_NAME}\Logs"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe" "" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$DIR_INSTALL\uninstall-irss.exe" "" "$DIR_INSTALL\uninstall-irss.exe"
 
   
   ; Write registry settings
@@ -1089,13 +1089,13 @@ Section "-Complete"
   WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayVersion"  "${VERSION}"
   WriteRegStr HKLM "${REG_UNINSTALL}" "Publisher"       "${PRODUCT_PUBLISHER}"
   WriteRegStr HKLM "${REG_UNINSTALL}" "URLInfoAbout"    "${PRODUCT_WEB_SITE}"
-  WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayIcon"     "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
-  WriteRegStr HKLM "${REG_UNINSTALL}" "UninstallString" "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayIcon"     "$DIR_INSTALL\uninstall-irss.exe"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "UninstallString" "$DIR_INSTALL\uninstall-irss.exe"
   WriteRegDWORD HKLM "${REG_UNINSTALL}" "NoModify" 1
   WriteRegDWORD HKLM "${REG_UNINSTALL}" "NoRepair" 1
 
   ; Write the uninstaller
-  WriteUninstaller "$DIR_INSTALL\Uninstall ${PRODUCT_NAME}.exe"
+  WriteUninstaller "$DIR_INSTALL\uninstall-irss.exe"
 
   ; set rights to programmdata directory and reg keys
   Call SetRightsIRSS
