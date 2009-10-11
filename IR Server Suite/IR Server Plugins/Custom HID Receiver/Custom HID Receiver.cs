@@ -239,7 +239,7 @@ namespace IRServer.Plugin
     {
       if (Environment.UserInteractive)
       {
-        IrssLog.Error("{0,15}: not available on \"service\" installation mode", Name);
+        IrssLog.Warn("{0,15}: not available on \"service\" installation mode", Name);
         return DetectionResult.DeviceDisabled;
       }
       return DetectionResult.DevicePresent;
@@ -338,7 +338,7 @@ namespace IRServer.Plugin
         XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char) 9;
+        writer.IndentChar = (char)9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("settings"); // <settings>
 
@@ -376,7 +376,7 @@ namespace IRServer.Plugin
 
     private bool RegisterForRawInput(RawInput.RAWINPUTDEVICE[] devices)
     {
-      return RawInput.RegisterRawInputDevices(devices, (uint) devices.Length, (uint) Marshal.SizeOf(devices[0]));
+      return RawInput.RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf(devices[0]));
     }
 
     private void ProcMessage(ref Message m)
@@ -433,9 +433,9 @@ namespace IRServer.Plugin
       uint dwSize = 0;
 
       RawInput.GetRawInputData(message.LParam, RawInput.RawInputCommand.Input, IntPtr.Zero, ref dwSize,
-                               (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)));
+                               (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)));
 
-      IntPtr buffer = Marshal.AllocHGlobal((int) dwSize);
+      IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
       try
       {
         if (buffer == IntPtr.Zero)
@@ -443,16 +443,16 @@ namespace IRServer.Plugin
 
         if (
           RawInput.GetRawInputData(message.LParam, RawInput.RawInputCommand.Input, buffer, ref dwSize,
-                                   (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER))) != dwSize)
+                                   (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER))) != dwSize)
           return;
 
-        RawInput.RAWINPUT raw = (RawInput.RAWINPUT) Marshal.PtrToStructure(buffer, typeof (RawInput.RAWINPUT));
+        RawInput.RAWINPUT raw = (RawInput.RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RawInput.RAWINPUT));
 
         switch (raw.header.dwType)
         {
           case RawInput.RawInputType.HID:
             {
-              int offset = Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof (RawInput.RAWHID));
+              int offset = Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof(RawInput.RAWHID));
 
               byte[] bRawData = new byte[offset + raw.hid.dwSizeHid];
               Marshal.Copy(buffer, bRawData, 0, bRawData.Length);
@@ -492,7 +492,7 @@ namespace IRServer.Plugin
               Trace.WriteLine(String.Format("Last Y: {0}", raw.mouse.lLastY));
 #endif
               if (_mouseHandler != null)
-                _mouseHandler(Name, raw.mouse.lLastX, raw.mouse.lLastY, (int) raw.mouse.ulButtons);
+                _mouseHandler(Name, raw.mouse.lLastX, raw.mouse.lLastY, (int)raw.mouse.ulButtons);
 
               break;
             }

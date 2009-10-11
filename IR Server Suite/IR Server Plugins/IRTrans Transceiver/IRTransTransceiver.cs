@@ -325,7 +325,7 @@ namespace IRServer.Plugin
       }
       catch (Exception ex)
       {
-        IrssLog.Error("{0,15} exception: {1}", Name, ex.Message);
+        IrssLog.Error("{0,15}: exception {1}", Name, ex.Message);
         return DetectionResult.DeviceException;
       }
 
