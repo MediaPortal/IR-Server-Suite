@@ -352,7 +352,8 @@ namespace IRServer.Plugin
         {
             "Vid_15c2&Pid_003c",
             "Vid_15c2&Pid_0038",
-            "Vid_15c2&Pid_0036"
+            "Vid_15c2&Pid_0036",
+            "Vid_15c2&Pid_0035"
         };
 
         private RawInput.RAWINPUTDEVICE[] _deviceTree;
