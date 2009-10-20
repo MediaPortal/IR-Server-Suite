@@ -1,4 +1,4 @@
-namespace TvEngine
+namespace TvEngine.Forms
 {
   partial class MacroEditor
   {
@@ -57,7 +57,7 @@ namespace TvEngine
       // textBoxName
       // 
       this.textBoxName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+                                                                      | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxName.Location = new System.Drawing.Point(64, 8);
       this.textBoxName.Name = "textBoxName";
       this.textBoxName.Size = new System.Drawing.Size(240, 20);
@@ -66,8 +66,8 @@ namespace TvEngine
       // groupBoxCommandSequence
       // 
       this.groupBoxCommandSequence.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+                                                                                   | System.Windows.Forms.AnchorStyles.Left)
+                                                                                  | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxCommandSequence.Controls.Add(this.buttonRemove);
       this.groupBoxCommandSequence.Controls.Add(this.buttonMoveDown);
       this.groupBoxCommandSequence.Controls.Add(this.buttonMoveUp);
@@ -115,8 +115,8 @@ namespace TvEngine
       // listBoxMacro
       // 
       this.listBoxMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+                                                                        | System.Windows.Forms.AnchorStyles.Left)
+                                                                       | System.Windows.Forms.AnchorStyles.Right)));
       this.listBoxMacro.FormattingEnabled = true;
       this.listBoxMacro.IntegralHeight = false;
       this.listBoxMacro.Location = new System.Drawing.Point(8, 16);
@@ -128,7 +128,7 @@ namespace TvEngine
       // comboBoxCommands
       // 
       this.comboBoxCommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+                                                                           | System.Windows.Forms.AnchorStyles.Right)));
       this.comboBoxCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxCommands.FormattingEnabled = true;
       this.comboBoxCommands.Location = new System.Drawing.Point(8, 16);
@@ -150,7 +150,7 @@ namespace TvEngine
       // groupBoxCommands
       // 
       this.groupBoxCommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+                                                                           | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxCommands.Controls.Add(this.buttonAddCommand);
       this.groupBoxCommands.Controls.Add(this.comboBoxCommands);
       this.groupBoxCommands.Location = new System.Drawing.Point(8, 240);

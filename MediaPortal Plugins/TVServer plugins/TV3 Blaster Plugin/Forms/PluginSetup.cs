@@ -27,12 +27,12 @@ using System.Windows.Forms;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using SetupTv;
 using TvDatabase;
-using TvEngine;
 using TvLibrary.Log;
 using Server = IrssComms.Server;
 
-namespace SetupTv.Sections
+namespace TvEngine.Forms
 {
   internal partial class PluginSetup : SectionSettings
   {
@@ -85,9 +85,8 @@ namespace SetupTv.Sections
       TV3BlasterPlugin.HandleMessage -= ReceivedMessage;
 
       TvBusinessLayer layer = new TvBusinessLayer();
-      Setting setting;
 
-      setting = layer.GetSetting("TV3BlasterPlugin_ServerHost");
+      Setting setting = layer.GetSetting("TV3BlasterPlugin_ServerHost");
       setting.Value = TV3BlasterPlugin.ServerHost;
       setting.Persist();
 
@@ -187,7 +186,7 @@ namespace SetupTv.Sections
       try
       {
         string command = listViewMacro.SelectedItems[0].Text;
-        string fileName = TV3BlasterPlugin.FolderMacros + command + Common.FileExtensionMacro;
+        string fileName = TV3BlasterPlugin.PathCombine(command);
 
         if (File.Exists(fileName))
         {

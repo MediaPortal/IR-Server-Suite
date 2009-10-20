@@ -31,10 +31,10 @@ using IrssComms;
 using IrssUtils;
 using MPUtils;
 using SetupTv;
-using SetupTv.Sections;
 using TvControl;
 using TvDatabase;
 using TvEngine.Events;
+using TvEngine.Forms;
 using TvLibrary.Implementations;
 using TvLibrary.Interfaces;
 using TvLibrary.Log;
@@ -847,6 +847,11 @@ namespace TvEngine
     {
       TvBusinessLayer layer = new TvBusinessLayer();
       ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", "localhost").Value;
+    }
+
+    public static string PathCombine(string filename)
+    {
+      return Path.Combine(FolderMacros, filename + Common.FileExtensionMacro);
     }
 
     #endregion Implementation

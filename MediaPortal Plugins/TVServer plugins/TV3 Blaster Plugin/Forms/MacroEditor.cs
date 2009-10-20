@@ -29,7 +29,7 @@ using IrssUtils.Exceptions;
 using IrssUtils.Forms;
 using TvLibrary.Log;
 
-namespace TvEngine
+namespace TvEngine.Forms
 {
   internal partial class MacroEditor : Form
   {
@@ -59,7 +59,8 @@ namespace TvEngine
       textBoxName.Text = name;
       textBoxName.Enabled = false;
 
-      string fileName = TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
+      string fileName = TV3BlasterPlugin.
+        PathCombine(name);
       ReadFromFile(fileName);
     }
 
@@ -305,7 +306,7 @@ namespace TvEngine
 
       try
       {
-        WriteToFile(TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro);
+        WriteToFile(TV3BlasterPlugin.PathCombine(name));
 
         TV3BlasterPlugin.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
@@ -344,7 +345,7 @@ namespace TvEngine
 
       try
       {
-        WriteToFile(TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro);
+        WriteToFile(TV3BlasterPlugin.PathCombine(name));
       }
       catch (Exception ex)
       {

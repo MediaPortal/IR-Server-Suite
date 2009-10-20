@@ -1,6 +1,5 @@
-namespace SetupTv.Sections
+namespace TvEngine.Forms
 {
-
   partial class PluginSetup
   {
     /// <summary>
@@ -54,8 +53,8 @@ namespace SetupTv.Sections
       // tabControl
       // 
       this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+                                                                      | System.Windows.Forms.AnchorStyles.Left)
+                                                                     | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl.Controls.Add(this.tabPageSetup);
       this.tabControl.Controls.Add(this.tabPageMacros);
       this.tabControl.Controls.Add(this.tabPageIR);
@@ -128,8 +127,8 @@ namespace SetupTv.Sections
       // listViewIR
       // 
       this.listViewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+                                                                      | System.Windows.Forms.AnchorStyles.Left)
+                                                                     | System.Windows.Forms.AnchorStyles.Right)));
       this.listViewIR.FullRowSelect = true;
       this.listViewIR.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
       this.listViewIR.HideSelection = false;
@@ -195,8 +194,8 @@ namespace SetupTv.Sections
       // listViewMacro
       // 
       this.listViewMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+                                                                         | System.Windows.Forms.AnchorStyles.Left)
+                                                                        | System.Windows.Forms.AnchorStyles.Right)));
       this.listViewMacro.FullRowSelect = true;
       this.listViewMacro.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
       this.listViewMacro.HideSelection = false;
