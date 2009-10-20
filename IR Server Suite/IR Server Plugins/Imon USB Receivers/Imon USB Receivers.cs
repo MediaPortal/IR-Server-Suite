@@ -743,9 +743,9 @@ namespace IRServer.Plugin
             int lastError = Marshal.GetLastWin32Error();
 
             if (_deviceHandle.IsInvalid)
-            {
+            {   
                 DebugWriteLine("Start_HID(): Failed to get open device");
-                throw new Win32Exception(lastError, "Failed to get open device");
+                // throw new Win32Exception(lastError, "Failed to get open device");
             }
 
             SetHid(_remoteMode);
@@ -801,8 +801,29 @@ namespace IRServer.Plugin
 
         private void HID_OpenDevice(ref SafeFileHandle _deviceHandle)
         {
-            string RemoteDeviceNameLower = RemoteDeviceName.ToLower();
-            _deviceHandle = FileIO.CreateFile(RemoteDeviceNameLower, FileIO.GENERIC_WRITE, FileIO.FILE_SHARE_READ | FileIO.FILE_SHARE_WRITE, IntPtr.Zero, FileIO.OPEN_EXISTING, 0, 0);
+            DebugWriteLine("HID_OpenDevice(): Trying to open device for writing config to it");
+            DebugWriteLine("HID_OpenDevice(): RemoteDeviceName = {0}", RemoteDeviceName);
+            try
+            {
+                _deviceHandle = FileIO.CreateFile(RemoteDeviceName, FileIO.GENERIC_WRITE, FileIO.FILE_SHARE_READ | FileIO.FILE_SHARE_WRITE, IntPtr.Zero, FileIO.OPEN_EXISTING, 0, 0);
+                DebugWriteLine("HID_OpenDevice(): success, returned _deviceHandle = {0}", _deviceHandle.ToString());
+            }
+            catch
+            {
+                DebugWriteLine("HID_OpenDevice(): failed, returned _deviceHandle = {0}", _deviceHandle.ToString());
+                DebugWriteLine("HID_OpenDevice(): trying with RemoteDeviceNameLower");
+                string RemoteDeviceNameLower = RemoteDeviceName.ToLower();
+                DebugWriteLine("HID_OpenDevice(): RemoteDeviceNameLower = {0}", RemoteDeviceNameLower);
+                try
+                {
+                    _deviceHandle = FileIO.CreateFile(RemoteDeviceNameLower, FileIO.GENERIC_WRITE, FileIO.FILE_SHARE_READ | FileIO.FILE_SHARE_WRITE, IntPtr.Zero, FileIO.OPEN_EXISTING, 0, 0);
+                    DebugWriteLine("HID_OpenDevice(): success, returned _deviceHandle = {0}", _deviceHandle.ToString());
+                }
+                catch
+                {
+                    DebugWriteLine("HID_OpenDevice(): failed, returned _deviceHandle = {0}", _deviceHandle.ToString());
+                }
+            }
         }
 
         /// <summary>
@@ -1890,10 +1911,33 @@ namespace IRServer.Plugin
             {
                 foreach (byte[] send in modeData)
                 {
+                    bool writeDevice = false;
+
                     DebugWriteLine("SetMode (HID): sending command ({0} bytes) to device", send.Length);
                     int bytesWritten = 0;
-                    bool writeDevice = FileIO.WriteFile(_deviceHandle, send, send.Length, ref bytesWritten, IntPtr.Zero);
-                    DebugWriteLine("SetMode (HID): sent {0} bytes to device", bytesWritten);
+                    for (int i = 0; i < 100; i++)
+                    {
+                        try
+                        {
+                            DebugWriteLine("SetMode (HID): trying to send...");
+                            writeDevice = FileIO.WriteFile(_deviceHandle, send, send.Length, ref bytesWritten, IntPtr.Zero);
+                            if (!writeDevice)
+                            {
+                                DebugWriteLine("SetMode (HID): no success, reopening handle...");
+                                HID_OpenDevice(ref _deviceHandle);
+                            }
+                        }
+                        catch
+                        {
+                            DebugWriteLine("SetMode (HID): exception appeared while writing to device! reopening handle...");
+                            HID_OpenDevice(ref _deviceHandle);
+                        }
+                        if (writeDevice) break;
+                    }
+                    if (writeDevice)
+                        DebugWriteLine("SetMode (HID): sent {0} bytes to device", bytesWritten);
+                    else
+                        DebugWriteLine("SetMode (HID): sending failed after 100 tries");
                 }
             }
             catch (Exception ex)
