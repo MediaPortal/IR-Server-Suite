@@ -801,28 +801,27 @@ namespace IRServer.Plugin
 
         private void HID_OpenDevice(ref SafeFileHandle _deviceHandle)
         {
+            System.Threading.Thread.Sleep(25);
             DebugWriteLine("HID_OpenDevice(): Trying to open device for writing config to it");
             DebugWriteLine("HID_OpenDevice(): RemoteDeviceName = {0}", RemoteDeviceName);
             try
             {
                 _deviceHandle = FileIO.CreateFile(RemoteDeviceName, FileIO.GENERIC_WRITE, FileIO.FILE_SHARE_READ | FileIO.FILE_SHARE_WRITE, IntPtr.Zero, FileIO.OPEN_EXISTING, 0, 0);
-                DebugWriteLine("HID_OpenDevice(): success, returned _deviceHandle = {0}", _deviceHandle.ToString());
             }
-            catch
+            catch { }
+            DebugWriteLine("HID_OpenDevice(): returned _deviceHandle = {0}", _deviceHandle.IsInvalid.ToString());
+
+            if (_deviceHandle.IsInvalid == true)
             {
-                DebugWriteLine("HID_OpenDevice(): failed, returned _deviceHandle = {0}", _deviceHandle.ToString());
                 DebugWriteLine("HID_OpenDevice(): trying with RemoteDeviceNameLower");
                 string RemoteDeviceNameLower = RemoteDeviceName.ToLower();
                 DebugWriteLine("HID_OpenDevice(): RemoteDeviceNameLower = {0}", RemoteDeviceNameLower);
                 try
                 {
                     _deviceHandle = FileIO.CreateFile(RemoteDeviceNameLower, FileIO.GENERIC_WRITE, FileIO.FILE_SHARE_READ | FileIO.FILE_SHARE_WRITE, IntPtr.Zero, FileIO.OPEN_EXISTING, 0, 0);
-                    DebugWriteLine("HID_OpenDevice(): success, returned _deviceHandle = {0}", _deviceHandle.ToString());
                 }
-                catch
-                {
-                    DebugWriteLine("HID_OpenDevice(): failed, returned _deviceHandle = {0}", _deviceHandle.ToString());
-                }
+                catch { }
+                DebugWriteLine("HID_OpenDevice(): returned _deviceHandle = {0}", _deviceHandle.IsInvalid.ToString());
             }
         }
 
