@@ -300,7 +300,7 @@ namespace TvEngine.Forms
         return;
 
       string file = listViewMacro.SelectedItems[0].Text;
-      string fileName = TV3BlasterPlugin.FolderMacros + file + Common.FileExtensionMacro;
+      string fileName = TV3BlasterPlugin.PathCombine(file);
       if (File.Exists(fileName))
       {
         if (
@@ -428,7 +428,7 @@ namespace TvEngine.Forms
 
       ListViewItem originItem = origin.Items[e.Item];
 
-      string oldFileName = TV3BlasterPlugin.FolderMacros + originItem.Text + Common.FileExtensionMacro;
+      string oldFileName = TV3BlasterPlugin.PathCombine(originItem.Text);
       if (!File.Exists(oldFileName))
       {
         MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
@@ -449,8 +449,7 @@ namespace TvEngine.Forms
 
       try
       {
-        string newFileName = TV3BlasterPlugin.FolderMacros + name + Common.FileExtensionMacro;
-
+        string newFileName = TV3BlasterPlugin.PathCombine(name);
         File.Move(oldFileName, newFileName);
       }
       catch (Exception ex)
