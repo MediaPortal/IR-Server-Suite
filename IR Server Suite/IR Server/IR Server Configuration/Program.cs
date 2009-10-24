@@ -142,6 +142,10 @@ namespace IRServer.Configuration
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(true);
 
+      // allow only one application instance
+      if (IrssUtils.ProcessHelper.IsProcessAlreadyRunning())
+        return;
+
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open("IR Server Configuration.log");
 
