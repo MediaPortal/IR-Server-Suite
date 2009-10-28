@@ -1285,6 +1285,15 @@ namespace IRServer.Plugin
                                 rDevice.usUsage = details.Usage;
                                 rDevice.usUsagePage = details.UsagePage;
                                 RemoteDeviceName = details.ID;
+
+                                // on very rare systems RemoteDeviceName is reported wrong, no idea why. Lets change it!
+                                if (RemoteDeviceName.StartsWith(@"\??\"))
+                                {
+                                  DebugWriteLine("FindDevices_HID(): Changing to right RemoteDeviceName...");
+                                  DebugWriteLine("FindDevices_HID():    reported RemoteDeviceName: \"{0}\"", RemoteDeviceName);
+                                  RemoteDeviceName = @"\\?\" + RemoteDeviceName.Substring(4);
+                                  DebugWriteLine("FindDevices_HID():   corrected RemoteDeviceName: \"{0}\"", RemoteDeviceName);
+                                }
                             }
                             // check for keyboard device - MI_00&Col02#
                             if (details.ID.Contains(HIDKeyboardSuffix))
@@ -1572,9 +1581,9 @@ namespace IRServer.Plugin
                             }
                             else if (newArray[8] == 0xEE) // Front panel buttons/volume knob
                             {
-                                if (newArray[4] != 0x00)
+                                if (newArray[5] != 0x00)
                                 {
-                                    uint keyCode = IMON_PANEL_BUTTON + newArray[4];
+                                    uint keyCode = IMON_PANEL_BUTTON + newArray[5];
                                     RemoteEvent(keyCode, _remoteToggle != newArray[4]);
                                 }
                                 _remoteToggle = newArray[4];

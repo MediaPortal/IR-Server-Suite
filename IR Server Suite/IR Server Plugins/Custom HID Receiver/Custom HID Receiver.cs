@@ -235,6 +235,9 @@ namespace IRServer.Plugin
 
     #endregion
 
+    /// <summary>
+    /// Detect Custom HID Devices.
+    /// </summary>
     public override DetectionResult Detect()
     {
       if (Environment.UserInteractive)

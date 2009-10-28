@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 namespace IRServer.Plugin
 {
@@ -196,7 +197,7 @@ namespace IRServer.Plugin
 
             DeviceType DevType;
 
-            iMonUSBReceivers device = new iMonUSBReceiver();
+            iMonUSBReceivers device = new iMonUSBReceivers();
 
             try
             {

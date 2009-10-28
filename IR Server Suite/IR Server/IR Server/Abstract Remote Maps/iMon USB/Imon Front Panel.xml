@@ -8,6 +8,7 @@
   <RemoteTable RawCode="3015" AbstractButton="Start" />
   <RemoteTable RawCode="3023" AbstractButton="Back" />
   <RemoteTable RawCode="3045" AbstractButton="Info" />
+  <RemoteTable RawCode="3044" AbstractButton="Home" />
   <RemoteTable RawCode="3043" AbstractButton="Power" />
   <RemoteTable RawCode="3002" AbstractButton="Play" />
   <RemoteTable RawCode="3004" AbstractButton="Stop" />
