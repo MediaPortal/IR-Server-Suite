@@ -102,113 +102,31 @@ Var MPdir.BurnerSupport
 #***************************
 #***************************
 
-!macro GetPathTextCall _DIR _RESULT
-  !verbose push
-  !verbose ${_MediaPortalDirectories_VERBOSE}
-  Push `${_DIR}`
-  ${CallArtificialFunction} GetPathText_
-  Pop ${_RESULT}
-  !verbose pop
-!macroend
+!define ReadMPdir `!insertmacro ReadMPdir`
+!macro ReadMPdir DIR
 
-!define GetPathText `!insertmacro GetPathTextCall`
-
-!macro GetPathText_
-  !verbose push
-  !verbose ${_MediaPortalDirectories_VERBOSE}
-
-  Exch $0 ;_DIR
-  Push $1
-  Push $2
-
-  ${xml::GotoPath} "/Config" $1
-  ${If} $1 != 0
-    ${LOG_TEXT} "ERROR" "xml::GotoPath /Config"
-    Goto error
-  ${EndIf}
-
-  loop:
-
-  ${xml::FindNextElement} "Dir" $2 $1
-  ${If} $1 != 0
-    ${LOG_TEXT} "ERROR" "xml::FindNextElement >/Dir< >$2<"
-    Goto error
-  ${EndIf}
-
-  ${xml::ElementPath} $2
-  ${xml::GetAttribute} "id" $2 $1
-  ${If} $1 != 0
-    ${LOG_TEXT} "ERROR" "xml::GetAttribute >id< >$2<"
-    Goto error
-  ${EndIf}
-  ${IfThen} $2 == $0  ${|} Goto foundDir ${|}
-
-  Goto loop
-
-
-  foundDir:
-  ${xml::ElementPath} $2
-  ${xml::GotoPath} "$2/Path" $1
-  ${If} $1 != 0
-    ${LOG_TEXT} "ERROR" "xml::GotoPath >$2/Path<"
-    Goto error
-  ${EndIf}
-
+  ${xml::RootElement} $0 $1
+  IntCmp $1 -1 ${DIR}_fail
+  ${xml::XPathNode} "//Config/Dir[@id='${DIR}']/Path" $1
+  IntCmp $1 -1 ${DIR}_fail
   ${xml::GetText} $0 $1
-  ${If} $1 != 0
-    ; maybe the path is only empty, which means MPdir.Base
-    #MessageBox MB_OK "error: xml::GetText"
-    #Goto error
-    StrCpy $0 ""
-  ${EndIf}
+  IntCmp $1 -1 ${DIR}_fail
 
-
-  Goto end
-
-  error:
-  StrCpy $0 "-1"
-
-  end:
-  Pop $2
-  Pop $1
-  Exch $0
-
-  !verbose pop
-!macroend
-
-#***************************
-#***************************
-
-!define ReadMPdir `!insertmacro ReadMPdirCall`
-
-!macro ReadMPdirCall DIR
-  !verbose push
-  !verbose ${_MediaPortalDirectories_VERBOSE}
-
-  Push $0
-  Push $1
-  Push $2
-  Push $3
-
-
-
-  ${GetPathText} "${DIR}" $0
-  ${IfThen} $0 == -1 ${|} Goto error1 ${|}
-
-  ;${LOG_TEXT} "DEBUG" "macro: ReadMPdir | text found in xml: '$0'"
   ${WordReplace} "$0" "%APPDATA%" "$UserAppData" "+" $0
   ${WordReplace} "$0" "%PROGRAMDATA%" "$CommonAppData" "+" $0
 
+  ; if there is no root, it is relative to MediaPortal's base dir
   ${GetRoot} "$0" $1
-  ${IfThen} $1 == "" ${|} StrCpy $0 "$MPdir.Base\$0" ${|}
+  ${If} $1 == ""
+    StrCpy $0 "$MPdir.Base\$0"
+  ${EndIf}
 
-  ; TRIM    \    AT THE END
+  # trim   \   at the end of the path
+  ; path length
   StrLen $1 "$0"
-    #${DEBUG_MSG} "1 $1$\r$\n2 $2$\r$\n3 $3"
   IntOp $2 $1 - 1
-    #${DEBUG_MSG} "1 $1$\r$\n2 $2$\r$\n3 $3"
+  ; get last char from path
   StrCpy $3 $0 1 $2
-    #${DEBUG_MSG} "1 $1$\r$\n2 $2$\r$\n3 $3"
 
   ${If} $3 == "\"
     StrCpy $MPdir.${DIR} $0 $2
@@ -216,74 +134,18 @@ Var MPdir.BurnerSupport
     StrCpy $MPdir.${DIR} $0
   ${EndIf}
 
+  Goto ${DIR}_done
+  ${DIR}_fail:
+    ${LOG_TEXT} "ERROR" "Reading ${DIR}-dir from MediaPortalDirs.xml failed."
+    ${LOG_TEXT} "INFO" "  Using default: $MPdir.${DIR}"
+  ${DIR}_done:
 
-  Pop $3
-  Pop $2
-  Pop $1
-  Pop $0
-
-  !verbose pop
 !macroend
 
 #***************************
 #***************************
 
-!macro ReadConfigCall _PATH_TO_XML _RESULT
-  !verbose push
-  !verbose ${_MediaPortalDirectories_VERBOSE}
-  Push `${_PATH_TO_XML}`
-  ${CallArtificialFunction2} ReadConfig_
-  Pop ${_RESULT}
-  !verbose pop
-!macroend
-
-!define ReadConfig `!insertmacro ReadConfigCall`
-
-!macro ReadConfig_
-  !verbose push
-  !verbose ${_MediaPortalDirectories_VERBOSE}
-
-  Exch $0 ;_PATH_TO_XML
-  Push $1
-
-
-  IfFileExists "$0\MediaPortalDirs.xml" 0 error1
-
-  ${xml::LoadFile} "$0\MediaPortalDirs.xml" $1
-  ${IfThen} $1 != 0 ${|} Goto error1 ${|}
-
-  #</Dir>  Log CustomInputDevice CustomInputDefault Skin Language Database Thumbs Weather Cache BurnerSupport
-
-  ${ReadMPdir} Config
-  ${ReadMPdir} Plugins
-  ${ReadMPdir} Log
-  ${ReadMPdir} CustomInputDevice
-  ${ReadMPdir} CustomInputDefault
-  ${ReadMPdir} Skin
-  ${ReadMPdir} Language
-  ${ReadMPdir} Database
-  ${ReadMPdir} Thumbs
-  ${ReadMPdir} Weather
-  ${ReadMPdir} Cache
-  ${ReadMPdir} BurnerSupport
-
-
-  StrCpy $0 "0"
-  Goto end1
-
-  error1:
-  StrCpy $0 "-1"
-
-  end1:
-  Pop $1
-  Exch $0
-
-  !verbose pop
-!macroend
-
-#***************************
-#***************************
-
+!define LoadDefaultDirs `!insertmacro LoadDefaultDirs`
 !macro LoadDefaultDirs
 
   StrCpy $MPdir.Config              "$CommonAppData\Team MediaPortal\MediaPortal"
@@ -305,6 +167,66 @@ Var MPdir.BurnerSupport
 #***************************
 #***************************
 
+!define ReadConfig `!insertmacro ReadConfigCall`
+!macro ReadConfigCall _PATH_TO_XML _RESULT
+  !verbose push
+  !verbose ${_MediaPortalDirectories_VERBOSE}
+  Push `${_PATH_TO_XML}`
+  ${CallArtificialFunction2} ReadConfig_
+  Pop ${_RESULT}
+  !verbose pop
+!macroend
+
+!macro ReadConfig_
+  !verbose push
+  !verbose ${_MediaPortalDirectories_VERBOSE}
+
+  Exch $0 ;_PATH_TO_XML
+  Push $1
+  Push $2
+  Push $3
+  Push $4
+
+
+  IfFileExists "$0\MediaPortalDirs.xml" 0 ReadConfig_fail
+
+  ${xml::LoadFile} "$0\MediaPortalDirs.xml" $1
+  IntCmp $1 -1 ReadConfig_fail
+
+  ${LoadDefaultDirs}
+  ${ReadMPdir} Config
+  ${ReadMPdir} Plugins
+  ${ReadMPdir} Log
+  ${ReadMPdir} CustomInputDevice
+  ${ReadMPdir} CustomInputDefault
+  ${ReadMPdir} Skin
+  ${ReadMPdir} Language
+  ${ReadMPdir} Database
+  ${ReadMPdir} Thumbs
+  ${ReadMPdir} Weather
+  ${ReadMPdir} Cache
+  ${ReadMPdir} BurnerSupport
+
+
+  StrCpy $0 "0"
+  Goto ReadConfig_done
+
+  ReadConfig_fail:
+  StrCpy $0 "-1"
+  ReadConfig_done:
+
+  Pop $4
+  Pop $3
+  Pop $2
+  Pop $1
+  Exch $0
+
+  !verbose pop
+!macroend
+
+#***************************
+#***************************
+
 !define ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirsCall`
 !define un.ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirsCall`
 !macro ReadMediaPortalDirsCall INSTDIR
@@ -320,7 +242,7 @@ Var MPdir.BurnerSupport
   SetShellVarContext all
   StrCpy $CommonAppData "$APPDATA"
 
-  !insertmacro LoadDefaultDirs
+  ${LoadDefaultDirs}
 
   ${ReadConfig} "$MyDocs\Team MediaPortal" $0
   ${If} $0 != 0   ; an error occured
@@ -331,7 +253,8 @@ Var MPdir.BurnerSupport
     ${If} $0 != 0   ; an error occured
       ${LOG_TEXT} "ERROR" "Loading MediaPortalDirectories from InstallDir failed. ('$MPdir.Base\MediaPortalDirs.xml')"
       ${LOG_TEXT} "INFO"  "Using default paths for MediaPortalDirectories now."
-      !insertmacro LoadDefaultDirs
+
+      ${LoadDefaultDirs}
 
     ${Else}
       ${LOG_TEXT} "INFO" "Loaded MediaPortalDirectories from InstallDir successfully. ('$MPdir.Base\MediaPortalDirs.xml')"
