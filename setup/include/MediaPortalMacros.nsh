@@ -135,23 +135,23 @@
 # COMMANDLINE PARAMETERS
 #---------------------------------------------------------------------------
 ; gets comandline parameter
-!macro InitCommandlineParameterCall UNINSTALL
-  ${${UNINSTALL}GetParameters} $R0
+!macro InitCommandlineParameterCall
+  ${GetParameters} $R0
   ${LOG_TEXT} "DEBUG" "commandline parameters: $R0"
 !macroend
-!define InitCommandlineParameter `!insertmacro InitCommandlineParameterCall ""`
-!define un.InitCommandlineParameter `!insertmacro InitCommandlineParameterCall "un."`
+!define InitCommandlineParameter `!insertmacro InitCommandlineParameterCall`
+!define un.InitCommandlineParameter `!insertmacro InitCommandlineParameterCall`
 
 ; check for special parameter and set the their variables, need InitCommandlineParameter first
-!macro ReadCommandlineParameterCall UNINSTALL Parameter
+!macro ReadCommandlineParameterCall Parameter
   ClearErrors
-  ${${UNINSTALL}GetOptions} $R0 "/${Parameter}" $R1
+  ${GetOptions} $R0 "/${Parameter}" $R1
   ${IfNot} ${Errors}
     StrCpy $${Parameter} 1
   ${EndUnless}
 !macroend
-!define ReadCommandlineParameter `!insertmacro ReadCommandlineParameterCall ""`
-!define un.ReadCommandlineParameter `!insertmacro ReadCommandlineParameterCall "un."`
+!define ReadCommandlineParameter `!insertmacro ReadCommandlineParameterCall`
+!define un.ReadCommandlineParameter `!insertmacro ReadCommandlineParameterCall`
 
 
 #**********************************************************************************************************#

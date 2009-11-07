@@ -51,26 +51,43 @@ Var LogFile
 Var TempInstallLog
 
 
-!define LOG_OPEN `!insertmacro LOG_OPEN ""`
-!define un.LOG_OPEN `!insertmacro LOG_OPEN "un."`
-!macro LOG_OPEN UNINSTALL_PREFIX
+!define LOG_OPEN `!insertmacro LOG_OPEN`
+!define un.LOG_OPEN `!insertmacro LOG_OPEN`
+!macro LOG_OPEN
+  !ifndef __UNINSTALL__
+    !define UNINSTALL_PREFIX ""
+  !else
+    !define UNINSTALL_PREFIX "un"
+  !endif
+
+
   GetTempFileName $TempInstallLog
   FileOpen $LogFile "$TempInstallLog" w
 
-  ${${UNINSTALL_PREFIX}GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
   ${LOG_TEXT} "INFO" "${PRODUCT_NAME} ${UNINSTALL_PREFIX}installation"
   ${LOG_TEXT} "INFO" "Logging started: $0.$1.$2 $4:$5:$6"
   ${LOG_TEXT} "INFO" "${UNINSTALL_PREFIX}installer version: ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
   ${LOG_TEXT} "INFO" "============================================================================================"
+
+
+  !undef UNINSTALL_PREFIX
 !macroend
 
 
-!define LOG_CLOSE `!insertmacro LOG_CLOSE ""`
-!define un.LOG_CLOSE `!insertmacro LOG_CLOSE "un."`
-!macro LOG_CLOSE UNINSTALL_PREFIX
+!define LOG_CLOSE `!insertmacro LOG_CLOSE`
+!define un.LOG_CLOSE `!insertmacro LOG_CLOSE`
+!macro LOG_CLOSE
+  !ifndef __UNINSTALL__
+    !define UNINSTALL_PREFIX ""
+  !else
+    !define UNINSTALL_PREFIX "un"
+  !endif
+
+
   SetShellVarContext all
 
-  ${${UNINSTALL_PREFIX}GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
   ${LOG_TEXT} "INFO" "============================================================================================"
   ${LOG_TEXT} "INFO" "Logging stopped: $0.$1.$2 $4:$5:$6"
   ${LOG_TEXT} "INFO" "${UNINSTALL_PREFIX}installer version: ${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}"
@@ -85,12 +102,15 @@ Var TempInstallLog
     !error "$\r$\n$\r$\nCOMMON_APPDATA is not defined!$\r$\n$\r$\n"
   !endif
 
-  ${${UNINSTALL_PREFIX}GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  CopyFiles "$TempInstallLog" "${COMMON_APPDATA}\logs\${UNINSTALL_PREFIX}install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}_$2-$1-$0_$4-$5-$6.log"
+  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+  CopyFiles "$TempInstallLog" "${COMMON_APPDATA}\log\${UNINSTALL_PREFIX}install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}_$2-$1-$0_$4-$5-$6.log"
 
   Delete "$TempInstallLog"
 
 !endif
+
+
+  !undef UNINSTALL_PREFIX
 !macroend
 
 
