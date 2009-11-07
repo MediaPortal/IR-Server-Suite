@@ -1,7 +1,23 @@
 <?xml version="1.0" standalone="yes"?>
 <DocumentElement>
-  <RemoteTable RawCode="X10CMD_SCROLLUP1" AbstractButton="ScrollUp" />
-  <RemoteTable RawCode="X10CMD_SCROLLDN1" AbstractButton="ScrollDown" />
+  <RemoteTable RawCode="X10CMD_SCROLLUP1" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_SCROLLDN1" AbstractButton="Down" />
+  <!-- The following codes are sent by the scrolling wheel, if it is scrolled faster. -->
+  <RemoteTable RawCode="X10CMD_SCROLLUP2" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_SCROLLDN2" AbstractButton="Down" />
+  <RemoteTable RawCode="X10CMD_SCROLLUP3" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_SCROLLDN3" AbstractButton="Down" />
+  <RemoteTable RawCode="X10CMD_SCROLLUP4" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_SCROLLDN4" AbstractButton="Down" />
+  <RemoteTable RawCode="X10CMD_SCROLLUP5" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_SCROLLDN5" AbstractButton="Down" />
+  <RemoteTable RawCode="X10CMD_SCROLLUP6" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_SCROLLDN6" AbstractButton="Down" />
+  <RemoteTable RawCode="X10CMD_SCROLLUP7" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_SCROLLDN7" AbstractButton="Down" />
+  <RemoteTable RawCode="X10CMD_SCROLLUP8" AbstractButton="Up" />
+  <RemoteTable RawCode="X10CMD_SCROLLDN8" AbstractButton="Down" />
+  <!-- END of ScrollWheel codes -->
   <RemoteTable RawCode="X10CMD_LEFT" AbstractButton="Left" />
   <RemoteTable RawCode="X10CMD_RIGHT" AbstractButton="Right" />
   <RemoteTable RawCode="X10CMD_ENTER" AbstractButton="OK" />
