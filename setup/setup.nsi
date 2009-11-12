@@ -788,7 +788,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-${MementoSection} "IR File Tool" SectionIRFileTool
+${MementoUnselectedSection} "IR File Tool" SectionIRFileTool
   ${LOG_TEXT} "INFO" "Installing IR File Tool..."
   ${KILLPROCESS} "IRFileTool.exe"
 
@@ -816,7 +816,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-${MementoSection} "Keyboard Input Relay" SectionKeyboardInputRelay
+${MementoUnselectedSection} "Keyboard Input Relay" SectionKeyboardInputRelay
   ${LOG_TEXT} "INFO" "Installing Keyboard Input Relay..."
   ${KILLPROCESS} "KeyboardInputRelay.exe"
 
@@ -889,7 +889,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-${MementoSection} "Tray Launcher" SectionTrayLauncher
+${MementoUnselectedSection} "Tray Launcher" SectionTrayLauncher
   ${LOG_TEXT} "INFO" "Installing Tray Launcher..."
   ${KILLPROCESS} "TrayLauncher.exe"
 
@@ -922,7 +922,7 @@ ${MementoSectionEnd}
 
 ;======================================
 
-${MementoSection} "Virtual Remote" SectionVirtualRemote
+${MementoUnselectedSection} "Virtual Remote" SectionVirtualRemote
   ${LOG_TEXT} "INFO" "Installing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
   ${KILLPROCESS} "VirtualRemote.exe"
   ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
