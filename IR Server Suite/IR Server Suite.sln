@@ -663,4 +663,7 @@ Global
 		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB} = {F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}
 		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D} = {F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}
 	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = ..
+	EndGlobalSection
 EndGlobal

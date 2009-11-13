@@ -119,20 +119,6 @@ namespace IRServer.Configuration
 
     #endregion Variables
 
-    #region Interops
-
-    [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
-    internal static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
-    [DllImport("user32.dll")]
-    internal static extern int SendMessage(
-          IntPtr hWnd,      // handle to destination window
-          uint Msg,       // message
-          long wParam,  // first message parameter
-          long lParam   // second message parameter
-          );
-
-    #endregion Interops
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -198,7 +184,7 @@ namespace IRServer.Configuration
 
       try
       {
-        irsWindow = FindWindowByCaption(IntPtr.Zero, ServerWindowName);
+        irsWindow = Win32.FindWindowByTitle(ServerWindowName);
         if (irsWindow != IntPtr.Zero)
           _irsStatus = IrsStatus.RunningApplication;
       }
@@ -559,7 +545,7 @@ namespace IRServer.Configuration
         IrssLog.Info("Starting IR Server (application)");
         Process IRServer = Process.Start(IRServerFile);
         waitCount = 0;
-        while (FindWindowByCaption(IntPtr.Zero, ServerWindowName) == IntPtr.Zero)
+        while (Win32.FindWindowByTitle(ServerWindowName) == IntPtr.Zero)
         {
           waitCount++;
           if (waitCount > 150) throw new TimeoutException();
@@ -584,10 +570,10 @@ namespace IRServer.Configuration
       try
       {
         IrssLog.Info("Stopping IR Server (application)");
-        IntPtr irssWindow = FindWindowByCaption(IntPtr.Zero, ServerWindowName);
-        int result = SendMessage(irssWindow, 16, 0, 0);
+        IntPtr irssWindow = Win32.FindWindowByTitle(ServerWindowName);
+        IntPtr result = Win32.SendWindowsMessage(irssWindow, 16, 0, 0);
         waitCount = 0;
-        while (FindWindowByCaption(IntPtr.Zero, ServerWindowName) != IntPtr.Zero)
+        while (Win32.FindWindowByTitle(ServerWindowName) != IntPtr.Zero)
         {
           waitCount++;
           if (waitCount > 150) throw new TimeoutException();
