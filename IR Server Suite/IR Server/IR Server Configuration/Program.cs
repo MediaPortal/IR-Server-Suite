@@ -92,10 +92,10 @@ namespace IRServer.Configuration
 
     private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, @"IR Server\IR Server.xml");
     internal static readonly string IRServerFile = Path.Combine(Common.FolderProgramFiles, @"IR Server.exe");
-    internal static readonly string AdminHelperFile = Path.Combine(Common.FolderProgramFiles, @"IR Server AdminHelper.exe");
 
     internal static readonly Icon _iconGray = new Icon(Resources.iconGray, new Size(16, 16));
     internal static readonly Icon _iconGreen = new Icon(Resources.iconGreen, new Size(16, 16));
+    private static readonly TimeSpan defaultServiceTime = new TimeSpan(0, 0, 30);
 
     #endregion Constants
 
@@ -110,7 +110,7 @@ namespace IRServer.Configuration
     private static NotifyIcon _notifyIcon;
     private static bool _inConfiguration;
     private static Thread thread;
-    //private static ServiceController serviceController;
+    private static ServiceController serviceController;
     private static ServiceController[] serviceControllers;
     private static IntPtr irsWindow;
     private static int waitCount;
@@ -459,63 +459,97 @@ namespace IRServer.Configuration
       }
     }
 
-    private static void RunAdminHelper(string arguments)
+    private static ServiceController getServiceController()
     {
-      int exitCode = 0;
-
-      Process process = new Process();
-      process.StartInfo = new ProcessStartInfo();
-      process.StartInfo.FileName = AdminHelperFile;
-      process.StartInfo.Arguments = arguments;
-      process.StartInfo.CreateNoWindow = true;
-      process.StartInfo.UseShellExecute = true;
-
-      // Must enable Exited event for both sync and async scenarios
-      process.EnableRaisingEvents = true;
-
-      try
+      serviceControllers = ServiceController.GetServices();
+      foreach (ServiceController sc in serviceControllers)
       {
-        process.Start();
-        // Synchronously block until process is complete, then return exit code from process
-        process.WaitForExit();
-        exitCode = process.ExitCode;
+        if (sc.ServiceName == ServerName)
+          return sc;
       }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        exitCode = 10;
-      }
-
-
-      if (exitCode != 0)
-      {
-        IrssLog.Error("RunAdminHelper exitcode = " + exitCode);
-        MessageBox.Show("There occured an issue when trying to run AdminHelper." + Environment.NewLine +
-          "Do you have administration rights?" + Environment.NewLine +
-          "Did you accept the request for Administration rights?" + Environment.NewLine + Environment.NewLine +
-          "If you think you did everything right, please report the issue to the devlopers.",
-          "IR Server Configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
+      return null;
     }
 
     internal static void ServiceInstall()
     {
-      RunAdminHelper("/INSTALL");
+      try
+      {
+        IrssLog.Info("Installing IR Server service");
+        Process IRServer = Process.Start(Program.IRServerFile, "/INSTALL");
+        IRServer.WaitForExit((int)defaultServiceTime.TotalMilliseconds);
+        IrssLog.Info("Installing IR Server service - done");
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Installing IR Server service - failed (see following...)");
+        IrssLog.Error(ex);
+      }
     }
 
     internal static void ServiceUninstall()
     {
-      RunAdminHelper("/UNINSTALL");
+      try
+      {
+        IrssLog.Info("Uninstalling IR Server service");
+        Process IRServer = Process.Start(Program.IRServerFile, "/UNINSTALL");
+        IRServer.WaitForExit((int)defaultServiceTime.TotalMilliseconds);
+        IrssLog.Info("Uninstalling IR Server service - done");
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Uninstalling IR Server service - failed (see following...)");
+        IrssLog.Error(ex);
+      }
     }
 
     internal static void ServiceStart()
     {
-      RunAdminHelper("/START");
+      try
+      {
+        serviceController = getServiceController();
+        if (serviceControllers != null)
+        {
+          IrssLog.Info("Starting IR Server (service)");
+          serviceController.Start();
+          serviceController.WaitForStatus(ServiceControllerStatus.Running, defaultServiceTime);
+          IrssLog.Info("Starting IR Server (service) - done");
+        }
+      }
+      catch (TimeoutException ex)
+      {
+        IrssLog.Error("Starting IR Server (service) - failed (timeout error)");
+        IrssLog.Error(ex);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Starting IR Server (service) - failed (see following...)");
+        IrssLog.Error(ex);
+      }
     }
 
     internal static void ServiceStop()
     {
-      RunAdminHelper("/STOP");
+      try
+      {
+        serviceController = getServiceController();
+        if (serviceControllers != null)
+        {
+          IrssLog.Info("Stopping IR Server (service)");
+          serviceController.Stop();
+          serviceController.WaitForStatus(ServiceControllerStatus.Stopped, defaultServiceTime);
+          IrssLog.Info("Stopping IR Server (service) - done");
+        }
+      }
+      catch (TimeoutException ex)
+      {
+        IrssLog.Error("Stopping IR Server (service) - failed (timeout error)");
+        IrssLog.Error(ex);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Stopping IR Server (service) - failed (see following...)");
+        IrssLog.Error(ex);
+      }
     }
 
     internal static void ApplicationStart()

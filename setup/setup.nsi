@@ -380,8 +380,7 @@ ${MementoSection} "IR Server" SectionIRServer
   File "..\IR Server Suite\IR Server\IR Server Configuration\bin\${Build_Type}\IR Server Configuration.*"
   File "..\IR Server Suite\IR Server\SourceGrid\DevAge*"
   File "..\IR Server Suite\IR Server\SourceGrid\SourceGrid*"
-  
-  File "..\IR Server Suite\IR Server\IR Server AdminHelper\bin\${Build_Type}\IR Server AdminHelper.*"
+
   File "..\IR Server Suite\IR Server Plugins\IR Server Plugin Interface\bin\${Build_Type}\IRServerPluginInterface.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
@@ -472,7 +471,6 @@ ${MementoSectionEnd}
   Delete "$DIR_INSTALL\DevAge*"
   Delete "$DIR_INSTALL\SourceGrid*"
 
-  Delete "$DIR_INSTALL\IR Server AdminHelper.*"
   Delete "$DIR_INSTALL\IRServerPluginInterface.*"
 !macroend
 
