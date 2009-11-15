@@ -34,246 +34,246 @@ using Microsoft.Win32;
 
 namespace IRServer
 {
-    internal static class Program
+  internal static class Program
+  {
+    #region Constants
+
+    public const string ServiceDescription =
+      "The main component of IR Server Suite, the IR Server provides access to your input devices";
+
+    public const string ServiceDisplayName = "IR Server";
+    public const string ServiceName = "IRServer";
+    public const string ServerWindowName = "IRSS - " + ServiceName;
+    private static IRServer IRServer;
+
+    #endregion Constants
+
+    /// <summary>
+    /// The main entry point for the service.
+    /// </summary>
+    /// <param name="args">Command line parameters.</param>
+    [STAThread]
+    private static void Main(string[] args)
     {
-        #region Constants
+      IrssLog.LogLevel = IrssLog.Level.Debug;
 
-        public const string ServiceDescription =
-          "The main component of IR Server Suite, the IR Server provides access to your input devices";
+      try
+      {
+        IrssLog.Open("IR Server.log");
 
-        public const string ServiceDisplayName = "IR Server";
-        public const string ServiceName = "IRServer";
-        public const string ServerWindowName = "IRSS - " + ServiceName;
-        private static IRServer IRServer;
-
-        #endregion Constants
-
-        /// <summary>
-        /// The main entry point for the service.
-        /// </summary>
-        /// <param name="args">Command line parameters.</param>
-        [STAThread]
-        private static void Main(string[] args)
+        if (args.Length == 0)
         {
-            IrssLog.LogLevel = IrssLog.Level.Debug;
+          IRServer = new IRServer();
+          if (IRServer.DoStart())
+          {
+            SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(OnPowerModeChanged);
 
-            try
-            {
-                IrssLog.Open("IR Server.log");
+            ReceiverWindow receiverWindow = new ReceiverWindow(ServerWindowName);
 
-                if (args.Length == 0)
-                {
-                    IRServer = new IRServer();
-                    if (IRServer.DoStart())
-                    {
-                        SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(OnPowerModeChanged);
-                        
-                        ReceiverWindow receiverWindow = new ReceiverWindow(ServerWindowName);
+            Application.Run();
+            SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(OnPowerModeChanged);
 
-                        Application.Run();
-                        SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(OnPowerModeChanged);
-                        
-                        receiverWindow.DestroyHandle();
-                        receiverWindow = null;
-                        IRServer.DoStop();
-                    }
-                }
-                else
-                {
-                    foreach (string parameter in args)
-                    {
-                        switch (parameter.ToUpperInvariant().Replace("-", "/"))
-                        {
-                            case "/INSTALL":
-                                IrssLog.Info("Installing IR Server ...");
-                                using (TransactedInstaller transactedInstaller = new TransactedInstaller())
-                                {
-                                    using (IRServerInstaller IRServerInstaller = new IRServerInstaller())
-                                    {
-                                        transactedInstaller.Installers.Add(IRServerInstaller);
-
-                                        string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
-                                        string[] cmdline = { path };
-
-                                        InstallContext installContext = new InstallContext(String.Empty, cmdline);
-                                        transactedInstaller.Context = installContext;
-
-                                        transactedInstaller.Install(new Hashtable());
-                                    }
-                                }
-                                break;
-
-                            case "/UNINSTALL":
-                                IrssLog.Info("Uninstalling IR Server ...");
-                                using (TransactedInstaller transactedInstaller = new TransactedInstaller())
-                                {
-                                    using (IRServerInstaller IRServerInstaller = new IRServerInstaller())
-                                    {
-                                        transactedInstaller.Installers.Add(IRServerInstaller);
-
-                                        string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
-                                        string[] cmdline = { path };
-
-                                        InstallContext installContext = new InstallContext(String.Empty, cmdline);
-                                        transactedInstaller.Context = installContext;
-
-                                        transactedInstaller.Uninstall(null);
-                                    }
-                                }
-                                break;
-
-                            case "/START":
-                                IrssLog.Info("Starting IR Server ...");
-                                using (ServiceController serviceController = new ServiceController(ServiceName))
-                                    if (serviceController.Status == ServiceControllerStatus.Stopped)
-                                        serviceController.Start();
-                                break;
-
-                            case "/STOP":
-                                IrssLog.Info("Stopping IR Server ...");
-                                using (ServiceController serviceController = new ServiceController(ServiceName))
-                                    if (serviceController.Status == ServiceControllerStatus.Running)
-                                        serviceController.Stop();
-                                break;
-
-                            case "/RESTART":
-                                IrssLog.Info("Restarting IR Server ...");
-                                using (ServiceController serviceController = new ServiceController(ServiceName))
-                                {
-                                    if (serviceController.Status == ServiceControllerStatus.Running)
-                                        serviceController.Stop();
-
-                                    serviceController.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
-
-                                    if (serviceController.Status == ServiceControllerStatus.Stopped)
-                                        serviceController.Start();
-                                }
-                                break;
-
-                            case "/SERVICE":
-                                {
-                                    IRServer IRServer = new IRServer();
-                                    ServiceBase.Run(IRServer);
-                                }
-                                break;
-
-                            default:
-                                throw new InvalidOperationException(String.Format("Unknown command line parameter \"{0}\"", parameter));
-                        }
-                    }
-
-                    IrssLog.Info("Done.");
-                }
-            }
-            catch (Exception ex)
-            {
-                IrssLog.Error(ex);
-            }
-            finally
-            {
-                IrssLog.Close();
-            }
+            receiverWindow.DestroyHandle();
+            receiverWindow = null;
+            IRServer.DoStop();
+          }
         }
-
-
-        /// <summary>
-        /// Retreives a plugin instance given the plugin name.
-        /// </summary>
-        /// <param name="pluginName">Name of plugin to instantiate.</param>
-        /// <returns>Plugin instance.</returns>
-        internal static PluginBase GetPlugin(string pluginName)
+        else
         {
-            if (String.IsNullOrEmpty(pluginName))
-                throw new ArgumentNullException("pluginName");
-
-            PluginBase[] serverPlugins = BasicFunctions.AvailablePlugins();
-            if (serverPlugins == null)
-                throw new FileNotFoundException("No available plugins found");
-
-            foreach (PluginBase plugin in serverPlugins)
-                if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
-                    return plugin;
-
-            throw new InvalidOperationException(String.Format("Plugin not found ({0})", pluginName));
-        }
-
-        /// <summary>
-        /// Retreives a list of detected Receiver plugins.
-        /// </summary>
-        /// <returns>String array of plugin names.</returns>
-        internal static string[] DetectReceivers()
-        {
-            IrssLog.Info("Detect Receivers ...");
-
-            PluginBase[] plugins = BasicFunctions.AvailablePlugins();
-            if (plugins == null || plugins.Length == 0)
-                return null;
-
-            List<string> receivers = new List<string>();
-
-            foreach (PluginBase plugin in plugins)
+          foreach (string parameter in args)
+          {
+            switch (parameter.ToUpperInvariant().Replace("-", "/"))
             {
-                try
+              case "/INSTALL":
+                IrssLog.Info("Installing IR Server ...");
+                using (TransactedInstaller transactedInstaller = new TransactedInstaller())
                 {
-                    if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
-                        receivers.Add(plugin.Name);
+                  using (IRServerInstaller IRServerInstaller = new IRServerInstaller())
+                  {
+                    transactedInstaller.Installers.Add(IRServerInstaller);
+
+                    string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
+                    string[] cmdline = { path };
+
+                    InstallContext installContext = new InstallContext(String.Empty, cmdline);
+                    transactedInstaller.Context = installContext;
+
+                    transactedInstaller.Install(new Hashtable());
+                  }
                 }
-                catch (Exception ex)
+                break;
+
+              case "/UNINSTALL":
+                IrssLog.Info("Uninstalling IR Server ...");
+                using (TransactedInstaller transactedInstaller = new TransactedInstaller())
                 {
-                    IrssLog.Error(ex);
+                  using (IRServerInstaller IRServerInstaller = new IRServerInstaller())
+                  {
+                    transactedInstaller.Installers.Add(IRServerInstaller);
+
+                    string path = "/assemblypath=" + Assembly.GetExecutingAssembly().Location;
+                    string[] cmdline = { path };
+
+                    InstallContext installContext = new InstallContext(String.Empty, cmdline);
+                    transactedInstaller.Context = installContext;
+
+                    transactedInstaller.Uninstall(null);
+                  }
                 }
+                break;
+
+              case "/START":
+                IrssLog.Info("Starting IR Server ...");
+                using (ServiceController serviceController = new ServiceController(ServiceName))
+                  if (serviceController.Status == ServiceControllerStatus.Stopped)
+                    serviceController.Start();
+                break;
+
+              case "/STOP":
+                IrssLog.Info("Stopping IR Server ...");
+                using (ServiceController serviceController = new ServiceController(ServiceName))
+                  if (serviceController.Status == ServiceControllerStatus.Running)
+                    serviceController.Stop();
+                break;
+
+              case "/RESTART":
+                IrssLog.Info("Restarting IR Server ...");
+                using (ServiceController serviceController = new ServiceController(ServiceName))
+                {
+                  if (serviceController.Status == ServiceControllerStatus.Running)
+                    serviceController.Stop();
+
+                  serviceController.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 30));
+
+                  if (serviceController.Status == ServiceControllerStatus.Stopped)
+                    serviceController.Start();
+                }
+                break;
+
+              case "/SERVICE":
+                {
+                  IRServer IRServer = new IRServer();
+                  ServiceBase.Run(IRServer);
+                }
+                break;
+
+              default:
+                throw new InvalidOperationException(String.Format("Unknown command line parameter \"{0}\"", parameter));
             }
+          }
 
-            if (receivers.Count > 0)
-                return receivers.ToArray();
-
-            return null;
+          IrssLog.Info("Done.");
         }
-
-        /// <summary>
-        /// Retreives a list of detected Blaster plugins.
-        /// </summary>
-        /// <returns>String array of plugin names.</returns>
-        internal static string[] DetectBlasters()
-        {
-            IrssLog.Info("Detect Blasters ...");
-
-            PluginBase[] plugins = BasicFunctions.AvailablePlugins();
-            if (plugins == null || plugins.Length == 0)
-                return null;
-
-            List<string> blasters = new List<string>();
-
-            foreach (PluginBase plugin in plugins)
-            {
-                try
-                {
-                    if (plugin is ITransmitIR && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
-                        blasters.Add(plugin.Name);
-                }
-                catch (Exception ex)
-                {
-                    IrssLog.Error(ex);
-                }
-            }
-
-            if (blasters.Count > 0)
-                return blasters.ToArray();
-
-            return null;
-        }
-
-        private static void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
-        {
-            switch (e.Mode)
-            {
-                case PowerModes.Resume:
-                    IRServer.DoPowerEvent(PowerBroadcastStatus.ResumeAutomatic);
-                    break;
-                case PowerModes.Suspend:
-                    IRServer.DoPowerEvent(PowerBroadcastStatus.Suspend);
-                    break;
-            }
-        }
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+      finally
+      {
+        IrssLog.Close();
+      }
     }
+
+
+    /// <summary>
+    /// Retreives a plugin instance given the plugin name.
+    /// </summary>
+    /// <param name="pluginName">Name of plugin to instantiate.</param>
+    /// <returns>Plugin instance.</returns>
+    internal static PluginBase GetPlugin(string pluginName)
+    {
+      if (String.IsNullOrEmpty(pluginName))
+        throw new ArgumentNullException("pluginName");
+
+      PluginBase[] serverPlugins = BasicFunctions.AvailablePlugins();
+      if (serverPlugins == null)
+        throw new FileNotFoundException("No available plugins found");
+
+      foreach (PluginBase plugin in serverPlugins)
+        if (plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
+          return plugin;
+
+      throw new InvalidOperationException(String.Format("Plugin not found ({0})", pluginName));
+    }
+
+    /// <summary>
+    /// Retreives a list of detected Receiver plugins.
+    /// </summary>
+    /// <returns>String array of plugin names.</returns>
+    internal static string[] DetectReceivers()
+    {
+      IrssLog.Info("Detect Receivers ...");
+
+      PluginBase[] plugins = BasicFunctions.AvailablePlugins();
+      if (plugins == null || plugins.Length == 0)
+        return null;
+
+      List<string> receivers = new List<string>();
+
+      foreach (PluginBase plugin in plugins)
+      {
+        try
+        {
+          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
+            receivers.Add(plugin.Name);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
+
+      if (receivers.Count > 0)
+        return receivers.ToArray();
+
+      return null;
+    }
+
+    /// <summary>
+    /// Retreives a list of detected Blaster plugins.
+    /// </summary>
+    /// <returns>String array of plugin names.</returns>
+    internal static string[] DetectBlasters()
+    {
+      IrssLog.Info("Detect Blasters ...");
+
+      PluginBase[] plugins = BasicFunctions.AvailablePlugins();
+      if (plugins == null || plugins.Length == 0)
+        return null;
+
+      List<string> blasters = new List<string>();
+
+      foreach (PluginBase plugin in plugins)
+      {
+        try
+        {
+          if (plugin is ITransmitIR && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
+            blasters.Add(plugin.Name);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
+
+      if (blasters.Count > 0)
+        return blasters.ToArray();
+
+      return null;
+    }
+
+    private static void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    {
+      switch (e.Mode)
+      {
+        case PowerModes.Resume:
+          IRServer.DoPowerEvent(PowerBroadcastStatus.ResumeAutomatic);
+          break;
+        case PowerModes.Suspend:
+          IRServer.DoPowerEvent(PowerBroadcastStatus.Suspend);
+          break;
+      }
+    }
+  }
 }
