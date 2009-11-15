@@ -90,11 +90,8 @@ namespace IRServer.Configuration
     internal const string ServerWindowName = "IRSS - " + ServerName;
     internal const string ServerDisplayName = "IR Server";
 
-    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, @"IR Server\IR Server.xml");
     internal static readonly string IRServerFile = Path.Combine(Common.FolderProgramFiles, @"IR Server.exe");
 
-    internal static readonly Icon _iconGray = new Icon(Resources.iconGray, new Size(16, 16));
-    internal static readonly Icon _iconGreen = new Icon(Resources.iconGreen, new Size(16, 16));
     private static readonly TimeSpan defaultServiceTime = new TimeSpan(0, 0, 30);
 
     #endregion Constants
@@ -107,9 +104,7 @@ namespace IRServer.Configuration
     private static string[] _pluginNameReceive;
     private static string _pluginNameTransmit;
     private static string _processPriority;
-    private static NotifyIcon _notifyIcon;
     private static bool _inConfiguration;
-    private static Thread thread;
     private static ServiceController serviceController;
     private static ServiceController[] serviceControllers;
     private static IntPtr irsWindow;
@@ -128,43 +123,15 @@ namespace IRServer.Configuration
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(true);
 
-      // allow only one application instance
-      if (IrssUtils.ProcessHelper.IsProcessAlreadyRunning())
+      if (ProcessHelper.IsProcessAlreadyRunning())
         return;
 
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open("IR Server Configuration.log");
 
-      _notifyIcon = new NotifyIcon();
+      Application.Run(new Config());
 
-      _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
-      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel(ServerDisplayName));
-      _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-      _notifyIcon.ContextMenuStrip.Items.Add("&Setup", null, OpenConfiguration);
-      _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, ClickQuit);
-      _notifyIcon.DoubleClick += new EventHandler(OpenConfiguration);
-      _notifyIcon.Icon = new System.Drawing.Icon(Resources.iconGray, new System.Drawing.Size(16, 16));
-      _notifyIcon.Text = ServerDisplayName;
-      _notifyIcon.Visible = true;
-
-      thread = new Thread(new ThreadStart(UpdateIcon));
-      thread.IsBackground = true;
-      thread.Start();
-
-      Application.Run();
-      thread.Abort();
-      _notifyIcon.Visible = false;
-      _notifyIcon = null;
-    }
-
-    private static void UpdateIcon()
-    {
-      while (thread != null && thread.IsAlive)
-      {
-        getStatus();
-        _notifyIcon.Icon = getIcon();
-        Thread.Sleep(1000);
-      }
+      IrssLog.Close();
     }
 
     internal static void getStatus()
@@ -189,260 +156,6 @@ namespace IRServer.Configuration
           _irsStatus = IrsStatus.RunningApplication;
       }
       catch { }
-    }
-
-    private static Icon getIcon()
-    {
-      return (_irsStatus == IrsStatus.NotRunning) ? _iconGray : _iconGreen;
-    }
-
-    private static void ClickQuit(object sender, EventArgs e)
-    {
-      Application.Exit();
-    }
-
-    private static void OpenConfiguration(object sender, EventArgs e)
-    {
-      if (_inConfiguration)
-        return;
-
-      IrssLog.Info("Setup");
-
-      LoadSettings();
-
-      Config config = new Config();
-
-      config.AbstractRemoteMode = _abstractRemoteMode;
-      config.Mode = _mode;
-      config.HostComputer = _hostComputer;
-      config.ProcessPriority = _processPriority;
-      config.PluginReceive = _pluginNameReceive;
-      config.PluginTransmit = _pluginNameTransmit;
-
-      _inConfiguration = true;
-
-      if (config.ShowDialog() == DialogResult.OK)
-      {
-        if ((_abstractRemoteMode != config.AbstractRemoteMode) ||
-            (_mode != config.Mode) ||
-            (_hostComputer != config.HostComputer) ||
-            (_processPriority != config.ProcessPriority) ||
-            (_pluginNameReceive != config.PluginReceive) ||
-            (_pluginNameTransmit != config.PluginTransmit))
-        {
-          if (
-            MessageBox.Show("IR Server will now be restarted for configuration changes to take effect",
-                            "Restarting IR Server", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) ==
-            DialogResult.OK)
-          {
-            // Change settings ...
-            _abstractRemoteMode = config.AbstractRemoteMode;
-            _mode = config.Mode;
-            _hostComputer = config.HostComputer;
-            _processPriority = config.ProcessPriority;
-            _pluginNameReceive = config.PluginReceive;
-            _pluginNameTransmit = config.PluginTransmit;
-
-            SaveSettings();
-
-            // Restart IR Server ...
-            RestartIRS();
-          }
-          else
-          {
-            IrssLog.Info("Canceled settings changes");
-          }
-        }
-      }
-
-      _inConfiguration = false;
-
-      IrssLog.Close();
-    }
-
-    private static void LoadSettings()
-    {
-      IrssLog.Info("Loading settings ...");
-
-      _abstractRemoteMode = true;
-      _mode = IRServerMode.ServerMode;
-      _hostComputer = String.Empty;
-      _processPriority = "No Change";
-      _pluginNameReceive = null;
-      _pluginNameTransmit = String.Empty;
-
-      XmlDocument doc = new XmlDocument();
-
-      try
-      {
-        doc.Load(ConfigurationFile);
-      }
-      catch (DirectoryNotFoundException)
-      {
-        IrssLog.Error("No configuration file found ({0}), folder not found! Creating default configuration file",
-                      ConfigurationFile);
-
-        Directory.CreateDirectory(Path.GetDirectoryName(ConfigurationFile));
-
-        CreateDefaultSettings();
-        return;
-      }
-      catch (FileNotFoundException)
-      {
-        IrssLog.Warn("No configuration file found ({0}), creating default configuration file", ConfigurationFile);
-
-        CreateDefaultSettings();
-        return;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        return;
-      }
-
-      try
-      {
-        _abstractRemoteMode = bool.Parse(doc.DocumentElement.Attributes["AbstractRemoteMode"].Value);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Warn(ex.ToString());
-      }
-
-      try
-      {
-        _mode =
-          (IRServerMode)Enum.Parse(typeof(IRServerMode), doc.DocumentElement.Attributes["Mode"].Value, true);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Warn(ex.ToString());
-      }
-
-      try
-      {
-        _hostComputer = doc.DocumentElement.Attributes["HostComputer"].Value;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Warn(ex.ToString());
-      }
-
-      try
-      {
-        _processPriority = doc.DocumentElement.Attributes["ProcessPriority"].Value;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Warn(ex.ToString());
-      }
-
-      try
-      {
-        _pluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Warn(ex.ToString());
-      }
-
-      try
-      {
-        string receivers = doc.DocumentElement.Attributes["PluginReceive"].Value;
-        if (!String.IsNullOrEmpty(receivers))
-          _pluginNameReceive = receivers.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Warn(ex.ToString());
-      }
-    }
-
-    private static void SaveSettings()
-    {
-      IrssLog.Info("Saving settings ...");
-
-      try
-      {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
-        {
-          writer.Formatting = Formatting.Indented;
-          writer.Indentation = 1;
-          writer.IndentChar = (char)9;
-          writer.WriteStartDocument(true);
-          writer.WriteStartElement("settings"); // <settings>
-
-          writer.WriteAttributeString("AbstractRemoteMode", _abstractRemoteMode.ToString());
-          writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), _mode));
-          writer.WriteAttributeString("HostComputer", _hostComputer);
-          writer.WriteAttributeString("ProcessPriority", _processPriority);
-          writer.WriteAttributeString("PluginTransmit", _pluginNameTransmit);
-
-          if (_pluginNameReceive != null)
-          {
-            StringBuilder receivers = new StringBuilder();
-            for (int index = 0; index < _pluginNameReceive.Length; index++)
-            {
-              receivers.Append(_pluginNameReceive[index]);
-
-              if (index < _pluginNameReceive.Length - 1)
-                receivers.Append(',');
-            }
-            writer.WriteAttributeString("PluginReceive", receivers.ToString());
-          }
-          else
-          {
-            writer.WriteAttributeString("PluginReceive", String.Empty);
-          }
-
-          writer.WriteEndElement(); // </settings>
-          writer.WriteEndDocument();
-        }
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-      }
-    }
-
-    private static void CreateDefaultSettings()
-    {
-      try
-      {
-        string[] blasters = DetectBlasters();
-        if (blasters == null)
-          _pluginNameTransmit = String.Empty;
-        else
-          _pluginNameTransmit = blasters[0];
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        _pluginNameTransmit = String.Empty;
-      }
-
-      try
-      {
-        string[] receivers = DetectReceivers();
-        if (receivers == null)
-          _pluginNameReceive = null;
-        else
-          _pluginNameReceive = receivers;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        _pluginNameReceive = null;
-      }
-
-      try
-      {
-        SaveSettings();
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-      }
     }
 
     private static ServiceController getServiceController()
@@ -593,7 +306,7 @@ namespace IRServer.Configuration
       }
     }
 
-    private static void RestartIRS()
+    internal static void RestartIRS()
     {
       IrssLog.Info("Restarting IR Server");
 

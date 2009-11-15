@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace IRServer.Configuration.Properties {
+namespace IRServer.Tray.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace IRServer.Configuration.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("IRServer.Configuration.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("IRServer.Tray.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,13 @@ namespace IRServer.Configuration.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        internal static System.Drawing.Icon iconGray {
+            get {
+                object obj = ResourceManager.GetObject("iconGray", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

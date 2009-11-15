@@ -359,6 +359,7 @@ ${MementoSection} "IR Server" SectionIRServer
   ${StopService} "IRServer"
   ${KILLPROCESS} "IR Server.exe"
   ${KILLPROCESS} "IR Server Configuration.exe"
+  ${KILLPROCESS} "IR Server Tray.exe"
 
   ; Use the all users context
   SetShellVarContext all
@@ -380,6 +381,9 @@ ${MementoSection} "IR Server" SectionIRServer
   File "..\IR Server Suite\IR Server\IR Server Configuration\bin\${Build_Type}\IR Server Configuration.*"
   File "..\IR Server Suite\IR Server\SourceGrid\DevAge*"
   File "..\IR Server Suite\IR Server\SourceGrid\SourceGrid*"
+
+  ${LOG_TEXT} "INFO" "Installing IR Server Tray..."
+  File "..\IR Server Suite\IR Server\IR Server Tray\bin\${Build_Type}\IR Server Tray.*"
 
   File "..\IR Server Suite\IR Server Plugins\IR Server Plugin Interface\bin\${Build_Type}\IRServerPluginInterface.*"
 
@@ -435,6 +439,7 @@ ${MementoSection} "IR Server" SectionIRServer
 
   ; Create start menu shortcut
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk" "$DIR_INSTALL\IR Server Configuration.exe" "" "$DIR_INSTALL\IR Server Configuration.exe" 0
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Tray.lnk"          "$DIR_INSTALL\IR Server Tray.exe"          "" "$DIR_INSTALL\IR Server Tray.exe"          0
 
   ; Install Server/Service
   ${If} $ServerServiceMode == "IRServerAsApplication"
@@ -444,7 +449,8 @@ ${MementoSection} "IR Server" SectionIRServer
     ${LOG_TEXT} "INFO" "Installing IR Server as Service..."
     ExecWait '"$DIR_INSTALL\IR Server.exe" /install'
   ${EndIf}
-  !insertmacro SetAutoRun "IR Server Configuration" '"$DIR_INSTALL\IR Server Configuration.exe"'
+    ${LOG_TEXT} "INFO" "Adding IR Server Tray to Autostart..."
+  !insertmacro SetAutoRun "IR Server Tray" '"$DIR_INSTALL\IR Server Tray.exe"'
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRServer}
@@ -452,15 +458,18 @@ ${MementoSectionEnd}
   ${StopService} "IRServer"
   ${KILLPROCESS} "IR Server.exe"
   ${KILLPROCESS} "IR Server Configuration.exe"
+  ${KILLPROCESS} "IR Server Tray.exe"
 
   ${LOG_TEXT} "INFO" "Removing IR Server from Autostart..."
   !insertmacro RemoveAutoRun "IR Server"
   ${LOG_TEXT} "INFO" "Uninstalling IR Server as Service..."
   ExecWait '"$DIR_INSTALL\IR Server.exe" /uninstall'
-  !insertmacro RemoveAutoRun "IR Server Configuration"
+  ${LOG_TEXT} "INFO" "Removing IR Server Tray from Autostart..."
+  !insertmacro RemoveAutoRun "IR Server Tray"
 
   ; remove start menu shortcuts
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Tray.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\IR Server.*"
@@ -470,6 +479,8 @@ ${MementoSectionEnd}
   Delete "$DIR_INSTALL\IR Server Configuration.*"
   Delete "$DIR_INSTALL\DevAge*"
   Delete "$DIR_INSTALL\SourceGrid*"
+
+  Delete "$DIR_INSTALL\IR Server Tray.*"
 
   Delete "$DIR_INSTALL\IRServerPluginInterface.*"
 !macroend
@@ -1302,6 +1313,8 @@ ${If} ${SectionIsSelected} ${SectionIRServer}
     ${LOG_TEXT} "INFO" "Starting IR Server service..."
     Exec '"$DIR_INSTALL\IR Server.exe" /start'
   ${EndIf}
+
+  Exec "$DIR_INSTALL\IR Server Tray.exe"
   
 ${EndIf}
 

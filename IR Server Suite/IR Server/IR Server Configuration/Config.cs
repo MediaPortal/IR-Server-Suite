@@ -323,30 +323,6 @@ namespace IRServer.Configuration
 
     #region Properties
 
-    public bool AbstractRemoteMode
-    {
-      get { return _abstractRemoteMode; }
-      set { _abstractRemoteMode = value; }
-    }
-
-    public IRServerMode Mode
-    {
-      get { return _mode; }
-      set { _mode = value; }
-    }
-
-    public string HostComputer
-    {
-      get { return _hostComputer; }
-      set { _hostComputer = value; }
-    }
-
-    public string ProcessPriority
-    {
-      get { return _processPriority; }
-      set { _processPriority = value; }
-    }
-
     public string[] PluginReceive
     {
       get
@@ -430,6 +406,9 @@ namespace IRServer.Configuration
     {
       InitializeComponent();
 
+      Settings.LoadSettings();
+      LoadSettings();
+
       try
       {
         _transceivers = BasicFunctions.AvailablePlugins();
@@ -454,13 +433,12 @@ namespace IRServer.Configuration
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
-      DialogResult = DialogResult.OK;
+      SaveSettings();
       Close();
     }
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      DialogResult = DialogResult.Cancel;
       Close();
     }
 
@@ -571,5 +549,52 @@ namespace IRServer.Configuration
 
     #endregion Controls
 
+    #region Settings
+
+    private void LoadSettings()
+    {
+      _abstractRemoteMode = Settings.AbstractRemoteMode;
+      _mode = Settings.Mode;
+      _hostComputer = Settings.HostComputer;
+      _processPriority = Settings.ProcessPriority;
+      PluginReceive = Settings.PluginNameReceive;
+      PluginTransmit = Settings.PluginNameTransmit;
+    }
+
+    private void SaveSettings()
+    {
+      if ((Settings.AbstractRemoteMode != _abstractRemoteMode) ||
+          (Settings.Mode != _mode) ||
+          (Settings.HostComputer != _hostComputer) ||
+          (Settings.ProcessPriority != _processPriority) ||
+          (Settings.PluginNameReceive != PluginReceive) ||
+          (Settings.PluginNameTransmit != PluginTransmit))
+      {
+        if (
+          MessageBox.Show("IR Server will now be restarted for configuration changes to take effect",
+                          "Restarting IR Server", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) ==
+          DialogResult.OK)
+        {
+          // Change settings ...
+          Settings.AbstractRemoteMode = _abstractRemoteMode;
+          Settings.Mode = _mode;
+          Settings.HostComputer = _hostComputer;
+          Settings.ProcessPriority = _processPriority;
+          Settings.PluginNameReceive = PluginReceive;
+          Settings.PluginNameTransmit = PluginTransmit;
+
+          Settings.SaveSettings();
+
+          // Restart IR Server ...
+          Program.RestartIRS();
+        }
+        else
+        {
+          IrssLog.Info("Canceled settings changes");
+        }
+      }
+    }
+
+    #endregion
   }
 }
