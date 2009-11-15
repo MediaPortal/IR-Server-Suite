@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.ServiceProcess;
 using System.Threading;
 using System.Windows.Forms;
 using IRServer.Tray.Properties;
@@ -10,55 +9,9 @@ using IrssUtils;
 
 namespace IRServer.Tray
 {
-  #region Enumerations
-
-  /// <summary>
-  /// Describes the operation mode of IR Server.
-  /// </summary>
-  internal enum IRServerMode
-  {
-    /// <summary>
-    /// Acts as a standard Server (Default).
-    /// </summary>
-    ServerMode = 0,
-    /// <summary>
-    /// Relays button presses to another IR Server.
-    /// </summary>
-    RelayMode = 1,
-    /// <summary>
-    /// Acts as a repeater for another IR Server's blasting.
-    /// </summary>
-    RepeaterMode = 2,
-  }
-
-  /// <summary>
-  /// Describes the actual status of IR Server
-  /// </summary>
-  internal enum IrsStatus
-  {
-    /// <summary>
-    /// IR Server is not running.
-    /// </summary>
-    NotRunning,
-    /// <summary>
-    /// IR Server is running as Service.
-    /// </summary>
-    RunningService,
-    /// <summary>
-    /// IR Server is running as Application.
-    /// </summary>
-    RunningApplication
-  }
-
-  #endregion Enumerations
-
   static class Program
   {
     #region Constants
-
-    internal const string ServerName = "IRServer";
-    internal const string ServerWindowName = "IRSS - " + ServerName;
-    internal const string ServerDisplayName = "IR Server";
 
     private static readonly string _configExe = Path.Combine(Common.FolderProgramFiles, @"IR Server Configuration.exe");
     private static readonly string _translatorExe = Path.Combine(Common.FolderProgramFiles, @"Translator.exe");
@@ -73,12 +26,6 @@ namespace IRServer.Tray
 
     internal static readonly Icon _iconGray = new Icon(Resources.iconGray, new Size(16, 16));
     internal static readonly Icon _iconGreen = new Icon(Resources.iconGreen, new Size(16, 16));
-
-    private static ServiceController[] serviceControllers;
-    private static IntPtr irsWindow;
-
-    internal static IrsStatus _irsStatus;
-    internal static bool _serviceInstalled;
 
     #endregion Variables
 
@@ -111,7 +58,7 @@ namespace IRServer.Tray
       _notifyIcon.ContextMenuStrip.Items.Add("&Exit", null, ClickExit);
       //_notifyIcon.DoubleClick += new EventHandler(OpenConfiguration);
       _notifyIcon.Icon = new System.Drawing.Icon(Resources.iconGray, new System.Drawing.Size(16, 16));
-      _notifyIcon.Text = ServerDisplayName;
+      _notifyIcon.Text = Shared.ServerDisplayName;
       _notifyIcon.Visible = true;
 
       thread = new Thread(new ThreadStart(UpdateIcon));
@@ -154,39 +101,15 @@ namespace IRServer.Tray
     {
       while (thread != null && thread.IsAlive)
       {
-        getStatus();
+        Shared.getStatus();
         _notifyIcon.Icon = getIcon();
         Thread.Sleep(1000);
       }
     }
 
-    internal static void getStatus()
-    {
-      _irsStatus = IrsStatus.NotRunning;
-      _serviceInstalled = false;
-      serviceControllers = ServiceController.GetServices();
-      foreach (ServiceController serviceController in serviceControllers)
-      {
-        if (serviceController.ServiceName == ServerName)
-        {
-          _serviceInstalled = true;
-          if (serviceController.Status == ServiceControllerStatus.Running)
-            _irsStatus = IrsStatus.RunningService;
-        }
-      }
-
-      try
-      {
-        irsWindow = Win32.FindWindowByTitle(ServerWindowName);
-        if (irsWindow != IntPtr.Zero)
-          _irsStatus = IrsStatus.RunningApplication;
-      }
-      catch { }
-    }
-
     private static Icon getIcon()
     {
-      return (_irsStatus == IrsStatus.NotRunning) ? _iconGray : _iconGreen;
+      return (Shared._irsStatus == IrsStatus.NotRunning) ? _iconGray : _iconGreen;
     }
 
     #endregion

@@ -51,8 +51,8 @@ namespace IRServer
       serviceProcessInstaller.Password = null;
 
       // Service Information
-      serviceInstaller.ServiceName = Program.ServiceName;
-      serviceInstaller.DisplayName = Program.ServiceDisplayName;
+      serviceInstaller.ServiceName = Shared.ServerName;
+      serviceInstaller.DisplayName = Shared.ServerDisplayName;
       serviceInstaller.Description = Program.ServiceDescription;
       serviceInstaller.StartType = ServiceStartMode.Automatic;
 
@@ -90,7 +90,7 @@ namespace IRServer
         ManagementScope mgmtScope = new ManagementScope(@"root\CIMV2", coOptions);
         mgmtScope.Connect();
 
-        string path = string.Format("Win32_Service.Name='{0}'", Program.ServiceName);
+        string path = string.Format("Win32_Service.Name='{0}'", Shared.ServerName);
 
         using (ManagementObject wmiService = new ManagementObject(path))
         {

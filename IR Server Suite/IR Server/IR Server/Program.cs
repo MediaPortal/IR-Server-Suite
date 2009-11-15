@@ -41,9 +41,6 @@ namespace IRServer
     public const string ServiceDescription =
       "The main component of IR Server Suite, the IR Server provides access to your input devices";
 
-    public const string ServiceDisplayName = "IR Server";
-    public const string ServiceName = "IRServer";
-    public const string ServerWindowName = "IRSS - " + ServiceName;
     private static IRServer IRServer;
 
     #endregion Constants
@@ -68,7 +65,7 @@ namespace IRServer
           {
             SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(OnPowerModeChanged);
 
-            ReceiverWindow receiverWindow = new ReceiverWindow(ServerWindowName);
+            ReceiverWindow receiverWindow = new ReceiverWindow(Shared.ServerWindowName);
 
             Application.Run();
             SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(OnPowerModeChanged);
@@ -124,21 +121,21 @@ namespace IRServer
 
               case "/START":
                 IrssLog.Info("Starting IR Server ...");
-                using (ServiceController serviceController = new ServiceController(ServiceName))
+                using (ServiceController serviceController = new ServiceController(Shared.ServerName))
                   if (serviceController.Status == ServiceControllerStatus.Stopped)
                     serviceController.Start();
                 break;
 
               case "/STOP":
                 IrssLog.Info("Stopping IR Server ...");
-                using (ServiceController serviceController = new ServiceController(ServiceName))
+                using (ServiceController serviceController = new ServiceController(Shared.ServerName))
                   if (serviceController.Status == ServiceControllerStatus.Running)
                     serviceController.Stop();
                 break;
 
               case "/RESTART":
                 IrssLog.Info("Restarting IR Server ...");
-                using (ServiceController serviceController = new ServiceController(ServiceName))
+                using (ServiceController serviceController = new ServiceController(Shared.ServerName))
                 {
                   if (serviceController.Status == ServiceControllerStatus.Running)
                     serviceController.Stop();
@@ -175,7 +172,6 @@ namespace IRServer
       }
     }
 
-
     /// <summary>
     /// Retreives a plugin instance given the plugin name.
     /// </summary>
@@ -195,72 +191,6 @@ namespace IRServer
           return plugin;
 
       throw new InvalidOperationException(String.Format("Plugin not found ({0})", pluginName));
-    }
-
-    /// <summary>
-    /// Retreives a list of detected Receiver plugins.
-    /// </summary>
-    /// <returns>String array of plugin names.</returns>
-    internal static string[] DetectReceivers()
-    {
-      IrssLog.Info("Detect Receivers ...");
-
-      PluginBase[] plugins = BasicFunctions.AvailablePlugins();
-      if (plugins == null || plugins.Length == 0)
-        return null;
-
-      List<string> receivers = new List<string>();
-
-      foreach (PluginBase plugin in plugins)
-      {
-        try
-        {
-          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
-            receivers.Add(plugin.Name);
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error(ex);
-        }
-      }
-
-      if (receivers.Count > 0)
-        return receivers.ToArray();
-
-      return null;
-    }
-
-    /// <summary>
-    /// Retreives a list of detected Blaster plugins.
-    /// </summary>
-    /// <returns>String array of plugin names.</returns>
-    internal static string[] DetectBlasters()
-    {
-      IrssLog.Info("Detect Blasters ...");
-
-      PluginBase[] plugins = BasicFunctions.AvailablePlugins();
-      if (plugins == null || plugins.Length == 0)
-        return null;
-
-      List<string> blasters = new List<string>();
-
-      foreach (PluginBase plugin in plugins)
-      {
-        try
-        {
-          if (plugin is ITransmitIR && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
-            blasters.Add(plugin.Name);
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error(ex);
-        }
-      }
-
-      if (blasters.Count > 0)
-        return blasters.ToArray();
-
-      return null;
     }
 
     private static void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)

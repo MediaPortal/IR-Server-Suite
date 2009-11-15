@@ -39,56 +39,9 @@ using System.Diagnostics;
 
 namespace IRServer.Configuration
 {
-
-  #region Enumerations
-
-  /// <summary>
-  /// Describes the operation mode of IR Server.
-  /// </summary>
-  internal enum IRServerMode
-  {
-    /// <summary>
-    /// Acts as a standard Server (Default).
-    /// </summary>
-    ServerMode = 0,
-    /// <summary>
-    /// Relays button presses to another IR Server.
-    /// </summary>
-    RelayMode = 1,
-    /// <summary>
-    /// Acts as a repeater for another IR Server's blasting.
-    /// </summary>
-    RepeaterMode = 2,
-  }
-
-  /// <summary>
-  /// Describes the actual status of IR Server
-  /// </summary>
-  internal enum IrsStatus
-  {
-    /// <summary>
-    /// IR Server is not running.
-    /// </summary>
-    NotRunning,
-    /// <summary>
-    /// IR Server is running as Service.
-    /// </summary>
-    RunningService,
-    /// <summary>
-    /// IR Server is running as Application.
-    /// </summary>
-    RunningApplication
-  }
-
-  #endregion Enumerations
-
   internal static class Program
   {
     #region Constants
-
-    internal const string ServerName = "IRServer";
-    internal const string ServerWindowName = "IRSS - " + ServerName;
-    internal const string ServerDisplayName = "IR Server";
 
     internal static readonly string IRServerFile = Path.Combine(Common.FolderProgramFiles, @"IR Server.exe");
 
@@ -98,19 +51,8 @@ namespace IRServer.Configuration
 
     #region Variables
 
-    private static bool _abstractRemoteMode;
-    private static string _hostComputer;
-    private static IRServerMode _mode;
-    private static string[] _pluginNameReceive;
-    private static string _pluginNameTransmit;
-    private static string _processPriority;
-    private static bool _inConfiguration;
     private static ServiceController serviceController;
-    private static ServiceController[] serviceControllers;
-    private static IntPtr irsWindow;
     private static int waitCount;
-    internal static IrsStatus _irsStatus;
-    internal static bool _serviceInstalled;
 
     #endregion Variables
 
@@ -129,41 +71,18 @@ namespace IRServer.Configuration
       IrssLog.LogLevel = IrssLog.Level.Debug;
       IrssLog.Open("IR Server Configuration.log");
 
+      Settings.LoadSettings();
       Application.Run(new Config());
 
       IrssLog.Close();
     }
 
-    internal static void getStatus()
-    {
-      _irsStatus = IrsStatus.NotRunning;
-      _serviceInstalled = false;
-      serviceControllers = ServiceController.GetServices();
-      foreach (ServiceController serviceController in serviceControllers)
-      {
-        if (serviceController.ServiceName == ServerName)
-        {
-          _serviceInstalled = true;
-          if (serviceController.Status == ServiceControllerStatus.Running)
-            _irsStatus = IrsStatus.RunningService;
-        }
-      }
-
-      try
-      {
-        irsWindow = Win32.FindWindowByTitle(ServerWindowName);
-        if (irsWindow != IntPtr.Zero)
-          _irsStatus = IrsStatus.RunningApplication;
-      }
-      catch { }
-    }
-
     private static ServiceController getServiceController()
     {
-      serviceControllers = ServiceController.GetServices();
-      foreach (ServiceController sc in serviceControllers)
+      Shared.serviceControllers = ServiceController.GetServices();
+      foreach (ServiceController sc in Shared.serviceControllers)
       {
-        if (sc.ServiceName == ServerName)
+        if (sc.ServiceName == Shared.ServerName)
           return sc;
       }
       return null;
@@ -206,7 +125,7 @@ namespace IRServer.Configuration
       try
       {
         serviceController = getServiceController();
-        if (serviceControllers != null)
+        if (Shared.serviceControllers != null)
         {
           IrssLog.Info("Starting IR Server (service)");
           serviceController.Start();
@@ -231,7 +150,7 @@ namespace IRServer.Configuration
       try
       {
         serviceController = getServiceController();
-        if (serviceControllers != null)
+        if (Shared.serviceControllers != null)
         {
           IrssLog.Info("Stopping IR Server (service)");
           serviceController.Stop();
@@ -258,7 +177,7 @@ namespace IRServer.Configuration
         IrssLog.Info("Starting IR Server (application)");
         Process IRServer = Process.Start(IRServerFile);
         waitCount = 0;
-        while (Win32.FindWindowByTitle(ServerWindowName) == IntPtr.Zero)
+        while (Win32.FindWindowByTitle(Shared.ServerWindowName) == IntPtr.Zero)
         {
           waitCount++;
           if (waitCount > 150) throw new TimeoutException();
@@ -283,10 +202,10 @@ namespace IRServer.Configuration
       try
       {
         IrssLog.Info("Stopping IR Server (application)");
-        IntPtr irssWindow = Win32.FindWindowByTitle(ServerWindowName);
+        IntPtr irssWindow = Win32.FindWindowByTitle(Shared.ServerWindowName);
         IntPtr result = Win32.SendWindowsMessage(irssWindow, 16, 0, 0);
         waitCount = 0;
-        while (Win32.FindWindowByTitle(ServerWindowName) != IntPtr.Zero)
+        while (Win32.FindWindowByTitle(Shared.ServerWindowName) != IntPtr.Zero)
         {
           waitCount++;
           if (waitCount > 150) throw new TimeoutException();
@@ -310,7 +229,7 @@ namespace IRServer.Configuration
     {
       IrssLog.Info("Restarting IR Server");
 
-      switch (_irsStatus)
+      switch (Shared._irsStatus)
       {
         case IrsStatus.RunningService:
           {
@@ -326,72 +245,6 @@ namespace IRServer.Configuration
           }
       }
       IrssLog.Info("Restarting IR Server - done");
-    }
-
-    /// <summary>
-    /// Retreives a list of detected Receiver plugins.
-    /// </summary>
-    /// <returns>String array of plugin names.</returns>
-    internal static string[] DetectReceivers()
-    {
-      IrssLog.Info("Detect Receivers ...");
-
-      PluginBase[] plugins = BasicFunctions.AvailablePlugins();
-      if (plugins == null || plugins.Length == 0)
-        return null;
-
-      List<string> receivers = new List<string>();
-
-      foreach (PluginBase plugin in plugins)
-      {
-        try
-        {
-          if ((plugin is IRemoteReceiver || plugin is IKeyboardReceiver || plugin is IMouseReceiver) && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
-            receivers.Add(plugin.Name);
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error(ex);
-        }
-      }
-
-      if (receivers.Count > 0)
-        return receivers.ToArray();
-
-      return null;
-    }
-
-    /// <summary>
-    /// Retreives a list of detected Blaster plugins.
-    /// </summary>
-    /// <returns>String array of plugin names.</returns>
-    internal static string[] DetectBlasters()
-    {
-      IrssLog.Info("Detect Blasters ...");
-
-      PluginBase[] plugins = BasicFunctions.AvailablePlugins();
-      if (plugins == null || plugins.Length == 0)
-        return null;
-
-      List<string> blasters = new List<string>();
-
-      foreach (PluginBase plugin in plugins)
-      {
-        try
-        {
-          if (plugin is ITransmitIR && plugin.Detect() == PluginBase.DetectionResult.DevicePresent)
-            blasters.Add(plugin.Name);
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error(ex);
-        }
-      }
-
-      if (blasters.Count > 0)
-        return blasters.ToArray();
-
-      return null;
     }
   }
 }

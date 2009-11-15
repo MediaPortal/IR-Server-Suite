@@ -118,6 +118,10 @@
       <Project>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</Project>
       <Name>IR Server Plugin Interface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IRServer.Shared\IRServer.Shared.csproj">
+      <Project>{0C6A59C2-B5CC-48EF-A41F-0F1E463D8391}</Project>
+      <Name>IRServer.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Install.cmd">

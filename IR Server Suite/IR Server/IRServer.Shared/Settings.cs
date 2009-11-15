@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
 using IrssUtils;
 
-namespace IRServer.Configuration
+namespace IRServer
 {
-  static class Settings
+  public static class Settings
   {
     private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, @"IR Server\IR Server.xml");
 
@@ -167,8 +166,8 @@ namespace IRServer.Configuration
     {
       try
       {
-        string[] blasters = Program.DetectBlasters();
-        if (blasters == null)
+        string[] blasters = Shared.DetectBlasters();
+        if (blasters == null || blasters.Length == 0)
           PluginNameTransmit = String.Empty;
         else
           PluginNameTransmit = blasters[0];
@@ -181,8 +180,8 @@ namespace IRServer.Configuration
 
       try
       {
-        string[] receivers = Program.DetectReceivers();
-        if (receivers == null)
+        string[] receivers = Shared.DetectReceivers();
+        if (receivers == null || receivers.Length == 0)
           PluginNameReceive = null;
         else
           PluginNameReceive = receivers;

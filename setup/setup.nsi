@@ -385,6 +385,7 @@ ${MementoSection} "IR Server" SectionIRServer
   ${LOG_TEXT} "INFO" "Installing IR Server Tray..."
   File "..\IR Server Suite\IR Server\IR Server Tray\bin\${Build_Type}\IR Server Tray.*"
 
+  File "..\IR Server Suite\IR Server\IRServer.Shared\bin\${Build_Type}\IRServer.Shared.*"
   File "..\IR Server Suite\IR Server Plugins\IR Server Plugin Interface\bin\${Build_Type}\IRServerPluginInterface.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
@@ -482,6 +483,7 @@ ${MementoSectionEnd}
 
   Delete "$DIR_INSTALL\IR Server Tray.*"
 
+  Delete "$DIR_INSTALL\IRServer.Shared.*"
   Delete "$DIR_INSTALL\IRServerPluginInterface.*"
 !macroend
 

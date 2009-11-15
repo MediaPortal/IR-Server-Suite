@@ -92,7 +92,7 @@ namespace IRServer.Configuration
     {
       do
       {
-        Program.getStatus();
+        Shared.getStatus();
         monitorThread.ReportProgress(0);
         Thread.Sleep(1000);
       }
@@ -106,7 +106,7 @@ namespace IRServer.Configuration
 
     private void setButtons()
     {
-      if (Program._serviceInstalled == true)
+      if (Shared._serviceInstalled == true)
       {
         toolStripServiceButton.Text = "Uninstall Service";
       }
@@ -114,14 +114,14 @@ namespace IRServer.Configuration
       {
         toolStripServiceButton.Text = "Install Service";
       }
-      switch (Program._irsStatus)
+      switch (Shared._irsStatus)
       {
         case IrsStatus.NotRunning:
           {
             toolStripButtonApplication.Image = IrssUtils.Properties.Resources.Start;
             toolStripButtonApplication.Enabled = true;
             toolStripButtonService.Image = IrssUtils.Properties.Resources.Start;
-            toolStripButtonService.Enabled = Program._serviceInstalled;
+            toolStripButtonService.Enabled = Shared._serviceInstalled;
             break;
           }
         case IrsStatus.RunningApplication:
@@ -406,9 +406,6 @@ namespace IRServer.Configuration
     {
       InitializeComponent();
 
-      Settings.LoadSettings();
-      LoadSettings();
-
       try
       {
         _transceivers = BasicFunctions.AvailablePlugins();
@@ -425,6 +422,9 @@ namespace IRServer.Configuration
                         MessageBoxIcon.Error);
       else
         CreateGrid();
+
+
+      LoadSettings();
     }
 
     #endregion Constructor
@@ -521,29 +521,29 @@ namespace IRServer.Configuration
     private void toolStripServiceButton_Click(object sender, EventArgs e)
     {
       toolStripServiceButton.Enabled = false;
-      if (Program._serviceInstalled == true)
+      if (Shared._serviceInstalled == true)
         Program.ServiceUninstall();
       else
         Program.ServiceInstall();
 
-      Program.getStatus();
+      Shared.getStatus();
       setButtons();
       toolStripServiceButton.Enabled = true;
     }
 
     private void toolStripButtonService_Click(object sender, EventArgs e)
     {
-      if (Program._irsStatus == IrsStatus.RunningService)
+      if (Shared._irsStatus == IrsStatus.RunningService)
         Program.ServiceStop();
-      if (Program._irsStatus == IrsStatus.NotRunning)
+      if (Shared._irsStatus == IrsStatus.NotRunning)
         Program.ServiceStart();
     }
 
     private void toolStripButtonApplication_Click(object sender, EventArgs e)
     {
-      if (Program._irsStatus == IrsStatus.RunningApplication)
+      if (Shared._irsStatus == IrsStatus.RunningApplication)
         Program.ApplicationStop();
-      if (Program._irsStatus == IrsStatus.NotRunning)
+      if (Shared._irsStatus == IrsStatus.NotRunning)
         Program.ApplicationStart();
     }
 
