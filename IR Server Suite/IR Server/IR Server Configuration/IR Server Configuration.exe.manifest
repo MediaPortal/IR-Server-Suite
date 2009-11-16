@@ -1,16 +1,4 @@
-﻿ï»¿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" >
-  <assemblyIdentity name="IR Server Configuration" version="1.4.2.0" publicKeyToken="dc0b77bf2c754d95" processorArchitecture="msil" />
-  <description>Configuration tool to change settings for IR Server.</description>
-  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
-    <security>
-      <requestedPrivileges>
-        <requestedExecutionLevel level="requireAdministrator" uiAccess="false"></requestedExecutionLevel>
-      </requestedPrivileges>
-    </security>
-  </trustInfo>
-</assembly>
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" >
   <assemblyIdentity name="IR Server Configuration" version="1.4.2.0" publicKeyToken="dc0b77bf2c754d95" processorArchitecture="msil" />
   <description>Configuration tool to change settings for IR Server.</description>
