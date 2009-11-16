@@ -45,7 +45,7 @@ namespace IRServer.Plugin
 
     private static readonly byte[] FlatCode = new byte[] { 0x25, 0x87, 0xE0 };
     private static readonly byte[] KeyCodeTemplate = new byte[] { 0x25, 0x87, 0xEE, 0xFF, 0xFF };
-    private static readonly byte[] RepeatCode = new byte[] { 0x26, 0x00, 0x00, 0x00, 0x00 };
+    private static readonly byte[] RepeatCode = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
     #endregion Constants
 
@@ -306,35 +306,44 @@ namespace IRServer.Plugin
           Array.Copy(_deviceBuffer, 0, codeBytes, 0, readLength);
 
           TimeSpan timeSpan = DateTime.Now - _lastCodeTime;
-
-          string keyCode = String.Empty;
-
-          bool accept = false;
-          if (Equals(codeBytes, FlatCode))
+          if (timeSpan.Milliseconds > 0)
           {
+            string keyCode = String.Empty;
+
+            bool accept = false;
+            if (CompareByteArrays(codeBytes, FlatCode))
+            {
 #if TRACE
             Trace.WriteLine("MacMini Remote has a flat battery");
 #endif
-          }
-          if (Equals(codeBytes, RepeatCode))
-          {
-            if (timeSpan.Milliseconds >= 250)
+            }
+
+            if (CompareByteArrays(codeBytes, RepeatCode))
+            {
+              if (timeSpan.Milliseconds <= 250)
+              {
+                accept = true;
+                keyCode = _lastCode;
+              }
+              else
+              {   // +, - and menu all have code 00 same as repeat code
+                accept = true;
+                keyCode = BitConverter.ToString(codeBytes, 0, 2);
+              }
+
+            }
+            else
             {
               accept = true;
-              keyCode = _lastCode;
+              keyCode = BitConverter.ToString(codeBytes, 0, 2);
             }
-          }
-          else
-          {
-            accept = true;
-            keyCode = BitConverter.ToString(codeBytes, 3, 2);
-          }
 
-          if (accept)
-          {
-            _remoteButtonHandler(Name, keyCode);
-            _lastCodeTime = DateTime.Now;
-            _lastCode = keyCode;
+            if (accept)
+            {
+              _remoteButtonHandler(Name, keyCode);
+              _lastCodeTime = DateTime.Now;
+              _lastCode = keyCode;
+            }
           }
         }
 
@@ -346,5 +355,17 @@ namespace IRServer.Plugin
     }
 
     #endregion Implementation
+
+    private static bool CompareByteArrays(byte[] array1, byte[] array2)
+    {
+      if (array1.Length != array2.Length)
+        return false;
+
+      for (int i = 0; i < array1.Length; i++)
+        if (array1[i] != array2[i])
+          return false;
+
+      return true;
+    }
   }
 }
