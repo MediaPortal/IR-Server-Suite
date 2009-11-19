@@ -31,6 +31,7 @@ using System.Xml;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Hardware;
 using MediaPortal.Profile;
@@ -39,9 +40,12 @@ using MPUtils;
 
 namespace MediaPortal.Plugins
 {
+  [PluginIcons("MediaPortal.Plugins.MPControlPlugin.IRSS.iconGreen.ico",
+    "MediaPortal.Plugins.MPControlPlugin.IRSS.iconGray.ico")]
+
   /// <summary>
-  /// MediaPortal Control Plugin for IR Server.
-  /// </summary>
+    /// MediaPortal Control Plugin for IR Server.
+    /// </summary>
   public class MPControlPlugin : IPlugin, ISetupForm
   {
     #region Constants
@@ -1060,7 +1064,7 @@ namespace MediaPortal.Plugins
             continue;
 
           Log.Debug("MPControlPlugin: Event Mapper - Event \"{0}\"",
-                     Enum.GetName(typeof (MappedEvent.MappingEvent), eventType));
+                    Enum.GetName(typeof (MappedEvent.MappingEvent), eventType));
 
           try
           {
@@ -1089,7 +1093,7 @@ namespace MediaPortal.Plugins
             continue;
 
           Log.Debug("MPControlPlugin: Event Mapper - Event \"{0}\"",
-                     Enum.GetName(typeof (MappedEvent.MappingEvent), eventType));
+                    Enum.GetName(typeof (MappedEvent.MappingEvent), eventType));
 
           try
           {

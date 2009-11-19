@@ -8,7 +8,7 @@
     <ProjectGuid>{E8BEBBCC-1EE0-488D-8806-98ADCB7F0479}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MediaPortal.Plugins</RootNamespace>
+    <RootNamespace>MediaPortal.Plugins.MPControlPlugin.IRSS</RootNamespace>
     <AssemblyName>MPControlPlugin</AssemblyName>
     <StartupObject>
     </StartupObject>
@@ -162,5 +162,9 @@
       <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
       <Name>MPUtils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="iconGray.ico" />
+    <EmbeddedResource Include="iconGreen.ico" />
   </ItemGroup>
 </Project>

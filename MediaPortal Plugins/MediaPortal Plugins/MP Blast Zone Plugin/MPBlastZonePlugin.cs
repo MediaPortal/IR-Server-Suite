@@ -30,12 +30,16 @@ using System.Xml;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Profile;
 using MPUtils;
 
 namespace MediaPortal.Plugins
 {
+  [PluginIcons("MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGreen.ico",
+    "MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGray.ico")]
+
   /// <summary>
   /// MediaPortal Blast Zone Plugin for IR Server.
   /// </summary>
