@@ -32,64 +32,26 @@ namespace Translator
     {
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-      this.listViewPrograms = new System.Windows.Forms.ListView();
-      this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-      this.contextMenuStripPrograms = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.programsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.addProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.editProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.removeProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.imageListPrograms = new System.Windows.Forms.ImageList(this.components);
-      this.listViewButtons = new System.Windows.Forms.ListView();
-      this.columnHeaderButton = new System.Windows.Forms.ColumnHeader();
-      this.columnHeaderDescription = new System.Windows.Forms.ColumnHeader();
-      this.columnHeaderCommand = new System.Windows.Forms.ColumnHeader();
-      this.contextMenuStripButtonMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
-      this.newButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.editButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.deleteButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.clearButtonsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.remapButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.mappingsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.newMappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.editMappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.removeMappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.clearMappingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.remapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-      this.copyButtonsFromToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.copyMappingsFromToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.buttonOK = new System.Windows.Forms.Button();
-      this.tabControl = new System.Windows.Forms.TabControl();
-      this.tabPagePrograms = new System.Windows.Forms.TabPage();
-      this.panelPrograms = new System.Windows.Forms.Panel();
-      this.panelProgramsButtons = new System.Windows.Forms.Panel();
-      this.labelProgramsDelete = new System.Windows.Forms.Label();
-      this.labelProgramsEdit = new System.Windows.Forms.Label();
-      this.labelProgramsAdd = new System.Windows.Forms.Label();
-      this.toolStripButtonMappings = new System.Windows.Forms.ToolStrip();
-      this.toolStripButtonNewMapping = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonEditMapping = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonDeleteMapping = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonDeleteAllMappings = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonRemapMapping = new System.Windows.Forms.ToolStripButton();
-      this.tabPageEvents = new System.Windows.Forms.TabPage();
-      this.buttonSetCommand = new System.Windows.Forms.Button();
-      this.buttonAddEvent = new System.Windows.Forms.Button();
-      this.labelCommand = new System.Windows.Forms.Label();
-      this.comboBoxCommands = new System.Windows.Forms.ComboBox();
-      this.labelEvent = new System.Windows.Forms.Label();
-      this.comboBoxEvents = new System.Windows.Forms.ComboBox();
-      this.listViewEventMap = new System.Windows.Forms.ListView();
-      this.columnHeaderEvent = new System.Windows.Forms.ColumnHeader();
-      this.columnHeaderEventCommand = new System.Windows.Forms.ColumnHeader();
       this.contextMenuStripEvents = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.removeEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.tabPageMacro = new System.Windows.Forms.TabPage();
-      this.toolStripMacros = new System.Windows.Forms.ToolStrip();
-      this.toolStripButtonNewMacro = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonEditMacro = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonDeleteMacro = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonCreateShortcutForMacro = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonTestMacro = new System.Windows.Forms.ToolStripButton();
-      this.listViewMacro = new System.Windows.Forms.ListView();
-      this.tabPageIRCommands = new System.Windows.Forms.TabPage();
-      this.toolStripIRCommands = new System.Windows.Forms.ToolStrip();
-      this.toolStripButtonNewIR = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonEditIR = new System.Windows.Forms.ToolStripButton();
-      this.toolStripButtonDeleteIR = new System.Windows.Forms.ToolStripButton();
-      this.listViewIR = new System.Windows.Forms.ListView();
       this.toolTip = new System.Windows.Forms.ToolTip(this.components);
       this.checkBoxAutoRun = new System.Windows.Forms.CheckBox();
+      this.programsListView = new System.Windows.Forms.ListView();
+      this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -106,50 +68,92 @@ namespace Translator
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
       this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-      this.contextMenuStripButtonMapping.SuspendLayout();
-      this.tabControl.SuspendLayout();
-      this.tabPagePrograms.SuspendLayout();
-      this.panelPrograms.SuspendLayout();
-      this.panelProgramsButtons.SuspendLayout();
-      this.toolStripButtonMappings.SuspendLayout();
-      this.tabPageEvents.SuspendLayout();
+      this.tabPageIRCommands = new System.Windows.Forms.TabPage();
+      this.toolStripIRCommands = new System.Windows.Forms.ToolStrip();
+      this.toolStripButtonNewIR = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonEditIR = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonDeleteIR = new System.Windows.Forms.ToolStripButton();
+      this.listViewIR = new System.Windows.Forms.ListView();
+      this.tabPageMacro = new System.Windows.Forms.TabPage();
+      this.toolStripMacros = new System.Windows.Forms.ToolStrip();
+      this.toolStripButtonNewMacro = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonEditMacro = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonDeleteMacro = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonCreateShortcutForMacro = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonTestMacro = new System.Windows.Forms.ToolStripButton();
+      this.listViewMacro = new System.Windows.Forms.ListView();
+      this.tabPageEvents = new System.Windows.Forms.TabPage();
+      this.buttonSetCommand = new System.Windows.Forms.Button();
+      this.buttonAddEvent = new System.Windows.Forms.Button();
+      this.labelCommand = new System.Windows.Forms.Label();
+      this.comboBoxCommands = new System.Windows.Forms.ComboBox();
+      this.labelEvent = new System.Windows.Forms.Label();
+      this.comboBoxEvents = new System.Windows.Forms.ComboBox();
+      this.listViewEventMap = new System.Windows.Forms.ListView();
+      this.columnHeaderEvent = new System.Windows.Forms.ColumnHeader();
+      this.columnHeaderEventCommand = new System.Windows.Forms.ColumnHeader();
+      this.tabPagePrograms = new System.Windows.Forms.TabPage();
+      this.programsPanel = new System.Windows.Forms.Panel();
+      this.programsToolStrip = new System.Windows.Forms.ToolStrip();
+      this.addProgramToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.editProgramToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.removeProgramToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.mappingsListView = new System.Windows.Forms.ListView();
+      this.columnHeaderButton = new System.Windows.Forms.ColumnHeader();
+      this.columnHeaderDescription = new System.Windows.Forms.ColumnHeader();
+      this.columnHeaderCommand = new System.Windows.Forms.ColumnHeader();
+      this.mappingsToolStrip = new System.Windows.Forms.ToolStrip();
+      this.newMappingToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.editMappingToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.removeMappingToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.clearMappingsToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.remapToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.tabControl = new System.Windows.Forms.TabControl();
+      this.programsContextMenuStrip.SuspendLayout();
+      this.mappingsContextMenuStrip.SuspendLayout();
       this.contextMenuStripEvents.SuspendLayout();
-      this.tabPageMacro.SuspendLayout();
-      this.toolStripMacros.SuspendLayout();
+      this.menuStrip.SuspendLayout();
       this.tabPageIRCommands.SuspendLayout();
       this.toolStripIRCommands.SuspendLayout();
-      this.menuStrip.SuspendLayout();
+      this.tabPageMacro.SuspendLayout();
+      this.toolStripMacros.SuspendLayout();
+      this.tabPageEvents.SuspendLayout();
+      this.tabPagePrograms.SuspendLayout();
+      this.programsPanel.SuspendLayout();
+      this.programsToolStrip.SuspendLayout();
+      this.mappingsToolStrip.SuspendLayout();
+      this.tabControl.SuspendLayout();
       this.SuspendLayout();
       // 
-      // listViewPrograms
+      // programsContextMenuStrip
       // 
-      this.listViewPrograms.Alignment = System.Windows.Forms.ListViewAlignment.Left;
-      this.listViewPrograms.BorderStyle = System.Windows.Forms.BorderStyle.None;
-      this.listViewPrograms.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
-      this.listViewPrograms.ContextMenuStrip = this.contextMenuStripPrograms;
-      this.listViewPrograms.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.listViewPrograms.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-      this.listViewPrograms.HideSelection = false;
-      this.listViewPrograms.LargeImageList = this.imageListPrograms;
-      this.listViewPrograms.Location = new System.Drawing.Point(0, 0);
-      this.listViewPrograms.MultiSelect = false;
-      this.listViewPrograms.Name = "listViewPrograms";
-      this.listViewPrograms.ShowGroups = false;
-      this.listViewPrograms.ShowItemToolTips = true;
-      this.listViewPrograms.Size = new System.Drawing.Size(470, 84);
-      this.listViewPrograms.TabIndex = 0;
-      this.listViewPrograms.TileSize = new System.Drawing.Size(128, 48);
-      this.toolTip.SetToolTip(this.listViewPrograms, "Choose a Program to modify mappings");
-      this.listViewPrograms.UseCompatibleStateImageBehavior = false;
-      this.listViewPrograms.SelectedIndexChanged += new System.EventHandler(this.listViewPrograms_SelectedIndexChanged);
-      this.listViewPrograms.DoubleClick += new System.EventHandler(this.listViewPrograms_DoubleClick);
+      this.programsContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addProgramToolStripMenuItem,
+            this.editProgramToolStripMenuItem,
+            this.removeProgramToolStripMenuItem});
+      this.programsContextMenuStrip.Name = "contextMenuStripPrograms";
+      this.programsContextMenuStrip.Size = new System.Drawing.Size(167, 70);
       // 
-      // contextMenuStripPrograms
+      // addProgramToolStripMenuItem
       // 
-      this.contextMenuStripPrograms.Name = "contextMenuStripPrograms";
-      this.contextMenuStripPrograms.Size = new System.Drawing.Size(61, 4);
-      this.contextMenuStripPrograms.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripPrograms_Opening);
+      this.addProgramToolStripMenuItem.Name = "addProgramToolStripMenuItem";
+      this.addProgramToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+      this.addProgramToolStripMenuItem.Text = "&Add Program";
+      this.addProgramToolStripMenuItem.Click += new System.EventHandler(this.AddProgram);
+      // 
+      // editProgramToolStripMenuItem
+      // 
+      this.editProgramToolStripMenuItem.Name = "editProgramToolStripMenuItem";
+      this.editProgramToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+      this.editProgramToolStripMenuItem.Text = "&Edit Program";
+      this.editProgramToolStripMenuItem.Click += new System.EventHandler(this.EditProgram);
+      // 
+      // removeProgramToolStripMenuItem
+      // 
+      this.removeProgramToolStripMenuItem.Name = "removeProgramToolStripMenuItem";
+      this.removeProgramToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+      this.removeProgramToolStripMenuItem.Text = "&Remove Program";
+      this.removeProgramToolStripMenuItem.Click += new System.EventHandler(this.RemoveProgram);
       // 
       // imageListPrograms
       // 
@@ -157,105 +161,65 @@ namespace Translator
       this.imageListPrograms.ImageSize = new System.Drawing.Size(32, 32);
       this.imageListPrograms.TransparentColor = System.Drawing.Color.Transparent;
       // 
-      // listViewButtons
+      // mappingsContextMenuStrip
       // 
-      this.listViewButtons.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.listViewButtons.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeaderButton,
-            this.columnHeaderDescription,
-            this.columnHeaderCommand});
-      this.listViewButtons.ContextMenuStrip = this.contextMenuStripButtonMapping;
-      this.listViewButtons.FullRowSelect = true;
-      this.listViewButtons.GridLines = true;
-      this.listViewButtons.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-      this.listViewButtons.HideSelection = false;
-      this.listViewButtons.Location = new System.Drawing.Point(8, 104);
-      this.listViewButtons.MultiSelect = false;
-      this.listViewButtons.Name = "listViewButtons";
-      this.listViewButtons.ShowGroups = false;
-      this.listViewButtons.Size = new System.Drawing.Size(504, 232);
-      this.listViewButtons.TabIndex = 1;
-      this.listViewButtons.UseCompatibleStateImageBehavior = false;
-      this.listViewButtons.View = System.Windows.Forms.View.Details;
-      this.listViewButtons.DoubleClick += new System.EventHandler(this.listViewButtons_DoubleClick);
-      this.listViewButtons.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewButtons_KeyDown);
-      // 
-      // columnHeaderButton
-      // 
-      this.columnHeaderButton.Text = "Code";
-      this.columnHeaderButton.Width = 100;
-      // 
-      // columnHeaderDescription
-      // 
-      this.columnHeaderDescription.Text = "Description";
-      this.columnHeaderDescription.Width = 180;
-      // 
-      // columnHeaderCommand
-      // 
-      this.columnHeaderCommand.Text = "Command";
-      this.columnHeaderCommand.Width = 200;
-      // 
-      // contextMenuStripButtonMapping
-      // 
-      this.contextMenuStripButtonMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newButtonToolStripMenuItem,
-            this.editButtonToolStripMenuItem,
-            this.deleteButtonToolStripMenuItem,
-            this.clearButtonsToolStripMenuItem,
-            this.remapButtonToolStripMenuItem,
+      this.mappingsContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newMappingToolStripMenuItem,
+            this.editMappingToolStripMenuItem,
+            this.removeMappingToolStripMenuItem,
+            this.clearMappingsToolStripMenuItem,
+            this.remapToolStripMenuItem,
             this.toolStripSeparator3,
-            this.copyButtonsFromToolStripMenuItem});
-      this.contextMenuStripButtonMapping.Name = "contextMenuStripButtonMapping";
-      this.contextMenuStripButtonMapping.Size = new System.Drawing.Size(144, 142);
-      this.contextMenuStripButtonMapping.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripButtonMapping_Opening);
+            this.copyMappingsFromToolStripMenuItem});
+      this.mappingsContextMenuStrip.Name = "contextMenuStripButtonMapping";
+      this.mappingsContextMenuStrip.Size = new System.Drawing.Size(144, 142);
+      this.mappingsContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.mappingsContextMenuStrip_Opening);
       // 
-      // newButtonToolStripMenuItem
+      // newMappingToolStripMenuItem
       // 
-      this.newButtonToolStripMenuItem.Name = "newButtonToolStripMenuItem";
-      this.newButtonToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-      this.newButtonToolStripMenuItem.Text = "&New";
-      this.newButtonToolStripMenuItem.Click += new System.EventHandler(this.newButtonToolStripMenuItem_Click);
+      this.newMappingToolStripMenuItem.Name = "newMappingToolStripMenuItem";
+      this.newMappingToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+      this.newMappingToolStripMenuItem.Text = "&New";
+      this.newMappingToolStripMenuItem.Click += new System.EventHandler(this.NewButtonMapping);
       // 
-      // editButtonToolStripMenuItem
+      // editMappingToolStripMenuItem
       // 
-      this.editButtonToolStripMenuItem.Name = "editButtonToolStripMenuItem";
-      this.editButtonToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-      this.editButtonToolStripMenuItem.Text = "&Edit";
-      this.editButtonToolStripMenuItem.Click += new System.EventHandler(this.editButtonToolStripMenuItem_Click);
+      this.editMappingToolStripMenuItem.Name = "editMappingToolStripMenuItem";
+      this.editMappingToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+      this.editMappingToolStripMenuItem.Text = "&Edit";
+      this.editMappingToolStripMenuItem.Click += new System.EventHandler(this.EditButtonMapping);
       // 
-      // deleteButtonToolStripMenuItem
+      // removeMappingToolStripMenuItem
       // 
-      this.deleteButtonToolStripMenuItem.Name = "deleteButtonToolStripMenuItem";
-      this.deleteButtonToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-      this.deleteButtonToolStripMenuItem.Text = "&Delete";
-      this.deleteButtonToolStripMenuItem.Click += new System.EventHandler(this.deleteButtonToolStripMenuItem_Click);
+      this.removeMappingToolStripMenuItem.Name = "removeMappingToolStripMenuItem";
+      this.removeMappingToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+      this.removeMappingToolStripMenuItem.Text = "&Delete";
+      this.removeMappingToolStripMenuItem.Click += new System.EventHandler(this.DeleteButtonMapping);
       // 
-      // clearButtonsToolStripMenuItem
+      // clearMappingsToolStripMenuItem
       // 
-      this.clearButtonsToolStripMenuItem.Name = "clearButtonsToolStripMenuItem";
-      this.clearButtonsToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-      this.clearButtonsToolStripMenuItem.Text = "&Clear";
-      this.clearButtonsToolStripMenuItem.Click += new System.EventHandler(this.clearButtonsToolStripMenuItem_Click);
+      this.clearMappingsToolStripMenuItem.Name = "clearMappingsToolStripMenuItem";
+      this.clearMappingsToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+      this.clearMappingsToolStripMenuItem.Text = "&Clear";
+      this.clearMappingsToolStripMenuItem.Click += new System.EventHandler(this.ClearButtonMappings);
       // 
-      // remapButtonToolStripMenuItem
+      // remapToolStripMenuItem
       // 
-      this.remapButtonToolStripMenuItem.Name = "remapButtonToolStripMenuItem";
-      this.remapButtonToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-      this.remapButtonToolStripMenuItem.Text = "&Remap";
-      this.remapButtonToolStripMenuItem.Click += new System.EventHandler(this.remapButtonToolStripMenuItem_Click);
+      this.remapToolStripMenuItem.Name = "remapToolStripMenuItem";
+      this.remapToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+      this.remapToolStripMenuItem.Text = "&Remap";
+      this.remapToolStripMenuItem.Click += new System.EventHandler(this.RemapButtonMapping);
       // 
       // toolStripSeparator3
       // 
       this.toolStripSeparator3.Name = "toolStripSeparator3";
       this.toolStripSeparator3.Size = new System.Drawing.Size(140, 6);
       // 
-      // copyButtonsFromToolStripMenuItem
+      // copyMappingsFromToolStripMenuItem
       // 
-      this.copyButtonsFromToolStripMenuItem.Name = "copyButtonsFromToolStripMenuItem";
-      this.copyButtonsFromToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-      this.copyButtonsFromToolStripMenuItem.Text = "Copy &from ...";
+      this.copyMappingsFromToolStripMenuItem.Name = "copyMappingsFromToolStripMenuItem";
+      this.copyMappingsFromToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+      this.copyMappingsFromToolStripMenuItem.Text = "Copy &from ...";
       // 
       // buttonOK
       // 
@@ -269,156 +233,343 @@ namespace Translator
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
       // 
-      // tabControl
+      // contextMenuStripEvents
       // 
-      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+      this.contextMenuStripEvents.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.removeEventToolStripMenuItem});
+      this.contextMenuStripEvents.Name = "contextMenuStripEvents";
+      this.contextMenuStripEvents.Size = new System.Drawing.Size(118, 26);
+      // 
+      // removeEventToolStripMenuItem
+      // 
+      this.removeEventToolStripMenuItem.Name = "removeEventToolStripMenuItem";
+      this.removeEventToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+      this.removeEventToolStripMenuItem.Text = "&Remove";
+      this.removeEventToolStripMenuItem.Click += new System.EventHandler(this.removeEventToolStripMenuItem_Click);
+      // 
+      // checkBoxAutoRun
+      // 
+      this.checkBoxAutoRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.checkBoxAutoRun.AutoSize = true;
+      this.checkBoxAutoRun.Location = new System.Drawing.Point(8, 448);
+      this.checkBoxAutoRun.Name = "checkBoxAutoRun";
+      this.checkBoxAutoRun.Size = new System.Drawing.Size(167, 17);
+      this.checkBoxAutoRun.TabIndex = 2;
+      this.checkBoxAutoRun.Text = "&Start Translator with Windows";
+      this.toolTip.SetToolTip(this.checkBoxAutoRun, "Set this to make Translator automatically start when you turn the computer on");
+      this.checkBoxAutoRun.UseVisualStyleBackColor = true;
+      this.checkBoxAutoRun.CheckedChanged += new System.EventHandler(this.checkBoxAutoRun_CheckedChanged);
+      // 
+      // programsListView
+      // 
+      this.programsListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
+      this.programsListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+      this.programsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+      this.programsListView.ContextMenuStrip = this.programsContextMenuStrip;
+      this.programsListView.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.programsListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+      this.programsListView.HideSelection = false;
+      this.programsListView.LargeImageList = this.imageListPrograms;
+      this.programsListView.Location = new System.Drawing.Point(0, 0);
+      this.programsListView.MultiSelect = false;
+      this.programsListView.Name = "programsListView";
+      this.programsListView.ShowGroups = false;
+      this.programsListView.ShowItemToolTips = true;
+      this.programsListView.Size = new System.Drawing.Size(445, 84);
+      this.programsListView.TabIndex = 0;
+      this.programsListView.TileSize = new System.Drawing.Size(128, 48);
+      this.toolTip.SetToolTip(this.programsListView, "Choose a Program to modify mappings");
+      this.programsListView.UseCompatibleStateImageBehavior = false;
+      this.programsListView.SelectedIndexChanged += new System.EventHandler(this.programsListView_SelectedIndexChanged);
+      this.programsListView.DoubleClick += new System.EventHandler(this.EditProgram);
+      // 
+      // menuStrip
+      // 
+      this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.configurationToolStripMenuItem,
+            this.helpToolStripMenuItem});
+      this.menuStrip.Location = new System.Drawing.Point(0, 0);
+      this.menuStrip.Name = "menuStrip";
+      this.menuStrip.Size = new System.Drawing.Size(544, 24);
+      this.menuStrip.TabIndex = 0;
+      this.menuStrip.Text = "menuStrip";
+      // 
+      // configurationToolStripMenuItem
+      // 
+      this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem,
+            this.openToolStripMenuItem,
+            this.importToolStripMenuItem,
+            this.exportToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.serverToolStripMenuItem,
+            this.advancedToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.exitToolStripMenuItem});
+      this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
+      this.configurationToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+      this.configurationToolStripMenuItem.Text = "&File";
+      // 
+      // newToolStripMenuItem
+      // 
+      this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+      this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+      this.newToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.newToolStripMenuItem.Text = "&New";
+      this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+      // 
+      // openToolStripMenuItem
+      // 
+      this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+      this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.openToolStripMenuItem.Text = "&Open...";
+      this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+      // 
+      // importToolStripMenuItem
+      // 
+      this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+      this.importToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.importToolStripMenuItem.Text = "&Import...";
+      this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+      // 
+      // exportToolStripMenuItem
+      // 
+      this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+      this.exportToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.exportToolStripMenuItem.Text = "&Export...";
+      this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+      // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(154, 6);
+      // 
+      // serverToolStripMenuItem
+      // 
+      this.serverToolStripMenuItem.Name = "serverToolStripMenuItem";
+      this.serverToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.serverToolStripMenuItem.Text = "&Server...";
+      this.serverToolStripMenuItem.Click += new System.EventHandler(this.serverToolStripMenuItem2_Click);
+      // 
+      // advancedToolStripMenuItem
+      // 
+      this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
+      this.advancedToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.advancedToolStripMenuItem.Text = "&Advanced...";
+      this.advancedToolStripMenuItem.Click += new System.EventHandler(this.advancedToolStripMenuItem_Click);
+      // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(154, 6);
+      // 
+      // exitToolStripMenuItem
+      // 
+      this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+      this.exitToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+      this.exitToolStripMenuItem.Text = "E&xit";
+      this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+      // 
+      // helpToolStripMenuItem
+      // 
+      this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contentsToolStripMenuItem,
+            this.aboutToolStripMenuItem});
+      this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+      this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+      this.helpToolStripMenuItem.Text = "&Help";
+      // 
+      // contentsToolStripMenuItem
+      // 
+      this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
+      this.contentsToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+      this.contentsToolStripMenuItem.Text = "&Contents";
+      this.contentsToolStripMenuItem.Click += new System.EventHandler(this.contentsToolStripMenuItem_Click);
+      // 
+      // aboutToolStripMenuItem
+      // 
+      this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+      this.aboutToolStripMenuItem.Text = "&About";
+      this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+      // 
+      // openFileDialog
+      // 
+      this.openFileDialog.Filter = "XML Files|*.xml";
+      // 
+      // saveFileDialog
+      // 
+      this.saveFileDialog.Filter = "XML Files|*.xml";
+      this.saveFileDialog.Title = "Export settings ...";
+      // 
+      // tabPageIRCommands
+      // 
+      this.tabPageIRCommands.Controls.Add(this.toolStripIRCommands);
+      this.tabPageIRCommands.Controls.Add(this.listViewIR);
+      this.tabPageIRCommands.Location = new System.Drawing.Point(4, 22);
+      this.tabPageIRCommands.Name = "tabPageIRCommands";
+      this.tabPageIRCommands.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageIRCommands.Size = new System.Drawing.Size(520, 374);
+      this.tabPageIRCommands.TabIndex = 3;
+      this.tabPageIRCommands.Text = "IR Commands";
+      this.tabPageIRCommands.UseVisualStyleBackColor = true;
+      // 
+      // toolStripIRCommands
+      // 
+      this.toolStripIRCommands.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.toolStripIRCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+      this.toolStripIRCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButtonNewIR,
+            this.toolStripButtonEditIR,
+            this.toolStripButtonDeleteIR});
+      this.toolStripIRCommands.Location = new System.Drawing.Point(3, 346);
+      this.toolStripIRCommands.Name = "toolStripIRCommands";
+      this.toolStripIRCommands.Size = new System.Drawing.Size(514, 25);
+      this.toolStripIRCommands.TabIndex = 1;
+      this.toolStripIRCommands.Text = "IR Commands";
+      // 
+      // toolStripButtonNewIR
+      // 
+      this.toolStripButtonNewIR.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonNewIR.Name = "toolStripButtonNewIR";
+      this.toolStripButtonNewIR.Size = new System.Drawing.Size(35, 22);
+      this.toolStripButtonNewIR.Text = "New";
+      this.toolStripButtonNewIR.ToolTipText = "Create a new IR Command";
+      this.toolStripButtonNewIR.Click += new System.EventHandler(this.toolStripButtonNewIR_Click);
+      // 
+      // toolStripButtonEditIR
+      // 
+      this.toolStripButtonEditIR.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonEditIR.Name = "toolStripButtonEditIR";
+      this.toolStripButtonEditIR.Size = new System.Drawing.Size(31, 22);
+      this.toolStripButtonEditIR.Text = "Edit";
+      this.toolStripButtonEditIR.ToolTipText = "Edit the selected IR Command";
+      this.toolStripButtonEditIR.Click += new System.EventHandler(this.toolStripButtonEditIR_Click);
+      // 
+      // toolStripButtonDeleteIR
+      // 
+      this.toolStripButtonDeleteIR.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonDeleteIR.Name = "toolStripButtonDeleteIR";
+      this.toolStripButtonDeleteIR.Size = new System.Drawing.Size(44, 22);
+      this.toolStripButtonDeleteIR.Text = "Delete";
+      this.toolStripButtonDeleteIR.ToolTipText = "Delete the selected IR Command";
+      this.toolStripButtonDeleteIR.Click += new System.EventHandler(this.toolStripButtonDeleteIR_Click);
+      // 
+      // listViewIR
+      // 
+      this.listViewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.tabControl.Controls.Add(this.tabPagePrograms);
-      this.tabControl.Controls.Add(this.tabPageEvents);
-      this.tabControl.Controls.Add(this.tabPageMacro);
-      this.tabControl.Controls.Add(this.tabPageIRCommands);
-      this.tabControl.Location = new System.Drawing.Point(8, 32);
-      this.tabControl.Name = "tabControl";
-      this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(528, 400);
-      this.tabControl.TabIndex = 1;
-      this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
+      this.listViewIR.FullRowSelect = true;
+      this.listViewIR.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+      this.listViewIR.HideSelection = false;
+      this.listViewIR.LabelEdit = true;
+      this.listViewIR.Location = new System.Drawing.Point(8, 8);
+      this.listViewIR.MultiSelect = false;
+      this.listViewIR.Name = "listViewIR";
+      this.listViewIR.ShowGroups = false;
+      this.listViewIR.Size = new System.Drawing.Size(504, 328);
+      this.listViewIR.TabIndex = 0;
+      this.listViewIR.UseCompatibleStateImageBehavior = false;
+      this.listViewIR.View = System.Windows.Forms.View.List;
+      this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
+      this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
       // 
-      // tabPagePrograms
+      // tabPageMacro
       // 
-      this.tabPagePrograms.Controls.Add(this.panelPrograms);
-      this.tabPagePrograms.Controls.Add(this.listViewButtons);
-      this.tabPagePrograms.Controls.Add(this.toolStripButtonMappings);
-      this.tabPagePrograms.Location = new System.Drawing.Point(4, 22);
-      this.tabPagePrograms.Name = "tabPagePrograms";
-      this.tabPagePrograms.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPagePrograms.Size = new System.Drawing.Size(520, 374);
-      this.tabPagePrograms.TabIndex = 0;
-      this.tabPagePrograms.Text = "Programs";
-      this.tabPagePrograms.UseVisualStyleBackColor = true;
+      this.tabPageMacro.Controls.Add(this.toolStripMacros);
+      this.tabPageMacro.Controls.Add(this.listViewMacro);
+      this.tabPageMacro.Location = new System.Drawing.Point(4, 22);
+      this.tabPageMacro.Name = "tabPageMacro";
+      this.tabPageMacro.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageMacro.Size = new System.Drawing.Size(520, 374);
+      this.tabPageMacro.TabIndex = 2;
+      this.tabPageMacro.Text = "Macros";
+      this.tabPageMacro.UseVisualStyleBackColor = true;
       // 
-      // panelPrograms
+      // toolStripMacros
       // 
-      this.panelPrograms.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+      this.toolStripMacros.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.toolStripMacros.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+      this.toolStripMacros.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButtonNewMacro,
+            this.toolStripButtonEditMacro,
+            this.toolStripButtonDeleteMacro,
+            this.toolStripButtonCreateShortcutForMacro,
+            this.toolStripButtonTestMacro});
+      this.toolStripMacros.Location = new System.Drawing.Point(3, 346);
+      this.toolStripMacros.Name = "toolStripMacros";
+      this.toolStripMacros.Size = new System.Drawing.Size(514, 25);
+      this.toolStripMacros.TabIndex = 1;
+      this.toolStripMacros.Text = "Macros";
+      // 
+      // toolStripButtonNewMacro
+      // 
+      this.toolStripButtonNewMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonNewMacro.Name = "toolStripButtonNewMacro";
+      this.toolStripButtonNewMacro.Size = new System.Drawing.Size(35, 22);
+      this.toolStripButtonNewMacro.Text = "New";
+      this.toolStripButtonNewMacro.ToolTipText = "Create a new macro";
+      this.toolStripButtonNewMacro.Click += new System.EventHandler(this.toolStripButtonNewMacro_Click);
+      // 
+      // toolStripButtonEditMacro
+      // 
+      this.toolStripButtonEditMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonEditMacro.Name = "toolStripButtonEditMacro";
+      this.toolStripButtonEditMacro.Size = new System.Drawing.Size(31, 22);
+      this.toolStripButtonEditMacro.Text = "Edit";
+      this.toolStripButtonEditMacro.ToolTipText = "Edit the selected macro";
+      this.toolStripButtonEditMacro.Click += new System.EventHandler(this.toolStripButtonEditMacro_Click);
+      // 
+      // toolStripButtonDeleteMacro
+      // 
+      this.toolStripButtonDeleteMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonDeleteMacro.Name = "toolStripButtonDeleteMacro";
+      this.toolStripButtonDeleteMacro.Size = new System.Drawing.Size(44, 22);
+      this.toolStripButtonDeleteMacro.Text = "Delete";
+      this.toolStripButtonDeleteMacro.ToolTipText = "Delete the selected macro";
+      this.toolStripButtonDeleteMacro.Click += new System.EventHandler(this.toolStripButtonDeleteMacro_Click);
+      // 
+      // toolStripButtonCreateShortcutForMacro
+      // 
+      this.toolStripButtonCreateShortcutForMacro.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.toolStripButtonCreateShortcutForMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonCreateShortcutForMacro.Name = "toolStripButtonCreateShortcutForMacro";
+      this.toolStripButtonCreateShortcutForMacro.Size = new System.Drawing.Size(92, 22);
+      this.toolStripButtonCreateShortcutForMacro.Text = "Create shortcut";
+      this.toolStripButtonCreateShortcutForMacro.ToolTipText = "Create a shortcut to run the selected macro";
+      this.toolStripButtonCreateShortcutForMacro.Click += new System.EventHandler(this.toolStripButtonCreateShortcutForMacro_Click);
+      // 
+      // toolStripButtonTestMacro
+      // 
+      this.toolStripButtonTestMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonTestMacro.Name = "toolStripButtonTestMacro";
+      this.toolStripButtonTestMacro.Size = new System.Drawing.Size(33, 22);
+      this.toolStripButtonTestMacro.Text = "Test";
+      this.toolStripButtonTestMacro.ToolTipText = "Test the selected macro";
+      this.toolStripButtonTestMacro.Click += new System.EventHandler(this.toolStripButtonTestMacro_Click);
+      // 
+      // listViewMacro
+      // 
+      this.listViewMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.panelPrograms.BackColor = System.Drawing.SystemColors.Window;
-      this.panelPrograms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-      this.panelPrograms.Controls.Add(this.listViewPrograms);
-      this.panelPrograms.Controls.Add(this.panelProgramsButtons);
-      this.panelPrograms.Location = new System.Drawing.Point(8, 8);
-      this.panelPrograms.Name = "panelPrograms";
-      this.panelPrograms.Size = new System.Drawing.Size(504, 88);
-      this.panelPrograms.TabIndex = 3;
-      // 
-      // panelProgramsButtons
-      // 
-      this.panelProgramsButtons.Controls.Add(this.labelProgramsDelete);
-      this.panelProgramsButtons.Controls.Add(this.labelProgramsEdit);
-      this.panelProgramsButtons.Controls.Add(this.labelProgramsAdd);
-      this.panelProgramsButtons.Dock = System.Windows.Forms.DockStyle.Right;
-      this.panelProgramsButtons.Location = new System.Drawing.Point(470, 0);
-      this.panelProgramsButtons.Name = "panelProgramsButtons";
-      this.panelProgramsButtons.Size = new System.Drawing.Size(30, 84);
-      this.panelProgramsButtons.TabIndex = 1;
-      // 
-      // labelProgramsDelete
-      // 
-      this.labelProgramsDelete.Anchor = System.Windows.Forms.AnchorStyles.Right;
-      this.labelProgramsDelete.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.labelProgramsDelete.Location = new System.Drawing.Point(1, 52);
-      this.labelProgramsDelete.Name = "labelProgramsDelete";
-      this.labelProgramsDelete.Size = new System.Drawing.Size(24, 24);
-      this.labelProgramsDelete.TabIndex = 2;
-      this.labelProgramsDelete.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTip.SetToolTip(this.labelProgramsDelete, "Remove program");
-      this.labelProgramsDelete.Click += new System.EventHandler(this.labelProgramsDelete_Click);
-      // 
-      // labelProgramsEdit
-      // 
-      this.labelProgramsEdit.Anchor = System.Windows.Forms.AnchorStyles.Right;
-      this.labelProgramsEdit.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.labelProgramsEdit.Location = new System.Drawing.Point(1, 27);
-      this.labelProgramsEdit.Name = "labelProgramsEdit";
-      this.labelProgramsEdit.Size = new System.Drawing.Size(24, 24);
-      this.labelProgramsEdit.TabIndex = 1;
-      this.labelProgramsEdit.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTip.SetToolTip(this.labelProgramsEdit, "Edit program");
-      this.labelProgramsEdit.Click += new System.EventHandler(this.labelProgramsEdit_Click);
-      // 
-      // labelProgramsAdd
-      // 
-      this.labelProgramsAdd.Anchor = System.Windows.Forms.AnchorStyles.Right;
-      this.labelProgramsAdd.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.labelProgramsAdd.Location = new System.Drawing.Point(1, 2);
-      this.labelProgramsAdd.Name = "labelProgramsAdd";
-      this.labelProgramsAdd.Size = new System.Drawing.Size(24, 24);
-      this.labelProgramsAdd.TabIndex = 0;
-      this.labelProgramsAdd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      this.toolTip.SetToolTip(this.labelProgramsAdd, "Add program");
-      this.labelProgramsAdd.Click += new System.EventHandler(this.labelProgramsAdd_Click);
-      // 
-      // toolStripButtonMappings
-      // 
-      this.toolStripButtonMappings.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.toolStripButtonMappings.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-      this.toolStripButtonMappings.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButtonNewMapping,
-            this.toolStripButtonEditMapping,
-            this.toolStripButtonDeleteMapping,
-            this.toolStripButtonDeleteAllMappings,
-            this.toolStripButtonRemapMapping});
-      this.toolStripButtonMappings.Location = new System.Drawing.Point(3, 346);
-      this.toolStripButtonMappings.Name = "toolStripButtonMappings";
-      this.toolStripButtonMappings.Size = new System.Drawing.Size(514, 25);
-      this.toolStripButtonMappings.TabIndex = 2;
-      this.toolStripButtonMappings.Text = "Button Mappings";
-      // 
-      // toolStripButtonNewMapping
-      // 
-      this.toolStripButtonNewMapping.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonNewMapping.Name = "toolStripButtonNewMapping";
-      this.toolStripButtonNewMapping.Size = new System.Drawing.Size(35, 22);
-      this.toolStripButtonNewMapping.Text = "New";
-      this.toolStripButtonNewMapping.ToolTipText = "Create a new button mapping";
-      this.toolStripButtonNewMapping.Click += new System.EventHandler(this.toolStripButtonNewMapping_Click);
-      // 
-      // toolStripButtonEditMapping
-      // 
-      this.toolStripButtonEditMapping.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonEditMapping.Name = "toolStripButtonEditMapping";
-      this.toolStripButtonEditMapping.Size = new System.Drawing.Size(31, 22);
-      this.toolStripButtonEditMapping.Text = "Edit";
-      this.toolStripButtonEditMapping.ToolTipText = "Edit the selected button mapping";
-      this.toolStripButtonEditMapping.Click += new System.EventHandler(this.toolStripButtonEditMapping_Click);
-      // 
-      // toolStripButtonDeleteMapping
-      // 
-      this.toolStripButtonDeleteMapping.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonDeleteMapping.Name = "toolStripButtonDeleteMapping";
-      this.toolStripButtonDeleteMapping.Size = new System.Drawing.Size(44, 22);
-      this.toolStripButtonDeleteMapping.Text = "Delete";
-      this.toolStripButtonDeleteMapping.ToolTipText = "Delete the selected button mapping";
-      this.toolStripButtonDeleteMapping.Click += new System.EventHandler(this.toolStripButtonDeleteMapping_Click);
-      // 
-      // toolStripButtonDeleteAllMappings
-      // 
-      this.toolStripButtonDeleteAllMappings.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-      this.toolStripButtonDeleteAllMappings.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonDeleteAllMappings.Name = "toolStripButtonDeleteAllMappings";
-      this.toolStripButtonDeleteAllMappings.Size = new System.Drawing.Size(61, 22);
-      this.toolStripButtonDeleteAllMappings.Text = "Delete All";
-      this.toolStripButtonDeleteAllMappings.ToolTipText = "Delete all the button mappings";
-      this.toolStripButtonDeleteAllMappings.Click += new System.EventHandler(this.toolStripButtonDeleteAllMappings_Click);
-      // 
-      // toolStripButtonRemapMapping
-      // 
-      this.toolStripButtonRemapMapping.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonRemapMapping.Name = "toolStripButtonRemapMapping";
-      this.toolStripButtonRemapMapping.Size = new System.Drawing.Size(48, 22);
-      this.toolStripButtonRemapMapping.Text = "Remap";
-      this.toolStripButtonRemapMapping.ToolTipText = "Link a new code to the selected mapping";
-      this.toolStripButtonRemapMapping.Click += new System.EventHandler(this.toolStripButtonRemapMapping_Click);
+      this.listViewMacro.FullRowSelect = true;
+      this.listViewMacro.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+      this.listViewMacro.HideSelection = false;
+      this.listViewMacro.LabelEdit = true;
+      this.listViewMacro.Location = new System.Drawing.Point(8, 8);
+      this.listViewMacro.MultiSelect = false;
+      this.listViewMacro.Name = "listViewMacro";
+      this.listViewMacro.ShowGroups = false;
+      this.listViewMacro.Size = new System.Drawing.Size(504, 328);
+      this.listViewMacro.TabIndex = 0;
+      this.listViewMacro.UseCompatibleStateImageBehavior = false;
+      this.listViewMacro.View = System.Windows.Forms.View.List;
+      this.listViewMacro.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewMacro_AfterLabelEdit);
+      this.listViewMacro.DoubleClick += new System.EventHandler(this.listViewMacro_DoubleClick);
       // 
       // tabPageEvents
       // 
@@ -535,319 +686,195 @@ namespace Translator
       this.columnHeaderEventCommand.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.columnHeaderEventCommand.Width = 280;
       // 
-      // contextMenuStripEvents
+      // tabPagePrograms
       // 
-      this.contextMenuStripEvents.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.removeEventToolStripMenuItem});
-      this.contextMenuStripEvents.Name = "contextMenuStripEvents";
-      this.contextMenuStripEvents.Size = new System.Drawing.Size(118, 26);
+      this.tabPagePrograms.Controls.Add(this.programsPanel);
+      this.tabPagePrograms.Controls.Add(this.mappingsListView);
+      this.tabPagePrograms.Controls.Add(this.mappingsToolStrip);
+      this.tabPagePrograms.Location = new System.Drawing.Point(4, 22);
+      this.tabPagePrograms.Name = "tabPagePrograms";
+      this.tabPagePrograms.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPagePrograms.Size = new System.Drawing.Size(520, 374);
+      this.tabPagePrograms.TabIndex = 0;
+      this.tabPagePrograms.Text = "Programs";
+      this.tabPagePrograms.UseVisualStyleBackColor = true;
       // 
-      // removeEventToolStripMenuItem
+      // programsPanel
       // 
-      this.removeEventToolStripMenuItem.Name = "removeEventToolStripMenuItem";
-      this.removeEventToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-      this.removeEventToolStripMenuItem.Text = "&Remove";
-      this.removeEventToolStripMenuItem.Click += new System.EventHandler(this.removeEventToolStripMenuItem_Click);
+      this.programsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.programsPanel.BackColor = System.Drawing.SystemColors.Window;
+      this.programsPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+      this.programsPanel.Controls.Add(this.programsListView);
+      this.programsPanel.Controls.Add(this.programsToolStrip);
+      this.programsPanel.Location = new System.Drawing.Point(8, 8);
+      this.programsPanel.Name = "programsPanel";
+      this.programsPanel.Size = new System.Drawing.Size(504, 88);
+      this.programsPanel.TabIndex = 3;
       // 
-      // tabPageMacro
+      // programsToolStrip
       // 
-      this.tabPageMacro.Controls.Add(this.toolStripMacros);
-      this.tabPageMacro.Controls.Add(this.listViewMacro);
-      this.tabPageMacro.Location = new System.Drawing.Point(4, 22);
-      this.tabPageMacro.Name = "tabPageMacro";
-      this.tabPageMacro.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMacro.Size = new System.Drawing.Size(520, 374);
-      this.tabPageMacro.TabIndex = 2;
-      this.tabPageMacro.Text = "Macros";
-      this.tabPageMacro.UseVisualStyleBackColor = true;
+      this.programsToolStrip.Dock = System.Windows.Forms.DockStyle.Right;
+      this.programsToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+      this.programsToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addProgramToolStripButton,
+            this.editProgramToolStripButton,
+            this.removeProgramToolStripButton});
+      this.programsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
+      this.programsToolStrip.Location = new System.Drawing.Point(445, 0);
+      this.programsToolStrip.Name = "programsToolStrip";
+      this.programsToolStrip.Size = new System.Drawing.Size(55, 84);
+      this.programsToolStrip.TabIndex = 2;
+      this.programsToolStrip.Text = "toolStrip1";
       // 
-      // toolStripMacros
+      // addProgramToolStripButton
       // 
-      this.toolStripMacros.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.toolStripMacros.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-      this.toolStripMacros.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButtonNewMacro,
-            this.toolStripButtonEditMacro,
-            this.toolStripButtonDeleteMacro,
-            this.toolStripButtonCreateShortcutForMacro,
-            this.toolStripButtonTestMacro});
-      this.toolStripMacros.Location = new System.Drawing.Point(3, 346);
-      this.toolStripMacros.Name = "toolStripMacros";
-      this.toolStripMacros.Size = new System.Drawing.Size(514, 25);
-      this.toolStripMacros.TabIndex = 1;
-      this.toolStripMacros.Text = "Macros";
+      this.addProgramToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.addProgramToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.addProgramToolStripButton.Name = "addProgramToolStripButton";
+      this.addProgramToolStripButton.Size = new System.Drawing.Size(52, 19);
+      this.addProgramToolStripButton.Text = "Add";
+      this.addProgramToolStripButton.Click += new System.EventHandler(this.AddProgram);
       // 
-      // toolStripButtonNewMacro
+      // editProgramToolStripButton
       // 
-      this.toolStripButtonNewMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonNewMacro.Name = "toolStripButtonNewMacro";
-      this.toolStripButtonNewMacro.Size = new System.Drawing.Size(35, 22);
-      this.toolStripButtonNewMacro.Text = "New";
-      this.toolStripButtonNewMacro.ToolTipText = "Create a new macro";
-      this.toolStripButtonNewMacro.Click += new System.EventHandler(this.toolStripButtonNewMacro_Click);
+      this.editProgramToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.editProgramToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("editProgramToolStripButton.Image")));
+      this.editProgramToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.editProgramToolStripButton.Name = "editProgramToolStripButton";
+      this.editProgramToolStripButton.Size = new System.Drawing.Size(52, 19);
+      this.editProgramToolStripButton.Text = "Edit";
+      this.editProgramToolStripButton.Click += new System.EventHandler(this.EditProgram);
       // 
-      // toolStripButtonEditMacro
+      // removeProgramToolStripButton
       // 
-      this.toolStripButtonEditMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonEditMacro.Name = "toolStripButtonEditMacro";
-      this.toolStripButtonEditMacro.Size = new System.Drawing.Size(31, 22);
-      this.toolStripButtonEditMacro.Text = "Edit";
-      this.toolStripButtonEditMacro.ToolTipText = "Edit the selected macro";
-      this.toolStripButtonEditMacro.Click += new System.EventHandler(this.toolStripButtonEditMacro_Click);
+      this.removeProgramToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.removeProgramToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("removeProgramToolStripButton.Image")));
+      this.removeProgramToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.removeProgramToolStripButton.Name = "removeProgramToolStripButton";
+      this.removeProgramToolStripButton.Size = new System.Drawing.Size(52, 19);
+      this.removeProgramToolStripButton.Text = "Remove";
+      this.removeProgramToolStripButton.Click += new System.EventHandler(this.RemoveProgram);
       // 
-      // toolStripButtonDeleteMacro
+      // mappingsListView
       // 
-      this.toolStripButtonDeleteMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonDeleteMacro.Name = "toolStripButtonDeleteMacro";
-      this.toolStripButtonDeleteMacro.Size = new System.Drawing.Size(44, 22);
-      this.toolStripButtonDeleteMacro.Text = "Delete";
-      this.toolStripButtonDeleteMacro.ToolTipText = "Delete the selected macro";
-      this.toolStripButtonDeleteMacro.Click += new System.EventHandler(this.toolStripButtonDeleteMacro_Click);
-      // 
-      // toolStripButtonCreateShortcutForMacro
-      // 
-      this.toolStripButtonCreateShortcutForMacro.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-      this.toolStripButtonCreateShortcutForMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonCreateShortcutForMacro.Name = "toolStripButtonCreateShortcutForMacro";
-      this.toolStripButtonCreateShortcutForMacro.Size = new System.Drawing.Size(92, 22);
-      this.toolStripButtonCreateShortcutForMacro.Text = "Create shortcut";
-      this.toolStripButtonCreateShortcutForMacro.ToolTipText = "Create a shortcut to run the selected macro";
-      this.toolStripButtonCreateShortcutForMacro.Click += new System.EventHandler(this.toolStripButtonCreateShortcutForMacro_Click);
-      // 
-      // toolStripButtonTestMacro
-      // 
-      this.toolStripButtonTestMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonTestMacro.Name = "toolStripButtonTestMacro";
-      this.toolStripButtonTestMacro.Size = new System.Drawing.Size(33, 22);
-      this.toolStripButtonTestMacro.Text = "Test";
-      this.toolStripButtonTestMacro.ToolTipText = "Test the selected macro";
-      this.toolStripButtonTestMacro.Click += new System.EventHandler(this.toolStripButtonTestMacro_Click);
-      // 
-      // listViewMacro
-      // 
-      this.listViewMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+      this.mappingsListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.listViewMacro.FullRowSelect = true;
-      this.listViewMacro.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-      this.listViewMacro.HideSelection = false;
-      this.listViewMacro.LabelEdit = true;
-      this.listViewMacro.Location = new System.Drawing.Point(8, 8);
-      this.listViewMacro.MultiSelect = false;
-      this.listViewMacro.Name = "listViewMacro";
-      this.listViewMacro.ShowGroups = false;
-      this.listViewMacro.Size = new System.Drawing.Size(504, 328);
-      this.listViewMacro.TabIndex = 0;
-      this.listViewMacro.UseCompatibleStateImageBehavior = false;
-      this.listViewMacro.View = System.Windows.Forms.View.List;
-      this.listViewMacro.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewMacro_AfterLabelEdit);
-      this.listViewMacro.DoubleClick += new System.EventHandler(this.listViewMacro_DoubleClick);
+      this.mappingsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeaderButton,
+            this.columnHeaderDescription,
+            this.columnHeaderCommand});
+      this.mappingsListView.ContextMenuStrip = this.mappingsContextMenuStrip;
+      this.mappingsListView.FullRowSelect = true;
+      this.mappingsListView.GridLines = true;
+      this.mappingsListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+      this.mappingsListView.HideSelection = false;
+      this.mappingsListView.ImeMode = System.Windows.Forms.ImeMode.On;
+      this.mappingsListView.Location = new System.Drawing.Point(8, 104);
+      this.mappingsListView.MultiSelect = false;
+      this.mappingsListView.Name = "mappingsListView";
+      this.mappingsListView.ShowGroups = false;
+      this.mappingsListView.Size = new System.Drawing.Size(504, 232);
+      this.mappingsListView.TabIndex = 1;
+      this.mappingsListView.UseCompatibleStateImageBehavior = false;
+      this.mappingsListView.View = System.Windows.Forms.View.Details;
+      this.mappingsListView.SelectedIndexChanged += new System.EventHandler(this.mappingsListView_SelectedIndexChanged);
+      this.mappingsListView.DoubleClick += new System.EventHandler(this.EditButtonMapping);
+      this.mappingsListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mappingsListView_KeyDown);
       // 
-      // tabPageIRCommands
+      // columnHeaderButton
       // 
-      this.tabPageIRCommands.Controls.Add(this.toolStripIRCommands);
-      this.tabPageIRCommands.Controls.Add(this.listViewIR);
-      this.tabPageIRCommands.Location = new System.Drawing.Point(4, 22);
-      this.tabPageIRCommands.Name = "tabPageIRCommands";
-      this.tabPageIRCommands.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageIRCommands.Size = new System.Drawing.Size(520, 374);
-      this.tabPageIRCommands.TabIndex = 3;
-      this.tabPageIRCommands.Text = "IR Commands";
-      this.tabPageIRCommands.UseVisualStyleBackColor = true;
+      this.columnHeaderButton.Text = "Code";
+      this.columnHeaderButton.Width = 100;
       // 
-      // toolStripIRCommands
+      // columnHeaderDescription
       // 
-      this.toolStripIRCommands.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.toolStripIRCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-      this.toolStripIRCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButtonNewIR,
-            this.toolStripButtonEditIR,
-            this.toolStripButtonDeleteIR});
-      this.toolStripIRCommands.Location = new System.Drawing.Point(3, 346);
-      this.toolStripIRCommands.Name = "toolStripIRCommands";
-      this.toolStripIRCommands.Size = new System.Drawing.Size(514, 25);
-      this.toolStripIRCommands.TabIndex = 1;
-      this.toolStripIRCommands.Text = "IR Commands";
+      this.columnHeaderDescription.Text = "Description";
+      this.columnHeaderDescription.Width = 180;
       // 
-      // toolStripButtonNewIR
+      // columnHeaderCommand
       // 
-      this.toolStripButtonNewIR.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonNewIR.Name = "toolStripButtonNewIR";
-      this.toolStripButtonNewIR.Size = new System.Drawing.Size(35, 22);
-      this.toolStripButtonNewIR.Text = "New";
-      this.toolStripButtonNewIR.ToolTipText = "Create a new IR Command";
-      this.toolStripButtonNewIR.Click += new System.EventHandler(this.toolStripButtonNewIR_Click);
+      this.columnHeaderCommand.Text = "Command";
+      this.columnHeaderCommand.Width = 200;
       // 
-      // toolStripButtonEditIR
+      // mappingsToolStrip
       // 
-      this.toolStripButtonEditIR.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonEditIR.Name = "toolStripButtonEditIR";
-      this.toolStripButtonEditIR.Size = new System.Drawing.Size(31, 22);
-      this.toolStripButtonEditIR.Text = "Edit";
-      this.toolStripButtonEditIR.ToolTipText = "Edit the selected IR Command";
-      this.toolStripButtonEditIR.Click += new System.EventHandler(this.toolStripButtonEditIR_Click);
+      this.mappingsToolStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.mappingsToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+      this.mappingsToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newMappingToolStripButton,
+            this.editMappingToolStripButton,
+            this.removeMappingToolStripButton,
+            this.clearMappingsToolStripButton,
+            this.remapToolStripButton});
+      this.mappingsToolStrip.Location = new System.Drawing.Point(3, 346);
+      this.mappingsToolStrip.Name = "mappingsToolStrip";
+      this.mappingsToolStrip.Size = new System.Drawing.Size(514, 25);
+      this.mappingsToolStrip.TabIndex = 2;
+      this.mappingsToolStrip.Text = "Button Mappings";
       // 
-      // toolStripButtonDeleteIR
+      // newMappingToolStripButton
       // 
-      this.toolStripButtonDeleteIR.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButtonDeleteIR.Name = "toolStripButtonDeleteIR";
-      this.toolStripButtonDeleteIR.Size = new System.Drawing.Size(44, 22);
-      this.toolStripButtonDeleteIR.Text = "Delete";
-      this.toolStripButtonDeleteIR.ToolTipText = "Delete the selected IR Command";
-      this.toolStripButtonDeleteIR.Click += new System.EventHandler(this.toolStripButtonDeleteIR_Click);
+      this.newMappingToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.newMappingToolStripButton.Name = "newMappingToolStripButton";
+      this.newMappingToolStripButton.Size = new System.Drawing.Size(35, 22);
+      this.newMappingToolStripButton.Text = "New";
+      this.newMappingToolStripButton.ToolTipText = "Create a new button mapping";
+      this.newMappingToolStripButton.Click += new System.EventHandler(this.NewButtonMapping);
       // 
-      // listViewIR
+      // editMappingToolStripButton
       // 
-      this.listViewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+      this.editMappingToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.editMappingToolStripButton.Name = "editMappingToolStripButton";
+      this.editMappingToolStripButton.Size = new System.Drawing.Size(31, 22);
+      this.editMappingToolStripButton.Text = "Edit";
+      this.editMappingToolStripButton.ToolTipText = "Edit the selected button mapping";
+      this.editMappingToolStripButton.Click += new System.EventHandler(this.EditButtonMapping);
+      // 
+      // removeMappingToolStripButton
+      // 
+      this.removeMappingToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.removeMappingToolStripButton.Name = "removeMappingToolStripButton";
+      this.removeMappingToolStripButton.Size = new System.Drawing.Size(44, 22);
+      this.removeMappingToolStripButton.Text = "Delete";
+      this.removeMappingToolStripButton.ToolTipText = "Delete the selected button mapping";
+      this.removeMappingToolStripButton.Click += new System.EventHandler(this.DeleteButtonMapping);
+      // 
+      // clearMappingsToolStripButton
+      // 
+      this.clearMappingsToolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.clearMappingsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.clearMappingsToolStripButton.Name = "clearMappingsToolStripButton";
+      this.clearMappingsToolStripButton.Size = new System.Drawing.Size(61, 22);
+      this.clearMappingsToolStripButton.Text = "Delete All";
+      this.clearMappingsToolStripButton.ToolTipText = "Delete all the button mappings";
+      this.clearMappingsToolStripButton.Click += new System.EventHandler(this.ClearButtonMappings);
+      // 
+      // remapToolStripButton
+      // 
+      this.remapToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.remapToolStripButton.Name = "remapToolStripButton";
+      this.remapToolStripButton.Size = new System.Drawing.Size(48, 22);
+      this.remapToolStripButton.Text = "Remap";
+      this.remapToolStripButton.ToolTipText = "Link a new code to the selected mapping";
+      this.remapToolStripButton.Click += new System.EventHandler(this.RemapButtonMapping);
+      // 
+      // tabControl
+      // 
+      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
-      this.listViewIR.FullRowSelect = true;
-      this.listViewIR.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-      this.listViewIR.HideSelection = false;
-      this.listViewIR.LabelEdit = true;
-      this.listViewIR.Location = new System.Drawing.Point(8, 8);
-      this.listViewIR.MultiSelect = false;
-      this.listViewIR.Name = "listViewIR";
-      this.listViewIR.ShowGroups = false;
-      this.listViewIR.Size = new System.Drawing.Size(504, 328);
-      this.listViewIR.TabIndex = 0;
-      this.listViewIR.UseCompatibleStateImageBehavior = false;
-      this.listViewIR.View = System.Windows.Forms.View.List;
-      this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
-      this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
-      // 
-      // checkBoxAutoRun
-      // 
-      this.checkBoxAutoRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.checkBoxAutoRun.AutoSize = true;
-      this.checkBoxAutoRun.Location = new System.Drawing.Point(8, 448);
-      this.checkBoxAutoRun.Name = "checkBoxAutoRun";
-      this.checkBoxAutoRun.Size = new System.Drawing.Size(167, 17);
-      this.checkBoxAutoRun.TabIndex = 2;
-      this.checkBoxAutoRun.Text = "&Start Translator with Windows";
-      this.toolTip.SetToolTip(this.checkBoxAutoRun, "Set this to make Translator automatically start when you turn the computer on");
-      this.checkBoxAutoRun.UseVisualStyleBackColor = true;
-      this.checkBoxAutoRun.CheckedChanged += new System.EventHandler(this.checkBoxAutoRun_CheckedChanged);
-      // 
-      // menuStrip
-      // 
-      this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.configurationToolStripMenuItem,
-            this.helpToolStripMenuItem});
-      this.menuStrip.Location = new System.Drawing.Point(0, 0);
-      this.menuStrip.Name = "menuStrip";
-      this.menuStrip.Size = new System.Drawing.Size(544, 24);
-      this.menuStrip.TabIndex = 0;
-      this.menuStrip.Text = "menuStrip";
-      // 
-      // configurationToolStripMenuItem
-      // 
-      this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem,
-            this.openToolStripMenuItem,
-            this.importToolStripMenuItem,
-            this.exportToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.serverToolStripMenuItem,
-            this.advancedToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.exitToolStripMenuItem});
-      this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
-      this.configurationToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-      this.configurationToolStripMenuItem.Text = "&File";
-      // 
-      // newToolStripMenuItem
-      // 
-      this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-      this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-      this.newToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.newToolStripMenuItem.Text = "&New";
-      this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
-      // 
-      // openToolStripMenuItem
-      // 
-      this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-      this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.openToolStripMenuItem.Text = "&Open...";
-      this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-      // 
-      // importToolStripMenuItem
-      // 
-      this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-      this.importToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.importToolStripMenuItem.Text = "&Import...";
-      this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
-      // 
-      // exportToolStripMenuItem
-      // 
-      this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-      this.exportToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.exportToolStripMenuItem.Text = "&Export...";
-      this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
-      // 
-      // toolStripSeparator1
-      // 
-      this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(154, 6);
-      // 
-      // serverToolStripMenuItem2
-      // 
-      this.serverToolStripMenuItem.Name = "serverToolStripMenuItem2";
-      this.serverToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.serverToolStripMenuItem.Text = "&Server...";
-      this.serverToolStripMenuItem.Click += new System.EventHandler(this.serverToolStripMenuItem2_Click);
-      // 
-      // advancedToolStripMenuItem
-      // 
-      this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-      this.advancedToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.advancedToolStripMenuItem.Text = "&Advanced...";
-      this.advancedToolStripMenuItem.Click += new System.EventHandler(this.advancedToolStripMenuItem_Click);
-      // 
-      // toolStripSeparator2
-      // 
-      this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(154, 6);
-      // 
-      // exitToolStripMenuItem
-      // 
-      this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-      this.exitToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-      this.exitToolStripMenuItem.Text = "E&xit";
-      this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-      // 
-      // helpToolStripMenuItem
-      // 
-      this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.contentsToolStripMenuItem,
-            this.aboutToolStripMenuItem});
-      this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-      this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-      this.helpToolStripMenuItem.Text = "&Help";
-      // 
-      // contentsToolStripMenuItem
-      // 
-      this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
-      this.contentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.contentsToolStripMenuItem.Text = "&Contents";
-      this.contentsToolStripMenuItem.Click += new System.EventHandler(this.contentsToolStripMenuItem_Click);
-      // 
-      // aboutToolStripMenuItem
-      // 
-      this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.aboutToolStripMenuItem.Text = "&About";
-      this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-      // 
-      // openFileDialog
-      // 
-      this.openFileDialog.Filter = "XML Files|*.xml";
-      // 
-      // saveFileDialog
-      // 
-      this.saveFileDialog.Filter = "XML Files|*.xml";
-      this.saveFileDialog.Title = "Export settings ...";
+      this.tabControl.Controls.Add(this.tabPagePrograms);
+      this.tabControl.Controls.Add(this.tabPageEvents);
+      this.tabControl.Controls.Add(this.tabPageMacro);
+      this.tabControl.Controls.Add(this.tabPageIRCommands);
+      this.tabControl.Location = new System.Drawing.Point(8, 34);
+      this.tabControl.Name = "tabControl";
+      this.tabControl.SelectedIndex = 0;
+      this.tabControl.Size = new System.Drawing.Size(528, 400);
+      this.tabControl.TabIndex = 1;
+      this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
       // 
       // MainForm
       // 
@@ -855,10 +882,10 @@ namespace Translator
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(544, 473);
-      this.Controls.Add(this.tabControl);
       this.Controls.Add(this.menuStrip);
       this.Controls.Add(this.buttonOK);
       this.Controls.Add(this.checkBoxAutoRun);
+      this.Controls.Add(this.tabControl);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MainMenuStrip = this.menuStrip;
       this.MinimizeBox = false;
@@ -869,26 +896,29 @@ namespace Translator
       this.Load += new System.EventHandler(this.MainForm_Load);
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
       this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.MainForm_HelpRequested);
-      this.contextMenuStripButtonMapping.ResumeLayout(false);
-      this.tabControl.ResumeLayout(false);
-      this.tabPagePrograms.ResumeLayout(false);
-      this.tabPagePrograms.PerformLayout();
-      this.panelPrograms.ResumeLayout(false);
-      this.panelProgramsButtons.ResumeLayout(false);
-      this.toolStripButtonMappings.ResumeLayout(false);
-      this.toolStripButtonMappings.PerformLayout();
-      this.tabPageEvents.ResumeLayout(false);
+      this.programsContextMenuStrip.ResumeLayout(false);
+      this.mappingsContextMenuStrip.ResumeLayout(false);
       this.contextMenuStripEvents.ResumeLayout(false);
-      this.tabPageMacro.ResumeLayout(false);
-      this.tabPageMacro.PerformLayout();
-      this.toolStripMacros.ResumeLayout(false);
-      this.toolStripMacros.PerformLayout();
+      this.menuStrip.ResumeLayout(false);
+      this.menuStrip.PerformLayout();
       this.tabPageIRCommands.ResumeLayout(false);
       this.tabPageIRCommands.PerformLayout();
       this.toolStripIRCommands.ResumeLayout(false);
       this.toolStripIRCommands.PerformLayout();
-      this.menuStrip.ResumeLayout(false);
-      this.menuStrip.PerformLayout();
+      this.tabPageMacro.ResumeLayout(false);
+      this.tabPageMacro.PerformLayout();
+      this.toolStripMacros.ResumeLayout(false);
+      this.toolStripMacros.PerformLayout();
+      this.tabPageEvents.ResumeLayout(false);
+      this.tabPagePrograms.ResumeLayout(false);
+      this.tabPagePrograms.PerformLayout();
+      this.programsPanel.ResumeLayout(false);
+      this.programsPanel.PerformLayout();
+      this.programsToolStrip.ResumeLayout(false);
+      this.programsToolStrip.PerformLayout();
+      this.mappingsToolStrip.ResumeLayout(false);
+      this.mappingsToolStrip.PerformLayout();
+      this.tabControl.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -896,27 +926,9 @@ namespace Translator
 
     #endregion
 
-    private System.Windows.Forms.ListView listViewButtons;
-    private System.Windows.Forms.ColumnHeader columnHeaderButton;
-    private System.Windows.Forms.ColumnHeader columnHeaderCommand;
     private System.Windows.Forms.Button buttonOK;
-    private System.Windows.Forms.TabControl tabControl;
-    private System.Windows.Forms.TabPage tabPagePrograms;
-    private System.Windows.Forms.TabPage tabPageIRCommands;
-    private System.Windows.Forms.TabPage tabPageMacro;
-    private System.Windows.Forms.ColumnHeader columnHeaderDescription;
     private System.Windows.Forms.ToolTip toolTip;
     private System.Windows.Forms.CheckBox checkBoxAutoRun;
-    private System.Windows.Forms.TabPage tabPageEvents;
-    private System.Windows.Forms.Label labelEvent;
-    private System.Windows.Forms.ComboBox comboBoxEvents;
-    private System.Windows.Forms.ListView listViewEventMap;
-    private System.Windows.Forms.ColumnHeader columnHeaderEvent;
-    private System.Windows.Forms.ColumnHeader columnHeaderEventCommand;
-    private System.Windows.Forms.Button buttonSetCommand;
-    private System.Windows.Forms.Button buttonAddEvent;
-    private System.Windows.Forms.Label labelCommand;
-    private System.Windows.Forms.ComboBox comboBoxCommands;
     private System.Windows.Forms.MenuStrip menuStrip;
     private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
@@ -932,44 +944,65 @@ namespace Translator
     private System.Windows.Forms.ToolStripMenuItem serverToolStripMenuItem;
     private System.Windows.Forms.OpenFileDialog openFileDialog;
     private System.Windows.Forms.SaveFileDialog saveFileDialog;
-    private System.Windows.Forms.ListView listViewIR;
-    private System.Windows.Forms.ListView listViewMacro;
-    private System.Windows.Forms.ListView listViewPrograms;
     private System.Windows.Forms.ImageList imageListPrograms;
-    private System.Windows.Forms.ContextMenuStrip contextMenuStripPrograms;
+    private System.Windows.Forms.ContextMenuStrip programsContextMenuStrip;
     private System.Windows.Forms.ContextMenuStrip contextMenuStripEvents;
     private System.Windows.Forms.ToolStripMenuItem removeEventToolStripMenuItem;
-    private System.Windows.Forms.ContextMenuStrip contextMenuStripButtonMapping;
-    private System.Windows.Forms.ToolStripMenuItem newButtonToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem editButtonToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem deleteButtonToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem clearButtonsToolStripMenuItem;
+    private System.Windows.Forms.ContextMenuStrip mappingsContextMenuStrip;
+    private System.Windows.Forms.ToolStripMenuItem newMappingToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem editMappingToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem removeMappingToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem clearMappingsToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-    private System.Windows.Forms.ToolStripMenuItem copyButtonsFromToolStripMenuItem;
-    private System.Windows.Forms.ColumnHeader columnHeader1;
-    private System.Windows.Forms.ToolStrip toolStripButtonMappings;
-    private System.Windows.Forms.ToolStripButton toolStripButtonNewMapping;
-    private System.Windows.Forms.ToolStripButton toolStripButtonEditMapping;
-    private System.Windows.Forms.ToolStripButton toolStripButtonDeleteMapping;
-    private System.Windows.Forms.ToolStripButton toolStripButtonDeleteAllMappings;
-    private System.Windows.Forms.ToolStrip toolStripMacros;
-    private System.Windows.Forms.ToolStripButton toolStripButtonNewMacro;
-    private System.Windows.Forms.ToolStripButton toolStripButtonEditMacro;
-    private System.Windows.Forms.ToolStripButton toolStripButtonDeleteMacro;
-    private System.Windows.Forms.ToolStripButton toolStripButtonTestMacro;
-    private System.Windows.Forms.ToolStripButton toolStripButtonCreateShortcutForMacro;
+    private System.Windows.Forms.ToolStripMenuItem copyMappingsFromToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem remapToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
+    private System.Windows.Forms.TabPage tabPageIRCommands;
     private System.Windows.Forms.ToolStrip toolStripIRCommands;
     private System.Windows.Forms.ToolStripButton toolStripButtonNewIR;
     private System.Windows.Forms.ToolStripButton toolStripButtonEditIR;
     private System.Windows.Forms.ToolStripButton toolStripButtonDeleteIR;
-    private System.Windows.Forms.ToolStripButton toolStripButtonRemapMapping;
-    private System.Windows.Forms.Panel panelPrograms;
-    private System.Windows.Forms.Panel panelProgramsButtons;
-    private System.Windows.Forms.Label labelProgramsDelete;
-    private System.Windows.Forms.Label labelProgramsEdit;
-    private System.Windows.Forms.Label labelProgramsAdd;
-    private System.Windows.Forms.ToolStripMenuItem remapButtonToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
+    private System.Windows.Forms.ListView listViewIR;
+    private System.Windows.Forms.TabPage tabPageMacro;
+    private System.Windows.Forms.ToolStrip toolStripMacros;
+    private System.Windows.Forms.ToolStripButton toolStripButtonNewMacro;
+    private System.Windows.Forms.ToolStripButton toolStripButtonEditMacro;
+    private System.Windows.Forms.ToolStripButton toolStripButtonDeleteMacro;
+    private System.Windows.Forms.ToolStripButton toolStripButtonCreateShortcutForMacro;
+    private System.Windows.Forms.ToolStripButton toolStripButtonTestMacro;
+    private System.Windows.Forms.ListView listViewMacro;
+    private System.Windows.Forms.TabPage tabPageEvents;
+    private System.Windows.Forms.Button buttonSetCommand;
+    private System.Windows.Forms.Button buttonAddEvent;
+    private System.Windows.Forms.Label labelCommand;
+    private System.Windows.Forms.ComboBox comboBoxCommands;
+    private System.Windows.Forms.Label labelEvent;
+    private System.Windows.Forms.ComboBox comboBoxEvents;
+    private System.Windows.Forms.ListView listViewEventMap;
+    private System.Windows.Forms.ColumnHeader columnHeaderEvent;
+    private System.Windows.Forms.ColumnHeader columnHeaderEventCommand;
+    private System.Windows.Forms.TabPage tabPagePrograms;
+    private System.Windows.Forms.Panel programsPanel;
+    private System.Windows.Forms.ListView programsListView;
+    private System.Windows.Forms.ColumnHeader columnHeader1;
+    private System.Windows.Forms.ToolStrip programsToolStrip;
+    private System.Windows.Forms.ToolStripButton addProgramToolStripButton;
+    private System.Windows.Forms.ToolStripButton editProgramToolStripButton;
+    private System.Windows.Forms.ToolStripButton removeProgramToolStripButton;
+    private System.Windows.Forms.ListView mappingsListView;
+    private System.Windows.Forms.ColumnHeader columnHeaderButton;
+    private System.Windows.Forms.ColumnHeader columnHeaderDescription;
+    private System.Windows.Forms.ColumnHeader columnHeaderCommand;
+    private System.Windows.Forms.ToolStrip mappingsToolStrip;
+    private System.Windows.Forms.ToolStripButton newMappingToolStripButton;
+    private System.Windows.Forms.ToolStripButton editMappingToolStripButton;
+    private System.Windows.Forms.ToolStripButton removeMappingToolStripButton;
+    private System.Windows.Forms.ToolStripButton clearMappingsToolStripButton;
+    private System.Windows.Forms.ToolStripButton remapToolStripButton;
+    private System.Windows.Forms.TabControl tabControl;
+    private System.Windows.Forms.ToolStripMenuItem addProgramToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem editProgramToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem removeProgramToolStripMenuItem;
   }
 }
 

@@ -47,10 +47,7 @@ namespace Translator
 
     #region Variables
 
-    private ToolStripMenuItem _addProgramToolStripMenuItem;
-    private ToolStripMenuItem _editProgramToolStripMenuItem;
     private LearnIR _learnIR;
-    private ToolStripMenuItem _removeProgramToolStripMenuItem;
 
     private int _selectedProgram;
 
@@ -68,15 +65,13 @@ namespace Translator
       SetImages();
 
       RefreshProgramList();
-      listViewPrograms.Items[0].Selected = true;
+      programsListView.Items[0].Selected = true;
 
-      RefreshButtonList();
+      RefreshMappingList();
       RefreshEventList();
       RefreshEventCommands();
       RefreshIRList();
       RefreshMacroList();
-
-      SetupProgramsContextMenu();
 
       try
       {
@@ -92,20 +87,30 @@ namespace Translator
 
     private void SetImages()
     {
-      this.newButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.editButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-      this.clearButtonsToolStripMenuItem.Image = IrssUtils.Properties.Resources.DeleteAll;
-      this.remapButtonToolStripMenuItem.Image = IrssUtils.Properties.Resources.Remap;
-      this.copyButtonsFromToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
-      this.labelProgramsDelete.Image = IrssUtils.Properties.Resources.Delete;
-      this.labelProgramsEdit.Image = IrssUtils.Properties.Resources.Edit;
-      this.labelProgramsAdd.Image = IrssUtils.Properties.Resources.Plus;
-      this.toolStripButtonNewMapping.Image = IrssUtils.Properties.Resources.Plus;
-      this.toolStripButtonEditMapping.Image = IrssUtils.Properties.Resources.Edit;
-      this.toolStripButtonDeleteMapping.Image = IrssUtils.Properties.Resources.Delete;
-      this.toolStripButtonDeleteAllMappings.Image = IrssUtils.Properties.Resources.DeleteAll;
-      this.toolStripButtonRemapMapping.Image = IrssUtils.Properties.Resources.Remap;
+      this.newMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
+      this.editMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
+      this.removeMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
+      this.clearMappingsToolStripMenuItem.Image = IrssUtils.Properties.Resources.DeleteAll;
+      this.remapToolStripMenuItem.Image = IrssUtils.Properties.Resources.Remap;
+      this.copyMappingsFromToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
+
+      // programs panel
+      this.addProgramToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
+      this.addProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      this.editProgramToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
+      this.editProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      this.removeProgramToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
+      this.removeProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+
+      this.addProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
+      this.editProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
+      this.removeProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
+
+      this.newMappingToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
+      this.editMappingToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
+      this.removeMappingToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
+      this.clearMappingsToolStripButton.Image = IrssUtils.Properties.Resources.DeleteAll;
+      this.remapToolStripButton.Image = IrssUtils.Properties.Resources.Remap;
       this.removeEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
       this.toolStripButtonNewMacro.Image = IrssUtils.Properties.Resources.Plus;
       this.toolStripButtonEditMacro.Image = IrssUtils.Properties.Resources.Edit;
@@ -144,6 +149,8 @@ namespace Translator
 
       Configuration.Save(Program.Config, Program.ConfigFile);
     }
+    
+    #region Programs Panel
 
     private void RefreshProgramList()
     {
@@ -162,16 +169,16 @@ namespace Translator
       //imageListPrograms.Images.Add(Properties.Resources.NoIcon);
 
       string wasSelected = string.Empty;
-      if (listViewPrograms.Items.Count > 0)
-        wasSelected = listViewPrograms.Items[_selectedProgram].Text;
+      if (programsListView.Items.Count > 0)
+        wasSelected = programsListView.Items[_selectedProgram].Text;
 
-      listViewPrograms.Items.Clear();
+      programsListView.Items.Clear();
       _selectedProgram = 0;
 
       // Add System-Wide ...
       ListViewItem newItem = new ListViewItem(SystemWide, 0);
       newItem.ToolTipText = "Defines mappings that effect the whole computer";
-      listViewPrograms.Items.Add(newItem);
+      programsListView.Items.Add(newItem);
 
       // Add other programs ...
       int imageIndex = 2;
@@ -194,21 +201,184 @@ namespace Translator
           newItem.ToolTipText = "Please check program file path";
         }
 
-        listViewPrograms.Items.Add(newItem);
+        programsListView.Items.Add(newItem);
 
         if (progSettings.Name.Equals(wasSelected))
           newItem.Selected = true;
       }
 
-      if (wasSelected.Equals(SystemWide) || listViewPrograms.SelectedItems.Count == 0)
-        listViewPrograms.Items[0].Selected = true;
+      if (wasSelected.Equals(SystemWide) || programsListView.SelectedItems.Count == 0)
+        programsListView.Items[0].Selected = true;
 
       Program.UpdateNotifyMenu();
     }
 
-    private void RefreshButtonList()
+
+    private void AddProgram()
     {
-      listViewButtons.Items.Clear();
+      ProgramSettings progSettings = new ProgramSettings();
+
+      if (EditProgram(progSettings))
+      {
+        Program.Config.Programs.Add(progSettings);
+
+        RefreshProgramList();
+
+        // TODO: Detect and offer preconfigured settings ...
+        /*
+        string programFile = Path.GetFileName(progSettings.FileName);
+        string settingsFile = Path.Combine(Program.FolderDefaultSettings, programFile + ".xml");
+        if (File.Exists(settingsFile))
+        {
+          if (MessageBox.Show(this, String.Format("Do you want to use the default settings for {0} ({1})?", progSettings.Name, programFile), "Default settings available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+          {
+            AppProfile appProfile = LoadDefaultSettings(settingsFile);
+
+            if (appProfile != null)
+            {
+              progSettings.ButtonMappings.AddRange(appProfile.ButtonMappings);
+
+              RefreshButtonList();
+            }
+          }
+        }
+        */
+      }
+    }
+
+    private void AddProgram(object sender, EventArgs e)
+    {
+      AddProgram();
+    }
+
+    private bool EditProgram()
+    {
+      if (_selectedProgram == 0)
+        return false;
+      //if (programsListView.SelectedItems.Count == 0)
+      //  return;
+
+      string selectedItem = programsListView.Items[_selectedProgram].Text;
+      //string selectedItem = programsListView.SelectedItems[0].Text;
+
+      return EditProgram(selectedItem);
+      //EditProgram(selectedItem);
+    }
+
+    private void EditProgram(object sender, EventArgs e)
+    {
+      EditProgram();
+    }
+
+    private bool EditProgram(string programName)
+    {
+      foreach (ProgramSettings progSettings in Program.Config.Programs)
+      {
+        if (progSettings.Name.Equals(programName))
+        {
+          if (EditProgram(progSettings))
+          {
+            RefreshProgramList();
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    private bool EditProgram(ProgramSettings progSettings)
+    {
+      EditProgramForm editProg = new EditProgramForm(progSettings);
+
+      if (editProg.ShowDialog(this) == DialogResult.OK)
+      {
+        progSettings.Name = editProg.DisplayName;
+        progSettings.FileName = editProg.Filename;
+        progSettings.Folder = editProg.StartupFolder;
+        progSettings.Arguments = editProg.Parameters;
+        progSettings.WindowState = editProg.StartState;
+        progSettings.UseShellExecute = editProg.UseShellExecute;
+        progSettings.IgnoreSystemWide = editProg.IgnoreSystemWide;
+
+        Program.UpdateNotifyMenu();
+        return true;
+      }
+
+      return false;
+    }
+
+    private void RemoveProgram(object sender, EventArgs e)
+    {
+      if (programsListView.SelectedItems.Count == 0)
+        return;
+
+      string selectedItem = programsListView.SelectedItems[0].Text;
+
+      string message = String.Format("Are you sure you want to remove all mappings for {0}?", selectedItem);
+      string caption = String.Format("Remove {0}?", selectedItem);
+
+      if (MessageBox.Show(this, message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+      {
+        foreach (ProgramSettings progSettings in Program.Config.Programs)
+        {
+          if (progSettings.Name.Equals(selectedItem))
+          {
+            Program.Config.Programs.Remove(progSettings);
+            break;
+          }
+        }
+
+        RefreshProgramList();
+      }
+    }
+
+
+    private void programsListView_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (programsListView.SelectedItems.Count == 0)
+        return;
+
+
+      _selectedProgram = programsListView.SelectedIndices[0];
+
+      if (_selectedProgram == 0)
+      {
+        editProgramToolStripMenuItem.Text = "&Edit ...";
+        removeProgramToolStripMenuItem.Text = "&Remove ...";
+
+        editProgramToolStripButton.Enabled = false;
+        editProgramToolStripMenuItem.Enabled = false;
+        removeProgramToolStripButton.Enabled = false;
+        removeProgramToolStripMenuItem.Enabled = false;
+      }
+      else
+      {
+        string program = programsListView.Items[_selectedProgram].Text;
+
+        editProgramToolStripMenuItem.Text = String.Format("&Edit \"{0}\"", program);
+        removeProgramToolStripMenuItem.Text = String.Format("&Remove \"{0}\"", program);
+
+        editProgramToolStripButton.Enabled = true;
+        editProgramToolStripMenuItem.Enabled = true;
+        removeProgramToolStripButton.Enabled = true;
+        removeProgramToolStripMenuItem.Enabled = true;
+      }
+
+      RefreshMappingList();
+    }
+
+    #endregion Programs Panel
+
+    #region Mappings Panel
+
+    private void RefreshMappingList()
+    {
+      mappingsListView.Items.Clear();
 
       List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
       if (currentMappings == null)
@@ -216,13 +386,336 @@ namespace Translator
 
       foreach (ButtonMapping map in currentMappings)
       {
-        listViewButtons.Items.Add(
+        mappingsListView.Items.Add(
           new ListViewItem(
             new string[] {map.KeyCode, map.Description, map.Command}
             )
           );
       }
+
+      mappingsListView_SelectedIndexChanged(null, null);
     }
+
+
+    private void NewButtonMapping()
+    {
+      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+      if (currentMappings == null)
+        return;
+
+      GetKeyCodeForm getKeyCode = new GetKeyCodeForm();
+      getKeyCode.ShowDialog(this);
+
+      string keyCode = getKeyCode.KeyCode;
+      string deviceName = getKeyCode.DeviceName;
+
+      if (String.IsNullOrEmpty(keyCode))
+        return;
+
+      ButtonMappingForm map = null;
+      ButtonMapping existing = null;
+
+      foreach (ButtonMapping test in currentMappings)
+      {
+        if (keyCode.Equals(test.KeyCode, StringComparison.Ordinal))
+        {
+          existing = test;
+          map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
+          break;
+        }
+      }
+
+      if (map == null)
+      {
+        string description = String.Empty;
+
+        // TODO: Implement abstract remote button descriptions.
+        if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
+        {
+          switch (keyCode.ToLowerInvariant())
+          {
+            case "Red":
+              description = "Red teletext button";
+              break;
+          }
+        }
+
+        map = new ButtonMappingForm(keyCode, description, String.Empty);
+      }
+
+      if (map.ShowDialog(this) == DialogResult.OK)
+      {
+        if (existing == null) // Create new mapping
+        {
+          mappingsListView.Items.Add(
+            new ListViewItem(
+              new string[] { map.KeyCode, map.Description, map.Command }
+              ));
+
+          currentMappings.Add(new ButtonMapping(map.KeyCode, map.Description, map.Command));
+        }
+        else // Replace existing mapping
+        {
+          for (int index = 0; index < mappingsListView.Items.Count; index++)
+          {
+            if (mappingsListView.Items[index].SubItems[0].Text.Equals(map.KeyCode, StringComparison.Ordinal))
+            {
+              mappingsListView.Items[index].SubItems[1].Text = map.Description;
+              mappingsListView.Items[index].SubItems[2].Text = map.Command;
+            }
+          }
+
+          existing.Description = map.Description;
+          existing.Command = map.Command;
+        }
+      }
+    }
+    private void NewButtonMapping(object sender, EventArgs e)
+    {
+      NewButtonMapping();
+    }
+
+    private void DeleteButtonMapping()
+    {
+      if (mappingsListView.SelectedIndices.Count != 1)
+        return;
+
+      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+      if (currentMappings == null)
+        return;
+
+      ListViewItem item = mappingsListView.SelectedItems[0];
+      mappingsListView.Items.Remove(item);
+
+      ButtonMapping toRemove = null;
+      foreach (ButtonMapping test in currentMappings)
+      {
+        if (test.KeyCode.Equals(item.SubItems[0].Text, StringComparison.Ordinal))
+        {
+          toRemove = test;
+          break;
+        }
+      }
+
+      if (toRemove != null)
+        currentMappings.Remove(toRemove);
+    }
+    private void DeleteButtonMapping(object sender, EventArgs e)
+    {
+      DeleteButtonMapping();
+    }
+
+    private void EditButtonMapping()
+    {
+      if (mappingsListView.SelectedIndices.Count != 1)
+        return;
+
+      ListViewItem item = mappingsListView.SelectedItems[0];
+
+      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+      if (currentMappings == null)
+        return;
+
+      foreach (ButtonMapping test in currentMappings)
+      {
+        if (item.SubItems[0].Text.Equals(test.KeyCode, StringComparison.Ordinal))
+        {
+          ButtonMappingForm map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
+
+          if (map.ShowDialog(this) == DialogResult.OK)
+          {
+            item.SubItems[1].Text = map.Description;
+            item.SubItems[2].Text = map.Command;
+
+            test.Description = map.Description;
+            test.Command = map.Command;
+          }
+
+          break;
+        }
+      }
+    }
+    private void EditButtonMapping(object sender, EventArgs e)
+    {
+      EditButtonMapping();
+    }
+
+    private void ClearButtonMappings()
+    {
+      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+      if (currentMappings == null)
+        return;
+
+      if (
+        MessageBox.Show(this, "Are you sure you want to clear all remote button mappings?", "Warning",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+        return;
+
+      currentMappings.Clear();
+      mappingsListView.Items.Clear();
+    }
+    private void ClearButtonMappings(object sender, EventArgs e)
+    {
+      ClearButtonMappings();
+    }
+
+    private void RemapButtonMapping()
+    {
+      if (mappingsListView.SelectedIndices.Count != 1)
+        return;
+
+      ListViewItem item = mappingsListView.SelectedItems[0];
+
+      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+      if (currentMappings == null)
+        return;
+
+      ButtonMapping toModify = null;
+      foreach (ButtonMapping test in currentMappings)
+      {
+        if (test.KeyCode.Equals(item.SubItems[0].Text, StringComparison.Ordinal))
+        {
+          toModify = test;
+          break;
+        }
+      }
+
+      if (toModify == null)
+        return;
+
+      GetKeyCodeForm getKeyCode = new GetKeyCodeForm();
+      getKeyCode.ShowDialog(this);
+
+      string keyCode = getKeyCode.KeyCode;
+      if (String.IsNullOrEmpty(keyCode))
+        return;
+
+      foreach (ButtonMapping test in currentMappings)
+      {
+        if (test.KeyCode.Equals(keyCode, StringComparison.Ordinal))
+        {
+          MessageBox.Show(this,
+                          String.Format("{0} is already mapped to {1} ({2})", keyCode, test.Description, test.Command),
+                          "Cannot remap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+      }
+
+      item.SubItems[0].Text = keyCode;
+
+      toModify.KeyCode = keyCode;
+    }
+    private void RemapButtonMapping(object sender, EventArgs e)
+    {
+      RemapButtonMapping();
+    }
+
+    private void CopyMappingsFromOtherProgram(string programName)
+    {
+      if (programName.Equals(SystemWide))
+      {
+        ImportButtons(Program.Config.SystemWideMappings);
+        return;
+      }
+
+      foreach (ProgramSettings programSettings in Program.Config.Programs)
+      {
+        if (programSettings.Name.Equals(programName, StringComparison.OrdinalIgnoreCase))
+        {
+          ImportButtons(programSettings.ButtonMappings);
+          return;
+        }
+      }
+    }
+    private void CopyMappingsFromOtherProgram(object sender, EventArgs e)
+    {
+      ToolStripMenuItem origin = sender as ToolStripMenuItem;
+      if (origin == null)
+        return;
+
+      CopyMappingsFromOtherProgram(origin.Text);
+      RefreshMappingList();
+    }
+
+
+    private void mappingsContextMenuStrip_Opening(object sender, CancelEventArgs e)
+    {
+      copyMappingsFromToolStripMenuItem.DropDownItems.Clear();
+
+      string selectedItem = programsListView.Items[_selectedProgram].Text;
+
+      if (_selectedProgram > 0)
+        copyMappingsFromToolStripMenuItem.DropDownItems.Add(SystemWide, IrssUtils.Properties.Resources.WinLogo,
+                                                           CopyMappingsFromOtherProgram);
+
+      foreach (ProgramSettings programSettings in Program.Config.Programs)
+      {
+        if (programSettings.Name.Equals(selectedItem))
+          continue;
+
+        if (String.IsNullOrEmpty(programSettings.FileName))
+          continue;
+
+        Icon icon = Win32.GetIconFor(programSettings.FileName);
+
+        Image image = null;
+        if (icon != null)
+          image = icon.ToBitmap();
+
+        copyMappingsFromToolStripMenuItem.DropDownItems.Add(programSettings.Name, image, CopyMappingsFromOtherProgram);
+      }
+    }
+
+    private void mappingsListView_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (mappingsListView.SelectedIndices.Count != 1)
+      {
+        editMappingToolStripButton.Enabled = false;
+        editMappingToolStripMenuItem.Enabled = false;
+        removeMappingToolStripButton.Enabled = false;
+        removeMappingToolStripMenuItem.Enabled = false;
+        remapToolStripButton.Enabled = false;
+        remapToolStripMenuItem.Enabled = false;
+      }
+      else
+      {
+        editMappingToolStripButton.Enabled = true;
+        editMappingToolStripMenuItem.Enabled = true;
+        removeMappingToolStripButton.Enabled = true;
+        removeMappingToolStripMenuItem.Enabled = true;
+        remapToolStripButton.Enabled = true;
+        remapToolStripMenuItem.Enabled = true;
+      }
+    }
+
+    private void mappingsListView_KeyDown(object sender, KeyEventArgs e)
+    {
+      e.Handled = true;
+
+      switch (e.KeyData)
+      {
+        case Keys.OemMinus:
+        case Keys.Delete:
+          DeleteButtonMapping();
+          break;
+
+        case Keys.F2:
+        case Keys.Enter:
+          EditButtonMapping();
+          break;
+
+        case Keys.Oemplus:
+        case Keys.Insert:
+          NewButtonMapping();
+          break;
+
+        default:
+          e.Handled = false;
+          break;
+      }
+    }
+
+    #endregion Mappings Panel
 
     private void RefreshEventList()
     {
@@ -302,7 +795,7 @@ namespace Translator
       }
       else
       {
-        string selectedItem = listViewPrograms.Items[_selectedProgram].Text;
+        string selectedItem = programsListView.Items[_selectedProgram].Text;
 
         foreach (ProgramSettings progSettings in Program.Config.Programs)
           if (progSettings.Name.Equals(selectedItem))
@@ -310,74 +803,6 @@ namespace Translator
       }
 
       return null;
-    }
-
-    private void SetupProgramsContextMenu()
-    {
-      _addProgramToolStripMenuItem = new ToolStripMenuItem("&Add Program", IrssUtils.Properties.Resources.Plus,
-                                                           new EventHandler(addProgramToolStripMenuItem_Click));
-      _editProgramToolStripMenuItem = new ToolStripMenuItem("&Edit Program", IrssUtils.Properties.Resources.Edit,
-                                                            new EventHandler(editProgramToolStripMenuItem_Click));
-      _removeProgramToolStripMenuItem = new ToolStripMenuItem("&Remove Program", IrssUtils.Properties.Resources.Delete,
-                                                              new EventHandler(removeProgramToolStripMenuItem_Click));
-
-      contextMenuStripPrograms.Items.Add(_addProgramToolStripMenuItem);
-      contextMenuStripPrograms.Items.Add(_editProgramToolStripMenuItem);
-      contextMenuStripPrograms.Items.Add(_removeProgramToolStripMenuItem);
-    }
-
-    private void RefreshProgramsContextMenu()
-    {
-      if (_selectedProgram == 0)
-      {
-        _editProgramToolStripMenuItem.Text = "&Edit ...";
-        _removeProgramToolStripMenuItem.Text = "&Remove ...";
-
-        _editProgramToolStripMenuItem.Enabled = false;
-        _removeProgramToolStripMenuItem.Enabled = false;
-      }
-      else
-      {
-        string program = listViewPrograms.Items[_selectedProgram].Text;
-
-        _editProgramToolStripMenuItem.Text = String.Format("&Edit \"{0}\"", program);
-        _removeProgramToolStripMenuItem.Text = String.Format("&Remove \"{0}\"", program);
-
-        _editProgramToolStripMenuItem.Enabled = true;
-        _removeProgramToolStripMenuItem.Enabled = true;
-      }
-    }
-
-    private void AddProgram()
-    {
-      ProgramSettings progSettings = new ProgramSettings();
-
-      if (EditProgram(progSettings))
-      {
-        Program.Config.Programs.Add(progSettings);
-
-        RefreshProgramList();
-
-        // TODO: Detect and offer preconfigured settings ...
-        /*
-        string programFile = Path.GetFileName(progSettings.FileName);
-        string settingsFile = Path.Combine(Program.FolderDefaultSettings, programFile + ".xml");
-        if (File.Exists(settingsFile))
-        {
-          if (MessageBox.Show(this, String.Format("Do you want to use the default settings for {0} ({1})?", progSettings.Name, programFile), "Default settings available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-          {
-            AppProfile appProfile = LoadDefaultSettings(settingsFile);
-
-            if (appProfile != null)
-            {
-              progSettings.ButtonMappings.AddRange(appProfile.ButtonMappings);
-
-              RefreshButtonList();
-            }
-          }
-        }
-        */
-      }
     }
 
     private AppProfile LoadDefaultSettings(string settingsFile)
@@ -394,58 +819,6 @@ namespace Translator
       }
 
       return null;
-    }
-
-    private bool EditCurrentProgram()
-    {
-      if (_selectedProgram == 0)
-        return false;
-
-      string selectedItem = listViewPrograms.Items[_selectedProgram].Text;
-
-      return EditProgram(selectedItem);
-    }
-
-    private bool EditProgram(string programName)
-    {
-      foreach (ProgramSettings progSettings in Program.Config.Programs)
-      {
-        if (progSettings.Name.Equals(programName))
-        {
-          if (EditProgram(progSettings))
-          {
-            RefreshProgramList();
-            return true;
-          }
-          else
-          {
-            return false;
-          }
-        }
-      }
-
-      return false;
-    }
-
-    private bool EditProgram(ProgramSettings progSettings)
-    {
-      EditProgramForm editProg = new EditProgramForm(progSettings);
-
-      if (editProg.ShowDialog(this) == DialogResult.OK)
-      {
-        progSettings.Name = editProg.DisplayName;
-        progSettings.FileName = editProg.Filename;
-        progSettings.Folder = editProg.StartupFolder;
-        progSettings.Arguments = editProg.Parameters;
-        progSettings.WindowState = editProg.StartState;
-        progSettings.UseShellExecute = editProg.UseShellExecute;
-        progSettings.IgnoreSystemWide = editProg.IgnoreSystemWide;
-
-        Program.UpdateNotifyMenu();
-        return true;
-      }
-
-      return false;
     }
 
     private void EditIR()
@@ -520,227 +893,6 @@ namespace Translator
       }
     }
 
-    private void NewButtonMapping()
-    {
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      GetKeyCodeForm getKeyCode = new GetKeyCodeForm();
-      getKeyCode.ShowDialog(this);
-
-      string keyCode = getKeyCode.KeyCode;
-      string deviceName = getKeyCode.DeviceName;
-
-      if (String.IsNullOrEmpty(keyCode))
-        return;
-
-      ButtonMappingForm map = null;
-      ButtonMapping existing = null;
-
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (keyCode.Equals(test.KeyCode, StringComparison.Ordinal))
-        {
-          existing = test;
-          map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
-          break;
-        }
-      }
-
-      if (map == null)
-      {
-        string description = String.Empty;
-
-        // TODO: Implement abstract remote button descriptions.
-        if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
-        {
-          switch (keyCode.ToLowerInvariant())
-          {
-            case "Red":
-              description = "Red teletext button";
-              break;
-          }
-        }
-
-        map = new ButtonMappingForm(keyCode, description, String.Empty);
-      }
-
-      if (map.ShowDialog(this) == DialogResult.OK)
-      {
-        if (existing == null) // Create new mapping
-        {
-          listViewButtons.Items.Add(
-            new ListViewItem(
-              new string[] {map.KeyCode, map.Description, map.Command}
-              ));
-
-          currentMappings.Add(new ButtonMapping(map.KeyCode, map.Description, map.Command));
-        }
-        else // Replace existing mapping
-        {
-          for (int index = 0; index < listViewButtons.Items.Count; index++)
-          {
-            if (listViewButtons.Items[index].SubItems[0].Text.Equals(map.KeyCode, StringComparison.Ordinal))
-            {
-              listViewButtons.Items[index].SubItems[1].Text = map.Description;
-              listViewButtons.Items[index].SubItems[2].Text = map.Command;
-            }
-          }
-
-          existing.Description = map.Description;
-          existing.Command = map.Command;
-        }
-      }
-    }
-
-    private void DeleteButtonMapping()
-    {
-      if (listViewButtons.SelectedIndices.Count != 1)
-        return;
-
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      ListViewItem item = listViewButtons.SelectedItems[0];
-      listViewButtons.Items.Remove(item);
-
-      ButtonMapping toRemove = null;
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (test.KeyCode.Equals(item.SubItems[0].Text, StringComparison.Ordinal))
-        {
-          toRemove = test;
-          break;
-        }
-      }
-
-      if (toRemove != null)
-        currentMappings.Remove(toRemove);
-    }
-
-    private void EditButtonMapping()
-    {
-      if (listViewButtons.SelectedIndices.Count != 1)
-        return;
-
-      ListViewItem item = listViewButtons.SelectedItems[0];
-
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (item.SubItems[0].Text.Equals(test.KeyCode, StringComparison.Ordinal))
-        {
-          ButtonMappingForm map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
-
-          if (map.ShowDialog(this) == DialogResult.OK)
-          {
-            item.SubItems[1].Text = map.Description;
-            item.SubItems[2].Text = map.Command;
-
-            test.Description = map.Description;
-            test.Command = map.Command;
-          }
-
-          break;
-        }
-      }
-    }
-
-    private void ClearButtonMappings()
-    {
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      if (
-        MessageBox.Show(this, "Are you sure you want to clear all remote button mappings?", "Warning",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-        return;
-
-      currentMappings.Clear();
-      listViewButtons.Items.Clear();
-    }
-
-    private void RemapButtonMapping()
-    {
-      if (listViewButtons.SelectedIndices.Count != 1)
-        return;
-
-      ListViewItem item = listViewButtons.SelectedItems[0];
-
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      ButtonMapping toModify = null;
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (test.KeyCode.Equals(item.SubItems[0].Text, StringComparison.Ordinal))
-        {
-          toModify = test;
-          break;
-        }
-      }
-
-      if (toModify == null)
-        return;
-
-      GetKeyCodeForm getKeyCode = new GetKeyCodeForm();
-      getKeyCode.ShowDialog(this);
-
-      string keyCode = getKeyCode.KeyCode;
-      if (String.IsNullOrEmpty(keyCode))
-        return;
-
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (test.KeyCode.Equals(keyCode, StringComparison.Ordinal))
-        {
-          MessageBox.Show(this,
-                          String.Format("{0} is already mapped to {1} ({2})", keyCode, test.Description, test.Command),
-                          "Cannot remap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-          return;
-        }
-      }
-
-      item.SubItems[0].Text = keyCode;
-
-      toModify.KeyCode = keyCode;
-    }
-
-    private void ClickCopyFrom(object sender, EventArgs e)
-    {
-      ToolStripMenuItem origin = sender as ToolStripMenuItem;
-      if (origin == null)
-        return;
-
-      CopyButtonsFrom(origin.Text);
-      RefreshButtonList();
-    }
-
-    private void CopyButtonsFrom(string programName)
-    {
-      if (programName.Equals(SystemWide))
-      {
-        ImportButtons(Program.Config.SystemWideMappings);
-        return;
-      }
-
-      foreach (ProgramSettings programSettings in Program.Config.Programs)
-      {
-        if (programSettings.Name.Equals(programName, StringComparison.OrdinalIgnoreCase))
-        {
-          ImportButtons(programSettings.ButtonMappings);
-          return;
-        }
-      }
-    }
-
     private void ImportButtons(List<ButtonMapping> buttonMappings)
     {
       List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
@@ -790,32 +942,6 @@ namespace Translator
     #endregion Implementation
 
     #region Controls
-
-    private void listViewButtons_DoubleClick(object sender, EventArgs e)
-    {
-      EditButtonMapping();
-    }
-
-    private void listViewButtons_KeyDown(object sender, KeyEventArgs e)
-    {
-      switch (e.KeyData)
-      {
-        case Keys.OemMinus:
-        case Keys.Delete:
-          DeleteButtonMapping();
-          break;
-
-        case Keys.F2:
-        case Keys.Enter:
-          EditButtonMapping();
-          break;
-
-        case Keys.Oemplus:
-        case Keys.Insert:
-          NewButtonMapping();
-          break;
-      }
-    }
 
     private void buttonOK_Click(object sender, EventArgs e)
     {
@@ -1108,20 +1234,6 @@ namespace Translator
       listViewEventMap.SelectedItems[0].SubItems[1].Text = command;
     }
 
-    private void listViewPrograms_DoubleClick(object sender, EventArgs e)
-    {
-      EditCurrentProgram();
-    }
-
-    private void listViewPrograms_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (listViewPrograms.SelectedItems.Count == 0)
-        return;
-
-      _selectedProgram = listViewPrograms.SelectedIndices[0];
-      RefreshButtonList();
-    }
-
     #endregion Controls
 
     #region Menus
@@ -1136,7 +1248,7 @@ namespace Translator
       Program.Config = new Configuration();
 
       RefreshProgramList();
-      RefreshButtonList();
+      RefreshMappingList();
       RefreshEventList();
     }
 
@@ -1154,7 +1266,7 @@ namespace Translator
         Program.Config = newConfig;
 
         RefreshProgramList();
-        RefreshButtonList();
+        RefreshMappingList();
         RefreshEventList();
       }
     }
@@ -1172,7 +1284,7 @@ namespace Translator
         Program.Config.Import(newConfig);
 
         RefreshProgramList();
-        RefreshButtonList();
+        RefreshMappingList();
         RefreshEventList();
       }
     }
@@ -1238,108 +1350,10 @@ namespace Translator
       new AboutForm().ShowDialog();
     }
 
-
-    private void addProgramToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      AddProgram();
-    }
-
-    private void editProgramToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (listViewPrograms.SelectedItems.Count == 0)
-        return;
-
-      string selectedItem = listViewPrograms.SelectedItems[0].Text;
-
-      EditProgram(selectedItem);
-    }
-
-    private void removeProgramToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (listViewPrograms.SelectedItems.Count == 0)
-        return;
-
-      string selectedItem = listViewPrograms.SelectedItems[0].Text;
-
-      string message = String.Format("Are you sure you want to remove all mappings for {0}?", selectedItem);
-      string caption = String.Format("Remove {0}?", selectedItem);
-
-      if (MessageBox.Show(this, message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-      {
-        foreach (ProgramSettings progSettings in Program.Config.Programs)
-        {
-          if (progSettings.Name.Equals(selectedItem))
-          {
-            Program.Config.Programs.Remove(progSettings);
-            break;
-          }
-        }
-
-        RefreshProgramList();
-      }
-    }
-
-    private void contextMenuStripPrograms_Opening(object sender, CancelEventArgs e)
-    {
-      RefreshProgramsContextMenu();
-    }
-
     private void removeEventToolStripMenuItem_Click(object sender, EventArgs e)
     {
       foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
         listViewEventMap.Items.Remove(listViewItem);
-    }
-
-    private void contextMenuStripButtonMapping_Opening(object sender, CancelEventArgs e)
-    {
-      copyButtonsFromToolStripMenuItem.DropDownItems.Clear();
-
-      string selectedItem = listViewPrograms.Items[_selectedProgram].Text;
-
-      if (_selectedProgram > 0)
-        copyButtonsFromToolStripMenuItem.DropDownItems.Add(SystemWide, IrssUtils.Properties.Resources.WinLogo, ClickCopyFrom);
-
-      foreach (ProgramSettings programSettings in Program.Config.Programs)
-      {
-        if (programSettings.Name.Equals(selectedItem))
-          continue;
-
-        if (String.IsNullOrEmpty(programSettings.FileName))
-          continue;
-
-        Icon icon = Win32.GetIconFor(programSettings.FileName);
-
-        Image image = null;
-        if (icon != null)
-          image = icon.ToBitmap();
-
-        copyButtonsFromToolStripMenuItem.DropDownItems.Add(programSettings.Name, image, ClickCopyFrom);
-      }
-    }
-
-    private void newButtonToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      NewButtonMapping();
-    }
-
-    private void editButtonToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      EditButtonMapping();
-    }
-
-    private void deleteButtonToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      DeleteButtonMapping();
-    }
-
-    private void clearButtonsToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      ClearButtonMappings();
-    }
-
-    private void remapButtonToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      RemapButtonMapping();
     }
 
     #endregion Menus
@@ -1414,30 +1428,6 @@ namespace Translator
 
     //#endregion Enumerations
 
-    private void toolStripButtonNewMapping_Click(object sender, EventArgs e)
-    {
-      NewButtonMapping();
-    }
-
-    private void toolStripButtonEditMapping_Click(object sender, EventArgs e)
-    {
-      EditButtonMapping();
-    }
-
-    private void toolStripButtonDeleteMapping_Click(object sender, EventArgs e)
-    {
-      DeleteButtonMapping();
-    }
-
-    private void toolStripButtonDeleteAllMappings_Click(object sender, EventArgs e)
-    {
-      ClearButtonMappings();
-    }
-
-    private void toolStripButtonRemapMapping_Click(object sender, EventArgs e)
-    {
-      RemapButtonMapping();
-    }
 
     private void toolStripButtonNewMacro_Click(object sender, EventArgs e)
     {
@@ -1557,48 +1547,5 @@ namespace Translator
                         MessageBoxIcon.Exclamation);
       }
     }
-
-    private void labelProgramsAdd_Click(object sender, EventArgs e)
-    {
-      AddProgram();
-    }
-
-    private void labelProgramsEdit_Click(object sender, EventArgs e)
-    {
-      if (listViewPrograms.SelectedItems.Count == 0)
-        return;
-
-      string selectedItem = listViewPrograms.SelectedItems[0].Text;
-
-      EditProgram(selectedItem);
-    }
-
-    private void labelProgramsDelete_Click(object sender, EventArgs e)
-    {
-      if (listViewPrograms.SelectedItems.Count == 0)
-        return;
-
-      string selectedItem = listViewPrograms.SelectedItems[0].Text;
-
-      string message = String.Format("Are you sure you want to remove all mappings for {0}?", selectedItem);
-      string caption = String.Format("Remove {0}?", selectedItem);
-
-      if (MessageBox.Show(this, message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-      {
-        foreach (ProgramSettings progSettings in Program.Config.Programs)
-        {
-          if (progSettings.Name.Equals(selectedItem))
-          {
-            Program.Config.Programs.Remove(progSettings);
-            break;
-          }
-        }
-
-        RefreshProgramList();
-      }
-    }
-
-
-
   }
 }
