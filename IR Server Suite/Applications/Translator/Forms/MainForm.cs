@@ -87,12 +87,16 @@ namespace Translator
 
     private void SetImages()
     {
-      this.newMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.editMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
-      this.removeMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-      this.clearMappingsToolStripMenuItem.Image = IrssUtils.Properties.Resources.DeleteAll;
-      this.remapToolStripMenuItem.Image = IrssUtils.Properties.Resources.Remap;
-      this.copyMappingsFromToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
+      // main menu
+      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
+      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
+      this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
+      this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
+
+      this.serverToolStripMenuItem.Image = IrssUtils.Properties.Resources.ChangeServer;
+
+      this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
+      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
 
       // programs panel
       this.addProgramToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
@@ -106,35 +110,52 @@ namespace Translator
       this.editProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
       this.removeProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
 
+      // mappings panel
       this.newMappingToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
       this.editMappingToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
-      this.removeMappingToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
+      this.deleteMappingToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
       this.clearMappingsToolStripButton.Image = IrssUtils.Properties.Resources.DeleteAll;
       this.remapToolStripButton.Image = IrssUtils.Properties.Resources.Remap;
+
+      this.newMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
+      this.editMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
+      this.deleteMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
+      this.clearMappingsToolStripMenuItem.Image = IrssUtils.Properties.Resources.DeleteAll;
+      this.remapToolStripMenuItem.Image = IrssUtils.Properties.Resources.Remap;
+      this.copyMappingsFromToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
+
+      // evens tab
+      this.addEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
       this.removeEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-      this.toolStripButtonNewMacro.Image = IrssUtils.Properties.Resources.Plus;
-      this.toolStripButtonEditMacro.Image = IrssUtils.Properties.Resources.Edit;
-      this.toolStripButtonDeleteMacro.Image = IrssUtils.Properties.Resources.Delete;
-      this.toolStripButtonCreateShortcutForMacro.Image = IrssUtils.Properties.Resources.Shortcut;
-      this.toolStripButtonTestMacro.Image = IrssUtils.Properties.Resources.MoveRight;
-      this.toolStripButtonNewIR.Image = IrssUtils.Properties.Resources.Plus;
-      this.toolStripButtonEditIR.Image = IrssUtils.Properties.Resources.Edit;
-      this.toolStripButtonDeleteIR.Image = IrssUtils.Properties.Resources.Delete;
 
-      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
-      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
-      this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
-      this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
+      // macros tab
+      this.newMacroToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
+      this.editMacroToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
+      this.deleteMacroToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
+      this.createShortcutForMacroToolStripButton.Image = IrssUtils.Properties.Resources.Shortcut;
+      this.testMacroToolStripButton.Image = IrssUtils.Properties.Resources.MoveRight;
 
-      this.serverToolStripMenuItem.Image = IrssUtils.Properties.Resources.ChangeServer;
+      this.addMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
+      this.editMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
+      this.deleteMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
+      this.createShortcutForMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Shortcut;
+      this.testMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
 
-      this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
-      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
+      // ir commands tab
+      this.newIRToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
+      this.editIRToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
+      this.deleteIRToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
+
+      this.addIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
+      this.editIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
+      this.deleteIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
     }
 
     #endregion Constructor
 
     #region Implementation
+
+    #region Main Form
 
     private void MainForm_Load(object sender, EventArgs e)
     {
@@ -149,7 +170,179 @@ namespace Translator
 
       Configuration.Save(Program.Config, Program.ConfigFile);
     }
-    
+
+    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      IrssHelp.Open(sender);
+    }
+
+
+    private void buttonOK_Click(object sender, EventArgs e)
+    {
+      Close();
+    }
+
+    private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      switch (tabControl.SelectedTab.Name)
+      {
+        case "tabPageIRCodes":
+          RefreshIRList();
+          break;
+
+        case "tabPageMacro":
+          RefreshMacroList();
+          break;
+
+        case "tabPageEvents":
+          RefreshEventCommands();
+          break;
+
+        case "tabPagePrograms":
+          break;
+      }
+    }
+
+    private void checkBoxAutoRun_CheckedChanged(object sender, EventArgs e)
+    {
+      if (checkBoxAutoRun.Checked)
+        SystemRegistry.SetAutoRun("Translator", Application.ExecutablePath);
+      else
+        SystemRegistry.RemoveAutoRun("Translator");
+    }
+
+
+    #region Menus
+
+    private void NewConfig(object sender, EventArgs e)
+    {
+      if (
+        MessageBox.Show(this, "Are you sure you want to start a new configuration?", "New Configuration",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+        return;
+
+      Program.Config = new Configuration();
+
+      RefreshProgramList();
+      RefreshMappingList();
+      RefreshEventList();
+    }
+
+    private void OpenConfig(object sender, EventArgs e)
+    {
+      openFileDialog.Title = "Open settings file ...";
+
+      if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+      {
+        Configuration newConfig = Configuration.Load(openFileDialog.FileName);
+
+        if (newConfig == null)
+          return;
+
+        Program.Config = newConfig;
+
+        RefreshProgramList();
+        RefreshMappingList();
+        RefreshEventList();
+      }
+    }
+
+    private void ImportConfig(object sender, EventArgs e)
+    {
+      openFileDialog.Title = "Import settings ...";
+
+      if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+      {
+        Configuration newConfig = Configuration.Load(openFileDialog.FileName);
+        if (newConfig == null)
+          return;
+
+        Program.Config.Import(newConfig);
+
+        RefreshProgramList();
+        RefreshMappingList();
+        RefreshEventList();
+      }
+    }
+
+    private void ExportConfig(object sender, EventArgs e)
+    {
+      if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+      {
+        if (!Configuration.Save(Program.Config, saveFileDialog.FileName))
+          MessageBox.Show(this, "Failed to export settings to file", "Export failed", MessageBoxButtons.OK,
+                          MessageBoxIcon.Error);
+      }
+    }
+
+
+    private void SetServer(object sender, EventArgs e)
+    {
+      ServerAddress serverAddress = new ServerAddress(Program.Config.ServerHost);
+      if (serverAddress.ShowDialog(this) == DialogResult.OK)
+      {
+        Program.StopClient();
+
+        Program.Config.ServerHost = serverAddress.ServerHost;
+
+        IPAddress serverIP = Client.GetIPFromName(Program.Config.ServerHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
+
+        Program.StartClient(endPoint);
+      }
+    }
+
+    private void ShowAdvancedSettings(object sender, EventArgs e)
+    {
+      Advanced advanced = new Advanced();
+      advanced.ProcessPriority = Program.Config.ProcessPriority;
+      advanced.HideTrayIcon = Program.Config.HideTrayIcon;
+
+      if (advanced.ShowDialog(this) == DialogResult.OK)
+      {
+        if (!advanced.ProcessPriority.Equals(Program.Config.ProcessPriority, StringComparison.OrdinalIgnoreCase))
+        {
+          Program.Config.ProcessPriority = advanced.ProcessPriority;
+          Program.AdjustPriority(Program.Config.ProcessPriority);
+        }
+
+        Program.Config.HideTrayIcon = advanced.HideTrayIcon;
+        Program.TrayIcon.Visible = !Program.Config.HideTrayIcon;
+      }
+    }
+
+
+    private void CloseMainForm(object sender, EventArgs e)
+    {
+      this.Close();
+    }
+
+    private void ExitApplication(object sender, EventArgs e)
+    {
+      Application.Exit();
+    }
+
+
+    private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      IrssHelp.Open(this);
+    }
+
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      new AboutForm().ShowDialog();
+    }
+
+    private void removeEventToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
+        listViewEventMap.Items.Remove(listViewItem);
+    }
+
+    #endregion Menus
+
+    #endregion Main Form
+
     #region Programs Panel
 
     private void RefreshProgramList()
@@ -312,7 +505,7 @@ namespace Translator
       return false;
     }
 
-    private void RemoveProgram(object sender, EventArgs e)
+    private void DeleteProgram(object sender, EventArgs e)
     {
       if (programsListView.SelectedItems.Count == 0)
         return;
@@ -664,6 +857,8 @@ namespace Translator
 
         copyMappingsFromToolStripMenuItem.DropDownItems.Add(programSettings.Name, image, CopyMappingsFromOtherProgram);
       }
+
+      copyMappingsFromToolStripMenuItem.Enabled = copyMappingsFromToolStripMenuItem.DropDownItems.Count > 0;
     }
 
     private void mappingsListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -672,8 +867,8 @@ namespace Translator
       {
         editMappingToolStripButton.Enabled = false;
         editMappingToolStripMenuItem.Enabled = false;
-        removeMappingToolStripButton.Enabled = false;
-        removeMappingToolStripMenuItem.Enabled = false;
+        deleteMappingToolStripButton.Enabled = false;
+        deleteMappingToolStripMenuItem.Enabled = false;
         remapToolStripButton.Enabled = false;
         remapToolStripMenuItem.Enabled = false;
       }
@@ -681,8 +876,8 @@ namespace Translator
       {
         editMappingToolStripButton.Enabled = true;
         editMappingToolStripMenuItem.Enabled = true;
-        removeMappingToolStripButton.Enabled = true;
-        removeMappingToolStripMenuItem.Enabled = true;
+        deleteMappingToolStripButton.Enabled = true;
+        deleteMappingToolStripMenuItem.Enabled = true;
         remapToolStripButton.Enabled = true;
         remapToolStripMenuItem.Enabled = true;
       }
@@ -717,6 +912,8 @@ namespace Translator
 
     #endregion Mappings Panel
 
+    #region Events Tab
+
     private void RefreshEventList()
     {
       listViewEventMap.Items.Clear();
@@ -725,17 +922,25 @@ namespace Translator
       {
         listViewEventMap.Items.Add(
           new ListViewItem(
-            new string[] {Enum.GetName(typeof (MappingEvent), mappedEvent.EventType), mappedEvent.Command}
+            new string[] { Enum.GetName(typeof(MappingEvent), mappedEvent.EventType), mappedEvent.Command }
             )
           );
       }
 
+      // refresh combobox
       comboBoxEvents.Items.Clear();
-      foreach (string eventName in Enum.GetNames(typeof (MappingEvent)))
+      foreach (string eventName in Enum.GetNames(typeof(MappingEvent)))
         if (!eventName.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxEvents.Items.Add(eventName);
 
       comboBoxEvents.SelectedIndex = 0;
+
+      // refresh context menu
+      addEventToolStripMenuItem.DropDownItems.Clear();
+      foreach (string eventName in Enum.GetNames(typeof(MappingEvent)))
+        if (!eventName.Equals("None", StringComparison.OrdinalIgnoreCase))
+          addEventToolStripMenuItem.DropDownItems.Add(
+            eventName, null, AddEvent);
     }
 
     private void RefreshEventCommands()
@@ -765,110 +970,6 @@ namespace Translator
         comboBoxCommands.SelectedIndex = 0;
     }
 
-    private void RefreshIRList()
-    {
-      listViewIR.Items.Clear();
-
-      string[] irList = Common.GetIRList(false);
-      if (irList != null && irList.Length > 0)
-        foreach (string irFile in irList)
-          listViewIR.Items.Add(irFile);
-    }
-
-    private void RefreshMacroList()
-    {
-      listViewMacro.Items.Clear();
-
-      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
-      if (macroList != null && macroList.Length > 0)
-        foreach (string macroFile in macroList)
-          listViewMacro.Items.Add(macroFile);
-
-      Program.UpdateNotifyMenu();
-    }
-
-    private List<ButtonMapping> GetCurrentButtonMappings()
-    {
-      if (_selectedProgram == 0)
-      {
-        return Program.Config.SystemWideMappings;
-      }
-      else
-      {
-        string selectedItem = programsListView.Items[_selectedProgram].Text;
-
-        foreach (ProgramSettings progSettings in Program.Config.Programs)
-          if (progSettings.Name.Equals(selectedItem))
-            return progSettings.ButtonMappings;
-      }
-
-      return null;
-    }
-
-    private AppProfile LoadDefaultSettings(string settingsFile)
-    {
-      try
-      {
-        XmlSerializer reader = new XmlSerializer(typeof (AppProfile));
-        using (StreamReader file = new StreamReader(settingsFile))
-          return (AppProfile) reader.Deserialize(file);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-      }
-
-      return null;
-    }
-
-    private void EditIR()
-    {
-      if (listViewIR.SelectedItems.Count != 1)
-        return;
-
-      string command = listViewIR.SelectedItems[0].Text;
-      string fileName = Path.Combine(Common.FolderIRCommands, command + Common.FileExtensionIR);
-
-      if (File.Exists(fileName))
-      {
-        _learnIR = new LearnIR(
-          Program.LearnIR,
-          Program.BlastIR,
-          Program.TransceiverInformation.Ports,
-          command);
-
-        _learnIR.ShowDialog(this);
-
-        _learnIR = null;
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-        RefreshIRList();
-      }
-    }
-
-    private void EditMacro()
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      string command = listViewMacro.SelectedItems[0].Text;
-      string fileName = Path.Combine(Program.FolderMacros, command + Common.FileExtensionMacro);
-
-      if (File.Exists(fileName))
-      {
-        MacroEditor macroEditor = new MacroEditor(command);
-        macroEditor.ShowDialog(this);
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-        RefreshMacroList();
-      }
-    }
 
     private void CommitEvents()
     {
@@ -880,7 +981,7 @@ namespace Translator
       {
         try
         {
-          eventType = (MappingEvent) Enum.Parse(typeof (MappingEvent), item.SubItems[0].Text, true);
+          eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), item.SubItems[0].Text, true);
           command = item.SubItems[1].Text;
 
           Program.Config.Events.Add(new MappedEvent(eventType, command));
@@ -893,208 +994,28 @@ namespace Translator
       }
     }
 
-    private void ImportButtons(List<ButtonMapping> buttonMappings)
-    {
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      foreach (ButtonMapping newMapping in buttonMappings)
-      {
-        bool alreadyExists = false;
-
-        foreach (ButtonMapping existingMapping in currentMappings)
-        {
-          if (existingMapping.KeyCode.Equals(newMapping.KeyCode, StringComparison.Ordinal))
-          {
-            // Change the existing mapping to the new one
-            existingMapping.Description = newMapping.Description;
-            existingMapping.Command = newMapping.Command;
-            alreadyExists = true;
-            break;
-          }
-        }
-
-        if (!alreadyExists)
-          currentMappings.Add(newMapping);
-      }
-    }
-
-    private void ReceivedMessage(IrssMessage received)
-    {
-      if (_learnIR != null && received.Type == MessageType.LearnIR)
-      {
-        if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
-        {
-          _learnIR.LearnStatus("Learned IR successfully", true);
-        }
-        else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
-        {
-          _learnIR.LearnStatus("Learn IR timed out", false);
-        }
-        else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
-        {
-          _learnIR.LearnStatus("Learn IR failed", false);
-        }
-      }
-    }
-
-    #endregion Implementation
-
-    #region Controls
-
-    private void buttonOK_Click(object sender, EventArgs e)
-    {
-      Close();
-    }
-
-    private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      switch (tabControl.SelectedTab.Name)
-      {
-        case "tabPageIRCodes":
-          RefreshIRList();
-          break;
-
-        case "tabPageMacro":
-          RefreshMacroList();
-          break;
-
-        case "tabPageEvents":
-          RefreshEventCommands();
-          break;
-
-        case "tabPagePrograms":
-          break;
-      }
-    }
-
-    private void listViewIR_DoubleClick(object sender, EventArgs e)
-    {
-      EditIR();
-    }
-
-    private void listViewMacro_DoubleClick(object sender, EventArgs e)
-    {
-      EditMacro();
-    }
-
-    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label))
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      string name = e.Label.Trim();
-
-      if (!Common.IsValidFileName(name))
-      {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
-
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label))
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = Path.Combine(Program.FolderMacros, originItem.Text + Common.FileExtensionMacro);
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      string name = e.Label.Trim();
-
-      if (!Common.IsValidFileName(name))
-      {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    private void checkBoxAutoRun_CheckedChanged(object sender, EventArgs e)
-    {
-      if (checkBoxAutoRun.Checked)
-        SystemRegistry.SetAutoRun("Translator", Application.ExecutablePath);
-      else
-        SystemRegistry.RemoveAutoRun("Translator");
-    }
-
-    private void buttonAddEvent_Click(object sender, EventArgs e)
+    private void AddEvent(string mappingEvent)
     {
       ListViewItem newItem =
-        new ListViewItem(new string[] {comboBoxEvents.SelectedItem as string, String.Empty});
+        new ListViewItem(new string[] { mappingEvent, String.Empty });
 
       listViewEventMap.SelectedIndices.Clear();
       listViewEventMap.Items.Add(newItem);
       newItem.Selected = true;
     }
+    private void AddEvent(object sender, EventArgs e)
+    {
+      if (Equals(sender, buttonAddEvent))
+      {
+        AddEvent(comboBoxEvents.SelectedItem as string);
+      }
+      else
+      {
+        AddEvent(sender.ToString());
+      }
+    }
 
-    private void buttonSetCommand_Click(object sender, EventArgs e)
+    private void SetCommandToEvent(object sender, EventArgs e)
     {
       if (comboBoxCommands.SelectedIndex == -1 || listViewEventMap.SelectedItems.Count == 0)
         return;
@@ -1234,202 +1155,26 @@ namespace Translator
       listViewEventMap.SelectedItems[0].SubItems[1].Text = command;
     }
 
-    #endregion Controls
+    #endregion
 
-    #region Menus
+    #region Macros Tab
 
-    private void newToolStripMenuItem_Click(object sender, EventArgs e)
+    private void RefreshMacroList()
     {
-      if (
-        MessageBox.Show(this, "Are you sure you want to start a new configuration?", "New Configuration",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-        return;
+      listViewMacro.Items.Clear();
 
-      Program.Config = new Configuration();
+      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
+      if (macroList != null && macroList.Length > 0)
+        foreach (string macroFile in macroList)
+          listViewMacro.Items.Add(macroFile);
 
-      RefreshProgramList();
-      RefreshMappingList();
-      RefreshEventList();
-    }
+      Program.UpdateNotifyMenu();
 
-    private void openToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      openFileDialog.Title = "Open settings file ...";
-
-      if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-      {
-        Configuration newConfig = Configuration.Load(openFileDialog.FileName);
-
-        if (newConfig == null)
-          return;
-
-        Program.Config = newConfig;
-
-        RefreshProgramList();
-        RefreshMappingList();
-        RefreshEventList();
-      }
-    }
-
-    private void importToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      openFileDialog.Title = "Import settings ...";
-
-      if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-      {
-        Configuration newConfig = Configuration.Load(openFileDialog.FileName);
-        if (newConfig == null)
-          return;
-
-        Program.Config.Import(newConfig);
-
-        RefreshProgramList();
-        RefreshMappingList();
-        RefreshEventList();
-      }
-    }
-
-    private void exportToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
-      {
-        if (!Configuration.Save(Program.Config, saveFileDialog.FileName))
-          MessageBox.Show(this, "Failed to export settings to file", "Export failed", MessageBoxButtons.OK,
-                          MessageBoxIcon.Error);
-      }
-    }
-
-    private void serverToolStripMenuItem2_Click(object sender, EventArgs e)
-    {
-      ServerAddress serverAddress = new ServerAddress(Program.Config.ServerHost);
-      if (serverAddress.ShowDialog(this) == DialogResult.OK)
-      {
-        Program.StopClient();
-
-        Program.Config.ServerHost = serverAddress.ServerHost;
-
-        IPAddress serverIP = Client.GetIPFromName(Program.Config.ServerHost);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
-
-        Program.StartClient(endPoint);
-      }
-    }
-
-    private void advancedToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      Advanced advanced = new Advanced();
-      advanced.ProcessPriority = Program.Config.ProcessPriority;
-      advanced.HideTrayIcon = Program.Config.HideTrayIcon;
-
-      if (advanced.ShowDialog(this) == DialogResult.OK)
-      {
-        if (!advanced.ProcessPriority.Equals(Program.Config.ProcessPriority, StringComparison.OrdinalIgnoreCase))
-        {
-          Program.Config.ProcessPriority = advanced.ProcessPriority;
-          Program.AdjustPriority(Program.Config.ProcessPriority);
-        }
-
-        Program.Config.HideTrayIcon = advanced.HideTrayIcon;
-        Program.TrayIcon.Visible = !Program.Config.HideTrayIcon;
-      }
-    }
-
-    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      Application.Exit();
+      listViewMacro_SelectedIndexChanged(null, null);
     }
 
 
-    private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      IrssHelp.Open(this);
-    }
-
-    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      new AboutForm().ShowDialog();
-    }
-
-    private void removeEventToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
-        listViewEventMap.Items.Remove(listViewItem);
-    }
-
-    #endregion Menus
-
-    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
-    {
-      IrssHelp.Open(sender);
-    }
-
-    //#region Enumerations
-
-    ///// <summary>
-    ///// A list of MCE remote buttons.
-    ///// </summary>
-    //public enum MceButton
-    //{
-    //  Custom        = -1,
-    //  None          = 0,
-    //  TV_Power      = 0x7b9a,
-    //  Blue          = 0x7ba1,
-    //  Yellow        = 0x7ba2,
-    //  Green         = 0x7ba3,
-    //  Red           = 0x7ba4,
-    //  Teletext      = 0x7ba5,
-    //  Radio         = 0x7baf,
-    //  Print         = 0x7bb1,
-    //  Videos        = 0x7bb5,
-    //  Pictures      = 0x7bb6,
-    //  Recorded_TV   = 0x7bb7,
-    //  Music         = 0x7bb8,
-    //  TV            = 0x7bb9,
-    //  Guide         = 0x7bd9,
-    //  Live_TV       = 0x7bda,
-    //  DVD_Menu      = 0x7bdb,
-    //  Back          = 0x7bdc,
-    //  OK            = 0x7bdd,
-    //  Right         = 0x7bde,
-    //  Left          = 0x7bdf,
-    //  Down          = 0x7be0,
-    //  Up            = 0x7be1,
-    //  Star          = 0x7be2,
-    //  Hash          = 0x7be3,
-    //  Replay        = 0x7be4,
-    //  Skip          = 0x7be5,
-    //  Stop          = 0x7be6,
-    //  Pause         = 0x7be7,
-    //  Record        = 0x7be8,
-    //  Play          = 0x7be9,
-    //  Rewind        = 0x7bea,
-    //  Forward       = 0x7beb,
-    //  Channel_Down  = 0x7bec,
-    //  Channel_Up    = 0x7bed,
-    //  Volume_Down   = 0x7bee,
-    //  Volume_Up     = 0x7bef,
-    //  Info          = 0x7bf0,
-    //  Mute          = 0x7bf1,
-    //  Start         = 0x7bf2,
-    //  PC_Power      = 0x7bf3,
-    //  Enter         = 0x7bf4,
-    //  Escape        = 0x7bf5,
-    //  Number_9      = 0x7bf6,
-    //  Number_8      = 0x7bf7,
-    //  Number_7      = 0x7bf8,
-    //  Number_6      = 0x7bf9,
-    //  Number_5      = 0x7bfa,
-    //  Number_4      = 0x7bfb,
-    //  Number_3      = 0x7bfc,
-    //  Number_2      = 0x7bfd,
-    //  Number_1      = 0x7bfe,
-    //  Number_0      = 0x7bff,
-    //}
-
-    //#endregion Enumerations
-
-
-    private void toolStripButtonNewMacro_Click(object sender, EventArgs e)
+    private void NewMacro(object sender, EventArgs e)
     {
       MacroEditor macroEditor = new MacroEditor();
       macroEditor.ShowDialog(this);
@@ -1437,12 +1182,28 @@ namespace Translator
       RefreshMacroList();
     }
 
-    private void toolStripButtonEditMacro_Click(object sender, EventArgs e)
+    private void EditMacro(object sender, EventArgs e)
     {
-      EditMacro();
+      if (listViewMacro.SelectedItems.Count != 1)
+        return;
+
+      string command = listViewMacro.SelectedItems[0].Text;
+      string fileName = Path.Combine(Program.FolderMacros, command + Common.FileExtensionMacro);
+
+      if (File.Exists(fileName))
+      {
+        MacroEditor macroEditor = new MacroEditor(command);
+        macroEditor.ShowDialog(this);
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+        RefreshMacroList();
+      }
     }
 
-    private void toolStripButtonDeleteMacro_Click(object sender, EventArgs e)
+    private void DeleteMacro(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -1466,7 +1227,7 @@ namespace Translator
       }
     }
 
-    private void toolStripButtonTestMacro_Click(object sender, EventArgs e)
+    private void TestMacro(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -1482,7 +1243,7 @@ namespace Translator
       }
     }
 
-    private void toolStripButtonCreateShortcutForMacro_Click(object sender, EventArgs e)
+    private void CreateShortcutForMacro(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedItems.Count != 1)
         return;
@@ -1505,7 +1266,99 @@ namespace Translator
       shortcut.Save();
     }
 
-    private void toolStripButtonNewIR_Click(object sender, EventArgs e)
+
+    private void listViewMacro_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (listViewMacro.SelectedIndices.Count != 1)
+      {
+        editMacroToolStripButton.Enabled = false;
+        editMacroToolStripMenuItem.Enabled = false;
+        deleteMacroToolStripButton.Enabled = false;
+        deleteMacroToolStripMenuItem.Enabled = false;
+        testMacroToolStripButton.Enabled = false;
+        testMacroToolStripMenuItem.Enabled = false;
+        createShortcutForMacroToolStripButton.Enabled = false;
+        createShortcutForMacroToolStripMenuItem.Enabled = false;
+      }
+      else
+      {
+        editMacroToolStripButton.Enabled = true;
+        editMacroToolStripMenuItem.Enabled = true;
+        deleteMacroToolStripButton.Enabled = true;
+        deleteMacroToolStripMenuItem.Enabled = true;
+        testMacroToolStripButton.Enabled = true;
+        testMacroToolStripMenuItem.Enabled = true;
+        createShortcutForMacroToolStripButton.Enabled = true;
+        createShortcutForMacroToolStripMenuItem.Enabled = true;
+      }
+    }
+
+    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+      {
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = Path.Combine(Program.FolderMacros, originItem.Text + Common.FileExtensionMacro);
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
+      {
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
+    #endregion
+
+    #region IRCommands Tab
+
+    private void RefreshIRList()
+    {
+      listViewIR.Items.Clear();
+
+      string[] irList = Common.GetIRList(false);
+      if (irList != null && irList.Length > 0)
+        foreach (string irFile in irList)
+          listViewIR.Items.Add(irFile);
+
+      listViewIR_SelectedIndexChanged(null, null);
+    }
+
+
+    private void NewIRCommand(object sender, EventArgs e)
     {
       _learnIR = new LearnIR(
         Program.LearnIR,
@@ -1519,12 +1372,35 @@ namespace Translator
       RefreshIRList();
     }
 
-    private void toolStripButtonEditIR_Click(object sender, EventArgs e)
+    private void EditIRCommand(object sender, EventArgs e)
     {
-      EditIR();
+      if (listViewIR.SelectedItems.Count != 1)
+        return;
+
+      string command = listViewIR.SelectedItems[0].Text;
+      string fileName = Path.Combine(Common.FolderIRCommands, command + Common.FileExtensionIR);
+
+      if (File.Exists(fileName))
+      {
+        _learnIR = new LearnIR(
+          Program.LearnIR,
+          Program.BlastIR,
+          Program.TransceiverInformation.Ports,
+          command);
+
+        _learnIR.ShowDialog(this);
+
+        _learnIR = null;
+      }
+      else
+      {
+        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+        RefreshIRList();
+      }
     }
 
-    private void toolStripButtonDeleteIR_Click(object sender, EventArgs e)
+    private void DeleteIRCommand(object sender, EventArgs e)
     {
       if (listViewIR.SelectedItems.Count != 1)
         return;
@@ -1547,5 +1423,158 @@ namespace Translator
                         MessageBoxIcon.Exclamation);
       }
     }
+
+
+    private void listViewIR_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (listViewIR.SelectedIndices.Count != 1)
+      {
+        editIRToolStripButton.Enabled = false;
+        editIRToolStripMenuItem.Enabled = false;
+        deleteIRToolStripButton.Enabled = false;
+        deleteIRToolStripMenuItem.Enabled = false;
+      }
+      else
+      {
+        editIRToolStripButton.Enabled = true;
+        editIRToolStripMenuItem.Enabled = true;
+        deleteIRToolStripButton.Enabled = true;
+        deleteIRToolStripMenuItem.Enabled = true;
+      }
+    }
+
+    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+      ListView origin = sender as ListView;
+      if (origin == null)
+      {
+        e.CancelEdit = true;
+        return;
+      }
+
+      if (String.IsNullOrEmpty(e.Label))
+      {
+        e.CancelEdit = true;
+        return;
+      }
+
+      ListViewItem originItem = origin.Items[e.Item];
+
+      string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
+      if (!File.Exists(oldFileName))
+      {
+        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      string name = e.Label.Trim();
+
+      if (!Common.IsValidFileName(name))
+      {
+        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+        e.CancelEdit = true;
+        return;
+      }
+
+      try
+      {
+        string newFileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
+
+        File.Move(oldFileName, newFileName);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
+    #endregion
+
+
+    private List<ButtonMapping> GetCurrentButtonMappings()
+    {
+      if (_selectedProgram == 0)
+      {
+        return Program.Config.SystemWideMappings;
+      }
+      else
+      {
+        string selectedItem = programsListView.Items[_selectedProgram].Text;
+
+        foreach (ProgramSettings progSettings in Program.Config.Programs)
+          if (progSettings.Name.Equals(selectedItem))
+            return progSettings.ButtonMappings;
+      }
+
+      return null;
+    }
+
+    private AppProfile LoadDefaultSettings(string settingsFile)
+    {
+      try
+      {
+        XmlSerializer reader = new XmlSerializer(typeof (AppProfile));
+        using (StreamReader file = new StreamReader(settingsFile))
+          return (AppProfile) reader.Deserialize(file);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+
+      return null;
+    }
+
+    private void ImportButtons(List<ButtonMapping> buttonMappings)
+    {
+      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+      if (currentMappings == null)
+        return;
+
+      foreach (ButtonMapping newMapping in buttonMappings)
+      {
+        bool alreadyExists = false;
+
+        foreach (ButtonMapping existingMapping in currentMappings)
+        {
+          if (existingMapping.KeyCode.Equals(newMapping.KeyCode, StringComparison.Ordinal))
+          {
+            // Change the existing mapping to the new one
+            existingMapping.Description = newMapping.Description;
+            existingMapping.Command = newMapping.Command;
+            alreadyExists = true;
+            break;
+          }
+        }
+
+        if (!alreadyExists)
+          currentMappings.Add(newMapping);
+      }
+    }
+
+    private void ReceivedMessage(IrssMessage received)
+    {
+      if (_learnIR != null && received.Type == MessageType.LearnIR)
+      {
+        if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
+        {
+          _learnIR.LearnStatus("Learned IR successfully", true);
+        }
+        else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
+        {
+          _learnIR.LearnStatus("Learn IR timed out", false);
+        }
+        else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
+        {
+          _learnIR.LearnStatus("Learn IR failed", false);
+        }
+      }
+    }
+
+    #endregion Implementation
   }
 }

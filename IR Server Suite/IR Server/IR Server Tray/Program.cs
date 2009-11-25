@@ -45,14 +45,14 @@ namespace IRServer.Tray
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel("IR Server Tray"));
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-      
-      _notifyIcon.ContextMenuStrip.Items.Add("&Configuration", GetExeIconAsImage(_configExe), ClickConfiguration);
+
+      _notifyIcon.ContextMenuStrip.Items.Add("&Configuration", Win32.GetImageFromFile(_configExe), ClickConfiguration);
       
       if (File.Exists(_translatorExe))
-        _notifyIcon.ContextMenuStrip.Items.Add("&Translator", GetExeIconAsImage(_translatorExe), ClickTranslator);
+        _notifyIcon.ContextMenuStrip.Items.Add("&Translator", Win32.GetImageFromFile(_translatorExe), ClickTranslator);
       
       if (File.Exists(_debugClientExe))
-        _notifyIcon.ContextMenuStrip.Items.Add("&Debug Client", GetExeIconAsImage(_debugClientExe), ClickDebugClient);
+        _notifyIcon.ContextMenuStrip.Items.Add("&Debug Client", Win32.GetImageFromFile(_debugClientExe), ClickDebugClient);
       
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
       _notifyIcon.ContextMenuStrip.Items.Add("&Exit", null, ClickExit);
@@ -113,15 +113,5 @@ namespace IRServer.Tray
     }
 
     #endregion
-
-    private static Image GetExeIconAsImage(string filepath)
-    {
-      if (filepath == null) return null;
-
-      Icon icon = Icon.ExtractAssociatedIcon(filepath);
-      if (icon == null) return null;
-
-      return icon.ToBitmap();
-    }
   }
 }

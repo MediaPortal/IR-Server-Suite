@@ -6,8 +6,14 @@ using IrssUtils;
 
 namespace IRServer
 {
+  /// <summary>
+  /// Handles settings used by <see cref="IRServer"/> or it's configuration.
+  /// </summary>
   public static class Settings
   {
+    /// <summary>
+    /// Contains the full path to the XML-file, where the settings are saved.
+    /// </summary>
     private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData, @"IR Server\IR Server.xml");
 
     public static bool AbstractRemoteMode { get; set; }
@@ -17,6 +23,9 @@ namespace IRServer
     public static string[] PluginNameReceive { get; set; }
     public static string PluginNameTransmit { get; set; }
 
+    /// <summary>
+    /// Loads settings from XML-File to <see cref="Settings"/> class.
+    /// </summary>
     public static void LoadSettings()
     {
       IrssLog.Info("Loading settings ...");
@@ -115,6 +124,9 @@ namespace IRServer
       }
     }
 
+    /// <summary>
+    /// Saves settings from <see cref="Settings"/> class to XML-file.
+    /// </summary>
     public static void SaveSettings()
     {
       IrssLog.Info("Saving settings ...");
@@ -162,6 +174,9 @@ namespace IRServer
       }
     }
 
+    /// <summary>
+    /// Loads default values into settings class.
+    /// </summary>
     private static void CreateDefaultSettings()
     {
       try

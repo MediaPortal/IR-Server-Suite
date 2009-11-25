@@ -23,6 +23,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -463,7 +464,8 @@ namespace Translator
         ToolStripMenuItem launch = new ToolStripMenuItem("&Launch");
 
         foreach (ProgramSettings programSettings in Config.Programs)
-          launch.DropDownItems.Add(programSettings.Name, null, ClickProgram);
+          launch.DropDownItems.Add(programSettings.Name,
+            Win32.GetImageFromFile(programSettings.FileName), ClickProgram);
 
         _notifyIcon.ContextMenuStrip.Items.Add(launch);
       }
@@ -654,6 +656,7 @@ namespace Translator
 
       if (_inConfiguration)
       {
+        _mainForm.BringToFront();
         IrssLog.Warn("Already in configuration");
         return;
       }

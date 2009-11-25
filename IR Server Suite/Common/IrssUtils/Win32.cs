@@ -2284,6 +2284,7 @@ namespace IrssUtils
       return GetDesktopWindow();
     }
 
+    #warning "Check the methods for getting icons from files (apps). Should the Interop-based or the other one be used?" 
     /// <summary>
     /// Gets the icon for a supplied file.
     /// </summary>
@@ -2308,6 +2309,24 @@ namespace IrssUtils
 
       return icon;
     }
+
+    public static Icon GetIconFromFile(string fileName)
+    {
+      if (String.IsNullOrEmpty(fileName))
+        return null;
+
+      Icon icon = Icon.ExtractAssociatedIcon(fileName);
+      if (icon == null)
+        return null;
+
+      return icon;
+    }
+
+    public static Image GetImageFromFile(string fileName)
+    {
+      return GetIconFromFile(fileName).ToBitmap();
+    }
+
 
     /// <summary>
     /// Gets the window icon.
