@@ -82,6 +82,14 @@ namespace Translator
       this.createShortcutForMacroToolStripButton = new System.Windows.Forms.ToolStripButton();
       this.testMacroToolStripButton = new System.Windows.Forms.ToolStripButton();
       this.listViewMacro = new System.Windows.Forms.ListView();
+      this.macrosContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.addMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.editMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.deleteMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+      this.testMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.createShortcutForMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabPageEvents = new System.Windows.Forms.TabPage();
       this.buttonSetCommand = new System.Windows.Forms.Button();
       this.buttonAddEvent = new System.Windows.Forms.Button();
@@ -113,14 +121,6 @@ namespace Translator
       this.addIRToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.editIRToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.deleteIRToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.macrosContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-      this.addMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.editMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.deleteMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-      this.testMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-      this.createShortcutForMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.programsContextMenuStrip.SuspendLayout();
       this.mappingsContextMenuStrip.SuspendLayout();
       this.eventsContextMenuStripEvents.SuspendLayout();
@@ -129,6 +129,7 @@ namespace Translator
       this.irCommandsToolStrip.SuspendLayout();
       this.tabPageMacro.SuspendLayout();
       this.macrosToolStrip.SuspendLayout();
+      this.macrosContextMenuStrip.SuspendLayout();
       this.tabPageEvents.SuspendLayout();
       this.tabPagePrograms.SuspendLayout();
       this.mappingsToolStrip.SuspendLayout();
@@ -136,7 +137,6 @@ namespace Translator
       this.programsToolStrip.SuspendLayout();
       this.tabControl.SuspendLayout();
       this.irCommandsContextMenuStrip.SuspendLayout();
-      this.macrosContextMenuStrip.SuspendLayout();
       this.SuspendLayout();
       // 
       // programsContextMenuStrip
@@ -192,47 +192,47 @@ namespace Translator
       // newMappingToolStripMenuItem
       // 
       this.newMappingToolStripMenuItem.Name = "newMappingToolStripMenuItem";
-      this.newMappingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.newMappingToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.newMappingToolStripMenuItem.Text = "&New";
       this.newMappingToolStripMenuItem.Click += new System.EventHandler(this.NewButtonMapping);
       // 
       // editMappingToolStripMenuItem
       // 
       this.editMappingToolStripMenuItem.Name = "editMappingToolStripMenuItem";
-      this.editMappingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.editMappingToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.editMappingToolStripMenuItem.Text = "&Edit";
       this.editMappingToolStripMenuItem.Click += new System.EventHandler(this.EditButtonMapping);
       // 
       // deleteMappingToolStripMenuItem
       // 
       this.deleteMappingToolStripMenuItem.Name = "deleteMappingToolStripMenuItem";
-      this.deleteMappingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.deleteMappingToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.deleteMappingToolStripMenuItem.Text = "&Delete";
       this.deleteMappingToolStripMenuItem.Click += new System.EventHandler(this.DeleteButtonMapping);
       // 
       // clearMappingsToolStripMenuItem
       // 
       this.clearMappingsToolStripMenuItem.Name = "clearMappingsToolStripMenuItem";
-      this.clearMappingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.clearMappingsToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.clearMappingsToolStripMenuItem.Text = "&Clear";
       this.clearMappingsToolStripMenuItem.Click += new System.EventHandler(this.ClearButtonMappings);
       // 
       // remapToolStripMenuItem
       // 
       this.remapToolStripMenuItem.Name = "remapToolStripMenuItem";
-      this.remapToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.remapToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.remapToolStripMenuItem.Text = "&Remap";
       this.remapToolStripMenuItem.Click += new System.EventHandler(this.RemapButtonMapping);
       // 
       // toolStripSeparator3
       // 
       this.toolStripSeparator3.Name = "toolStripSeparator3";
-      this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
+      this.toolStripSeparator3.Size = new System.Drawing.Size(140, 6);
       // 
       // copyMappingsFromToolStripMenuItem
       // 
       this.copyMappingsFromToolStripMenuItem.Name = "copyMappingsFromToolStripMenuItem";
-      this.copyMappingsFromToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.copyMappingsFromToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
       this.copyMappingsFromToolStripMenuItem.Text = "Copy &from ...";
       // 
       // buttonOK
@@ -370,14 +370,14 @@ namespace Translator
       // serverToolStripMenuItem
       // 
       this.serverToolStripMenuItem.Name = "serverToolStripMenuItem";
-      this.serverToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+      this.serverToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.serverToolStripMenuItem.Text = "&Server...";
       this.serverToolStripMenuItem.Click += new System.EventHandler(this.SetServer);
       // 
       // advancedToolStripMenuItem
       // 
       this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-      this.advancedToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+      this.advancedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.advancedToolStripMenuItem.Text = "&Advanced...";
       this.advancedToolStripMenuItem.Click += new System.EventHandler(this.ShowAdvancedSettings);
       // 
@@ -393,14 +393,14 @@ namespace Translator
       // contentsToolStripMenuItem
       // 
       this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
-      this.contentsToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+      this.contentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.contentsToolStripMenuItem.Text = "&Contents";
       this.contentsToolStripMenuItem.Click += new System.EventHandler(this.contentsToolStripMenuItem_Click);
       // 
       // aboutToolStripMenuItem
       // 
       this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.aboutToolStripMenuItem.Text = "&About";
       this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
       // 
@@ -587,6 +587,64 @@ namespace Translator
       this.listViewMacro.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewMacro_AfterLabelEdit);
       this.listViewMacro.SelectedIndexChanged += new System.EventHandler(this.listViewMacro_SelectedIndexChanged);
       this.listViewMacro.DoubleClick += new System.EventHandler(this.EditMacro);
+      // 
+      // macrosContextMenuStrip
+      // 
+      this.macrosContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addMacroToolStripMenuItem,
+            this.editMacroToolStripMenuItem,
+            this.deleteMacroToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.testMacroToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.createShortcutForMacroToolStripMenuItem});
+      this.macrosContextMenuStrip.Name = "macrosContextMenuStrip";
+      this.macrosContextMenuStrip.Size = new System.Drawing.Size(159, 126);
+      // 
+      // addMacroToolStripMenuItem
+      // 
+      this.addMacroToolStripMenuItem.Name = "addMacroToolStripMenuItem";
+      this.addMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+      this.addMacroToolStripMenuItem.Text = "Add new Macro";
+      this.addMacroToolStripMenuItem.Click += new System.EventHandler(this.NewMacro);
+      // 
+      // editMacroToolStripMenuItem
+      // 
+      this.editMacroToolStripMenuItem.Name = "editMacroToolStripMenuItem";
+      this.editMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+      this.editMacroToolStripMenuItem.Text = "Edit Macro";
+      this.editMacroToolStripMenuItem.Click += new System.EventHandler(this.EditMacro);
+      // 
+      // deleteMacroToolStripMenuItem
+      // 
+      this.deleteMacroToolStripMenuItem.Name = "deleteMacroToolStripMenuItem";
+      this.deleteMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+      this.deleteMacroToolStripMenuItem.Text = "Delete Macro";
+      this.deleteMacroToolStripMenuItem.Click += new System.EventHandler(this.DeleteMacro);
+      // 
+      // toolStripSeparator4
+      // 
+      this.toolStripSeparator4.Name = "toolStripSeparator4";
+      this.toolStripSeparator4.Size = new System.Drawing.Size(155, 6);
+      // 
+      // testMacroToolStripMenuItem
+      // 
+      this.testMacroToolStripMenuItem.Name = "testMacroToolStripMenuItem";
+      this.testMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+      this.testMacroToolStripMenuItem.Text = "Test Macro";
+      this.testMacroToolStripMenuItem.Click += new System.EventHandler(this.TestMacro);
+      // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(155, 6);
+      // 
+      // createShortcutForMacroToolStripMenuItem
+      // 
+      this.createShortcutForMacroToolStripMenuItem.Name = "createShortcutForMacroToolStripMenuItem";
+      this.createShortcutForMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+      this.createShortcutForMacroToolStripMenuItem.Text = "Create Shortcut";
+      this.createShortcutForMacroToolStripMenuItem.Click += new System.EventHandler(this.CreateShortcutForMacro);
       // 
       // tabPageEvents
       // 
@@ -825,12 +883,12 @@ namespace Translator
       this.editProgramToolStripButton.Text = "Edit";
       this.editProgramToolStripButton.Click += new System.EventHandler(this.EditProgram);
       // 
-      // deleteProgramToolStripButton
+      // removeProgramToolStripButton
       // 
       this.removeProgramToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-      this.removeProgramToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("deleteProgramToolStripButton.Image")));
+      this.removeProgramToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("removeProgramToolStripButton.Image")));
       this.removeProgramToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.removeProgramToolStripButton.Name = "deleteProgramToolStripButton";
+      this.removeProgramToolStripButton.Name = "removeProgramToolStripButton";
       this.removeProgramToolStripButton.Size = new System.Drawing.Size(42, 19);
       this.removeProgramToolStripButton.Text = "Delete";
       this.removeProgramToolStripButton.Click += new System.EventHandler(this.DeleteProgram);
@@ -924,64 +982,6 @@ namespace Translator
       this.deleteIRToolStripMenuItem.Text = "Delete IR Command";
       this.deleteIRToolStripMenuItem.Click += new System.EventHandler(this.DeleteIRCommand);
       // 
-      // macrosContextMenuStrip
-      // 
-      this.macrosContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addMacroToolStripMenuItem,
-            this.editMacroToolStripMenuItem,
-            this.deleteMacroToolStripMenuItem,
-            this.toolStripSeparator4,
-            this.testMacroToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.createShortcutForMacroToolStripMenuItem});
-      this.macrosContextMenuStrip.Name = "macrosContextMenuStrip";
-      this.macrosContextMenuStrip.Size = new System.Drawing.Size(159, 126);
-      // 
-      // addMacroToolStripMenuItem
-      // 
-      this.addMacroToolStripMenuItem.Name = "addMacroToolStripMenuItem";
-      this.addMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-      this.addMacroToolStripMenuItem.Text = "Add new Macro";
-      this.addMacroToolStripMenuItem.Click += new System.EventHandler(this.NewMacro);
-      // 
-      // editMacroToolStripMenuItem
-      // 
-      this.editMacroToolStripMenuItem.Name = "editMacroToolStripMenuItem";
-      this.editMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-      this.editMacroToolStripMenuItem.Text = "Edit Macro";
-      this.editMacroToolStripMenuItem.Click += new System.EventHandler(this.EditMacro);
-      // 
-      // deleteMacroToolStripMenuItem
-      // 
-      this.deleteMacroToolStripMenuItem.Name = "deleteMacroToolStripMenuItem";
-      this.deleteMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-      this.deleteMacroToolStripMenuItem.Text = "Delete Macro";
-      this.deleteMacroToolStripMenuItem.Click += new System.EventHandler(this.DeleteMacro);
-      // 
-      // toolStripSeparator4
-      // 
-      this.toolStripSeparator4.Name = "toolStripSeparator4";
-      this.toolStripSeparator4.Size = new System.Drawing.Size(155, 6);
-      // 
-      // testMacroToolStripMenuItem
-      // 
-      this.testMacroToolStripMenuItem.Name = "testMacroToolStripMenuItem";
-      this.testMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-      this.testMacroToolStripMenuItem.Text = "Test Macro";
-      this.testMacroToolStripMenuItem.Click += new System.EventHandler(this.TestMacro);
-      // 
-      // toolStripSeparator2
-      // 
-      this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(155, 6);
-      // 
-      // createShortcutToolStripMenuItem
-      // 
-      this.createShortcutForMacroToolStripMenuItem.Name = "createShortcutToolStripMenuItem";
-      this.createShortcutForMacroToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-      this.createShortcutForMacroToolStripMenuItem.Text = "Create Shortcut";
-      this.createShortcutForMacroToolStripMenuItem.Click += new System.EventHandler(this.CreateShortcutForMacro);
-      // 
       // MainForm
       // 
       this.AcceptButton = this.buttonOK;
@@ -1015,6 +1015,7 @@ namespace Translator
       this.tabPageMacro.PerformLayout();
       this.macrosToolStrip.ResumeLayout(false);
       this.macrosToolStrip.PerformLayout();
+      this.macrosContextMenuStrip.ResumeLayout(false);
       this.tabPageEvents.ResumeLayout(false);
       this.tabPagePrograms.ResumeLayout(false);
       this.tabPagePrograms.PerformLayout();
@@ -1026,7 +1027,6 @@ namespace Translator
       this.programsToolStrip.PerformLayout();
       this.tabControl.ResumeLayout(false);
       this.irCommandsContextMenuStrip.ResumeLayout(false);
-      this.macrosContextMenuStrip.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 

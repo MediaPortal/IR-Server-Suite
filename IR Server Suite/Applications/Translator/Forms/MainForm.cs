@@ -533,13 +533,15 @@ namespace Translator
 
     private void programsListView_SelectedIndexChanged(object sender, EventArgs e)
     {
-      if (programsListView.SelectedItems.Count == 0)
-        return;
+      // only update '_selectedProgram' related things if there is a new item selected
+      // do nothing, if nothing is selected
+      if (programsListView.SelectedItems.Count > 0)
+      {
+        _selectedProgram = programsListView.SelectedIndices[0];
+        RefreshMappingList();
+      }
 
-
-      _selectedProgram = programsListView.SelectedIndices[0];
-
-      if (_selectedProgram == 0)
+      if (programsListView.SelectedIndices.Count != 1 || _selectedProgram == 0)
       {
         editProgramToolStripMenuItem.Text = "&Edit ...";
         removeProgramToolStripMenuItem.Text = "&Remove ...";
@@ -561,8 +563,6 @@ namespace Translator
         removeProgramToolStripButton.Enabled = true;
         removeProgramToolStripMenuItem.Enabled = true;
       }
-
-      RefreshMappingList();
     }
 
     #endregion Programs Panel
