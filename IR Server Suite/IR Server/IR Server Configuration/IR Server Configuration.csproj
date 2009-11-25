@@ -17,7 +17,7 @@
     </AssemblyOriginatorKeyFile>
     <Win32Resource>
     </Win32Resource>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

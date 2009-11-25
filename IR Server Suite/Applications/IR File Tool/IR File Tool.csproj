@@ -12,7 +12,7 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <StartupObject>IrFileTool.Program</StartupObject>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
