@@ -91,7 +91,6 @@ Var PREVIOUS_VERSION_STATE
 Var EXPRESS_UPDATE
 
 Var AutoRunTranslator
-Var AutoRunTrayLauncher
 
 Var frominstall
 
@@ -257,7 +256,6 @@ UninstPage custom un.UninstallModePage un.UninstallModePageLeave
   !insertmacro "${MacroName}" "SectionIRFileTool"
   !insertmacro "${MacroName}" "SectionKeyboardInputRelay"
   !insertmacro "${MacroName}" "SectionTranslator"
-  !insertmacro "${MacroName}" "SectionTrayLauncher"
   !insertmacro "${MacroName}" "SectionVirtualRemote"
   
   #SectionGroupCmdLineTools
@@ -900,39 +898,6 @@ ${MementoSectionEnd}
 
 ;======================================
 
-${MementoUnselectedSection} "Tray Launcher" SectionTrayLauncher
-  ${LOG_TEXT} "INFO" "Installing Tray Launcher..."
-  ${KILLPROCESS} "TrayLauncher.exe"
-
-  ; install files
-  SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Tray Launcher\bin\${Build_Type}\TrayLauncher.*"
-
-  ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk" "$DIR_INSTALL\TrayLauncher.exe" "" "$DIR_INSTALL\TrayLauncher.exe" 0
-
-
-  ; check if TrayLauncher is an autorun app
-  ${If} $AutoRunTrayLauncher == 1
-    !insertmacro SetAutoRun "Tray Launcher" "$DIR_INSTALL\TrayLauncher.exe"
-  ${EndIf}
-${MementoSectionEnd}
-!macro Remove_${SectionTrayLauncher}
-  ${LOG_TEXT} "INFO" "Removing Tray Launcher..."
-  ${KILLPROCESS} "TrayLauncher.exe"
-
-  ; remove auto-run
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Tray Launcher"
-
-  ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Tray Launcher.lnk"
-
-  ; remove files
-  Delete "$DIR_INSTALL\TrayLauncher.*"
-!macroend
-
-;======================================
-
 ${MementoUnselectedSection} "Virtual Remote" SectionVirtualRemote
   ${LOG_TEXT} "INFO" "Installing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
   ${KILLPROCESS} "VirtualRemote.exe"
@@ -1231,13 +1196,6 @@ Function ReadPreviousSettings
   ${Else}
     StrCpy $AutoRunTranslator 0
   ${EndIf}
-
-  ; check if TrayLauncher is an autorun app
-  ${If} ${IsAutoRun} "Tray Launcher"
-    StrCpy $AutoRunTrayLauncher 1
-  ${Else}
-    StrCpy $AutoRunTrayLauncher 0
-  ${EndIf}
 FunctionEnd
 
 Function LoadPreviousSettings
@@ -1504,7 +1462,6 @@ FunctionEnd
 !endif
 
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator}          "$(DESC_SectionTranslator)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionTrayLauncher}        "$(DESC_SectionTrayLauncher)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionVirtualRemote}       "$(DESC_SectionVirtualRemote)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRBlast}             "$(DESC_SectionIRBlast)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionIRFileTool}          "$(DESC_SectionIRFileTool)"
