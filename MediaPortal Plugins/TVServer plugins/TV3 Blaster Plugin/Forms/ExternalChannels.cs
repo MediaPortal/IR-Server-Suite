@@ -54,7 +54,7 @@ namespace TvEngine
       if (cards.Count == 0)
       {
         Card dummyCard = new Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0,
-                                  false, 0, "timeshifting folder", 0, 0);
+                                  false, 0, "timeshifting folder", 0, 0, 0);
         cards.Add(dummyCard);
       }
 

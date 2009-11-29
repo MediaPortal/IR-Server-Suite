@@ -38,7 +38,7 @@ using TvEngine.Forms;
 using TvLibrary.Implementations;
 using TvLibrary.Interfaces;
 using TvLibrary.Log;
-using Server=IrssComms.Server;
+using Server = IrssComms.Server;
 
 namespace TvEngine
 {
@@ -344,10 +344,10 @@ namespace TvEngine
     {
       try
       {
-        TvServerEventArgs tvEvent = (TvServerEventArgs) eventArgs;
+        TvServerEventArgs tvEvent = (TvServerEventArgs)eventArgs;
 
         Log.Debug("TV3BlasterPlugin: Received TV Server Event \"{0}\"",
-                  Enum.GetName(typeof (TvServerEventType), tvEvent.EventType));
+                  Enum.GetName(typeof(TvServerEventType), tvEvent.EventType));
 
         if (tvEvent.EventType != TvServerEventType.StartZapChannel)
           return;
@@ -357,7 +357,7 @@ namespace TvEngine
           return;
 
         Log.Debug("TV3BlasterPlugin: Analog channel input source \"{0}\"",
-                  Enum.GetName(typeof (AnalogChannel.VideoInputType), analogChannel.VideoSource));
+                  Enum.GetName(typeof(AnalogChannel.VideoInputType), analogChannel.VideoSource));
 
         //if (analogChannel.VideoSource == AnalogChannel.VideoInputType.Tuner)
         //return;
@@ -372,7 +372,7 @@ namespace TvEngine
         newThread.Name = "ProcessExternalChannel";
         newThread.Priority = ThreadPriority.AboveNormal;
         newThread.IsBackground = true;
-        newThread.Start(new int[] {analogChannel.ChannelNumber, tvEvent.Card.Id});
+        newThread.Start(new int[] { analogChannel.ChannelNumber, tvEvent.Card.Id });
       }
       catch (Exception ex)
       {
@@ -392,7 +392,7 @@ namespace TvEngine
         Log.Info("Cannot load external channel configurations, there are no TV cards registered");
 
         Card dummyCard = new Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0,
-                                  false, 0, "timeshifting folder", 0, 0);
+                                  false, 0, "timeshifting folder", 0, 0, 0);
         cards.Add(dummyCard);
       }
 
@@ -653,7 +653,7 @@ namespace TvEngine
         BitConverter.GetBytes(port.Length).CopyTo(outData, 0);
         Encoding.ASCII.GetBytes(port).CopyTo(outData, 4);
 
-        file.Read(outData, 4 + port.Length, (int) file.Length);
+        file.Read(outData, 4 + port.Length, (int)file.Length);
 
         IrssMessage message = new IrssMessage(MessageType.BlastIR, MessageFlags.Request, outData);
         _client.Send(message);
