@@ -34,6 +34,7 @@
 #---------------------------------------------------------------------------
 # import other header files
 #---------------------------------------------------------------------------
+!include FileFunc.nsh
 !include LogicLib.nsh
 !include x64.nsh
 
@@ -376,8 +377,6 @@
 
 !macroend
 
-!include FileFunc.nsh
-!insertmacro GetTime
 !macro GET_BACKUP_POSTFIX _var
 
   ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
@@ -586,14 +585,12 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
 
 !macroend
 
-!include FileFunc.nsh
-!insertmacro un.GetParent
 !macro NSISuninstall REG_KEY
 
   ReadRegStr $R0 HKLM "${REG_KEY}" UninstallString
   ${If} ${FileExists} "$R0"
     ; get parent folder of uninstallation EXE (RO) and save it to R1
-    ${un.GetParent} $R0 $R1
+    ${GetParent} $R0 $R1
     ; start uninstallation of installed MP, from tmp folder, so it will delete itself
     ;HideWindow
     ClearErrors
@@ -618,7 +615,7 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
   ReadRegStr $R0 HKLM "${REG_KEY}" UninstallString
   ${If} ${FileExists} "$R0"
     ; get parent folder of uninstallation EXE (RO) and save it to R1
-    ${un.GetParent} $R0 $R1
+    ${GetParent} $R0 $R1
     ; start uninstallation of installed MP, from tmp folder, so it will delete itself
     ;HideWindow
     ClearErrors
