@@ -115,6 +115,7 @@ Var frominstall
 ;!include "include\FileAssociation.nsh"
 !include "include\IrssSystemRegistry.nsh"
 !include "include\LanguageMacros.nsh"
+!define INSTALL_LOG_DIR "${COMMON_APPDATA}\logs"
 !include "include\LoggingMacros.nsh"
 !ifdef MPplugins
 !include "include\MediaPortalDirectories.nsh"

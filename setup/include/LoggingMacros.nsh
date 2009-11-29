@@ -98,17 +98,25 @@ Var TempInstallLog
 !ifdef INSTALL_LOG_FILE
   CopyFiles "$TempInstallLog" "${INSTALL_LOG_FILE}"
 !else
-  !ifndef COMMON_APPDATA
-    !error "$\r$\n$\r$\nCOMMON_APPDATA is not defined!$\r$\n$\r$\n"
+
+  !ifdef INSTALL_LOG_DIR
+
+    ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+    CopyFiles "$TempInstallLog" "${INSTALL_LOG_DIR}\${UNINSTALL_PREFIX}install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}_$2-$1-$0_$4-$5-$6.log"
+
+  !else
+
+    !ifndef COMMON_APPDATA
+      !error "$\r$\n$\r$\nCOMMON_APPDATA is not defined!$\r$\n$\r$\n"
+    !endif
+
+    ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+    CopyFiles "$TempInstallLog" "${COMMON_APPDATA}\log\${UNINSTALL_PREFIX}install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}_$2-$1-$0_$4-$5-$6.log"
+
   !endif
 
-  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  CopyFiles "$TempInstallLog" "${COMMON_APPDATA}\log\${UNINSTALL_PREFIX}install_${VER_MAJOR}.${VER_MINOR}.${VER_REVISION}.${VER_BUILD}_$2-$1-$0_$4-$5-$6.log"
-
-  Delete "$TempInstallLog"
-
 !endif
-
+  Delete "$TempInstallLog"
 
   !undef UNINSTALL_PREFIX
 !macroend
