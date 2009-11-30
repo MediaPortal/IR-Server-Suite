@@ -243,16 +243,13 @@ UninstPage custom un.UninstallModePage un.UninstallModePageLeave
   !insertmacro "${MacroName}" "SectionMPCommon"
     !insertmacro "${MacroName}" "SectionMPControlPlugin"
     !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
-;    !insertmacro "${MacroName}" "SectionTV2BlasterPlugin"
 
   !insertmacro "${MacroName}" "SectionTV3Common"
     !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
-
-;  !insertmacro "${MacroName}" "SectionMCEBlaster"
 !endif
 
   #SectionGroupTools
-  ;!insertmacro "${MacroName}" "SectionAbstractor"
+  !insertmacro "${MacroName}" "SectionAbstractor"
   !insertmacro "${MacroName}" "SectionDebugClient"
   !insertmacro "${MacroName}" "SectionIRFileTool"
   !insertmacro "${MacroName}" "SectionKeyboardInputRelay"
@@ -589,28 +586,6 @@ ${MementoSectionEnd}
   Delete /REBOOTOK "$MPdir.Plugins\Windows\MPBlastZonePlugin.*"
 !macroend
 
-;======================================
-/*
-${MementoUnselectedSection} "TV2 Blaster Plugin" SectionTV2BlasterPlugin
-  ${LOG_TEXT} "INFO" "Installing TV2 Blaster Plugin..."
-
-  ; Write plugin dll
-  SetOutPath "$MPdir.Plugins\Process"
-  File "..\MediaPortal Plugins\MediaPortal Plugins\TV2 Blaster Plugin\bin\${Build_Type}\TV2BlasterPlugin.*"
-
-  ; Create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV2 Blaster Plugin"
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV2 Blaster Plugin\Macro"
-
-${MementoSectionEnd}
-!macro Remove_${SectionTV2BlasterPlugin}
-  ${LOG_TEXT} "INFO" "Removing TV2 Blaster Plugin..."
-
-  Delete /REBOOTOK "$MPdir.Plugins\Process\TV2BlasterPlugin.*"
-!macroend
-;======================================
-*/
-
 SectionGroupEnd
 
 ;======================================
@@ -638,6 +613,8 @@ Var RestartTvService
     StrCpy $RestartTvService 1
   ${EndIf}
 !macroend
+
+;======================================
 
 SectionGroup "TV Server plugins" SectionGroupTV3
 
@@ -692,56 +669,11 @@ ${MementoSectionEnd}
   ${EndIf}
 !macroend
 
-;======================================
-
 SectionGroupEnd
-
-;======================================
-/*
-SectionGroup /e "Media Center add-ons" SectionGroupMCE
-
-${MementoUnselectedSection} "Media Center Blaster (experimental)" SectionMCEBlaster
-  ${LOG_TEXT} "INFO" "Installing MediaCenterBlaster..."
-  ${KILLPROCESS} "MediaCenterBlaster.exe"
-
-  ; Use the all users context
-  SetShellVarContext all
-
-  ; Installing Translator
-  CreateDirectory "$DIR_INSTALL\Media Center Blaster"
-  SetOutPath "$DIR_INSTALL\Media Center Blaster"
-  File "..\IR Server Suite\Applications\Media Center Blaster\bin\${Build_Type}\*.*"
-
-  ; Create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Media Center Blaster"
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Media Center Blaster\Macro"
-
-  ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Media Center Blaster.lnk" "$DIR_INSTALL\Media Center Blaster\MediaCenterBlaster.exe" "" "$DIR_INSTALL\Media Center Blaster\MediaCenterBlaster.exe" 0
-
-${MementoSectionEnd}
-!macro Remove_${SectionMCEBlaster}
-  ${LOG_TEXT} "INFO" "Removing MediaCenterBlaster..."
-  ${KILLPROCESS} "MediaCenterBlaster.exe"
-
-  ; Remove auto-run
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Media Center Blaster"
-
-  ; remove Start Menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Media Center Blaster.lnk"
-
-  ; remove files
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Media Center Blaster"
-!macroend
-
-;======================================
-
-SectionGroupEnd
-
-;======================================
-*/
 
 !endif
+
+;======================================
 
 SectionGroup "Tools" SectionGroupTools
 
@@ -1224,12 +1156,10 @@ Function LoadPreviousSettings
   ${If} "$DIR_MEDIAPORTAL" != ""
     !insertmacro EnableSection "${SectionMPControlPlugin}" "MP Control Plugin"
     !insertmacro EnableSection "${SectionMPBlastZonePlugin}" "MP Blast Zone Plugin"
-    ;!insertmacro EnableSection "${SectionTV2BlasterPlugin}" "TV2 Blaster Plugin"
     !insertmacro EnableSection "${SectionGroupMP}" "MediaPortal plugins"
   ${else}
     !insertmacro DisableSection "${SectionMPControlPlugin}" "MP Control Plugin" " "
     !insertmacro DisableSection "${SectionMPBlastZonePlugin}" "MP Blast Zone Plugin" " "
-    ;!insertmacro DisableSection "${SectionTV2BlasterPlugin}" "TV2 Blaster Plugin" " "
     !insertmacro DisableSection "${SectionGroupMP}" "MediaPortal plugins" " ($(TEXT_MP_NOT_INSTALLED))"
   ${Endif}
 
@@ -1289,7 +1219,6 @@ Function .onSelChange
   ; disable/remove common files for MediaPortal plugins if all MediaPortal plugins are unselected
   ${IfNot} ${SectionIsSelected} ${SectionMPControlPlugin}
   ${AndIfNot} ${SectionIsSelected} ${SectionMPBlastZonePlugin}
-;  ${AndIfNot} ${SectionIsSelected} ${SectionTV2BlasterPlugin}
     !insertmacro UnselectSection ${SectionMPCommon}
   ${Else}
     !insertmacro SelectSection ${SectionMPCommon}
@@ -1455,11 +1384,8 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMP}             "$(DESC_SectionGroupMP)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPControlPlugin}     "$(DESC_SectionMPControlPlugin)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPBlastZonePlugin}   "$(DESC_SectionMPBlastZonePlugin)"
-;    !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV2BlasterPlugin}    "$(DESC_SectionTV2BlasterPlugin)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupTV3}            "$(DESC_SectionGroupTV3)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMCE}            "$(DESC_SectionGroupMCE)"
-;    !insertmacro MUI_DESCRIPTION_TEXT ${SectionMCEBlaster}          "$(DESC_SectionMCEBlaster)"
 !endif
 
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator}          "$(DESC_SectionTranslator)"
