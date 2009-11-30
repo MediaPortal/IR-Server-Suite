@@ -27,28 +27,6 @@
 !ifndef ___MediaPortalDirectories__NSH___
 !define ___MediaPortalDirectories__NSH___
 
-!include Util.nsh
-
-!verbose push
-!verbose 3
-!ifndef _MediaPortalDirectories_VERBOSE
-  !define _MediaPortalDirectories_VERBOSE 3
-!endif
-!verbose ${_MediaPortalDirectories_VERBOSE}
-!define MediaPortalDirectories_VERBOSE `!insertmacro MediaPortalDirectories_VERBOSE`
-!verbose pop
-
-!macro MediaPortalDirectories_VERBOSE _VERBOSE
-  !verbose push
-  !verbose 3
-  !undef _MediaPortalDirectories_VERBOSE
-  !define _MediaPortalDirectories_VERBOSE ${_VERBOSE}
-  !verbose pop
-!macroend
-
-
-
-
 !include LogicLib.nsh
 !include FileFunc.nsh
 !include WordFunc.nsh
@@ -179,7 +157,7 @@ Var MPdir.BurnerSupport
 
 !macro ReadConfig_
   !verbose push
-  !verbose ${_MediaPortalDirectories_VERBOSE}
+  !verbose 3
 
   Exch $0 ;_PATH_TO_XML
   Push $1
@@ -231,7 +209,8 @@ Var MPdir.BurnerSupport
 !define un.ReadMediaPortalDirs `!insertmacro ReadMediaPortalDirsCall`
 !macro ReadMediaPortalDirsCall INSTDIR
   !verbose push
-  !verbose ${_MediaPortalDirectories_VERBOSE}
+  !verbose 3
+
   Push $0
 
 
@@ -281,6 +260,7 @@ Var MPdir.BurnerSupport
 
 
   Pop $0
+
   !verbose pop
 !macroend
 

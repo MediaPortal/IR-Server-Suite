@@ -54,6 +54,10 @@ Var TempInstallLog
 !define LOG_OPEN `!insertmacro LOG_OPEN`
 !define un.LOG_OPEN `!insertmacro LOG_OPEN`
 !macro LOG_OPEN
+  !echo "LOG_OPEN"
+  !verbose push
+  !verbose 3
+
   !ifndef __UNINSTALL__
     !define UNINSTALL_PREFIX ""
   !else
@@ -72,12 +76,18 @@ Var TempInstallLog
 
 
   !undef UNINSTALL_PREFIX
+
+  !verbose pop
 !macroend
 
 
 !define LOG_CLOSE `!insertmacro LOG_CLOSE`
 !define un.LOG_CLOSE `!insertmacro LOG_CLOSE`
 !macro LOG_CLOSE
+  !echo "LOG_CLOSE"
+  !verbose push
+  !verbose 3
+
   !ifndef __UNINSTALL__
     !define UNINSTALL_PREFIX ""
   !else
@@ -119,11 +129,15 @@ Var TempInstallLog
   Delete "$TempInstallLog"
 
   !undef UNINSTALL_PREFIX
+
+  !verbose pop
 !macroend
 
 
 !define LOG_TEXT `!insertmacro LOG_TEXT`
 !macro LOG_TEXT LEVEL TEXT
+  !verbose push
+  !verbose 3
 
 !if     "${LEVEL}" != "DEBUG"
   !if   "${LEVEL}" != "ERROR"
@@ -139,6 +153,7 @@ Var TempInstallLog
 
   FileWrite $LogFile "${prefix${LEVEL}}${TEXT}$\r$\n"
 
+  !verbose pop
 !macroend
 
 !endif # !LoggingMacros_INCLUDED
