@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -75,7 +76,14 @@ namespace IRServer.Tray
 
     private static void ClickConfiguration(object sender, EventArgs e)
     {
-      Process.Start(_configExe);
+      try
+      {
+        Process.Start(_configExe);
+      }
+      catch (Win32Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
     }
 
     private static void ClickTranslator(object sender, EventArgs e)
