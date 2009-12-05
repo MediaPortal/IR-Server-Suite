@@ -1,9 +1,27 @@
-;======================================
-; IR Server Suite.nsi
-;
-; (C) Copyright Aaron Dinnage, 2008
-;======================================
+#region Copyright (C) 2005-2009 Team MediaPortal
 
+/*
+ *  Copyright (C) 2005-2009 Team MediaPortal
+ *  http://www.team-mediaportal.com
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with GNU Make; see the file COPYING.  If not, write to
+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. 
+ *  http://www.gnu.org/copyleft/gpl.html
+ *
+ */
+
+#endregion
 
 #---------------------------------------------------------------------------
 # SPECIAL BUILDS
@@ -42,13 +60,14 @@
 # DEFINES
 #---------------------------------------------------------------------------
 !define PRODUCT_NAME          "IR Server Suite"
-!define PRODUCT_PUBLISHER     "Aaron Dinnage (and-81)"
+!define PRODUCT_PUBLISHER     "Team MediaPortal"
 !define PRODUCT_WEB_SITE      "http://forum.team-mediaportal.com/ir-server-suite-irss-165/"
 
 !define REG_UNINSTALL         "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define MEMENTO_REGISTRY_ROOT HKLM
 !define MEMENTO_REGISTRY_KEY  "${REG_UNINSTALL}"
 !define COMMON_APPDATA        "$APPDATA\${PRODUCT_NAME}"
+!define STARTMENU_GROUP       "$SMPROGRAMS\${PRODUCT_NAME}"
 
 ; VER_BUILD is set to zero for Release builds
 !define VER_MAJOR       1
@@ -148,18 +167,18 @@ CRCCheck on
 # INSTALLER INTERFACE settings
 #---------------------------------------------------------------------------
 !define MUI_ABORTWARNING
-!define MUI_ICON "Icons\iconGreen.ico"
-!define MUI_UNICON "Icons\iconGreen.ico"
+!define MUI_ICON    "Icons\iconGreen.ico"
+!define MUI_UNICON  "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP            "images\header.bmp"
-!if ${VER_BUILD} == 0
+#!if ${VER_BUILD} == 0
   !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard.bmp"
   !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard.bmp"
-!else
-  !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard-svn.bmp"
-  !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard-svn.bmp"
-!endif
+#!else
+#  !define MUI_WELCOMEFINISHPAGE_BITMAP    "images\wizard-svn.bmp"
+#  !define MUI_UNWELCOMEFINISHPAGE_BITMAP  "images\wizard-svn.bmp"
+#!endif
 !define MUI_HEADERIMAGE_RIGHT
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
@@ -239,6 +258,26 @@ UninstPage custom un.UninstallModePage un.UninstallModePageLeave
   !insertmacro "${MacroName}" "SectionHcwPvrTuner"
 !macroend
 
+!macro ShutdownRunningMediaPortalApplications
+  ${LOG_TEXT} "INFO" "Terminating processes..."
+
+  ${StopService} "IRServer"
+  ${KILLPROCESS} "IR Server.exe"
+  ${KILLPROCESS} "IR Server Configuration.exe"
+  ${KILLPROCESS} "IR Server Tray.exe"
+
+  ${KILLPROCESS} "Abstractor.exe"
+  ${KILLPROCESS} "DebugClient.exe"
+  ${KILLPROCESS} "IRFileTool.exe"
+  ${KILLPROCESS} "KeyboardInputRelay.exe"
+  ${KILLPROCESS} "Translator.exe"
+
+  ${KILLPROCESS} "VirtualRemote.exe"
+  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
+  ${KILLPROCESS} "WebRemote.exe"
+
+!macroend
+
 ;======================================
 
 Function RunUninstaller
@@ -257,6 +296,9 @@ FunctionEnd
 # SECTIONS and REMOVEMACROS
 #---------------------------------------------------------------------------
 Section "-prepare"
+
+  ; close all IRSS related apps
+  !insertmacro ShutdownRunningMediaPortalApplications
 
   ; uninstall old version if necessary
   ${If} ${Silent}
@@ -289,16 +331,16 @@ Section "-Core"
   File "..\IR Server Suite\Common\ShellLink\bin\${Build_Type}\ShellLink.*"
 
   ; startmenu needs to be created before creating shortcuts
-  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
+  CreateDirectory "${STARTMENU_GROUP}"
 
   ; create app data directories
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}"
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Logs"
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR Commands"
+  CreateDirectory "${COMMON_APPDATA}"
+  CreateDirectory "${COMMON_APPDATA}\Logs"
+  CreateDirectory "${COMMON_APPDATA}\IR Commands"
 
   ; Copy known set top boxes
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
-  SetOutPath "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
+  CreateDirectory "${COMMON_APPDATA}\Set Top Boxes"
+  SetOutPath "${COMMON_APPDATA}\Set Top Boxes"
   SetOverwrite ifnewer
   File /r /x .svn "..\IR Server Suite\Set Top Boxes\*.*"
   SetOverwrite on
@@ -308,10 +350,6 @@ SectionEnd
 
 ${MementoSection} "IR Server" SectionIRServer
   ${LOG_TEXT} "INFO" "Installing IR Server..."
-  ${StopService} "IRServer"
-  ${KILLPROCESS} "IR Server.exe"
-  ${KILLPROCESS} "IR Server Configuration.exe"
-  ${KILLPROCESS} "IR Server Tray.exe"
 
   ; use the all users context
   SetShellVarContext all
@@ -374,26 +412,26 @@ ${MementoSection} "IR Server" SectionIRServer
   ; File "..\IR Server Suite\IR Server Plugins\Tira Transceiver\bin\${Build_Type}\Tira Transceiver.*"
   
   ; Create App Data Folder for IR Server configuration files
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR Server"
+  CreateDirectory "${COMMON_APPDATA}\IR Server"
   
   ; Copy Abstract Remote maps
-  SetOutPath "$APPDATA\${PRODUCT_NAME}\IR Server\Abstract Remote Maps"
+  SetOutPath "${COMMON_APPDATA}\IR Server\Abstract Remote Maps"
   SetOverwrite ifnewer
   File /r /x .svn "..\IR Server Suite\IR Server\IR Server\Abstract Remote Maps\*.*"
   File "..\IR Server Suite\IR Server\IR Server\RemoteTable.xsd"
   SetOverwrite on
 
   ; Create start menu shortcut
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk" "$DIR_INSTALL\IR Server Configuration.exe" "" "$DIR_INSTALL\IR Server Configuration.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Tray.lnk"          "$DIR_INSTALL\IR Server Tray.exe"          "" "$DIR_INSTALL\IR Server Tray.exe"          0
+  CreateShortCut "${STARTMENU_GROUP}\IR Server Configuration.lnk" "$DIR_INSTALL\IR Server Configuration.exe" "" "$DIR_INSTALL\IR Server Configuration.exe" 0
+  CreateShortCut "${STARTMENU_GROUP}\IR Server Tray.lnk"          "$DIR_INSTALL\IR Server Tray.exe"          "" "$DIR_INSTALL\IR Server Tray.exe"          0
 
-  ; Install Server/Service
+  ; install Server/Service
   ${If} $ServerServiceMode == "IRServerAsApplication"
     ${LOG_TEXT} "INFO" "Adding IR Server to Autostart..."
     !insertmacro SetAutoRun "IR Server" '"$DIR_INSTALL\IR Server.exe"'
   ${Else}
     ${LOG_TEXT} "INFO" "Installing IR Server as Service..."
-    ExecWait '"$DIR_INSTALL\IR Server.exe" /install'
+    nsExec::ExecToLog '"$DIR_INSTALL\IR Server.exe" /install'
   ${EndIf}
 
   ${LOG_TEXT} "INFO" "Adding IR Server Tray to Autostart..."
@@ -402,10 +440,6 @@ ${MementoSection} "IR Server" SectionIRServer
 ${MementoSectionEnd}
 !macro Remove_${SectionIRServer}
   ${LOG_TEXT} "INFO" "Removing IR Server..."
-  ${StopService} "IRServer"
-  ${KILLPROCESS} "IR Server.exe"
-  ${KILLPROCESS} "IR Server Configuration.exe"
-  ${KILLPROCESS} "IR Server Tray.exe"
 
   ${LOG_TEXT} "INFO" "Removing IR Server from Autostart..."
   !insertmacro RemoveAutoRun "IR Server"
@@ -415,8 +449,8 @@ ${MementoSectionEnd}
   !insertmacro RemoveAutoRun "IR Server Tray"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Configuration.lnk"
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR Server Tray.lnk"
+  Delete "${STARTMENU_GROUP}\IR Server Configuration.lnk"
+  Delete "${STARTMENU_GROUP}\IR Server Tray.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\IR Server.*"
@@ -484,14 +518,14 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Control Plugin\InputMapping\MPControlPlugin.xml"
 
   ; Write app data
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Control Plugin"
-  SetOutPath "$APPDATA\${PRODUCT_NAME}\MP Control Plugin"
+  CreateDirectory "${COMMON_APPDATA}\MP Control Plugin"
+  SetOutPath "${COMMON_APPDATA}\MP Control Plugin"
   SetOverwrite ifnewer
   File /r /x .svn "..\MediaPortal Plugins\MediaPortal Plugins\MP Control Plugin\AppData\*.*"
   SetOverwrite on
 
   ; Create Macro folder
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Control Plugin\Macro"
+  CreateDirectory "${COMMON_APPDATA}\MP Control Plugin\Macro"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionMPControlPlugin}
@@ -513,8 +547,8 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\bin\${Build_Type}\MPBlastZonePlugin.*"
 
   ; Write app data
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin"
-  SetOutPath "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin"
+  CreateDirectory "${COMMON_APPDATA}\MP Blast Zone Plugin"
+  SetOutPath "${COMMON_APPDATA}\MP Blast Zone Plugin"
   SetOverwrite off
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\AppData\Menu.xml"
   SetOverwrite on
@@ -527,7 +561,7 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   File /r /x .svn "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   ; Create Macro folder
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\MP Blast Zone Plugin\Macro"
+  CreateDirectory "${COMMON_APPDATA}\MP Blast Zone Plugin\Macro"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionMPBlastZonePlugin}
@@ -604,8 +638,8 @@ ${MementoUnselectedSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
   File "..\MediaPortal Plugins\TVServer plugins\TV3 Blaster Plugin\bin\${Build_Type}\TV3BlasterPlugin.*"
 
   ; create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV3 Blaster Plugin"
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV3 Blaster Plugin\Macro"
+  CreateDirectory "${COMMON_APPDATA}\TV3 Blaster Plugin"
+  CreateDirectory "${COMMON_APPDATA}\TV3 Blaster Plugin\Macro"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionTV3BlasterPlugin}
@@ -629,22 +663,20 @@ SectionGroup "Tools" SectionGroupTools
 
 ${MementoSection} "Abstractor" SectionAbstractor
   ${LOG_TEXT} "INFO" "Installing Abstractor..."
-  ${KILLPROCESS} "Abstractor.exe"
 
   ; install files
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\Abstractor\bin\${Build_Type}\Abstractor.*"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk" "$DIR_INSTALL\Abstractor.exe" "" "$DIR_INSTALL\Abstractor.exe" 0
+  CreateShortCut "${STARTMENU_GROUP}\Abstractor.lnk" "$DIR_INSTALL\Abstractor.exe" "" "$DIR_INSTALL\Abstractor.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionAbstractor}
   ${LOG_TEXT} "INFO" "Removing Abstractor..."
-  ${KILLPROCESS} "Abstractor.exe"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Abstractor.lnk"
+  Delete "${STARTMENU_GROUP}\Abstractor.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\Abstractor.*"
@@ -654,25 +686,23 @@ ${MementoSectionEnd}
 
 ${MementoSection} "Debug Client" SectionDebugClient
   ${LOG_TEXT} "INFO" "Installing Debug Client..."
-  ${KILLPROCESS} "DebugClient.exe"
 
   ; install files
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\Debug Client\bin\${Build_Type}\DebugClient.*"
 
   ; create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Debug Client"
+  CreateDirectory "${COMMON_APPDATA}\Debug Client"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk" "$DIR_INSTALL\DebugClient.exe" "" "$DIR_INSTALL\DebugClient.exe" 0
+  CreateShortCut "${STARTMENU_GROUP}\Debug Client.lnk" "$DIR_INSTALL\DebugClient.exe" "" "$DIR_INSTALL\DebugClient.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionDebugClient}
   ${LOG_TEXT} "INFO" "Removing Debug Client..."
-  ${KILLPROCESS} "DebugClient.exe"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Debug Client.lnk"
+  Delete "${STARTMENU_GROUP}\Debug Client.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\DebugClient.*"
@@ -682,25 +712,23 @@ ${MementoSectionEnd}
 
 ${MementoUnselectedSection} "IR File Tool" SectionIRFileTool
   ${LOG_TEXT} "INFO" "Installing IR File Tool..."
-  ${KILLPROCESS} "IRFileTool.exe"
 
   ; install files
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\IR File Tool\bin\${Build_Type}\IRFileTool.*"
 
   ; create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR File Tool"
+  CreateDirectory "${COMMON_APPDATA}\IR File Tool"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk" "$DIR_INSTALL\IRFileTool.exe" "" "$DIR_INSTALL\IRFileTool.exe" 0
+  CreateShortCut "${STARTMENU_GROUP}\IR File Tool.lnk" "$DIR_INSTALL\IRFileTool.exe" "" "$DIR_INSTALL\IRFileTool.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRFileTool}
   ${LOG_TEXT} "INFO" "Removing IR File Tool..."
-  ${KILLPROCESS} "IRFileTool.exe"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\IR File Tool.lnk"
+  Delete "${STARTMENU_GROUP}\IR File Tool.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\IRFileTool.*"
@@ -710,28 +738,26 @@ ${MementoSectionEnd}
 
 ${MementoUnselectedSection} "Keyboard Input Relay" SectionKeyboardInputRelay
   ${LOG_TEXT} "INFO" "Installing Keyboard Input Relay..."
-  ${KILLPROCESS} "KeyboardInputRelay.exe"
 
   ; install files
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\Keyboard Input Relay\bin\${Build_Type}\KeyboardInputRelay.*"
 
   ; create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Keyboard Input Relay"
+  CreateDirectory "${COMMON_APPDATA}\Keyboard Input Relay"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk" "$DIR_INSTALL\KeyboardInputRelay.exe" "" "$DIR_INSTALL\KeyboardInputRelay.exe" 0
+  CreateShortCut "${STARTMENU_GROUP}\Keyboard Input Relay.lnk" "$DIR_INSTALL\KeyboardInputRelay.exe" "" "$DIR_INSTALL\KeyboardInputRelay.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionKeyboardInputRelay}
   ${LOG_TEXT} "INFO" "Removing Keyboard Input Relay..."
-  ${KILLPROCESS} "KeyboardInputRelay.exe"
 
   ; remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Keyboard Input Relay"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Keyboard Input Relay.lnk"
+  Delete "${STARTMENU_GROUP}\Keyboard Input Relay.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\KeyboardInputRelay.*"
@@ -741,41 +767,36 @@ ${MementoSectionEnd}
 
 ${MementoSection} "Translator" SectionTranslator
   ${LOG_TEXT} "INFO" "Installing Translator..."
-  ${KILLPROCESS} "Translator.exe"
 
   ; install files
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\Translator\bin\${Build_Type}\Translator.*"
 
   ; create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator"
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator\Macro"
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Translator\Default Settings"
+  CreateDirectory "${COMMON_APPDATA}\Translator"
+  CreateDirectory "${COMMON_APPDATA}\Translator\Macro"
+  CreateDirectory "${COMMON_APPDATA}\Translator\Default Settings"
 
   ; Copy in default settings files  
-  SetOutPath "$APPDATA\${PRODUCT_NAME}\Translator\Default Settings"
+  SetOutPath "${COMMON_APPDATA}\Translator\Default Settings"
   File "..\IR Server Suite\Applications\Translator\Default Settings\*.xml"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk" "$DIR_INSTALL\Translator.exe" "" "$DIR_INSTALL\Translator.exe" 0
-
+  CreateShortCut "${STARTMENU_GROUP}\Translator.lnk" "$DIR_INSTALL\Translator.exe" "" "$DIR_INSTALL\Translator.exe" 0
 
   ; check if Translator is an autorun app
   ${If} $AutoRunTranslator == 1
     !insertmacro SetAutoRun "Translator" "$DIR_INSTALL\Translator.exe"
-    ; if translator is an autorun app, start is not so user doesn't need to do it manually
-    Exec '"$DIR_INSTALL\Translator.exe"'
   ${EndIf}
 ${MementoSectionEnd}
 !macro Remove_${SectionTranslator}
   ${LOG_TEXT} "INFO" "Removing Translator..."
-  ${KILLPROCESS} "Translator.exe"
 
   ; remove auto-run
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "Translator"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Translator.lnk"
+  Delete "${STARTMENU_GROUP}\Translator.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\Translator.*"
@@ -785,9 +806,6 @@ ${MementoSectionEnd}
 
 ${MementoUnselectedSection} "Virtual Remote" SectionVirtualRemote
   ${LOG_TEXT} "INFO" "Installing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
-  ${KILLPROCESS} "VirtualRemote.exe"
-  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
-  ${KILLPROCESS} "WebRemote.exe"
 
   ; Installing Virtual Remote and Web Remote
   SetOutPath "$DIR_INSTALL"
@@ -806,26 +824,23 @@ ${MementoUnselectedSection} "Virtual Remote" SectionVirtualRemote
   File "..\Virtual Remote\Applications\Virtual Remote (WinCE5) Installer\${Build_Type}\*.cab"
 
   ; create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Virtual Remote"
+  CreateDirectory "${COMMON_APPDATA}\Virtual Remote"
 
   ; create start menu shortcuts
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk" "$DIR_INSTALL\VirtualRemote.exe" "" "$DIR_INSTALL\VirtualRemote.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk" "$DIR_INSTALL\VirtualRemoteSkinEditor.exe" "" "$DIR_INSTALL\VirtualRemoteSkinEditor.exe" 0
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote for Smart Devices.lnk" "$DIR_INSTALL\Virtual Remote\Smart Devices"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk" "$DIR_INSTALL\WebRemote.exe" "" "$DIR_INSTALL\WebRemote.exe" 0
+  CreateShortCut "${STARTMENU_GROUP}\Virtual Remote.lnk" "$DIR_INSTALL\VirtualRemote.exe" "" "$DIR_INSTALL\VirtualRemote.exe" 0
+  CreateShortCut "${STARTMENU_GROUP}\Virtual Remote Skin Editor.lnk" "$DIR_INSTALL\VirtualRemoteSkinEditor.exe" "" "$DIR_INSTALL\VirtualRemoteSkinEditor.exe" 0
+  CreateShortCut "${STARTMENU_GROUP}\Virtual Remote for Smart Devices.lnk" "$DIR_INSTALL\Virtual Remote\Smart Devices"
+  CreateShortCut "${STARTMENU_GROUP}\Web Remote.lnk" "$DIR_INSTALL\WebRemote.exe" "" "$DIR_INSTALL\WebRemote.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionVirtualRemote}
   ${LOG_TEXT} "INFO" "Removing Virtual Remote, Skin Editor, Smart Device versions, and Web Remote..."
-  ${KILLPROCESS} "VirtualRemote.exe"
-  ${KILLPROCESS} "VirtualRemoteSkinEditor.exe"
-  ${KILLPROCESS} "WebRemote.exe"
 
   ; remove start menu shortcuts
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote.lnk"
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote Skin Editor.lnk"
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Virtual Remote for Smart Devices.lnk"
-  Delete "$SMPROGRAMS\${PRODUCT_NAME}\Web Remote.lnk"
+  Delete "${STARTMENU_GROUP}\Virtual Remote.lnk"
+  Delete "${STARTMENU_GROUP}\Virtual Remote Skin Editor.lnk"
+  Delete "${STARTMENU_GROUP}\Virtual Remote for Smart Devices.lnk"
+  Delete "${STARTMENU_GROUP}\Web Remote.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\VirtualRemote.*"
@@ -867,7 +882,7 @@ ${MementoUnselectedSection} "Dreambox Tuner" SectionDboxTuner
   File "..\IR Server Suite\Applications\Dbox Tuner\bin\${Build_Type}\DboxTuner.*"
 
   ; create folders
-  CreateDirectory "$APPDATA\${PRODUCT_NAME}\Dbox Tuner"
+  CreateDirectory "${COMMON_APPDATA}\Dbox Tuner"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionDboxTuner}
@@ -922,10 +937,10 @@ Section "-Complete"
   SetShellVarContext all
 
   ; Create start menu shortcuts
-  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation.url"  "InternetShortcut" "URL" "http://www.team-mediaportal.com/manual/IRServerSuite"
-  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Website.url"  "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Log Files.lnk" "$APPDATA\${PRODUCT_NAME}\Logs"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$DIR_INSTALL\uninstall-irss.exe" "" "$DIR_INSTALL\uninstall-irss.exe"
+  WriteINIStr "${STARTMENU_GROUP}\Documentation.url"  "InternetShortcut" "URL" "http://www.team-mediaportal.com/manual/IRServerSuite"
+  WriteINIStr "${STARTMENU_GROUP}\Website.url"  "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
+  CreateShortCut "${STARTMENU_GROUP}\Log Files.lnk" "${COMMON_APPDATA}\Logs"
+  CreateShortCut "${STARTMENU_GROUP}\Uninstall.lnk" "$DIR_INSTALL\uninstall-irss.exe" "" "$DIR_INSTALL\uninstall-irss.exe"
 
   
   ; Write registry settings
@@ -949,7 +964,7 @@ Section "-Complete"
   WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayVersion"  "${VERSION}"
   WriteRegStr HKLM "${REG_UNINSTALL}" "Publisher"       "${PRODUCT_PUBLISHER}"
   WriteRegStr HKLM "${REG_UNINSTALL}" "URLInfoAbout"    "${PRODUCT_WEB_SITE}"
-  WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayIcon"     "$DIR_INSTALL\uninstall-irss.exe"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayIcon"     "$DIR_INSTALL\IR Server.exe"
   WriteRegStr HKLM "${REG_UNINSTALL}" "UninstallString" "$DIR_INSTALL\uninstall-irss.exe"
   WriteRegDWORD HKLM "${REG_UNINSTALL}" "NoModify" 1
   WriteRegDWORD HKLM "${REG_UNINSTALL}" "NoRepair" 1
@@ -961,7 +976,7 @@ Section "-Complete"
   Call SetRightsIRSS
 
   ; Store the install log
-  StrCpy $0 "$APPDATA\${PRODUCT_NAME}\Logs\Install.log"
+  StrCpy $0 "${COMMON_APPDATA}\Logs\Install.log"
   Push $0
   Call DumpLog
 
@@ -979,6 +994,12 @@ Section "Uninstall"
   ; use the all users context
   SetShellVarContext all
 
+  ; if uninstaller is launched from installer, closing the apps is already done
+  ${IfNot} $frominstall == 1
+    ; close all IRSS related apps
+    !insertmacro ShutdownRunningMediaPortalApplications
+  ${EndIf}
+
   ; First removes all optional components
   !insertmacro SectionList "RemoveSection"
 
@@ -992,7 +1013,7 @@ Section "Uninstall"
   RMDir /R "$DIR_INSTALL"
 
   DetailPrint "Removing start menu shortcuts ..."
-  RMDir /R "$SMPROGRAMS\${PRODUCT_NAME}"
+  RMDir /R "${STARTMENU_GROUP}"
   
   ; Remove registry keys
   DetailPrint "Removing registry keys ..."
@@ -1002,7 +1023,7 @@ Section "Uninstall"
   ${If} $UnInstallMode == 1
 
     ${LOG_TEXT} "INFO" "Removing User Settings"
-    RMDir /r "$APPDATA\${PRODUCT_NAME}"
+    RMDir /r "${COMMON_APPDATA}"
     RMDir /r "$LOCALAPPDATA\VirtualStore\Program Files\${PRODUCT_NAME}"
     RMDir /r "$LOCALAPPDATA\VirtualStore\ProgramData\${PRODUCT_NAME}"
 
@@ -1132,7 +1153,7 @@ Function .onInit
 FunctionEnd
 
 Function .onInstFailed
-  ${LOG_CLOSE}
+${LOG_CLOSE}
 FunctionEnd
 
 Function .onInstSuccess
@@ -1142,18 +1163,29 @@ ${If} ${SectionIsSelected} ${SectionIRServer}
   ; start Server/Service
   ${If} $ServerServiceMode == "IRServerAsApplication"
     ${LOG_TEXT} "INFO" "Starting IR Server..."
-    Exec "$DIR_INSTALL\IR Server.exe"
+    Exec '"$DIR_INSTALL\IR Server.exe"'
   ${Else}
     ${LOG_TEXT} "INFO" "Starting IR Server service..."
     Exec '"$DIR_INSTALL\IR Server.exe" /start'
   ${EndIf}
 
-  Exec "$DIR_INSTALL\IR Server Tray.exe"
-  
+  ; start tray tool
+  ${LOG_TEXT} "INFO" "Starting IR Server Tray..."
+  Exec '"$DIR_INSTALL\IR Server Tray.exe"'
+
 ${EndIf}
 
+${If} ${SectionIsSelected} ${SectionTranslator}
 
-  ${LOG_CLOSE}
+  ; automatically start translator only if it was already and autostart app
+  ${If} $AutoRunTranslator == 1
+    ; if translator is an autorun app, start is not so user doesn't need to do it manually
+    Exec '"$DIR_INSTALL\Translator.exe"'
+  ${EndIf}
+
+${EndIf}
+
+${LOG_CLOSE}
 FunctionEnd
 
 Function .onSelChange
