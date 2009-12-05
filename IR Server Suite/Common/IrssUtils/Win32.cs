@@ -2284,7 +2284,6 @@ namespace IrssUtils
       return GetDesktopWindow();
     }
 
-    #warning "Check the methods for getting icons from files (apps). Should the Interop-based or the other one be used?" 
     /// <summary>
     /// Gets the icon for a supplied file.
     /// </summary>
