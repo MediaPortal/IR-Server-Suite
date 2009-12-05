@@ -132,15 +132,16 @@ Var frominstall
 #---------------------------------------------------------------------------
 # INSTALLER ATTRIBUTES
 #---------------------------------------------------------------------------
-Name "${PRODUCT_NAME}"
-OutFile "..\${PRODUCT_NAME} - ${VERSION}.exe"
-InstallDir ""
+Name          "${PRODUCT_NAME}"
+BrandingText  "${PRODUCT_NAME} ${VERSION} by ${PRODUCT_PUBLISHER}"
+OutFile       "..\${PRODUCT_NAME} - ${VERSION}.exe"
+InstallDir    ""
 
+XPStyle on
+RequestExecutionLevel admin
 ;ShowInstDetails show
 ;ShowUninstDetails show
-CRCCheck On
-
-BrandingText "${PRODUCT_NAME} - ${VERSION} by ${PRODUCT_PUBLISHER}"
+CRCCheck on
 
 
 #---------------------------------------------------------------------------
@@ -183,28 +184,6 @@ Page custom PageReinstallMode PageLeaveReinstallMode
 
 Page custom PageServerServiceMode PageLeaveServerServiceMode
 
-/*
-; MediaPortal install path
-!define MUI_PAGE_HEADER_TEXT "Choose MediaPortal Location"
-!define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install MediaPortal plugins."
-!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install MediaPortal plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
-!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "MediaPortal Folder"
-!define MUI_DIRECTORYPAGE_VARIABLE "$DIR_MEDIAPORTAL"
-!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreMP
-!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveMP
-!insertmacro MUI_PAGE_DIRECTORY
-
-; TV Server install path
-!define MUI_PAGE_HEADER_TEXT "Choose TV Server Location"
-!define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install TV Server plugins."
-!define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install TV Server plugins in the following folder.$\r$\n$\r$\nTo install in a different folder, click Browse and select another folder. Click Next to continue."
-!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "TV Server Folder"
-!define MUI_DIRECTORYPAGE_VARIABLE "$DIR_TVSERVER"
-!define MUI_PAGE_CUSTOMFUNCTION_PRE DirectoryPreTV
-!define MUI_PAGE_CUSTOMFUNCTION_LEAVE DirectoryLeaveTV
-!insertmacro MUI_PAGE_DIRECTORY
-*/
-
 ; Main app install path
 !define MUI_DIRECTORYPAGE_VARIABLE "$DIR_INSTALL"
 !define MUI_PAGE_CUSTOMFUNCTION_PRE PageDirectoryPre
@@ -218,8 +197,6 @@ Page custom PageServerServiceMode PageLeaveServerServiceMode
 !define MUI_PAGE_CUSTOMFUNCTION_PRE un.WelcomePagePre
 !insertmacro MUI_UNPAGE_WELCOME
 UninstPage custom un.UninstallModePage un.UninstallModePageLeave
-;!define MUI_PAGE_CUSTOMFUNCTION_PRE un.ConfirmPagePre
-;!insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 !define MUI_PAGE_CUSTOMFUNCTION_PRE un.FinishPagePre
 !insertmacro MUI_UNPAGE_FINISH
@@ -280,7 +257,6 @@ FunctionEnd
 # SECTIONS and REMOVEMACROS
 #---------------------------------------------------------------------------
 Section "-prepare"
-  DetailPrint "Uninstalling old version ..."
 
   ; uninstall old version if necessary
   ${If} ${Silent}
@@ -293,47 +269,29 @@ Section "-prepare"
     BringToFront
 
   ${EndIf}
-  
-  
-/* OBSOLETE since irss is uninstalled before
-  DetailPrint "Preparing to install ..."
 
-  IfFileExists "$DIR_INSTALL\IR Server.exe" StopIRServer SkipStopIRServer
-
-StopIRServer:
-  ExecWait '"$DIR_INSTALL\IR Server.exe" /stop'
-
-SkipStopIRServer:
-  Sleep 100
-*/
 SectionEnd
 
 ;======================================
 
 Section "-Core"
+  ${LOG_TEXT} "INFO" "Setting up paths and installing core files ..."
 
-  DetailPrint "Setting up paths and installing core files ..."
-
-  ; Use the all users context
+  ; use the all users context
   SetShellVarContext all
   SetOverwrite on
 
-
-  ; Create app data directories
-  SetOutPath "$DIR_INSTALL"
-  ;File "..\IR Server Suite\Documentation\${PRODUCT_NAME}.chm"
-
-
   ; common files
+  SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
   File "..\IR Server Suite\Common\IrssScheduler\bin\${Build_Type}\IrssScheduler.*"
   File "..\IR Server Suite\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
   File "..\IR Server Suite\Common\ShellLink\bin\${Build_Type}\ShellLink.*"
 
-
+  ; startmenu needs to be created before creating shortcuts
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
 
-  ; Create app data directories
+  ; create app data directories
   CreateDirectory "$APPDATA\${PRODUCT_NAME}"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\Logs"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\IR Commands"
@@ -344,8 +302,6 @@ Section "-Core"
   SetOverwrite ifnewer
   File /r /x .svn "..\IR Server Suite\Set Top Boxes\*.*"
   SetOverwrite on
-
-
 SectionEnd
 
 ;======================================
@@ -357,15 +313,8 @@ ${MementoSection} "IR Server" SectionIRServer
   ${KILLPROCESS} "IR Server Configuration.exe"
   ${KILLPROCESS} "IR Server Tray.exe"
 
-  ; Use the all users context
+  ; use the all users context
   SetShellVarContext all
-
-
-  ;not needed anymore since uninstall is launched before
-  ;${LOG_TEXT} "INFO" "Removing current IRServer from Autostart..."
-  ;!insertmacro RemoveAutoRun "IR Server"
-  ;${LOG_TEXT} "INFO" "Uninstalling current IRServer..."
-  ;ExecWait '"$DIR_INSTALL\IR Server.exe" /uninstall'
 
   SetOutPath "$DIR_INSTALL"
   ${LOG_TEXT} "INFO" "Installing IR Server..."
@@ -446,7 +395,8 @@ ${MementoSection} "IR Server" SectionIRServer
     ${LOG_TEXT} "INFO" "Installing IR Server as Service..."
     ExecWait '"$DIR_INSTALL\IR Server.exe" /install'
   ${EndIf}
-    ${LOG_TEXT} "INFO" "Adding IR Server Tray to Autostart..."
+
+  ${LOG_TEXT} "INFO" "Adding IR Server Tray to Autostart..."
   !insertmacro SetAutoRun "IR Server Tray" '"$DIR_INSTALL\IR Server Tray.exe"'
 
 ${MementoSectionEnd}
@@ -460,7 +410,7 @@ ${MementoSectionEnd}
   ${LOG_TEXT} "INFO" "Removing IR Server from Autostart..."
   !insertmacro RemoveAutoRun "IR Server"
   ${LOG_TEXT} "INFO" "Uninstalling IR Server as Service..."
-  ExecWait '"$DIR_INSTALL\IR Server.exe" /uninstall'
+  nsExec::ExecToLog '"$DIR_INSTALL\IR Server.exe" /uninstall'
   ${LOG_TEXT} "INFO" "Removing IR Server Tray from Autostart..."
   !insertmacro RemoveAutoRun "IR Server Tray"
 
@@ -512,12 +462,12 @@ SectionEnd
   ${KILLPROCESS} "configuration.exe"
 
   ; remove files
-  Delete /REBOOTOK "$MPdir.Plugins\Process\MPUtils.*"
-  Delete /REBOOTOK "$MPdir.Plugins\Process\IrssComms.*"
-  Delete /REBOOTOK "$MPdir.Plugins\Process\IrssUtils.*"
-  Delete /REBOOTOK "$MPdir.Plugins\Windows\MPUtils.*"
-  Delete /REBOOTOK "$MPdir.Plugins\Windows\IrssComms.*"
-  Delete /REBOOTOK "$MPdir.Plugins\Windows\IrssUtils.*"
+  Delete "$MPdir.Plugins\Process\MPUtils.*"
+  Delete "$MPdir.Plugins\Process\IrssComms.*"
+  Delete "$MPdir.Plugins\Process\IrssUtils.*"
+  Delete "$MPdir.Plugins\Windows\MPUtils.*"
+  Delete "$MPdir.Plugins\Windows\IrssComms.*"
+  Delete "$MPdir.Plugins\Windows\IrssUtils.*"
 !macroend
 
 ;======================================
@@ -547,7 +497,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMPControlPlugin}
   ${LOG_TEXT} "INFO" "MP Control Plugin..."
 
-  Delete /REBOOTOK "$MPdir.Plugins\Process\MPControlPlugin.*"
+  Delete "$MPdir.Plugins\Process\MPControlPlugin.*"
 !macroend
 
 ;======================================
@@ -555,7 +505,7 @@ ${MementoSectionEnd}
 ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   ${LOG_TEXT} "INFO" "Installing MP Blast Zone Plugin..."
 
-  ; Use the all users context
+  ; use the all users context
   SetShellVarContext all
 
   ; Write plugin dll
@@ -583,7 +533,7 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMPBlastZonePlugin}
   ${LOG_TEXT} "INFO" "Removing MP Blast Zone Plugin..."
 
-  Delete /REBOOTOK "$MPdir.Plugins\Windows\MPBlastZonePlugin.*"
+  Delete "$MPdir.Plugins\Windows\MPBlastZonePlugin.*"
 !macroend
 
 SectionGroupEnd
@@ -637,9 +587,9 @@ SectionEnd
     !insertmacro StopTVService
 
     ; remove files
-    Delete /REBOOTOK "$DIR_TVSERVER\Plugins\MPUtils.*"
-    Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssComms.*"
-    Delete /REBOOTOK "$DIR_TVSERVER\Plugins\IrssUtils.*"
+    Delete "$DIR_TVSERVER\Plugins\MPUtils.*"
+    Delete "$DIR_TVSERVER\Plugins\IrssComms.*"
+    Delete "$DIR_TVSERVER\Plugins\IrssUtils.*"
 
   ${EndIf}
 !macroend
@@ -653,7 +603,7 @@ ${MementoUnselectedSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
   SetOutPath "$DIR_TVSERVER\Plugins"
   File "..\MediaPortal Plugins\TVServer plugins\TV3 Blaster Plugin\bin\${Build_Type}\TV3BlasterPlugin.*"
 
-  ; Create folders
+  ; create folders
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV3 Blaster Plugin"
   CreateDirectory "$APPDATA\${PRODUCT_NAME}\TV3 Blaster Plugin\Macro"
 
@@ -664,7 +614,7 @@ ${MementoSectionEnd}
     ${LOG_TEXT} "INFO" "Removing TV Server Blaster Plugin..."
     !insertmacro StopTVService
 
-    Delete /REBOOTOK "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.*"
+    Delete "$DIR_TVSERVER\Plugins\TV3BlasterPlugin.*"
 
   ${EndIf}
 !macroend
@@ -813,6 +763,8 @@ ${MementoSection} "Translator" SectionTranslator
   ; check if Translator is an autorun app
   ${If} $AutoRunTranslator == 1
     !insertmacro SetAutoRun "Translator" "$DIR_INSTALL\Translator.exe"
+    ; if translator is an autorun app, start is not so user doesn't need to do it manually
+    Exec '"$DIR_INSTALL\Translator.exe"'
   ${EndIf}
 ${MementoSectionEnd}
 !macro Remove_${SectionTranslator}
@@ -879,7 +831,7 @@ ${MementoSectionEnd}
   Delete "$DIR_INSTALL\VirtualRemote.*"
   Delete "$DIR_INSTALL\VirtualRemoteSkinEditor.*"
   Delete "$DIR_INSTALL\WebRemote.*"
-  RMDir /R /REBOOTOK "$DIR_INSTALL\Virtual Remote"
+  RMDir /R "$DIR_INSTALL\Virtual Remote"
 !macroend
 
 SectionGroupEnd
@@ -951,12 +903,11 @@ ${MementoSectionDone}
 ;======================================
 
 Section "-Complete"
+  ${LOG_TEXT} "INFO" "Completing installation..."
 
-  DetailPrint "Completing install ..."
-
-  ;Removes unselected components
+  ; removes unselected components
   !insertmacro SectionList "FinishSection"
-  ;writes component status to registry
+  ; writes component status to registry
   ${MementoSectionSave}
 
 !ifdef MPplugins
@@ -967,7 +918,7 @@ Section "-Complete"
   ; removing tve2 blaster
   Delete "$MPdir.Plugins\Process\TV2BlasterPlugin.dll"
 
-  ; Use the all users context
+  ; use the all users context
   SetShellVarContext all
 
   ; Create start menu shortcuts
@@ -1025,8 +976,7 @@ Section "Uninstall"
   DetailPrint "DIR_TVSERVER: $DIR_TVSERVER"
 !endif
 
-
-  ; Use the all users context
+  ; use the all users context
   SetShellVarContext all
 
   ; First removes all optional components
@@ -1037,13 +987,9 @@ Section "Uninstall"
   !insertmacro StartTVService
 !endif
 
-  ; do not remove anything in appdata
-  ;DetailPrint "Removing Set Top Box presets ..."
-  ;RMDir /R "$APPDATA\${PRODUCT_NAME}\Set Top Boxes"
-
   ; Remove files and uninstaller
   DetailPrint "Removing program files ..."
-  RMDir /R /REBOOTOK "$DIR_INSTALL"
+  RMDir /R "$DIR_INSTALL"
 
   DetailPrint "Removing start menu shortcuts ..."
   RMDir /R "$SMPROGRAMS\${PRODUCT_NAME}"
@@ -1062,6 +1008,7 @@ Section "Uninstall"
 
   ${EndIf}
 
+  ; close uninstaller, if it is called from installer
   ${If} $frominstall == 1
     Quit
   ${EndIf}
@@ -1097,7 +1044,7 @@ SectionEnd
   ${Endif}
 !endif
 
-  !macroend
+!macroend
 !endif
 
 Function ReadPreviousSettings
@@ -1114,14 +1061,11 @@ Function ReadPreviousSettings
   ; read previous used directories
   ReadRegStr $PREVIOUS_INSTALLDIR HKLM "Software\${PRODUCT_NAME}" "Install_Dir"
 !ifdef MPplugins
-  #ReadRegStr $DIR_MEDIAPORTAL HKLM "Software\${PRODUCT_NAME}" "MediaPortal_Dir"
-  #ReadRegStr $DIR_TVSERVER HKLM "Software\${PRODUCT_NAME}" "TVServer_Dir"
   !insertmacro GetMediaPortalPaths    ; if not installed, path == ""
 !endif
   
   ; read previous settings
   ReadRegStr $PREVIOUS_ServerServiceMode HKLM "${REG_UNINSTALL}" "ServerServiceMode"
-
 
   ; check if Translator is an autorun app
   ${If} ${IsAutoRun} "Translator"
@@ -1146,7 +1090,6 @@ Function LoadPreviousSettings
   ${Else}
     StrCpy $ServerServiceMode "IRServerAsService"
   ${EndIf}
-
 
   ; reset previous component selection from registry
   ${MementoSectionRestore}
@@ -1243,71 +1186,12 @@ Function PageComponentsPre
   ${EndIf}
 FunctionEnd
 
-/*
-Function DirectoryPreMP
-  ; skip page if no MediaPortal plugins are selected
-  ${IfNot} ${SectionIsSelected} ${SectionGroupMP}
-    Abort
-  ${EndIf}
-
-  ; skip page if previous settings are used for update and DIR_MEDIAPORTAL is valid
-  ${If} $EXPRESS_UPDATE == 1
-  ${AndIf} $DIR_MEDIAPORTAL != ""
-    Abort
-  ${EndIf}
-FunctionEnd
-
-Function DirectoryLeaveMP
-  ; verify if the dir is valid
-  ${IfNot} ${FileExists} "$DIR_MEDIAPORTAL\MediaPortal.exe"
-    MessageBox MB_OK|MB_ICONEXCLAMATION "MediaPortal is not found in this directory. Please specify the correct path to MediaPortal."
-    Abort
-  ${EndIf}
-
-  ; refresh MP subdirs, if user has changed the path again
-  ${ReadMediaPortalDirs} $DIR_MEDIAPORTAL
-FunctionEnd
-
-Function DirectoryPreTV
-  ; skip page if no TvServer plugins are selected
-  ${IfNot} ${SectionIsSelected} ${SectionGroupTV3}
-    Abort
-  ${EndIf}
-
-  ; skip page if previous settings are used for update and DIR_TVSERVER is valid
-  ${If} $EXPRESS_UPDATE == 1
-  ${AndIf} $DIR_TVSERVER != ""
-    Abort
-  ${EndIf}
-FunctionEnd
-
-Function DirectoryLeaveTV
-  ; verify if the dir is valid
-  ${IfNot} ${FileExists} "$DIR_TVSERVER\TvService.exe"
-    MessageBox MB_OK|MB_ICONEXCLAMATION "TvServer is not found in this directory. Please specify the correct path to TVServer."
-    Abort
-  ${EndIf}
-FunctionEnd
-*/
-
 Function PageDirectoryPre
   ; skip page if previous settings are used for update
   ${If} $EXPRESS_UPDATE == 1
     Abort
   ${EndIf}
 FunctionEnd
-
-/*
-Function FinishShow
-  ; This function is called, after the Finish Page creation is finished
-
-  ; It checks, if the Server has been selected and only displays the run checkbox in this case
-  ${IfNot} ${SectionIsSelected} SectionIRServer
-      SendMessage $mui.FinishPage.Run ${BM_CLICK} 0 0
-      ShowWindow  $mui.FinishPage.Run ${SW_HIDE}
-  ${EndIf}
-FunctionEnd
-*/
 
 
 #---------------------------------------------------------------------------
@@ -1336,28 +1220,25 @@ FunctionEnd
 ;======================================
 
 Function un.WelcomePagePre
-
+  ; skip page if uninstaller is called from installer
   ${If} $frominstall == 1
     Abort
   ${EndIf}
-
 FunctionEnd
 
 Function un.ConfirmPagePre
-
+  ; skip page if uninstaller is called from installer
   ${If} $frominstall == 1
     Abort
   ${EndIf}
-
 FunctionEnd
 
 Function un.FinishPagePre
-
+  ; skip page if uninstaller is called from installer
   ${If} $frominstall == 1
     SetRebootFlag false
     Abort
   ${EndIf}
-
 FunctionEnd
 
 
@@ -1368,11 +1249,12 @@ Function SetRightsIRSS
   SetOutPath "$PLUGINSDIR"
   File "Resources\SetRights.exe"
 
+  ; use the all users context
   SetShellVarContext all
-  nsExec::ExecToLog '"$PLUGINSDIR\SetRights.exe" FOLDER "$APPDATA\${PRODUCT_NAME}"'
+  nsExec::ExecToLog '"$PLUGINSDIR\SetRights.exe" FOLDER "${COMMON_APPDATA}"'
   nsExec::ExecToLog '"$PLUGINSDIR\SetRights.exe" HKLM "Software\${PRODUCT_NAME}"'
-  ;nsExec::ExecToLog '"$PLUGINSDIR\SetRights.exe" HKCU "Software\Team MediaPortal"'
 FunctionEnd
+
 
 #---------------------------------------------------------------------------
 # SECTION DESCRIPTIONS
