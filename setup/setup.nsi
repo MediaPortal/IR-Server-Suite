@@ -691,9 +691,6 @@ ${MementoSection} "Debug Client" SectionDebugClient
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\Debug Client\bin\${Build_Type}\DebugClient.*"
 
-  ; create folders
-  CreateDirectory "${COMMON_APPDATA}\Debug Client"
-
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\Debug Client.lnk" "$DIR_INSTALL\DebugClient.exe" "" "$DIR_INSTALL\DebugClient.exe" 0
 
@@ -717,9 +714,6 @@ ${MementoUnselectedSection} "IR File Tool" SectionIRFileTool
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\IR File Tool\bin\${Build_Type}\IRFileTool.*"
 
-  ; create folders
-  CreateDirectory "${COMMON_APPDATA}\IR File Tool"
-
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\IR File Tool.lnk" "$DIR_INSTALL\IRFileTool.exe" "" "$DIR_INSTALL\IRFileTool.exe" 0
 
@@ -742,9 +736,6 @@ ${MementoUnselectedSection} "Keyboard Input Relay" SectionKeyboardInputRelay
   ; install files
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\Keyboard Input Relay\bin\${Build_Type}\KeyboardInputRelay.*"
-
-  ; create folders
-  CreateDirectory "${COMMON_APPDATA}\Keyboard Input Relay"
 
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\Keyboard Input Relay.lnk" "$DIR_INSTALL\KeyboardInputRelay.exe" "" "$DIR_INSTALL\KeyboardInputRelay.exe" 0
@@ -822,9 +813,6 @@ ${MementoUnselectedSection} "Virtual Remote" SectionVirtualRemote
   File "..\Virtual Remote\Applications\Virtual Remote (PocketPC2003) Installer\${Build_Type}\*.cab"
   File "..\Virtual Remote\Applications\Virtual Remote (Smartphone2003) Installer\${Build_Type}\*.cab"
   File "..\Virtual Remote\Applications\Virtual Remote (WinCE5) Installer\${Build_Type}\*.cab"
-
-  ; create folders
-  CreateDirectory "${COMMON_APPDATA}\Virtual Remote"
 
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\Virtual Remote.lnk" "$DIR_INSTALL\VirtualRemote.exe" "" "$DIR_INSTALL\VirtualRemote.exe" 0

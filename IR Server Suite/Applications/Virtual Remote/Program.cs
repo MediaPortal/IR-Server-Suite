@@ -40,8 +40,10 @@ namespace VirtualRemote
 
     private const string DefaultSkin = "MCE";
 
-    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
-                                                                    "Virtual Remote\\Virtual Remote.xml");
+    private static readonly string ConfigurationFolder = Path.Combine(Common.FolderAppData,
+                                                                    "Virtual Remote");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationFolder,
+                                                                    "Virtual Remote.xml");
 
     #endregion Constants
 
@@ -249,9 +251,17 @@ namespace VirtualRemote
       {
         doc.Load(ConfigurationFile);
       }
+      catch (DirectoryNotFoundException)
+      {
+        IrssLog.Warn("Configuration directory not found, using default settings");
+
+        Directory.CreateDirectory(ConfigurationFolder);
+        CreateDefaultSettings();
+        return;
+      }
       catch (FileNotFoundException)
       {
-        IrssLog.Warn("Configuration file not found, using defaults");
+        IrssLog.Warn("Configuration file not found, using default settings");
 
         CreateDefaultSettings();
         return;
@@ -259,6 +269,7 @@ namespace VirtualRemote
       catch (Exception ex)
       {
         IrssLog.Error(ex);
+
         CreateDefaultSettings();
         return;
       }

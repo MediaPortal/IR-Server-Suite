@@ -49,8 +49,10 @@ namespace WebRemote
     private const string DefaultSkin = "MCE";
     private const int DefaultWebPort = 2481;
 
-    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
-                                                                    "Virtual Remote\\Web Remote.xml");
+    private static readonly string ConfigurationFolder = Path.Combine(Common.FolderAppData,
+                                                                    "Virtual Remote");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationFolder,
+                                                                    "Web Remote.xml");
 
     #endregion Constants
 
@@ -411,9 +413,17 @@ namespace WebRemote
       {
         doc.Load(ConfigurationFile);
       }
+      catch (DirectoryNotFoundException)
+      {
+        IrssLog.Warn("Configuration directory not found, using default settings");
+
+        Directory.CreateDirectory(ConfigurationFolder);
+        CreateDefaultSettings();
+        return;
+      }
       catch (FileNotFoundException)
       {
-        IrssLog.Warn("Configuration file not found, using defaults");
+        IrssLog.Warn("Configuration file not found, using default settings");
 
         CreateDefaultSettings();
         return;

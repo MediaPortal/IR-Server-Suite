@@ -40,8 +40,10 @@ namespace KeyboardInputRelay
   {
     #region Constants
 
-    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
-                                                                    "Keyboard Input Relay\\Keyboard Input Relay.xml");
+    private static readonly string ConfigurationFolder = Path.Combine(Common.FolderAppData,
+                                                                    "Keyboard Input Relay");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationFolder,
+                                                                    "Keyboard Input Relay.xml");
 
     #endregion Constants
 
@@ -132,9 +134,17 @@ namespace KeyboardInputRelay
       {
         doc.Load(ConfigurationFile);
       }
+      catch (DirectoryNotFoundException)
+      {
+        IrssLog.Warn("Configuration directory not found, using default settings");
+
+        Directory.CreateDirectory(ConfigurationFolder);
+        CreateDefaultSettings();
+        return;
+      }
       catch (FileNotFoundException)
       {
-        IrssLog.Warn("Configuration file not found, using defaults");
+        IrssLog.Warn("Configuration file not found, using default settings");
 
         CreateDefaultSettings();
         return;

@@ -41,8 +41,10 @@ namespace SkinEditor
   {
     #region Constants
 
-    private static readonly string ConfigurationFile = Path.Combine(Common.FolderAppData,
-                                                                    "Virtual Remote\\Virtual Remote Skin Editor.xml");
+    private static readonly string ConfigurationFolder = Path.Combine(Common.FolderAppData,
+                                                                    "Virtual Remote");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationFolder,
+                                                                    "Virtual Remote Skin Editor.xml");
 
     #endregion Constants
 
@@ -548,24 +550,42 @@ namespace SkinEditor
 
     private void LoadSettings()
     {
+      XmlDocument doc = new XmlDocument();
+
       try
       {
-        XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
+      }
+      catch (DirectoryNotFoundException)
+      {
+        IrssLog.Warn("Configuration directory not found, using default settings");
 
-        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+        Directory.CreateDirectory(ConfigurationFolder);
+        CreateDefaultSettings();
+        return;
       }
       catch (FileNotFoundException)
       {
-        IrssLog.Warn("Configuration file not found, using defaults");
+        IrssLog.Warn("Configuration file not found, using default settings");
 
         CreateDefaultSettings();
+        return;
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
         CreateDefaultSettings();
+        return;
+      }
+
+      try
+      {
+        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+      }
+      catch
+      {
+        _serverHost = "localhost";
       }
     }
 
