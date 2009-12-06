@@ -102,7 +102,7 @@ namespace IrssUtils
       {
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char) 9;
+        writer.IndentChar = (char)9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("variables"); // <variables>
 
@@ -127,10 +127,10 @@ namespace IrssUtils
       XmlDocument doc = new XmlDocument();
       doc.Load(path);
 
-      XmlNodeList variableNodes = doc.DocumentElement.SelectNodes("VariableList");
+      XmlNodeList variableNodes = doc.SelectNodes("/variables/*");
 
       foreach (XmlNode node in variableNodes)
-        SetVariable(node.Name, node.Value);
+        SetVariable(node.Name, node.InnerText);
     }
 
     #endregion Implementation
