@@ -128,6 +128,7 @@
       this.textBoxKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                   | System.Windows.Forms.AnchorStyles.Left)
                   | System.Windows.Forms.AnchorStyles.Right)));
+      this.textBoxKeys.ContextMenuStrip = this.contextMenuStripKeystrokes;
       this.textBoxKeys.Location = new System.Drawing.Point(3, 33);
       this.textBoxKeys.Multiline = true;
       this.textBoxKeys.Name = "textBoxKeys";
