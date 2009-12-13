@@ -82,6 +82,7 @@ namespace Translator
     public ButtonMappingForm(string keyCode, string description, string command)
     {
       InitializeComponent();
+      SetImages();
 
       _keyCode = keyCode;
       _description = description;
@@ -89,6 +90,19 @@ namespace Translator
     }
 
     #endregion Constructors
+
+    private void SetImages()
+    {
+      this.checkBoxMouseScrollDown.Image = IrssUtils.Properties.Resources.ScrollDown;
+      this.checkBoxMouseScrollUp.Image = IrssUtils.Properties.Resources.ScrollUp;
+      this.checkBoxMouseClickRight.Image = IrssUtils.Properties.Resources.ClickRight;
+      this.checkBoxMouseClickMiddle.Image = IrssUtils.Properties.Resources.ClickMiddle;
+      this.checkBoxMouseClickLeft.Image = IrssUtils.Properties.Resources.ClickLeft;
+      this.checkBoxMouseMoveLeft.Image = IrssUtils.Properties.Resources.MoveLeft;
+      this.checkBoxMouseMoveDown.Image = IrssUtils.Properties.Resources.MoveDown;
+      this.checkBoxMouseMoveRight.Image = IrssUtils.Properties.Resources.MoveRight;
+      this.checkBoxMouseMoveUp.Image = IrssUtils.Properties.Resources.MoveUp;
+    }
 
     private void SetupIRList()
     {
@@ -112,16 +126,6 @@ namespace Translator
         comboBoxMacro.Items.AddRange(macroList);
         comboBoxMacro.SelectedIndex = 0;
       }
-    }
-
-    private void InsertKeystroke(char key)
-    {
-      textBoxKeys.Paste(key.ToString());
-    }
-
-    private void InsertKeystroke(string keystroke)
-    {
-      textBoxKeys.Paste(keystroke);
     }
 
     private void ButtonMappingForm_Load(object sender, EventArgs e)
@@ -272,7 +276,7 @@ namespace Translator
           case Common.CmdPrefixKeys:
             {
               tabControl.SelectTab(tabPageKeystrokes);
-              textBoxKeys.Text = suffix;
+              keystrokeCommandPanel.CommandString = suffix;
               break;
             }
 
@@ -477,7 +481,7 @@ namespace Translator
 
         case "tabPageKeystrokes":
           {
-            textBoxCommand.Text = _command = Common.CmdPrefixKeys + textBoxKeys.Text;
+            textBoxCommand.Text = _command = Common.CmdPrefixKeys + keystrokeCommandPanel.CommandString;
             break;
           }
 
@@ -707,20 +711,6 @@ namespace Translator
       SetupMacroList();
     }
 
-    private void buttonKeyHelp_Click(object sender, EventArgs e)
-    {
-      try
-      {
-        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this, file, HelpNavigator.Topic, "Common\\keystrokes_info.html");
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
     private void textBoxButtonDesc_TextChanged(object sender, EventArgs e)
     {
       _description = textBoxButtonDesc.Text;
@@ -742,180 +732,6 @@ namespace Translator
       if (origin != checkBoxMouseMoveRight) checkBoxMouseMoveRight.Checked = false;
       if (origin != checkBoxMouseScrollUp) checkBoxMouseScrollUp.Checked = false;
       if (origin != checkBoxMouseScrollDown) checkBoxMouseScrollDown.Checked = false;
-    }
-
-    private void KeystrokeToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      ToolStripMenuItem origin = sender as ToolStripMenuItem;
-
-      if (origin == null)
-        return;
-
-      switch (origin.Name)
-      {
-        case "upToolStripMenuItem":
-          InsertKeystroke("{UP}");
-          break;
-        case "downToolStripMenuItem":
-          InsertKeystroke("{DOWN}");
-          break;
-        case "leftToolStripMenuItem":
-          InsertKeystroke("{LEFT}");
-          break;
-        case "rightToolStripMenuItem":
-          InsertKeystroke("{RIGHT}");
-          break;
-
-        case "f1ToolStripMenuItem":
-          InsertKeystroke("{F1}");
-          break;
-        case "f2ToolStripMenuItem":
-          InsertKeystroke("{F2}");
-          break;
-        case "f3ToolStripMenuItem":
-          InsertKeystroke("{F3}");
-          break;
-        case "f4ToolStripMenuItem":
-          InsertKeystroke("{F4}");
-          break;
-        case "f5ToolStripMenuItem":
-          InsertKeystroke("{F5}");
-          break;
-        case "f6ToolStripMenuItem":
-          InsertKeystroke("{F6}");
-          break;
-        case "f7ToolStripMenuItem":
-          InsertKeystroke("{F7}");
-          break;
-        case "f8ToolStripMenuItem":
-          InsertKeystroke("{F8}");
-          break;
-        case "f9ToolStripMenuItem":
-          InsertKeystroke("{F9}");
-          break;
-        case "f10ToolStripMenuItem":
-          InsertKeystroke("{F10}");
-          break;
-        case "f11ToolStripMenuItem":
-          InsertKeystroke("{F11}");
-          break;
-        case "f12ToolStripMenuItem":
-          InsertKeystroke("{F12}");
-          break;
-        case "f13ToolStripMenuItem":
-          InsertKeystroke("{F13}");
-          break;
-        case "f14ToolStripMenuItem":
-          InsertKeystroke("{F14}");
-          break;
-        case "f15ToolStripMenuItem":
-          InsertKeystroke("{F15}");
-          break;
-        case "f16ToolStripMenuItem":
-          InsertKeystroke("{F16}");
-          break;
-
-        case "addToolStripMenuItem":
-          InsertKeystroke("{ADD}");
-          break;
-        case "subtractToolStripMenuItem":
-          InsertKeystroke("{SUBTRACT}");
-          break;
-        case "multiplyToolStripMenuItem":
-          InsertKeystroke("{MULTIPLY}");
-          break;
-        case "divideToolStripMenuItem":
-          InsertKeystroke("{DIVIDE}");
-          break;
-
-        case "altToolStripMenuItem":
-          InsertKeystroke(Keyboard.ModifierAlt);
-          break;
-        case "controlToolStripMenuItem":
-          InsertKeystroke(Keyboard.ModifierControl);
-          break;
-        case "shiftToolStripMenuItem":
-          InsertKeystroke(Keyboard.ModifierShift);
-          break;
-        case "windowsToolStripMenuItem":
-          InsertKeystroke(Keyboard.ModifierWinKey);
-          break;
-
-        case "backspaceToolStripMenuItem":
-          InsertKeystroke("{BACKSPACE}");
-          break;
-        case "breakToolStripMenuItem":
-          InsertKeystroke("{BREAK}");
-          break;
-        case "capsLockToolStripMenuItem":
-          InsertKeystroke("{CAPSLOCK}");
-          break;
-        case "delToolStripMenuItem":
-          InsertKeystroke("{DEL}");
-          break;
-
-        case "endToolStripMenuItem":
-          InsertKeystroke("{END}");
-          break;
-        case "enterToolStripMenuItem":
-          InsertKeystroke("{ENTER}");
-          break;
-        case "escapeToolStripMenuItem":
-          InsertKeystroke("{ESC}");
-          break;
-        case "helpToolStripMenuItem":
-          InsertKeystroke("{HELP}");
-          break;
-        case "homeToolStripMenuItem":
-          InsertKeystroke("{HOME}");
-          break;
-        case "insToolStripMenuItem":
-          InsertKeystroke("{INS}");
-          break;
-        case "numLockToolStripMenuItem":
-          InsertKeystroke("{NUMLOCK}");
-          break;
-        case "pageDownToolStripMenuItem":
-          InsertKeystroke("{PGDN}");
-          break;
-        case "pageUpToolStripMenuItem":
-          InsertKeystroke("{PGUP}");
-          break;
-        case "scrollLockToolStripMenuItem":
-          InsertKeystroke("{SCROLLLOCK}");
-          break;
-        case "tabToolStripMenuItem":
-          InsertKeystroke("{TAB}");
-          break;
-        case "windowsKeyToolStripMenuItem":
-          InsertKeystroke("{WIN}");
-          break;
-      }
-    }
-
-    private void cutToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      textBoxKeys.Cut();
-    }
-
-    private void copyToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      textBoxKeys.Copy();
-    }
-
-    private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      textBoxKeys.Paste();
-    }
-
-    private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      textBoxKeys.SelectAll();
-    }
-
-    private void selectNoneToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      textBoxKeys.SelectionLength = 0;
     }
 
     #endregion Controls

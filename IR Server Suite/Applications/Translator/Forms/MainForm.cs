@@ -61,7 +61,6 @@ namespace Translator
     public MainForm()
     {
       InitializeComponent();
-
       SetImages();
 
       RefreshProgramList();
@@ -84,6 +83,8 @@ namespace Translator
         checkBoxAutoRun.Checked = false;
       }
     }
+
+    #endregion Constructor
 
     private void SetImages()
     {
@@ -150,8 +151,6 @@ namespace Translator
       this.editIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
       this.deleteIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
     }
-
-    #endregion Constructor
 
     #region Implementation
 

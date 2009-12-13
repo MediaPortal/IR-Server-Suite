@@ -823,6 +823,36 @@ namespace IrssUtils
       /// Zoom
       /// </summary>
       VK_ZOOM = 0xFB,
+
+      /// <summary>
+      /// Next Track key
+      /// </summary>
+      VK_MEDIA_NEXT_TRACK = 0xB0,
+      /// <summary>
+      /// Previous Track key
+      /// </summary>
+      VK_MEDIA_PREV_TRACK = 0xB1,
+      /// <summary>
+      /// Stop Media key
+      /// </summary>
+      VK_MEDIA_STOP = 0xB2,
+      /// <summary>
+      /// Play/Pause Media key
+      /// </summary>
+      VK_MEDIA_PLAY_PAUSE = 0xB3,
+
+      /// <summary>
+      /// Volume Mute key
+      /// </summary>
+      VK_VOLUME_MUTE = 0xAD,
+      /// <summary>
+      /// Volume Down key
+      /// </summary>
+      VK_VOLUME_DOWN = 0xAE,
+      /// <summary>
+      /// Volume Up key
+      /// </summary>
+      VK_VOLUME_UP = 0xAF,
     }
 
     #endregion
