@@ -14,9 +14,9 @@ namespace IRServer.Tray
   {
     #region Constants
 
-    private static readonly string _configExe = Path.Combine(Common.FolderProgramFiles, @"IR Server Configuration.exe");
-    private static readonly string _translatorExe = Path.Combine(Common.FolderProgramFiles, @"Translator.exe");
-    private static readonly string _debugClientExe = Path.Combine(Common.FolderProgramFiles, @"DebugClient.exe");
+    private static readonly string _configExe = Path.Combine(Application.StartupPath, @"IR Server Configuration.exe");
+    private static readonly string _translatorExe = Path.Combine(Application.StartupPath, @"Translator.exe");
+    private static readonly string _debugClientExe = Path.Combine(Application.StartupPath, @"DebugClient.exe");
 
     #endregion Constants
 

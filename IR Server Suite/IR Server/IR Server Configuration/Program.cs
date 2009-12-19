@@ -43,7 +43,7 @@ namespace IRServer.Configuration
   {
     #region Constants
 
-    internal static readonly string IRServerFile = Path.Combine(Common.FolderProgramFiles, @"IR Server.exe");
+    internal static readonly string IRServerFile = Path.Combine(Application.StartupPath, @"IR Server.exe");
 
     private static readonly TimeSpan defaultServiceTime = new TimeSpan(0, 0, 30);
 
