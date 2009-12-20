@@ -30,6 +30,9 @@
 !insertmacro LANG_STRING DESC_SectionHcwPvrTuner         "Command line tuner for Hauppauge PVR devices."
 !insertmacro LANG_STRING DESC_SectionMCEBlaster          "For tuning external channels (on Set Top Boxes) with Windows Media Center."
 
+!insertmacro LANG_STRING ERROR_MIN_VERSION_MP             "You are trying to install MediaPortal plugins.$\r$\nThe minimum required MediaPortal version is ${MIN_VERSION_MP}.$\r$\n$\r$\nSo please update your MediaPortal installation or unselect those plugins."
+!insertmacro LANG_STRING ERROR_MIN_VERSION_TVSERVER       "You are trying to install MediaPortal TV Server plugins.$\r$\nThe minimum required MediaPortal TV Server version is ${MIN_VERSION_TVSERVER}.$\r$\n$\r$\nSo please update your MediaPortal TV Server installation or unselect those plugins."
+
 
 # Texts for message boxes
 !if "${PRODUCT_NAME}" == "MediaPortal"

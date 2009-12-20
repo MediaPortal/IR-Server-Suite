@@ -94,6 +94,11 @@ SetCompressor /SOLID /FINAL lzma
 ; if you want to set custom path to logfile, uncomment the following line
 #!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
 
+!ifdef MPplugins
+  !define MIN_VERSION_MP "2.0.0.0"
+  !define MIN_VERSION_TVSERVER "2.0.0.0"
+!endif
+
 
 #---------------------------------------------------------------------------
 # VARIABLES
@@ -196,9 +201,11 @@ CRCCheck on
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "..\IR Server Suite\Documentation\LICENSE.GPL"
 
-Page custom PageReinstallMode PageLeaveReinstallMode
+!define MUI_PAGE_CUSTOMFUNCTION_LEAVE PageReinstallLeave
+!insertmacro MUI_PAGE_REINSTALL
 
 !define MUI_PAGE_CUSTOMFUNCTION_PRE PageComponentsPre
+!define MUI_PAGE_CUSTOMFUNCTION_LEAVE PageComponentsLeave
 !insertmacro MUI_PAGE_COMPONENTS
 
 Page custom PageServerServiceMode PageLeaveServerServiceMode
@@ -916,10 +923,10 @@ Section "-Complete"
 !ifdef MPplugins
   ; start tvservice, if it was closed before
   !insertmacro StartTVService
-!endif
 
   ; removing tve2 blaster
   Delete "$MPdir.Plugins\Process\TV2BlasterPlugin.dll"
+!endif
 
   ; use the all users context
   SetShellVarContext all
@@ -1053,6 +1060,31 @@ SectionEnd
   ${Endif}
 !endif
 
+!macroend
+!macro MediaPortalVersionCheck
+  ${If} ${SectionIsSelected} ${SectionMPControlPlugin}
+  ${OrIf} ${SectionIsSelected} ${SectionMPBlastZonePlugin}
+
+    !insertmacro MP_GET_VERSION $0
+    ${VersionCompare} $0 ${MIN_VERSION_MP} $R0
+    ${If} $R0 == 2 ;MIN_VERSION_MP is higher than current installed
+      MessageBox MB_OK|MB_ICONEXCLAMATION "$(ERROR_MIN_VERSION_MP)"
+      Abort
+    ${EndIf}
+
+  ${EndIf}
+
+
+  ${If} ${SectionIsSelected} ${SectionTV3BlasterPlugin}
+
+    !insertmacro TVSERVER_GET_VERSION $0
+    ${VersionCompare} $0 ${MIN_VERSION_TVSERVER} $R0
+    ${If} $R0 == 2 ;MIN_VERSION_TVSERVER is higher than current installed
+      MessageBox MB_OK|MB_ICONEXCLAMATION "$(ERROR_MIN_VERSION_TVSERVER)"
+      Abort
+    ${EndIf}
+
+  ${EndIf}
 !macroend
 !endif
 
@@ -1199,11 +1231,31 @@ FunctionEnd
 
 ;======================================
 
+Function PageReinstallLeave
+  !ifdef MPplugins
+    ; ExpressUpdate is selected
+    ${If} $PREVIOUS_VERSION_STATE != "same"
+    ${AndIf} $ReinstallMode == 1
+
+      ; check if mp components are selected and if correct versions are installed
+      !insertmacro MediaPortalVersionCheck
+
+    ${EndIf}
+  !endif
+FunctionEnd
+
 Function PageComponentsPre
   ; skip page if previous settings are used for update
   ${If} $EXPRESS_UPDATE == 1
     Abort
   ${EndIf}
+FunctionEnd
+
+Function PageComponentsLeave
+  !ifdef MPplugins
+    ; check if mp components are selected and if correct versions are installed
+    !insertmacro MediaPortalVersionCheck
+  !endif
 FunctionEnd
 
 Function PageDirectoryPre
@@ -1246,12 +1298,12 @@ Function un.WelcomePagePre
   ${EndIf}
 FunctionEnd
 
-Function un.ConfirmPagePre
-  ; skip page if uninstaller is called from installer
-  ${If} $frominstall == 1
-    Abort
-  ${EndIf}
-FunctionEnd
+;Function un.ConfirmPagePre
+;  ; skip page if uninstaller is called from installer
+;  ${If} $frominstall == 1
+;    Abort
+;  ${EndIf}
+;FunctionEnd
 
 Function un.FinishPagePre
   ; skip page if uninstaller is called from installer

@@ -1,9 +1,9 @@
 #region Copyright (C) 2005-2009 Team MediaPortal
 
 /* 
- *	Copyright (C) 2005-2009 Team MediaPortal
- *	http://www.team-mediaportal.com
- *
+ *  Copyright (C) 2005-2009 Team MediaPortal
+ *  http://www.team-mediaportal.com
+ *  
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2, or (at your option)
@@ -26,178 +26,237 @@
 /*
 _____________________________________________________________________________
 
-                       AddRemovePage
+                       ReinstallPage
+
+    If same version is already installed, this page offers to uninstall or reinstall.
+    If different version, this page offers simple and advanced mode for installation.
+    
+    Needs:     $PREVIOUS_VERSION_STATE { "newer" , "older", "same" }
+               $EXPRESS_UPDATE { 0 , 1 }
+               Function: RunUninstaller            to start uninstaller of previous version
+               Function: LoadPreviousSettings      to re-load settings of previous installation
 _____________________________________________________________________________
-
-  The original header file is taken from:
-              http://nsis.sourceforge.net/Add/Remove_Functionality
-  and modified for our needs.
 */
 
-!ifndef ___ADD_REMOVE_PAGE__NSH___
-!define ___ADD_REMOVE_PAGE__NSH___
+!ifndef ___REINSTALLPAGE__NSH___
+!define ___REINSTALLPAGE__NSH___
 
-!include WordFunc.nsh
-!include FileFunc.nsh
+;--------------------------------
+;Page interface settings and variables
 
-#####    Add/Remove/Reinstall page
-Var ReinstallMode
-Var ReinstallModePage.optBtn1
-Var ReinstallModePage.optBtn1.state
-Var ReinstallModePage.optBtn2
-Var ReinstallModePage.optBtn2.state
+!macro MUI_REINSTALLPAGE_INTERFACE
 
-Function PageReinstallMode
-  ; check if software is already installed
-  ${If} $PREVIOUS_VERSION == ""
-    Abort
-  ${EndIf}
+  !ifndef MUI_REINSTALLPAGE_INTERFACE
+    !define MUI_REINSTALLPAGE_INTERFACE
+    Var mui.ReinstallPage
+    Var ReinstallMode
 
+    Var mui.ReinstallPage.Text
 
-  ; save current values to stack
-  Push $R0
-  Push $R1
-  Push $R2
-  Push $R3
+    Var mui.ReinstallPage.Option1
+    Var mui.ReinstallPage.Option1.State
+    Var mui.ReinstallPage.Option2
+    Var mui.ReinstallPage.Option2.State
 
 
-  ; set string for control texts
-  ${If} $PREVIOUS_VERSION_STATE == "newer"
-    StrCpy $R1 "$(TEXT_ADDREMOVE_INFO_UPGRADE)"
-    StrCpy $R2 "$(TEXT_ADDREMOVE_UPDOWN_OPT1)"
-    StrCpy $R3 "$(TEXT_ADDREMOVE_UPDOWN_OPT2)"
-    !insertmacro MUI_HEADER_TEXT "$(TEXT_ADDREMOVE_HEADER)" "$(TEXT_ADDREMOVE_HEADER2_UPDOWN)"
+    Function ReinstallPage.UpdateSelection
 
-  ${ElseIf} $PREVIOUS_VERSION_STATE == "older"
-    StrCpy $R1 "$(TEXT_ADDREMOVE_INFO_DOWNGRADE)"
-    StrCpy $R2 "$(TEXT_ADDREMOVE_UPDOWN_OPT1)"
-    StrCpy $R3 "$(TEXT_ADDREMOVE_UPDOWN_OPT2)"
-    !insertmacro MUI_HEADER_TEXT "$(TEXT_ADDREMOVE_HEADER)" "$(TEXT_ADDREMOVE_HEADER2_UPDOWN)"
+      ${NSD_GetState} $mui.ReinstallPage.Option1 $mui.ReinstallPage.Option1.State
+      ${NSD_GetState} $mui.ReinstallPage.Option2 $mui.ReinstallPage.Option2.State
 
-  ${ElseIf} $PREVIOUS_VERSION_STATE == "same"
-    StrCpy $R1 "$(TEXT_ADDREMOVE_INFO_REPAIR)"
-    StrCpy $R2 "$(TEXT_ADDREMOVE_REPAIR_OPT1)"
-    StrCpy $R3 "$(TEXT_ADDREMOVE_REPAIR_OPT2)"
-    !insertmacro MUI_HEADER_TEXT "$(TEXT_ADDREMOVE_HEADER)" "$(TEXT_ADDREMOVE_HEADER2_REPAIR)"
+      ${If} $mui.ReinstallPage.Option2.State == ${BST_CHECKED}
+        StrCpy $ReinstallMode 2
+      ${Else}
+        StrCpy $ReinstallMode 1
+      ${EndIf}
 
-  ${Else}
-    MessageBox MB_ICONSTOP "Unknown value of PREVIOUS_VERSION_STATE, aborting" /SD IDOK
-    Abort
-  ${EndIf}
+    FunctionEnd
+
+  !endif
+  
+;  !insertmacro MUI_DEFAULT MUI_${MUI_PAGE_UNINSTALLER_PREFIX}WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\win.bmp"  
+
+!macroend
 
 
-  ; create controls
-  nsDialogs::Create /NOUNLOAD 1018
-  Pop $R0
+;--------------------------------
+;Interface initialization
 
-  ${NSD_CreateLabel} 0 0 300u 24u $R1
-  Pop $R1
+!macro MUI_REINSTALLPAGE_GUIINIT
 
-  ${NSD_CreateRadioButton} 30u 50u -30u 8u $R2
-  Pop $ReinstallModePage.optBtn1
-  ${NSD_OnClick} $ReinstallModePage.optBtn1 PageReinstallModeUpdateSelection
+  !ifndef MUI_${MUI_PAGE_UNINSTALLER_PREFIX}REINSTALLPAGE_GUINIT
+    !define MUI_${MUI_PAGE_UNINSTALLER_PREFIX}REINSTALLPAGE_GUINIT
 
-  ${NSD_CreateRadioButton} 30u 70u -30u 8u $R3
-  Pop $ReinstallModePage.optBtn2
-  ${NSD_OnClick} $ReinstallModePage.optBtn2 PageReinstallModeUpdateSelection
+    Function ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}mui.ReinstallPage.GUIInit
 
+;      InitPluginsDir
+;      File "/oname=$PLUGINSDIR\modern-wizard.bmp" "${MUI_${MUI_PAGE_UNINSTALLER_PREFIX}WELCOMEFINISHPAGE_BITMAP}"
 
-  ; set current ReinstallMode to option buttons
-  ${If} $ReinstallMode == 2
-    ${NSD_Check} $ReinstallModePage.optBtn2
-  ${Else}
-    ; if not 2, set to 1
-    ${NSD_Check} $ReinstallModePage.optBtn1
-    ; set reinstallmode to 1, if reinstallmode = ""
-    StrCpy $ReinstallMode 1
-  ${EndIf}
+      !ifdef MUI_${MUI_PAGE_UNINSTALLER_PREFIX}PAGE_FUNCTION_GUIINIT
+        Call "${MUI_${MUI_PAGE_UNINSTALLER_PREFIX}PAGE_FUNCTION_GUIINIT}"
+      !endif
 
+    FunctionEnd
+  
+    !insertmacro MUI_SET MUI_${MUI_PAGE_UNINSTALLER_PREFIX}PAGE_FUNCTION_GUIINIT ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}mui.ReinstallPage.GUIInit
 
-  nsDialogs::Show
+  !endif
 
-  ; restore values from stack
-  Pop $R3
-  Pop $R2
-  Pop $R1
-  Pop $R0
-FunctionEnd
-
-Function PageReinstallModeUpdateSelection
-
-  ${NSD_GetState} $ReinstallModePage.optBtn1 $ReinstallModePage.optBtn1.state
-  ${NSD_GetState} $ReinstallModePage.optBtn2 $ReinstallModePage.optBtn2.state
-
-  ${If} $ReinstallModePage.optBtn2.state == ${BST_CHECKED}
-    StrCpy $ReinstallMode 2
-  ${Else}
-    StrCpy $ReinstallMode 1
-  ${EndIf}
-
-FunctionEnd
-
-Function PageLeaveReinstallMode
-
-  StrCpy $EXPRESS_UPDATE 0
-
-  ; Uninstall is selected
-  ${If} $PREVIOUS_VERSION_STATE == "same"
-  ${AndIf} $ReinstallMode == 2
-
-    StrCpy $EXPRESS_UPDATE 1
-    Call RunUninstaller
-    Quit
-
-  ${EndIf}
+!macroend
 
 
-  ; ExpressUpdate is selected
-  ${If} $PREVIOUS_VERSION_STATE != "same"
-  ${AndIf} $ReinstallMode == 1
+;--------------------------------
+;Page declaration
 
-    StrCpy $EXPRESS_UPDATE 1
-    Call LoadPreviousSettings
+!macro MUI_PAGEDECLARATION_REINSTALL
 
-  ${EndIf}
+  !insertmacro MUI_SET MUI_${MUI_PAGE_UNINSTALLER_PREFIX}REINSTALLPAGE ""
+  !insertmacro MUI_REINSTALLPAGE_INTERFACE
+  
+  !insertmacro MUI_REINSTALLPAGE_GUIINIT
 
-FunctionEnd
+;  !insertmacro MUI_DEFAULT MUI_WELCOMEPAGE_TITLE "$(MUI_${MUI_PAGE_UNINSTALLER_PREFIX}TEXT_WELCOME_INFO_TITLE)"
+;  !insertmacro MUI_DEFAULT MUI_WELCOMEPAGE_TEXT "$(MUI_${MUI_PAGE_UNINSTALLER_PREFIX}TEXT_WELCOME_INFO_TEXT)"
+  
+;  !insertmacro MUI_PAGE_FUNCTION_FULLWINDOW
 
-/*
-  ${NSD_GetState} $R2 $R1
+  PageEx ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}custom
 
-  StrCmp $R0 "1" 0 +2
-    StrCmp $R1 "1" doUninstall finish
-  StrCmp $R0 "2" 0 +3
-    StrCmp $R1 "1" finish doUninstall
+    PageCallbacks ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}mui.ReinstallPre_${MUI_UNIQUEID} ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}mui.ReinstallLeave_${MUI_UNIQUEID}
 
-  doUninstall:
-  ; check if MP is already installed
-  ReadRegStr $R0 HKLM "${RegKey}" UninstallString
-  ${If} ${FileExists} "$R0"
-    ; get parent folder of uninstallation EXE (RO) and save it to R1
-    ${GetParent} $R0 $R1
-    ; start uninstallation of installed MP, from tmp folder, so it will delete itself
-    HideWindow
-    ClearErrors
-    CopyFiles $R0 "$TEMP\uninstall-temp.exe"
-    ExecWait '"$TEMP\uninstall-temp.exe" _?=$R1'
-    BringToFront
+  PageExEnd
 
-    ; if an error occured, ask to cancel installation
-    ${If} ${Errors}
-      MessageBox MB_YESNO|MB_ICONEXCLAMATION "$(TEXT_MSGBOX_ERROR_ON_UNINSTALL)" IDYES +2
-      Quit
+  !insertmacro MUI_FUNCTION_REINSTALLPAGE ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}mui.ReinstallPre_${MUI_UNIQUEID} ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}mui.ReinstallLeave_${MUI_UNIQUEID}
+
+;  !insertmacro MUI_UNSET MUI_WELCOMEPAGE_TITLE
+;  !insertmacro MUI_UNSET MUI_WELCOMEPAGE_TITLE_3LINES
+;  !insertmacro MUI_UNSET MUI_WELCOMEPAGE_TEXT
+
+!macroend
+
+!macro MUI_PAGE_REINSTALL
+
+  !verbose push
+;  !verbose ${MUI_VERBOSE}
+  !verbose 4
+
+  !insertmacro MUI_PAGE_INIT
+  !insertmacro MUI_PAGEDECLARATION_REINSTALL
+
+  !verbose pop
+
+!macroend
+
+
+;--------------------------------
+;Page functions
+
+!macro MUI_FUNCTION_REINSTALLPAGE PRE LEAVE
+
+  Function "${PRE}"
+
+    !insertmacro MUI_PAGE_FUNCTION_CUSTOM PRE
+
+    ; check if software is already installed
+    ${If} $PREVIOUS_VERSION == ""
+      Abort
     ${EndIf}
-  ${EndIf}
 
-  ; if reboot flag is set, abort the installation, and continue the installer on next startup
-  ${If} ${FileExists} "$INSTDIR\rebootflag"
-    MessageBox MB_OK|MB_ICONEXCLAMATION "$(TEXT_MSGBOX_ERROR_REBOOT_REQUIRED)"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" "$(^Name)" $EXEPATH
-    Quit
-  ${EndIf}
 
-  finish:
-FunctionEnd
-*/
+    ; set string for control texts
+    ${If} $PREVIOUS_VERSION_STATE == "newer"
+      StrCpy $R1 "$(TEXT_ADDREMOVE_INFO_UPGRADE)"
+      StrCpy $R2 "$(TEXT_ADDREMOVE_UPDOWN_OPT1)"
+      StrCpy $R3 "$(TEXT_ADDREMOVE_UPDOWN_OPT2)"
+      !insertmacro MUI_HEADER_TEXT "$(TEXT_ADDREMOVE_HEADER)" "$(TEXT_ADDREMOVE_HEADER2_UPDOWN)"
 
-!endif # !___ADD_REMOVE_PAGE__NSH___
+    ${ElseIf} $PREVIOUS_VERSION_STATE == "older"
+      StrCpy $R1 "$(TEXT_ADDREMOVE_INFO_DOWNGRADE)"
+      StrCpy $R2 "$(TEXT_ADDREMOVE_UPDOWN_OPT1)"
+      StrCpy $R3 "$(TEXT_ADDREMOVE_UPDOWN_OPT2)"
+      !insertmacro MUI_HEADER_TEXT "$(TEXT_ADDREMOVE_HEADER)" "$(TEXT_ADDREMOVE_HEADER2_UPDOWN)"
+
+    ${ElseIf} $PREVIOUS_VERSION_STATE == "same"
+      StrCpy $R1 "$(TEXT_ADDREMOVE_INFO_REPAIR)"
+      StrCpy $R2 "$(TEXT_ADDREMOVE_REPAIR_OPT1)"
+      StrCpy $R3 "$(TEXT_ADDREMOVE_REPAIR_OPT2)"
+      !insertmacro MUI_HEADER_TEXT "$(TEXT_ADDREMOVE_HEADER)" "$(TEXT_ADDREMOVE_HEADER2_REPAIR)"
+
+    ${Else}
+      MessageBox MB_ICONSTOP "Unknown value of PREVIOUS_VERSION_STATE, aborting" /SD IDOK
+      Abort
+    ${EndIf}
+
+
+    ;create dialog
+    nsDialogs::Create 1018
+    Pop $mui.ReinstallPage
+;    nsDialogs::SetRTL $(^RTL)
+;    SetCtlColors $mui.ReinstallPage "" "${MUI_BGCOLOR}"
+
+    ;create text
+    ${NSD_CreateLabel} 0 0 300u 24u "$R1"
+    Pop $mui.ReinstallPage.Text
+
+    ;create options
+    ${NSD_CreateRadioButton} 30u 50u -30u 8u "$R2"
+    Pop $mui.ReinstallPage.Option1
+    ${NSD_OnClick} $mui.ReinstallPage.Option1 ReinstallPage.UpdateSelection
+    ${NSD_CreateRadioButton} 30u 70u -30u 8u "$R3"
+    Pop $mui.ReinstallPage.Option2
+    ${NSD_OnClick} $mui.ReinstallPage.Option2 ReinstallPage.UpdateSelection
+
+
+    ; set current ReinstallMode to option buttons
+    ${If} $ReinstallMode == 2
+      ${NSD_Check} $mui.ReinstallPage.Option2
+    ${Else}
+      ; if not 2, set to 1
+      ${NSD_Check} $mui.ReinstallPage.Option1
+      ; set reinstallmode to 1, if reinstallmode = ""
+      StrCpy $ReinstallMode 1
+    ${EndIf}
+
+
+    ;Show page
+;    Call ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}muiPageLoadFullWindow
+    !insertmacro MUI_PAGE_FUNCTION_CUSTOM SHOW
+    nsDialogs::Show
+;    Call ${MUI_PAGE_UNINSTALLER_FUNCPREFIX}muiPageUnloadFullWindow
+
+;    !insertmacro MUI_UNSET MUI_WELCOMEPAGE_TITLE_HEIGHT
+;    !insertmacro MUI_UNSET MUI_WELCOMEPAGE_TEXT_TOP
+
+  FunctionEnd
+
+  Function "${LEAVE}"
+
+    !insertmacro MUI_PAGE_FUNCTION_CUSTOM LEAVE
+
+
+    StrCpy $EXPRESS_UPDATE 0
+
+    ; Uninstall is selected
+    ${If} $PREVIOUS_VERSION_STATE == "same"
+    ${AndIf} $ReinstallMode == 2
+
+      StrCpy $EXPRESS_UPDATE 1
+      Call RunUninstaller
+      Quit
+
+    ${EndIf}
+
+    ; ExpressUpdate is selected
+    ${If} $PREVIOUS_VERSION_STATE != "same"
+    ${AndIf} $ReinstallMode == 1
+
+      StrCpy $EXPRESS_UPDATE 1
+      Call LoadPreviousSettings
+
+    ${EndIf}
+
+  FunctionEnd
+
+!macroend
+
+!endif # !___REINSTALL_PAGE__NSH___
