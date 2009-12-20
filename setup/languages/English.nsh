@@ -5,11 +5,6 @@
 !insertmacro LANG_STRING TEXT_MP_NOT_INSTALLED        "MediaPortal not installed"
 !insertmacro LANG_STRING TEXT_TVSERVER_NOT_INSTALLED  "TVServer not installed"
 
-!insertmacro LANG_STRING TEXT_MSGBOX_REMOVE_ALL              "Do you want to remove your User settings?$\r$\nAttention: This will remove all your customised settings including Skins and Databases."
-
-!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_ON_UNINSTALL               "An error occured while trying to uninstall old version!$\r$\nDo you still want to continue the installation?"
-!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_REBOOT_REQUIRED            "A reboot is required after a previous action. Reboot you system and try it again."
-
 
 # Descriptions for components (sections)
 !insertmacro LANG_STRING DESC_SectionIRServer        "A windows service that provides access to your IR devices."
@@ -35,17 +30,74 @@
 !insertmacro LANG_STRING DESC_SectionHcwPvrTuner         "Command line tuner for Hauppauge PVR devices."
 !insertmacro LANG_STRING DESC_SectionMCEBlaster          "For tuning external channels (on Set Top Boxes) with Windows Media Center."
 
+
+# Texts for message boxes
+!if "${PRODUCT_NAME}" == "MediaPortal"
+  !insertmacro LANG_STRING TEXT_MSGBOX_REMOVE_ALL           "!!! ATTENTION !!!$\r$\nDo you want to make a complete cleanup?$\r$\nThis removes completly the registry keys, the installation and the common app data directory, inclusive thumbs, databases, skins and plugins!"
+!endif
+!if "${PRODUCT_NAME}" == "MediaPortal TV Server / Client"
+  !insertmacro LANG_STRING TEXT_MSGBOX_REMOVE_ALL           "!!! ATTENTION !!!$\r$\nDo you want to make a complete cleanup?$\r$\nThis removes completly the registry keys, the installation and the common app data directory AND THE ---TVDATABASE---!!!"
+!endif
+!insertmacro LANG_STRING TEXT_MSGBOX_REMOVE_ALL_STUPID      "!!! ATTENTION !!!$\r$\nAgain for those who slept the msgBox before. :($\r$\n$\r$\n$(TEXT_MSGBOX_REMOVE_ALL)"
+
+!insertmacro LANG_STRING TEXT_MSGBOX_PARAMETER_ERROR        "You have done something wrong!$\r$\nIt is not allowed to use 'noClient' & 'noServer' at the same time."
+
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_MP022            "Old MSI-based MediaPortal 0.2.2.0 is still installed. Why didn't you follow the instructions and didn't remove it first? Do that and restart this setup."
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_MP023RC3         "Old MediaPortal 0.2.3.0 RC3 is still installed. Why didn't you follow the instructions and didn't remove it first? Do that and restart this setup."
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_MP023            "Old MediaPortal 0.2.3.0 is still installed. Why didn't you follow the instructions and didn't remove it first? Do that and restart this setup."
+
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_MSI_CLIENT       "Old MSI-based TV Client plugin is still installed. Why didn't you follow the instructions and didn't remove it first? Do that and restart this setup."
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_MSI_SERVER       "Old MSI-based TV Server is still installed. Why didn't you follow the instructions and didn't remove it first? Do that and restart this setup."
+
+
+# Texts for requirement checks
+!insertmacro LANG_STRING INSTALLATION_CANCELED                    "Installation will be canceled."
+!insertmacro LANG_STRING TEXT_MSGBOX_INSTALLATION_CANCELD         "$(INSTALLATION_CANCELED)"
+!insertmacro LANG_STRING TEXT_MSGBOX_MORE_INFO                    "Do you want to get more information about it?"
+
+!insertmacro LANG_STRING MISSING_COMPONENT_INTRO                  "Some components are missing on your system to install ${PRODUCT_NAME}."
+!insertmacro LANG_STRING MISSING_COMPONENT_INSTALL                "Please install the following components:"
+!insertmacro LANG_STRING MISSING_COMPONENT_MORE_INFO              "You can find more information and download links in MediaPortal Wiki, which will is opened now."
+
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_WIN                    "Your operating system is not supported by ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_WIN_NOT_RECOMMENDED    "Your operating system is not recommended by ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_ADMIN                  "You need administration rights to install ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_VCREDIST_2008              "Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) is not installed.$\r$\nIt is a requirement for ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_VCREDIST_2008_AND_Update   "Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) and an update for it are not installed.$\r$\nBoth are a requirement for ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_VCREDIST_2008_Update       "An  update  for Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) is not installed.$\r$\nIt is a requirement for ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_DOTNET20               "Microsoft .Net Framework 2.0 SP2 is not installed.$\r$\nIt is a requirement for ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_DOTNET20_SP            "Microsoft .Net Framework 2.0 is installed.$\r$\nBut Service Pack 2 is a requirement for ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_DOTNET35               "Microsoft .Net Framework 3.5 SP1 is not installed.$\r$\nIt is a requirement for ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_DOTNET35_SP            "Microsoft .Net Framework 3.5 is installed.$\r$\nBut Service Pack 1 for .Net 3.5 is a requirement for ${PRODUCT_NAME}.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n$(TEXT_MSGBOX_MORE_INFO)"
+
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_IS_INSTALLED               "${PRODUCT_NAME} is already installed. You need to uninstall it, before you continue with the installation.$\r$\nUninstall will be lunched when pressing OK."
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_ON_UNINSTALL               "An error occured while trying to uninstall old version!$\r$\nDo you still want to continue the installation?"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_REBOOT_REQUIRED            "A reboot is required after a previous action. Reboot you system and try it again."
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_UPDATE_BUT_NOT_INSTALLED   "${PRODUCT_NAME} is not installed. It is not possible to install this update.$\r$\n$\r$\n$(TEXT_MSGBOX_INSTALLATION_CANCELD)"
+
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_SVN_NOMP               "${PRODUCT_NAME} ${MIN_INSTALLED_MP_VERSION_TEXT} is not installed. It is required to install this SVN-Snapshot. Please install it first.$\r$\nDo you want to open the download page in your browser now?"
+!insertmacro LANG_STRING TEXT_MSGBOX_ERROR_SVN_WRONG_VERSION      "${PRODUCT_NAME} ${MIN_INSTALLED_MP_VERSION_TEXT} is not installed. It is required to install this SVN-Snapshot. Please install it first.$\r$\nDo you want to open the download page in your browser now?"
+
+
+!insertmacro LANG_STRING UPDATE_ERROR_WRONGEXE                    "updating ${PRODUCT_NAME} is only allowed by starting MediaPortalUpdater!"
+!insertmacro LANG_STRING UPDATE_ERROR_UNKNOWN                     "strange / unknown error, please use full installer"
+!insertmacro LANG_STRING UPDATE_ERROR_NOTHING_INSTALLED           "Nothing to do, nothing installed, please use the full installer"
+!insertmacro LANG_STRING UPDATE_ERROR_VERSION_MP                  "wrong version of MediaPortal is installed or svn, please use the full installer"
+!insertmacro LANG_STRING UPDATE_ERROR_VERSION_TVSERVER            "wrong version or TVServer or Client plugin is installed or svn, please use the full installer"
+
+
+
 # Strings for AddRemove-Page
 !insertmacro LANG_STRING TEXT_ADDREMOVE_HEADER          "Already Installed"
 !insertmacro LANG_STRING TEXT_ADDREMOVE_HEADER2_REPAIR  "Choose the maintenance option to perform."
-!insertmacro LANG_STRING TEXT_ADDREMOVE_HEADER2_UPDOWN  "Choose how you want to install $(^Name)."
+!insertmacro LANG_STRING TEXT_ADDREMOVE_HEADER2_UPDOWN  "Choose how you want to install ${PRODUCT_NAME}."
 !insertmacro LANG_STRING TEXT_ADDREMOVE_INFO_SELECT     "Select the operation you want to perform and click Next to continue."
-!insertmacro LANG_STRING TEXT_ADDREMOVE_INFO_REPAIR     "$(^Name) ${VERSION} is already installed. $(TEXT_ADDREMOVE_INFO_SELECT)"
-!insertmacro LANG_STRING TEXT_ADDREMOVE_INFO_UPGRADE    "An older version of $(^Name) is installed on your system. $(TEXT_ADDREMOVE_INFO_SELECT)"
-!insertmacro LANG_STRING TEXT_ADDREMOVE_INFO_DOWNGRADE  "A newer version of $(^Name) is already installed! It is not recommended that you install an older version. $(TEXT_ADDREMOVE_INFO_SELECT)"
+!insertmacro LANG_STRING TEXT_ADDREMOVE_INFO_REPAIR     "${PRODUCT_NAME} ${VERSION} is already installed. $(TEXT_ADDREMOVE_INFO_SELECT)"
+!insertmacro LANG_STRING TEXT_ADDREMOVE_INFO_UPGRADE    "An older version of ${PRODUCT_NAME} is installed on your system. $(TEXT_ADDREMOVE_INFO_SELECT)"
+!insertmacro LANG_STRING TEXT_ADDREMOVE_INFO_DOWNGRADE  "A newer version of ${PRODUCT_NAME} is already installed! It is not recommended that you install an older version. $(TEXT_ADDREMOVE_INFO_SELECT)"
 !insertmacro LANG_STRING TEXT_ADDREMOVE_REPAIR_OPT1     "Add/Remove/Reinstall components"
-!insertmacro LANG_STRING TEXT_ADDREMOVE_REPAIR_OPT2     "Uninstall $(^Name)"
-!insertmacro LANG_STRING TEXT_ADDREMOVE_UPDOWN_OPT1     "Upgrade $(^Name) using previous settings (recommended)"
+!insertmacro LANG_STRING TEXT_ADDREMOVE_REPAIR_OPT2     "Uninstall ${PRODUCT_NAME}"
+!insertmacro LANG_STRING TEXT_ADDREMOVE_UPDOWN_OPT1     "Upgrade ${PRODUCT_NAME} using previous settings (recommended)"
 !insertmacro LANG_STRING TEXT_ADDREMOVE_UPDOWN_OPT2     "Change settings (advanced)"
 
 
