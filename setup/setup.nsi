@@ -95,8 +95,8 @@ SetCompressor /SOLID /FINAL lzma
 #!define INSTALL_LOG_FILE "$DESKTOP\install_$(^Name).log"
 
 !ifdef MPplugins
-  !define MIN_VERSION_MP "2.0.0.0"
-  !define MIN_VERSION_TVSERVER "2.0.0.0"
+  !define MIN_VERSION_MP "1.0.2.0"
+  !define MIN_VERSION_TVSERVER "1.0.4.24253"
 !endif
 
 
