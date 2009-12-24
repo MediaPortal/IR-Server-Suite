@@ -23,7 +23,7 @@
 
 #endregion
 
-!if "${NSIS_VERSION}" != "v2.45"
+!if "${NSIS_VERSION}" != "v2.46"
   !error "$\r$\n$\r$\nPlease update your NSIS installation to latest version. http://nsis.sourceforge.net$\r$\n$\r$\n"
 !endif
 
@@ -75,6 +75,13 @@
 !ifndef TV3_REG_UNINSTALL
   !define TV3_REG_UNINSTALL "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal TV Server"
 !endif
+
+; modify your registry and uncomment the following line to test if the svn version check is working
+;!define SVN_BUILD
+!define MIN_INSTALLED_MP_VERSION      "1.0.4.0"
+!define MIN_INSTALLED_MP_VERSION_TEXT "v1.1.0 beta1"
+!define WEB_DOWNLOAD_MIN_MP_VERSION   "http://www.team-mediaportal.com/news/global/mediaportal_1.1.0_beta_1_-_released!.html"
+
 
 #---------------------------------------------------------------------------
 # SECTION MACROS
@@ -254,59 +261,19 @@
 
 ;======================================   3rd PARTY APPLICATION TESTs
 
-!macro _VCRedist2005IsInstalled _a _b _t _f
-
-  ClearErrors
-  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-  IfErrors `${_f}`
-
-  StrCpy $R1 $R0 3
- 
-  StrCmp $R1 '5.1' lbl_winnt_XP
-  StrCmp $R1 '5.2' lbl_winnt_2003
-  StrCmp $R1 '6.0' lbl_winnt_vista `${_f}`
-
-
-  lbl_winnt_vista:
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc80.crt_1fc8b3b9a1e18e3b_8.0.50727.762_none_10b2f55f9bffb8f8.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc80.mfc_1fc8b3b9a1e18e3b_8.0.50727.762_none_0c178a139ee2a7ed.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc80.atl_1fc8b3b9a1e18e3b_8.0.50727.762_none_11ecb0ab9b2caf3c.manifest" 0 `${_f}`
-  Goto `${_t}`
-
-  lbl_winnt_2003:
-  lbl_winnt_XP:
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC80.CRT_1fc8b3b9a1e18e3b_8.0.50727.762_x-ww_6b128700.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC80.MFC_1fc8b3b9a1e18e3b_8.0.50727.762_x-ww_3bf8fa05.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC80.ATL_1fc8b3b9a1e18e3b_8.0.50727.762_x-ww_cbb27474.manifest" 0 `${_f}`
-  Goto `${_t}`
-!macroend
-!define VCRedist2005IsInstalled `"" VCRedist2005IsInstalled ""`
-
 !macro _VCRedist2008IsInstalled _a _b _t _f
 
-  ClearErrors
-  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-  IfErrors `${_f}`
-
-  StrCpy $R1 $R0 3
- 
-  StrCmp $R1 '5.1' lbl_winnt_XP
-  StrCmp $R1 '5.2' lbl_winnt_2003
-  StrCmp $R1 '6.0' lbl_winnt_vista `${_f}`
-
-
-  lbl_winnt_vista:
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.crt_1fc8b3b9a1e18e3b_9.0.30729.1_none_e163563597edeada.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.mfc_1fc8b3b9a1e18e3b_9.0.30729.1_none_dcc7eae99ad0d9cf.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.atl_1fc8b3b9a1e18e3b_9.0.30729.1_none_e29d1181971ae11e.manifest" 0 `${_f}`
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.atl_1fc8b3b9a1e18e3b_9.0.30729.4148_none_51ca66a2bbe76806.manifest" 0 +2
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.crt_1fc8b3b9a1e18e3b_9.0.30729.4148_none_5090ab56bcba71c2.manifest" 0 +4
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_microsoft.vc90.mfc_1fc8b3b9a1e18e3b_9.0.30729.4148_none_4bf5400abf9d60b7.manifest" 0 +3
   Goto `${_t}`
 
-  lbl_winnt_2003:
-  lbl_winnt_XP:
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.CRT_1fc8b3b9a1e18e3b_9.0.30729.1_x-ww_6f74963e.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.MFC_1fc8b3b9a1e18e3b_9.0.30729.1_x-ww_405b0943.manifest" 0 `${_f}`
-  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.ATL_1fc8b3b9a1e18e3b_9.0.30729.1_x-ww_d01483b2.manifest" 0 `${_f}`
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.ATL_1fc8b3b9a1e18e3b_9.0.30729.4148_x-ww_353599c2.manifest" 0 +4
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.CRT_1fc8b3b9a1e18e3b_9.0.30729.4148_x-ww_d495ac4e.manifest" 0 +3
+  IfFileExists "$WINDIR\WinSxS\Manifests\x86_Microsoft.VC90.MFC_1fc8b3b9a1e18e3b_9.0.30729.4148_x-ww_a57c1f53.manifest" 0 +2
   Goto `${_t}`
+
+  Goto `${_f}`
 !macroend
 !define VCRedist2008IsInstalled `"" VCRedist2008IsInstalled ""`
 
@@ -675,6 +642,20 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
 #---------------------------------------------------------------------------
 !ifndef NO_OS_DETECTION
 
+!macro ShowMissingComponent MISSING_COMPONENTS
+
+    ExecShell open "${WEB_REQUIREMENTS}"
+    StrCpy $0 ""
+    StrCpy $0 "$0$(MISSING_COMPONENT_INTRO)$\r$\n"
+    StrCpy $0 "$0$(MISSING_COMPONENT_INSTALL)$\r$\n$\r$\n"
+    StrCpy $0 "$0${MISSING_COMPONENTS}$\r$\n$\r$\n"
+    StrCpy $0 "$0$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n"
+    StrCpy $0 "$0$(MISSING_COMPONENT_MORE_INFO)"
+    MessageBox MB_OK|MB_ICONSTOP "$0"
+    Abort
+
+!macroend
+
 !macro MediaPortalOperatingSystemCheck
   ${LOG_TEXT} "INFO" ".: Operating System Check :."
 
@@ -780,9 +761,7 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
 
   ; check if VC Redist 2008 SP1 is installed
   ${IfNot} ${VCRedist2008IsInstalled}
-    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_VCREDIST_2008)" IDNO +2
-    ExecShell open "${WEB_REQUIREMENTS}"
-    Abort
+    !insertmacro ShowMissingComponent "     - Microsoft Visual C++ 2008 Service Pack 1 Redistributable Package ATL Security Update"
   ${EndIf}
 
   ${LOG_TEXT} "INFO" "============================"
@@ -800,21 +779,67 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
   ${LOG_TEXT} "INFO" ".Net 3.5 ServicePack: $1"
 
   ${If} $0 != 1  ; if no 3.5
-    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET35)" IDNO +2
-    ExecShell open "${WEB_REQUIREMENTS}"
-    Abort
-  ${ElseIf} $1 < 1  ; if 3.5, but no sp1
-    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_DOTNET35_SP)" IDNO +2
-    ExecShell open "${WEB_REQUIREMENTS}"
-    Abort
+  ${OrIf} $1 < 1  ; if 3.5, but no sp1
+    !insertmacro ShowMissingComponent "     - Microsoft .NET Framework 3.5 Service Pack 1"
   ${EndIf}
 
   ${LOG_TEXT} "INFO" "============================"
 !macroend
 
+!ifdef SVN_BUILD
+!macro MinimumVersionForSVNCheck
+  ${LOG_TEXT} "INFO" ".: MinimumVersionForSVNCheck: Compare installed and minimum version for this SVN snapshot :."
+
+!if "${PRODUCT_NAME}" == "MediaPortal"
+  ${IfNot} ${MPIsInstalled}
+    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_SVN_NOMP)" IDNO +2
+    ExecShell open "${WEB_DOWNLOAD_MIN_MP_VERSION}"
+    Abort
+  ${Else}
+
+    !insertmacro MP_GET_VERSION $R0
+!endif
+
+!if "${PRODUCT_NAME}" == "MediaPortal TV Server / Client"
+  ${IfNot} ${TVServerIsInstalled}
+  ${AndIfNot} ${TVClientIsInstalled}
+    MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_SVN_NOMP)" IDNO +2
+    ExecShell open "${WEB_DOWNLOAD_MIN_MP_VERSION}"
+    Abort
+  ${Else}
+
+    !insertmacro TVSERVER_GET_VERSION $R0
+!endif
+
+    ${VersionCompare} $R0 ${MIN_INSTALLED_MP_VERSION} $R0
+    ${If} $R0 == 0
+      ; installed version is EQUAL to min
+    ${ElseIf} $R0 == 1
+      ; installed version is NEWER than min
+    ${ElseIf} $R0 == 2
+      ; installed version is OLDER than min
+      MessageBox MB_YESNO|MB_ICONSTOP "$(TEXT_MSGBOX_ERROR_SVN_WRONG_VERSION)" IDNO +2
+      ExecShell open "${WEB_DOWNLOAD_MIN_MP_VERSION}"
+      Abort
+    ${Else}
+      ; installed version is: not found
+    ${EndIf}
+
+  ${EndIf}
+
+  ${LOG_TEXT} "INFO" "============================"
+!macroend
+!endif
+
+
 !if "${PRODUCT_NAME}" == "MediaPortal"
 
 !macro DoPreInstallChecks
+
+!ifdef SVN_BUILD
+  ; check if correct MP version ist installed, which is required for this svn snapshot
+  !insertmacro MinimumVersionForSVNCheck
+!endif
 
   ; OS and other common initialization checks are done in the following NSIS header file
   !insertmacro MediaPortalOperatingSystemCheck
@@ -853,6 +878,11 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
 !if "${PRODUCT_NAME}" == "MediaPortal TV Server / Client"
 
 !macro DoPreInstallChecks
+
+!ifdef SVN_BUILD
+  ; check if correct MP version ist installed, which is required for this svn snapshot
+  !insertmacro MinimumVersionForSVNCheck
+!endif
 
   ; OS and other common initialization checks are done in the following NSIS header file
   !insertmacro MediaPortalOperatingSystemCheck
