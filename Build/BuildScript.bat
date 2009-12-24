@@ -29,7 +29,7 @@ echo.
 
 echo.
 echo Writing SVN revision assemblies...
-..\setup\DeployVersionSVN.exe /svn=".."  >> %LOG%
+"..\..\..\..\..\mediaportal\trunk\Tools\Script & Batch tools\DeployVersionSVN\DeployVersionSVN\bin\Release\DeployVersionSVN.exe" /svn=".."  >> %LOG%
 
 
 
@@ -50,7 +50,7 @@ rem "%ProgramDir%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %
 
 echo.
 echo Reverting assemblies...
-..\setup\DeployVersionSVN.exe /svn=".." /revert >> %LOG%
+"..\..\..\..\..\mediaportal\trunk\Tools\Script & Batch tools\DeployVersionSVN\DeployVersionSVN\bin\Release\DeployVersionSVN.exe" /svn=".." /revert >> %LOG%
 
 echo.
 echo Reading the svn revision...
