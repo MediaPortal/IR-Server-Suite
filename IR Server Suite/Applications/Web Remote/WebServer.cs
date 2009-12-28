@@ -165,7 +165,18 @@ namespace WebRemote
 
         Program.ButtonPress(command);
 
-        SendError(404, "File Not Found");
+		try
+		{
+			SendError(404, "File Not Found");
+		}
+		catch (Exception ex)
+		{
+			//maybe the sender isn't interested in the answer and already closed the socket...
+			//without catching this the server will shutdown
+
+			IrssLog.Error(ex);
+		}
+
         return;
       }
 
@@ -206,21 +217,21 @@ namespace WebRemote
       string command = String.Empty;
       bool first = true;
 
-      try
-      {
-        while ((buf = _networkReader.ReadLine()) != null && buf.Length > 0)
-        {
-          if (first)
-          {
-            command = buf;
-            first = false;
-          }
-        }
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-      }
+	  try
+	  {
+		  while ((buf = _networkReader.ReadLine()) != null && buf.Length > 0)
+		  {
+			  if (first)
+			  {
+				  command = buf;
+				  first = false;
+			  }
+		  }
+	  }
+	  catch (Exception ex)
+	  {
+		  IrssLog.Error(ex);
+	  }
 
       return command;
     }
