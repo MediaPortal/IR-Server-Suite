@@ -80,6 +80,9 @@ namespace Translator
 
     private static VariableList _variables;
 
+    private static bool _connected;
+
+    private static int _connectionFailures;
     #endregion Variables
 
     #region Properties
@@ -122,6 +125,7 @@ namespace Translator
     [STAThread]
     private static void Main(string[] args)
     {
+      _connectionFailures = 0;
       _configFile = DefaultConfigFile;
 
       if (args.Length > 0)
@@ -685,6 +689,7 @@ namespace Translator
 
     private static void CommsFailure(object obj)
     {
+      _connectionFailures ++;
       Exception ex = obj as Exception;
 
       if (ex != null)
@@ -697,14 +702,33 @@ namespace Translator
 
       StopClient();
 
-      MessageBox.Show("Please report this error.", "Translator - Communications failure", MessageBoxButtons.OK,
-                      MessageBoxIcon.Error);
+      if (!_connected && _connectionFailures < 30)
+      {
+        Thread.Sleep(1000);
+
+        IPAddress serverIP = Client.GetIPFromName(_config.ServerHost);
+        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
+
+        try
+        {
+          StartClient(endPoint);
+        }
+        catch (Exception ex2)
+        {
+          IrssLog.Error(ex2);
+        }
+      } else
+      {
+        MessageBox.Show("Please report this error.", "Translator - Communications failure", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+      }
     }
 
     private static void Connected(object obj)
     {
+      _connectionFailures = 0;
       IrssLog.Info("Connected to server");
-
+      _connected = true;
       IrssMessage message = new IrssMessage(MessageType.RegisterClient, MessageFlags.Request);
       _client.Send(message);
 
@@ -721,7 +745,7 @@ namespace Translator
     private static void Disconnected(object obj)
     {
       IrssLog.Warn("Communications with server has been lost");
-
+      _connected = false;
       _notifyIcon.Icon = Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Reconnecting ...";
 
