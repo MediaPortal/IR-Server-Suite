@@ -522,21 +522,23 @@ namespace IRServer.Plugin
                 dataBytes = GetData();
                 if (dataBytes.Length == DosDeviceBufferSize)
                 {
+                  try
+                  {
                     if (dataBytes[7] != 0xF0)
                     {
-                        string temp = "";
-                        foreach (byte x in dataBytes)
-                            temp += String.Format("{0:X2}", x);
-                        if (col == 3)
-                        {
-                            col = 0;
-                            Debug.Write(temp + "\n");
-                        }
-                        else
-                        {
-                            col++;
-                            Debug.Write(temp + "  ");
-                        }
+                      string temp = "";
+                      foreach (byte x in dataBytes)
+                        temp += String.Format("{0:X2}", x);
+                      if (col == 3)
+                      {
+                        col = 0;
+                        Debug.Write(temp + "\n");
+                      }
+                      else
+                      {
+                        col++;
+                        Debug.Write(temp + "  ");
+                      }
                     }
 
                     // Rubbish data:
@@ -547,9 +549,14 @@ namespace IRServer.Plugin
                         (dataBytes[0] != 0x00 || dataBytes[1] != 0x00 || dataBytes[2] != 0x00 || dataBytes[3] != 0x00 ||
                          dataBytes[4] != 0x00 || dataBytes[5] != 0x00))
                     {
-                        ProcessInput(dataBytes);
+                      ProcessInput(dataBytes);
                     }
                     Thread.Sleep(5);
+                  }
+                  catch
+                  {
+                    DebugWriteLine("Error processing input command!");
+                  }
                 }
             }
             
