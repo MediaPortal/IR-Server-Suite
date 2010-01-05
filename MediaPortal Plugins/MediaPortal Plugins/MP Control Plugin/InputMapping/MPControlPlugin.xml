@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <mappings version="3">
 	<remote family="My Remote Control">
 		<button name="Power TV" code="101">
@@ -88,6 +88,7 @@
 			<action layer="0" condition="WINDOW" conproperty="2007" command="ACTION" cmdproperty="31" sound="cursor.wav" />
 			<action layer="0" condition="WINDOW" conproperty="1" command="ACTION" cmdproperty="95" sound="cursor.wav" />
 			<action layer="0" condition="WINDOW" conproperty="602" command="ACTION" cmdproperty="95" sound="cursor.wav" />
+			<action layer="0" condition="WINDOW" conproperty="3003" command="ACTION" cmdproperty="95" sound="cursor.wav" />
 			<action layer="0" condition="*" conproperty="-1" command="ACTION" cmdproperty="5" sound="cursor.wav" />
 		</button>
 		<button name="Channel Down" code="19">
@@ -96,6 +97,7 @@
 			<action layer="0" condition="WINDOW" conproperty="2007" command="ACTION" cmdproperty="30" sound="cursor.wav" />
 			<action layer="0" condition="WINDOW" conproperty="1" command="ACTION" cmdproperty="94" sound="cursor.wav" />
 			<action layer="0" condition="WINDOW" conproperty="602" command="ACTION" cmdproperty="94" sound="cursor.wav" />
+			<action layer="0" condition="WINDOW" conproperty="3003" command="ACTION" cmdproperty="94" sound="cursor.wav" />
 			<action layer="0" condition="*" conproperty="-1" command="ACTION" cmdproperty="6" sound="cursor.wav" />
 		</button>
 		<button name="Mute" code="14">
