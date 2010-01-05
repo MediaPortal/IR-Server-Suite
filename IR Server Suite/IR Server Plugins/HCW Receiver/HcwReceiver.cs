@@ -27,6 +27,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using IRServer.Plugin.Properties;
+using IrssUtils;
 
 namespace IRServer.Plugin
 {
@@ -139,6 +140,24 @@ namespace IRServer.Plugin
     }
 
     #endregion
+
+    /// <summary>
+    /// Detect the presence of this device.
+    /// </summary>
+    public override DetectionResult Detect()
+    {
+      try
+      {
+        _irRemoteWrapper = new IrRemoteWrapper();
+          return DetectionResult.DevicePresent;
+       
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("{0,15}: exception {1} type: {2}", Name, ex.Message, ex.GetType());
+        return DetectionResult.DeviceException;
+      }
+    }
 
     /// <summary>
     /// Start the IR Server plugin.
