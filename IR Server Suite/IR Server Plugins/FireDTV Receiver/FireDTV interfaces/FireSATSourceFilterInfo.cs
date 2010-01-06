@@ -133,7 +133,7 @@ namespace IRServer.Plugin
 
     #region Properties
 
-    internal string Name
+    public string Name
     {
       get { return _name; }
     }
@@ -149,7 +149,7 @@ namespace IRServer.Plugin
       set { _handle = value; }
     }
 
-    internal string FriendlyName
+    public string FriendlyName
     {
       get { return _friendlyName; }
     }
