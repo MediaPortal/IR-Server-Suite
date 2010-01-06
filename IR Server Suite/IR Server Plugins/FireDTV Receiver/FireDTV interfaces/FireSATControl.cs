@@ -57,33 +57,35 @@ namespace IRServer.Plugin
     /// <param name="windowHandle"></param>
     internal FireDTVControl(IntPtr windowHandle)
     {
-      try
+      //
+      // For x64 we need FiresatAPI.dll in current dir, because we need x86 version
+      // instead in install path we'll find the x64 version
+      //
+      if (!IrssUtils.Win32.Check64Bit())
       {
-        string prgPath = Environment.GetEnvironmentVariable("ProgramW6432");
-        if (string.IsNullOrEmpty(prgPath))
-        {
-          prgPath = Environment.GetEnvironmentVariable("ProgramFiles");
-        }
-
-        // Look for Digital Everywhere's software which uses a hardcoded path
-        string fullDllPath = Path.Combine(prgPath, @"FireDTV\Tools\FiresatApi.dll");
-        if (!File.Exists(fullDllPath))
-        {
-          throw new FileNotFoundException("Could not FireSATApi.dll");
-        }
-
         try
         {
-          SetDllDirectory(Path.GetDirectoryName(fullDllPath));
+          // Look for Digital Everywhere's software which uses a hardcoded path
+          string fullDllPath = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles"),
+                                            @"FireDTV\Tools\FiresatApi.dll");
+          if (!File.Exists(fullDllPath))
+          {
+            throw new FileNotFoundException("Could not find FireSATApi.dll");
+          }
+
+          try
+          {
+            SetDllDirectory(Path.GetDirectoryName(fullDllPath));
+          }
+          catch (Exception)
+          {
+            throw new FileNotFoundException("FireDTV: Trying to enable FireDTV remote but failed to set its path.");
+          }
         }
         catch (Exception)
         {
-          throw new FileNotFoundException("FireDTV: Trying to enable FireDTV remote but failed to set its path.");
+          throw new FileNotFoundException("FireDTV: Trying to enable FireDTV remote but failed");
         }
-      }
-      catch (Exception)
-      {
-        throw new FileNotFoundException("FireDTV: Trying to enable FireDTV remote but failed");
       }
 
       _windowHandle = windowHandle;
@@ -128,7 +130,7 @@ namespace IRServer.Plugin
         }
         catch (Exception e)
         {
-          throw new InvalidOperationException("FireDTV: error initializing "+ e.Message);
+          throw new InvalidOperationException("FireDTV: error initializing " + e.Message);
         }
       }
     }
@@ -188,7 +190,7 @@ namespace IRServer.Plugin
       }
       catch (Exception ex)
       {
-        throw new InvalidOperationException("FireSATControl: Error getting WDM Devices "+ ex.Message);
+        throw new InvalidOperationException("FireSATControl: Error getting WDM Devices " + ex.Message);
       }
     }
 
