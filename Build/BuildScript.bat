@@ -1,8 +1,7 @@
 @ECHO OFF
 
 REM set paths
-set DeployVersionSVN=..\..\..\..\..\MediaPortal\trunk\Tools\Script ^& Batch tools\DeployVersionSVN\DeployVersionSVN\bin\Release\DeployVersionSVN.exe
-
+set DeployVersionSVN="..\..\..\..\..\MediaPortal\trunk\Tools\Script & Batch tools\DeployVersionSVN\DeployVersionSVN\bin\Release\DeployVersionSVN.exe"
 
 REM detect if BUILD_TYPE should be release or debug
 if not %1!==Debug! goto RELEASE
@@ -32,7 +31,7 @@ echo.
 
 
 echo.
-echo Writing SVN revision to AssemblyInfo files...
+echo Writing SVN revision assemblies...
 %DeployVersionSVN% /svn=".."  >> %LOG%
 
 
@@ -51,7 +50,7 @@ rem "%ProgramDir%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %
 
 
 echo.
-echo Reverting AssemblyInfo files...
+echo Reverting assemblies...
 %DeployVersionSVN% /svn=".." /revert >> %LOG%
 
 echo.
