@@ -1,5 +1,8 @@
 @ECHO OFF
 
+REM set paths
+set DeployVersionSVN=..\..\..\..\..\MediaPortal\trunk\Tools\Script ^& Batch tools\DeployVersionSVN\DeployVersionSVN\bin\Release\DeployVersionSVN.exe
+
 
 REM detect if BUILD_TYPE should be release or debug
 if not %1!==Debug! goto RELEASE
@@ -27,10 +30,10 @@ echo -= IR Server Suite =-
 echo -= build mode: %BUILD_TYPE% =-
 echo.
 
-echo.
-echo Writing SVN revision assemblies...
-"..\..\..\..\..\mediaportal\trunk\Tools\Script & Batch tools\DeployVersionSVN\DeployVersionSVN\bin\Release\DeployVersionSVN.exe" /svn=".."  >> %LOG%
 
+echo.
+echo Writing SVN revision to AssemblyInfo files...
+%DeployVersionSVN% /svn=".."  >> %LOG%
 
 
 echo.
@@ -47,19 +50,16 @@ rem "%ProgramDir%\Microsoft Visual Studio 9.0\Common7\IDE\devenv.com" /rebuild %
 :NoMPplugins
 
 
-
 echo.
-echo Reverting assemblies...
-"..\..\..\..\..\mediaportal\trunk\Tools\Script & Batch tools\DeployVersionSVN\DeployVersionSVN\bin\Release\DeployVersionSVN.exe" /svn=".." /revert >> %LOG%
+echo Reverting AssemblyInfo files...
+%DeployVersionSVN% /svn=".." /revert >> %LOG%
 
 echo.
 echo Reading the svn revision...
-echo $WCREV$>template.txt
-"%ProgramFiles%\TortoiseSVN\bin\SubWCRev.exe" ".." template.txt version.txt >> %LOG%
-SET /p version=<version.txt >> %LOG%
-DEL template.txt >> %LOG%
+%DeployVersionSVN% /svn=".." /GetVersion >> %LOG%
+rem SET /p version=<version.txt >> build.log
+SET version=%errorlevel%
 DEL version.txt >> %LOG%
-
 
 
 echo.
