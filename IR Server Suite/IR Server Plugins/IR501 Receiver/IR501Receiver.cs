@@ -38,8 +38,6 @@ namespace IRServer.Plugin
   {
     #region Constants
 
-    private const int DeviceBufferSize = 255;
-
     private const string DevicePathVidPid = "vid_147a&pid_e001";
 
     #endregion Constants
@@ -163,7 +161,7 @@ namespace IRServer.Plugin
 
       //_deviceWatcher.RegisterDeviceRemoval(deviceHandle);
 
-      _deviceBuffer = new byte[DeviceBufferSize];
+      _deviceBuffer = new byte[255];
       _deviceStream = new FileStream(deviceHandle, FileAccess.Read, _deviceBuffer.Length, true);
       _deviceStream.BeginRead(_deviceBuffer, 0, _deviceBuffer.Length, OnReadComplete, null);
     }

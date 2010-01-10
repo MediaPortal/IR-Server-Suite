@@ -34,13 +34,11 @@ namespace IRServer.Plugin
   /// <summary>
   /// IR Server Plugin for the IR507 IR receiver.
   /// </summary>
-  [CLSCompliant(false)]
   public class IR507Receiver : PluginBase, IRemoteReceiver
   {
     #region Constants
 
-    //const string DeviceID = "vid_0e6a&pid_6002";  // Unknown
-    private const string DeviceID = "vid_147a&pid_e02a";
+    private const string DevicePathVidPid = "vid_147a&pid_e02a";
 
     #endregion Constants
 
@@ -255,6 +253,11 @@ namespace IRServer.Plugin
       }
     }
 
+    /// <summary>
+    /// Finds the device.
+    /// </summary>
+    /// <param name="classGuid">The class GUID.</param>
+    /// <returns>Device path.</returns>
     private static string FindDevice(Guid classGuid)
     {
       // 0x12 = DIGCF_PRESENT | DIGCF_DEVICEINTERFACE
@@ -278,7 +281,7 @@ namespace IRServer.Plugin
           if (lastError != 0x0103 && lastError != 0x007E)
           {
             Win32.SetupDiDestroyDeviceInfoList(handle);
-            throw new Win32Exception(Marshal.GetLastWin32Error());
+            throw new Win32Exception(lastError);
           }
 
           Win32.SetupDiDestroyDeviceInfoList(handle);
@@ -302,8 +305,10 @@ namespace IRServer.Plugin
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        Win32.DeviceInterfaceDetailData deviceInterfaceDetailData = new Win32.DeviceInterfaceDetailData();
-        deviceInterfaceDetailData.Size = 5;
+        Win32.DeviceInterfaceDetailData deviceInterfaceDetailData = new Win32.DeviceInterfaceDetailData
+                                                                {
+                                                                  Size = Win32.Check64Bit() ? 8 : 5
+                                                                };
 
         if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData,
                                           IntPtr.Zero, IntPtr.Zero))
@@ -312,7 +317,7 @@ namespace IRServer.Plugin
           throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        if (deviceInterfaceDetailData.DevicePath.IndexOf(DeviceID, StringComparison.OrdinalIgnoreCase) != -1)
+        if (deviceInterfaceDetailData.DevicePath.IndexOf(DevicePathVidPid, StringComparison.OrdinalIgnoreCase) != -1)
         {
           Win32.SetupDiDestroyDeviceInfoList(handle);
           devicePath = deviceInterfaceDetailData.DevicePath;
@@ -324,35 +329,5 @@ namespace IRServer.Plugin
     }
 
     #endregion Implementation
-
-    // #define TEST_APPLICATION in the project properties when creating the console test app ...
-#if TEST_APPLICATION
-
-    static void xRemote(string deviceName, string code)
-    {
-      Console.WriteLine("Remote: {0}", code);
-    }
-
-    [STAThread]
-    static void Main()
-    {
-      try
-      {
-        IR507Receiver device = new IR507Receiver();
-
-        device.RemoteCallback += new RemoteHandler(xRemote);
-        device.Start();
-
-        Application.Run();
-
-        device.Stop();
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-    }
-
-#endif
   }
 }
