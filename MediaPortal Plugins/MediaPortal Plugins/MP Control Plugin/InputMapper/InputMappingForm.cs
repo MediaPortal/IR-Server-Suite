@@ -689,7 +689,7 @@ namespace MediaPortal.Plugins
             {
               case "WINDOW":
                 {
-                  comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
+                  comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
 
                   radioButtonWindow.Checked = true;
                   comboBoxCondProperty.Enabled = true;
@@ -725,7 +725,7 @@ namespace MediaPortal.Plugins
                             _playerList[Array.IndexOf(_nativePlayerList, (string) data.Value)]);
                 break;
               case "PLUGIN":
-                comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
+                comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
 
                 radioButtonPlugin.Checked = true;
                 comboBoxCondProperty.Enabled = true;
@@ -776,7 +776,7 @@ namespace MediaPortal.Plugins
                       break;
                     case "WINDOW":
                       {
-                        comboBoxCmdProperty.DropDownStyle = ComboBoxStyle.DropDown;
+                        comboBoxCmdProperty.DropDownStyle = ComboBoxStyle.DropDownList;
                         radioButtonActWindow.Checked = true;
                         comboBoxSound.Enabled = true;
                         comboBoxCmdProperty.Enabled = true;
@@ -940,7 +940,7 @@ namespace MediaPortal.Plugins
     {
       if (!((Control) sender).Focused) return;
 
-      comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
+      comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCondProperty.Enabled = true;
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "WINDOW", "0");
@@ -993,7 +993,7 @@ namespace MediaPortal.Plugins
     {
       if (!((Control) sender).Focused) return;
 
-      comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDown;
+      comboBoxCondProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCondProperty.Enabled = true;
       TreeNode node = getNode("CONDITION");
       node.Tag = new Data("CONDITION", "PLUGIN", _pluginList[0]);
@@ -1021,7 +1021,7 @@ namespace MediaPortal.Plugins
 
     private void radioButtonActWindow_Click(object sender, EventArgs e)
     {
-      comboBoxCmdProperty.DropDownStyle = ComboBoxStyle.DropDown;
+      comboBoxCmdProperty.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxSound.Enabled = true;
       comboBoxCmdProperty.Enabled = true;
       TreeNode node = getNode("COMMAND");
