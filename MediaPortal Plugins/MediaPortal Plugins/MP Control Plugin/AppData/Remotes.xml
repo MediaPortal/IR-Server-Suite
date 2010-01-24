@@ -152,7 +152,7 @@
 			<code value="TV" />
 		</button>
 		<button name="MyVideos">
-			<code value="Video" />
+			<code value="Videos" />
 		</button>
 		<button name="Print">
 			<code value="Print" />
