@@ -604,11 +604,11 @@ namespace IRServer.Plugin
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(280, 330);
       this.Name = "Configure";
-      this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Microsoft MCE Configuration";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).EndInit();

@@ -135,6 +135,7 @@ namespace IRServer.Plugin
     public Configure()
     {
       InitializeComponent();
+      this.Icon = Properties.Resources.Icon;
 
       // Put this in a try...catch so that if the registry keys don't exist we don't throw an ugly exception.
       try
