@@ -28,7 +28,6 @@ namespace IRServer.Configuration
     /// </summary>
     private void InitializeComponent()
     {
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Exclusions));
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.treeViewExclusions = new System.Windows.Forms.TreeView();
@@ -123,7 +122,6 @@ namespace IRServer.Configuration
       this.Controls.Add(this.buttonOK);
       this.Controls.Add(this.labelExpandAll);
       this.Controls.Add(this.labelCollapseAll);
-      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(320, 380);
       this.Name = "Exclusions";

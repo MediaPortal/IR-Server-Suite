@@ -36,6 +36,7 @@ namespace IRServer.Configuration
     public Exclusions()
     {
       InitializeComponent();
+      Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
       InitTree();
     }

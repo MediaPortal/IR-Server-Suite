@@ -29,7 +29,6 @@ namespace IRServer.Configuration
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Advanced));
       this.groupBoxMode = new System.Windows.Forms.GroupBox();
       this.labelComputer = new System.Windows.Forms.Label();
       this.radioButtonRepeater = new System.Windows.Forms.RadioButton();
@@ -230,14 +229,13 @@ namespace IRServer.Configuration
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(400, 304);
+      this.ClientSize = new System.Drawing.Size(400, 308);
       this.Controls.Add(this.groupBoxPriority);
       this.Controls.Add(this.groupBoxAbstractRemoteModel);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.Controls.Add(this.groupBoxMode);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(406, 336);

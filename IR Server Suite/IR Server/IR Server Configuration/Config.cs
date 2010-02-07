@@ -405,6 +405,7 @@ namespace IRServer.Configuration
     public Config()
     {
       InitializeComponent();
+      SetIcons();
 
       try
       {
@@ -425,6 +426,15 @@ namespace IRServer.Configuration
 
 
       LoadSettings();
+    }
+
+    private void SetIcons()
+    {
+      Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+
+      toolStripButtonDetect.Image = IrssUtils.Properties.Resources.Detect;
+      toolStripButtonAdvancedSettings.Image = IrssUtils.Properties.Resources.Advanced;
+      toolStripButtonHelp.Image = IrssUtils.Properties.Resources.Help;
     }
 
     #endregion Constructor

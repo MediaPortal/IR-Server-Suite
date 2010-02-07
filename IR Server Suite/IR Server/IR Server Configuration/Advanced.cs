@@ -90,6 +90,7 @@ namespace IRServer.Configuration
     public Advanced()
     {
       InitializeComponent();
+      Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
       List<string> networkPCs = Network.GetComputers(false);
       if (networkPCs != null)

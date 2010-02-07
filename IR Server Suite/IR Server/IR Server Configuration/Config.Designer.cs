@@ -29,7 +29,6 @@ namespace IRServer.Configuration
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Config));
       this.buttonOK = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
@@ -122,20 +121,18 @@ namespace IRServer.Configuration
       // 
       // toolStripButtonDetect
       // 
-      this.toolStripButtonDetect.Image = IrssUtils.Properties.Resources.Detect;
       this.toolStripButtonDetect.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDetect.Name = "toolStripButtonDetect";
-      this.toolStripButtonDetect.Size = new System.Drawing.Size(61, 22);
+      this.toolStripButtonDetect.Size = new System.Drawing.Size(45, 22);
       this.toolStripButtonDetect.Text = "Detect";
       this.toolStripButtonDetect.ToolTipText = "Detect attached devices";
       this.toolStripButtonDetect.Click += new System.EventHandler(this.toolStripButtonDetect_Click);
       // 
       // toolStripButtonAdvancedSettings
       // 
-      this.toolStripButtonAdvancedSettings.Image = IrssUtils.Properties.Resources.Advanced;
       this.toolStripButtonAdvancedSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonAdvancedSettings.Name = "toolStripButtonAdvancedSettings";
-      this.toolStripButtonAdvancedSettings.Size = new System.Drawing.Size(80, 22);
+      this.toolStripButtonAdvancedSettings.Size = new System.Drawing.Size(64, 22);
       this.toolStripButtonAdvancedSettings.Text = "Advanced";
       this.toolStripButtonAdvancedSettings.ToolTipText = "Advanced settings";
       this.toolStripButtonAdvancedSettings.Click += new System.EventHandler(this.toolStripButtonAdvancedSettings_Click);
@@ -143,10 +140,9 @@ namespace IRServer.Configuration
       // toolStripButtonHelp
       // 
       this.toolStripButtonHelp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-      this.toolStripButtonHelp.Image = IrssUtils.Properties.Resources.Help;
       this.toolStripButtonHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonHelp.Name = "toolStripButtonHelp";
-      this.toolStripButtonHelp.Size = new System.Drawing.Size(52, 22);
+      this.toolStripButtonHelp.Size = new System.Drawing.Size(36, 22);
       this.toolStripButtonHelp.Text = "Help";
       this.toolStripButtonHelp.Click += new System.EventHandler(this.toolStripButtonHelp_Click);
       // 
@@ -212,7 +208,6 @@ namespace IRServer.Configuration
       this.Controls.Add(this.groupBoxTransceiver);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
-      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MinimumSize = new System.Drawing.Size(480, 298);
       this.Name = "Config";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
