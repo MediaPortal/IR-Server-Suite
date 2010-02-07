@@ -196,14 +196,33 @@ namespace IRServer.Plugin
 
     #endregion Buttons
 
+    #region CheckBoxes
+
+    private void checkBoxEnableRemote_CheckedChanged(object sender, EventArgs e)
+    {
+      remotePanel.Enabled = checkBoxEnableRemote.Checked;
+    }
+
     private void checkBoxUseSystemRatesRemote_CheckedChanged(object sender, EventArgs e)
     {
       groupBoxRemoteTiming.Enabled = !checkBoxUseSystemRatesRemote.Checked;
+    }
+
+    private void checkBoxEnableKeyboard_CheckedChanged(object sender, EventArgs e)
+    {
+      keyboardPanel.Enabled = checkBoxEnableKeyboard.Checked;
     }
 
     private void checkBoxUseSystemRatesKeyboard_CheckedChanged(object sender, EventArgs e)
     {
       groupBoxKeypressTiming.Enabled = !checkBoxUseSystemRatesKeyboard.Checked;
     }
+
+    private void checkBoxEnableMouse_CheckedChanged(object sender, EventArgs e)
+    {
+      mousePanel.Enabled = checkBoxEnableMouse.Checked;
+    }
+
+    #endregion
   }
 }

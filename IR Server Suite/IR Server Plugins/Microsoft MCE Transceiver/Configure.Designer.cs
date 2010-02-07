@@ -50,21 +50,24 @@ namespace IRServer.Plugin
       this.checkBoxUseSystemRatesRemote = new System.Windows.Forms.CheckBox();
       this.checkBoxUseSystemRatesKeyboard = new System.Windows.Forms.CheckBox();
       this.checkBoxDisableAutomaticButtons = new System.Windows.Forms.CheckBox();
-      this.labelLearnIRTimeout = new System.Windows.Forms.Label();
-      this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageBasic = new System.Windows.Forms.TabPage();
+      this.groupBoxMceServices = new System.Windows.Forms.GroupBox();
+      this.radioButton1 = new System.Windows.Forms.RadioButton();
+      this.radioButtonDoNothing = new System.Windows.Forms.RadioButton();
+      this.radioButtonStopAtStartup = new System.Windows.Forms.RadioButton();
+      this.labelLearnIRTimeout = new System.Windows.Forms.Label();
       this.tabPageRemote = new System.Windows.Forms.TabPage();
+      this.remotePanel = new System.Windows.Forms.Panel();
       this.tabPageKeyboard = new System.Windows.Forms.TabPage();
+      this.keyboardPanel = new System.Windows.Forms.Panel();
+      this.checkBoxKeyboardQwertz = new System.Windows.Forms.CheckBox();
       this.groupBoxKeypressTiming = new System.Windows.Forms.GroupBox();
       this.labelKeyRepeatDelay = new System.Windows.Forms.Label();
       this.labelKeyHeldDelay = new System.Windows.Forms.Label();
       this.tabPageMouse = new System.Windows.Forms.TabPage();
+      this.mousePanel = new System.Windows.Forms.Panel();
       this.labelMouseSensitivity = new System.Windows.Forms.Label();
-      this.radioButtonStopAtStartup = new System.Windows.Forms.RadioButton();
-      this.groupBoxMceServices = new System.Windows.Forms.GroupBox();
-      this.radioButtonDoNothing = new System.Windows.Forms.RadioButton();
-      this.radioButton1 = new System.Windows.Forms.RadioButton();
-      this.checkBoxKeyboardQwertz = new System.Windows.Forms.CheckBox();
+      this.tabControl = new System.Windows.Forms.TabControl();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).BeginInit();
       this.groupBoxRemoteTiming.SuspendLayout();
@@ -72,41 +75,47 @@ namespace IRServer.Plugin
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyHeldDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseSensitivity)).BeginInit();
-      this.tabControl.SuspendLayout();
       this.tabPageBasic.SuspendLayout();
+      this.groupBoxMceServices.SuspendLayout();
       this.tabPageRemote.SuspendLayout();
+      this.remotePanel.SuspendLayout();
       this.tabPageKeyboard.SuspendLayout();
+      this.keyboardPanel.SuspendLayout();
       this.groupBoxKeypressTiming.SuspendLayout();
       this.tabPageMouse.SuspendLayout();
-      this.groupBoxMceServices.SuspendLayout();
+      this.mousePanel.SuspendLayout();
+      this.tabControl.SuspendLayout();
       this.SuspendLayout();
       // 
       // labelButtonRepeatDelay
       // 
-      this.labelButtonRepeatDelay.Location = new System.Drawing.Point(8, 24);
+      this.labelButtonRepeatDelay.AutoSize = true;
+      this.labelButtonRepeatDelay.Location = new System.Drawing.Point(6, 21);
       this.labelButtonRepeatDelay.Name = "labelButtonRepeatDelay";
-      this.labelButtonRepeatDelay.Size = new System.Drawing.Size(128, 20);
+      this.labelButtonRepeatDelay.Size = new System.Drawing.Size(102, 13);
       this.labelButtonRepeatDelay.TabIndex = 0;
       this.labelButtonRepeatDelay.Text = "Button repeat delay:";
       this.labelButtonRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // labelButtonHeldDelay
       // 
-      this.labelButtonHeldDelay.Location = new System.Drawing.Point(8, 56);
+      this.labelButtonHeldDelay.AutoSize = true;
+      this.labelButtonHeldDelay.Location = new System.Drawing.Point(6, 47);
       this.labelButtonHeldDelay.Name = "labelButtonHeldDelay";
-      this.labelButtonHeldDelay.Size = new System.Drawing.Size(128, 20);
+      this.labelButtonHeldDelay.Size = new System.Drawing.Size(92, 13);
       this.labelButtonHeldDelay.TabIndex = 2;
       this.labelButtonHeldDelay.Text = "Button held delay:";
       this.labelButtonHeldDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // numericUpDownButtonRepeatDelay
       // 
+      this.numericUpDownButtonRepeatDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.numericUpDownButtonRepeatDelay.Increment = new decimal(new int[] {
             50,
             0,
             0,
             0});
-      this.numericUpDownButtonRepeatDelay.Location = new System.Drawing.Point(144, 24);
+      this.numericUpDownButtonRepeatDelay.Location = new System.Drawing.Point(144, 19);
       this.numericUpDownButtonRepeatDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -127,12 +136,13 @@ namespace IRServer.Plugin
       // 
       // numericUpDownButtonHeldDelay
       // 
+      this.numericUpDownButtonHeldDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.numericUpDownButtonHeldDelay.Increment = new decimal(new int[] {
             50,
             0,
             0,
             0});
-      this.numericUpDownButtonHeldDelay.Location = new System.Drawing.Point(144, 56);
+      this.numericUpDownButtonHeldDelay.Location = new System.Drawing.Point(144, 45);
       this.numericUpDownButtonHeldDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -153,9 +163,9 @@ namespace IRServer.Plugin
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(128, 264);
+      this.buttonOK.Location = new System.Drawing.Point(106, 233);
       this.buttonOK.Name = "buttonOK";
-      this.buttonOK.Size = new System.Drawing.Size(64, 24);
+      this.buttonOK.Size = new System.Drawing.Size(75, 23);
       this.buttonOK.TabIndex = 1;
       this.buttonOK.Text = "OK";
       this.buttonOK.UseVisualStyleBackColor = true;
@@ -165,9 +175,9 @@ namespace IRServer.Plugin
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(200, 264);
+      this.buttonCancel.Location = new System.Drawing.Point(187, 233);
       this.buttonCancel.Name = "buttonCancel";
-      this.buttonCancel.Size = new System.Drawing.Size(64, 24);
+      this.buttonCancel.Size = new System.Drawing.Size(75, 23);
       this.buttonCancel.TabIndex = 2;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
@@ -179,9 +189,9 @@ namespace IRServer.Plugin
       this.groupBoxRemoteTiming.Controls.Add(this.numericUpDownButtonHeldDelay);
       this.groupBoxRemoteTiming.Controls.Add(this.labelButtonHeldDelay);
       this.groupBoxRemoteTiming.Controls.Add(this.numericUpDownButtonRepeatDelay);
-      this.groupBoxRemoteTiming.Location = new System.Drawing.Point(8, 88);
+      this.groupBoxRemoteTiming.Location = new System.Drawing.Point(6, 49);
       this.groupBoxRemoteTiming.Name = "groupBoxRemoteTiming";
-      this.groupBoxRemoteTiming.Size = new System.Drawing.Size(232, 88);
+      this.groupBoxRemoteTiming.Size = new System.Drawing.Size(230, 73);
       this.groupBoxRemoteTiming.TabIndex = 3;
       this.groupBoxRemoteTiming.TabStop = false;
       this.groupBoxRemoteTiming.Text = "Remote button timing (in milliseconds)";
@@ -193,7 +203,7 @@ namespace IRServer.Plugin
             0,
             0,
             0});
-      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(152, 8);
+      this.numericUpDownLearnTimeout.Location = new System.Drawing.Point(148, 10);
       this.numericUpDownLearnTimeout.Maximum = new decimal(new int[] {
             60000,
             0,
@@ -218,12 +228,13 @@ namespace IRServer.Plugin
       // 
       // numericUpDownKeyHeldDelay
       // 
+      this.numericUpDownKeyHeldDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.numericUpDownKeyHeldDelay.Increment = new decimal(new int[] {
             50,
             0,
             0,
             0});
-      this.numericUpDownKeyHeldDelay.Location = new System.Drawing.Point(144, 56);
+      this.numericUpDownKeyHeldDelay.Location = new System.Drawing.Point(144, 45);
       this.numericUpDownKeyHeldDelay.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -243,12 +254,13 @@ namespace IRServer.Plugin
       // 
       // numericUpDownKeyRepeatDelay
       // 
+      this.numericUpDownKeyRepeatDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.numericUpDownKeyRepeatDelay.Increment = new decimal(new int[] {
             50,
             0,
             0,
             0});
-      this.numericUpDownKeyRepeatDelay.Location = new System.Drawing.Point(144, 24);
+      this.numericUpDownKeyRepeatDelay.Location = new System.Drawing.Point(144, 19);
       this.numericUpDownKeyRepeatDelay.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -271,7 +283,7 @@ namespace IRServer.Plugin
       this.checkBoxHandleKeyboardLocal.AutoSize = true;
       this.checkBoxHandleKeyboardLocal.Checked = true;
       this.checkBoxHandleKeyboardLocal.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxHandleKeyboardLocal.Location = new System.Drawing.Point(8, 40);
+      this.checkBoxHandleKeyboardLocal.Location = new System.Drawing.Point(6, 3);
       this.checkBoxHandleKeyboardLocal.Name = "checkBoxHandleKeyboardLocal";
       this.checkBoxHandleKeyboardLocal.Size = new System.Drawing.Size(139, 17);
       this.checkBoxHandleKeyboardLocal.TabIndex = 1;
@@ -284,7 +296,7 @@ namespace IRServer.Plugin
       this.checkBoxHandleMouseLocal.AutoSize = true;
       this.checkBoxHandleMouseLocal.Checked = true;
       this.checkBoxHandleMouseLocal.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxHandleMouseLocal.Location = new System.Drawing.Point(8, 40);
+      this.checkBoxHandleMouseLocal.Location = new System.Drawing.Point(6, 3);
       this.checkBoxHandleMouseLocal.Name = "checkBoxHandleMouseLocal";
       this.checkBoxHandleMouseLocal.Size = new System.Drawing.Size(126, 17);
       this.checkBoxHandleMouseLocal.TabIndex = 1;
@@ -300,7 +312,7 @@ namespace IRServer.Plugin
             0,
             0,
             65536});
-      this.numericUpDownMouseSensitivity.Location = new System.Drawing.Point(160, 64);
+      this.numericUpDownMouseSensitivity.Location = new System.Drawing.Point(156, 27);
       this.numericUpDownMouseSensitivity.Maximum = new decimal(new int[] {
             10,
             0,
@@ -327,7 +339,7 @@ namespace IRServer.Plugin
       this.checkBoxDisableMCEServices.AutoSize = true;
       this.checkBoxDisableMCEServices.Checked = true;
       this.checkBoxDisableMCEServices.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxDisableMCEServices.Location = new System.Drawing.Point(8, 40);
+      this.checkBoxDisableMCEServices.Location = new System.Drawing.Point(6, 36);
       this.checkBoxDisableMCEServices.Name = "checkBoxDisableMCEServices";
       this.checkBoxDisableMCEServices.Size = new System.Drawing.Size(216, 17);
       this.checkBoxDisableMCEServices.TabIndex = 2;
@@ -341,44 +353,46 @@ namespace IRServer.Plugin
       this.checkBoxEnableRemote.AutoSize = true;
       this.checkBoxEnableRemote.Checked = true;
       this.checkBoxEnableRemote.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxEnableRemote.Location = new System.Drawing.Point(8, 8);
+      this.checkBoxEnableRemote.Location = new System.Drawing.Point(6, 6);
       this.checkBoxEnableRemote.Name = "checkBoxEnableRemote";
       this.checkBoxEnableRemote.Size = new System.Drawing.Size(155, 17);
       this.checkBoxEnableRemote.TabIndex = 0;
       this.checkBoxEnableRemote.Text = "Enable remote control input";
       this.toolTips.SetToolTip(this.checkBoxEnableRemote, "Decode remote control button presses");
-      this.checkBoxEnableRemote.UseVisualStyleBackColor = true;
+      this.checkBoxEnableRemote.CheckedChanged += new System.EventHandler(this.checkBoxEnableRemote_CheckedChanged);
       // 
       // checkBoxEnableKeyboard
       // 
       this.checkBoxEnableKeyboard.AutoSize = true;
       this.checkBoxEnableKeyboard.Checked = true;
       this.checkBoxEnableKeyboard.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxEnableKeyboard.Location = new System.Drawing.Point(8, 8);
+      this.checkBoxEnableKeyboard.Location = new System.Drawing.Point(6, 6);
       this.checkBoxEnableKeyboard.Name = "checkBoxEnableKeyboard";
       this.checkBoxEnableKeyboard.Size = new System.Drawing.Size(132, 17);
       this.checkBoxEnableKeyboard.TabIndex = 0;
       this.checkBoxEnableKeyboard.Text = "Enable keyboard input";
       this.toolTips.SetToolTip(this.checkBoxEnableKeyboard, "Decode remote keyboard input");
       this.checkBoxEnableKeyboard.UseVisualStyleBackColor = true;
+      this.checkBoxEnableKeyboard.CheckedChanged += new System.EventHandler(this.checkBoxEnableKeyboard_CheckedChanged);
       // 
       // checkBoxEnableMouse
       // 
       this.checkBoxEnableMouse.AutoSize = true;
       this.checkBoxEnableMouse.Checked = true;
       this.checkBoxEnableMouse.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxEnableMouse.Location = new System.Drawing.Point(8, 8);
+      this.checkBoxEnableMouse.Location = new System.Drawing.Point(6, 6);
       this.checkBoxEnableMouse.Name = "checkBoxEnableMouse";
       this.checkBoxEnableMouse.Size = new System.Drawing.Size(119, 17);
       this.checkBoxEnableMouse.TabIndex = 0;
       this.checkBoxEnableMouse.Text = "Enable mouse input";
       this.toolTips.SetToolTip(this.checkBoxEnableMouse, "Decode remote mouse input");
       this.checkBoxEnableMouse.UseVisualStyleBackColor = true;
+      this.checkBoxEnableMouse.CheckedChanged += new System.EventHandler(this.checkBoxEnableMouse_CheckedChanged);
       // 
       // checkBoxUseSystemRatesRemote
       // 
       this.checkBoxUseSystemRatesRemote.AutoSize = true;
-      this.checkBoxUseSystemRatesRemote.Location = new System.Drawing.Point(8, 64);
+      this.checkBoxUseSystemRatesRemote.Location = new System.Drawing.Point(6, 26);
       this.checkBoxUseSystemRatesRemote.Name = "checkBoxUseSystemRatesRemote";
       this.checkBoxUseSystemRatesRemote.Size = new System.Drawing.Size(187, 17);
       this.checkBoxUseSystemRatesRemote.TabIndex = 2;
@@ -390,7 +404,7 @@ namespace IRServer.Plugin
       // checkBoxUseSystemRatesKeyboard
       // 
       this.checkBoxUseSystemRatesKeyboard.AutoSize = true;
-      this.checkBoxUseSystemRatesKeyboard.Location = new System.Drawing.Point(8, 64);
+      this.checkBoxUseSystemRatesKeyboard.Location = new System.Drawing.Point(6, 26);
       this.checkBoxUseSystemRatesKeyboard.Name = "checkBoxUseSystemRatesKeyboard";
       this.checkBoxUseSystemRatesKeyboard.Size = new System.Drawing.Size(187, 17);
       this.checkBoxUseSystemRatesKeyboard.TabIndex = 2;
@@ -404,37 +418,13 @@ namespace IRServer.Plugin
       this.checkBoxDisableAutomaticButtons.AutoSize = true;
       this.checkBoxDisableAutomaticButtons.Checked = true;
       this.checkBoxDisableAutomaticButtons.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxDisableAutomaticButtons.Location = new System.Drawing.Point(8, 40);
+      this.checkBoxDisableAutomaticButtons.Location = new System.Drawing.Point(6, 3);
       this.checkBoxDisableAutomaticButtons.Name = "checkBoxDisableAutomaticButtons";
       this.checkBoxDisableAutomaticButtons.Size = new System.Drawing.Size(148, 17);
       this.checkBoxDisableAutomaticButtons.TabIndex = 1;
       this.checkBoxDisableAutomaticButtons.Text = "Disable automatic buttons";
       this.toolTips.SetToolTip(this.checkBoxDisableAutomaticButtons, "Prevent the operating system from automatically handling some buttons");
       this.checkBoxDisableAutomaticButtons.UseVisualStyleBackColor = true;
-      // 
-      // labelLearnIRTimeout
-      // 
-      this.labelLearnIRTimeout.Location = new System.Drawing.Point(8, 8);
-      this.labelLearnIRTimeout.Name = "labelLearnIRTimeout";
-      this.labelLearnIRTimeout.Size = new System.Drawing.Size(144, 20);
-      this.labelLearnIRTimeout.TabIndex = 0;
-      this.labelLearnIRTimeout.Text = "Learn IR timeout:";
-      this.labelLearnIRTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // tabControl
-      // 
-      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.tabControl.Controls.Add(this.tabPageBasic);
-      this.tabControl.Controls.Add(this.tabPageRemote);
-      this.tabControl.Controls.Add(this.tabPageKeyboard);
-      this.tabControl.Controls.Add(this.tabPageMouse);
-      this.tabControl.Location = new System.Drawing.Point(8, 8);
-      this.tabControl.Name = "tabControl";
-      this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(256, 248);
-      this.tabControl.TabIndex = 0;
       // 
       // tabPageBasic
       // 
@@ -445,108 +435,11 @@ namespace IRServer.Plugin
       this.tabPageBasic.Location = new System.Drawing.Point(4, 22);
       this.tabPageBasic.Name = "tabPageBasic";
       this.tabPageBasic.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageBasic.Size = new System.Drawing.Size(248, 222);
+      this.tabPageBasic.Size = new System.Drawing.Size(242, 184);
       this.tabPageBasic.TabIndex = 0;
       this.tabPageBasic.Text = "Basic";
       this.toolTips.SetToolTip(this.tabPageBasic, "Basic settings");
       this.tabPageBasic.UseVisualStyleBackColor = true;
-      // 
-      // tabPageRemote
-      // 
-      this.tabPageRemote.Controls.Add(this.checkBoxDisableAutomaticButtons);
-      this.tabPageRemote.Controls.Add(this.checkBoxUseSystemRatesRemote);
-      this.tabPageRemote.Controls.Add(this.checkBoxEnableRemote);
-      this.tabPageRemote.Controls.Add(this.groupBoxRemoteTiming);
-      this.tabPageRemote.Location = new System.Drawing.Point(4, 22);
-      this.tabPageRemote.Name = "tabPageRemote";
-      this.tabPageRemote.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageRemote.Size = new System.Drawing.Size(248, 222);
-      this.tabPageRemote.TabIndex = 1;
-      this.tabPageRemote.Text = "Remote";
-      this.toolTips.SetToolTip(this.tabPageRemote, "Remote control settings");
-      this.tabPageRemote.UseVisualStyleBackColor = true;
-      // 
-      // tabPageKeyboard
-      // 
-      this.tabPageKeyboard.Controls.Add(this.checkBoxKeyboardQwertz);
-      this.tabPageKeyboard.Controls.Add(this.checkBoxUseSystemRatesKeyboard);
-      this.tabPageKeyboard.Controls.Add(this.checkBoxHandleKeyboardLocal);
-      this.tabPageKeyboard.Controls.Add(this.checkBoxEnableKeyboard);
-      this.tabPageKeyboard.Controls.Add(this.groupBoxKeypressTiming);
-      this.tabPageKeyboard.Location = new System.Drawing.Point(4, 22);
-      this.tabPageKeyboard.Name = "tabPageKeyboard";
-      this.tabPageKeyboard.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageKeyboard.Size = new System.Drawing.Size(248, 222);
-      this.tabPageKeyboard.TabIndex = 2;
-      this.tabPageKeyboard.Text = "Keyboard";
-      this.toolTips.SetToolTip(this.tabPageKeyboard, "Keyboard settings for use with the MCE Replacement Driver");
-      this.tabPageKeyboard.UseVisualStyleBackColor = true;
-      // 
-      // groupBoxKeypressTiming
-      // 
-      this.groupBoxKeypressTiming.Controls.Add(this.labelKeyRepeatDelay);
-      this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyHeldDelay);
-      this.groupBoxKeypressTiming.Controls.Add(this.labelKeyHeldDelay);
-      this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyRepeatDelay);
-      this.groupBoxKeypressTiming.Location = new System.Drawing.Point(8, 88);
-      this.groupBoxKeypressTiming.Name = "groupBoxKeypressTiming";
-      this.groupBoxKeypressTiming.Size = new System.Drawing.Size(232, 88);
-      this.groupBoxKeypressTiming.TabIndex = 3;
-      this.groupBoxKeypressTiming.TabStop = false;
-      this.groupBoxKeypressTiming.Text = "Key press timing (in milliseconds)";
-      // 
-      // labelKeyRepeatDelay
-      // 
-      this.labelKeyRepeatDelay.Location = new System.Drawing.Point(8, 24);
-      this.labelKeyRepeatDelay.Name = "labelKeyRepeatDelay";
-      this.labelKeyRepeatDelay.Size = new System.Drawing.Size(128, 20);
-      this.labelKeyRepeatDelay.TabIndex = 0;
-      this.labelKeyRepeatDelay.Text = "Key repeat delay:";
-      this.labelKeyRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // labelKeyHeldDelay
-      // 
-      this.labelKeyHeldDelay.Location = new System.Drawing.Point(8, 56);
-      this.labelKeyHeldDelay.Name = "labelKeyHeldDelay";
-      this.labelKeyHeldDelay.Size = new System.Drawing.Size(128, 20);
-      this.labelKeyHeldDelay.TabIndex = 2;
-      this.labelKeyHeldDelay.Text = "Key held delay:";
-      this.labelKeyHeldDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // tabPageMouse
-      // 
-      this.tabPageMouse.Controls.Add(this.labelMouseSensitivity);
-      this.tabPageMouse.Controls.Add(this.numericUpDownMouseSensitivity);
-      this.tabPageMouse.Controls.Add(this.checkBoxHandleMouseLocal);
-      this.tabPageMouse.Controls.Add(this.checkBoxEnableMouse);
-      this.tabPageMouse.Location = new System.Drawing.Point(4, 22);
-      this.tabPageMouse.Name = "tabPageMouse";
-      this.tabPageMouse.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageMouse.Size = new System.Drawing.Size(248, 222);
-      this.tabPageMouse.TabIndex = 3;
-      this.tabPageMouse.Text = "Mouse";
-      this.toolTips.SetToolTip(this.tabPageMouse, "Mouse settings for use with the MCE Replacement Driver");
-      this.tabPageMouse.UseVisualStyleBackColor = true;
-      // 
-      // labelMouseSensitivity
-      // 
-      this.labelMouseSensitivity.Location = new System.Drawing.Point(8, 64);
-      this.labelMouseSensitivity.Name = "labelMouseSensitivity";
-      this.labelMouseSensitivity.Size = new System.Drawing.Size(144, 20);
-      this.labelMouseSensitivity.TabIndex = 2;
-      this.labelMouseSensitivity.Text = "Mouse sensitivity:";
-      this.labelMouseSensitivity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // radioButtonStopAtStartup
-      // 
-      this.radioButtonStopAtStartup.AutoSize = true;
-      this.radioButtonStopAtStartup.Location = new System.Drawing.Point(8, 48);
-      this.radioButtonStopAtStartup.Name = "radioButtonStopAtStartup";
-      this.radioButtonStopAtStartup.Size = new System.Drawing.Size(93, 17);
-      this.radioButtonStopAtStartup.TabIndex = 1;
-      this.radioButtonStopAtStartup.TabStop = true;
-      this.radioButtonStopAtStartup.Text = "Stop if running";
-      this.radioButtonStopAtStartup.UseVisualStyleBackColor = true;
       // 
       // groupBoxMceServices
       // 
@@ -554,23 +447,12 @@ namespace IRServer.Plugin
       this.groupBoxMceServices.Controls.Add(this.radioButtonDoNothing);
       this.groupBoxMceServices.Controls.Add(this.radioButtonStopAtStartup);
       this.groupBoxMceServices.Enabled = false;
-      this.groupBoxMceServices.Location = new System.Drawing.Point(8, 112);
+      this.groupBoxMceServices.Location = new System.Drawing.Point(6, 59);
       this.groupBoxMceServices.Name = "groupBoxMceServices";
-      this.groupBoxMceServices.Size = new System.Drawing.Size(232, 96);
+      this.groupBoxMceServices.Size = new System.Drawing.Size(230, 96);
       this.groupBoxMceServices.TabIndex = 3;
       this.groupBoxMceServices.TabStop = false;
       this.groupBoxMceServices.Text = "Windows Media Center Services";
-      // 
-      // radioButtonDoNothing
-      // 
-      this.radioButtonDoNothing.AutoSize = true;
-      this.radioButtonDoNothing.Location = new System.Drawing.Point(8, 24);
-      this.radioButtonDoNothing.Name = "radioButtonDoNothing";
-      this.radioButtonDoNothing.Size = new System.Drawing.Size(77, 17);
-      this.radioButtonDoNothing.TabIndex = 0;
-      this.radioButtonDoNothing.TabStop = true;
-      this.radioButtonDoNothing.Text = "Do nothing";
-      this.radioButtonDoNothing.UseVisualStyleBackColor = true;
       // 
       // radioButton1
       // 
@@ -583,10 +465,96 @@ namespace IRServer.Plugin
       this.radioButton1.Text = "Permanently disable";
       this.radioButton1.UseVisualStyleBackColor = true;
       // 
+      // radioButtonDoNothing
+      // 
+      this.radioButtonDoNothing.AutoSize = true;
+      this.radioButtonDoNothing.Location = new System.Drawing.Point(8, 24);
+      this.radioButtonDoNothing.Name = "radioButtonDoNothing";
+      this.radioButtonDoNothing.Size = new System.Drawing.Size(77, 17);
+      this.radioButtonDoNothing.TabIndex = 0;
+      this.radioButtonDoNothing.TabStop = true;
+      this.radioButtonDoNothing.Text = "Do nothing";
+      this.radioButtonDoNothing.UseVisualStyleBackColor = true;
+      // 
+      // radioButtonStopAtStartup
+      // 
+      this.radioButtonStopAtStartup.AutoSize = true;
+      this.radioButtonStopAtStartup.Location = new System.Drawing.Point(8, 48);
+      this.radioButtonStopAtStartup.Name = "radioButtonStopAtStartup";
+      this.radioButtonStopAtStartup.Size = new System.Drawing.Size(93, 17);
+      this.radioButtonStopAtStartup.TabIndex = 1;
+      this.radioButtonStopAtStartup.TabStop = true;
+      this.radioButtonStopAtStartup.Text = "Stop if running";
+      this.radioButtonStopAtStartup.UseVisualStyleBackColor = true;
+      // 
+      // labelLearnIRTimeout
+      // 
+      this.labelLearnIRTimeout.AutoSize = true;
+      this.labelLearnIRTimeout.Location = new System.Drawing.Point(6, 12);
+      this.labelLearnIRTimeout.Name = "labelLearnIRTimeout";
+      this.labelLearnIRTimeout.Size = new System.Drawing.Size(88, 13);
+      this.labelLearnIRTimeout.TabIndex = 0;
+      this.labelLearnIRTimeout.Text = "Learn IR timeout:";
+      this.labelLearnIRTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // tabPageRemote
+      // 
+      this.tabPageRemote.Controls.Add(this.remotePanel);
+      this.tabPageRemote.Controls.Add(this.checkBoxEnableRemote);
+      this.tabPageRemote.Location = new System.Drawing.Point(4, 22);
+      this.tabPageRemote.Name = "tabPageRemote";
+      this.tabPageRemote.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageRemote.Size = new System.Drawing.Size(242, 184);
+      this.tabPageRemote.TabIndex = 1;
+      this.tabPageRemote.Text = "Remote";
+      this.toolTips.SetToolTip(this.tabPageRemote, "Remote control settings");
+      this.tabPageRemote.UseVisualStyleBackColor = true;
+      // 
+      // remotePanel
+      // 
+      this.remotePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.remotePanel.Controls.Add(this.checkBoxDisableAutomaticButtons);
+      this.remotePanel.Controls.Add(this.groupBoxRemoteTiming);
+      this.remotePanel.Controls.Add(this.checkBoxUseSystemRatesRemote);
+      this.remotePanel.Location = new System.Drawing.Point(0, 29);
+      this.remotePanel.Name = "remotePanel";
+      this.remotePanel.Size = new System.Drawing.Size(242, 155);
+      this.remotePanel.TabIndex = 3;
+      // 
+      // tabPageKeyboard
+      // 
+      this.tabPageKeyboard.Controls.Add(this.keyboardPanel);
+      this.tabPageKeyboard.Controls.Add(this.checkBoxEnableKeyboard);
+      this.tabPageKeyboard.Location = new System.Drawing.Point(4, 22);
+      this.tabPageKeyboard.Name = "tabPageKeyboard";
+      this.tabPageKeyboard.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageKeyboard.Size = new System.Drawing.Size(242, 184);
+      this.tabPageKeyboard.TabIndex = 2;
+      this.tabPageKeyboard.Text = "Keyboard";
+      this.toolTips.SetToolTip(this.tabPageKeyboard, "Keyboard settings for use with the MCE Replacement Driver");
+      this.tabPageKeyboard.UseVisualStyleBackColor = true;
+      // 
+      // keyboardPanel
+      // 
+      this.keyboardPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.keyboardPanel.AutoSize = true;
+      this.keyboardPanel.Controls.Add(this.checkBoxHandleKeyboardLocal);
+      this.keyboardPanel.Controls.Add(this.checkBoxKeyboardQwertz);
+      this.keyboardPanel.Controls.Add(this.groupBoxKeypressTiming);
+      this.keyboardPanel.Controls.Add(this.checkBoxUseSystemRatesKeyboard);
+      this.keyboardPanel.Location = new System.Drawing.Point(0, 29);
+      this.keyboardPanel.Name = "keyboardPanel";
+      this.keyboardPanel.Size = new System.Drawing.Size(239, 155);
+      this.keyboardPanel.TabIndex = 5;
+      // 
       // checkBoxKeyboardQwertz
       // 
       this.checkBoxKeyboardQwertz.AutoSize = true;
-      this.checkBoxKeyboardQwertz.Location = new System.Drawing.Point(8, 184);
+      this.checkBoxKeyboardQwertz.Location = new System.Drawing.Point(6, 130);
       this.checkBoxKeyboardQwertz.Name = "checkBoxKeyboardQwertz";
       this.checkBoxKeyboardQwertz.Size = new System.Drawing.Size(127, 17);
       this.checkBoxKeyboardQwertz.TabIndex = 4;
@@ -594,42 +562,133 @@ namespace IRServer.Plugin
       this.toolTips.SetToolTip(this.checkBoxKeyboardQwertz, "Use the QWERTZ keyboard layout instead of QWERTY");
       this.checkBoxKeyboardQwertz.UseVisualStyleBackColor = true;
       // 
+      // groupBoxKeypressTiming
+      // 
+      this.groupBoxKeypressTiming.Controls.Add(this.labelKeyRepeatDelay);
+      this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyHeldDelay);
+      this.groupBoxKeypressTiming.Controls.Add(this.labelKeyHeldDelay);
+      this.groupBoxKeypressTiming.Controls.Add(this.numericUpDownKeyRepeatDelay);
+      this.groupBoxKeypressTiming.Location = new System.Drawing.Point(6, 49);
+      this.groupBoxKeypressTiming.Name = "groupBoxKeypressTiming";
+      this.groupBoxKeypressTiming.Size = new System.Drawing.Size(230, 75);
+      this.groupBoxKeypressTiming.TabIndex = 3;
+      this.groupBoxKeypressTiming.TabStop = false;
+      this.groupBoxKeypressTiming.Text = "Key press timing (in milliseconds)";
+      // 
+      // labelKeyRepeatDelay
+      // 
+      this.labelKeyRepeatDelay.AutoSize = true;
+      this.labelKeyRepeatDelay.Location = new System.Drawing.Point(6, 21);
+      this.labelKeyRepeatDelay.Name = "labelKeyRepeatDelay";
+      this.labelKeyRepeatDelay.Size = new System.Drawing.Size(89, 13);
+      this.labelKeyRepeatDelay.TabIndex = 0;
+      this.labelKeyRepeatDelay.Text = "Key repeat delay:";
+      this.labelKeyRepeatDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // labelKeyHeldDelay
+      // 
+      this.labelKeyHeldDelay.AutoSize = true;
+      this.labelKeyHeldDelay.Location = new System.Drawing.Point(6, 47);
+      this.labelKeyHeldDelay.Name = "labelKeyHeldDelay";
+      this.labelKeyHeldDelay.Size = new System.Drawing.Size(79, 13);
+      this.labelKeyHeldDelay.TabIndex = 2;
+      this.labelKeyHeldDelay.Text = "Key held delay:";
+      this.labelKeyHeldDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // tabPageMouse
+      // 
+      this.tabPageMouse.Controls.Add(this.mousePanel);
+      this.tabPageMouse.Controls.Add(this.checkBoxEnableMouse);
+      this.tabPageMouse.Location = new System.Drawing.Point(4, 22);
+      this.tabPageMouse.Name = "tabPageMouse";
+      this.tabPageMouse.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageMouse.Size = new System.Drawing.Size(242, 184);
+      this.tabPageMouse.TabIndex = 3;
+      this.tabPageMouse.Text = "Mouse";
+      this.toolTips.SetToolTip(this.tabPageMouse, "Mouse settings for use with the MCE Replacement Driver");
+      this.tabPageMouse.UseVisualStyleBackColor = true;
+      // 
+      // mousePanel
+      // 
+      this.mousePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.mousePanel.Controls.Add(this.checkBoxHandleMouseLocal);
+      this.mousePanel.Controls.Add(this.labelMouseSensitivity);
+      this.mousePanel.Controls.Add(this.numericUpDownMouseSensitivity);
+      this.mousePanel.Location = new System.Drawing.Point(0, 29);
+      this.mousePanel.Name = "mousePanel";
+      this.mousePanel.Size = new System.Drawing.Size(242, 155);
+      this.mousePanel.TabIndex = 4;
+      // 
+      // labelMouseSensitivity
+      // 
+      this.labelMouseSensitivity.AutoSize = true;
+      this.labelMouseSensitivity.Location = new System.Drawing.Point(24, 29);
+      this.labelMouseSensitivity.Name = "labelMouseSensitivity";
+      this.labelMouseSensitivity.Size = new System.Drawing.Size(90, 13);
+      this.labelMouseSensitivity.TabIndex = 2;
+      this.labelMouseSensitivity.Text = "Mouse sensitivity:";
+      this.labelMouseSensitivity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // tabControl
+      // 
+      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                  | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.tabControl.Controls.Add(this.tabPageBasic);
+      this.tabControl.Controls.Add(this.tabPageRemote);
+      this.tabControl.Controls.Add(this.tabPageKeyboard);
+      this.tabControl.Controls.Add(this.tabPageMouse);
+      this.tabControl.Location = new System.Drawing.Point(12, 12);
+      this.tabControl.Name = "tabControl";
+      this.tabControl.SelectedIndex = 0;
+      this.tabControl.Size = new System.Drawing.Size(250, 210);
+      this.tabControl.TabIndex = 0;
+      // 
       // Configure
       // 
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(272, 296);
+      this.ClientSize = new System.Drawing.Size(274, 268);
       this.Controls.Add(this.tabControl);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.buttonOK);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(280, 330);
       this.Name = "Configure";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Microsoft MCE Configuration";
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonRepeatDelay)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownButtonHeldDelay)).EndInit();
       this.groupBoxRemoteTiming.ResumeLayout(false);
+      this.groupBoxRemoteTiming.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLearnTimeout)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyHeldDelay)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKeyRepeatDelay)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseSensitivity)).EndInit();
-      this.tabControl.ResumeLayout(false);
       this.tabPageBasic.ResumeLayout(false);
       this.tabPageBasic.PerformLayout();
-      this.tabPageRemote.ResumeLayout(false);
-      this.tabPageRemote.PerformLayout();
-      this.tabPageKeyboard.ResumeLayout(false);
-      this.tabPageKeyboard.PerformLayout();
-      this.groupBoxKeypressTiming.ResumeLayout(false);
-      this.tabPageMouse.ResumeLayout(false);
-      this.tabPageMouse.PerformLayout();
       this.groupBoxMceServices.ResumeLayout(false);
       this.groupBoxMceServices.PerformLayout();
+      this.tabPageRemote.ResumeLayout(false);
+      this.tabPageRemote.PerformLayout();
+      this.remotePanel.ResumeLayout(false);
+      this.remotePanel.PerformLayout();
+      this.tabPageKeyboard.ResumeLayout(false);
+      this.tabPageKeyboard.PerformLayout();
+      this.keyboardPanel.ResumeLayout(false);
+      this.keyboardPanel.PerformLayout();
+      this.groupBoxKeypressTiming.ResumeLayout(false);
+      this.groupBoxKeypressTiming.PerformLayout();
+      this.tabPageMouse.ResumeLayout(false);
+      this.tabPageMouse.PerformLayout();
+      this.mousePanel.ResumeLayout(false);
+      this.mousePanel.PerformLayout();
+      this.tabControl.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -672,5 +731,8 @@ namespace IRServer.Plugin
     private System.Windows.Forms.RadioButton radioButtonDoNothing;
     private System.Windows.Forms.RadioButton radioButtonStopAtStartup;
     private System.Windows.Forms.CheckBox checkBoxKeyboardQwertz;
+    private System.Windows.Forms.Panel remotePanel;
+    private System.Windows.Forms.Panel keyboardPanel;
+    private System.Windows.Forms.Panel mousePanel;
   }
 }
