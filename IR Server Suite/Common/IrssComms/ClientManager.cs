@@ -133,15 +133,12 @@ namespace IrssComms
     {
       byte[] data = message.ToBytes();
 
-      int dataLength = IPAddress.HostToNetworkOrder(data.Length);
+      byte[] frame = new byte[sizeof(int) + data.Length];
+      Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(data.Length)), 0, frame, 0, sizeof(int));
+      Buffer.BlockCopy(data, 0, frame, sizeof(int), data.Length);
 
-      byte[] dataLengthBytes = BitConverter.GetBytes(dataLength);
-
-      // Send packet size ...
-      _connection.Send(dataLengthBytes);
-
-      // Send packet ...
-      _connection.Send(data);
+      // Send framed message
+      _connection.Send(frame);
     }
 
     private void ReceiveThread()
@@ -152,18 +149,11 @@ namespace IrssComms
 
         while (_processReceiveThread)
         {
-          int bytesRead = _connection.Receive(buffer, buffer.Length, SocketFlags.None);
-          if (bytesRead != buffer.Length)
-            break;
+          Receive(buffer);
 
-          int readSize = BitConverter.ToInt32(buffer, 0);
-          readSize = IPAddress.NetworkToHostOrder(readSize);
+          byte[] packet = new byte[IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, 0))];
 
-          byte[] packet = new byte[readSize];
-
-          bytesRead = _connection.Receive(packet, packet.Length, SocketFlags.None);
-          if (bytesRead != packet.Length)
-            break;
+          Receive(packet);
 
           IrssMessage message = IrssMessage.FromBytes(packet);
           MessageManagerCombo combo = new MessageManagerCombo(message, this);
@@ -192,6 +182,15 @@ namespace IrssComms
 
         _disconnectCallback(this);
       }
+    }
+
+    void Receive(byte[] buffer)
+    {
+      int bytesRead = 0;
+      do
+      {
+        bytesRead += _connection.Receive(buffer, bytesRead, buffer.Length - bytesRead, SocketFlags.None);
+      } while (bytesRead < buffer.Length);
     }
 
     #endregion Implementation

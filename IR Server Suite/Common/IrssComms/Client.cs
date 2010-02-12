@@ -222,17 +222,14 @@ namespace IrssComms
 
       byte[] data = message.ToBytes();
 
-      int dataLength = IPAddress.HostToNetworkOrder(data.Length);
-
-      byte[] dataLengthBytes = BitConverter.GetBytes(dataLength);
+      byte[] frame = new byte[sizeof(int) + data.Length];
+      Buffer.BlockCopy(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(data.Length)), 0, frame, 0, sizeof(int));
+      Buffer.BlockCopy(data, 0, frame, sizeof(int), data.Length);
 
       try
       {
-        // Send packet size ...
-        _serverSocket.Send(dataLengthBytes);
-
-        // Send packet ...
-        _serverSocket.Send(data);
+        // Send framed message
+        _serverSocket.Send(frame);
 
         return true;
       }
@@ -312,18 +309,11 @@ namespace IrssComms
           // Read data from socket ...
           while (_processConnectionThread)
           {
-            int bytesRead = _serverSocket.Receive(buffer, buffer.Length, SocketFlags.None);
-            if (bytesRead != buffer.Length)
-              break;
+            Receive(buffer);
 
-            int readSize = BitConverter.ToInt32(buffer, 0);
-            readSize = IPAddress.NetworkToHostOrder(readSize);
+            byte[] packet = new byte[IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, 0))];
 
-            byte[] packet = new byte[readSize];
-
-            bytesRead = _serverSocket.Receive(packet, packet.Length, SocketFlags.None);
-            if (bytesRead != packet.Length)
-              break;
+            Receive(packet);
 
             IrssMessage message = IrssMessage.FromBytes(packet);
             _messageQueue.Enqueue(message);
@@ -368,6 +358,14 @@ namespace IrssComms
       }
     }
 
+    void Receive(byte[] buffer)
+    {
+      int bytesRead = 0;
+      do
+      {
+        bytesRead += _serverSocket.Receive(buffer, bytesRead, buffer.Length - bytesRead, SocketFlags.None);
+      } while (bytesRead < buffer.Length);
+    }
 
     /// <summary>
     /// Translates a host name or address into an IPAddress object (IPv4).
