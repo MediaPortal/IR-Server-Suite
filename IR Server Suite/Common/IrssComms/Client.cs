@@ -1,6 +1,6 @@
-#region Copyright (C) 2005-2009 Team MediaPortal
+#region Copyright (C) 2005-2010 Team MediaPortal
 
-// Copyright (C) 2005-2009 Team MediaPortal
+// Copyright (C) 2005-2010 Team MediaPortal
 // http://www.team-mediaportal.com
 // 
 // This Program is free software; you can redistribute it and/or modify
@@ -309,11 +309,13 @@ namespace IrssComms
           // Read data from socket ...
           while (_processConnectionThread)
           {
-            Receive(buffer);
+            if (!Receive(buffer))
+              break;
 
             byte[] packet = new byte[IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, 0))];
 
-            Receive(packet);
+            if (!Receive(packet))
+              break;
 
             IrssMessage message = IrssMessage.FromBytes(packet);
             _messageQueue.Enqueue(message);
@@ -358,13 +360,17 @@ namespace IrssComms
       }
     }
 
-    void Receive(byte[] buffer)
+    // Returns true if buffer filled, false if connection has been closed.
+    bool Receive(byte[] buffer)
     {
-      int bytesRead = 0;
+      int bytesRead;
+      int bytesReadTotal = 0;
       do
       {
-        bytesRead += _serverSocket.Receive(buffer, bytesRead, buffer.Length - bytesRead, SocketFlags.None);
-      } while (bytesRead < buffer.Length);
+        bytesRead = _serverSocket.Receive(buffer, bytesReadTotal, buffer.Length - bytesReadTotal, SocketFlags.None);
+        bytesReadTotal += bytesRead;
+      } while ((bytesReadTotal < buffer.Length) && (bytesRead > 0));
+      return (bytesReadTotal == buffer.Length);
     }
 
     /// <summary>
