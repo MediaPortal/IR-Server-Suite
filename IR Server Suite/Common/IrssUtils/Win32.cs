@@ -2619,8 +2619,8 @@ namespace IrssUtils
         return false;
       }
 
-      int fgWindowPID = -1;
-      GetWindowThreadProcessId(fgWindow, out fgWindowPID);
+      int processId;
+      int fgWindowPID = GetWindowThreadProcessId(fgWindow, out processId);
 
       if (fgWindowPID == -1)
       {
