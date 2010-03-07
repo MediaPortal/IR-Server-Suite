@@ -170,7 +170,7 @@ CRCCheck on
 #---------------------------------------------------------------------------
 !define MUI_ABORTWARNING
 !define MUI_ICON    "Icons\iconGreen.ico"
-!define MUI_UNICON  "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_UNICON  "Icons\iconGreen.ico"
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP            "images\header.bmp"
