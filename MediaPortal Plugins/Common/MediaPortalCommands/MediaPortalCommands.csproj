@@ -50,23 +50,11 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommandBase, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\IR Server Suite\IR Server Suite\Commands\Command\bin\Release\CommandBase.dll</HintPath>
-    </Reference>
-    <Reference Include="IrssUtils, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\IR Server Suite\IR Server Suite\Common\IrssUtils\bin\Release\IrssUtils.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="VariableList, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\IR Server Suite\IR Server Suite\Commands\VariableList\bin\Release\VariableList.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandGotoScreen.cs" />
@@ -136,6 +124,18 @@
     <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Utils\Utils.csproj">
       <Project>{6DA0E4DF-6230-4642-98B5-E690BB6942BB}</Project>
       <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\IR Server Suite\Commands\Command\Command.csproj">
+      <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
+      <Name>Command</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\IR Server Suite\Commands\VariableList\VariableList.csproj">
+      <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
+      <Name>VariableList</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils.csproj">
+      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
+      <Name>IrssUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
