@@ -93,20 +93,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Core, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Core\bin\Release\Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Databases, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Databases\bin\Release\Databases.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Dialogs, Version=1.0.2.20629, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Dialogs\bin\Release\Dialogs.dll</HintPath>
-    </Reference>
     <Reference Include="IrssComms, Version=1.4.2.0, Culture=neutral, PublicKeyToken=dc0b77bf2c754d95, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\IR Server Suite\IR Server Suite\Common\IrssComms\bin\Release\IrssComms.dll</HintPath>
@@ -119,21 +105,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\mediaportal\trunk\mediaportal\xbmc\bin\Release\Microsoft.DirectX.Direct3D.DLL</HintPath>
     </Reference>
-    <Reference Include="RemotePlugins, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\RemotePlugins\bin\Release\RemotePlugins.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Utils, Version=0.2.2.9991, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Utils\bin\Release\Utils.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\MacroEditor.resx">
@@ -158,6 +134,26 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Core\Core.csproj">
+      <Project>{02FFFC1F-2555-4B99-8B01-3432D0673855}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Databases\Databases.csproj">
+      <Project>{C1BCEC3E-6074-4328-B5D9-391A457C8FFB}</Project>
+      <Name>Databases</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Dialogs\Dialogs.csproj">
+      <Project>{396C5208-5D46-4A11-92C1-FD0F2F42D7DD}</Project>
+      <Name>Dialogs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\RemotePlugins\RemotePlugins.csproj">
+      <Project>{0A234721-1F13-4DF8-9B1E-64D9E3111203}</Project>
+      <Name>RemotePlugins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Utils\Utils.csproj">
+      <Project>{6DA0E4DF-6230-4642-98B5-E690BB6942BB}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\MPUtils\MPUtils.csproj">
       <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
       <Name>MPUtils</Name>
