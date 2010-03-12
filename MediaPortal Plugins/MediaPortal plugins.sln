@@ -22,18 +22,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\..\..\..\mediaportal\trunk\mediaportal\Core\Core.csproj", "{02FFFC1F-2555-4B99-8B01-3432D0673855}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvLibrary.Interfaces", "..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvLibrary.Interfaces\TvLibrary.Interfaces.csproj", "{AE752FB4-7450-4150-9BAD-19EFA9D2AC37}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE} = {CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVDatabase", "..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\TVDatabase.csproj", "{0FD8DEAE-37A4-49CC-A7BE-E86E0E0D85BD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvControl", "..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvControl\TvControl.csproj", "{0DB878C6-1B68-4DC5-B6EF-564B7C08486F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvBusinessLayer", "..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\TvBusinessLayer\TvBusinessLayer.csproj", "{58C35C9D-F18D-40F2-8024-24E50D01E9C5}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE} = {CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "..\..\..\..\..\mediaportal\trunk\mediaportal\Utils\Utils.csproj", "{6DA0E4DF-6230-4642-98B5-E690BB6942BB}"
 EndProject
@@ -42,8 +36,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Databases", "..\..\..\..\..\mediaportal\trunk\mediaportal\Databases\Databases.csproj", "{C1BCEC3E-6074-4328-B5D9-391A457C8FFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemotePlugins", "..\..\..\..\..\mediaportal\trunk\mediaportal\RemotePlugins\RemotePlugins.csproj", "{0A234721-1F13-4DF8-9B1E-64D9E3111203}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectShowLib", "..\..\..\..\..\mediaportal\trunk\mediaportal\DirectShowLib\DirectShowLib.csproj", "{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssUtils", "..\IR Server Suite\Common\IrssUtils\IrssUtils.csproj", "{CA15769C-232E-4CA7-94FD-206A06CA3ABB}"
 EndProject
@@ -117,10 +109,6 @@ Global
 		{0A234721-1F13-4DF8-9B1E-64D9E3111203}.Debug|x86.Build.0 = Debug|x86
 		{0A234721-1F13-4DF8-9B1E-64D9E3111203}.Release|x86.ActiveCfg = Release|x86
 		{0A234721-1F13-4DF8-9B1E-64D9E3111203}.Release|x86.Build.0 = Release|x86
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Debug|x86.ActiveCfg = Debug|x86
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Debug|x86.Build.0 = Debug|x86
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Release|x86.ActiveCfg = Release|x86
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Release|x86.Build.0 = Release|x86
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Debug|x86.ActiveCfg = Debug|x86
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Debug|x86.Build.0 = Debug|x86
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Release|x86.ActiveCfg = Release|x86
@@ -160,7 +148,6 @@ Global
 		{396C5208-5D46-4A11-92C1-FD0F2F42D7DD} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{C1BCEC3E-6074-4328-B5D9-391A457C8FFB} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{0A234721-1F13-4DF8-9B1E-64D9E3111203} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{CA15769C-232E-4CA7-94FD-206A06CA3ABB} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
