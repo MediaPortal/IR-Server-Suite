@@ -165,17 +165,17 @@ namespace WebRemote
 
         Program.ButtonPress(command);
 
-		try
-		{
-			SendError(404, "File Not Found");
-		}
-		catch (Exception ex)
-		{
-			//maybe the sender isn't interested in the answer and already closed the socket...
-			//without catching this the server will shutdown
+		    try
+		    {
+			    SendError(404, "File Not Found");
+		    }
+		    catch (Exception ex)
+		    {
+			    //maybe the sender isn't interested in the answer and already closed the socket...
+			    //without catching this the server will shutdown
 
-			IrssLog.Error(ex);
-		}
+			    IrssLog.Error(ex);
+		    }
 
         return;
       }
@@ -217,21 +217,42 @@ namespace WebRemote
       string command = String.Empty;
       bool first = true;
 
-	  try
-	  {
-		  while ((buf = _networkReader.ReadLine()) != null && buf.Length > 0)
-		  {
-			  if (first)
-			  {
-				  command = buf;
-				  first = false;
-			  }
-		  }
-	  }
-	  catch (Exception ex)
-	  {
-		  IrssLog.Error(ex);
-	  }
+      AutoResetEvent resetEvent = new AutoResetEvent(false);
+
+      ThreadPool.QueueUserWorkItem(new WaitCallback(e =>
+      {
+        try
+        {
+          //in rare situations the call to ReadLine seems to cause an .NET internal dead-lock or whatever. Unfortunately I don't have a exact idea,
+          //but when I just execute this code-parts in a new thread it raises an exception, that can be handled. Without that the process just hangs
+          //forever until you kill it manually.
+          //The exception that is raised is the following:
+          //System.IO.IOException: Von der Übertragungsverbindung können keine Daten gelesen werden: Ein Blockierungsvorgang wurde durch einen Aufruf von WSACancelBlockingCall unterbrochen.
+
+          while ((buf = _networkReader.ReadLine()) != null && buf.Length > 0)
+          {
+            if (first)
+            {
+              command = buf;
+              first = false;
+            }
+          }
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+        finally
+        {
+          ((AutoResetEvent)e).Set();
+        }
+
+      }), resetEvent);
+
+      if (!resetEvent.WaitOne(5000))
+      {
+        IrssLog.Error("GetCommand failed. Timeout!");
+      }
 
       return command;
     }
