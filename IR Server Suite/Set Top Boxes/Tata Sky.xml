@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<config>
+	<PauseTime>500</PauseTime>
+	<UsePreChangeCommand>False</UsePreChangeCommand>
+	<SendSelect>False</SendSelect>
+	<DoubleChannelSelect>False</DoubleChannelSelect>
+	<ChannelDigits>0</ChannelDigits>
+	<RepeatChannelCommands>0</RepeatChannelCommands>
+	<RepeatDelay>2000</RepeatDelay>
+	<SelectCommand>Blast: OK|Both</SelectCommand>
+	<PreChangeCommand>Blast: Blue|Both</PreChangeCommand>
+	<Digit0>Blast: 0|Both</Digit0>
+	<Digit1>Blast: 1|Both</Digit1>
+	<Digit2>Blast: 2|Both</Digit2>
+	<Digit3>Blast: 3|Both</Digit3>
+	<Digit4>Blast: 4|Both</Digit4>
+	<Digit5>Blast: 5|Both</Digit5>
+	<Digit6>Blast: 6|Both</Digit6>
+	<Digit7>Blast: 7|Both</Digit7>
+	<Digit8>Blast: 8|Both</Digit8>
+	<Digit9>Blast: 9|Both</Digit9>
+</config>
