@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <config>
 	<UsePreChangeCommand>False</UsePreChangeCommand>
-	<Digit0>Blast: Tata Sky\0|Both</Digit0>
-	<Digit1>Blast: Tata Sky\1|Both</Digit1>
-	<Digit2>Blast: Tata Sky\2|Both</Digit2>
-	<Digit3>Blast: Tata Sky\3|Both</Digit3>
-	<Digit4>Blast: Tata Sky\4|Both</Digit4>
-	<Digit5>Blast: Tata Sky\5|Both</Digit5>
-	<Digit6>Blast: Tata Sky\6|Both</Digit6>
-	<Digit7>Blast: Tata Sky\7|Both</Digit7>
-	<Digit8>Blast: Tata Sky\8|Both</Digit8>
-	<Digit9>Blast: Tata Sky\9|Both</Digit9>
-	<SelectCommand>Blast: Tata Sky\OK|Both</SelectCommand>
+	<Digit0>STB: Tata Sky\0</Digit0>
+	<Digit1>STB: Tata Sky\1</Digit1>
+	<Digit2>STB: Tata Sky\2</Digit2>
+	<Digit3>STB: Tata Sky\3</Digit3>
+	<Digit4>STB: Tata Sky\4</Digit4>
+	<Digit5>STB: Tata Sky\5</Digit5>
+	<Digit6>STB: Tata Sky\6</Digit6>
+	<Digit7>STB: Tata Sky\7</Digit7>
+	<Digit8>STB: Tata Sky\8</Digit8>
+	<Digit9>STB: Tata Sky\9</Digit9>
+	<SelectCommand>STB: Tata Sky\OK</SelectCommand>
 </config>
