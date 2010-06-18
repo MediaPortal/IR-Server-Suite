@@ -29,7 +29,6 @@ using System.Net;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
-using System.Xml;
 using IRServer.Plugin;
 using IrssComms;
 using IrssUtils;
@@ -147,74 +146,7 @@ namespace IRServer
 
       #endregion Process Priority Adjustment
 
-      #region Load plugin(s)
-
-      _pluginReceive = null;
-      _pluginTransmit = null;
-
-      if (Settings.PluginNameReceive == null && String.IsNullOrEmpty(Settings.PluginNameTransmit))
-      {
-        IrssLog.Warn("No transmit or receive plugins loaded");
-      }
-      else
-      {
-        if (Settings.PluginNameReceive == null)
-        {
-          IrssLog.Warn("No receiver plugins loaded");
-        }
-        else
-        {
-          _pluginReceive = new List<PluginBase>(Settings.PluginNameReceive.Length);
-
-          for (int index = 0; index < Settings.PluginNameReceive.Length; index++)
-          {
-            try
-            {
-              string pluginName = Settings.PluginNameReceive[index];
-
-              PluginBase plugin = Program.GetPlugin(pluginName);
-
-              if (plugin == null)
-              {
-                IrssLog.Warn("Receiver plugin not found: {0}", pluginName);
-              }
-              else
-              {
-                _pluginReceive.Add(plugin);
-
-                if (!String.IsNullOrEmpty(Settings.PluginNameTransmit) &&
-                    plugin.Name.Equals(Settings.PluginNameTransmit, StringComparison.OrdinalIgnoreCase))
-                  _pluginTransmit = plugin;
-              }
-            }
-            catch (Exception ex)
-            {
-              IrssLog.Error(ex);
-            }
-          }
-
-          if (_pluginReceive.Count == 0)
-            _pluginReceive = null;
-        }
-
-        if (String.IsNullOrEmpty(Settings.PluginNameTransmit))
-        {
-          IrssLog.Warn("No transmit plugin loaded");
-        }
-        else if (_pluginTransmit == null)
-        {
-          try
-          {
-            _pluginTransmit = Program.GetPlugin(Settings.PluginNameTransmit);
-          }
-          catch (Exception ex)
-          {
-            IrssLog.Error(ex);
-          }
-        }
-      }
-
-      #endregion Load plugin(s)
+      LoadPlugins();
 
       #region Mode select
 
@@ -250,77 +182,7 @@ namespace IRServer
 
       #endregion Mode select
 
-      #region Start plugin(s)
-
-      bool startedTransmit = false;
-
-      if (_pluginReceive != null)
-      {
-        List<PluginBase> removePlugins = new List<PluginBase>();
-
-        foreach (PluginBase plugin in _pluginReceive)
-        {
-          try
-          {
-            plugin.Start();
-
-            IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
-            if (remoteReceiver != null)
-              remoteReceiver.RemoteCallback += RemoteHandlerCallback;
-
-            IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
-            if (keyboardReceiver != null)
-              keyboardReceiver.KeyboardCallback += KeyboardHandlerCallback;
-
-            IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
-            if (mouseReceiver != null)
-              mouseReceiver.MouseCallback += MouseHandlerCallback;
-
-            if (plugin.Name.Equals(Settings.PluginNameTransmit, StringComparison.OrdinalIgnoreCase))
-            {
-              startedTransmit = true;
-              IrssLog.Info("Transmit and Receive plugin started: \"{0}\"", plugin.Name);
-            }
-            else
-            {
-              IrssLog.Info("Receiver plugin started: \"{0}\"", plugin.Name);
-            }
-          }
-          catch (Exception ex)
-          {
-            IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
-            IrssLog.Error(ex);
-
-            removePlugins.Add(plugin);
-          }
-        }
-
-        if (removePlugins.Count > 0)
-          foreach (PluginBase plugin in removePlugins)
-            _pluginReceive.Remove(plugin);
-
-        if (_pluginReceive.Count == 0)
-          _pluginReceive = null;
-      }
-
-      if (_pluginTransmit != null && !startedTransmit)
-      {
-        try
-        {
-          _pluginTransmit.Start();
-
-          IrssLog.Info("Transmit plugin started: \"{0}\"", Settings.PluginNameTransmit);
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error("Failed to start transmit plugin: \"{0}\"", Settings.PluginNameTransmit);
-          IrssLog.Error(ex);
-
-          _pluginTransmit = null;
-        }
-      }
-
-      #endregion Start plugin(s)
+      StartPlugins();
 
       #region Setup Abstract Remote Model processing
 
@@ -362,61 +224,7 @@ namespace IRServer
         }
       }
 
-      // Stop Plugin(s) ...
-      bool stoppedTransmit = false;
-
-      if (_pluginReceive != null && _pluginReceive.Count > 0)
-      {
-        foreach (PluginBase plugin in _pluginReceive)
-        {
-          try
-          {
-            IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
-            if (remoteReceiver != null)
-              remoteReceiver.RemoteCallback -= RemoteHandlerCallback;
-
-            IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
-            if (keyboardReceiver != null)
-              keyboardReceiver.KeyboardCallback -= KeyboardHandlerCallback;
-
-            IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
-            if (mouseReceiver != null)
-              mouseReceiver.MouseCallback -= MouseHandlerCallback;
-
-            plugin.Stop();
-
-            if (plugin == _pluginTransmit)
-            {
-              stoppedTransmit = true;
-              IrssLog.Info("Transmit and Receive plugin stopped: \"{0}\"", plugin.Name);
-            }
-            else
-            {
-              IrssLog.Info("Receiver plugin stopped: \"{0}\"", plugin.Name);
-            }
-          }
-          catch (Exception ex)
-          {
-            IrssLog.Error(ex);
-          }
-        }
-      }
-
-      _pluginReceive = null;
-
-      try
-      {
-        if (_pluginTransmit != null && !stoppedTransmit)
-          _pluginTransmit.Stop();
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-      }
-      finally
-      {
-        _pluginTransmit = null;
-      }
+      StopPlugins();
 
       // Stop Service
       try
@@ -565,6 +373,208 @@ namespace IRServer
     #endregion Service Methods
 
     #region Implementation
+
+    #region Plugin handling
+
+    private void LoadPlugins()
+    {
+      _pluginReceive = null;
+      _pluginTransmit = null;
+
+      if (Settings.PluginNameReceive == null && String.IsNullOrEmpty(Settings.PluginNameTransmit))
+      {
+        IrssLog.Warn("No transmit or receive plugins loaded");
+      }
+      else
+      {
+        if (Settings.PluginNameReceive == null)
+        {
+          IrssLog.Warn("No receiver plugins loaded");
+        }
+        else
+        {
+          _pluginReceive = new List<PluginBase>(Settings.PluginNameReceive.Length);
+
+          for (int index = 0; index < Settings.PluginNameReceive.Length; index++)
+          {
+            try
+            {
+              string pluginName = Settings.PluginNameReceive[index];
+
+              PluginBase plugin = Program.GetPlugin(pluginName);
+
+              if (plugin == null)
+              {
+                IrssLog.Warn("Receiver plugin not found: {0}", pluginName);
+              }
+              else
+              {
+                _pluginReceive.Add(plugin);
+
+                if (!String.IsNullOrEmpty(Settings.PluginNameTransmit) &&
+                    plugin.Name.Equals(Settings.PluginNameTransmit, StringComparison.OrdinalIgnoreCase))
+                  _pluginTransmit = plugin;
+              }
+            }
+            catch (Exception ex)
+            {
+              IrssLog.Error(ex);
+            }
+          }
+
+          if (_pluginReceive.Count == 0)
+            _pluginReceive = null;
+        }
+
+        if (String.IsNullOrEmpty(Settings.PluginNameTransmit))
+        {
+          IrssLog.Warn("No transmit plugin loaded");
+        }
+        else if (_pluginTransmit == null)
+        {
+          try
+          {
+            _pluginTransmit = Program.GetPlugin(Settings.PluginNameTransmit);
+          }
+          catch (Exception ex)
+          {
+            IrssLog.Error(ex);
+          }
+        }
+      }
+    }
+
+    private void StartPlugins()
+    {
+      bool startedTransmit = false;
+
+      if (_pluginReceive != null)
+      {
+        List<PluginBase> removePlugins = new List<PluginBase>();
+
+        foreach (PluginBase plugin in _pluginReceive)
+        {
+          try
+          {
+            plugin.Start();
+
+            IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
+            if (remoteReceiver != null)
+              remoteReceiver.RemoteCallback += RemoteHandlerCallback;
+
+            IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
+            if (keyboardReceiver != null)
+              keyboardReceiver.KeyboardCallback += KeyboardHandlerCallback;
+
+            IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
+            if (mouseReceiver != null)
+              mouseReceiver.MouseCallback += MouseHandlerCallback;
+
+            if (plugin.Name.Equals(Settings.PluginNameTransmit, StringComparison.OrdinalIgnoreCase))
+            {
+              startedTransmit = true;
+              IrssLog.Info("Transmit and Receive plugin started: \"{0}\"", plugin.Name);
+            }
+            else
+            {
+              IrssLog.Info("Receiver plugin started: \"{0}\"", plugin.Name);
+            }
+          }
+          catch (Exception ex)
+          {
+            IrssLog.Error("Failed to start receive plugin: \"{0}\"", plugin.Name);
+            IrssLog.Error(ex);
+
+            removePlugins.Add(plugin);
+          }
+        }
+
+        if (removePlugins.Count > 0)
+          foreach (PluginBase plugin in removePlugins)
+            _pluginReceive.Remove(plugin);
+
+        if (_pluginReceive.Count == 0)
+          _pluginReceive = null;
+      }
+
+      if (_pluginTransmit != null && !startedTransmit)
+      {
+        try
+        {
+          _pluginTransmit.Start();
+
+          IrssLog.Info("Transmit plugin started: \"{0}\"", Settings.PluginNameTransmit);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error("Failed to start transmit plugin: \"{0}\"", Settings.PluginNameTransmit);
+          IrssLog.Error(ex);
+
+          _pluginTransmit = null;
+        }
+      }
+    }
+
+    private void StopPlugins()
+    {
+      // Stop Plugin(s) ...
+      bool stoppedTransmit = false;
+
+      if (_pluginReceive != null && _pluginReceive.Count > 0)
+      {
+        foreach (PluginBase plugin in _pluginReceive)
+        {
+          try
+          {
+            IRemoteReceiver remoteReceiver = plugin as IRemoteReceiver;
+            if (remoteReceiver != null)
+              remoteReceiver.RemoteCallback -= RemoteHandlerCallback;
+
+            IKeyboardReceiver keyboardReceiver = plugin as IKeyboardReceiver;
+            if (keyboardReceiver != null)
+              keyboardReceiver.KeyboardCallback -= KeyboardHandlerCallback;
+
+            IMouseReceiver mouseReceiver = plugin as IMouseReceiver;
+            if (mouseReceiver != null)
+              mouseReceiver.MouseCallback -= MouseHandlerCallback;
+
+            plugin.Stop();
+
+            if (plugin == _pluginTransmit)
+            {
+              stoppedTransmit = true;
+              IrssLog.Info("Transmit and Receive plugin stopped: \"{0}\"", plugin.Name);
+            }
+            else
+            {
+              IrssLog.Info("Receiver plugin stopped: \"{0}\"", plugin.Name);
+            }
+          }
+          catch (Exception ex)
+          {
+            IrssLog.Error(ex);
+          }
+        }
+      }
+
+      _pluginReceive = null;
+
+      try
+      {
+        if (_pluginTransmit != null && !stoppedTransmit)
+          _pluginTransmit.Stop();
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+      }
+      finally
+      {
+        _pluginTransmit = null;
+      }
+    }
+
+    #endregion
 
     private void StartServer()
     {
