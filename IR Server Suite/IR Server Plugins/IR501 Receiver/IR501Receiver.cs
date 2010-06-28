@@ -258,7 +258,7 @@ namespace IRServer.Plugin
 
         Win32.DeviceInterfaceDetailData deviceInterfaceDetailData = new Win32.DeviceInterfaceDetailData
                                                                 {
-                                                                  Size = Win32.Check64Bit() ? 8 : 5
+                                                                  Size = 5
                                                                 };
 
         if (!Win32.SetupDiGetDeviceInterfaceDetail(handle, ref deviceInterfaceData, ref deviceInterfaceDetailData, cbData,
