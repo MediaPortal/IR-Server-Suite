@@ -87,6 +87,13 @@ namespace IRServer.Plugin
           throw new FileNotFoundException("FireDTV: Trying to enable FireDTV remote but failed");
         }
       }
+      else
+      {
+        if (!File.Exists(@".\FireSATApi.dll"))
+        {
+          throw new FileNotFoundException("Could not find FireSATApi.dll in current path (32bit version needed)");
+        }
+      }
 
       _windowHandle = windowHandle;
 

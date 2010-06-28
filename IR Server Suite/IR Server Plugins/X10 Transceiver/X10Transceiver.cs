@@ -190,12 +190,15 @@ namespace IRServer.Plugin
       }
       catch (COMException ex)
       {
-        if (ex.ErrorCode != -2147221164)
+        if (ex.ErrorCode == -2147221164)
         {
-          IrssLog.Warn("{0,15}: exception {1}", Name, ex.ErrorCode);
+          IrssLog.Warn("{0,15}: needed interface not found", Name);
+        }
+        else
+        {
+          IrssLog.Debug("{0,15}: exception {1}", Name, ex.ErrorCode);
           return DetectionResult.DeviceException;
         }
-        IrssLog.Debug("{0,15}: exception {1}", Name, ex.ErrorCode);
       }
       catch (Exception ex)
       {

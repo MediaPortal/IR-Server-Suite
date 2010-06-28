@@ -149,8 +149,12 @@ namespace IRServer.Plugin
       try
       {
         _irRemoteWrapper = new IrRemoteWrapper();
-          return DetectionResult.DevicePresent;
-       
+        return DetectionResult.DevicePresent;
+      }
+      catch (DirectoryNotFoundException)
+      {
+        IrssLog.Warn("{0,15}: IrRemote.dll not found", Name);
+        return DetectionResult.DeviceNotFound;
       }
       catch (Exception ex)
       {
@@ -252,7 +256,7 @@ namespace IRServer.Plugin
         XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
         writer.Formatting = Formatting.Indented;
         writer.Indentation = 1;
-        writer.IndentChar = (char) 9;
+        writer.IndentChar = (char)9;
         writer.WriteStartDocument(true);
         writer.WriteStartElement("settings"); // <settings>
 
