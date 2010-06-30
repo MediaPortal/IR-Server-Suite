@@ -241,7 +241,7 @@ namespace IRServer.Plugin
     public override DetectionResult Detect()
     {
       Shared.getStatus();
-      if (Shared._irsStatus == IrsStatus.RunningService)
+      if (Shared._serviceInstalled)
       {
         IrssLog.Warn("{0,15}: not available on \"service\" installation mode", Name);
         return DetectionResult.DeviceDisabled;
