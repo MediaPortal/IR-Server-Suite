@@ -447,7 +447,6 @@ namespace MediaPortal.Plugins
                   }
                 break;
               case "PLUGIN": // plugin name: ISetupForm.PluginName()
-                Log.Error(map.ConProperty);
                 if (PluginManager.IsPluginNameEnabled2(map.ConProperty))
                   found = map;
                 break;
