@@ -231,15 +231,15 @@ namespace IRServer
       {
         switch (Settings.Mode)
         {
-            case IRServerMode.ServerMode:
+          case IRServerMode.ServerMode:
             StopServer();
             break;
 
-            case IRServerMode.RelayMode:
+          case IRServerMode.RelayMode:
             StopRelay();
             break;
 
-            case IRServerMode.RepeaterMode:
+          case IRServerMode.RepeaterMode:
             StopRepeater();
             break;
         }
@@ -265,11 +265,11 @@ namespace IRServer
     /// <returns>true if the event is handled, otherwise false.</returns>
     protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
     {
-      IrssLog.Info("PowerEvent: {0}", Enum.GetName(typeof (PowerBroadcastStatus), powerStatus));
+      IrssLog.Info("PowerEvent: {0}", Enum.GetName(typeof(PowerBroadcastStatus), powerStatus));
 
       switch (powerStatus)
       {
-          #region Suspend
+        #region Suspend
 
         case PowerBroadcastStatus.Suspend:
           // TODO: if anyone has any trouble with on-suspend commands then try changing this to QuerySuspend.
@@ -315,9 +315,9 @@ namespace IRServer
           }
           break;
 
-          #endregion Suspend
+        #endregion Suspend
 
-          #region Resume
+        #region Resume
 
         case PowerBroadcastStatus.ResumeAutomatic:
           //case PowerBroadcastStatus.ResumeCritical:
@@ -364,7 +364,7 @@ namespace IRServer
           }
           break;
 
-          #endregion Resume
+        #endregion Resume
       }
 
       return true;
@@ -771,7 +771,7 @@ namespace IRServer
 
       switch (Settings.Mode)
       {
-          case IRServerMode.ServerMode:
+        case IRServerMode.ServerMode:
           if (Settings.AbstractRemoteMode)
           {
             string abstractButton = LookupAbstractButton(deviceName, keyCode);
@@ -789,11 +789,11 @@ namespace IRServer
           }
           break;
 
-          case IRServerMode.RelayMode:
+        case IRServerMode.RelayMode:
           // Don't do anything in relay mode, just pass it on.
           break;
 
-          case IRServerMode.RepeaterMode:
+        case IRServerMode.RepeaterMode:
           IrssLog.Debug("Remote event ignored, IR Server is in Repeater Mode.");
           return;
       }
@@ -810,14 +810,14 @@ namespace IRServer
 
       switch (Settings.Mode)
       {
-          case IRServerMode.ServerMode:
+        case IRServerMode.ServerMode:
           {
             IrssMessage message = new IrssMessage(MessageType.RemoteEvent, MessageFlags.Notify, bytes);
             SendToAll(message);
             break;
           }
 
-          case IRServerMode.RelayMode:
+        case IRServerMode.RelayMode:
           {
             IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request, bytes);
             _client.Send(message);
@@ -836,21 +836,21 @@ namespace IRServer
 
       switch (Settings.Mode)
       {
-          case IRServerMode.ServerMode:
+        case IRServerMode.ServerMode:
           {
             IrssMessage message = new IrssMessage(MessageType.KeyboardEvent, MessageFlags.Notify, bytes);
             SendToAll(message);
             break;
           }
 
-          case IRServerMode.RelayMode:
+        case IRServerMode.RelayMode:
           {
             IrssMessage message = new IrssMessage(MessageType.ForwardKeyboardEvent, MessageFlags.Request, bytes);
             _client.Send(message);
             break;
           }
 
-          case IRServerMode.RepeaterMode:
+        case IRServerMode.RepeaterMode:
           {
             IrssLog.Debug("Keyboard event ignored, IR Server is in Repeater Mode.");
             break;
@@ -870,21 +870,21 @@ namespace IRServer
 
       switch (Settings.Mode)
       {
-          case IRServerMode.ServerMode:
+        case IRServerMode.ServerMode:
           {
             IrssMessage message = new IrssMessage(MessageType.MouseEvent, MessageFlags.Notify, bytes);
             SendToAll(message);
             break;
           }
 
-          case IRServerMode.RelayMode:
+        case IRServerMode.RelayMode:
           {
             IrssMessage message = new IrssMessage(MessageType.ForwardMouseEvent, MessageFlags.Request, bytes);
             _client.Send(message);
             break;
           }
 
-          case IRServerMode.RepeaterMode:
+        case IRServerMode.RepeaterMode:
           {
             IrssLog.Debug("Mouse event ignored, IR Server is in Repeater Mode.");
             break;
@@ -1141,10 +1141,10 @@ namespace IRServer
       {
         switch (combo.Message.Type)
         {
-            #region ForwardRemoteEvent
+          #region ForwardRemoteEvent
 
           case MessageType.ForwardRemoteEvent:
-                if (Settings.Mode == IRServerMode.RelayMode)
+            if (Settings.Mode == IRServerMode.RelayMode)
             {
               IrssMessage forward = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Request,
                                                     combo.Message.GetDataAsBytes());
@@ -1213,9 +1213,9 @@ namespace IRServer
             }
             break;
 
-            #endregion ForwardRemoteEvent
+          #endregion ForwardRemoteEvent
 
-            #region ForwardKeyboardEvent
+          #region ForwardKeyboardEvent
 
           case MessageType.ForwardKeyboardEvent:
             if (Settings.Mode == IRServerMode.RelayMode)
@@ -1232,9 +1232,9 @@ namespace IRServer
             }
             break;
 
-            #endregion ForwardKeyboardEvent
+          #endregion ForwardKeyboardEvent
 
-            #region ForwardMouseEvent
+          #region ForwardMouseEvent
 
           case MessageType.ForwardMouseEvent:
             if (Settings.Mode == IRServerMode.RelayMode)
@@ -1251,9 +1251,9 @@ namespace IRServer
             }
             break;
 
-            #endregion ForwardMouseEvent
+          #endregion ForwardMouseEvent
 
-            #region BlastIR
+          #region BlastIR
 
           case MessageType.BlastIR:
             {
@@ -1280,9 +1280,9 @@ namespace IRServer
               break;
             }
 
-            #endregion BlastIR
+          #endregion BlastIR
 
-            #region LearnIR
+          #region LearnIR
 
           case MessageType.LearnIR:
             {
@@ -1318,9 +1318,9 @@ namespace IRServer
               break;
             }
 
-            #endregion LearnIR
+          #endregion LearnIR
 
-            #region ServerShutdown
+          #region ServerShutdown
 
           case MessageType.ServerShutdown:
             if ((combo.Message.Flags & MessageFlags.Request) == MessageFlags.Request)
@@ -1330,9 +1330,9 @@ namespace IRServer
             }
             break;
 
-            #endregion ServerShutdown
+          #endregion ServerShutdown
 
-            #region RegisterClient
+          #region RegisterClient
 
           case MessageType.RegisterClient:
             {
@@ -1364,17 +1364,17 @@ namespace IRServer
               break;
             }
 
-            #endregion RegisterClient
+          #endregion RegisterClient
 
-            #region UnregisterClient
+          #region UnregisterClient
 
           case MessageType.UnregisterClient:
             UnregisterClient(combo.Manager);
             break;
 
-            #endregion UnregisterClient
+          #endregion UnregisterClient
 
-            #region RegisterRepeater
+          #region RegisterRepeater
 
           case MessageType.RegisterRepeater:
             {
@@ -1389,17 +1389,17 @@ namespace IRServer
               break;
             }
 
-            #endregion RegisterRepeater
+          #endregion RegisterRepeater
 
-            #region UnregisterRepeater
+          #region UnregisterRepeater
 
           case MessageType.UnregisterRepeater:
             UnregisterRepeater(combo.Manager);
             break;
 
-            #endregion UnregisterRepeater
+          #endregion UnregisterRepeater
 
-            #region ActiveBlasters
+          #region ActiveBlasters
 
           case MessageType.ActiveBlasters:
             {
@@ -1410,9 +1410,9 @@ namespace IRServer
               break;
             }
 
-            #endregion ActiveBlasters
+          #endregion ActiveBlasters
 
-            #region ActiveReceivers
+          #region ActiveReceivers
 
           case MessageType.ActiveReceivers:
             {
@@ -1440,9 +1440,9 @@ namespace IRServer
               break;
             }
 
-            #endregion ActiveReceivers
+          #endregion ActiveReceivers
 
-            #region AvailableBlasters
+          #region AvailableBlasters
 
           case MessageType.AvailableBlasters:
             {
@@ -1476,9 +1476,9 @@ namespace IRServer
               break;
             }
 
-            #endregion AvailableBlasters
+          #endregion AvailableBlasters
 
-            #region AvailableReceivers
+          #region AvailableReceivers
 
           case MessageType.AvailableReceivers:
             {
@@ -1512,9 +1512,9 @@ namespace IRServer
               break;
             }
 
-            #endregion AvailableReceivers
+          #endregion AvailableReceivers
 
-            #region DetectedBlasters
+          #region DetectedBlasters
 
           case MessageType.DetectedBlasters:
             {
@@ -1543,9 +1543,9 @@ namespace IRServer
               break;
             }
 
-            #endregion DetectedBlasters
+          #endregion DetectedBlasters
 
-            #region DetectedReceivers
+          #region DetectedReceivers
 
           case MessageType.DetectedReceivers:
             {
@@ -1574,7 +1574,7 @@ namespace IRServer
               break;
             }
 
-            #endregion DetectedReceivers
+          #endregion DetectedReceivers
         }
       }
       catch (Exception ex)
@@ -1717,20 +1717,20 @@ namespace IRServer
 
     public bool DoStart()
     {
-        this.OnStart(new string[] { });
-        return true;
+      this.OnStart(new string[] { });
+      return true;
     }
 
     public bool DoStop()
     {
-        this.OnStop();
-        return true;
+      this.OnStop();
+      return true;
     }
 
     public bool DoPowerEvent(PowerBroadcastStatus powerStatus)
     {
-        this.OnPowerEvent(powerStatus);
-        return true;
+      this.OnPowerEvent(powerStatus);
+      return true;
     }
 
     #endregion

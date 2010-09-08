@@ -21,12 +21,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
 namespace IrssComms
 {
-
   #region Enumerations
 
   /// <summary>
@@ -194,35 +194,21 @@ namespace IrssComms
   [DebuggerDisplay("Type={Type}, Flags={Flags}, Data={GetDataAsString()}")]
   public class IrssMessage
   {
-    #region Members
+    #region Const
 
-    private byte[] _data;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)] private MessageFlags _flags;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)] private MessageType _type;
+    public const string DATA = "DATA";
+    public const string DEVICE_NAME = "DEVICE_NAME";
+    public const string KEY_CODE = "KEY_CODE";
 
-    #endregion Members
+    #endregion
 
-    #region Properties
+    #region Protected fields
 
-    /// <summary>
-    /// Type of message.
-    /// </summary>
-    public MessageType Type
-    {
-      get { return _type; }
-      set { _type = value; }
-    }
+    protected MessageType _messageType;
+    protected IDictionary<string, object> _messageData = new Dictionary<string, object>();
+    protected MessageFlags _messageFlags;
 
-    /// <summary>
-    /// Message flags.
-    /// </summary>
-    public MessageFlags Flags
-    {
-      get { return _flags; }
-      set { _flags = value; }
-    }
-
-    #endregion Properties
+    #endregion
 
     #region Constructors
 
@@ -231,8 +217,8 @@ namespace IrssComms
     /// </summary>
     protected IrssMessage()
     {
-      _type = MessageType.Unknown;
-      _flags = MessageFlags.None;
+      _messageType = MessageType.Unknown;
+      _messageFlags = MessageFlags.None;
     }
 
     /// <summary>
@@ -242,8 +228,8 @@ namespace IrssComms
     /// <param name="flags">The message flags.</param>
     public IrssMessage(MessageType type, MessageFlags flags)
     {
-      _type = type;
-      _flags = flags;
+      _messageType = type;
+      _messageFlags = flags;
     }
 
     /// <summary>
@@ -272,6 +258,37 @@ namespace IrssComms
 
     #endregion Constructors
 
+    #region Properties
+
+    /// <summary>
+    /// Gets the type of this message.
+    /// </summary>
+    public MessageType Type
+    {
+      get { return _messageType; }
+    }
+
+    /// <summary>
+    /// Message flags.
+    /// </summary>
+    public MessageFlags Flags
+    {
+      get { return _messageFlags; }
+      set { _messageFlags = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the message data. The message data is a generic dictionary special
+    /// data entries defined by the message queue.
+    /// </summary>
+    public IDictionary<string, object> MessageData
+    {
+      get { return _messageData; }
+      set { _messageData = value; }
+    }
+
+    #endregion Properties
+
     #region Implementation
 
     /// <summary>
@@ -279,18 +296,22 @@ namespace IrssComms
     /// </summary>
     public byte[] GetDataAsBytes()
     {
-      return _data;
+      if (!_messageData.ContainsKey(DATA)) return null;
+
+      return _messageData[DATA] as byte[];
     }
 
     /// <summary>
     /// Set message data as bytes.
     /// </summary>
-    public void SetDataAsBytes(byte[] data)
+    private void SetDataAsBytes(byte[] data)
     {
       if (data == null)
-        _data = null;
+        _messageData[DATA] = null;
       else
-        _data = (byte[]) data.Clone();
+        _messageData[DATA] = (byte[])data.Clone();
+
+      SetMessageData();
     }
 
     /// <summary>
@@ -298,22 +319,44 @@ namespace IrssComms
     /// </summary>
     public string GetDataAsString()
     {
-      if (_data == null)
-        return String.Empty;
+      if (GetDataAsBytes() == null) return string.Empty;
 
-      return Encoding.ASCII.GetString(_data);
+      return Encoding.ASCII.GetString(GetDataAsBytes());
     }
 
     /// <summary>
     /// Set message data as string.
     /// </summary>
-    public void SetDataAsString(string data)
+    private void SetDataAsString(string data)
     {
       if (String.IsNullOrEmpty(data))
-        _data = null;
+        _messageData[DATA] = null;
       else
-        _data = Encoding.ASCII.GetBytes(data);
+        _messageData[DATA] = Encoding.ASCII.GetBytes(data);
+
+      SetMessageData();
     }
+
+    /// <summary>
+    /// Converts data for some messages from bytes to data dictionary for easier reading the values.
+    /// </summary>
+    private void SetMessageData()
+    {
+      switch (_messageType)
+      {
+        case MessageType.RemoteEvent:
+          byte[] data = GetDataAsBytes();
+
+          int deviceNameSize = BitConverter.ToInt32(data, 0);
+          _messageData[DEVICE_NAME] = System.Text.Encoding.ASCII.GetString(data, 4, deviceNameSize);
+
+          int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
+          _messageData[KEY_CODE] = System.Text.Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+
+          break;
+      }
+    }
+
 
     /// <summary>
     /// Turn this Message instance into a byte array.
@@ -322,16 +365,16 @@ namespace IrssComms
     public byte[] ToBytes()
     {
       int dataLength = 0;
-      if (_data != null)
-        dataLength = _data.Length;
+      if (GetDataAsBytes() != null)
+        dataLength = GetDataAsBytes().Length;
 
       byte[] byteArray = new byte[8 + dataLength];
 
-      BitConverter.GetBytes((int) _type).CopyTo(byteArray, 0);
-      BitConverter.GetBytes((int) _flags).CopyTo(byteArray, 4);
+      BitConverter.GetBytes((int)_messageType).CopyTo(byteArray, 0);
+      BitConverter.GetBytes((int)_messageFlags).CopyTo(byteArray, 4);
 
-      if (_data != null)
-        _data.CopyTo(byteArray, 8);
+      if (GetDataAsBytes() != null)
+        GetDataAsBytes().CopyTo(byteArray, 8);
 
       return byteArray;
     }
@@ -349,14 +392,15 @@ namespace IrssComms
       if (from.Length < 8)
         throw new ArgumentException("Insufficient bytes to create message", "from");
 
-      MessageType type = (MessageType) BitConverter.ToInt32(from, 0);
-      MessageFlags flags = (MessageFlags) BitConverter.ToInt32(from, 4);
+      MessageType type = (MessageType)BitConverter.ToInt32(from, 0);
+      MessageFlags flags = (MessageFlags)BitConverter.ToInt32(from, 4);
 
       if (from.Length == 8)
         return new IrssMessage(type, flags);
 
       byte[] data = new byte[from.Length - 8];
       Array.Copy(from, 8, data, 0, data.Length);
+
       return new IrssMessage(type, flags, data);
     }
 
