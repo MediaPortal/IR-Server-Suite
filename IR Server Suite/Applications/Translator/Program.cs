@@ -794,18 +794,18 @@ namespace Translator
         switch (received.Type)
         {
           case MessageType.RemoteEvent:
-            string deviceName = received.MessageData[IrssMessage.DEVICE_NAME] as string;
-            string keyCode = received.MessageData[IrssMessage.KEY_CODE] as string;
+            {
+              string deviceName = received.MessageData[IrssMessage.DEVICE_NAME] as string;
+              string keyCode = received.MessageData[IrssMessage.KEY_CODE] as string;
 
-            RemoteHandlerCallback(deviceName, keyCode);
+              RemoteHandlerCallback(deviceName, keyCode);
+            }
             break;
 
           case MessageType.KeyboardEvent:
             {
-              byte[] dataBytes = received.GetDataAsBytes();
-
-              int vKey = BitConverter.ToInt32(dataBytes, 0);
-              bool keyUp = BitConverter.ToBoolean(dataBytes, 4);
+              int vKey = (int)received.MessageData[IrssMessage.V_KEY];
+              bool keyUp = (bool)received.MessageData[IrssMessage.KEY_UP];
 
               KeyboardHandlerCallback("TODO", vKey, keyUp);
               break;
@@ -813,11 +813,9 @@ namespace Translator
 
           case MessageType.MouseEvent:
             {
-              byte[] dataBytes = received.GetDataAsBytes();
-
-              int deltaX = BitConverter.ToInt32(dataBytes, 0);
-              int deltaY = BitConverter.ToInt32(dataBytes, 4);
-              int buttons = BitConverter.ToInt32(dataBytes, 8);
+              int deltaX = (int)received.MessageData[IrssMessage.DELTA_X];
+              int deltaY = (int)received.MessageData[IrssMessage.DELTA_Y];
+              int buttons = (int)received.MessageData[IrssMessage.BUTTONS];
 
               MouseHandlerCallback("TODO", deltaX, deltaY, buttons);
               break;

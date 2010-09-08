@@ -278,15 +278,7 @@ namespace WebRemote
       if (!_registered)
         return;
 
-      byte[] deviceNameBytes = Encoding.ASCII.GetBytes(_device);
-      byte[] keyCodeBytes = Encoding.ASCII.GetBytes(keyCode);
-
-      byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
-
-      BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(bytes, 0);
-      deviceNameBytes.CopyTo(bytes, 4);
-      BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
-      keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
+      byte[] bytes = IrssMessage.EncodeRemoteEventData(_device, keyCode);
 
       IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, bytes);
       SendMessage(message);

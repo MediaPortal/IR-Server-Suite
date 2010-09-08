@@ -197,16 +197,27 @@ namespace IrssComms
     #region Const
 
     public const string DATA = "DATA";
+
+    // remote
     public const string DEVICE_NAME = "DEVICE_NAME";
     public const string KEY_CODE = "KEY_CODE";
+
+    // keyboard
+    public const string V_KEY = "V_KEY";
+    public const string KEY_UP = "KEY_UP";
+
+    // mouse
+    public const string DELTA_X = "DELTA_X";
+    public const string DELTA_Y = "DELTA_Y";
+    public const string BUTTONS = "BUTTONS";
 
     #endregion
 
     #region Protected fields
 
     protected MessageType _messageType;
-    protected IDictionary<string, object> _messageData = new Dictionary<string, object>();
     protected MessageFlags _messageFlags;
+    protected IDictionary<string, object> _messageData;
 
     #endregion
 
@@ -304,7 +315,7 @@ namespace IrssComms
     /// <summary>
     /// Set message data as bytes.
     /// </summary>
-    private void SetDataAsBytes(byte[] data)
+    public void SetDataAsBytes(byte[] data)
     {
       if (data == null)
         _messageData[DATA] = null;
@@ -327,7 +338,7 @@ namespace IrssComms
     /// <summary>
     /// Set message data as string.
     /// </summary>
-    private void SetDataAsString(string data)
+    public void SetDataAsString(string data)
     {
       if (String.IsNullOrEmpty(data))
         _messageData[DATA] = null;
@@ -345,14 +356,37 @@ namespace IrssComms
       switch (_messageType)
       {
         case MessageType.RemoteEvent:
-          byte[] data = GetDataAsBytes();
+        case MessageType.ForwardRemoteEvent:
+          {
+            byte[] data = GetDataAsBytes();
 
-          int deviceNameSize = BitConverter.ToInt32(data, 0);
-          _messageData[DEVICE_NAME] = System.Text.Encoding.ASCII.GetString(data, 4, deviceNameSize);
+            int deviceNameSize = BitConverter.ToInt32(data, 0);
+            _messageData[DEVICE_NAME] = System.Text.Encoding.ASCII.GetString(data, 4, deviceNameSize);
 
-          int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
-          _messageData[KEY_CODE] = System.Text.Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+            int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
+            _messageData[KEY_CODE] = System.Text.Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+          }
+          break;
 
+        case MessageType.KeyboardEvent:
+        case MessageType.ForwardKeyboardEvent:
+          {
+            byte[] data = GetDataAsBytes();
+
+            _messageData[V_KEY] = BitConverter.ToInt32(data, 0);
+            _messageData[KEY_UP] = BitConverter.ToBoolean(data, 4);
+          }
+          break;
+
+        case MessageType.MouseEvent:
+        case MessageType.ForwardMouseEvent:
+          {
+            byte[] data = GetDataAsBytes();
+
+            _messageData[DELTA_X] = BitConverter.ToInt32(data, 0);
+            _messageData[DELTA_Y] = BitConverter.ToInt32(data, 4);
+            _messageData[BUTTONS] = BitConverter.ToInt32(data, 8);
+          }
           break;
       }
     }
@@ -384,7 +418,7 @@ namespace IrssComms
     /// </summary>
     /// <param name="from">Byte array to generate message from.</param>
     /// <returns>New Message.</returns>
-    public static IrssMessage FromBytes(byte[] from)
+    internal static IrssMessage FromBytes(byte[] from)
     {
       if (from == null)
         throw new ArgumentNullException("from");
@@ -402,6 +436,42 @@ namespace IrssComms
       Array.Copy(from, 8, data, 0, data.Length);
 
       return new IrssMessage(type, flags, data);
+    }
+
+    public static byte[] EncodeRemoteEventData(string deviceName, string keyCode)
+    {
+      byte[] deviceNameBytes = Encoding.ASCII.GetBytes(deviceName);
+      byte[] keyCodeBytes = Encoding.ASCII.GetBytes(keyCode);
+
+      byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
+
+      BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(bytes, 0);
+      deviceNameBytes.CopyTo(bytes, 4);
+      BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
+      keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
+
+      return bytes;
+    }
+
+    public static byte[] EncodeKeyboardEventData(int vKey, bool keyUp)
+    {
+      byte[] bytes = new byte[8];
+
+      BitConverter.GetBytes(vKey).CopyTo(bytes, 0);
+      BitConverter.GetBytes(keyUp).CopyTo(bytes, 4);
+
+      return bytes;
+    }
+
+    public static byte[] EncodeMouseEventData(int deltaX, int deltaY, int buttons)
+    {
+      byte[] bytes = new byte[12];
+
+      BitConverter.GetBytes(deltaX).CopyTo(bytes, 0);
+      BitConverter.GetBytes(deltaY).CopyTo(bytes, 4);
+      BitConverter.GetBytes(buttons).CopyTo(bytes, 8);
+
+      return bytes;
     }
 
     #endregion Implementation

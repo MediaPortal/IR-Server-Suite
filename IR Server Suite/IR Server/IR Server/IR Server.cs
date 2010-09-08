@@ -798,15 +798,7 @@ namespace IRServer
           return;
       }
 
-      byte[] deviceNameBytes = Encoding.ASCII.GetBytes(messageDeviceName);
-      byte[] keyCodeBytes = Encoding.ASCII.GetBytes(messageKeyCode);
-
-      byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
-
-      BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(bytes, 0);
-      deviceNameBytes.CopyTo(bytes, 4);
-      BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
-      keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
+      byte[] bytes = IrssMessage.EncodeRemoteEventData(messageDeviceName, messageKeyCode);
 
       switch (Settings.Mode)
       {
@@ -830,9 +822,7 @@ namespace IRServer
     {
       IrssLog.Debug("{0} generated a keyboard event: {1}, keyUp: {2}", deviceName, vKey, keyUp);
 
-      byte[] bytes = new byte[8];
-      BitConverter.GetBytes(vKey).CopyTo(bytes, 0);
-      BitConverter.GetBytes(keyUp).CopyTo(bytes, 4);
+      byte[] bytes = IrssMessage.EncodeKeyboardEventData(vKey, keyUp);
 
       switch (Settings.Mode)
       {
@@ -863,10 +853,7 @@ namespace IRServer
       IrssLog.Debug("{0} generated a mouse Event - deltaX: {1}, deltaY: {2}, buttons: {3}", deviceName, deltaX, deltaY,
                     buttons);
 
-      byte[] bytes = new byte[12];
-      BitConverter.GetBytes(deltaX).CopyTo(bytes, 0);
-      BitConverter.GetBytes(deltaY).CopyTo(bytes, 4);
-      BitConverter.GetBytes(buttons).CopyTo(bytes, 8);
+      byte[] bytes = IrssMessage.EncodeMouseEventData(deltaX, deltaY, buttons);
 
       switch (Settings.Mode)
       {
@@ -1157,10 +1144,8 @@ namespace IRServer
               if (Settings.AbstractRemoteMode)
               {
                 // Decode message ...
-                int deviceNameSize = BitConverter.ToInt32(data, 0);
-                string deviceName = Encoding.ASCII.GetString(data, 4, deviceNameSize);
-                int keyCodeSize = BitConverter.ToInt32(data, 4 + deviceNameSize);
-                string keyCode = Encoding.ASCII.GetString(data, 8 + deviceNameSize, keyCodeSize);
+                string deviceName = combo.Message.MessageData[IrssMessage.DEVICE_NAME] as string;
+                string keyCode = combo.Message.MessageData[IrssMessage.KEY_CODE] as string;
 
                 // Check that the device maps are loaded for the forwarded device
                 bool foundDevice = false;
@@ -1190,15 +1175,7 @@ namespace IRServer
                     IrssLog.Info("Abstract Remote Button mapped from forwarded remote event: {0}", abstractButton);
 
                     // Encode new message ...
-                    byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Abstract");
-                    byte[] keyCodeBytes = Encoding.ASCII.GetBytes(abstractButton);
-
-                    data = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
-
-                    BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(data, 0);
-                    deviceNameBytes.CopyTo(data, 4);
-                    BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(data, 4 + deviceNameBytes.Length);
-                    keyCodeBytes.CopyTo(data, 8 + deviceNameBytes.Length);
+                    data = IrssMessage.EncodeRemoteEventData("Abstract", abstractButton);
                   }
                   else
                   {

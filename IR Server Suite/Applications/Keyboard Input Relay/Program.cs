@@ -394,15 +394,7 @@ namespace KeyboardInputRelay
 
           if (_registered)
           {
-            byte[] deviceNameBytes = Encoding.ASCII.GetBytes("Keyboard");
-            byte[] keyCodeBytes = Encoding.ASCII.GetBytes(String.Format("{0:X8}", keyCode));
-
-            byte[] bytes = new byte[8 + deviceNameBytes.Length + keyCodeBytes.Length];
-
-            BitConverter.GetBytes(deviceNameBytes.Length).CopyTo(bytes, 0);
-            deviceNameBytes.CopyTo(bytes, 4);
-            BitConverter.GetBytes(keyCodeBytes.Length).CopyTo(bytes, 4 + deviceNameBytes.Length);
-            keyCodeBytes.CopyTo(bytes, 8 + deviceNameBytes.Length);
+            byte[] bytes = IrssMessage.EncodeRemoteEventData("Keyboard", String.Format("{0:X8}", keyCode));
 
             IrssMessage message = new IrssMessage(MessageType.ForwardRemoteEvent, MessageFlags.Notify, bytes);
             _client.Send(message);
