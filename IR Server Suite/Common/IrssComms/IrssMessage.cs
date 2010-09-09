@@ -217,7 +217,7 @@ namespace IrssComms
 
     protected MessageType _messageType;
     protected MessageFlags _messageFlags;
-    protected IDictionary<string, object> _messageData;
+    protected IDictionary<string, object> _messageData = new Dictionary<string, object>();
 
     #endregion
 
