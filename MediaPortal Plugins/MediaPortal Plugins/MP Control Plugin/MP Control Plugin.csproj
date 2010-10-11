@@ -160,7 +160,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="iconGray.ico" />
-    <EmbeddedResource Include="iconGreen.ico" />
+    <EmbeddedResource Include="iconGray.gif" />
+    <EmbeddedResource Include="iconGreen.gif" />
   </ItemGroup>
 </Project>

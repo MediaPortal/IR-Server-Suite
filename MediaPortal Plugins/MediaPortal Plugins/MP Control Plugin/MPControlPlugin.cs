@@ -40,8 +40,8 @@ using MPUtils;
 
 namespace MediaPortal.Plugins
 {
-  [PluginIcons("MediaPortal.Plugins.MPControlPlugin.IRSS.iconGreen.ico",
-    "MediaPortal.Plugins.MPControlPlugin.IRSS.iconGray.ico")]
+  [PluginIcons("MediaPortal.Plugins.MPControlPlugin.IRSS.iconGreen.gif",
+    "MediaPortal.Plugins.MPControlPlugin.IRSS.iconGray.gif")]
 
   /// <summary>
     /// MediaPortal Control Plugin for IR Server.

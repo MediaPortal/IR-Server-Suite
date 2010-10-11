@@ -37,8 +37,8 @@ using MPUtils;
 
 namespace MediaPortal.Plugins
 {
-  [PluginIcons("MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGreen.ico",
-    "MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGray.ico")]
+  [PluginIcons("MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGreen.gif",
+    "MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGray.gif")]
 
   /// <summary>
   /// MediaPortal Blast Zone Plugin for IR Server.

@@ -148,8 +148,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AppData\Menu.xml" />
-    <Content Include="iconGray.ico" />
-    <Content Include="iconGreen.ico" />
+    <EmbeddedResource Include="iconGray.gif" />
+    <EmbeddedResource Include="iconGreen.gif" />
     <Content Include="Skin\BlastZone.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
