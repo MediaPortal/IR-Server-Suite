@@ -693,7 +693,7 @@ namespace IRServer
       {
         StartServer();
 
-        IPAddress serverIP = Client.GetIPFromName(Settings.HostComputer);
+        IPAddress serverIP = Network.GetIPFromName(Settings.HostComputer);
         IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         StartClient(endPoint);
@@ -725,7 +725,7 @@ namespace IRServer
       {
         StartServer();
 
-        IPAddress serverIP = Client.GetIPFromName(Settings.HostComputer);
+        IPAddress serverIP = Network.GetIPFromName(Settings.HostComputer);
         IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         StartClient(endPoint);

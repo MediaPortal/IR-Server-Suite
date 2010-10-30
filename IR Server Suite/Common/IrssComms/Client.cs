@@ -373,25 +373,6 @@ namespace IrssComms
       return (bytesReadTotal == buffer.Length);
     }
 
-    /// <summary>
-    /// Translates a host name or address into an IPAddress object (IPv4).
-    /// </summary>
-    /// <param name="name">Host name or IP address.</param>
-    /// <returns>IPAddress object.</returns>
-    public static IPAddress GetIPFromName(string name)
-    {
-      // Automatically convert localhost to loopback address, avoiding lookup calls for systems that aren't on a network. 
-      if (name.Equals("localhost", StringComparison.OrdinalIgnoreCase))
-        return IPAddress.Loopback;
-
-      IPAddress[] addresses = Dns.GetHostAddresses(name);
-      foreach (IPAddress address in addresses)
-        if (address.AddressFamily == AddressFamily.InterNetwork)
-          return address;
-
-      return null;
-    }
-
     #endregion Implementation
   }
 }

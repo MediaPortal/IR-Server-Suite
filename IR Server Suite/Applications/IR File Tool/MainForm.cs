@@ -463,7 +463,7 @@ namespace IrFileTool
     {
       Invoke(new UpdateWindowDel(UpdateWindow), new string[] { "Connecting ..." });
 
-      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(_serverHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);

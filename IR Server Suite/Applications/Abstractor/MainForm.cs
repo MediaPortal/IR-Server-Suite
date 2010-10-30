@@ -431,7 +431,7 @@ namespace Abstractor
 
         _serverHost = comboBoxComputer.Text;
 
-        IPAddress serverIp = Client.GetIPFromName(_serverHost);
+        IPAddress serverIp = Network.GetIPFromName(_serverHost);
         IPEndPoint endPoint = new IPEndPoint(serverIp, Server.DefaultPort);
 
         StartClient(endPoint);

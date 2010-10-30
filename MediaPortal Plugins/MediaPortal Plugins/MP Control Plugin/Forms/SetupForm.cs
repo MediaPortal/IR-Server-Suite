@@ -64,7 +64,7 @@ namespace MediaPortal.Plugins
         MPControlPlugin.ServerHost = serverAddress.ServerHost;
       }
 
-      IPAddress serverIP = Client.GetIPFromName(MPControlPlugin.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(MPControlPlugin.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!MPControlPlugin.StartClient(endPoint))
@@ -834,7 +834,7 @@ namespace MediaPortal.Plugins
 
       MPControlPlugin.ServerHost = serverAddress.ServerHost;
 
-      IPAddress serverIP = Client.GetIPFromName(MPControlPlugin.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(MPControlPlugin.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       MPControlPlugin.StartClient(endPoint);

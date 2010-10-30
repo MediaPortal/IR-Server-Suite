@@ -364,7 +364,7 @@ namespace SkinEditor
 
     private void connectToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(_serverHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);

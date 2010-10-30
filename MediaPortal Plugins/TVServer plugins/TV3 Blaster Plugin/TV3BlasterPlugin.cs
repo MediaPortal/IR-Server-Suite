@@ -160,7 +160,7 @@ namespace TvEngine
       ITvServerEvent events = GlobalServiceProvider.Instance.Get<ITvServerEvent>();
       events.OnTvServerEvent += events_OnTvServerEvent;
 
-      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(_serverHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!StartClient(endPoint))
@@ -209,7 +209,7 @@ namespace TvEngine
 
       Log.Info("TV3BlasterPlugin: Attempting communications restart ...");
 
-      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(_serverHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);

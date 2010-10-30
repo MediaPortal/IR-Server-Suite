@@ -60,7 +60,7 @@ namespace MediaPortal.Plugins
         MPBlastZonePlugin.ServerHost = serverAddress.ServerHost;
       }
 
-      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(MPBlastZonePlugin.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!MPBlastZonePlugin.StartClient(endPoint))
@@ -670,7 +670,7 @@ namespace MediaPortal.Plugins
 
       MPBlastZonePlugin.ServerHost = serverAddress.ServerHost;
 
-      IPAddress serverIP = Client.GetIPFromName(MPBlastZonePlugin.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(MPBlastZonePlugin.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       MPBlastZonePlugin.StartClient(endPoint);

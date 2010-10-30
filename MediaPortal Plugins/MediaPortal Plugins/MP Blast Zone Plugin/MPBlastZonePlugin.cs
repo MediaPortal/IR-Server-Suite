@@ -290,7 +290,7 @@ namespace MediaPortal.Plugins
 
       Log.Info("MPBlastZonePlugin: Starting ({0})", PluginVersion);
 
-      IPAddress serverIP = Client.GetIPFromName(ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!StartClient(endPoint))
@@ -447,7 +447,7 @@ namespace MediaPortal.Plugins
 
       Log.Warn("MPBlastZonePlugin: Attempting communications restart ...");
 
-      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(_serverHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);

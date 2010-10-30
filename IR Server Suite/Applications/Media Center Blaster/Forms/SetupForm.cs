@@ -299,7 +299,7 @@ namespace MediaCenterBlaster
 
       Tray.ServerHost = serverAddress.ServerHost;
 
-      IPAddress serverIP = Client.GetIPFromName(Tray.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(Tray.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       Tray.StartClient(endPoint);

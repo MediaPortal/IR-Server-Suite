@@ -61,7 +61,7 @@ namespace TvEngine.Forms
 
       TvBusinessLayer layer = new TvBusinessLayer();
       TV3BlasterPlugin.ServerHost = layer.GetSetting("TV3BlasterPlugin_ServerHost", "localhost").Value;
-      IPAddress serverIP = Client.GetIPFromName(TV3BlasterPlugin.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(TV3BlasterPlugin.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!TV3BlasterPlugin.StartClient(endPoint))
@@ -342,7 +342,7 @@ namespace TvEngine.Forms
 
       TV3BlasterPlugin.ServerHost = serverAddress.ServerHost;
 
-      IPAddress serverIP = Client.GetIPFromName(TV3BlasterPlugin.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(TV3BlasterPlugin.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       TV3BlasterPlugin.StartClient(endPoint);

@@ -108,7 +108,7 @@ namespace IRBlast
           }
           else
           {
-            IPAddress serverIP = Client.GetIPFromName(_serverHost);
+            IPAddress serverIP = Network.GetIPFromName(_serverHost);
             IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
             if (StartClient(endPoint))

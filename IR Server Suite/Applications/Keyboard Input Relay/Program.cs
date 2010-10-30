@@ -83,7 +83,7 @@ namespace KeyboardInputRelay
 
       bool clientStarted = false;
 
-      IPAddress serverIP = Client.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(_serverHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       try

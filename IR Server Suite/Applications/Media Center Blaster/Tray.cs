@@ -219,7 +219,7 @@ namespace MediaCenterBlaster
 
         try
         {
-          IPAddress serverIP = Client.GetIPFromName(_serverHost);
+          IPAddress serverIP = Network.GetIPFromName(_serverHost);
           IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
           clientStarted = StartClient(endPoint);
