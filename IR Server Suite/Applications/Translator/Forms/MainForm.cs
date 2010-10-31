@@ -284,7 +284,7 @@ namespace Translator
 
         Program.Config.ServerHost = serverAddress.ServerHost;
 
-        IPAddress serverIP = Client.GetIPFromName(Program.Config.ServerHost);
+        IPAddress serverIP = Network.GetIPFromName(Program.Config.ServerHost);
         IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         Program.StartClient(endPoint);

@@ -140,7 +140,7 @@ namespace VirtualRemote
           IrssLog.Error("Error processing command line parameters: {0}", ex.ToString());
         }
 
-        IPAddress serverIP = Client.GetIPFromName(_serverHost);
+        IPAddress serverIP = Network.GetIPFromName(_serverHost);
         IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         if (virtualButtons.Count != 0 && StartClient(endPoint))
@@ -192,7 +192,7 @@ namespace VirtualRemote
 
         bool clientStarted = false;
 
-        IPAddress serverIP = Client.GetIPFromName(_serverHost);
+        IPAddress serverIP = Network.GetIPFromName(_serverHost);
         IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         try

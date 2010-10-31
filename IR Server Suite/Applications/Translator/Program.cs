@@ -208,7 +208,7 @@ namespace Translator
       // Start server communications ...
       bool clientStarted = false;
 
-      IPAddress serverIP = Client.GetIPFromName(_config.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(_config.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       try
@@ -706,7 +706,7 @@ namespace Translator
       {
         Thread.Sleep(1000);
 
-        IPAddress serverIP = Client.GetIPFromName(_config.ServerHost);
+        IPAddress serverIP = Network.GetIPFromName(_config.ServerHost);
         IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         try

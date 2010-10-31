@@ -211,7 +211,7 @@ namespace VirtualRemote
 
       Program.ServerHost = serverAddress.ServerHost;
 
-      IPAddress serverIP = Client.GetIPFromName(Program.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(Program.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       Program.StartClient(endPoint);

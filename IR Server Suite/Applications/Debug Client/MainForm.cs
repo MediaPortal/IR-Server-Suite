@@ -376,7 +376,7 @@ namespace DebugClient
 
         _serverHost = comboBoxComputer.Text;
 
-        IPAddress serverIP = Client.GetIPFromName(_serverHost);
+        IPAddress serverIP = Network.GetIPFromName(_serverHost);
         IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         StartClient(endPoint);
