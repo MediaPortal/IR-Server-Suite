@@ -32,6 +32,7 @@ using System.Xml;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
+using MediaCenterBlaster.Properties;
 using Microsoft.MediaCenter.Samples.MediaState;
 
 namespace MediaCenterBlaster

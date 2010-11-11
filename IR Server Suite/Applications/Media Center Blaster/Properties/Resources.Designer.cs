@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MediaCenterBlaster
+namespace MediaCenterBlaster.Properties
 {
     using System;
     
