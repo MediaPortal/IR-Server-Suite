@@ -83,6 +83,12 @@ namespace IRServer.Configuration
       set { comboBoxPriority.SelectedItem = value; }
     }
 
+    public bool RestartOnUSBChanges
+    {
+      get { return checkBoxRestartOnUSBChanges.Checked; }
+      set { checkBoxRestartOnUSBChanges.Checked = value; }
+    }
+
     #endregion Properties
 
     #region Constructor

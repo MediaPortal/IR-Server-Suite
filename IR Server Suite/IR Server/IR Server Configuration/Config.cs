@@ -58,6 +58,7 @@ namespace IRServer.Configuration
     private string _hostComputer = String.Empty;
     private IRServerMode _mode = IRServerMode.ServerMode;
     private string _processPriority = String.Empty;
+    private bool _restartOnUSBChanges = true;
     private BackgroundWorker monitorThread;
 
     #endregion Variables
@@ -311,6 +312,7 @@ namespace IRServer.Configuration
       advanced.Mode = _mode;
       advanced.HostComputer = _hostComputer;
       advanced.ProcessPriority = _processPriority;
+      advanced.RestartOnUSBChanges = _restartOnUSBChanges;
 
       if (advanced.ShowDialog(this) == DialogResult.OK)
       {
@@ -318,6 +320,7 @@ namespace IRServer.Configuration
         _mode = advanced.Mode;
         _hostComputer = advanced.HostComputer;
         _processPriority = advanced.ProcessPriority;
+        _restartOnUSBChanges = advanced.RestartOnUSBChanges;
       }
     }
 
@@ -567,6 +570,7 @@ namespace IRServer.Configuration
       _mode = Settings.Mode;
       _hostComputer = Settings.HostComputer;
       _processPriority = Settings.ProcessPriority;
+      _restartOnUSBChanges = Settings.RestartOnUSBChanges;
       PluginReceive = Settings.PluginNameReceive;
       PluginTransmit = Settings.PluginNameTransmit;
     }
@@ -577,6 +581,7 @@ namespace IRServer.Configuration
           (Settings.Mode != _mode) ||
           (Settings.HostComputer != _hostComputer) ||
           (Settings.ProcessPriority != _processPriority) ||
+          (Settings.RestartOnUSBChanges != _restartOnUSBChanges) ||
           (Settings.PluginNameReceive != PluginReceive) ||
           (Settings.PluginNameTransmit != PluginTransmit))
       {
@@ -590,6 +595,7 @@ namespace IRServer.Configuration
           Settings.Mode = _mode;
           Settings.HostComputer = _hostComputer;
           Settings.ProcessPriority = _processPriority;
+          Settings.RestartOnUSBChanges = _restartOnUSBChanges;
           Settings.PluginNameReceive = PluginReceive;
           Settings.PluginNameTransmit = PluginTransmit;
 

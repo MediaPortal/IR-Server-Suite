@@ -44,9 +44,12 @@ namespace IRServer.Configuration
       this.groupBoxPriority = new System.Windows.Forms.GroupBox();
       this.labelPriority = new System.Windows.Forms.Label();
       this.comboBoxPriority = new System.Windows.Forms.ComboBox();
+      this.groupBoxHardwareMonitoring = new System.Windows.Forms.GroupBox();
+      this.checkBoxRestartOnUSBChanges = new System.Windows.Forms.CheckBox();
       this.groupBoxMode.SuspendLayout();
       this.groupBoxAbstractRemoteModel.SuspendLayout();
       this.groupBoxPriority.SuspendLayout();
+      this.groupBoxHardwareMonitoring.SuspendLayout();
       this.SuspendLayout();
       // 
       // groupBoxMode
@@ -132,7 +135,7 @@ namespace IRServer.Configuration
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(328, 272);
+      this.buttonCancel.Location = new System.Drawing.Point(328, 318);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(64, 24);
       this.buttonCancel.TabIndex = 4;
@@ -143,7 +146,7 @@ namespace IRServer.Configuration
       // buttonOK
       // 
       this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOK.Location = new System.Drawing.Point(256, 272);
+      this.buttonOK.Location = new System.Drawing.Point(256, 318);
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(64, 24);
       this.buttonOK.TabIndex = 3;
@@ -223,13 +226,38 @@ namespace IRServer.Configuration
       this.comboBoxPriority.Size = new System.Drawing.Size(272, 21);
       this.comboBoxPriority.TabIndex = 1;
       // 
+      // groupBoxHardwareMonitoring
+      // 
+      this.groupBoxHardwareMonitoring.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxHardwareMonitoring.Controls.Add(this.checkBoxRestartOnUSBChanges);
+      this.groupBoxHardwareMonitoring.Location = new System.Drawing.Point(8, 262);
+      this.groupBoxHardwareMonitoring.Name = "groupBoxHardwareMonitoring";
+      this.groupBoxHardwareMonitoring.Size = new System.Drawing.Size(384, 50);
+      this.groupBoxHardwareMonitoring.TabIndex = 5;
+      this.groupBoxHardwareMonitoring.TabStop = false;
+      this.groupBoxHardwareMonitoring.Text = "Hardware Monitoring";
+      // 
+      // checkBoxRestartOnUSBChanges
+      // 
+      this.checkBoxRestartOnUSBChanges.AutoSize = true;
+      this.checkBoxRestartOnUSBChanges.Location = new System.Drawing.Point(16, 24);
+      this.checkBoxRestartOnUSBChanges.Name = "checkBoxRestartOnUSBChanges";
+      this.checkBoxRestartOnUSBChanges.Size = new System.Drawing.Size(214, 17);
+      this.checkBoxRestartOnUSBChanges.TabIndex = 0;
+      this.checkBoxRestartOnUSBChanges.Text = "Restart IR Server on hardware changes";
+      this.toolTips.SetToolTip(this.checkBoxRestartOnUSBChanges, "If enabled, IR Server will be automatically restarted if an USB device hase been " +
+              "connected or removed.");
+      this.checkBoxRestartOnUSBChanges.UseVisualStyleBackColor = true;
+      // 
       // Advanced
       // 
       this.AcceptButton = this.buttonOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(400, 308);
+      this.ClientSize = new System.Drawing.Size(400, 354);
+      this.Controls.Add(this.groupBoxHardwareMonitoring);
       this.Controls.Add(this.groupBoxPriority);
       this.Controls.Add(this.groupBoxAbstractRemoteModel);
       this.Controls.Add(this.buttonCancel);
@@ -246,6 +274,8 @@ namespace IRServer.Configuration
       this.groupBoxMode.PerformLayout();
       this.groupBoxAbstractRemoteModel.ResumeLayout(false);
       this.groupBoxPriority.ResumeLayout(false);
+      this.groupBoxHardwareMonitoring.ResumeLayout(false);
+      this.groupBoxHardwareMonitoring.PerformLayout();
       this.ResumeLayout(false);
 
     }
@@ -267,5 +297,7 @@ namespace IRServer.Configuration
     private System.Windows.Forms.GroupBox groupBoxPriority;
     private System.Windows.Forms.ComboBox comboBoxPriority;
     private System.Windows.Forms.Label labelPriority;
+    private System.Windows.Forms.GroupBox groupBoxHardwareMonitoring;
+    private System.Windows.Forms.CheckBox checkBoxRestartOnUSBChanges;
   }
 }

@@ -63,6 +63,10 @@ namespace IRServer
     private List<ClientManager> _registeredRepeaters;
     private Server _server;
 
+    private HardwareMonitor hardwareMonitor;
+    private DateTime lastDeviceEvent = DateTime.MinValue;
+    private const int timeToWaitForRestart = 10000;
+
     #endregion Variables
 
     #region Constructor
@@ -201,6 +205,17 @@ namespace IRServer
 
       #endregion Setup Abstract Remote Model processing
 
+      #region Setup Hardware Monitoring
+
+      if (Settings.RestartOnUSBChanges)
+      {
+        hardwareMonitor = new HardwareMonitor();
+        hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
+        hardwareMonitor.Start();
+      }
+
+      #endregion
+
       IrssLog.Info("IR Server started");
     }
 
@@ -210,6 +225,10 @@ namespace IRServer
     protected override void OnStop()
     {
       IrssLog.Info("Stopping IR Server ...");
+
+      if (hardwareMonitor != null)
+        hardwareMonitor.Stop();
+      hardwareMonitor = null;
 
       if (Settings.Mode == IRServerMode.ServerMode)
       {
@@ -1687,6 +1706,34 @@ namespace IRServer
 
       return true;
     }
+
+    #region Hardware Monitoring
+
+    private void OnDeviceConnected()
+    {
+      Thread lazyRestartThread = new Thread(LazyRestart);
+      lazyRestartThread.Start();
+    }
+
+    private void LazyRestart()
+    {
+      DateTime tempLastDeviceEvent = DateTime.Now;
+      lastDeviceEvent = tempLastDeviceEvent;
+
+      // wait, if new decice events occur
+      Thread.Sleep(timeToWaitForRestart);
+      
+      // if new device event occured, stop here
+      if (!tempLastDeviceEvent.Equals(lastDeviceEvent)) return;
+
+      // restart service
+      IrssLog.Info("New device event. Restarting Input Service.");
+      StopPlugins();
+      LoadPlugins();
+      StartPlugins();
+    }
+
+    #endregion
 
     #endregion Implementation
 
