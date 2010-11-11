@@ -35,7 +35,7 @@ namespace IRServer
       Mode = IRServerMode.ServerMode;
       HostComputer = String.Empty;
       ProcessPriority = "No Change";
-      RestartOnUSBChanges = true;
+      RestartOnUSBChanges = false;
       PluginNameReceive = null;
       PluginNameTransmit = String.Empty;
 
