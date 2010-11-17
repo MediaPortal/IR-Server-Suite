@@ -232,8 +232,8 @@ namespace IrssComms
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool Send(ClientManager sendTo, IrssMessage message)
     {
-      if (!_clientManagers.Contains(sendTo))
-        return false;
+      if (_clientManagers == null) return false;
+      if (!_clientManagers.Contains(sendTo)) return false;
 
       try
       {

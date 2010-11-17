@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace IRServer
 {
   internal delegate void ProcessMessage(ref Message m);
 
-  class ReceiverWindow : NativeWindow
+  sealed class ReceiverWindow : NativeWindow
   {
 
     #region Constructor/Destructor
