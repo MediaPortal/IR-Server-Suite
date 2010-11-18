@@ -67,9 +67,7 @@ Var MPdir.Skin
 Var MPdir.Language
 Var MPdir.Database
 Var MPdir.Thumbs
-Var MPdir.Weather
 Var MPdir.Cache
-Var MPdir.BurnerSupport
 
 #***************************
 #***************************
@@ -130,9 +128,7 @@ Var MPdir.BurnerSupport
   StrCpy $MPdir.Language            "$MPdir.Config\language"
   StrCpy $MPdir.Database            "$MPdir.Config\database"
   StrCpy $MPdir.Thumbs              "$MPdir.Config\thumbs"
-  StrCpy $MPdir.Weather             "$MPdir.Base\weather"
   StrCpy $MPdir.Cache               "$MPdir.Config\cache"
-  StrCpy $MPdir.BurnerSupport       "$MPdir.Base\Burner"
 
 !macroend
 
@@ -175,9 +171,7 @@ Var MPdir.BurnerSupport
   ${ReadMPdir} Language
   ${ReadMPdir} Database
   ${ReadMPdir} Thumbs
-  ${ReadMPdir} Weather
   ${ReadMPdir} Cache
-  ${ReadMPdir} BurnerSupport
 
 
   StrCpy $0 "0"
@@ -248,9 +242,7 @@ Var MPdir.BurnerSupport
   ${LOG_TEXT} "INFO" "          Language: $MPdir.Language"
   ${LOG_TEXT} "INFO" "          Database: $MPdir.Database"
   ${LOG_TEXT} "INFO" "          Thumbs: $MPdir.Thumbs"
-  ${LOG_TEXT} "INFO" "          Weather: $MPdir.Weather"
   ${LOG_TEXT} "INFO" "          Cache: $MPdir.Cache"
-  ${LOG_TEXT} "INFO" "          BurnerSupport: $MPdir.BurnerSupport"
 
 
   Pop $0
