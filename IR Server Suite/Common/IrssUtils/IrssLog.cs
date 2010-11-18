@@ -23,6 +23,8 @@
 using System;
 using System.IO;
 using System.Reflection;
+using MediaPortal.Core.Logging;
+using MediaPortal.Core.Services.Logging;
 
 namespace IrssUtils
 {
@@ -90,6 +92,8 @@ namespace IrssUtils
       set { _logLevel = value; }
     }
 
+    public static ILogger Logger { get; set; }
+
     #endregion Properties
 
     #region Implementation
@@ -102,9 +106,6 @@ namespace IrssUtils
     /// <param name="fileName">Log file name.</param>
     public static void Open(string fileName)
     {
-      if (_streamWriter != null || _logLevel == Level.Off)
-        return;
-
       string filePath = Path.Combine(Common.FolderIrssLogs, fileName);
 
       if (File.Exists(filePath))
@@ -118,54 +119,23 @@ namespace IrssUtils
 
           File.Move(filePath, backup);
         }
-#if TRACE
         catch (Exception ex)
         {
-          Trace.WriteLine(ex.ToString());
+          Logger.Error(ex);
         }
-#else
-        catch
-        {
-        }
-#endif
       }
 
-      try
-      {
-        _streamWriter = new StreamWriter(filePath, false);
-        _streamWriter.AutoFlush = true;
+      Logger = FileLogger.CreateFileLogger(filePath, MediaPortal.Core.Logging.LogLevel.All, false, true);
 
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Opened", DateTime.Now);
-        _streamWriter.WriteLine(message);
-
-#if TRACE
-        Trace.WriteLine(message);
-#endif
-
-        message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - {1}", DateTime.Now,
-                                Assembly.GetCallingAssembly().FullName);
-        _streamWriter.WriteLine(message);
-
-#if TRACE
-        Trace.WriteLine(message);
-#endif
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
+      Logger.Info("Log Opened");
+      Logger.Info(Assembly.GetCallingAssembly().FullName);
     }
 
     /// <summary>
     /// Open a log file to append log entries to.
     /// </summary>
     /// <param name="fileName">Log file name.</param>
+    [Obsolete]
     public static void Append(string fileName)
     {
       if (_streamWriter != null || _logLevel == Level.Off)
@@ -225,30 +195,7 @@ namespace IrssUtils
     /// </summary>
     public static void Close()
     {
-      if (_streamWriter == null)
-        return;
-
-      try
-      {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Log Closed", DateTime.Now);
-        _streamWriter.WriteLine(message);
-        _streamWriter.WriteLine();
-#if TRACE
-        Trace.WriteLine(message);
-#endif
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-        throw;
-      }
-#endif
-      finally
-      {
-        _streamWriter.Dispose();
-        _streamWriter = null;
-      }
+      Logger.Info("Log Closed");
     }
 
     #endregion Log file opening and closing
@@ -261,15 +208,7 @@ namespace IrssUtils
     /// <param name="ex">Exception to log.</param>
     public static void Error(Exception ex)
     {
-      if (_streamWriter != null && _logLevel >= Level.Error)
-      {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Error:\t{1}", DateTime.Now, ex);
-
-        _streamWriter.WriteLine(message);
-#if TRACE
-        Trace.WriteLine(message);
-#endif
-      }
+      Logger.Error(ex);
     }
 
     /// <summary>
@@ -279,16 +218,18 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Error(string format, params object[] args)
     {
-      if (_streamWriter != null && _logLevel >= Level.Error)
-      {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Error:\t", DateTime.Now) +
-                         String.Format(format, args);
+      Logger.Error(format, args);
+    }
 
-        _streamWriter.WriteLine(message);
-#if TRACE
-        Trace.WriteLine(message);
-#endif
-      }
+    /// <summary>
+    /// Log an Error.
+    /// </summary>
+    /// <param name="format">String format.</param>
+    /// <param name="ex">Exception to log.</param>
+    /// <param name="args">String format arguments.</param>
+    public static void Error(string format, Exception ex, params object[] args)
+    {
+      Logger.Error(format, ex, args);
     }
 
     /// <summary>
@@ -298,16 +239,18 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Warn(string format, params object[] args)
     {
-      if (_streamWriter != null && _logLevel >= Level.Warn)
-      {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Warn:\t", DateTime.Now) +
-                         String.Format(format, args);
+      Logger.Warn(format, args);
+    }
 
-        _streamWriter.WriteLine(message);
-#if TRACE
-        //Trace.WriteLine(message);
-#endif
-      }
+    /// <summary>
+    /// Log a Warning.
+    /// </summary>
+    /// <param name="format">String format.</param>
+    /// <param name="ex">Exception to log.</param>
+    /// <param name="args">String format arguments.</param>
+    public static void Warn(string format, Exception ex, params object[] args)
+    {
+      Logger.Warn(format, ex, args);
     }
 
     /// <summary>
@@ -317,16 +260,18 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Info(string format, params object[] args)
     {
-      if (_streamWriter != null && _logLevel >= Level.Info)
-      {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Info:\t", DateTime.Now) +
-                         String.Format(format, args);
+      Logger.Info(format, args);
+    }
 
-        _streamWriter.WriteLine(message);
-#if TRACE
-        //Trace.WriteLine(message);
-#endif
-      }
+    /// <summary>
+    /// Log Information.
+    /// </summary>
+    /// <param name="format">String format.</param>
+    /// <param name="ex">Exception to log.</param>
+    /// <param name="args">String format arguments.</param>
+    public static void Info(string format, Exception ex, params object[] args)
+    {
+      Logger.Info(format, ex, args);
     }
 
     /// <summary>
@@ -336,16 +281,18 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Debug(string format, params object[] args)
     {
-      if (_streamWriter != null && _logLevel >= Level.Debug)
-      {
-        string message = String.Format("{0:yyyy-MM-dd HH:mm:ss.ffffff} - Debug:\t", DateTime.Now) +
-                         String.Format(format, args);
+      Logger.Debug(format, args);
+    }
 
-        _streamWriter.WriteLine(message);
-#if TRACE
-        //Trace.WriteLine(message);
-#endif
-      }
+    /// <summary>
+    /// Log a Debug message.
+    /// </summary>
+    /// <param name="format">String format.</param>
+    /// <param name="ex">Exception to log.</param>
+    /// <param name="args">String format arguments.</param>
+    public static void Debug(string format, Exception ex, params object[] args)
+    {
+      Logger.Debug(format, ex, args);
     }
 
     #endregion Log recording methods

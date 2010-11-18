@@ -92,6 +92,7 @@ namespace IrssUtils
         EventArrivedEventArgs e)
     {
       HardwareEventType eventType = (HardwareEventType)int.Parse(e.NewEvent.Properties["EventType"].Value.ToString());
+      IrssLog.Debug("HandleEvent: EvenType = {0}", eventType);
 
       // handle only (dis)connects
       if (eventType == HardwareEventType.ConfigurationChanged

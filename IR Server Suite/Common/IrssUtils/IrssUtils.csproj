@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -20,6 +20,7 @@
     <OldToolsVersion>2.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,6 +52,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -58,6 +60,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
@@ -241,6 +246,14 @@
     <Compile Include="IrssMacro.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="IrssHelp.cs" />
+    <Compile Include="MediaPortal.Core\Logging\ILogger.cs" />
+    <Compile Include="MediaPortal.Core\Logging\LogLevel.cs" />
+    <Compile Include="MediaPortal.Core\Logging\NoLogger.cs" />
+    <Compile Include="MediaPortal.Core\Services\Logging\ConsoleLogger.cs" />
+    <Compile Include="MediaPortal.Core\Services\Logging\CrashLoggerBase.cs" />
+    <Compile Include="MediaPortal.Core\Services\Logging\DefaultLogger.cs" />
+    <Compile Include="MediaPortal.Core\Services\Logging\FileLogger.cs" />
+    <Compile Include="MediaPortal.Core\Services\Logging\GroupLogger.cs" />
     <Compile Include="Mouse.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Panels\KeystrokeCommandPanel.cs">
