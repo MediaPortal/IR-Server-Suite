@@ -155,8 +155,8 @@ namespace IRServer.Plugin
     {
       List<PluginBase> plugins = new List<PluginBase>();
 
-      string path = Path.Combine(Application.StartupPath, "IR Server Plugins");
-      string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+      string path = Path.Combine(Application.StartupPath, "Plugins");
+      string[] files = Directory.GetFiles(path, "*.dll", SearchOption.AllDirectories);
 
       // TODO: Return a Type[], don't instantiate unless required
 

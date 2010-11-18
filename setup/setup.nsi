@@ -376,7 +376,7 @@ ${MementoSection} "IR Server" SectionIRServer
   File "..\IR Server Suite\IR Server Plugins\IR Server Plugin Interface\bin\${Build_Type}\IRServerPluginInterface.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
-  SetOutPath "$DIR_INSTALL\IR Server Plugins"
+  SetOutPath "$DIR_INSTALL\Plugins"
 
   File "..\IR Server Suite\IR Server Plugins\Ads Tech PTV-335 Receiver\bin\${Build_Type}\Ads Tech PTV-335 Receiver.*"
   File "..\IR Server Suite\IR Server Plugins\CoolCommand Receiver\bin\${Build_Type}\CoolCommand Receiver.*"
