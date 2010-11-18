@@ -756,8 +756,9 @@ namespace IRServer
         StopServer();
         StopClient();
       }
-      catch
+      catch (Exception e)
       {
+        IrssLog.Error(e);
       }
     }
 
@@ -1026,6 +1027,8 @@ namespace IRServer
 
     private bool RegisterClient(ClientManager addClient)
     {
+      if (_registeredClients == null) return false;
+
       lock (_registeredClients)
       {
         if (!_registeredClients.Contains(addClient))
@@ -1038,6 +1041,8 @@ namespace IRServer
 
     private bool UnregisterClient(ClientManager removeClient)
     {
+      if (_registeredClients == null) return false;
+
       lock (_registeredClients)
       {
         if (!_registeredClients.Contains(removeClient))
@@ -1052,6 +1057,8 @@ namespace IRServer
 
     private bool RegisterRepeater(ClientManager addRepeater)
     {
+      if (_registeredRepeaters == null) return false;
+
       lock (_registeredRepeaters)
       {
         if (!_registeredRepeaters.Contains(addRepeater))
@@ -1064,6 +1071,8 @@ namespace IRServer
 
     private bool UnregisterRepeater(ClientManager removeRepeater)
     {
+      if (_registeredRepeaters == null) return false;
+
       lock (_registeredRepeaters)
       {
         if (!_registeredRepeaters.Contains(removeRepeater))
@@ -1368,7 +1377,7 @@ namespace IRServer
                 {
                   irServerInfo.CanLearn = (_transmitPlugin is ILearnIR);
                   irServerInfo.CanTransmit = true;
-                  irServerInfo.Ports = (_transmitPlugin as ITransmitIR).AvailablePorts;
+                  irServerInfo.Ports = ((ITransmitIR)_transmitPlugin).AvailablePorts;
                 }
 
                 response.SetDataAsBytes(irServerInfo.ToBytes());
@@ -1655,6 +1664,7 @@ namespace IRServer
         foreach (DataTable table in _abstractRemoteButtons.Tables)
         {
           string device = table.ExtendedProperties["Device"] as string;
+          if (String.IsNullOrEmpty(device)) continue;
 
           if (device.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
           {
@@ -1745,7 +1755,7 @@ namespace IRServer
 
       // wait, if new decice events occur
       Thread.Sleep(TimeToWaitForRestart);
-      
+
       // if new device event occured, stop here
       if (!tempLastDeviceEvent.Equals(_lastDeviceEvent)) return;
 
