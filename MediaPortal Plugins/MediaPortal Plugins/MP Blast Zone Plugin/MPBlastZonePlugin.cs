@@ -34,6 +34,7 @@ using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Profile;
 using MPUtils;
+using Action = MediaPortal.GUI.Library.Action;
 
 namespace MediaPortal.Plugins
 {

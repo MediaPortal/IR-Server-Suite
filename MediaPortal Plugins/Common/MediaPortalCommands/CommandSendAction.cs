@@ -23,6 +23,7 @@
 using System;
 using System.Windows.Forms;
 using MediaPortal.GUI.Library;
+using Action = MediaPortal.GUI.Library.Action;
 
 namespace Commands.MediaPortal
 {

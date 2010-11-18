@@ -32,6 +32,7 @@ using MediaPortal.Player;
 using MediaPortal.Profile;
 using MediaPortal.Util;
 using MPUtils;
+using Action = MediaPortal.GUI.Library.Action;
 
 namespace MediaPortal.Plugins
 {
