@@ -404,69 +404,78 @@ namespace IRServer
       if (Settings.PluginNameReceive == null && String.IsNullOrEmpty(Settings.PluginNameTransmit))
       {
         IrssLog.Warn("No transmit or receive plugins loaded");
+        return;
+      }
+
+      #region Load receive plugins
+
+      if (Settings.PluginNameReceive == null)
+      {
+        IrssLog.Warn("No receiver plugins loaded");
       }
       else
       {
-        if (Settings.PluginNameReceive == null)
-        {
-          IrssLog.Warn("No receiver plugins loaded");
-        }
-        else
-        {
-          _receivePlugins = new List<PluginBase>(Settings.PluginNameReceive.Length);
+        _receivePlugins = new List<PluginBase>(Settings.PluginNameReceive.Length);
 
-          for (int index = 0; index < Settings.PluginNameReceive.Length; index++)
-          {
-            try
-            {
-              string pluginName = Settings.PluginNameReceive[index];
-
-              PluginBase plugin = Program.GetPlugin(pluginName);
-
-              if (plugin == null)
-              {
-                IrssLog.Warn("Receiver plugin not found: {0}", pluginName);
-              }
-              else
-              {
-                _receivePlugins.Add(plugin);
-
-                if (!String.IsNullOrEmpty(Settings.PluginNameTransmit) &&
-                    plugin.Name.Equals(Settings.PluginNameTransmit, StringComparison.OrdinalIgnoreCase))
-                  _transmitPlugin = plugin;
-              }
-            }
-            catch (Exception ex)
-            {
-              IrssLog.Error(ex);
-            }
-          }
-
-          if (_receivePlugins.Count == 0)
-            _receivePlugins = null;
-        }
-
-        if (String.IsNullOrEmpty(Settings.PluginNameTransmit))
-        {
-          IrssLog.Warn("No transmit plugin loaded");
-        }
-        else if (_transmitPlugin == null)
+        for (int index = 0; index < Settings.PluginNameReceive.Length; index++)
         {
           try
           {
-            _transmitPlugin = Program.GetPlugin(Settings.PluginNameTransmit);
+            string pluginName = Settings.PluginNameReceive[index];
+
+            PluginBase plugin = Program.GetPlugin(pluginName);
+
+            if (plugin == null)
+            {
+              IrssLog.Warn("Receiver plugin not found: {0}", pluginName);
+            }
+            else
+            {
+              _receivePlugins.Add(plugin);
+
+              if (!String.IsNullOrEmpty(Settings.PluginNameTransmit) &&
+                  plugin.Name.Equals(Settings.PluginNameTransmit, StringComparison.OrdinalIgnoreCase))
+                _transmitPlugin = plugin;
+            }
           }
           catch (Exception ex)
           {
             IrssLog.Error(ex);
           }
         }
+
+        if (_receivePlugins.Count == 0)
+          _receivePlugins = null;
       }
+
+      #endregion
+
+      #region Load transmit plugin
+
+      if (String.IsNullOrEmpty(Settings.PluginNameTransmit))
+      {
+        IrssLog.Warn("No transmit plugin loaded");
+      }
+      else if (_transmitPlugin == null)
+      {
+        try
+        {
+          _transmitPlugin = Program.GetPlugin(Settings.PluginNameTransmit);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
+
+      #endregion
     }
 
     private void StartPlugins()
     {
       bool transmitPluginAlreadyStarted = false;
+
+      #region Start receive plugins
 
       if (_receivePlugins != null)
       {
@@ -517,6 +526,10 @@ namespace IRServer
           _receivePlugins = null;
       }
 
+      #endregion
+
+      #region Start transmit plugin
+
       if (_transmitPlugin != null && !transmitPluginAlreadyStarted)
       {
         try
@@ -533,11 +546,15 @@ namespace IRServer
           _transmitPlugin = null;
         }
       }
+
+      #endregion
     }
 
     private void StopPlugins()
     {
       bool transmitPluginAlreadyStopped = false;
+
+      #region Stop receive plugins
 
       if (_receivePlugins != null && _receivePlugins.Count > 0)
       {
@@ -578,6 +595,10 @@ namespace IRServer
 
       _receivePlugins = null;
 
+      #endregion
+
+      #region Stop transmit plugin
+
       try
       {
         if (_transmitPlugin != null && !transmitPluginAlreadyStopped)
@@ -591,6 +612,8 @@ namespace IRServer
       {
         _transmitPlugin = null;
       }
+
+      #endregion
     }
 
     #endregion
