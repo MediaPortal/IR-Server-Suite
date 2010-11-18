@@ -22,6 +22,9 @@
 
 using System;
 using System.ComponentModel;
+#if TRACE
+using System.Diagnostics;
+#endif
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;

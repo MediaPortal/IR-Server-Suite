@@ -22,6 +22,9 @@
 
 using System;
 using System.Collections.Generic;
+#if TRACE
+using System.Diagnostics;
+#endif
 using System.Drawing;
 using System.Runtime.InteropServices;
 using IRServer.Plugin.Properties;

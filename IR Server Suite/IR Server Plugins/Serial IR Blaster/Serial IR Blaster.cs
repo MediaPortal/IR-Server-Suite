@@ -20,6 +20,10 @@
 
 #endregion
 
+#if TRACE
+using System;
+using System.Diagnostics;
+#endif
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;

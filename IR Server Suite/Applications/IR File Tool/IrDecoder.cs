@@ -21,6 +21,9 @@
 #endregion
 
 using System;
+#if TRACE
+using System.Diagnostics;
+#endif
 
 namespace IrFileTool
 {

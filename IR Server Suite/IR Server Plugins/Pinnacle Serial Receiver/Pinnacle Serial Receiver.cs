@@ -29,6 +29,9 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using IRServer.Plugin.Properties;
+#if TRACE
+using System.Diagnostics;
+#endif
 
 namespace IRServer.Plugin
 {

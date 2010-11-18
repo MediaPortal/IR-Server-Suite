@@ -22,6 +22,9 @@
 
 using System;
 using System.Collections.Generic;
+#if TRACE
+using System.Diagnostics;
+#endif
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 

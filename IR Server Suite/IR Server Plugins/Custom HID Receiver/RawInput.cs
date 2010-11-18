@@ -21,6 +21,9 @@
 #endregion
 
 using System;
+#if TRACE
+using System.Diagnostics;
+#endif
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
