@@ -48,6 +48,8 @@ namespace IRServer
     private static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData,
                                                                            "IR Server\\Abstract Remote Maps\\RemoteTable.xsd");
 
+    private const int TimeToWaitForRestart = 10000;
+
     #endregion Constants
 
     #region Variables
@@ -55,17 +57,16 @@ namespace IRServer
     private DataSet _abstractRemoteButtons;
     private Client _client;
 
-    private List<PluginBase> _pluginReceive;
-    private PluginBase _pluginTransmit;
+    private List<PluginBase> _receivePlugins;
+    private PluginBase _transmitPlugin;
     private bool _registered; // Used for relay and repeater modes.
 
     private List<ClientManager> _registeredClients;
     private List<ClientManager> _registeredRepeaters;
     private Server _server;
 
-    private HardwareMonitor hardwareMonitor;
-    private DateTime lastDeviceEvent = DateTime.MinValue;
-    private const int timeToWaitForRestart = 10000;
+    private HardwareMonitor _hardwareMonitor;
+    private DateTime _lastDeviceEvent = DateTime.MinValue;
 
     #endregion Variables
 
@@ -197,8 +198,8 @@ namespace IRServer
         _abstractRemoteButtons = new DataSet("AbstractRemoteButtons");
         _abstractRemoteButtons.CaseSensitive = true;
 
-        if (_pluginReceive != null)
-          foreach (PluginBase plugin in _pluginReceive)
+        if (_receivePlugins != null)
+          foreach (PluginBase plugin in _receivePlugins)
             if (plugin is IRemoteReceiver)
               LoadAbstractDeviceFiles(plugin.Name);
       }
@@ -209,9 +210,9 @@ namespace IRServer
 
       if (Settings.RestartOnUSBChanges)
       {
-        hardwareMonitor = new HardwareMonitor();
-        hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
-        hardwareMonitor.Start();
+        _hardwareMonitor = new HardwareMonitor();
+        _hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
+        _hardwareMonitor.Start();
       }
 
       #endregion
@@ -226,9 +227,9 @@ namespace IRServer
     {
       IrssLog.Info("Stopping IR Server ...");
 
-      if (hardwareMonitor != null)
-        hardwareMonitor.Stop();
-      hardwareMonitor = null;
+      if (_hardwareMonitor != null)
+        _hardwareMonitor.Stop();
+      _hardwareMonitor = null;
 
       if (Settings.Mode == IRServerMode.ServerMode)
       {
@@ -296,15 +297,15 @@ namespace IRServer
 
           bool suspendedTransmit = false;
 
-          if (_pluginReceive != null)
+          if (_receivePlugins != null)
           {
-            foreach (PluginBase plugin in _pluginReceive)
+            foreach (PluginBase plugin in _receivePlugins)
             {
               try
               {
                 plugin.Suspend();
 
-                if (plugin == _pluginTransmit)
+                if (plugin == _transmitPlugin)
                   suspendedTransmit = true;
               }
               catch (Exception ex)
@@ -314,11 +315,11 @@ namespace IRServer
             }
           }
 
-          if (_pluginTransmit != null && !suspendedTransmit)
+          if (_transmitPlugin != null && !suspendedTransmit)
           {
             try
             {
-              _pluginTransmit.Suspend();
+              _transmitPlugin.Suspend();
             }
             catch (Exception ex)
             {
@@ -345,13 +346,13 @@ namespace IRServer
 
           bool resumedTransmit = false;
 
-          if (_pluginReceive != null)
+          if (_receivePlugins != null)
           {
-            foreach (PluginBase plugin in _pluginReceive)
+            foreach (PluginBase plugin in _receivePlugins)
             {
               try
               {
-                if (plugin == _pluginTransmit)
+                if (plugin == _transmitPlugin)
                   resumedTransmit = true;
 
                 plugin.Resume();
@@ -363,11 +364,11 @@ namespace IRServer
             }
           }
 
-          if (_pluginTransmit != null && !resumedTransmit)
+          if (_transmitPlugin != null && !resumedTransmit)
           {
             try
             {
-              _pluginTransmit.Resume();
+              _transmitPlugin.Resume();
             }
             catch (Exception ex)
             {
@@ -397,8 +398,8 @@ namespace IRServer
 
     private void LoadPlugins()
     {
-      _pluginReceive = null;
-      _pluginTransmit = null;
+      _receivePlugins = null;
+      _transmitPlugin = null;
 
       if (Settings.PluginNameReceive == null && String.IsNullOrEmpty(Settings.PluginNameTransmit))
       {
@@ -412,7 +413,7 @@ namespace IRServer
         }
         else
         {
-          _pluginReceive = new List<PluginBase>(Settings.PluginNameReceive.Length);
+          _receivePlugins = new List<PluginBase>(Settings.PluginNameReceive.Length);
 
           for (int index = 0; index < Settings.PluginNameReceive.Length; index++)
           {
@@ -428,11 +429,11 @@ namespace IRServer
               }
               else
               {
-                _pluginReceive.Add(plugin);
+                _receivePlugins.Add(plugin);
 
                 if (!String.IsNullOrEmpty(Settings.PluginNameTransmit) &&
                     plugin.Name.Equals(Settings.PluginNameTransmit, StringComparison.OrdinalIgnoreCase))
-                  _pluginTransmit = plugin;
+                  _transmitPlugin = plugin;
               }
             }
             catch (Exception ex)
@@ -441,19 +442,19 @@ namespace IRServer
             }
           }
 
-          if (_pluginReceive.Count == 0)
-            _pluginReceive = null;
+          if (_receivePlugins.Count == 0)
+            _receivePlugins = null;
         }
 
         if (String.IsNullOrEmpty(Settings.PluginNameTransmit))
         {
           IrssLog.Warn("No transmit plugin loaded");
         }
-        else if (_pluginTransmit == null)
+        else if (_transmitPlugin == null)
         {
           try
           {
-            _pluginTransmit = Program.GetPlugin(Settings.PluginNameTransmit);
+            _transmitPlugin = Program.GetPlugin(Settings.PluginNameTransmit);
           }
           catch (Exception ex)
           {
@@ -465,13 +466,13 @@ namespace IRServer
 
     private void StartPlugins()
     {
-      bool startedTransmit = false;
+      bool transmitPluginAlreadyStarted = false;
 
-      if (_pluginReceive != null)
+      if (_receivePlugins != null)
       {
         List<PluginBase> removePlugins = new List<PluginBase>();
 
-        foreach (PluginBase plugin in _pluginReceive)
+        foreach (PluginBase plugin in _receivePlugins)
         {
           try
           {
@@ -491,7 +492,7 @@ namespace IRServer
 
             if (plugin.Name.Equals(Settings.PluginNameTransmit, StringComparison.OrdinalIgnoreCase))
             {
-              startedTransmit = true;
+              transmitPluginAlreadyStarted = true;
               IrssLog.Info("Transmit and Receive plugin started: \"{0}\"", plugin.Name);
             }
             else
@@ -510,17 +511,17 @@ namespace IRServer
 
         if (removePlugins.Count > 0)
           foreach (PluginBase plugin in removePlugins)
-            _pluginReceive.Remove(plugin);
+            _receivePlugins.Remove(plugin);
 
-        if (_pluginReceive.Count == 0)
-          _pluginReceive = null;
+        if (_receivePlugins.Count == 0)
+          _receivePlugins = null;
       }
 
-      if (_pluginTransmit != null && !startedTransmit)
+      if (_transmitPlugin != null && !transmitPluginAlreadyStarted)
       {
         try
         {
-          _pluginTransmit.Start();
+          _transmitPlugin.Start();
 
           IrssLog.Info("Transmit plugin started: \"{0}\"", Settings.PluginNameTransmit);
         }
@@ -529,19 +530,18 @@ namespace IRServer
           IrssLog.Error("Failed to start transmit plugin: \"{0}\"", Settings.PluginNameTransmit);
           IrssLog.Error(ex);
 
-          _pluginTransmit = null;
+          _transmitPlugin = null;
         }
       }
     }
 
     private void StopPlugins()
     {
-      // Stop Plugin(s) ...
-      bool stoppedTransmit = false;
+      bool transmitPluginAlreadyStopped = false;
 
-      if (_pluginReceive != null && _pluginReceive.Count > 0)
+      if (_receivePlugins != null && _receivePlugins.Count > 0)
       {
-        foreach (PluginBase plugin in _pluginReceive)
+        foreach (PluginBase plugin in _receivePlugins)
         {
           try
           {
@@ -559,9 +559,9 @@ namespace IRServer
 
             plugin.Stop();
 
-            if (plugin == _pluginTransmit)
+            if (plugin == _transmitPlugin)
             {
-              stoppedTransmit = true;
+              transmitPluginAlreadyStopped = true;
               IrssLog.Info("Transmit and Receive plugin stopped: \"{0}\"", plugin.Name);
             }
             else
@@ -576,12 +576,12 @@ namespace IRServer
         }
       }
 
-      _pluginReceive = null;
+      _receivePlugins = null;
 
       try
       {
-        if (_pluginTransmit != null && !stoppedTransmit)
-          _pluginTransmit.Stop();
+        if (_transmitPlugin != null && !transmitPluginAlreadyStopped)
+          _transmitPlugin.Stop();
       }
       catch (Exception ex)
       {
@@ -589,7 +589,7 @@ namespace IRServer
       }
       finally
       {
-        _pluginTransmit = null;
+        _transmitPlugin = null;
       }
     }
 
@@ -1059,13 +1059,13 @@ namespace IRServer
       {
         IrssLog.Info("Blast IR");
 
-        if (_pluginTransmit == null)
+        if (_transmitPlugin == null)
         {
           IrssLog.Warn("No transmit plugin loaded, can't blast");
           return false;
         }
 
-        ITransmitIR _blaster = _pluginTransmit as ITransmitIR;
+        ITransmitIR _blaster = _transmitPlugin as ITransmitIR;
         if (_blaster == null)
         {
           IrssLog.Error("Active transmit plugin doesn't support blasting!");
@@ -1096,13 +1096,13 @@ namespace IRServer
 
       data = null;
 
-      if (_pluginTransmit == null)
+      if (_transmitPlugin == null)
       {
         IrssLog.Warn("No transmit plugin loaded, can't learn");
         return LearnStatus.Failure;
       }
 
-      ILearnIR _learner = _pluginTransmit as ILearnIR;
+      ILearnIR _learner = _transmitPlugin as ILearnIR;
       if (_learner == null)
       {
         IrssLog.Warn("Active transmit plugin doesn't support learn");
@@ -1168,9 +1168,9 @@ namespace IRServer
 
                 // Check that the device maps are loaded for the forwarded device
                 bool foundDevice = false;
-                if (_pluginReceive != null)
+                if (_receivePlugins != null)
                 {
-                  foreach (PluginBase plugin in _pluginReceive)
+                  foreach (PluginBase plugin in _receivePlugins)
                   {
                     if (plugin is IRemoteReceiver && plugin.Name.Equals(deviceName, StringComparison.OrdinalIgnoreCase))
                     {
@@ -1338,14 +1338,14 @@ namespace IRServer
               {
                 IRServerInfo irServerInfo = new IRServerInfo();
 
-                if (_pluginReceive != null)
+                if (_receivePlugins != null)
                   irServerInfo.CanReceive = true;
 
-                if (_pluginTransmit != null)
+                if (_transmitPlugin != null)
                 {
-                  irServerInfo.CanLearn = (_pluginTransmit is ILearnIR);
+                  irServerInfo.CanLearn = (_transmitPlugin is ILearnIR);
                   irServerInfo.CanTransmit = true;
-                  irServerInfo.Ports = (_pluginTransmit as ITransmitIR).AvailablePorts;
+                  irServerInfo.Ports = (_transmitPlugin as ITransmitIR).AvailablePorts;
                 }
 
                 response.SetDataAsBytes(irServerInfo.ToBytes());
@@ -1718,13 +1718,13 @@ namespace IRServer
     private void LazyRestart()
     {
       DateTime tempLastDeviceEvent = DateTime.Now;
-      lastDeviceEvent = tempLastDeviceEvent;
+      _lastDeviceEvent = tempLastDeviceEvent;
 
       // wait, if new decice events occur
-      Thread.Sleep(timeToWaitForRestart);
+      Thread.Sleep(TimeToWaitForRestart);
       
       // if new device event occured, stop here
-      if (!tempLastDeviceEvent.Equals(lastDeviceEvent)) return;
+      if (!tempLastDeviceEvent.Equals(_lastDeviceEvent)) return;
 
       // restart service
       IrssLog.Info("New device event. Restarting Input Service.");
