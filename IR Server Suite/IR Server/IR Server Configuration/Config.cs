@@ -535,9 +535,9 @@ namespace IRServer.Configuration
     {
       toolStripServiceButton.Enabled = false;
       if (Shared._serviceInstalled == true)
-        Program.ServiceUninstall();
+        Shared.ServiceUninstall();
       else
-        Program.ServiceInstall();
+        Shared.ServiceInstall();
 
       Shared.getStatus();
       setButtons();
@@ -547,17 +547,17 @@ namespace IRServer.Configuration
     private void toolStripButtonService_Click(object sender, EventArgs e)
     {
       if (Shared._irsStatus == IrsStatus.RunningService)
-        Program.ServiceStop();
+        Shared.ServiceStop();
       if (Shared._irsStatus == IrsStatus.NotRunning)
-        Program.ServiceStart();
+        Shared.ServiceStart();
     }
 
     private void toolStripButtonApplication_Click(object sender, EventArgs e)
     {
       if (Shared._irsStatus == IrsStatus.RunningApplication)
-        Program.ApplicationStop();
+        Shared.ApplicationStop();
       if (Shared._irsStatus == IrsStatus.NotRunning)
-        Program.ApplicationStart();
+        Shared.ApplicationStart();
     }
 
     #endregion Controls
@@ -602,7 +602,7 @@ namespace IRServer.Configuration
           Settings.SaveSettings();
 
           // Restart IR Server ...
-          Program.RestartIRS();
+          Shared.RestartIRS();
         }
         else
         {

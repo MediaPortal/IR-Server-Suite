@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.ServiceProcess;
+using System.Threading;
 using IRServer.Plugin;
 using IrssUtils;
+using TimeoutException = System.ServiceProcess.TimeoutException;
 
 namespace IRServer
 {
@@ -52,19 +57,201 @@ namespace IRServer
   {
     #region Constants
 
+    public static readonly string IRServerFile = Path.Combine(
+      Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase), @"IR Server.exe");
+
     public const string ServerName = "IRServer";
     public const string ServerWindowName = "IRSS - " + ServerName;
     public const string ServerDisplayName = "IR Server";
 
+    private static readonly TimeSpan defaultServiceTime = new TimeSpan(0, 0, 30);
+
     #endregion
 
     #region Variables
+
+    private static ServiceController serviceController;
+    private static int waitCount;
 
     public static ServiceController[] serviceControllers;
     private static IntPtr irsWindow;
 
     public static IrsStatus _irsStatus;
     public static bool _serviceInstalled;
+
+    #endregion
+
+    #region Start / Stop   App / Service
+
+    private static ServiceController getServiceController()
+    {
+      Shared.serviceControllers = ServiceController.GetServices();
+      foreach (ServiceController sc in Shared.serviceControllers)
+      {
+        if (sc.ServiceName == Shared.ServerName)
+          return sc;
+      }
+      return null;
+    }
+
+    public static void ServiceInstall()
+    {
+      try
+      {
+        IrssLog.Info("Installing IR Server service");
+        Process IRServer = Process.Start(Shared.IRServerFile, "/INSTALL");
+        IRServer.WaitForExit((int)defaultServiceTime.TotalMilliseconds);
+        IrssLog.Info("Installing IR Server service - done");
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Installing IR Server service - failed (see following...)");
+        IrssLog.Error(ex);
+      }
+    }
+
+    public static void ServiceUninstall()
+    {
+      try
+      {
+        IrssLog.Info("Uninstalling IR Server service");
+        Process IRServer = Process.Start(Shared.IRServerFile, "/UNINSTALL");
+        IRServer.WaitForExit((int)defaultServiceTime.TotalMilliseconds);
+        IrssLog.Info("Uninstalling IR Server service - done");
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Uninstalling IR Server service - failed (see following...)");
+        IrssLog.Error(ex);
+      }
+    }
+
+    public static void ServiceStart()
+    {
+      try
+      {
+        serviceController = getServiceController();
+        if (Shared.serviceControllers != null)
+        {
+          IrssLog.Info("Starting IR Server (service)");
+          serviceController.Start();
+          serviceController.WaitForStatus(ServiceControllerStatus.Running, defaultServiceTime);
+          IrssLog.Info("Starting IR Server (service) - done");
+        }
+      }
+      catch (TimeoutException ex)
+      {
+        IrssLog.Error("Starting IR Server (service) - failed (timeout error)");
+        IrssLog.Error(ex);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Starting IR Server (service) - failed (see following...)");
+        IrssLog.Error(ex);
+      }
+    }
+
+    public static void ServiceStop()
+    {
+      try
+      {
+        serviceController = getServiceController();
+        if (Shared.serviceControllers != null)
+        {
+          IrssLog.Info("Stopping IR Server (service)");
+          serviceController.Stop();
+          serviceController.WaitForStatus(ServiceControllerStatus.Stopped, defaultServiceTime);
+          IrssLog.Info("Stopping IR Server (service) - done");
+        }
+      }
+      catch (TimeoutException ex)
+      {
+        IrssLog.Error("Stopping IR Server (service) - failed (timeout error)");
+        IrssLog.Error(ex);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Stopping IR Server (service) - failed (see following...)");
+        IrssLog.Error(ex);
+      }
+    }
+
+    public static void RestartIRS()
+    {
+      IrssLog.Info("Restarting IR Server");
+
+      switch (Shared._irsStatus)
+      {
+        case IrsStatus.RunningService:
+          {
+            ServiceStop();
+            ServiceStart();
+            break;
+          }
+        case IrsStatus.RunningApplication:
+          {
+            ApplicationStop();
+            ApplicationStart();
+            break;
+          }
+      }
+      IrssLog.Info("Restarting IR Server - done");
+    }
+
+    public static void ApplicationStart()
+    {
+      try
+      {
+        IrssLog.Info("Starting IR Server (application)");
+        Process IRServer = Process.Start(IRServerFile);
+        waitCount = 0;
+        while (Win32.FindWindowByTitle(Shared.ServerWindowName) == IntPtr.Zero)
+        {
+          waitCount++;
+          if (waitCount > 150) throw new TimeoutException();
+          Thread.Sleep(200);
+        }
+        IrssLog.Info("Starting IR Server (application) - done");
+      }
+      catch (TimeoutException ex)
+      {
+        IrssLog.Error("Starting IR Server (application) - failed (timeout error)");
+        IrssLog.Error(ex);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Starting IR Server (application) - failed (see following...)");
+        IrssLog.Error(ex);
+      }
+    }
+
+    public static void ApplicationStop()
+    {
+      try
+      {
+        IrssLog.Info("Stopping IR Server (application)");
+        IntPtr irssWindow = Win32.FindWindowByTitle(ServerWindowName);
+        IntPtr result = Win32.SendWindowsMessage(irssWindow, 16, 0, 0);
+        waitCount = 0;
+        while (Win32.FindWindowByTitle(ServerWindowName) != IntPtr.Zero)
+        {
+          waitCount++;
+          if (waitCount > 150) throw new TimeoutException();
+          Thread.Sleep(200);
+        }
+        IrssLog.Info("Stopping IR Server (application) - done");
+      }
+      catch (TimeoutException ex)
+      {
+        IrssLog.Error("Stopping IR Server (application) - failed (timeout error)");
+        IrssLog.Error(ex);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error("Stopping IR Server (application) - failed (see following...)");
+        IrssLog.Error(ex);
+      }
+    }
 
     #endregion
 
@@ -138,7 +325,7 @@ namespace IRServer
 
     #endregion
 
-    #region
+    #region getstatus
 
     public static void getStatus()
     {

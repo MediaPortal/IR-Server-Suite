@@ -207,13 +207,14 @@ namespace IRServer
       #endregion Setup Abstract Remote Model processing
 
       #region Setup Hardware Monitoring
-
-      if (Settings.RestartOnUSBChanges)
-      {
-        _hardwareMonitor = new HardwareMonitor();
-        _hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
-        _hardwareMonitor.Start();
-      }
+      
+      //// Restart is done onlyy in IRTray with AppMode
+      //if (Settings.RestartOnUSBChanges)
+      //{
+      //  _hardwareMonitor = new HardwareMonitor();
+      //  _hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
+      //  _hardwareMonitor.Start();
+      //}
 
       #endregion
 
