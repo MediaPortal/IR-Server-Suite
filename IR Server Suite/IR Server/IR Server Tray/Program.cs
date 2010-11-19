@@ -41,6 +41,9 @@ namespace IRServer.Tray
     [STAThread]
     static void Main()
     {
+      Thread.CurrentThread.Name = "Main Thread";
+      IrssLog.Open("IR Server Tray.log");
+
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
@@ -52,8 +55,9 @@ namespace IRServer.Tray
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel("IR Server Tray"));
       _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 
+      if (File.Exists(_configExe))
       _notifyIcon.ContextMenuStrip.Items.Add("&Configuration", Win32.GetImageFromFile(_configExe), ClickConfiguration);
-      
+
       if (File.Exists(_translatorExe))
         _notifyIcon.ContextMenuStrip.Items.Add("&Translator", Win32.GetImageFromFile(_translatorExe), ClickTranslator);
       
@@ -81,8 +85,14 @@ namespace IRServer.Tray
 
       Application.Run();
       thread.Abort();
+
+      _hardwareMonitor.Stop();
+      _hardwareMonitor = null;
+
       _notifyIcon.Visible = false;
       _notifyIcon = null;
+
+      IrssLog.Close();
     }
 
     #region EventHandler
