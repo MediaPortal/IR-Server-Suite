@@ -89,6 +89,12 @@ namespace IRServer.Configuration
       set { checkBoxRestartOnUSBChanges.Checked = value; }
     }
 
+    public bool RestartOnUSBChangesTray
+    {
+      get { return checkBoxRestartOnUSBChangesTray.Checked; }
+      set { checkBoxRestartOnUSBChangesTray.Checked = value; }
+    }
+
     #endregion Properties
 
     #region Constructor
@@ -154,5 +160,21 @@ namespace IRServer.Configuration
     }
 
     #endregion Controls
+
+    private void checkBoxRestartOnUSBChanges_CheckedChanged(object sender, EventArgs e)
+    {
+      if (checkBoxRestartOnUSBChanges.Checked)
+      {
+        checkBoxRestartOnUSBChangesTray.Checked = false;
+      }
+    }
+
+    private void checkBoxRestartOnUSBChangesTray_CheckedChanged(object sender, EventArgs e)
+    {
+      if (checkBoxRestartOnUSBChangesTray.Checked)
+      {
+        checkBoxRestartOnUSBChanges.Checked = false;
+      }
+    }
   }
 }

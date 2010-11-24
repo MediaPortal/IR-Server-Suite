@@ -169,8 +169,7 @@ namespace IRServer.Tray
 
       // restart service
       IrssLog.Info("New device event. Restarting Input Service.");
-      Shared.ApplicationStop();
-      Shared.ApplicationStart();
+      Shared.RestartIRS();
     }
 
     #endregion

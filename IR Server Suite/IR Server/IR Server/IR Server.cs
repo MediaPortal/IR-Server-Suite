@@ -207,14 +207,13 @@ namespace IRServer
       #endregion Setup Abstract Remote Model processing
 
       #region Setup Hardware Monitoring
-      
-      //// Restart is done onlyy in IRTray with AppMode
-      //if (Settings.RestartOnUSBChanges)
-      //{
-      //  _hardwareMonitor = new HardwareMonitor();
-      //  _hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
-      //  _hardwareMonitor.Start();
-      //}
+
+      if (Settings.RestartOnUSBChanges)
+      {
+        _hardwareMonitor = new HardwareMonitor();
+        _hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
+        _hardwareMonitor.Start();
+      }
 
       #endregion
 
@@ -229,8 +228,10 @@ namespace IRServer
       IrssLog.Info("Stopping IR Server ...");
 
       if (_hardwareMonitor != null)
+      {
         _hardwareMonitor.Stop();
-      _hardwareMonitor = null;
+        _hardwareMonitor = null;
+      }
 
       if (Settings.Mode == IRServerMode.ServerMode)
       {
@@ -1762,9 +1763,11 @@ namespace IRServer
 
       // restart service
       IrssLog.Info("New device event. Restarting Input Service.");
+      StopServer();
       StopPlugins();
       LoadPlugins();
       StartPlugins();
+      StartServer();
     }
 
     #endregion
