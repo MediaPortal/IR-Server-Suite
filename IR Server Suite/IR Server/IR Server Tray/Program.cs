@@ -72,7 +72,7 @@ namespace IRServer.Tray
       _notifyIcon.Visible = true;
 
       Settings.LoadSettings();
-      if (Settings.RestartOnUSBChanges)
+      if (Settings.RestartOnUSBChangesTray)
       {
         _hardwareMonitor = new HardwareMonitor();
         _hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
@@ -86,8 +86,11 @@ namespace IRServer.Tray
       Application.Run();
       thread.Abort();
 
-      _hardwareMonitor.Stop();
-      _hardwareMonitor = null;
+      if (Settings.RestartOnUSBChangesTray)
+      {
+        _hardwareMonitor.Stop();
+        _hardwareMonitor = null;
+      }
 
       _notifyIcon.Visible = false;
       _notifyIcon = null;
