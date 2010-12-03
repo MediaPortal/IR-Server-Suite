@@ -60,6 +60,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WiimoteLib, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mouse.cs" />
@@ -83,10 +84,6 @@
       <Name>IR Server Plugin Interface</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\WiimoteLib\WiimoteLib.csproj">
-      <Project>{37A555DF-7012-4B99-8A47-1C922A361E52}</Project>
-      <Name>WiimoteLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -101,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="References\WiimoteLib.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -111,6 +109,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetDir)$(ProjectName).???"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetDir)$(ProjectName).???"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"
+xcopy /Y "$(ProjectDir)References\*.dll"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
