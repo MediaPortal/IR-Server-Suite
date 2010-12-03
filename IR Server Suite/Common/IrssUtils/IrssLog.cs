@@ -41,7 +41,7 @@ namespace IrssUtils
     /// <summary>
     /// File extension for log file backups.
     /// </summary>
-    public const string ExtensionBackupFile = ".bak";
+    public const string ExtensionBackupFile = ".old.log";
 
     #endregion Constants
 
