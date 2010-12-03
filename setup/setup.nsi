@@ -360,7 +360,7 @@ ${MementoSection} "IR Server" SectionIRServer
 
   SetOutPath "$DIR_INSTALL"
   ${LOG_TEXT} "INFO" "Installing IR Server..."
-  File "..\IR Server Suite\IR Server\IR Server\bin\${Build_Type}\IR Server.*"
+  File "${svn_ROOT_IRSS}\bin\${Build_Type}\IR Server.???"
   File "..\IR Server Suite\IR Server\IR Server\Install.cmd"
   File "..\IR Server Suite\IR Server\IR Server\Uninstall.cmd"
 
