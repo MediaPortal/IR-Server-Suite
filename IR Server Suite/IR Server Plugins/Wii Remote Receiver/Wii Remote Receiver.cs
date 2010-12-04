@@ -202,7 +202,7 @@ namespace IRServer.Plugin
         _wiimote.WiimoteExtensionChanged += WiimoteExtensionChanged;
 
         _wiimote.Connect();
-        _wiimote.SetReportType(Wiimote.InputReport.IRAccel, true);
+        _wiimote.SetReportType(InputReport.IRAccel, true);
         _wiimote.SetLEDs(_led1, _led2, _led3, _led4);
         _wiimote.SetRumble(false);
       }
@@ -379,8 +379,8 @@ namespace IRServer.Plugin
             if (ws.NunchukState.Z != _previousState.NunchukState.Z)
               mouseButtons |= ws.NunchukState.Z ? Mouse.MouseEvents.LeftDown : Mouse.MouseEvents.LeftUp;
 
-            int deltaX = (int) (ws.NunchukState.X * 10 * _mouseSensitivity);
-            int deltaY = (int) (ws.NunchukState.Y * -10 * _mouseSensitivity);
+            int deltaX = (int) (ws.NunchukState.Joystick.X * 10 * _mouseSensitivity);
+            int deltaY = (int) (ws.NunchukState.Joystick.Y * -10 * _mouseSensitivity);
 
             if (_handleMouseLocally)
             {
@@ -440,10 +440,10 @@ namespace IRServer.Plugin
             RemoteCallback(Name, "WiimoteClassic_Pad:Up");
         }
 
-        if (ws.IRState.Found1 && ws.IRState.Found2)
+        if (ws.IRState.IRSensors[0].Found && ws.IRState.IRSensors[1].Found)
         {
-          int x = (int) (ScreenWidth - (ws.IRState.X1 + ws.IRState.X2) / 2 * ScreenWidth);
-          int y = (int) ((ws.IRState.Y1 + ws.IRState.Y2) / 2 * ScreenHeight);
+          int x = (int)(ScreenWidth - (ws.IRState.IRSensors[0].Position.X + ws.IRState.IRSensors[1].Position.X) / 2 * ScreenWidth);
+          int y = (int)((ws.IRState.IRSensors[0].Position.Y + ws.IRState.IRSensors[1].Position.Y) / 2 * ScreenHeight);
 
           if (_handleMouseLocally)
           {
@@ -451,8 +451,8 @@ namespace IRServer.Plugin
           }
           else
           {
-            int prevX = (int) (ScreenWidth - (_previousState.IRState.X1 + _previousState.IRState.X2) / 2 * ScreenWidth);
-            int prevY = (int) ((_previousState.IRState.Y1 + _previousState.IRState.Y2) / 2 * ScreenHeight);
+            int prevX = (int)(ScreenWidth - (_previousState.IRState.IRSensors[0].Position.X + _previousState.IRState.IRSensors[1].Position.X) / 2 * ScreenWidth);
+            int prevY = (int)((_previousState.IRState.IRSensors[0].Position.Y + _previousState.IRState.IRSensors[1].Position.Y) / 2 * ScreenHeight);
 
             int deltaX = x - prevX;
             int deltaY = y - prevY;
@@ -495,23 +495,10 @@ namespace IRServer.Plugin
       _previousState.Extension = ws.Extension;
       _previousState.ExtensionType = ws.ExtensionType;
 
-      _previousState.IRState.Found1 = ws.IRState.Found1;
-      _previousState.IRState.Found2 = ws.IRState.Found2;
-      _previousState.IRState.MidX = ws.IRState.MidX;
-      _previousState.IRState.MidY = ws.IRState.MidY;
+      _previousState.IRState.IRSensors = ws.IRState.IRSensors;
+      _previousState.IRState.Midpoint = ws.IRState.Midpoint;
       _previousState.IRState.Mode = ws.IRState.Mode;
-      _previousState.IRState.RawMidX = ws.IRState.RawMidX;
-      _previousState.IRState.RawMidY = ws.IRState.RawMidY;
-      _previousState.IRState.RawX1 = ws.IRState.RawX1;
-      _previousState.IRState.RawX2 = ws.IRState.RawX2;
-      _previousState.IRState.RawY1 = ws.IRState.RawY1;
-      _previousState.IRState.RawY2 = ws.IRState.RawY2;
-      _previousState.IRState.Size1 = ws.IRState.Size1;
-      _previousState.IRState.Size2 = ws.IRState.Size2;
-      _previousState.IRState.X1 = ws.IRState.X1;
-      _previousState.IRState.X2 = ws.IRState.X2;
-      _previousState.IRState.Y1 = ws.IRState.Y1;
-      _previousState.IRState.Y2 = ws.IRState.Y2;
+      _previousState.IRState.RawMidpoint = ws.IRState.RawMidpoint;
 
       _previousState.NunchukState.C = ws.NunchukState.C;
       _previousState.NunchukState.Z = ws.NunchukState.Z;
@@ -520,9 +507,9 @@ namespace IRServer.Plugin
     private void WiimoteExtensionChanged(object sender, WiimoteExtensionChangedEventArgs args)
     {
       if (args.Inserted)
-        _wiimote.SetReportType(Wiimote.InputReport.IRExtensionAccel, true);
+        _wiimote.SetReportType(InputReport.IRExtensionAccel, true);
       else
-        _wiimote.SetReportType(Wiimote.InputReport.IRAccel, true);
+        _wiimote.SetReportType(InputReport.IRAccel, true);
     }
 
     #endregion Implementation
