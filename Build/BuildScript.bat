@@ -31,6 +31,12 @@ echo.
 
 
 echo.
+echo Removing old binaries...
+RMDir /S /Q ..\bin\%BUILD_TYPE% >> %LOG%
+if not %ERRORLEVEL%==0 EXIT
+
+
+echo.
 echo Writing SVN revision assemblies...
 %DeployVersionSVN% /svn="..\IR Server Suite"  >> %LOG%
 
