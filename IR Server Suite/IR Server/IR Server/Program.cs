@@ -26,6 +26,7 @@ using System.Configuration.Install;
 using System.IO;
 using System.Reflection;
 using System.ServiceProcess;
+using System.Threading;
 using IRServer.Plugin;
 using IrssUtils;
 using System.Windows.Forms;
@@ -51,12 +52,14 @@ namespace IRServer
     [STAThread]
     private static void Main(string[] args)
     {
-      IrssLog.LogLevel = IrssLog.Level.Debug;
+      if (ProcessHelper.IsProcessAlreadyRunning())
+        return;
+
+      Thread.CurrentThread.Name = "Main Thread";
+      IrssLog.Open("IR Server.log");
 
       try
       {
-        IrssLog.Open("IR Server.log");
-
         if (args.Length == 0)
         {
           IRServer = new IRServer();

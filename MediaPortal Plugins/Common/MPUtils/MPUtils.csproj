@@ -66,6 +66,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\IR Server Suite\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExternalChannelConfig.cs" />
     <Compile Include="Forms\MPMessage.cs">
       <SubType>Form</SubType>
@@ -86,7 +90,6 @@
       <DependentUpon>GoToScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="MPCommon.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\MPMessage.resx">

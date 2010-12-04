@@ -65,13 +65,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientManager.cs" />
     <Compile Include="IrssMessage.cs" />
     <Compile Include="GenericPCQueue.cs" />
     <Compile Include="MessageManagerCombo.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

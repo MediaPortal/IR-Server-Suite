@@ -1763,10 +1763,11 @@ namespace IRServer
 
       // restart service
       IrssLog.Info("New device event. Restarting Input Service.");
-      StopServer();
       StopPlugins();
       LoadPlugins();
       StartPlugins();
+
+      StopServer();
       StartServer();
     }
 

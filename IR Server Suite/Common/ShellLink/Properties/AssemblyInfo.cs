@@ -1,4 +1,4 @@
-﻿#region Copyright (C) 2005-2010 Team MediaPortal
+#region Copyright (C) 2005-2010 Team MediaPortal
 
 // Copyright (C) 2005-2010 Team MediaPortal
 // http://www.team-mediaportal.com
@@ -27,6 +27,6 @@ using System.Reflection;
 // associated with an assembly.
 //
 
-[assembly: AssemblyTitle("IRMan Receiver")]
-[assembly: AssemblyDescription("IR Server plugin to support the IRMan receiver")]
+[assembly: AssemblyTitle("ShellLink")]
+[assembly: AssemblyDescription("")]
 [assembly: CLSCompliant(true)]

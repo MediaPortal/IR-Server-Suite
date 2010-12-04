@@ -63,6 +63,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandHibernate.cs" />
     <Compile Include="CommandKeystrokes.cs" />
     <Compile Include="CommandPause.cs" />
@@ -97,7 +101,6 @@
     <Compile Include="Forms\EditPause.Designer.cs">
       <DependentUpon>EditPause.cs</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\PopupMessage.cs">
       <SubType>Form</SubType>
     </Compile>

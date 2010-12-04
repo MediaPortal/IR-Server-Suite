@@ -41,14 +41,14 @@ namespace IRServer.Tray
     [STAThread]
     static void Main()
     {
+      if (ProcessHelper.IsProcessAlreadyRunning())
+        return;
+
       Thread.CurrentThread.Name = "Main Thread";
       IrssLog.Open("IR Server Tray.log");
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-
-      if (ProcessHelper.IsProcessAlreadyRunning())
-        return;
 
       _notifyIcon = new NotifyIcon();
       _notifyIcon.ContextMenuStrip = new ContextMenuStrip();

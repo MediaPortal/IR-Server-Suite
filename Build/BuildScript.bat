@@ -32,7 +32,7 @@ echo.
 
 echo.
 echo Writing SVN revision assemblies...
-%DeployVersionSVN% /svn=".."  >> %LOG%
+%DeployVersionSVN% /svn="..\IR Server Suite"  >> %LOG%
 
 
 echo.
@@ -52,11 +52,11 @@ if not %ERRORLEVEL%==0 EXIT
 
 echo.
 echo Reverting assemblies...
-%DeployVersionSVN% /svn=".." /revert >> %LOG%
+%DeployVersionSVN% /svn="..\IR Server Suite" /revert >> %LOG%
 
 echo.
 echo Reading the svn revision...
-%DeployVersionSVN% /svn=".." /GetVersion >> %LOG%
+%DeployVersionSVN% /svn="..\IR Server Suite" /GetVersion >> %LOG%
 rem SET /p version=<version.txt >> build.log
 SET version=%errorlevel%
 DEL version.txt >> %LOG%

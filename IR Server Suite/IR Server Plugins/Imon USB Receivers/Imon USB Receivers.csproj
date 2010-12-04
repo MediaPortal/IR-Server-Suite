@@ -64,6 +64,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,7 +79,6 @@
     <Compile Include="Keyboard.cs" />
     <Compile Include="Mouse.cs" />
     <Compile Include="PluginBaseInterfaces.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Imon USB Receivers.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

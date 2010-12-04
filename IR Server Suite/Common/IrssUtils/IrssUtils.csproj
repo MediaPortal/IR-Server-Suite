@@ -71,6 +71,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Audio.cs" />
     <Compile Include="CDRom.cs" />
     <Compile Include="Common.cs" />
@@ -274,7 +278,6 @@
     <Compile Include="VariableList.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="XML.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\AboutForm.resx">

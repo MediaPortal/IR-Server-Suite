@@ -64,6 +64,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IConfigure.cs" />
     <Compile Include="IKeyboardReceiver.cs" />
     <Compile Include="ILearnIR.cs" />
@@ -71,7 +75,6 @@
     <Compile Include="IRemoteReceiver.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="ITransmitIR.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">

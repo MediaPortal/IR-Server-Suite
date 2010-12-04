@@ -64,6 +64,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AdvancedSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,7 +80,6 @@
     <Compile Include="DeviceSelect.Designer.cs">
       <DependentUpon>DeviceSelect.cs</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Custom HID Receiver.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

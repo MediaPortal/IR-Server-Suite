@@ -63,6 +63,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\IR Server Suite\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandGotoScreen.cs" />
     <Compile Include="CommandExit.cs" />
     <Compile Include="CommandReboot.cs" />
@@ -98,7 +102,6 @@
     <Compile Include="Forms\EditPopup.Designer.cs">
       <DependentUpon>EditPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\EditSendMessage.resx">
