@@ -129,14 +129,12 @@ namespace MediaPortal.Plugins
             case (int) GUIWindow.Window.WINDOW_MUSIC_INFO:
             case (int) GUIWindow.Window.WINDOW_OSD:
             case (int) GUIWindow.Window.WINDOW_TOPBAR:
-              //case (int)GUIWindow.Window.WINDOW_TOPBARHOME:
             case (int) GUIWindow.Window.WINDOW_TVMSNOSD:
             case (int) GUIWindow.Window.WINDOW_TVOSD:
             case (int) GUIWindow.Window.WINDOW_TVZAPOSD:
             case (int) GUIWindow.Window.WINDOW_VIDEO_ARTIST_INFO:
             case (int) GUIWindow.Window.WINDOW_VIDEO_INFO:
             case (int) GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD:
-            case (int) GUIWindow.Window.WINDOW_VIRTUAL_WEB_KEYBOARD:
               break;
             default:
               _windowsListFiltered.Add(GetFriendlyName(wnd.ToString()));
