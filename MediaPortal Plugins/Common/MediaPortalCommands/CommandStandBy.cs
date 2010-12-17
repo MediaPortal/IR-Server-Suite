@@ -24,6 +24,7 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Player;
 using MediaPortal.Profile;
 using MediaPortal.Util;
+using MPUtils;
 
 namespace Commands.MediaPortal
 {
@@ -79,7 +80,7 @@ namespace Commands.MediaPortal
     public override void Execute(VariableList variables)
     {
       bool mpBasicHome = false;
-      using (Settings xmlreader = new Settings(Common.MPConfigFile))
+      using (Settings xmlreader = new Settings(MPCommon.MPConfigFile))
         mpBasicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
 
       GUIGraphicsContext.ResetLastActivity();

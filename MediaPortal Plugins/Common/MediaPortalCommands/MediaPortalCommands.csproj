@@ -72,7 +72,6 @@
     <Compile Include="CommandReboot.cs" />
     <Compile Include="CommandShutdown.cs" />
     <Compile Include="CommandHibernate.cs" />
-    <Compile Include="Common.cs" />
     <Compile Include="CommandStandBy.cs" />
     <Compile Include="CommandSendAction.cs" />
     <Compile Include="CommandSendMessage.cs" />
@@ -145,6 +144,10 @@
     <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MPUtils\MPUtils.csproj">
+      <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
+      <Name>MPUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
