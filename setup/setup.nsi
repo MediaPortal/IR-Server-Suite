@@ -480,8 +480,8 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   SetOutPath "$MPdir.Plugins\Process"
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Control Plugin\bin\${Build_Type}\MPControlPlugin.*"
 
-  ; Write input mapping
-  SetOutPath "$MPdir.CustomInputDefault"
+  ; Write default input mapping
+  SetOutPath "$MPdir.Base\defaults\InputDeviceMappings"
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Control Plugin\InputMapping\MPControlPlugin.xml"
 
   ; Write app data
@@ -498,7 +498,11 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMPControlPlugin}
   ${LOG_TEXT} "INFO" "MP Control Plugin..."
 
+  ; Delete plugin dll
   Delete "$MPdir.Plugins\Process\MPControlPlugin.*"
+
+  ; Delete default input mapping
+  Delete "$MPdir.Base\defaults\InputDeviceMappings\MPControlPlugin.xml"
 !macroend
 
 ;======================================
