@@ -88,11 +88,9 @@
     <Compile Include="DriverVista.cs" />
     <Compile Include="DriverXP.cs" />
     <Compile Include="IrDecoder.cs" />
-    <Compile Include="Keyboard.cs" />
     <Compile Include="MceDetectionData.cs" />
     <Compile Include="IrCode.cs" />
     <Compile Include="MicrosoftMceTransceiver.cs" />
-    <Compile Include="Mouse.cs" />
     <Compile Include="NotifyWindow.cs" />
     <Compile Include="Pronto.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

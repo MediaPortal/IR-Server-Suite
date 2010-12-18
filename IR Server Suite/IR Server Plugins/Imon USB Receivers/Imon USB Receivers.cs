@@ -32,6 +32,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using IRServer.Plugin.Properties;
+using IrssUtils;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 

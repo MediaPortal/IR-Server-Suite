@@ -30,6 +30,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using IRServer.Plugin.Properties;
+using IrssUtils;
 using WiimoteLib;
 
 namespace IRServer.Plugin

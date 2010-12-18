@@ -22,6 +22,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using IrssUtils.Exceptions;
 
@@ -104,6 +105,68 @@ namespace IrssUtils
     /// </summary>
     private const string PrefixVK = "VK_";
 
+    #region Imported from MCE Transceiver's 'native Keyboard handler (Keyboard.cs)
+
+    /// <summary>
+    /// English (Australia).
+    /// </summary>
+    public const string English_AU = "00000c09";
+
+    /// <summary>
+    /// English (Great Britain).
+    /// </summary>
+    public const string English_GB = "00000809";
+
+    /// <summary>
+    /// English (US).
+    /// </summary>
+    public const string English_US = "00000409";
+
+    /// <summary>
+    /// French (France).
+    /// </summary>
+    public const string French_FR = "0000040c";
+
+    /// <summary>
+    /// German (Austria).
+    /// </summary>
+    public const string German_AT = "00000c07";
+
+    /// <summary>
+    /// German (Germany).
+    /// </summary>
+    public const string German_DE = "00000407";
+
+    /// <summary>
+    /// Japanese (Japan).
+    /// </summary>
+    public const string Japanese_JP = "00000411";
+
+    /// <summary>
+    /// Spanish (Spain).
+    /// </summary>
+    public const string Spanish_ES = "00000c0a";
+
+
+    private const int KL_NAMELENGTH = 9;
+
+    private const uint KLF_ACTIVATE = 0x0001;
+    //private const uint KLF_NOTELLSHELL = 0x0080;
+    private const uint KLF_REORDER = 0x0008;
+    //private const uint KLF_REPLACELANG = 0x0010;
+    //const uint KLF_RESET        = 0x40000000;
+    private const uint KLF_SETFORPROCESS = 0x0100;
+    //const uint KLF_SHIFTLOCK    = 0x10000;
+    private const uint KLF_SUBSTITUTE_OK = 0x0002;
+    //private const uint KLF_UNLOADPREVIOUS = 0x0004;
+
+
+    //private const int MAPVK_SCAN_TO_VK = 1;
+    private const int MAPVK_VK_TO_CHAR = 2;
+    //private const int MAPVK_VK_TO_SCAN = 0;
+
+    #endregion
+
     #endregion Constants
 
     #region Interop
@@ -123,6 +186,33 @@ namespace IrssUtils
     private static extern uint MapVirtualKey(
       uint code,
       uint mapType);
+
+    #region Imported from MCE Transceiver's 'native Keyboard handler (Keyboard.cs)
+
+    [DllImport("user32.dll")]
+    private static extern long GetKeyboardLayoutName(
+      StringBuilder pwszKLID);
+
+    [DllImport("user32.dll")]
+    private static extern int ActivateKeyboardLayout(
+      IntPtr nkl,
+      uint Flags);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetKeyboardLayoutList(
+      int nBuff,
+      [Out] IntPtr[] lpList);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr LoadKeyboardLayout(
+      string pwszKLID,
+      uint Flags);
+
+    [DllImport("user32.dll")]
+    private static extern bool UnloadKeyboardLayout(
+      IntPtr hkl);
+
+    #endregion
 
     #endregion Interop
 
@@ -1226,6 +1316,83 @@ namespace IrssUtils
       if (shift) KeyUp(VKey.VK_SHIFT);
       if (winKey) KeyUp(VKey.VK_LWIN);
     }
+
+    #region Imported from MCE Transceiver's 'native Keyboard handler (Keyboard.cs)
+
+    /// <summary>
+    /// Gets the character that maps to the Virtual Key provided.
+    /// </summary>
+    /// <param name="vKey">The virtual key.</param>
+    /// <returns>The character.</returns>
+    public static char GetCharFromVKey(VKey vKey)
+    {
+      return (char)MapVirtualKey((uint)vKey, MAPVK_VK_TO_CHAR);
+    }
+
+    /// <summary>
+    /// Gets the current keyboard layout.
+    /// </summary>
+    /// <returns>The name of the current keyboard layout.</returns>
+    public static string GetLayout()
+    {
+      StringBuilder name = new StringBuilder(KL_NAMELENGTH);
+      GetKeyboardLayoutName(name);
+      return name.ToString();
+    }
+
+    /// <summary>
+    /// Loads the specified keyboard layout.
+    /// </summary>
+    /// <param name="layout">The keyboard layout to load.</param>
+    /// <returns>Identifier for removing this keyboard layout.</returns>
+    public static IntPtr LoadLayout(string layout)
+    {
+      return LoadKeyboardLayout(layout, KLF_ACTIVATE | KLF_REORDER | KLF_SETFORPROCESS | KLF_SUBSTITUTE_OK);
+    }
+
+    /// <summary>
+    /// Unloads the already loaded layout.
+    /// </summary>
+    /// <param name="layout">The layout to unload.</param>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public static bool UnloadLayout(IntPtr layout)
+    {
+      return UnloadKeyboardLayout(layout);
+    }
+
+    /*
+    /// <summary>
+    /// Simulate a key being pressed down.
+    /// </summary>
+    /// <param name="vKey">Virtual key to press.</param>
+    public static void KeyDown(VKey vKey)
+    {
+      keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyDown, IntPtr.Zero);
+    }
+
+    /// <summary>
+    /// Simulate a key being released.
+    /// </summary>
+    /// <param name="vKey">Virtual key to release.</param>
+    public static void KeyUp(VKey vKey)
+    {
+      keybd_event((byte)vKey, 0, (uint)KeyEvents.KeyUp, IntPtr.Zero);
+    }
+    */
+
+    /// <summary>
+    /// Simulate a Virtual Key event.
+    /// </summary>
+    /// <param name="vKey">Virtual Key.</param>
+    /// <param name="scan">Scan code.</param>
+    /// <param name="flags">Event type.</param>
+    /// <param name="extraInfo">Pointer to additional information.</param>
+    public static void Event(VKey vKey, byte scan, KeyEvents flags, IntPtr extraInfo)
+    {
+      keybd_event((byte)vKey, scan, (uint)flags, extraInfo);
+    }
+
+    #endregion
 
     #endregion Public Methods
   }
