@@ -101,16 +101,6 @@
       <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\references\Gentle.Framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PluginBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\Plugins\PluginBase\bin\Release\PluginBase.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SetupControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\SetupControls\bin\Release\SetupControls.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -177,6 +167,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\Plugins\PluginBase\PluginBase.csproj">
+      <Project>{5EE20DC0-B22B-4BDB-828B-8DC5723A1873}</Project>
+      <Name>PluginBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\SetupControls\SetupControls.csproj">
+      <Project>{A2792D3C-04C1-4A92-9383-A33D59C54D8D}</Project>
+      <Name>SetupControls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvControl\TvControl.csproj">
       <Project>{0DB878C6-1B68-4DC5-B6EF-564B7C08486F}</Project>
       <Name>TvControl</Name>

@@ -47,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Command", "..\IR Server Sui
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPortal.Support", "..\..\..\..\..\mediaportal\trunk\mediaportal\MediaPortal.Support\MediaPortal.Support.csproj", "{BD4A3413-C9F9-4299-BB52-ED45027EE7CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\Plugins\PluginBase\PluginBase.csproj", "{5EE20DC0-B22B-4BDB-828B-8DC5723A1873}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupControls", "..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\SetupControls\SetupControls.csproj", "{A2792D3C-04C1-4A92-9383-A33D59C54D8D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -129,6 +133,14 @@ Global
 		{BD4A3413-C9F9-4299-BB52-ED45027EE7CC}.Debug|x86.Build.0 = Debug|x86
 		{BD4A3413-C9F9-4299-BB52-ED45027EE7CC}.Release|x86.ActiveCfg = Release|x86
 		{BD4A3413-C9F9-4299-BB52-ED45027EE7CC}.Release|x86.Build.0 = Release|x86
+		{5EE20DC0-B22B-4BDB-828B-8DC5723A1873}.Debug|x86.ActiveCfg = Debug|x86
+		{5EE20DC0-B22B-4BDB-828B-8DC5723A1873}.Debug|x86.Build.0 = Debug|x86
+		{5EE20DC0-B22B-4BDB-828B-8DC5723A1873}.Release|x86.ActiveCfg = Release|x86
+		{5EE20DC0-B22B-4BDB-828B-8DC5723A1873}.Release|x86.Build.0 = Release|x86
+		{A2792D3C-04C1-4A92-9383-A33D59C54D8D}.Debug|x86.ActiveCfg = Debug|x86
+		{A2792D3C-04C1-4A92-9383-A33D59C54D8D}.Debug|x86.Build.0 = Debug|x86
+		{A2792D3C-04C1-4A92-9383-A33D59C54D8D}.Release|x86.ActiveCfg = Release|x86
+		{A2792D3C-04C1-4A92-9383-A33D59C54D8D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -153,5 +165,7 @@ Global
 		{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{21E04B17-D850-43E7-AAD3-876C0E062BDB} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{BD4A3413-C9F9-4299-BB52-ED45027EE7CC} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
+		{5EE20DC0-B22B-4BDB-828B-8DC5723A1873} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
+		{A2792D3C-04C1-4A92-9383-A33D59C54D8D} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 	EndGlobalSection
 EndGlobal
