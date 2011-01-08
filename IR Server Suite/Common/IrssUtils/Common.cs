@@ -21,6 +21,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -120,7 +121,7 @@ namespace IrssUtils
     public const string CmdPrefixClearVars = "Clear Variables";
     public const string CmdPrefixCloseProgram = "Close Program: ";
     public const string CmdPrefixCommand = "Command: ";
-//  public const string CmdPrefixWindowState  = "Toggle Window State";
+    //  public const string CmdPrefixWindowState  = "Toggle Window State";
 
     public const string CmdPrefixDisplayMode = "Display Mode: ";
     public const string CmdPrefixDisplayPower = "Display Power: ";
@@ -519,7 +520,7 @@ namespace IrssUtils
         process.StartInfo.FileName = commands[0];
         process.StartInfo.WorkingDirectory = commands[1];
         process.StartInfo.Arguments = commands[2];
-        process.StartInfo.WindowStyle = (ProcessWindowStyle) Enum.Parse(typeof (ProcessWindowStyle), commands[3], true);
+        process.StartInfo.WindowStyle = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), commands[3], true);
         process.StartInfo.CreateNoWindow = bool.Parse(commands[4]);
         process.StartInfo.UseShellExecute = bool.Parse(commands[5]);
         //process.PriorityClass               = ProcessPriorityClass.
@@ -552,13 +553,13 @@ namespace IrssUtils
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      string command = ReplaceSpecial(commands[0]);
-
+      Byte[] command = ReplaceSpecial(commands[0]);
+      
       string comPort = commands[1];
       int baudRate = int.Parse(commands[2]);
-      Parity parity = (Parity) Enum.Parse(typeof (Parity), commands[3], true);
+      Parity parity = (Parity)Enum.Parse(typeof(Parity), commands[3], true);
       int dataBits = int.Parse(commands[4]);
-      StopBits stopBits = (StopBits) Enum.Parse(typeof (StopBits), commands[5], true);
+      StopBits stopBits = (StopBits)Enum.Parse(typeof(StopBits), commands[5], true);
       bool waitForResponse = bool.Parse(commands[6]);
 
       SerialPort serialPort = new SerialPort(comPort, baudRate, parity, dataBits, stopBits);
@@ -566,7 +567,7 @@ namespace IrssUtils
 
       try
       {
-        serialPort.Write(command);
+        serialPort.Write(command, 0, command.Length);
 
         if (waitForResponse)
         {
@@ -575,8 +576,9 @@ namespace IrssUtils
             serialPort.ReadTimeout = 5000;
             serialPort.ReadByte();
           }
-          catch
+          catch (Exception ex)
           {
+            IrssLog.Debug("ProcessSerialCommand: {0}", ex.Message);
           }
         }
       }
@@ -681,7 +683,7 @@ namespace IrssUtils
         {
           using (StreamWriter streamWriter = new StreamWriter(networkStream))
           {
-            string toWrite = ReplaceSpecial(commands[2]);
+            Byte[] toWrite = ReplaceSpecial(commands[2]);
 
             streamWriter.Write(toWrite);
             streamWriter.Flush();
@@ -813,7 +815,7 @@ namespace IrssUtils
       if (commands == null)
         throw new ArgumentNullException("commands");
 
-      Uri uri = new Uri(ReplaceSpecial(commands[0]));
+      Uri uri = new Uri(ReplaceSpecial(commands[0]).ToString());
 
       WebRequest request = WebRequest.Create(uri);
       request.Timeout = int.Parse(commands[1]);
@@ -1022,10 +1024,12 @@ namespace IrssUtils
     /// </summary>
     /// <param name="input">The input to process.</param>
     /// <returns>Processed input string.</returns>
-    public static string ReplaceSpecial(string input)
+    public static Byte[] ReplaceSpecial(string input)
     {
       if (String.IsNullOrEmpty(input))
-        return input;
+      {
+        return null;
+      }
 
       // Process Special Codes ...
       if (input.Contains("%"))
@@ -1104,7 +1108,7 @@ namespace IrssUtils
       bool inEscapeCode = false;
       bool inHexCode = false;
       StringBuilder hexCode = new StringBuilder();
-      StringBuilder output = new StringBuilder();
+      List<Byte> output = new List<Byte>();
 
       foreach (char currentChar in input)
       {
@@ -1113,37 +1117,36 @@ namespace IrssUtils
           switch (currentChar)
           {
             case 'a':
-              output.Append((char) 7);
+              output.Add((byte)7);
               break;
             case 'b':
-              output.Append((char) Keys.Back);
+              output.Add((byte)Keys.Back);
               break;
             case 'f':
-              output.Append((char) 12);
+              output.Add((byte)12);
               break;
             case 'n':
-              output.Append((char) Keys.LineFeed);
+              output.Add((byte)Keys.LineFeed);
               break;
             case 'r':
-              output.Append((char) Keys.Return);
+              output.Add((byte)Keys.Return);
               break;
             case 't':
-              output.Append((char) Keys.Tab);
+              output.Add((byte)Keys.Tab);
               break;
             case 'v':
-              output.Append((char) 11);
+              output.Add((byte)11);
               break;
             case 'x':
               hexCode = new StringBuilder();
               inHexCode = true;
-              inEscapeCode = false;
               break;
             case '0': // I've got a bad feeling about this
-              output.Append((char) 0);
+              output.Add((byte)0);
               break;
 
             default: // If it doesn't know it as an escape code, just use the char
-              output.Append(currentChar);
+              output.Add((byte)currentChar);
               break;
           }
 
@@ -1156,10 +1159,13 @@ namespace IrssUtils
             case 'h': // 'h' terminates the hex code
               byte hexParsed;
               if (byte.TryParse(hexCode.ToString(), NumberStyles.HexNumber, null, out hexParsed))
-                output.Append((char) hexParsed);
+              {
+                output.Add(hexParsed);
+              }
               else
+              {
                 throw new ArgumentException(String.Format("Bad Hex Code \"{0}\"", hexCode), "input");
-
+              }
               inHexCode = false;
               break;
 
@@ -1174,11 +1180,11 @@ namespace IrssUtils
         }
         else
         {
-          output.Append(currentChar);
+          output.Add((byte)currentChar);
         }
       }
 
-      return output.ToString();
+      return output.ToArray();
     }
 
     /// <summary>
@@ -1315,28 +1321,28 @@ namespace IrssUtils
       return null;
     }
 
-/*
-    private static Process GetProcessByFileName(string fileName)
-    {
-      foreach (Process process in Process.GetProcesses())
-      {
-        string procFileName;
-        try
+    /*
+        private static Process GetProcessByFileName(string fileName)
         {
-          procFileName = process.MainModule.ModuleName;
-        }
-        catch
-        {
-          continue;
-        }
+          foreach (Process process in Process.GetProcesses())
+          {
+            string procFileName;
+            try
+            {
+              procFileName = process.MainModule.ModuleName;
+            }
+            catch
+            {
+              continue;
+            }
 
-        if (procFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase))
-          return process;
-      }
+            if (procFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase))
+              return process;
+          }
 
-      return null;
-    }
-*/
+          return null;
+        }
+    */
 
     private static void EndProcess(Process process, int timeout)
     {

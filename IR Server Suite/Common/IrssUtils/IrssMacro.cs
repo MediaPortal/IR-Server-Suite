@@ -177,11 +177,11 @@ namespace IrssUtils
 
           if (commands[0].StartsWith(Common.VariablePrefix, StringComparison.OrdinalIgnoreCase))
             commands[0] = variables.GetVariable(commands[0].Substring(Common.VariablePrefix.Length));
-          commands[0] = Common.ReplaceSpecial(commands[0]);
+          commands[0] = Common.ReplaceSpecial(commands[0]).ToString();
 
           if (commands[2].StartsWith(Common.VariablePrefix, StringComparison.OrdinalIgnoreCase))
             commands[2] = variables.GetVariable(commands[2].Substring(Common.VariablePrefix.Length));
-          commands[2] = Common.ReplaceSpecial(commands[2]);
+          commands[2] = Common.ReplaceSpecial(commands[2]).ToString();
 
           if (EvaluateIfCommand(commands))
             position = GetLabelPosition(commandList, commands[3]);
@@ -202,7 +202,7 @@ namespace IrssUtils
           string[] commands = Common.SplitSetVarCommand(command.Substring(Common.CmdPrefixSetVar.Length));
 
           string variable = commands[0].Substring(Common.VariablePrefix.Length);
-          string value = Common.ReplaceSpecial(commands[1]);
+          string value = Common.ReplaceSpecial(commands[1]).ToString();
 
           variables.SetVariable(variable, value);
         }
