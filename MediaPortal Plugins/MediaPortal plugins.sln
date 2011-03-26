@@ -1,11 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MP plugins", "MP plugins", "{79836E52-FF93-4FD0-818B-03FAD48D426E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TVServer plugins", "TVServer plugins", "{2F3BA832-EA15-492D-AC8E-400CF3FEA715}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A49450EE-A82E-4BDA-A7B2-C0609EECC7CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_External Projects_", "_External Projects_", "{1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TV3 Blaster Plugin", "TVServer plugins\TV3 Blaster Plugin\TV3 Blaster Plugin.csproj", "{CD395FC2-70E2-42C4-8A20-5469A0C5EB50}"
 EndProject
@@ -16,8 +18,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP Blast Zone Plugin", "MediaPortal Plugins\MP Blast Zone Plugin\MP Blast Zone Plugin.csproj", "{907DCA39-A5E0-4EFA-B1F6-5FBE2C1BCD25}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP Control Plugin", "MediaPortal Plugins\MP Control Plugin\MP Control Plugin.csproj", "{E8BEBBCC-1EE0-488D-8806-98ADCB7F0479}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_External Projects_", "_External Projects_", "{1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\..\..\..\mediaportal\trunk\mediaportal\Core\Core.csproj", "{02FFFC1F-2555-4B99-8B01-3432D0673855}"
 EndProject
@@ -50,6 +50,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\Plugins\PluginBase\PluginBase.csproj", "{5EE20DC0-B22B-4BDB-828B-8DC5723A1873}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupControls", "..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\SetupControls\SetupControls.csproj", "{A2792D3C-04C1-4A92-9383-A33D59C54D8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TV2 Blaster Plugin", "MediaPortal Plugins\TV2 Blaster Plugin\TV2 Blaster Plugin.csproj", "{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,6 +143,8 @@ Global
 		{A2792D3C-04C1-4A92-9383-A33D59C54D8D}.Debug|x86.Build.0 = Debug|x86
 		{A2792D3C-04C1-4A92-9383-A33D59C54D8D}.Release|x86.ActiveCfg = Release|x86
 		{A2792D3C-04C1-4A92-9383-A33D59C54D8D}.Release|x86.Build.0 = Release|x86
+		{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90}.Debug|x86.ActiveCfg = Debug|x86
+		{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,6 +152,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{907DCA39-A5E0-4EFA-B1F6-5FBE2C1BCD25} = {79836E52-FF93-4FD0-818B-03FAD48D426E}
 		{E8BEBBCC-1EE0-488D-8806-98ADCB7F0479} = {79836E52-FF93-4FD0-818B-03FAD48D426E}
+		{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90} = {79836E52-FF93-4FD0-818B-03FAD48D426E}
 		{CD395FC2-70E2-42C4-8A20-5469A0C5EB50} = {2F3BA832-EA15-492D-AC8E-400CF3FEA715}
 		{966281F9-3898-4CB7-9940-99D49C21F170} = {A49450EE-A82E-4BDA-A7B2-C0609EECC7CE}
 		{08F57DD7-2C6E-484E-9CC5-835F70C5BC64} = {A49450EE-A82E-4BDA-A7B2-C0609EECC7CE}
