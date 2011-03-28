@@ -123,7 +123,7 @@ namespace MediaPortal.Plugins
     {
       listViewIR.Items.Clear();
 
-      string[] irList = Common.GetIRList(false);
+      string[] irList = IrssUtils.Common.GetIRList(false);
       if (irList != null && irList.Length > 0)
         foreach (string irFile in irList)
           listViewIR.Items.Add(irFile);
@@ -143,18 +143,18 @@ namespace MediaPortal.Plugins
     {
       comboBoxCommands.Items.Clear();
 
-      comboBoxCommands.Items.Add(Common.UITextRun);
-      comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
-      comboBoxCommands.Items.Add(Common.UITextTcpMsg);
-      comboBoxCommands.Items.Add(Common.UITextEject);
-      comboBoxCommands.Items.Add(Common.UITextGotoScreen);
-      //comboBoxCommands.Items.Add(Common.UITextWindowState);
-      comboBoxCommands.Items.Add(Common.UITextExit);
-      comboBoxCommands.Items.Add(Common.UITextStandby);
-      comboBoxCommands.Items.Add(Common.UITextHibernate);
-      comboBoxCommands.Items.Add(Common.UITextReboot);
-      comboBoxCommands.Items.Add(Common.UITextShutdown);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextRun);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextSerial);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextWindowMsg);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextTcpMsg);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextEject);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextGotoScreen);
+      //comboBoxCommands.Items.Add(IrssUtils.Common.UITextWindowState);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextExit);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextStandby);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextHibernate);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextReboot);
+      comboBoxCommands.Items.Add(IrssUtils.Common.UITextShutdown);
 
       string[] fileList = MPBlastZonePlugin.GetFileList(true);
 
@@ -170,7 +170,7 @@ namespace MediaPortal.Plugins
       try
       {
         string command = listViewIR.SelectedItems[0].Text;
-        string fileName = Path.Combine(Common.FolderIRCommands, command + Common.FileExtensionIR);
+        string fileName = Path.Combine(IrssUtils.Common.FolderIRCommands, command + IrssUtils.Common.FileExtensionIR);
 
         if (File.Exists(fileName))
         {
@@ -207,7 +207,7 @@ namespace MediaPortal.Plugins
       try
       {
         string command = listViewMacro.SelectedItems[0].Text;
-        string fileName = MPBlastZonePlugin.FolderMacros + command + Common.FileExtensionMacro;
+        string fileName = MPBlastZonePlugin.FolderMacros + command + IrssUtils.Common.FileExtensionMacro;
 
         if (File.Exists(fileName))
         {
@@ -345,7 +345,7 @@ namespace MediaPortal.Plugins
         return;
 
       string file = listViewIR.SelectedItems[0].Text;
-      string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
+      string fileName = Path.Combine(IrssUtils.Common.FolderIRCommands, file + IrssUtils.Common.FileExtensionIR);
       if (File.Exists(fileName))
       {
         if (
@@ -383,7 +383,7 @@ namespace MediaPortal.Plugins
         return;
 
       string file = listViewMacro.SelectedItems[0].Text;
-      string fileName = MPBlastZonePlugin.FolderMacros + file + Common.FileExtensionMacro;
+      string fileName = MPBlastZonePlugin.FolderMacros + file + IrssUtils.Common.FileExtensionMacro;
       if (File.Exists(fileName))
       {
         if (
@@ -408,7 +408,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        MPBlastZonePlugin.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
+        MPBlastZonePlugin.ProcessCommand(IrssUtils.Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
       }
       catch (Exception ex)
       {
@@ -443,52 +443,52 @@ namespace MediaPortal.Plugins
       string selected = comboBoxCommands.SelectedItem as string;
       string newCommand = null;
 
-      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
+      if (selected.Equals(IrssUtils.Common.UITextRun, StringComparison.OrdinalIgnoreCase))
       {
         ExternalProgram externalProgram = new ExternalProgram();
         if (externalProgram.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
+      else if (selected.Equals(IrssUtils.Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
       {
         SerialCommand serialCommand = new SerialCommand();
         if (serialCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
+      else if (selected.Equals(IrssUtils.Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
         MessageCommand messageCommand = new MessageCommand();
         if (messageCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
+      else if (selected.Equals(IrssUtils.Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
         if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
       }
-      else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
+      else if (selected.Equals(IrssUtils.Common.UITextEject, StringComparison.OrdinalIgnoreCase))
       {
         EjectCommand ejectCommand = new EjectCommand();
         if (ejectCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixEject + ejectCommand.CommandString;
       }
-      else if (selected.Equals(Common.UITextGotoScreen, StringComparison.OrdinalIgnoreCase))
+      else if (selected.Equals(IrssUtils.Common.UITextGotoScreen, StringComparison.OrdinalIgnoreCase))
       {
         GoToScreen goToScreen = new GoToScreen();
         if (goToScreen.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixGotoScreen + goToScreen.CommandString;
       }
-      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+      else if (selected.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
         BlastCommand blastCommand = new BlastCommand(
           MPBlastZonePlugin.BlastIR,
-          Common.FolderIRCommands,
+          IrssUtils.Common.FolderIRCommands,
           MPBlastZonePlugin.TransceiverInformation.Ports,
-          selected.Substring(Common.CmdPrefixBlast.Length));
+          selected.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
 
         if (blastCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixBlast + blastCommand.CommandString;
       }
       else
       {
@@ -725,7 +725,7 @@ namespace MediaPortal.Plugins
 
       ListViewItem originItem = origin.Items[e.Item];
 
-      string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
+      string oldFileName = Path.Combine(IrssUtils.Common.FolderIRCommands, originItem.Text + IrssUtils.Common.FileExtensionIR);
       if (!File.Exists(oldFileName))
       {
         MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
@@ -736,7 +736,7 @@ namespace MediaPortal.Plugins
 
       string name = e.Label.Trim();
 
-      if (!Common.IsValidFileName(name))
+      if (!IrssUtils.Common.IsValidFileName(name))
       {
         MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
@@ -746,7 +746,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        string newFileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
+        string newFileName = Path.Combine(IrssUtils.Common.FolderIRCommands, name + IrssUtils.Common.FileExtensionIR);
 
         File.Move(oldFileName, newFileName);
       }
@@ -774,7 +774,7 @@ namespace MediaPortal.Plugins
 
       ListViewItem originItem = origin.Items[e.Item];
 
-      string oldFileName = MPBlastZonePlugin.FolderMacros + originItem.Text + Common.FileExtensionMacro;
+      string oldFileName = MPBlastZonePlugin.FolderMacros + originItem.Text + IrssUtils.Common.FileExtensionMacro;
       if (!File.Exists(oldFileName))
       {
         MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
@@ -785,7 +785,7 @@ namespace MediaPortal.Plugins
 
       string name = e.Label.Trim();
 
-      if (!Common.IsValidFileName(name))
+      if (!IrssUtils.Common.IsValidFileName(name))
       {
         MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
@@ -795,7 +795,7 @@ namespace MediaPortal.Plugins
 
       try
       {
-        string newFileName = MPBlastZonePlugin.FolderMacros + name + Common.FileExtensionMacro;
+        string newFileName = MPBlastZonePlugin.FolderMacros + name + IrssUtils.Common.FileExtensionMacro;
 
         File.Move(oldFileName, newFileName);
       }
@@ -817,52 +817,52 @@ namespace MediaPortal.Plugins
       string command = treeViewMenu.SelectedNode.Text;
       string newCommand = null;
 
-      if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+      if (command.StartsWith(IrssUtils.Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
+        string[] commands = IrssUtils.Common.SplitRunCommand(command.Substring(IrssUtils.Common.CmdPrefixRun.Length));
         ExternalProgram externalProgram = new ExternalProgram(commands);
         if (externalProgram.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixRun + externalProgram.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(IrssUtils.Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
       {
-        GoToScreen goToScreen = new GoToScreen(command.Substring(Common.CmdPrefixGotoScreen.Length));
+        GoToScreen goToScreen = new GoToScreen(command.Substring(IrssUtils.Common.CmdPrefixGotoScreen.Length));
         if (goToScreen.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixGotoScreen + goToScreen.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixGotoScreen + goToScreen.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(IrssUtils.Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
+        string[] commands = IrssUtils.Common.SplitSerialCommand(command.Substring(IrssUtils.Common.CmdPrefixSerial.Length));
         SerialCommand serialCommand = new SerialCommand(commands);
         if (serialCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixSerial + serialCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(IrssUtils.Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
+        string[] commands = IrssUtils.Common.SplitWindowMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixWindowMsg.Length));
         MessageCommand messageCommand = new MessageCommand(commands);
         if (messageCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixWindowMsg + messageCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(IrssUtils.Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
+        string[] commands = IrssUtils.Common.SplitTcpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixTcpMsg.Length));
         TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
         if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
       }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+      else if (command.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
       {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
+        string[] commands = IrssUtils.Common.SplitBlastCommand(command.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
 
         BlastCommand blastCommand = new BlastCommand(
           MPBlastZonePlugin.BlastIR,
-          Common.FolderIRCommands,
+          IrssUtils.Common.FolderIRCommands,
           MPBlastZonePlugin.TransceiverInformation.Ports,
           commands);
 
         if (blastCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
+          newCommand = IrssUtils.Common.CmdPrefixBlast + blastCommand.CommandString;
       }
 
       if (!String.IsNullOrEmpty(newCommand))

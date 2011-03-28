@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupControls", "..\..\..\.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TV2 Blaster Plugin", "MediaPortal Plugins\TV2 Blaster Plugin\TV2 Blaster Plugin.csproj", "{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Utils", "..\..\..\..\..\MediaPortal\trunk\Common-MP-TVE3\Common.Utils\Common.Utils.csproj", "{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -145,6 +147,10 @@ Global
 		{A2792D3C-04C1-4A92-9383-A33D59C54D8D}.Release|x86.Build.0 = Release|x86
 		{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90}.Debug|x86.ActiveCfg = Debug|x86
 		{7946D42A-4BCB-4D79-80EB-BA9B17CE2E90}.Release|x86.ActiveCfg = Release|x86
+		{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227}.Debug|x86.ActiveCfg = Debug|x86
+		{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227}.Debug|x86.Build.0 = Debug|x86
+		{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227}.Release|x86.ActiveCfg = Release|x86
+		{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -172,5 +178,6 @@ Global
 		{BD4A3413-C9F9-4299-BB52-ED45027EE7CC} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{5EE20DC0-B22B-4BDB-828B-8DC5723A1873} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 		{A2792D3C-04C1-4A92-9383-A33D59C54D8D} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
+		{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227} = {1F14A9F2-92B5-4126-AA0D-AAB2B9C491CD}
 	EndGlobalSection
 EndGlobal

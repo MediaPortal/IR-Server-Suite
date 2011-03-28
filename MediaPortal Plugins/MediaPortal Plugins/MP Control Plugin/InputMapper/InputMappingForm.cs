@@ -1445,22 +1445,22 @@ namespace MediaPortal.Plugins
         case "BLAST":
           {
             string text = (string) comboBoxCmdProperty.SelectedItem;
-            if (text.StartsWith(Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))
+            if (text.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.InvariantCultureIgnoreCase))
             {
               BlastCommand blastCommand = new BlastCommand(
                 MPControlPlugin.BlastIR,
-                Common.FolderIRCommands,
+                IrssUtils.Common.FolderIRCommands,
                 MPControlPlugin.TransceiverInformation.Ports,
-                text.Substring(Common.CmdPrefixBlast.Length));
+                text.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
 
               if (blastCommand.ShowDialog(this) == DialogResult.OK)
               {
-                string command = Common.CmdPrefixBlast + blastCommand.CommandString;
+                string command = IrssUtils.Common.CmdPrefixBlast + blastCommand.CommandString;
                 node.Tag = new Data("COMMAND", "BLAST", command);
                 node.Text = command;
               }
             }
-            else if (text.StartsWith(Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase))
+            else if (text.StartsWith(IrssUtils.Common.CmdPrefixMacro, StringComparison.InvariantCultureIgnoreCase))
             {
               node.Tag = new Data("COMMAND", "BLAST", text);
               node.Text = text;

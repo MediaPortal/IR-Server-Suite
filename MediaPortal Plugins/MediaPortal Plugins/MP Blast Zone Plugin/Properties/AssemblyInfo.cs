@@ -21,6 +21,7 @@
 using System;
 using System.Reflection;
 using System.Resources;
+using MediaPortal.Common.Utils;
 
 //
 // General Information about an assembly is controlled through the following 
@@ -32,3 +33,9 @@ using System.Resources;
 [assembly: AssemblyDescription("This is a remote control plugin for MediaPortal for use with IR Server")]
 [assembly: CLSCompliant(true)]
 [assembly: NeutralResourcesLanguage("en")]
+
+[assembly: CompatibleVersion("1.1.6.27644")]
+[assembly: UsesSubsystem("MP.SkinEngine.Core")]
+[assembly: UsesSubsystem("MP.SkinEngine.Controls")]
+//[assembly: UsesSubsystem("MP.Utils.Log")]
+[assembly: UsesSubsystem("MP.Config")]

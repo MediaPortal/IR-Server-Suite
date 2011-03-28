@@ -57,18 +57,18 @@ namespace MediaPortal.Plugins
 
     private const string ProcessCommandThreadName = "ProcessCommand";
 
-    internal static readonly string EventMappingFile = Path.Combine(Common.FolderAppData,
+    internal static readonly string EventMappingFile = Path.Combine(IrssUtils.Common.FolderAppData,
                                                                     "MP Control Plugin\\EventMapping.xml");
 
-    internal static readonly string FolderMacros = Path.Combine(Common.FolderAppData, "MP Control Plugin\\Macro");
+    internal static readonly string FolderMacros = Path.Combine(IrssUtils.Common.FolderAppData, "MP Control Plugin\\Macro");
 
-    internal static readonly string MultiMappingFile = Path.Combine(Common.FolderAppData,
+    internal static readonly string MultiMappingFile = Path.Combine(IrssUtils.Common.FolderAppData,
                                                                     "MP Control Plugin\\MultiMapping.xml");
 
-    internal static readonly string RemotePresetsFolder = Path.Combine(Common.FolderAppData,
+    internal static readonly string RemotePresetsFolder = Path.Combine(IrssUtils.Common.FolderAppData,
                                                                        "MP Control Plugin\\Remote Presets");
 
-    internal static readonly string RemotesFile = Path.Combine(Common.FolderAppData, "MP Control Plugin\\Remotes.xml");
+    internal static readonly string RemotesFile = Path.Combine(IrssUtils.Common.FolderAppData, "MP Control Plugin\\Remotes.xml");
 
     #endregion Constants
 
@@ -1295,111 +1295,111 @@ namespace MediaPortal.Plugins
         if (String.IsNullOrEmpty(command))
           throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
 
-        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+        if (command.StartsWith(IrssUtils.Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
         {
           string fileName = Path.Combine(FolderMacros,
-                                         command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
+                                         command.Substring(IrssUtils.Common.CmdPrefixMacro.Length) + IrssUtils.Common.FileExtensionMacro);
           ProcMacro(fileName);
         }
-        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-          BlastIR(Path.Combine(Common.FolderIRCommands, commands[0] + Common.FileExtensionIR), commands[1]);
+          string[] commands = IrssUtils.Common.SplitBlastCommand(command.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
+          BlastIR(Path.Combine(IrssUtils.Common.FolderIRCommands, commands[0] + IrssUtils.Common.FileExtensionIR), commands[1]);
         }
-        else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
         {
-          int pauseTime = int.Parse(command.Substring(Common.CmdPrefixPause.Length));
+          int pauseTime = int.Parse(command.Substring(IrssUtils.Common.CmdPrefixPause.Length));
           Thread.Sleep(pauseTime);
         }
-        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-          Common.ProcessRunCommand(commands);
+          string[] commands = IrssUtils.Common.SplitRunCommand(command.Substring(IrssUtils.Common.CmdPrefixRun.Length));
+          IrssUtils.Common.ProcessRunCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-          Common.ProcessSerialCommand(commands);
+          string[] commands = IrssUtils.Common.SplitSerialCommand(command.Substring(IrssUtils.Common.CmdPrefixSerial.Length));
+          IrssUtils.Common.ProcessSerialCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-          Common.ProcessWindowMessageCommand(commands);
+          string[] commands = IrssUtils.Common.SplitWindowMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixWindowMsg.Length));
+          IrssUtils.Common.ProcessWindowMessageCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
-          Common.ProcessTcpMessageCommand(commands);
+          string[] commands = IrssUtils.Common.SplitTcpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixTcpMsg.Length));
+          IrssUtils.Common.ProcessTcpMessageCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
-          Common.ProcessHttpCommand(commands);
+          string[] commands = IrssUtils.Common.SplitHttpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixHttpMsg.Length));
+          IrssUtils.Common.ProcessHttpCommand(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
         {
-          string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
+          string keyCommand = command.Substring(IrssUtils.Common.CmdPrefixKeys.Length);
           if (_inConfiguration)
-            MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(keyCommand, IrssUtils.Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
-            Common.ProcessKeyCommand(keyCommand);
+            IrssUtils.Common.ProcessKeyCommand(keyCommand);
         }
-        else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
         {
-          string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
-          Common.ProcessMouseCommand(mouseCommand);
+          string mouseCommand = command.Substring(IrssUtils.Common.CmdPrefixMouse.Length);
+          IrssUtils.Common.ProcessMouseCommand(mouseCommand);
         }
-        else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
         {
-          string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
-          Common.ProcessEjectCommand(ejectCommand);
+          string ejectCommand = command.Substring(IrssUtils.Common.CmdPrefixEject.Length);
+          IrssUtils.Common.ProcessEjectCommand(ejectCommand);
         }
-        else if (command.StartsWith(Common.CmdPrefixMultiMap, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixMultiMap, StringComparison.OrdinalIgnoreCase))
         {
-          string multiMapping = command.Substring(Common.CmdPrefixMultiMap.Length);
+          string multiMapping = command.Substring(IrssUtils.Common.CmdPrefixMultiMap.Length);
           if (_inConfiguration)
-            MessageBox.Show(multiMapping, Common.UITextMultiMap, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(multiMapping, IrssUtils.Common.UITextMultiMap, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             ChangeMultiMapping(multiMapping);
         }
-        else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
+          string[] commands = IrssUtils.Common.SplitPopupCommand(command.Substring(IrssUtils.Common.CmdPrefixPopup.Length));
           if (_inConfiguration)
             MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
         }
-        else if (command.StartsWith(Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
         {
-          string screenID = command.Substring(Common.CmdPrefixGotoScreen.Length);
+          string screenID = command.Substring(IrssUtils.Common.CmdPrefixGotoScreen.Length);
 
           if (_inConfiguration)
-            MessageBox.Show(screenID, Common.UITextGotoScreen, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(screenID, IrssUtils.Common.UITextGotoScreen, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.ProcessGoTo(screenID, _mpBasicHome);
         }
-        else if (command.StartsWith(Common.CmdPrefixSendMPAction, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSendMPAction, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitSendMPActionCommand(command.Substring(Common.CmdPrefixSendMPAction.Length));
+          string[] commands = IrssUtils.Common.SplitSendMPActionCommand(command.Substring(IrssUtils.Common.CmdPrefixSendMPAction.Length));
           if (_inConfiguration)
-            MessageBox.Show(commands[0], Common.UITextSendMPAction, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(commands[0], IrssUtils.Common.UITextSendMPAction, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.ProcessSendMediaPortalAction(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixSendMPMsg, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSendMPMsg, StringComparison.OrdinalIgnoreCase))
         {
-          string[] commands = Common.SplitSendMPMsgCommand(command.Substring(Common.CmdPrefixSendMPMsg.Length));
+          string[] commands = IrssUtils.Common.SplitSendMPMsgCommand(command.Substring(IrssUtils.Common.CmdPrefixSendMPMsg.Length));
           if (_inConfiguration)
-            MessageBox.Show(commands[0], Common.UITextSendMPMsg, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(commands[0], IrssUtils.Common.UITextSendMPMsg, MessageBoxButtons.OK, MessageBoxIcon.Information);
           else
             MPCommon.ProcessSendMediaPortalMessage(commands);
         }
-        else if (command.StartsWith(Common.CmdPrefixInputLayer, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixInputLayer, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot toggle the input handler layer while in configuration", Common.UITextInputLayer,
+            MessageBox.Show("Cannot toggle the input handler layer while in configuration", IrssUtils.Common.UITextInputLayer,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
           }
           else
@@ -1417,51 +1417,51 @@ namespace MediaPortal.Plugins
               inputHandler.CurrentLayer = 1;
           }
         }
-        else if (command.StartsWith(Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot exit MediaPortal in configuration", Common.UITextExit, MessageBoxButtons.OK,
+            MessageBox.Show("Cannot exit MediaPortal in configuration", IrssUtils.Common.UITextExit, MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
           else
             MPCommon.ExitMP();
         }
-        else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK,
+            MessageBox.Show("Cannot Hibernate in configuration", IrssUtils.Common.UITextHibernate, MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
           else
             MPCommon.Hibernate();
         }
-        else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK,
+            MessageBox.Show("Cannot Reboot in configuration", IrssUtils.Common.UITextReboot, MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
           else
             MPCommon.Reboot();
         }
-        else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot Shutdown in configuration", Common.UITextShutdown, MessageBoxButtons.OK,
+            MessageBox.Show("Cannot Shutdown in configuration", IrssUtils.Common.UITextShutdown, MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
           else
             MPCommon.ShutDown();
         }
-        else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
-            MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK,
+            MessageBox.Show("Cannot enter Standby in configuration", IrssUtils.Common.UITextStandby, MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
           else
             MPCommon.Standby();
         }
-        else if (command.StartsWith(Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB,
+            MessageBox.Show("Cannot show Virtual Keyboard in configuration", IrssUtils.Common.UITextVirtualKB,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
           }
           else
@@ -1471,11 +1471,11 @@ namespace MediaPortal.Plugins
               Keyboard.ProcessCommand(vk.TextOutput);
           }
         }
-        else if (command.StartsWith(Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
+        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
         {
           if (_inConfiguration)
           {
-            MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK,
+            MessageBox.Show("Cannot show SMS Keyboard in configuration", IrssUtils.Common.UITextSmsKB, MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
           }
           else
@@ -1523,14 +1523,14 @@ namespace MediaPortal.Plugins
     /// <returns>string[] of Macros.</returns>
     internal static string[] GetMacroList(bool commandPrefix)
     {
-      string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
+      string[] files = Directory.GetFiles(FolderMacros, '*' + IrssUtils.Common.FileExtensionMacro);
       string[] list = new string[files.Length];
 
       int i = 0;
       foreach (string file in files)
       {
         if (commandPrefix)
-          list[i++] = Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
+          list[i++] = IrssUtils.Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
         else
           list[i++] = Path.GetFileNameWithoutExtension(file);
       }
@@ -1545,15 +1545,15 @@ namespace MediaPortal.Plugins
     /// <returns>string[] of IR Commands and Macros.</returns>
     internal static string[] GetFileList(bool commandPrefix)
     {
-      string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
-      string[] IRFiles = Directory.GetFiles(Common.FolderIRCommands, '*' + Common.FileExtensionIR);
+      string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + IrssUtils.Common.FileExtensionMacro);
+      string[] IRFiles = Directory.GetFiles(IrssUtils.Common.FolderIRCommands, '*' + IrssUtils.Common.FileExtensionIR);
       string[] list = new string[MacroFiles.Length + IRFiles.Length];
 
       int i = 0;
       foreach (string file in MacroFiles)
       {
         if (commandPrefix)
-          list[i++] = Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
+          list[i++] = IrssUtils.Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
         else
           list[i++] = Path.GetFileNameWithoutExtension(file);
       }
@@ -1561,7 +1561,7 @@ namespace MediaPortal.Plugins
       foreach (string file in IRFiles)
       {
         if (commandPrefix)
-          list[i++] = Common.CmdPrefixBlast + Path.GetFileNameWithoutExtension(file);
+          list[i++] = IrssUtils.Common.CmdPrefixBlast + Path.GetFileNameWithoutExtension(file);
         else
           list[i++] = Path.GetFileNameWithoutExtension(file);
       }

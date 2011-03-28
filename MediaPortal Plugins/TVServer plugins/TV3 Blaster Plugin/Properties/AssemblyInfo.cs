@@ -21,6 +21,7 @@
 using System;
 using System.Reflection;
 using System.Resources;
+using MediaPortal.Common.Utils;
 
 //
 // General Information about an assembly is controlled through the following 
@@ -32,3 +33,9 @@ using System.Resources;
 [assembly: AssemblyDescription("External Channel Changer for TV Engine 3 using IR Server")]
 [assembly: CLSCompliant(true)]
 [assembly: NeutralResourcesLanguage("en")]
+
+[assembly: CompatibleVersion("1.1.6.27644")]
+[assembly: UsesSubsystem("TVE.DB")]
+[assembly: UsesSubsystem("TVE.Controller")]
+[assembly: UsesSubsystem("TVE.Config")]
+
