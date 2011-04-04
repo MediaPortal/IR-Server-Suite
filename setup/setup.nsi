@@ -240,12 +240,9 @@ UninstPage custom un.UninstallModePage un.UninstallModePageLeave
   !insertmacro "${MacroName}" "SectionIRServer"
 
 !ifdef MPplugins
-  !insertmacro "${MacroName}" "SectionMPCommon"
-    !insertmacro "${MacroName}" "SectionMPControlPlugin"
-    !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
-
-  !insertmacro "${MacroName}" "SectionTV3Common"
-    !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
+  !insertmacro "${MacroName}" "SectionMPControlPlugin"
+  !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
+  !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
 !endif
 
   #SectionGroupTools
@@ -440,41 +437,11 @@ ${MementoSectionEnd}
 
 SectionGroup "MediaPortal plugins" SectionGroupMP
 
-Section "-commonMP" SectionMPCommon
-  ${LOG_TEXT} "INFO" "Installing common files for MediaPortal plugins..."
-  ${KILLPROCESS} "MediaPortal.exe"
-  ${KILLPROCESS} "configuration.exe"
-
-  ; Write plugin dll
-  SetOutPath "$MPdir.Plugins\Process"
-  File "..\MediaPortal Plugins\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
-  File "..\IR Server Suite\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
-  File "..\IR Server Suite\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
-
-  ; Write plugin dll
-  SetOutPath "$MPdir.Plugins\Windows"
-  File "..\MediaPortal Plugins\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
-  File "..\IR Server Suite\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
-  File "..\IR Server Suite\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
-SectionEnd
-!macro Remove_${SectionMPCommon}
-  ${LOG_TEXT} "INFO" "Removing common files for MediaPortal plugins..."
-  ${KILLPROCESS} "MediaPortal.exe"
-  ${KILLPROCESS} "configuration.exe"
-
-  ; remove files
-  Delete "$MPdir.Plugins\Process\MPUtils.*"
-  Delete "$MPdir.Plugins\Process\IrssComms.*"
-  Delete "$MPdir.Plugins\Process\IrssUtils.*"
-  Delete "$MPdir.Plugins\Windows\MPUtils.*"
-  Delete "$MPdir.Plugins\Windows\IrssComms.*"
-  Delete "$MPdir.Plugins\Windows\IrssUtils.*"
-!macroend
-
-;======================================
-
 ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   ${LOG_TEXT} "INFO" "Installing MP Control Plugin..."
+
+  ${KILLPROCESS} "MediaPortal.exe"
+  ${KILLPROCESS} "configuration.exe"
 
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
@@ -498,6 +465,9 @@ ${MementoSectionEnd}
 !macro Remove_${SectionMPControlPlugin}
   ${LOG_TEXT} "INFO" "MP Control Plugin..."
 
+  ${KILLPROCESS} "MediaPortal.exe"
+  ${KILLPROCESS} "configuration.exe"
+
   ; Delete plugin dll
   Delete "$MPdir.Plugins\Process\MPControlPlugin.*"
 
@@ -509,6 +479,9 @@ ${MementoSectionEnd}
 
 ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   ${LOG_TEXT} "INFO" "Installing MP Blast Zone Plugin..."
+
+  ${KILLPROCESS} "MediaPortal.exe"
+  ${KILLPROCESS} "configuration.exe"
 
   ; use the all users context
   SetShellVarContext all
@@ -537,6 +510,9 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
 ${MementoSectionEnd}
 !macro Remove_${SectionMPBlastZonePlugin}
   ${LOG_TEXT} "INFO" "Removing MP Blast Zone Plugin..."
+
+  ${KILLPROCESS} "MediaPortal.exe"
+  ${KILLPROCESS} "configuration.exe"
 
   Delete "$MPdir.Plugins\Windows\MPBlastZonePlugin.*"
 !macroend
@@ -573,36 +549,9 @@ Var RestartTvService
 
 SectionGroup "TV Server plugins" SectionGroupTV3
 
-Section "-commonTV3" SectionTV3Common
-  ${LOG_TEXT} "INFO" "Installing common files for TV Server plugins..."
-  !insertmacro StopTVService
-
-  ; Write plugin dll
-  SetOutPath "$DIR_TVSERVER\Plugins"
-  File "..\MediaPortal Plugins\Common\MPUtils\bin\${Build_Type}\MPUtils.*"
-  File "..\IR Server Suite\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
-  File "..\IR Server Suite\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
-SectionEnd
-!macro Remove_${SectionTV3Common}
-  ${If} ${FileExists} "$DIR_TVSERVER\Plugins\MPUtils.*"
-  ${OrIf} ${FileExists} "$DIR_TVSERVER\Plugins\IrssComms.*"
-  ${OrIf} ${FileExists} "$DIR_TVSERVER\Plugins\IrssUtils.*"
-
-    ${LOG_TEXT} "INFO" "Removing common files for TV Server plugins..."
-    !insertmacro StopTVService
-
-    ; remove files
-    Delete "$DIR_TVSERVER\Plugins\MPUtils.*"
-    Delete "$DIR_TVSERVER\Plugins\IrssComms.*"
-    Delete "$DIR_TVSERVER\Plugins\IrssUtils.*"
-
-  ${EndIf}
-!macroend
-
-;======================================
-
 ${MementoUnselectedSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
   ${LOG_TEXT} "INFO" "Installing TV Server Blaster Plugin..."
+  !insertmacro StopTVService
 
   ; Write plugin dll
   SetOutPath "$DIR_TVSERVER\Plugins"
@@ -1119,9 +1068,6 @@ Function LoadPreviousSettings
     !insertmacro DisableSection "${SectionGroupTV3}" "TV Server plugins" " ($(TEXT_TVSERVER_NOT_INSTALLED))"
   ${Endif}
 !endif
-
-  ; update component selection
-  Call .onSelChange
 FunctionEnd
 
 
@@ -1171,29 +1117,6 @@ ${EndIf}
 
 ${LOG_CLOSE}
 FunctionEnd
-
-Function .onSelChange
-
-!ifdef MPplugins
-  ; disable/remove common files for MediaPortal plugins if all MediaPortal plugins are unselected
-  ${IfNot} ${SectionIsSelected} ${SectionMPControlPlugin}
-  ${AndIfNot} ${SectionIsSelected} ${SectionMPBlastZonePlugin}
-    !insertmacro UnselectSection ${SectionMPCommon}
-  ${Else}
-    !insertmacro SelectSection ${SectionMPCommon}
-  ${EndIf}
-
-  ; disable/remove common files for TVServer plugins if all TVServer plugins are unselected
-  ${IfNot} ${SectionIsSelected} ${SectionTV3BlasterPlugin}
-    !insertmacro UnselectSection ${SectionTV3Common}
-  ${Else}
-    !insertmacro SelectSection ${SectionTV3Common}
-  ${EndIf}
-!endif
-
-FunctionEnd
-
-;======================================
 
 Function PageReinstallLeave
   !ifdef MPplugins

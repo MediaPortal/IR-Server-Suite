@@ -12,7 +12,7 @@
     <AssemblyName>MPControlPlugin</AssemblyName>
     <StartupObject>
     </StartupObject>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
@@ -49,6 +49,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -130,8 +132,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)ILMerge.bat" "$(TargetDir)" $(ConfigurationName)</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\..\MediaPortal\trunk\Common-MP-TVE3\Common.Utils\Common.Utils.csproj">
@@ -174,5 +175,8 @@
   <ItemGroup>
     <EmbeddedResource Include="iconGray.gif" />
     <EmbeddedResource Include="iconGreen.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ILMerge.bat" />
   </ItemGroup>
 </Project>
