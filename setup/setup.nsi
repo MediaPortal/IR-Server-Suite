@@ -184,12 +184,12 @@ CRCCheck on
 !define MUI_HEADERIMAGE_RIGHT
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
-!define MUI_FINISHPAGE_NOAUTOCLOSE
+;!define MUI_FINISHPAGE_NOAUTOCLOSE
 
 !define MUI_FINISHPAGE_RUN      "$DIR_INSTALL\IR Server Configuration.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Run IR Server Configuration"
 
-!define MUI_UNFINISHPAGE_NOAUTOCLOSE
+;!define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
 
 #---------------------------------------------------------------------------
