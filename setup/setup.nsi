@@ -498,10 +498,10 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   SetOverwrite on
 
   ; Write skin files
-  SetOutPath "$MPdir.Skin\Blue3"
+  SetOutPath "$MPdir.Skin\Default"
   File /r /x .svn "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
-  SetOutPath "$MPdir.Skin\Blue3wide"
+  SetOutPath "$MPdir.Skin\Defaultwide"
   File /r /x .svn "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   ; Create Macro folder
