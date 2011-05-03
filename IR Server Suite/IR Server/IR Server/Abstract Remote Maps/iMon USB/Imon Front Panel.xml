@@ -4,13 +4,13 @@
   <RemoteTable RawCode="3019" AbstractButton="Down" />
   <RemoteTable RawCode="3020" AbstractButton="Left" />
   <RemoteTable RawCode="3021" AbstractButton="Right" />
-  <RemoteTable RawCode="3022" AbstractButton="OK" />
   <RemoteTable RawCode="3015" AbstractButton="Start" />
   <RemoteTable RawCode="3023" AbstractButton="Back" />
   <RemoteTable RawCode="3045" AbstractButton="Info" />
   <RemoteTable RawCode="3044" AbstractButton="Home" />
   <RemoteTable RawCode="3043" AbstractButton="Power" />
   <RemoteTable RawCode="3002" AbstractButton="Play" />
+  <RemoteTable RawCode="3060" AbstractButton="PlayPause" />
   <RemoteTable RawCode="3004" AbstractButton="Stop" />
   <RemoteTable RawCode="3008" AbstractButton="FastForward" />
   <RemoteTable RawCode="3007" AbstractButton="Rewind" />

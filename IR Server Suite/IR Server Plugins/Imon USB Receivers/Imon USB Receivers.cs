@@ -110,6 +110,8 @@ namespace IRServer.Plugin
         private const uint IMON_PANEL_BUTTON = 3000;
         private const uint IMON_VOLUME_DOWN = 4002;
         private const uint IMON_VOLUME_UP = 4001;
+        private const uint IMON_NAVIGATION_DOWN = 4012;
+        private const uint IMON_NAVIGATION_UP = 4011;
 
         private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "iMon USB Receivers.xml");
 
@@ -356,7 +358,8 @@ namespace IRServer.Plugin
             "Vid_15c2&Pid_003c",
             "Vid_15c2&Pid_0038",
             "Vid_15c2&Pid_0036",
-            "Vid_15c2&Pid_0035"
+            "Vid_15c2&Pid_0035",
+            "Vid_15c2&Pid_0039"
         };
 
         private RawInput.RAWINPUTDEVICE[] _deviceTree;
@@ -1602,6 +1605,10 @@ namespace IRServer.Plugin
                                     RemoteEvent(IMON_VOLUME_DOWN, true);
                                 if (newArray[2] == 0x01)
                                     RemoteEvent(IMON_VOLUME_UP, true);
+                                if (newArray[4] == 0x01)
+                                    RemoteEvent(IMON_NAVIGATION_UP, true);
+                                if (newArray[3] == 0x01)
+                                    RemoteEvent(IMON_NAVIGATION_DOWN, true);
                             }
                             else if ((newArray[1] & 0xFC) == 0x68)
                             {

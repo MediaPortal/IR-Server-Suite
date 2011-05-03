@@ -1,0 +1,6 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="4011" AbstractButton="Up" />
+  <RemoteTable RawCode="4012" AbstractButton="Down" />
+  <RemoteTable RawCode="3061" AbstractButton="OK" />
+</DocumentElement>
