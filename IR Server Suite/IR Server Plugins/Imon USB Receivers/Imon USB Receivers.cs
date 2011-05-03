@@ -351,7 +351,8 @@ namespace IRServer.Plugin
 
         private static readonly string[] SupportedDevices_HID = new string[]
         {
-            "Vid_15c2&Pid_0044",  
+            "Vid_15c2&Pid_0044",
+            "Vid_15c2&Pid_0043",
             "Vid_15c2&Pid_003c",
             "Vid_15c2&Pid_0038",
             "Vid_15c2&Pid_0036",
