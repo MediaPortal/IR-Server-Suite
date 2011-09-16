@@ -1020,18 +1020,6 @@ namespace IRServer.Plugin
     private void IoControl(IoCtrl ioControlCode, IntPtr inBuffer, int inBufferSize, IntPtr outBuffer, int outBufferSize,
                            out int bytesReturned)
     {
-      /*
-      IrssUtils.IrssLog.Append("IoControl.log");
-      IrssUtils.IrssLog.Debug("IoControl: Start of [{0}]", ioControlCode.ToString());
-
-      IrssUtils.IrssLog.Debug("IoControl: Thread Name   =[{0}]", System.Threading.Thread.CurrentThread.Name);
-      IrssUtils.IrssLog.Debug("IoControl: ioControlCode =[{0}]", ioControlCode.ToString());
-      IrssUtils.IrssLog.Debug("IoControl: inBuffer      =[{0}]", inBuffer.ToString());
-      IrssUtils.IrssLog.Debug("IoControl: inBufferSize  =[{0}]", inBufferSize.ToString());
-      IrssUtils.IrssLog.Debug("IoControl: outBuffer     =[{0}]", outBuffer.ToString());
-      IrssUtils.IrssLog.Debug("IoControl: outBufferSize =[{0}]", outBufferSize.ToString());
-      */
-
       if (!_deviceAvailable)
         throw new InvalidOperationException("Device not available");
 
