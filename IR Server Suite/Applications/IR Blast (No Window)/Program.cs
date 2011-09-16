@@ -56,7 +56,7 @@ namespace IRBlast
     private static void Main(string[] args)
     {
       IrssLog.LogLevel = IrssLog.Level.Debug;
-      IrssLog.Append("IR Blast (No Window).log");
+      IrssLog.Open("IR Blast (No Window).log");
 
       try
       {

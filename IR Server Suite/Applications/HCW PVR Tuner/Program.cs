@@ -84,7 +84,7 @@ namespace HcwPvrTuner
       Console.WriteLine();
 
       IrssLog.LogLevel = IrssLog.Level.Debug;
-      IrssLog.Append("Dbox Tuner.log");
+      IrssLog.Open("Dbox Tuner.log");
 
       if (args.Length != 1)
       {

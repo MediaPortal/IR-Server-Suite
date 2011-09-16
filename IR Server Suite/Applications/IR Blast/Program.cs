@@ -55,7 +55,7 @@ namespace IRBlast
     private static void Main(string[] args)
     {
       IrssLog.LogLevel = IrssLog.Level.Debug;
-      IrssLog.Append("IR Blast.log");
+      IrssLog.Open("IR Blast.log");
 
       ShowHeader();
 
