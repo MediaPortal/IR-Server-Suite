@@ -135,11 +135,11 @@
     <PostBuildEvent>"$(ProjectDir)ILMerge.bat" "$(TargetDir)" $(ConfigurationName)</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\MediaPortal\trunk\Common-MP-TVE3\Common.Utils\Common.Utils.csproj">
+    <ProjectReference Include="..\..\..\..\MediaPortal-1\Common-MP-TVE3\Common.Utils\Common.Utils.csproj">
       <Project>{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227}</Project>
       <Name>Common.Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Core\Core.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\mediaportal\Core\Core.csproj">
       <Project>{02FFFC1F-2555-4B99-8B01-3432D0673855}</Project>
       <Name>Core</Name>
     </ProjectReference>
@@ -147,15 +147,15 @@
       <Project>{C1BCEC3E-6074-4328-B5D9-391A457C8FFB}</Project>
       <Name>Databases</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Dialogs\Dialogs.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\mediaportal\Dialogs\Dialogs.csproj">
       <Project>{396C5208-5D46-4A11-92C1-FD0F2F42D7DD}</Project>
       <Name>Dialogs</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\RemotePlugins\RemotePlugins.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\mediaportal\RemotePlugins\RemotePlugins.csproj">
       <Project>{0A234721-1F13-4DF8-9B1E-64D9E3111203}</Project>
       <Name>RemotePlugins</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\mediaportal\Utils\Utils.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\mediaportal\Utils\Utils.csproj">
       <Project>{6DA0E4DF-6230-4642-98B5-E690BB6942BB}</Project>
       <Name>Utils</Name>
     </ProjectReference>

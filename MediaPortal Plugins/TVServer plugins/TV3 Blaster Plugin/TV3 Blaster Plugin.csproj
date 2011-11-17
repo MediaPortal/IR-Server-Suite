@@ -167,31 +167,31 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\MediaPortal\trunk\Common-MP-TVE3\Common.Utils\Common.Utils.csproj">
+    <ProjectReference Include="..\..\..\..\MediaPortal-1\Common-MP-TVE3\Common.Utils\Common.Utils.csproj">
       <Project>{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227}</Project>
       <Name>Common.Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\Plugins\PluginBase\PluginBase.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\TvEngine3\TVLibrary\Plugins\PluginBase\PluginBase.csproj">
       <Project>{5EE20DC0-B22B-4BDB-828B-8DC5723A1873}</Project>
       <Name>PluginBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\SetupControls\SetupControls.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\TvEngine3\TVLibrary\SetupControls\SetupControls.csproj">
       <Project>{A2792D3C-04C1-4A92-9383-A33D59C54D8D}</Project>
       <Name>SetupControls</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvControl\TvControl.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\TvEngine3\TVLibrary\TvControl\TvControl.csproj">
       <Project>{0DB878C6-1B68-4DC5-B6EF-564B7C08486F}</Project>
       <Name>TvControl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\TvBusinessLayer\TvBusinessLayer.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\TvEngine3\TVLibrary\TVDatabase\TvBusinessLayer\TvBusinessLayer.csproj">
       <Project>{58C35C9D-F18D-40F2-8024-24E50D01E9C5}</Project>
       <Name>TvBusinessLayer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\TVDatabase.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\TvEngine3\TVLibrary\TVDatabase\TVDatabase.csproj">
       <Project>{0FD8DEAE-37A4-49CC-A7BE-E86E0E0D85BD}</Project>
       <Name>TVDatabase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TvLibrary.Interfaces\TvLibrary.Interfaces.csproj">
+    <ProjectReference Include="..\..\..\..\Mediaportal-1\TvEngine3\TVLibrary\TvLibrary.Interfaces\TvLibrary.Interfaces.csproj">
       <Project>{AE752FB4-7450-4150-9BAD-19EFA9D2AC37}</Project>
       <Name>TvLibrary.Interfaces</Name>
     </ProjectReference>
