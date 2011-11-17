@@ -91,14 +91,14 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gentle.Common, Version=1.2.9.1285, Culture=neutral, PublicKeyToken=80b5de62e27be49b">
+    <Reference Include="Gentle.Common, Version=1.5.0.29111, Culture=neutral, PublicKeyToken=80b5de62e27be49b, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\MediaPortal-1\TvEngine3\TVLibrary\TVDatabase\references\Gentle.Common.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\references\Gentle.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Gentle.Framework, Version=1.2.9.1286, Culture=neutral, PublicKeyToken=80b5de62e27be49b">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\mediaportal\trunk\TvEngine3\TVLibrary\TVDatabase\references\Gentle.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\MediaPortal-1\TvEngine3\TVLibrary\TVDatabase\references\Gentle.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">

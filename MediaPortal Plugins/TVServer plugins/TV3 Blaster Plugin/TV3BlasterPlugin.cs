@@ -392,7 +392,7 @@ namespace TvEngine
         Log.Info("Cannot load external channel configurations, there are no TV cards registered");
 
         Card dummyCard = new Card(0, "device path", "Dummy TV Card", 0, false, DateTime.Now, "recording folder", 0,
-                                  false, 0, "timeshifting folder", 0, 0, 0);
+                                  false, 0, "timeshifting folder", 0, 0, false, false, false, 0);
         cards.Add(dummyCard);
       }
 
