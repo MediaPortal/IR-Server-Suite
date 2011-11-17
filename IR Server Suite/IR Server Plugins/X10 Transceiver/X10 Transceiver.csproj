@@ -57,6 +57,7 @@
     <Reference Include="Interop.X10, Version=1.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Interop.X10.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -119,6 +120,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetDir)$(ProjectName).???"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetDir)$(ProjectName).???"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"
+xcopy /Y "$(TargetDir)Interop.X10.dll"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"
+</PostBuildEvent>
   </PropertyGroup>
 </Project>
