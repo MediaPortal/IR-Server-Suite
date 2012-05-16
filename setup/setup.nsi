@@ -45,7 +45,7 @@
 #---------------------------------------------------------------------------
 # path definitions
 !define svn_ROOT_IRSS ".."
-!define svn_ROOT_MP "${svn_ROOT_IRSS}\..\..\..\..\MediaPortal\trunk"
+!define svn_ROOT_MP "${svn_ROOT_IRSS}\..\..\..\..\MediaPortal-1"
 
 !define svn_MPplugins "..\MediaPortal Plugins"
 
@@ -68,8 +68,8 @@
 
 ; VER_BUILD is set to zero for Release builds
 !define VER_MAJOR       1
-!define VER_MINOR       4
-!define VER_REVISION    2
+!define VER_MINOR       5
+!define VER_REVISION    0
 
 !ifndef VER_BUILD
   !define VER_BUILD     0
