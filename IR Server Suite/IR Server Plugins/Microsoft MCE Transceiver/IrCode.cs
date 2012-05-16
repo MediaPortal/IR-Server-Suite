@@ -58,32 +58,17 @@ namespace IRServer.Plugin
 
     #endregion Constants
 
-    #region Member Variables
-
-    private int _carrier;
-    private int[] _timingData;
-
-    #endregion Member Variables
-
     #region Properties
 
     /// <summary>
     /// Gets or Sets the IR carrier frequency.
     /// </summary>
-    public int Carrier
-    {
-      get { return _carrier; }
-      set { _carrier = value; }
-    }
+    public int Carrier { get; set; }
 
     /// <summary>
     /// Gets or Sets the IR timing data.
     /// </summary>
-    public int[] TimingData
-    {
-      get { return _timingData; }
-      set { _timingData = value; }
-    }
+    public int[] TimingData { get; set; }
 
     #endregion Properties
 
@@ -103,8 +88,8 @@ namespace IRServer.Plugin
 
     public IrCode(int carrier, int[] timingData)
     {
-      _carrier = carrier;
-      _timingData = timingData;
+      Carrier = carrier;
+      TimingData = timingData;
     }
 
     #endregion Constructors
@@ -117,12 +102,12 @@ namespace IRServer.Plugin
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
     public bool FinalizeData()
     {
-      if (_timingData.Length == 0)
+      if (TimingData.Length == 0)
         return false;
 
       // Find long spaces and trim the IR code ...
       List<int> newData = new List<int>();
-      foreach (int time in _timingData)
+      foreach (int time in TimingData)
       {
         if (time <= LongestSpace)
         {
@@ -135,7 +120,7 @@ namespace IRServer.Plugin
         }
       }
 
-      _timingData = newData.ToArray();
+      TimingData = newData.ToArray();
       return true;
     }
 
@@ -149,35 +134,35 @@ namespace IRServer.Plugin
 
       int index = 0;
 
-      if (_timingData.Length > 1)
+      if (TimingData.Length > 1)
       {
-        for (index = 0; index < _timingData.Length - 1; index++)
-          newTimingData.Add(_timingData[index]);
+        for (index = 0; index < TimingData.Length - 1; index++)
+          newTimingData.Add(TimingData[index]);
       }
-      else if (_timingData.Length == 0)
+      else if (TimingData.Length == 0)
       {
-        _timingData = new int[timingData.Length];
-        timingData.CopyTo(_timingData, 0);
+        TimingData = new int[timingData.Length];
+        timingData.CopyTo(TimingData, 0);
         return;
       }
 
-      if (timingData.Length == 0 || index >= _timingData.Length)
+      if (timingData.Length == 0 || index >= TimingData.Length)
         return;
 
-      if (Math.Sign(timingData[0]) == Math.Sign(_timingData[index]))
+      if (Math.Sign(timingData[0]) == Math.Sign(TimingData[index]))
       {
-        newTimingData.Add(_timingData[index] + timingData[0]);
+        newTimingData.Add(TimingData[index] + timingData[0]);
 
         for (index = 1; index < timingData.Length; index++)
           newTimingData.Add(timingData[index]);
       }
       else
       {
-        newTimingData.Add(_timingData[index]);
+        newTimingData.Add(TimingData[index]);
         newTimingData.AddRange(timingData);
       }
 
-      _timingData = newTimingData.ToArray();
+      TimingData = newTimingData.ToArray();
     }
 
     /// <summary>

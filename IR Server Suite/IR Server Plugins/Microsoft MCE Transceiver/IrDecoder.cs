@@ -27,7 +27,6 @@ using System.Diagnostics;
 
 namespace IRServer.Plugin
 {
-
   #region Enumerations
 
   /// <summary>

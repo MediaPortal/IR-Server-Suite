@@ -118,7 +118,6 @@ namespace IRServer.Plugin
 
     #region Members
 
-    private Guid _deviceClass;
     private IntPtr _deviceHandle;
     private IntPtr _handleDeviceArrival;
     private IntPtr _handleDeviceRemoval;
@@ -183,11 +182,7 @@ namespace IRServer.Plugin
 
     #region Properties
 
-    internal Guid Class
-    {
-      get { return _deviceClass; }
-      set { _deviceClass = value; }
-    }
+    internal Guid Class { get; set; }
 
     #endregion Properties
 
@@ -229,7 +224,7 @@ namespace IRServer.Plugin
 
       dbi.Size = Marshal.SizeOf(dbi);
       dbi.DeviceType = 0x5;
-      dbi.ClassGuid = _deviceClass;
+      dbi.ClassGuid = Class;
 
       _handleDeviceArrival = RegisterDeviceNotification(Handle, ref dbi, 0);
       int lastError = Marshal.GetLastWin32Error();
@@ -278,7 +273,7 @@ namespace IRServer.Plugin
         DeviceBroadcastInterface dbi =
           (DeviceBroadcastInterface) Marshal.PtrToStructure(ptr, typeof (DeviceBroadcastInterface));
 
-        if (dbi.ClassGuid == _deviceClass && DeviceArrival != null)
+        if (dbi.ClassGuid == Class && DeviceArrival != null)
           DeviceArrival();
       }
     }

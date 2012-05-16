@@ -24,7 +24,6 @@ using System;
 
 namespace IRServer.Plugin
 {
-
   #region Enumerations
 
   internal enum MceKeyboardDetectState
@@ -62,90 +61,19 @@ namespace IRServer.Plugin
 
   internal class MceDetectionData
   {
-    #region Members
-
-    private int _bit;
-    private int _deltaX;
-    private int _deltaY;
-    private int _halfBit;
-    private uint _keyCode;
-    private bool _left;
-    private uint _modifiers;
-
-    private bool _right;
-    private MceKeyboardDetectState _state = MceKeyboardDetectState.Header;
-    private uint _type;
-    private uint _working;
-
-    #endregion Members
-
     #region Properties
 
-    public MceKeyboardDetectState State
-    {
-      get { return _state; }
-      set { _state = value; }
-    }
-
-    public uint Type
-    {
-      get { return _type; }
-      set { _type = value; }
-    }
-
-    public uint KeyCode
-    {
-      get { return _keyCode; }
-      set { _keyCode = value; }
-    }
-
-    public uint Modifiers
-    {
-      get { return _modifiers; }
-      set { _modifiers = value; }
-    }
-
-    public int DeltaY
-    {
-      get { return _deltaY; }
-      set { _deltaY = value; }
-    }
-
-    public int DeltaX
-    {
-      get { return _deltaX; }
-      set { _deltaX = value; }
-    }
-
-    public bool Right
-    {
-      get { return _right; }
-      set { _right = value; }
-    }
-
-    public bool Left
-    {
-      get { return _left; }
-      set { _left = value; }
-    }
-
-    public int Bit
-    {
-      get { return _bit; }
-      set { _bit = value; }
-    }
-
-    public int HalfBit
-    {
-      get { return _halfBit; }
-      set { _halfBit = value; }
-    }
-
-    public uint Working
-    {
-      get { return _working; }
-      set { _working = value; }
-    }
+    public MceKeyboardDetectState State { get; set; }
+    public uint Type { get; set; }
+    public uint KeyCode { get; set; }
+    public uint Modifiers { get; set; }
+    public int DeltaY { get; set; }
+    public int DeltaX { get; set; }
+    public bool Right { get; set; }
+    public bool Left { get; set; }
+    public int Bit { get; set; }
+    public int HalfBit { get; set; }
+    public uint Working { get; set; }
 
     #endregion Properties
 
@@ -157,7 +85,7 @@ namespace IRServer.Plugin
 
     public MceDetectionData(MceKeyboardDetectState state)
     {
-      _state = state;
+      State = state;
     }
 
     #endregion Constructors
