@@ -1,8 +1,5 @@
 @ECHO OFF
 
-REM set paths
-set DeployVersionSVN="..\..\..\..\..\MediaPortal\trunk\Tools\Script & Batch tools\DeployVersionSVN\DeployVersionSVN\bin\Release\DeployVersionSVN.exe"
-
 REM detect if BUILD_TYPE should be release or debug
 if not %1!==Debug! goto RELEASE
 :DEBUG
@@ -37,11 +34,6 @@ if not %ERRORLEVEL%==0 EXIT
 
 
 echo.
-echo Writing SVN revision assemblies...
-%DeployVersionSVN% /svn="..\IR Server Suite"  >> %LOG%
-
-
-echo.
 echo Building IR Server Suite...
 rem "%ProgramDir%\Microsoft Visual Studio 10.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "..\IR Server Suite\IR Server Suite.sln" >> %LOG%
 "%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86;AllowUnsafeBlocks=true "..\IR Server Suite\IR Server Suite.sln" >> %LOG%
@@ -57,27 +49,15 @@ if not %ERRORLEVEL%==0 EXIT
 
 
 echo.
-echo Reverting assemblies...
-%DeployVersionSVN% /svn="..\IR Server Suite" /revert >> %LOG%
-
-echo.
-echo Reading the svn revision...
-%DeployVersionSVN% /svn="..\IR Server Suite" /GetVersion >> %LOG%
-rem SET /p version=<version.txt >> build.log
-SET version=%errorlevel%
-DEL version.txt >> %LOG%
-
-
-echo.
 if not %2!==MPplugins! goto NoMPplugins
 
 echo Building Installer with MPplugins...
-"%ProgramDir%\NSIS\makensis.exe" /DBUILD_TYPE=%BUILD_TYPE% /DVER_BUILD=%version% /DMPplugins ..\setup\setup.nsi >> %LOG%
+"%ProgramDir%\NSIS\makensis.exe" /DBUILD_TYPE=%BUILD_TYPE% /DMPplugins ..\setup\setup.nsi >> %LOG%
 GOTO END
 
 :NoMPplugins
 echo Building Installer...
-"%ProgramDir%\NSIS\makensis.exe" /DBUILD_TYPE=%BUILD_TYPE% /DVER_BUILD=%version% ..\setup\setup.nsi >> %LOG%
+"%ProgramDir%\NSIS\makensis.exe" /DBUILD_TYPE=%BUILD_TYPE% ..\setup\setup.nsi >> %LOG%
 
 :END
 
