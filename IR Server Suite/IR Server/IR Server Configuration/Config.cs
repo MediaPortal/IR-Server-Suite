@@ -250,6 +250,7 @@ namespace IRServer.Configuration
         gridPlugins.Columns[ColConfigure].AutoSizeMode = SourceGrid.AutoSizeMode.EnableAutoSize;
         gridPlugins.AutoStretchColumnsToFitWidth = true;
         gridPlugins.AutoSizeCells();
+        gridPlugins.SortRangeRows(new RangeFullGridNoFixedRows(), ColName, true, new ValueCellComparer());
       }
       catch (Exception ex)
       {
