@@ -18,8 +18,6 @@ namespace IRServer.Tray
     private static readonly string _translatorExe = Path.Combine(Application.StartupPath, @"Translator.exe");
     private static readonly string _debugClientExe = Path.Combine(Application.StartupPath, @"DebugClient.exe");
 
-    private const int TimeToWaitForRestart = 10000;
-
     #endregion Constants
 
     #region Variables
@@ -29,9 +27,6 @@ namespace IRServer.Tray
 
     internal static readonly Icon _iconGray = new Icon(Resources.iconGray, new Size(16, 16));
     internal static readonly Icon _iconGreen = new Icon(Resources.iconGreen, new Size(16, 16));
-
-    private static HardwareMonitor _hardwareMonitor;
-    private static DateTime _lastDeviceEvent = DateTime.MinValue;
 
     #endregion Variables
 
@@ -72,12 +67,6 @@ namespace IRServer.Tray
       _notifyIcon.Visible = true;
 
       Settings.LoadSettings();
-      if (Settings.RestartOnUSBChangesTray)
-      {
-        _hardwareMonitor = new HardwareMonitor();
-        _hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
-        _hardwareMonitor.Start();
-      }
 
       thread = new Thread(new ThreadStart(UpdateIcon));
       thread.IsBackground = true;
@@ -85,12 +74,6 @@ namespace IRServer.Tray
 
       Application.Run();
       thread.Abort();
-
-      if (Settings.RestartOnUSBChangesTray)
-      {
-        _hardwareMonitor.Stop();
-        _hardwareMonitor = null;
-      }
 
       _notifyIcon.Visible = false;
       _notifyIcon = null;
@@ -144,32 +127,6 @@ namespace IRServer.Tray
     private static Icon getIcon()
     {
       return (Shared._irsStatus == IrsStatus.NotRunning) ? _iconGray : _iconGreen;
-    }
-
-    #endregion
-
-    #region Hardware Monitoring
-
-    private static void OnDeviceConnected()
-    {
-      Thread lazyRestartThread = new Thread(LazyRestart);
-      lazyRestartThread.Start();
-    }
-
-    private static void LazyRestart()
-    {
-      DateTime tempLastDeviceEvent = DateTime.Now;
-      _lastDeviceEvent = tempLastDeviceEvent;
-
-      // wait, if new decice events occur
-      Thread.Sleep(TimeToWaitForRestart);
-
-      // if new device event occured, stop here
-      if (!tempLastDeviceEvent.Equals(_lastDeviceEvent)) return;
-
-      // restart service
-      IrssLog.Info("New device event. Restarting Input Service.");
-      Shared.RestartIRS();
     }
 
     #endregion

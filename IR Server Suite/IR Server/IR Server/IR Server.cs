@@ -48,8 +48,6 @@ namespace IRServer
     private static readonly string AbstractRemoteSchemaFile = Path.Combine(Common.FolderAppData,
                                                                            "IR Server\\Abstract Remote Maps\\RemoteTable.xsd");
 
-    private const int TimeToWaitForRestart = 10000;
-
     #endregion Constants
 
     #region Variables
@@ -64,9 +62,6 @@ namespace IRServer
     private List<ClientManager> _registeredClients;
     private List<ClientManager> _registeredRepeaters;
     private Server _server;
-
-    private HardwareMonitor _hardwareMonitor;
-    private DateTime _lastDeviceEvent = DateTime.MinValue;
 
     #endregion Variables
 
@@ -206,17 +201,6 @@ namespace IRServer
 
       #endregion Setup Abstract Remote Model processing
 
-      #region Setup Hardware Monitoring
-
-      if (Settings.RestartOnUSBChanges)
-      {
-        _hardwareMonitor = new HardwareMonitor();
-        _hardwareMonitor.DeviceConnected += new HardwareMonitor.HardwareMonitorEvent(OnDeviceConnected);
-        _hardwareMonitor.Start();
-      }
-
-      #endregion
-
       IrssLog.Info("IR Server started");
     }
 
@@ -226,12 +210,6 @@ namespace IRServer
     protected override void OnStop()
     {
       IrssLog.Info("Stopping IR Server ...");
-
-      if (_hardwareMonitor != null)
-      {
-        _hardwareMonitor.Stop();
-        _hardwareMonitor = null;
-      }
 
       if (Settings.Mode == IRServerMode.ServerMode)
       {
@@ -1741,37 +1719,6 @@ namespace IRServer
 
       return true;
     }
-
-    #region Hardware Monitoring
-
-    private void OnDeviceConnected()
-    {
-      Thread lazyRestartThread = new Thread(LazyRestart);
-      lazyRestartThread.Start();
-    }
-
-    private void LazyRestart()
-    {
-      DateTime tempLastDeviceEvent = DateTime.Now;
-      _lastDeviceEvent = tempLastDeviceEvent;
-
-      // wait, if new decice events occur
-      Thread.Sleep(TimeToWaitForRestart);
-
-      // if new device event occured, stop here
-      if (!tempLastDeviceEvent.Equals(_lastDeviceEvent)) return;
-
-      // restart service
-      IrssLog.Info("New device event. Restarting Input Service.");
-      StopPlugins();
-      LoadPlugins();
-      StartPlugins();
-
-      StopServer();
-      StartServer();
-    }
-
-    #endregion
 
     #endregion Implementation
 

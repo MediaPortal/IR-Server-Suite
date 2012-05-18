@@ -58,8 +58,6 @@ namespace IRServer.Configuration
     private string _hostComputer = String.Empty;
     private IRServerMode _mode = IRServerMode.ServerMode;
     private string _processPriority = String.Empty;
-    private bool _restartOnUSBChanges;
-    private bool _restartOnUSBChangesTray;
     private BackgroundWorker monitorThread;
 
     #endregion Variables
@@ -314,8 +312,6 @@ namespace IRServer.Configuration
       advanced.Mode = _mode;
       advanced.HostComputer = _hostComputer;
       advanced.ProcessPriority = _processPriority;
-      advanced.RestartOnUSBChanges = _restartOnUSBChanges;
-      advanced.RestartOnUSBChangesTray = _restartOnUSBChangesTray;
 
       if (advanced.ShowDialog(this) == DialogResult.OK)
       {
@@ -323,8 +319,6 @@ namespace IRServer.Configuration
         _mode = advanced.Mode;
         _hostComputer = advanced.HostComputer;
         _processPriority = advanced.ProcessPriority;
-        _restartOnUSBChanges = advanced.RestartOnUSBChanges;
-        _restartOnUSBChangesTray = advanced.RestartOnUSBChangesTray;
       }
     }
 
@@ -574,8 +568,6 @@ namespace IRServer.Configuration
       _mode = Settings.Mode;
       _hostComputer = Settings.HostComputer;
       _processPriority = Settings.ProcessPriority;
-      _restartOnUSBChanges = Settings.RestartOnUSBChanges;
-      _restartOnUSBChangesTray = Settings.RestartOnUSBChangesTray;
       PluginReceive = Settings.PluginNameReceive;
       PluginTransmit = Settings.PluginNameTransmit;
     }
@@ -586,8 +578,6 @@ namespace IRServer.Configuration
           (Settings.Mode != _mode) ||
           (Settings.HostComputer != _hostComputer) ||
           (Settings.ProcessPriority != _processPriority) ||
-          (Settings.RestartOnUSBChanges != _restartOnUSBChanges) ||
-          (Settings.RestartOnUSBChangesTray != _restartOnUSBChangesTray) ||
           (Settings.PluginNameReceive != PluginReceive) ||
           (Settings.PluginNameTransmit != PluginTransmit))
       {
@@ -601,8 +591,6 @@ namespace IRServer.Configuration
           Settings.Mode = _mode;
           Settings.HostComputer = _hostComputer;
           Settings.ProcessPriority = _processPriority;
-          Settings.RestartOnUSBChanges = _restartOnUSBChanges;
-          Settings.RestartOnUSBChangesTray = _restartOnUSBChangesTray;
           Settings.PluginNameReceive = PluginReceive;
           Settings.PluginNameTransmit = PluginTransmit;
 

@@ -22,8 +22,6 @@ namespace IRServer
     public static string ProcessPriority { get; set; }
     public static string[] PluginNameReceive { get; set; }
     public static string PluginNameTransmit { get; set; }
-    public static bool RestartOnUSBChanges { get; set; }
-    public static bool RestartOnUSBChangesTray { get; set; }
 
     /// <summary>
     /// Loads settings from XML-File to <see cref="Settings"/> class.
@@ -38,9 +36,6 @@ namespace IRServer
       ProcessPriority = "No Change";
       PluginNameReceive = null;
       PluginNameTransmit = String.Empty;
-
-      RestartOnUSBChanges = false;
-      RestartOnUSBChangesTray = false;
 
       XmlDocument doc = new XmlDocument();
 
@@ -110,24 +105,6 @@ namespace IRServer
 
       try
       {
-        RestartOnUSBChanges = bool.Parse(doc.DocumentElement.Attributes["RestartOnUSBChanges"].Value);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Warn(ex.ToString());
-      }
-
-      try
-      {
-        RestartOnUSBChangesTray = bool.Parse(doc.DocumentElement.Attributes["RestartOnUSBChangesTray"].Value);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Warn(ex.ToString());
-      }
-
-      try
-      {
         PluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value;
       }
       catch (Exception ex)
@@ -168,8 +145,6 @@ namespace IRServer
           writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), Mode));
           writer.WriteAttributeString("HostComputer", HostComputer);
           writer.WriteAttributeString("ProcessPriority", ProcessPriority);
-          writer.WriteAttributeString("RestartOnUSBChanges", RestartOnUSBChanges.ToString());
-          writer.WriteAttributeString("RestartOnUSBChangesTray", RestartOnUSBChangesTray.ToString());
           writer.WriteAttributeString("PluginTransmit", PluginNameTransmit);
 
           if (PluginNameReceive != null)
