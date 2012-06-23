@@ -21,21 +21,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.ServiceProcess;
-using System.Text;
 using System.Windows.Forms;
-using System.Xml;
-using IRServer.Plugin;
 using IrssUtils;
-using TimeoutException = System.ServiceProcess.TimeoutException;
-using IRServer.Configuration.Properties;
-using System.Threading;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 namespace IRServer.Configuration
 {

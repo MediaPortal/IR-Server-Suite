@@ -78,12 +78,6 @@
     <Compile Include="PluginBase.cs" />
     <Compile Include="ITransmitIR.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
-      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
-      <Name>IrssUtils</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

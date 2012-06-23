@@ -22,7 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
 using IRServer.Plugin;
@@ -33,8 +33,6 @@ using SourceGrid.Cells.Controllers;
 using Button = SourceGrid.Cells.Button;
 using CheckBox = SourceGrid.Cells.CheckBox;
 using ColumnHeader = SourceGrid.Cells.ColumnHeader;
-using IRServer.Configuration.Properties;
-using System.ComponentModel;
 
 namespace IRServer.Configuration
 {

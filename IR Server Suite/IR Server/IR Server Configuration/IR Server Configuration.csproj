@@ -91,11 +91,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs">
@@ -145,11 +142,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">
-      <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
-      <Name>IrssComms</Name>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>

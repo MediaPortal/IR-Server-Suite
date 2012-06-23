@@ -23,8 +23,8 @@
 using System.ComponentModel;
 using System.Configuration.Install;
 using System.Management;
-using System.ServiceProcess;
 using System.Reflection;
+using System.ServiceProcess;
 
 namespace IRServer
 {
