@@ -195,13 +195,13 @@
       <Project>{AE752FB4-7450-4150-9BAD-19EFA9D2AC37}</Project>
       <Name>TvLibrary.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssComms\IrssComms.csproj">
+    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssComms\IrssComms-Net35.csproj">
       <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
-      <Name>IrssComms</Name>
+      <Name>IrssComms-Net35</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils.csproj">
+    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils-Net35.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
-      <Name>IrssUtils</Name>
+      <Name>IrssUtils-Net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\MPUtils\MPUtils.csproj">
       <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>

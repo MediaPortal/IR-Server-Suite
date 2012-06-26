@@ -129,17 +129,17 @@
       <Project>{6DA0E4DF-6230-4642-98B5-E690BB6942BB}</Project>
       <Name>Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Commands\Command\Command.csproj">
+    <ProjectReference Include="..\..\..\IR Server Suite\Commands\Command\Command-Net35.csproj">
       <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
-      <Name>Command</Name>
+      <Name>Command-Net35</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Commands\VariableList\VariableList.csproj">
+    <ProjectReference Include="..\..\..\IR Server Suite\Commands\VariableList\VariableList-Net35.csproj">
       <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
-      <Name>VariableList</Name>
+      <Name>VariableList-Net35</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils.csproj">
+    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils-Net35.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
-      <Name>IrssUtils</Name>
+      <Name>IrssUtils-Net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\MPUtils\MPUtils.csproj">
       <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
