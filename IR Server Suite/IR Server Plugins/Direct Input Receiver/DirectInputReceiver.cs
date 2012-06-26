@@ -21,9 +21,8 @@
 #endregion
 
 using System;
-#if TRACE
+using System.Collections.Generic;
 using System.Diagnostics;
-#endif
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -31,7 +30,7 @@ using System.Windows.Forms;
 using System.Xml;
 using IRServer.Plugin.Properties;
 using IrssUtils;
-using Microsoft.DirectX.DirectInput;
+using SlimDX.DirectInput;
 
 namespace IRServer.Plugin
 {
@@ -132,7 +131,7 @@ namespace IRServer.Plugin
 
     #region Variables
 
-    private DeviceList _deviceList;
+    private IList<DeviceInstance> _deviceList;
     private DirectInputListener _diListener;
     private MouseHandler _mouseHandler;
     private RemoteHandler _remoteHandler;
@@ -239,11 +238,11 @@ namespace IRServer.Plugin
     /// </summary>
     public override DetectionResult Detect()
     {
-      if (IrssUtils.Win32.Check64Bit())
-      {
-        IrssLog.Warn("{0,15}: not available on current OS architecture (x64)", Name);
-        return DetectionResult.DeviceDisabled;
-      }
+      //if (IrssUtils.Win32.Check64Bit())
+      //{
+      //  IrssLog.Warn("{0,15}: not available on current OS architecture (x64)", Name);
+      //  return DetectionResult.DeviceDisabled;
+      //}
       try
       {
         InitDeviceList();
@@ -280,9 +279,7 @@ namespace IRServer.Plugin
 #if TRACE
         Trace.WriteLine("No direct input device selected in plugin configuration, using first found");
 #endif
-        _deviceList.Reset(); // Move to the position before the first in the device list.
-        _deviceList.MoveNext(); // Move to the first position in the device list.
-        DeviceInstance di = (DeviceInstance)_deviceList.Current; // Retreive the first position in the device list.
+        DeviceInstance di = _deviceList[0]; // Retreive the first position in the device list.
         _selectedDeviceGUID = di.InstanceGuid.ToString();
       }
 
@@ -383,7 +380,8 @@ namespace IRServer.Plugin
 
     private void InitDeviceList()
     {
-      _deviceList = Manager.GetDevices(DeviceClass.GameControl, EnumDevicesFlags.AttachedOnly);
+      DirectInput di = new DirectInput();
+      _deviceList = di.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
     }
 
     private void diListener_OnStateChange(object sender, JoystickState state)
@@ -396,7 +394,7 @@ namespace IRServer.Plugin
       if (_deviceList == null)
         return false;
 
-      _deviceList.Reset();
+      //_deviceList.Reset();
       foreach (DeviceInstance di in _deviceList)
         if (_selectedDeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
           return _diListener.InitDevice(di.InstanceGuid);
@@ -412,7 +410,7 @@ namespace IRServer.Plugin
       // todo: timer stuff!!
 
       // buttons first!
-      byte[] buttons = state.GetButtons();
+      bool[] buttons = state.GetButtons();
       int button = 0;
 
       // button combos
@@ -435,9 +433,9 @@ namespace IRServer.Plugin
       {
         button = 0;
         bool foundButton = false;
-        foreach (byte b in buttons)
+        foreach (bool b in buttons)
         {
-          if (0 != (b & 0x80))
+          if (b)
           {
             foundButton = true;
             break;
@@ -454,10 +452,12 @@ namespace IRServer.Plugin
         }
       }
 
+      
+
       // pov next
       if (actionCode == -1)
       {
-        int[] pov = state.GetPointOfView();
+        int[] pov = state.GetPointOfViewControllers();
         switch (pov[0])
         {
           case 0:
@@ -533,10 +533,10 @@ namespace IRServer.Plugin
       if (actionCode == -1)
       {
         // rotation
-        if (Math.Abs(state.Rx) > AxisLimit)
+        if (Math.Abs(state.RotationX) > AxisLimit)
         {
           //curAxisValue = state.Rx;
-          if (state.Rx > 0)
+          if (state.RotationX > 0)
           {
             actionCode = (int)joyButton.rotationXUp;
           }
@@ -545,10 +545,10 @@ namespace IRServer.Plugin
             actionCode = (int)joyButton.rotationXDown;
           }
         }
-        else if (Math.Abs(state.Ry) > AxisLimit)
+        else if (Math.Abs(state.RotationY) > AxisLimit)
         {
           //curAxisValue = state.Ry;
-          if (state.Ry > 0)
+          if (state.RotationY > 0)
           {
             actionCode = (int)joyButton.rotationYUp;
           }
@@ -557,10 +557,10 @@ namespace IRServer.Plugin
             actionCode = (int)joyButton.rotationYDown;
           }
         }
-        else if (Math.Abs(state.Rz) > AxisLimit)
+        else if (Math.Abs(state.RotationZ) > AxisLimit)
         {
           //curAxisValue = state.Rz;
-          if (state.Rz > 0)
+          if (state.RotationZ > 0)
           {
             actionCode = (int)joyButton.rotationZUp;
           }

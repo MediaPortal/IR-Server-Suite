@@ -22,7 +22,7 @@
 
 using System;
 using System.Threading;
-using Microsoft.DirectX.DirectInput;
+using SlimDX.DirectInput;
 
 namespace IRServer.Plugin
 {
@@ -42,7 +42,7 @@ namespace IRServer.Plugin
 
     private int delay = 150; // sleep time in milliseconds
 
-    private Device device;
+    private Joystick device;
     private Thread inputListener;
     private volatile bool isListening;
 
@@ -62,7 +62,7 @@ namespace IRServer.Plugin
 
     #region Properties
 
-    public Device SelectedDevice
+    public Joystick SelectedDevice
     {
       get { return device; }
     }
@@ -77,17 +77,17 @@ namespace IRServer.Plugin
 
     public bool InitDevice(Guid guid)
     {
-      device = new Device(guid);
-      device.SetCooperativeLevel(null, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
-      device.Properties.AxisModeAbsolute = true;
+      device = new Joystick(new DirectInput(), guid);
+      device.SetCooperativeLevel(null, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
+      device.Properties.AxisMode = DeviceAxisMode.Absolute;
 
       // Enumerate axes
-      foreach (DeviceObjectInstance doi in device.Objects)
+      foreach (DeviceObjectInstance doi in device.GetObjects())
       {
-        if ((doi.ObjectId & (int) DeviceObjectTypeFlags.Axis) != 0)
+        if (doi.ObjectType.HasFlag(ObjectDeviceType.Axis))
         {
           // We found an axis, set the range to a max of 10,000
-          device.Properties.SetRange(ParameterHow.ById, doi.ObjectId, new InputRange(-5000, 5000));
+          device.Properties.SetRange(-5000, 5000);
         }
       }
 
@@ -116,39 +116,35 @@ namespace IRServer.Plugin
 
     public string GetCurrentButtonCombo()
     {
-      string res = "";
-      JoystickState state;
-
       if (CheckDevice())
       {
         // Get the state of the device.
         try
         {
-          state = device.CurrentJoystickState;
+          JoystickState state = device.GetCurrentState();
           return ButtonComboAsString(state);
         }
           // Catch any exceptions. None will be handled here, 
           // any device re-aquisition will be handled above.  
-        catch (InputException)
+        catch (DirectInputException)
         {
-          return res;
         }
       }
 
-      return res;
+      return string.Empty;
     }
 
     private string ButtonComboAsString(JoystickState state)
     {
-      byte[] buttons = state.GetButtons();
+      bool[] buttons = state.GetButtons();
       int button = 0;
       string res = "";
 
       // button combos
       string sep = "";
-      foreach (byte b in buttons)
+      foreach (bool b in buttons)
       {
-        if (0 != (b & 0x80))
+        if (b)
         {
           res += sep + button.ToString("00");
           sep = ",";
@@ -180,10 +176,10 @@ namespace IRServer.Plugin
         // Poll the device for info.
         device.Poll();
       }
-      catch (InputException inputex)
+      catch (DirectInputException inputex)
       {
-        if ((inputex is NotAcquiredException) || (inputex is InputLostException))
-        {
+        //if ((inputex is NotAcquiredException) || (inputex is InputLostException))
+        //{
           // Check to see if either the app
           // needs to acquire the device, or
           // if the app lost the device to another
@@ -193,15 +189,15 @@ namespace IRServer.Plugin
             // Acquire the device.
             device.Acquire();
           }
-          catch (InputException)
+          catch (DirectInputException)
           {
             // Failed to acquire the device.
             // This could be because the app
             // doesn't have focus.
             return false;
           }
-        }
-      } //catch(InputException inputex)
+        //}
+      }
 
       return (device != null);
     }
@@ -215,9 +211,9 @@ namespace IRServer.Plugin
         // Get the state of the device.
         try
         {
-          state = device.CurrentJoystickState;
+          state = device.GetCurrentState();
         }
-        catch (InputException)
+        catch (DirectInputException)
           // Catch any exceptions. None will be handled here, any device re-aquisition will be handled above.
         {
           return;

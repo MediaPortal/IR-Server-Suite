@@ -21,8 +21,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
-using Microsoft.DirectX.DirectInput;
+using SlimDX.DirectInput;
 
 namespace IRServer.Plugin
 {
@@ -70,7 +71,7 @@ namespace IRServer.Plugin
 
     #region Constructor
 
-    public Configure(DeviceList deviceList)
+    public Configure(IEnumerable<DeviceInstance> deviceList)
     {
       InitializeComponent();
 
