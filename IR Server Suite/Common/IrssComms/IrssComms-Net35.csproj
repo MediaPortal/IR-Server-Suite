@@ -52,12 +52,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin35\Debug\</OutputPath>
+    <OutputPath>bin\Debug\net35\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin35\Release\</OutputPath>
+    <OutputPath>bin\Release\net35\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
