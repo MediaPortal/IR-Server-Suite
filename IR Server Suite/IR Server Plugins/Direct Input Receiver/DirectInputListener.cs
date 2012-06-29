@@ -78,7 +78,8 @@ namespace IRServer.Plugin
     public bool InitDevice(Guid guid)
     {
       device = new Joystick(new DirectInput(), guid);
-      device.SetCooperativeLevel(null, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
+      device.SetCooperativeLevel(new System.Windows.Forms.NativeWindow().Handle,
+                                 CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
       device.Properties.AxisMode = DeviceAxisMode.Absolute;
 
       // Enumerate axes
