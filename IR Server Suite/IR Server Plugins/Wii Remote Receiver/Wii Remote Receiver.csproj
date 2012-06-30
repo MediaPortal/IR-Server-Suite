@@ -31,19 +31,6 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WiimoteLib, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>References\WiimoteLib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
@@ -60,6 +47,11 @@
       <DependentUpon>Setup.cs</DependentUpon>
     </Compile>
     <Compile Include="Wii Remote Receiver.cs" />
+    <Compile Include="WiimoteLib\DataTypes.cs" />
+    <Compile Include="WiimoteLib\Events.cs" />
+    <Compile Include="WiimoteLib\HIDImports.cs" />
+    <Compile Include="WiimoteLib\Wiimote.cs" />
+    <Compile Include="WiimoteLib\WiimoteCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
@@ -85,6 +77,25 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <None Include="WiimoteLib\docs\copyright.txt" />
+    <None Include="WiimoteLib\docs\license.txt" />
+    <None Include="WiimoteLib\docs\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="WiimoteLib\docs\APIHelp\AdditionalContent\changes.topic" />
+    <None Include="WiimoteLib\docs\APIHelp\AdditionalContent\copyright.topic" />
+    <None Include="WiimoteLib\docs\APIHelp\AdditionalContent\license.topic" />
+    <None Include="WiimoteLib\docs\APIHelp\AdditionalContent\overview.topic" />
+    <None Include="WiimoteLib\docs\APIHelp\Help\LastBuild.log" />
+    <None Include="WiimoteLib\docs\APIHelp\Help\WiimoteLib.chm" />
+    <None Include="WiimoteLib\docs\APIHelp\WiimoteLib.shfb" />
+    <None Include="WiimoteLib\docs\APIHelp\WiimoteLib.sitemap" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -95,7 +106,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(ProjectDir)References\WiimoteLib.dll"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"
-xcopy /Y "$(TargetDir)$(ProjectName).???"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetDir)$(ProjectName).???"  "$(SolutionDir)..\$(OutDir)Plugins\$(ProjectName)\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
