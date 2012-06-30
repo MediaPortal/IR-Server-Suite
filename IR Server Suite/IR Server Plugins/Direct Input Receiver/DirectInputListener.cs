@@ -22,6 +22,7 @@
 
 using System;
 using System.Threading;
+using IRServer.Plugin.GamePad;
 using SlimDX.DirectInput;
 
 namespace IRServer.Plugin
@@ -71,6 +72,17 @@ namespace IRServer.Plugin
     {
       get { return delay; }
       set { delay = value; }
+    }
+
+    public DirectInputConverter Converter
+    {
+      get
+      {
+        if (SelectedDevice != null)
+          return new DirectInputConverter(SelectedDevice);
+
+        return null;
+      }
     }
 
     #endregion Properties

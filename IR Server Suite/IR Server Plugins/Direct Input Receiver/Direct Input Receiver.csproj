@@ -49,6 +49,20 @@
     <Compile Include="..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="GamePad\Enums\ButtonState.cs" />
+    <Compile Include="GamePad\DirectInputConverter.AxisReaders.cs" />
+    <Compile Include="GamePad\DirectInputConverter.ButtonReaders.cs" />
+    <Compile Include="GamePad\DirectInputConverter.cs" />
+    <Compile Include="GamePad\DirectInputConverter.Helpers.cs" />
+    <Compile Include="GamePad\DirectInputConverter.PovReaders.cs" />
+    <Compile Include="GamePad\DirectInputConverter.SliderReaders.cs" />
+    <Compile Include="GamePad\DirectInputConverter.Test.cs" />
+    <Compile Include="GamePad\Enums\Axes.cs" />
+    <Compile Include="GamePad\Enums\Sliders.cs" />
+    <Compile Include="GamePad\GamePadState.Builders.cs" />
+    <Compile Include="GamePad\GamePadState.cs" />
+    <Compile Include="GamePad\GamePadState.Test.cs" />
+    <Compile Include="Helper\EnumExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configure.cs">
       <SubType>Form</SubType>
