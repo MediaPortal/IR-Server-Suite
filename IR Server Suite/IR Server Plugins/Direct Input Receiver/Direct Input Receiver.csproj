@@ -84,6 +84,10 @@
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\IR Server\IRServer.Shared\IRServer.Shared.csproj">
+      <Project>{0C6A59C2-B5CC-48EF-A41F-0F1E463D8391}</Project>
+      <Name>IRServer.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
       <Project>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</Project>
       <Name>IR Server Plugin Interface</Name>
