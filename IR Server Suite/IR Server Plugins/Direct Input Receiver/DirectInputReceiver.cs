@@ -26,11 +26,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Management;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using IRServer.Hardware;
 using IRServer.Plugin.GamePad;
 using IRServer.Plugin.GamePad.Enums;
 using IRServer.Plugin.Properties;
@@ -44,7 +42,7 @@ namespace IRServer.Plugin
   /// </summary>
   public class DirectInputReceiver : PluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
   {
-    #region Debug
+#if DEBUG
 
     private static void Remote(string deviceName, string code)
     {
@@ -74,11 +72,11 @@ namespace IRServer.Plugin
       c = null;
     }
 
-    #endregion Debug
+#endif
 
     #region Constants
 
-    private const float AxisLimit = 0.3f;
+    private const float AxisLimit = 0.6f;
     private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Direct Input Receiver.xml");
 
     #endregion Constants
@@ -138,11 +136,8 @@ namespace IRServer.Plugin
 
     private IList<DeviceInstance> _deviceList;
     private DirectInputListener _diListener;
-    private MouseHandler _mouseHandler;
-    private RemoteHandler _remoteHandler;
 
     private string _selectedDeviceGUID;
-    private DeviceWatcher _deviceWatcher;
 
     #endregion Variables
 
@@ -218,11 +213,7 @@ namespace IRServer.Plugin
     /// <summary>
     /// Callback for mouse events.
     /// </summary>
-    public MouseHandler MouseCallback
-    {
-      get { return _mouseHandler; }
-      set { _mouseHandler = value; }
-    }
+    public MouseHandler MouseCallback { get; set; }
 
     #endregion
 
@@ -231,11 +222,7 @@ namespace IRServer.Plugin
     /// <summary>
     /// Callback for remote button presses.
     /// </summary>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteHandler; }
-      set { _remoteHandler = value; }
-    }
+    public RemoteHandler RemoteCallback { get; set; }
 
     #endregion
 
@@ -244,27 +231,13 @@ namespace IRServer.Plugin
     /// </summary>
     public override DetectionResult Detect()
     {
-      //if (IrssUtils.Win32.Check64Bit())
-      //{
-      //  IrssLog.Warn("{0,15}: not available on current OS architecture (x64)", Name);
-      //  return DetectionResult.DeviceDisabled;
-      //}
-      try
+      Shared.getStatus();
+      if (Shared._serviceInstalled)
       {
-        InitDeviceList();
-
-        if (_deviceList.Count != 0)
-        {
-          return DetectionResult.DevicePresent;
-        }
+        IrssLog.Warn("{0,15}: not available on \"service\" installation mode", Name);
+        return DetectionResult.DeviceDisabled;
       }
-      catch (Exception ex)
-      {
-        IrssLog.Error("{0,15}: exception {1}", Name, ex.Message);
-        return DetectionResult.DeviceException;
-      }
-
-      return DetectionResult.DeviceNotFound;
+      return DetectionResult.DevicePresent;
     }
 
     /// <summary>
@@ -305,48 +278,43 @@ namespace IRServer.Plugin
 
     private void RegisterDeviceNotification()
     {
+      IrssLog.Debug("DirectInput: Registering device notifications...");
       WqlEventQuery _q = new WqlEventQuery("__InstanceOperationEvent", "TargetInstance ISA 'Win32_USBControllerDevice' ");
       _q.WithinInterval = TimeSpan.FromSeconds(1);
       ManagementEventWatcher _w = new ManagementEventWatcher(_q);
       _w.EventArrived += new EventArrivedEventHandler(onEventArrived);
       _w.Start();
-      //_deviceWatcher = new DeviceWatcher();
-      //_deviceWatcher.Create();
-      ////_deviceWatcher.Class = _deviceClass;
-      //_deviceWatcher.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
-      //_deviceWatcher.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
-      ////_deviceWatcher.SettingsChanged += new SettingsChanged(OnSettingsChanged);
-      //_deviceWatcher.RegisterDeviceArrival();
-      //_deviceWatcher.RegisterDeviceRemoval();
     }
 
     void onEventArrived(object sender, EventArrivedEventArgs e)
     {
       ManagementBaseObject _o = e.NewEvent["TargetInstance"] as ManagementBaseObject;
+      if (_o == null) return;
 
-      if (_o != null)
+      ManagementObject mo = new ManagementObject(_o["Dependent"].ToString());
+      if (mo == null) return;
+
+      IList<DeviceInstance> newDeviceList = new DirectInput().GetDevices(DeviceClass.GameController,
+                                                                         DeviceEnumerationFlags.AttachedOnly);
+      if (_deviceList.Count == newDeviceList.Count) return;
+
+      try
       {
-        using (ManagementObject mo = new ManagementObject(_o["Dependent"].ToString()))
+        if (mo.GetPropertyValue("DeviceID").ToString() != string.Empty)
         {
-          if (mo != null)
-          {
-            try
-            {
-              if (mo.GetPropertyValue("DeviceID").ToString() != string.Empty)
-              {
-                //connected
-                Debug.WriteLine("Connected");
-                RestartListener();
-              }
-            }
-
-            catch (ManagementException ex)
-            {
-              //disconnected
-              RestartListener();
-            }
-          }
+          //connected
+          IrssLog.Debug("DirectInput: An USB device has been connected");
+          RestartListener();
         }
+      }
+      catch (ManagementException ex)
+      {
+        //disconnected
+        IrssLog.Debug("DirectInput: An USB device has been disconnected");
+        if (newDeviceList.Count == 0)
+          StopListener();
+        else
+          RestartListener();
       }
     }
 
@@ -359,18 +327,16 @@ namespace IRServer.Plugin
     private void StartListener()
     {
       InitDeviceList();
-
-
       if (_deviceList.Count == 0) return;
+
+      IrssLog.Debug("DirectInput: Start listening...");
 
 
       if (String.IsNullOrEmpty(_selectedDeviceGUID))
       {
-#if TRACE
-        Trace.WriteLine("No direct input device selected in plugin configuration, using first found");
-#endif
-        DeviceInstance di = _deviceList[0]; // Retreive the first position in the device list.
-        _selectedDeviceGUID = di.InstanceGuid.ToString();
+        IrssLog.Info("No direct input device selected in plugin configuration, using first found");
+        // Retreive the first position in the device list.
+        _selectedDeviceGUID = _deviceList[0].InstanceGuid.ToString();
       }
 
       _diListener = new DirectInputListener();
@@ -378,11 +344,13 @@ namespace IRServer.Plugin
       _diListener.OnStateChange += diListener_OnStateChange;
 
       if (!AcquireDevice())
-        throw new InvalidOperationException("Failed to acquire device");
+        IrssLog.Warn("Failed to acquire device");
     }
 
     private void StopListener()
     {
+      IrssLog.Debug("DirectInput: Stop listening...");
+
       if (_diListener != null)
       {
         _diListener.DeInitDevice();
@@ -461,7 +429,6 @@ namespace IRServer.Plugin
       if (_deviceList == null)
         return false;
 
-      //_deviceList.Reset();
       foreach (DeviceInstance di in _deviceList)
         if (_selectedDeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
           return _diListener.InitDevice(di.InstanceGuid);
@@ -587,11 +554,12 @@ namespace IRServer.Plugin
         }
       }
 
-      if (actionCode != -1 && _remoteHandler != null)
+      if (actionCode != -1 && RemoteCallback != null)
       {
         string keyCode = TranslateActionCode(actionCode);
+        IrssLog.Debug("DirectInput action mapped actionCode={0} to keyCode={1}", actionCode, keyCode);
 
-        _remoteHandler(Name, keyCode);
+        RemoteCallback(Name, keyCode);
       }
     }
 
@@ -601,9 +569,5 @@ namespace IRServer.Plugin
 
       return Enum.GetName(typeof(joyButton), j);
     }
-
-
-
-
   }
 }
