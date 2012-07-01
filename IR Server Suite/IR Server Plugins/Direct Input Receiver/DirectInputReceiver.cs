@@ -296,7 +296,7 @@ namespace IRServer.Plugin
 
       IList<DeviceInstance> newDeviceList = new DirectInput().GetDevices(DeviceClass.GameController,
                                                                          DeviceEnumerationFlags.AttachedOnly);
-      if (_deviceList.Count == newDeviceList.Count) return;
+      if (_deviceList != null && _deviceList.Count == newDeviceList.Count) return;
 
       try
       {
