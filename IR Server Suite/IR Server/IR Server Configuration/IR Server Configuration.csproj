@@ -170,7 +170,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetDir)$(ProjectName).???"  "C:\Program Files (x86)\IR Server Suite\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

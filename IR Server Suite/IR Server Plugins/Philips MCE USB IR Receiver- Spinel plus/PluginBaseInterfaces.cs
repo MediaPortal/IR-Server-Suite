@@ -61,15 +61,9 @@ namespace IRServer.Plugin
         /// </summary>
         public override DetectionResult Detect()
         {
-            DebugWriteLine("Detect()");
-            bool detected = Detect_Device();
-            if (detected)
-            {
-              DebugWriteLine("Detect(): completed - found Philips MCE USB IR Receiver- Spinel plus device");
-                return DetectionResult.DevicePresent;
-            }
-            DebugWriteLine("Detect(): completed - device not found");
-            return DetectionResult.DeviceNotFound;
+            Debug.Open("Philips MCE USB IR Receiver- Spinel plus.log");
+            Debug.WriteLine("Detect(): Called, Retrieving Plug&Play");
+            return DetectionResult.DeviceIsPlugAndPlay;
         }
 
         /// <summary>
@@ -77,13 +71,9 @@ namespace IRServer.Plugin
         /// </summary>
         public override void Start()
         {
-            DebugOpen("Philips MCE USB IR Receiver- Spinel plus.log");
-            DebugWriteLine("Start()");
-            //if (Detect() == DetectionResult.DevicePresent)
-            //{
-            DebugWriteLine("Start(): Starting \"Philips MCE USB IR Receiver- Spinel plus\" device");
+            Debug.Open("Philips MCE USB IR Receiver- Spinel plus.log");
+            Debug.WriteLine("Start(): Starting \"Philips MCE USB IR Receiver- Spinel plus\" device");
             Start_Receiver();
-            //}            
         }
 
         /// <summary>
@@ -91,8 +81,8 @@ namespace IRServer.Plugin
         /// </summary>
         public override void Suspend()
         {
-            DebugWriteLine("Suspend()");
-            Stop_Receiver();
+            Debug.WriteLine("Suspend()");
+            //Stop_Receiver();
         }
 
         /// <summary>
@@ -100,8 +90,8 @@ namespace IRServer.Plugin
         /// </summary>
         public override void Resume()
         {
-            DebugWriteLine("Resume()");
-            Start_Receiver();            
+            Debug.WriteLine("Resume()");
+            //Start_Receiver();            
         }
 
         /// <summary>
@@ -109,7 +99,7 @@ namespace IRServer.Plugin
         /// </summary>
         public override void Stop()
         {
-            DebugWriteLine("Stop()");
+            Debug.WriteLine("Stop()");
             Stop_Receiver();
         }
 
@@ -122,26 +112,27 @@ namespace IRServer.Plugin
         /// </summary>
         public void Configure(IWin32Window owner)
         {
-            DebugWriteLine("Configure()");
-            LoadSettings();
+            Debug.WriteLine("Configure()");
+            config = new Config();
+            ConfigManagement.LoadSettings(ref config);
 
-            Configuration config = new Configuration();
+            ConfigurationDialog configDialog = new ConfigurationDialog();
 
-            config.EnableRemote = _enableRemoteInput;
-            config.UseSystemRatesForRemote = _useSystemRatesRemote;
-            config.RemoteRepeatDelay = _remoteFirstRepeat;
-            config.RemoteHeldDelay = _remoteHeldRepeats;
+            configDialog.DoRepeats = config.doRepeats;
+            configDialog.UseSystemRatesDelay = config.useSystemRatesDelay;
+            configDialog.FirstRepeatDelay = config.firstRepeatDelay;
+            configDialog.HeldRepeatDelay = config.heldRepeatDelay;
            
-            if (config.ShowDialog(owner) == DialogResult.OK)
+            if (configDialog.ShowDialog(owner) == DialogResult.OK)
             {
-                _enableRemoteInput = config.EnableRemote;
-                _useSystemRatesRemote = config.UseSystemRatesForRemote;
-                _remoteFirstRepeat = config.RemoteRepeatDelay;
-                _remoteHeldRepeats = config.RemoteHeldDelay;
+              config.doRepeats = configDialog.DoRepeats;
+              config.useSystemRatesDelay = configDialog.UseSystemRatesDelay;
+              config.firstRepeatDelay = configDialog.FirstRepeatDelay;
+              config.heldRepeatDelay = configDialog.HeldRepeatDelay;
 
-                SaveSettings();                
+              ConfigManagement.SaveSettings(config);
             }
-            DebugWriteLine("Configure(): Completed");
+            Debug.WriteLine("Configure(): Completed");
         }
 
         #endregion

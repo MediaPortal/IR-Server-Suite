@@ -276,6 +276,10 @@ namespace IRServer.Configuration
           {
             IrssLog.Info("Plugin {0}: detected", plugin.Name);
           }
+          if (detected == PluginBase.DetectionResult.DeviceIsPlugAndPlay)
+          {
+            IrssLog.Info("Plugin {0}: Plug&Play device detected", plugin.Name);
+          }
           if (detected == PluginBase.DetectionResult.DeviceException)
           {
             IrssLog.Warn("Plugin {0}: exception during Detect()", plugin.Name);
@@ -284,12 +288,12 @@ namespace IRServer.Configuration
           // Receive
           checkBox = gridPlugins[row, ColReceive] as CheckBox;
           if (checkBox != null)
-            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent ? true : false);
+            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent || detected == PluginBase.DetectionResult.DeviceIsPlugAndPlay ? true : false);
 
           // Transmit
           checkBox = gridPlugins[row, ColTransmit] as CheckBox;
           if (checkBox != null)
-            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent ? true : false);
+            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent || detected == PluginBase.DetectionResult.DeviceIsPlugAndPlay ? true : false);
         }
         catch (Exception ex)
         {

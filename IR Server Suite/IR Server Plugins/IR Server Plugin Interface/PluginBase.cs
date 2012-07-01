@@ -103,7 +103,11 @@ namespace IRServer.Plugin
       ///<summary>
       /// Device is disabled on specific platform
       ///</summary>
-      DeviceDisabled
+      DeviceDisabled,
+      ///<summary>
+      /// Device supports Plug&Play
+      /// </summary>
+      DeviceIsPlugAndPlay
     }
     #endregion
 

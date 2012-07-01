@@ -6,119 +6,123 @@ using System.IO;
 namespace IRServer.Plugin
 {
   public partial class PhilipsMceUsbIrReceiverSpinelPlus
+  {
+
+    private static class Debug
     {
-        private static StreamWriter _debugFile;
+      private static StreamWriter _debugFile;
 
-        /// <summary>
-        /// Opens a debug output file.
-        /// </summary>
-        /// <param name="fileName">Name of the file.</param>
-        private static void DebugOpen(string fileName)
+      /// <summary>
+      /// Opens a debug output file.
+      /// </summary>
+      /// <param name="fileName">Name of the file.</param>
+      public static void Open(string fileName)
+      {
+        if (_debugFile != null) return;
+        try
         {
-            if (_debugFile != null) return;
-            try
-            {
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                                           String.Format("IR Server Suite\\Logs\\{0}", fileName));
-                _debugFile = new StreamWriter(path, false);
-                _debugFile.AutoFlush = true;
-            }
-            catch
-            {
-                _debugFile = null;
-            }
+          string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                                     String.Format("IR Server Suite\\Logs\\{0}", fileName));
+          _debugFile = new StreamWriter(path, false);
+          _debugFile.AutoFlush = true;
         }
-
-        /// <summary>
-        /// Closes the debug output file.
-        /// </summary>
-        private static void DebugClose()
+        catch
         {
-            if (_debugFile != null)
-            {
-                _debugFile.Close();
-                _debugFile.Dispose();
-                _debugFile = null;
-            }
+          _debugFile = null;
         }
+      }
 
-        /// <summary>
-        /// Writes a line to the debug output file.
-        /// </summary>
-        /// <param name="line">The line.</param>
-        /// <param name="args">Formatting arguments.</param>
-        private static void DebugWriteLine(string line, params object[] args)
+      /// <summary>
+      /// Closes the debug output file.
+      /// </summary>
+      public static void Close()
+      {
+        if (_debugFile != null)
         {
-            if (_debugFile != null)
-            {
-                _debugFile.Write("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
-                _debugFile.WriteLine(line, args);
-            }
+          _debugFile.Close();
+          _debugFile.Dispose();
+          _debugFile = null;
+        }
+      }
+
+      /// <summary>
+      /// Writes a line to the debug output file.
+      /// </summary>
+      /// <param name="line">The line.</param>
+      /// <param name="args">Formatting arguments.</param>
+      public static void WriteLine(string line, params object[] args)
+      {
+        if (_debugFile != null)
+        {
+          _debugFile.Write("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
+          _debugFile.WriteLine(line, args);
+        }
 #if TEST_APPLICATION
             Console.Write("{0:yyyy-MM-dd HH:mm:ss.ffffff} - ", DateTime.Now);
             Console.WriteLine(line, args);
 #endif
-        }
+      }
 
-        /// <summary>
-        /// Writes a string to the debug output file.
-        /// </summary>
-        /// <param name="text">The string to write.</param>
-        /// <param name="args">Formatting arguments.</param>
-        private static void DebugWrite(string text, params object[] args)
+      /// <summary>
+      /// Writes a string to the debug output file.
+      /// </summary>
+      /// <param name="text">The string to write.</param>
+      /// <param name="args">Formatting arguments.</param>
+      public static void Write(string text, params object[] args)
+      {
+        if (_debugFile != null)
         {
-            if (_debugFile != null)
-            {
-                _debugFile.Write(text, args);
-            }
+          _debugFile.Write(text, args);
+        }
 #if TEST_APPLICATION
             Console.Write(text, args);
 #endif
-        }
+      }
 
-        /// <summary>
-        /// Writes a new line to the debug output file.
-        /// </summary>
-        private static void DebugWriteNewLine()
+      /// <summary>
+      /// Writes a new line to the debug output file.
+      /// </summary>
+      public static void WriteNewLine()
+      {
+        if (_debugFile != null)
         {
-            if (_debugFile != null)
-            {
-                _debugFile.WriteLine();
-            }
+          _debugFile.WriteLine();
+        }
 #if TEST_APPLICATION
             Console.WriteLine();
 #endif
-        }
+      }
 
-        /// <summary>
-        /// Dumps an Array to the debug output file.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        private static void DebugDump(Array array)
+      /// <summary>
+      /// Dumps an Array to the debug output file.
+      /// </summary>
+      /// <param name="array">The array.</param>
+      public static void Dump(Array array)
+      {
+        foreach (object item in array)
         {
-            foreach (object item in array)
-            {
-                if (item is byte)
-                {
-                    DebugWrite("{0:X2}", (byte)item);
-                }
-                else if (item is ushort)
-                {
-                    DebugWrite("{0:X4}", (ushort)item);
-                }
-                else if (item is int)
-                {
-                    DebugWrite("{1}{0}", (int)item, (int)item > 0 ? "+" : String.Empty);
-                }
-                else
-                {
-                    DebugWrite("{0}", item);
-                }
+          if (item is byte)
+          {
+            Write("{0:X2}", (byte)item);
+          }
+          else if (item is ushort)
+          {
+            Write("{0:X4}", (ushort)item);
+          }
+          else if (item is int)
+          {
+            Write("{1}{0}", (int)item, (int)item > 0 ? "+" : String.Empty);
+          }
+          else
+          {
+            Write("{0}", item);
+          }
 
-                DebugWrite(", ");
-            }
-
-            DebugWriteNewLine();
+          Write(", ");
         }
+
+        WriteNewLine();
+      }
     }
+  }
 }
