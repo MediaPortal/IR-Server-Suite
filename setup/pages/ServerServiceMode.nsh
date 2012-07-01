@@ -66,16 +66,16 @@ Function PageServerServiceMode
 
 
   ${NSD_CreateRadioButton} 10u 30u -10u 8u "$(ServerServiceModePage_OPT0)"
-  Pop $ServerServiceModePage.optBtnIRServerAsService
-  ${NSD_OnClick} $ServerServiceModePage.optBtnIRServerAsService PageServerServiceModeUpdateSelection
+  Pop $ServerServiceModePage.optBtnIRServerAsApplication
+  ${NSD_OnClick} $ServerServiceModePage.optBtnIRServerAsApplication PageServerServiceModeUpdateSelection
 
   ${NSD_CreateLabel} 20u 45u -20u 24u "$(ServerServiceModePage_OPT0_DESC)"
   Pop $R0
 
 
   ${NSD_CreateRadioButton} 10u 70u -10u 8u "$(ServerServiceModePage_OPT1)"
-  Pop $ServerServiceModePage.optBtnIRServerAsApplication
-  ${NSD_OnClick} $ServerServiceModePage.optBtnIRServerAsApplication PageServerServiceModeUpdateSelection
+  Pop $ServerServiceModePage.optBtnIRServerAsService
+  ${NSD_OnClick} $ServerServiceModePage.optBtnIRServerAsService PageServerServiceModeUpdateSelection
 
   ${NSD_CreateLabel} 20u 85u -20u 24u "$(ServerServiceModePage_OPT1_DESC)"
   Pop $R0

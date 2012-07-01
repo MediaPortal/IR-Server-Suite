@@ -390,12 +390,12 @@ ${MementoSection} "IR Server" SectionIRServer
   CreateShortCut "${STARTMENU_GROUP}\IR Server Tray.lnk"          "$DIR_INSTALL\IR Server Tray.exe"          "" "$DIR_INSTALL\IR Server Tray.exe"          0
 
   ; install Server/Service
-  ${If} $ServerServiceMode == "IRServerAsApplication"
-    ${LOG_TEXT} "INFO" "Adding IR Server to Autostart..."
-    !insertmacro SetAutoRun "IR Server" '"$DIR_INSTALL\IR Server.exe"'
-  ${Else}
+  ${If} $ServerServiceMode == "IRServerAsService"
     ${LOG_TEXT} "INFO" "Installing IR Server as Service..."
     nsExec::ExecToLog '"$DIR_INSTALL\IR Server.exe" /install'
+  ${Else}
+    ${LOG_TEXT} "INFO" "Adding IR Server to Autostart..."
+    !insertmacro SetAutoRun "IR Server" '"$DIR_INSTALL\IR Server.exe"'
   ${EndIf}
 
   ${LOG_TEXT} "INFO" "Adding IR Server Tray to Autostart..."
@@ -1042,7 +1042,7 @@ Function LoadPreviousSettings
   ${OrIf} $PREVIOUS_ServerServiceMode == "IRServerAsService"
     StrCpy $ServerServiceMode $PREVIOUS_ServerServiceMode
   ${Else}
-    StrCpy $ServerServiceMode "IRServerAsService"
+    StrCpy $ServerServiceMode "IRServerAsApplication"
   ${EndIf}
 
   ; reset previous component selection from registry
@@ -1091,12 +1091,12 @@ Function .onInstSuccess
 ${If} ${SectionIsSelected} ${SectionIRServer}
 
   ; start Server/Service
-  ${If} $ServerServiceMode == "IRServerAsApplication"
-    ${LOG_TEXT} "INFO" "Starting IR Server..."
-    Exec '"$DIR_INSTALL\IR Server.exe"'
-  ${Else}
+  ${If} $ServerServiceMode == "IRServerAsService"
     ${LOG_TEXT} "INFO" "Starting IR Server service..."
     Exec '"$DIR_INSTALL\IR Server.exe" /start'
+  ${Else}
+    ${LOG_TEXT} "INFO" "Starting IR Server..."
+    Exec '"$DIR_INSTALL\IR Server.exe"'
   ${EndIf}
 
   ; start tray tool
