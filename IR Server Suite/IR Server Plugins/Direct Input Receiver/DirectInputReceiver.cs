@@ -25,9 +25,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Management;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
+using IRServer.Hardware;
 using IRServer.Plugin.GamePad;
 using IRServer.Plugin.GamePad.Enums;
 using IRServer.Plugin.Properties;
@@ -139,6 +142,7 @@ namespace IRServer.Plugin
     private RemoteHandler _remoteHandler;
 
     private string _selectedDeviceGUID;
+    private DeviceWatcher _deviceWatcher;
 
     #endregion Variables
 
@@ -271,26 +275,8 @@ namespace IRServer.Plugin
     {
       LoadSettings();
 
-      InitDeviceList();
-
-      if (_deviceList.Count == 0)
-        throw new InvalidOperationException("No Direct Input devices connected");
-
-      if (String.IsNullOrEmpty(_selectedDeviceGUID))
-      {
-#if TRACE
-        Trace.WriteLine("No direct input device selected in plugin configuration, using first found");
-#endif
-        DeviceInstance di = _deviceList[0]; // Retreive the first position in the device list.
-        _selectedDeviceGUID = di.InstanceGuid.ToString();
-      }
-
-      _diListener = new DirectInputListener();
-      _diListener.Delay = 150;
-      _diListener.OnStateChange += diListener_OnStateChange;
-
-      if (!AcquireDevice())
-        throw new InvalidOperationException("Failed to acquire device");
+      RegisterDeviceNotification();
+      StartListener();
     }
 
     /// <summary>
@@ -314,6 +300,89 @@ namespace IRServer.Plugin
     /// </summary>
     public override void Stop()
     {
+      StopListener();
+    }
+
+    private void RegisterDeviceNotification()
+    {
+      WqlEventQuery _q = new WqlEventQuery("__InstanceOperationEvent", "TargetInstance ISA 'Win32_USBControllerDevice' ");
+      _q.WithinInterval = TimeSpan.FromSeconds(1);
+      ManagementEventWatcher _w = new ManagementEventWatcher(_q);
+      _w.EventArrived += new EventArrivedEventHandler(onEventArrived);
+      _w.Start();
+      //_deviceWatcher = new DeviceWatcher();
+      //_deviceWatcher.Create();
+      ////_deviceWatcher.Class = _deviceClass;
+      //_deviceWatcher.DeviceArrival += new DeviceEventHandler(OnDeviceArrival);
+      //_deviceWatcher.DeviceRemoval += new DeviceEventHandler(OnDeviceRemoval);
+      ////_deviceWatcher.SettingsChanged += new SettingsChanged(OnSettingsChanged);
+      //_deviceWatcher.RegisterDeviceArrival();
+      //_deviceWatcher.RegisterDeviceRemoval();
+    }
+
+    void onEventArrived(object sender, EventArrivedEventArgs e)
+    {
+      ManagementBaseObject _o = e.NewEvent["TargetInstance"] as ManagementBaseObject;
+
+      if (_o != null)
+      {
+        using (ManagementObject mo = new ManagementObject(_o["Dependent"].ToString()))
+        {
+          if (mo != null)
+          {
+            try
+            {
+              if (mo.GetPropertyValue("DeviceID").ToString() != string.Empty)
+              {
+                //connected
+                Debug.WriteLine("Connected");
+                RestartListener();
+              }
+            }
+
+            catch (ManagementException ex)
+            {
+              //disconnected
+              RestartListener();
+            }
+          }
+        }
+      }
+    }
+
+    private void RestartListener()
+    {
+      StopListener();
+      StartListener();
+    }
+
+    private void StartListener()
+    {
+      InitDeviceList();
+
+
+      if (_deviceList.Count == 0) return;
+
+
+      if (String.IsNullOrEmpty(_selectedDeviceGUID))
+      {
+#if TRACE
+        Trace.WriteLine("No direct input device selected in plugin configuration, using first found");
+#endif
+        DeviceInstance di = _deviceList[0]; // Retreive the first position in the device list.
+        _selectedDeviceGUID = di.InstanceGuid.ToString();
+      }
+
+      _diListener = new DirectInputListener();
+      _diListener.Delay = 150;
+      _diListener.OnStateChange += diListener_OnStateChange;
+
+      if (!AcquireDevice())
+        throw new InvalidOperationException("Failed to acquire device");
+    }
+
+    private void StopListener()
+    {
       if (_diListener != null)
       {
         _diListener.DeInitDevice();
@@ -325,6 +394,8 @@ namespace IRServer.Plugin
 
       _deviceList = null;
     }
+
+
 
 
     private void LoadSettings()
@@ -357,7 +428,7 @@ namespace IRServer.Plugin
         {
           writer.Formatting = Formatting.Indented;
           writer.Indentation = 1;
-          writer.IndentChar = (char)9;
+          writer.IndentChar = (char) 9;
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
@@ -367,16 +438,10 @@ namespace IRServer.Plugin
           writer.WriteEndDocument();
         }
       }
-#if TRACE
       catch (Exception ex)
       {
-        Trace.WriteLine(ex.ToString());
+        Debug.WriteLine(ex.ToString());
       }
-#else
-      catch
-      {
-      }
-#endif
     }
 
 
@@ -407,35 +472,9 @@ namespace IRServer.Plugin
     private void SendActions(JoystickState state)
     {
       int actionCode = -1;
-
       GamePadState betterState = new GamePadState(_diListener.Converter, ref state);
-      Debug.WriteLine("new state");
-      Debug.WriteLine("buttons:{0}, povs:{1}, axes:{2},",
-        betterState.ButtonCount, betterState.PovCount, betterState.AxisCount);
 
-
-      //int curAxisValue = 0;
-      // todo: timer stuff!!
-
-      // buttons first!
-      //bool[] buttons = state.GetButtons();
-
-      // button combos
-      /*
-      string sep = "";
-      string pressedButtons = "";
-      foreach (byte b in buttons)
-      {
-        if ((b & 0x80) != 0)
-        {
-          pressedButtons += sep + button.ToString("00");
-          sep = ",";
-        }
-        button++;
-      }
-      */
-
-      // single buttons
+      // buttons
       if (actionCode == -1)
       {
         int button = -1;
@@ -458,9 +497,7 @@ namespace IRServer.Plugin
         }
       }
 
-      
-
-      // pov next
+      // pov
       if (actionCode == -1)
       {
         for (int i = 0; i < betterState.PovCount; i++)
@@ -497,14 +534,9 @@ namespace IRServer.Plugin
         }
       }
 
+      // axes
       if (actionCode == -1)
       {
-        Debug.WriteLine("axiscount {0} axes{1} ", betterState.AxisCount, betterState.AvailableAxes);
-        foreach (Axes ax in betterState.AvailableAxes.GetIndividualFlags())
-        {
-          Debug.WriteLine("{0}            {1} ", ax, betterState.GetAxis(ax));
-        }
-
         if (betterState.AvailableAxes.HasFlag(Axes.X) &&
           Math.Abs(betterState.GetAxis(Axes.X)) > AxisLimit)
         {
@@ -569,5 +601,9 @@ namespace IRServer.Plugin
 
       return Enum.GetName(typeof(joyButton), j);
     }
+
+
+
+
   }
 }

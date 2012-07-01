@@ -21,6 +21,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using IRServer.Plugin.GamePad;
 using SlimDX.DirectInput;
@@ -127,45 +128,45 @@ namespace IRServer.Plugin
       }
     }
 
-    public string GetCurrentButtonCombo()
-    {
-      if (CheckDevice())
-      {
-        // Get the state of the device.
-        try
-        {
-          JoystickState state = device.GetCurrentState();
-          return ButtonComboAsString(state);
-        }
-          // Catch any exceptions. None will be handled here, 
-          // any device re-aquisition will be handled above.  
-        catch (DirectInputException)
-        {
-        }
-      }
+    //public string GetCurrentButtonCombo()
+    //{
+    //  if (CheckDevice())
+    //  {
+    //    // Get the state of the device.
+    //    try
+    //    {
+    //      JoystickState state = device.GetCurrentState();
+    //      return ButtonComboAsString(state);
+    //    }
+    //      // Catch any exceptions. None will be handled here, 
+    //      // any device re-aquisition will be handled above.  
+    //    catch (DirectInputException)
+    //    {
+    //    }
+    //  }
 
-      return string.Empty;
-    }
+    //  return string.Empty;
+    //}
 
-    private string ButtonComboAsString(JoystickState state)
-    {
-      bool[] buttons = state.GetButtons();
-      int button = 0;
-      string res = "";
+    //private string ButtonComboAsString(JoystickState state)
+    //{
+    //  bool[] buttons = state.GetButtons();
+    //  int button = 0;
+    //  string res = "";
 
-      // button combos
-      string sep = "";
-      foreach (bool b in buttons)
-      {
-        if (b)
-        {
-          res += sep + button.ToString("00");
-          sep = ",";
-        }
-        button++;
-      }
-      return res;
-    }
+    //  // button combos
+    //  string sep = "";
+    //  foreach (bool b in buttons)
+    //  {
+    //    if (b)
+    //    {
+    //      res += sep + button.ToString("00");
+    //      sep = ",";
+    //    }
+    //    button++;
+    //  }
+    //  return res;
+    //}
 
     private void ThreadFunction()
     {
@@ -179,10 +180,7 @@ namespace IRServer.Plugin
 
     public bool CheckDevice()
     {
-      if (null == device)
-      {
-        return false;
-      }
+      if (device == null) return false;
 
       try
       {
@@ -191,6 +189,8 @@ namespace IRServer.Plugin
       }
       catch (DirectInputException inputex)
       {
+
+        Debug.WriteLine(inputex);
         //if ((inputex is NotAcquiredException) || (inputex is InputLostException))
         //{
           // Check to see if either the app
@@ -202,11 +202,12 @@ namespace IRServer.Plugin
             // Acquire the device.
             device.Acquire();
           }
-          catch (DirectInputException)
+          catch (DirectInputException ex)
           {
             // Failed to acquire the device.
             // This could be because the app
             // doesn't have focus.
+            Debug.WriteLine(ex);
             return false;
           }
         //}
