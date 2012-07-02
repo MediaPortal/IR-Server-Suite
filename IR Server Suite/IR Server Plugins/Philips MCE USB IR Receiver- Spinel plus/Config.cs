@@ -1,6 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Copyright (C) 2005-2012 Team MediaPortal
+
+// Copyright (C) 2005-2012 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// MediaPortal is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+// 
+// MediaPortal is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
 
 namespace IRServer.Plugin
 {
@@ -8,34 +24,13 @@ namespace IRServer.Plugin
   {
     public class Config
     {
-      private bool _doRepeats;
-      private bool _useSystemRatesDelay;
-      private int _firstRepeatDelay;
-      private int _heldRepeatDelay;
+      public bool DoRepeats { get; set; }
 
-      public bool doRepeats
-      {
-        get { return _doRepeats; }
-        set { _doRepeats = value; }
-      }
+      public bool UseSystemRatesDelay { get; set; }
 
-      public bool useSystemRatesDelay
-      {
-        get { return _useSystemRatesDelay; }
-        set { _useSystemRatesDelay = value; }
-      }
+      public int FirstRepeatDelay { get; set; }
 
-      public int firstRepeatDelay
-      {
-        get { return _firstRepeatDelay; }
-        set { _firstRepeatDelay = value; }
-      }
-
-      public int heldRepeatDelay
-      {
-        get { return _heldRepeatDelay; }
-        set { _heldRepeatDelay = value; }
-      }
+      public int HeldRepeatDelay { get; set; }
 
       public Config()
       {
@@ -46,10 +41,10 @@ namespace IRServer.Plugin
       {
         try
         {
-          _doRepeats = false;
-          _useSystemRatesDelay = true;
-          _firstRepeatDelay = 400;
-          _heldRepeatDelay = 100;
+          DoRepeats = false;
+          UseSystemRatesDelay = true;
+          FirstRepeatDelay = 400;
+          HeldRepeatDelay = 100;
           return true;
         }
         catch
