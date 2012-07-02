@@ -1,22 +1,20 @@
-#region Copyright (C) 2005-2009 Team MediaPortal
+#region Copyright (C) 2005-2012 Team MediaPortal
 
-// Copyright (C) 2005-2009 Team MediaPortal
+// Copyright (C) 2005-2012 Team MediaPortal
 // http://www.team-mediaportal.com
 // 
-// This Program is free software; you can redistribute it and/or modify
+// MediaPortal is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2, or (at your option)
-// any later version.
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
 // 
-// This Program is distributed in the hope that it will be useful,
+// MediaPortal is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
-// along with GNU Make; see the file COPYING.  If not, write to
-// the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-// http://www.gnu.org/copyleft/gpl.html
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
 
 #endregion
 
@@ -286,7 +284,7 @@ namespace IRServer.Plugin
       _w.Start();
     }
 
-    void onEventArrived(object sender, EventArrivedEventArgs e)
+    private void onEventArrived(object sender, EventArrivedEventArgs e)
     {
       ManagementBaseObject _o = e.NewEvent["TargetInstance"] as ManagementBaseObject;
       if (_o == null) return;
@@ -362,8 +360,6 @@ namespace IRServer.Plugin
 
       _deviceList = null;
     }
-
-
 
 
     private void LoadSettings()
@@ -472,28 +468,28 @@ namespace IRServer.Plugin
           switch (betterState.GetPov(i))
           {
             case 0:
-              actionCode = (int)joyButton.povN;
+              actionCode = (int) joyButton.povN;
               break;
             case 4500:
-              actionCode = (int)joyButton.povNE;
+              actionCode = (int) joyButton.povNE;
               break;
             case 9000:
-              actionCode = (int)joyButton.povE;
+              actionCode = (int) joyButton.povE;
               break;
             case 13500:
-              actionCode = (int)joyButton.povSE;
+              actionCode = (int) joyButton.povSE;
               break;
             case 18000:
-              actionCode = (int)joyButton.povS;
+              actionCode = (int) joyButton.povS;
               break;
             case 22500:
-              actionCode = (int)joyButton.povSW;
+              actionCode = (int) joyButton.povSW;
               break;
             case 27000:
-              actionCode = (int)joyButton.povW;
+              actionCode = (int) joyButton.povW;
               break;
             case 31500:
-              actionCode = (int)joyButton.povNW;
+              actionCode = (int) joyButton.povNW;
               break;
           }
 
@@ -505,52 +501,52 @@ namespace IRServer.Plugin
       if (actionCode == -1)
       {
         if (betterState.AvailableAxes.HasFlag(Axes.X) &&
-          Math.Abs(betterState.GetAxis(Axes.X)) > AxisLimit)
+            Math.Abs(betterState.GetAxis(Axes.X)) > AxisLimit)
         {
           if (betterState.GetAxis(Axes.X) > 0)
-            actionCode = (int)joyButton.axisXUp; // right
+            actionCode = (int) joyButton.axisXUp; // right
           else
-            actionCode = (int)joyButton.axisXDown; // left
+            actionCode = (int) joyButton.axisXDown; // left
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.Y) &&
-          Math.Abs(betterState.GetAxis(Axes.Y)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.Y)) > AxisLimit)
         {
           if (betterState.GetAxis(Axes.Y) > 0)
-            actionCode = (int)joyButton.axisYUp; // down
+            actionCode = (int) joyButton.axisYUp; // down
           else
-            actionCode = (int)joyButton.axisYDown; // up
+            actionCode = (int) joyButton.axisYDown; // up
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.Z) &&
-          Math.Abs(betterState.GetAxis(Axes.Z)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.Z)) > AxisLimit)
         {
           if (betterState.GetAxis(Axes.Z) > 0)
-            actionCode = (int)joyButton.axisZUp;
+            actionCode = (int) joyButton.axisZUp;
           else
-            actionCode = (int)joyButton.axisZDown;
+            actionCode = (int) joyButton.axisZDown;
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.RotationX) &&
-          Math.Abs(betterState.GetAxis(Axes.RotationX)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.RotationX)) > AxisLimit)
         {
           if (betterState.GetAxis(Axes.RotationX) > 0)
-            actionCode = (int)joyButton.rotationXUp;
+            actionCode = (int) joyButton.rotationXUp;
           else
-            actionCode = (int)joyButton.rotationXDown;
+            actionCode = (int) joyButton.rotationXDown;
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.RotationY) &&
-          Math.Abs(betterState.GetAxis(Axes.RotationY)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.RotationY)) > AxisLimit)
         {
           if (betterState.GetAxis(Axes.RotationY) > 0)
-            actionCode = (int)joyButton.rotationYUp;
+            actionCode = (int) joyButton.rotationYUp;
           else
-            actionCode = (int)joyButton.rotationYDown;
+            actionCode = (int) joyButton.rotationYDown;
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.RotationZ) &&
-          Math.Abs(betterState.GetAxis(Axes.RotationZ)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.RotationZ)) > AxisLimit)
         {
           if (betterState.GetAxis(Axes.RotationZ) > 0)
-            actionCode = (int)joyButton.rotationZUp;
+            actionCode = (int) joyButton.rotationZUp;
           else
-            actionCode = (int)joyButton.rotationZDown;
+            actionCode = (int) joyButton.rotationZDown;
         }
       }
 
@@ -565,9 +561,9 @@ namespace IRServer.Plugin
 
     private string TranslateActionCode(int actionCode)
     {
-      joyButton j = (joyButton)actionCode;
+      joyButton j = (joyButton) actionCode;
 
-      return Enum.GetName(typeof(joyButton), j);
+      return Enum.GetName(typeof (joyButton), j);
     }
   }
 }
