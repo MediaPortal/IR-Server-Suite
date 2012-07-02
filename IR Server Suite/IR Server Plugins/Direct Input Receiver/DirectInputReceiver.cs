@@ -162,7 +162,7 @@ namespace IRServer.Plugin
     /// </summary>
     public override string Author
     {
-      get { return "and-81, with original MediaPortal code by waeberd"; }
+      get { return "chefkoch, and-81, waeberd"; }
     }
 
     /// <summary>
