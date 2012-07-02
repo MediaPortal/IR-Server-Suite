@@ -7,7 +7,6 @@ namespace IRServer.Plugin
 {
   public partial class PhilipsMceUsbIrReceiverSpinelPlus
   {
-
     private static class Debug
     {
       private static StreamWriter _debugFile;
@@ -103,15 +102,15 @@ namespace IRServer.Plugin
         {
           if (item is byte)
           {
-            Write("{0:X2}", (byte)item);
+            Write("{0:X2}", (byte) item);
           }
           else if (item is ushort)
           {
-            Write("{0:X4}", (ushort)item);
+            Write("{0:X4}", (ushort) item);
           }
           else if (item is int)
           {
-            Write("{1}{0}", (int)item, (int)item > 0 ? "+" : String.Empty);
+            Write("{1}{0}", (int) item, (int) item > 0 ? "+" : String.Empty);
           }
           else
           {

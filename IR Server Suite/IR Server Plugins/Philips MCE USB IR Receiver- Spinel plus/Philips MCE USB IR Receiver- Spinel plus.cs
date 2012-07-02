@@ -43,7 +43,6 @@ namespace IRServer.Plugin
   /// </summary>
   public partial class PhilipsMceUsbIrReceiverSpinelPlus
   {
-
     #region Classes
 
     private class Device
@@ -63,28 +62,33 @@ namespace IRServer.Plugin
 
     #region Global Constants
 
-    private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Philips MCE USB IR Receiver- Spinel plus.xml");
+    private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath,
+                                                                    "Philips MCE USB IR Receiver- Spinel plus.xml");
 
     private static readonly List<Device> supportedDevices = new List<Device>()
-            {
-              new Device()
-              {
-                Name="Philips MCE USB IR Receiver- Spinel plus", deviceDetails = new List<DeviceDetails>()
-                {
-                  new DeviceDetails()
-                  { hwID="Vid_0471&Pid_20cc&Col03",
-                    UsagePage=0x000c,
-                    Usage=0x0001
-                  },
-                  new DeviceDetails()
-                  {
-                    hwID="Vid_0471&Pid_20cc&Col04",
-                    UsagePage=0xffbc,
-                    Usage=0x0088
-                  }
-                }
-              }
-            };
+                                                              {
+                                                                new Device()
+                                                                  {
+                                                                    Name = "Philips MCE USB IR Receiver- Spinel plus",
+                                                                    deviceDetails = new List<DeviceDetails>()
+                                                                                      {
+                                                                                        new DeviceDetails()
+                                                                                          {
+                                                                                            hwID =
+                                                                                              "Vid_0471&Pid_20cc&Col03",
+                                                                                            UsagePage = 0x000c,
+                                                                                            Usage = 0x0001
+                                                                                          },
+                                                                                        new DeviceDetails()
+                                                                                          {
+                                                                                            hwID =
+                                                                                              "Vid_0471&Pid_20cc&Col04",
+                                                                                            UsagePage = 0xffbc,
+                                                                                            Usage = 0x0088
+                                                                                          }
+                                                                                      }
+                                                                  }
+                                                              };
 
     #endregion
 
@@ -96,8 +100,8 @@ namespace IRServer.Plugin
     private RemoteHandler _remoteHandler;
     private bool _disposed;
     private System.Threading.Timer _RepeatTimer;
-    int _firstRepeatDelay;
-    int _heldRepeatDelay;
+    private int _firstRepeatDelay;
+    private int _heldRepeatDelay;
 
     #endregion Global Variables
 
@@ -132,8 +136,8 @@ namespace IRServer.Plugin
 
       if (config.useSystemRatesDelay)
       {
-        _firstRepeatDelay = 250 + (SystemInformation.KeyboardDelay * 250);
-        _heldRepeatDelay = (int)(1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
+        _firstRepeatDelay = 250 + (SystemInformation.KeyboardDelay*250);
+        _heldRepeatDelay = (int) (1000.0/(2.5 + (SystemInformation.KeyboardSpeed*0.888)));
       }
 
       // create receiver Window
@@ -256,8 +260,8 @@ namespace IRServer.Plugin
     {
       Debug.WriteLine("RegisterForRawInput(): Registering {0} device(s).", devices.Length);
       if (
-        !RawInput.RegisterRawInputDevices(devices, (uint)devices.Length,
-                                          (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTDEVICE))))
+        !RawInput.RegisterRawInputDevices(devices, (uint) devices.Length,
+                                          (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTDEVICE))))
       {
         int dwError = Marshal.GetLastWin32Error();
         Debug.WriteLine("RegisterForRawInput(): error={0}", dwError);
@@ -282,9 +286,9 @@ namespace IRServer.Plugin
       uint dwSize = 0;
 
       RawInput.GetRawInputData(message.LParam, RawInput.RawInputCommand.Input, IntPtr.Zero, ref dwSize,
-                               (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)));
+                               (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)));
 
-      IntPtr buffer = Marshal.AllocHGlobal((int)dwSize);
+      IntPtr buffer = Marshal.AllocHGlobal((int) dwSize);
       try
       {
         if (buffer == IntPtr.Zero)
@@ -292,10 +296,10 @@ namespace IRServer.Plugin
 
         if (
           RawInput.GetRawInputData(message.LParam, RawInput.RawInputCommand.Input, buffer, ref dwSize,
-                                   (uint)Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER))) != dwSize)
+                                   (uint) Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER))) != dwSize)
           return;
 
-        RawInput.RAWINPUT raw = (RawInput.RAWINPUT)Marshal.PtrToStructure(buffer, typeof(RawInput.RAWINPUT));
+        RawInput.RAWINPUT raw = (RawInput.RAWINPUT) Marshal.PtrToStructure(buffer, typeof (RawInput.RAWINPUT));
 
         // get the name of the device that generated the input message
         string deviceName = string.Empty;
@@ -303,20 +307,20 @@ namespace IRServer.Plugin
         RawInput.GetRawInputDeviceInfo(raw.header.hDevice, RawInput.RIDI_DEVICENAME, IntPtr.Zero, ref pcbSize);
         if (pcbSize > 0)
         {
-          IntPtr pData = Marshal.AllocHGlobal((int)pcbSize);
+          IntPtr pData = Marshal.AllocHGlobal((int) pcbSize);
           RawInput.GetRawInputDeviceInfo(raw.header.hDevice, RawInput.RIDI_DEVICENAME, pData, ref pcbSize);
           deviceName = Marshal.PtrToStringAnsi(pData);
           Marshal.FreeHGlobal(pData);
         }
 
-        Debug.WriteLine("Received Input Command ({0})", Enum.GetName(typeof(RawInput.RawInputType), raw.header.dwType));
+        Debug.WriteLine("Received Input Command ({0})", Enum.GetName(typeof (RawInput.RawInputType), raw.header.dwType));
         Debug.WriteLine("RAW HID DEVICE: {0}", deviceName);
 
         switch (raw.header.dwType)
         {
           case RawInput.RawInputType.HID:
             {
-              int offset = Marshal.SizeOf(typeof(RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof(RawInput.RAWHID));
+              int offset = Marshal.SizeOf(typeof (RawInput.RAWINPUTHEADER)) + Marshal.SizeOf(typeof (RawInput.RAWHID));
 
               byte[] bRawData = new byte[offset + raw.hid.dwSizeHid];
               Marshal.Copy(buffer, bRawData, 0, bRawData.Length);
@@ -332,7 +336,7 @@ namespace IRServer.Plugin
               UInt64 keyCode = 0;
               for (int i = 1; i < newArray.Length; i++)
               {
-                keyCode += (ulong)newArray[i] << (8 * (i - 1));
+                keyCode += (ulong) newArray[i] << (8*(i - 1));
               }
               if (keyCode != 0)
               {
@@ -341,10 +345,10 @@ namespace IRServer.Plugin
                 _remoteHandler(Name, codeString);
 
                 if (config.doRepeats)
-                { 
-                  _RepeatTimer = new System.Threading.Timer(new System.Threading.TimerCallback(repeatTimerCallback), (object)codeString, _firstRepeatDelay , _heldRepeatDelay );                  
+                {
+                  _RepeatTimer = new System.Threading.Timer(new System.Threading.TimerCallback(repeatTimerCallback),
+                                                            (object) codeString, _firstRepeatDelay, _heldRepeatDelay);
                 }
-
               }
               else
               {
@@ -357,7 +361,6 @@ namespace IRServer.Plugin
 
               break;
             }
-
         }
       }
       finally
@@ -372,11 +375,10 @@ namespace IRServer.Plugin
 
     private void repeatTimerCallback(object state)
     {
-      string codeString = (string)state;
+      string codeString = (string) state;
       _remoteHandler(Name, codeString);
     }
 
     #endregion Timer Callbacks
-
   }
 }

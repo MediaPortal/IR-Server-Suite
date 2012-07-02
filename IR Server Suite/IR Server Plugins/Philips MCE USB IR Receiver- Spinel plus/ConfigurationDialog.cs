@@ -25,66 +25,65 @@ using System.Windows.Forms;
 
 namespace IRServer.Plugin
 {
-    internal partial class ConfigurationDialog : Form
+  internal partial class ConfigurationDialog : Form
+  {
+    public ConfigurationDialog()
     {
-        public ConfigurationDialog()
-        {
-            InitializeComponent();
-            setEnabled();
-        }
-
-        public bool DoRepeats
-        {
-          get { return checkBoxDoRepeats.Checked; }
-          set { checkBoxDoRepeats.Checked = value; }
-        }
-
-        public bool UseSystemRatesDelay
-        {
-            get { return checkBoxUseSystemRatesDelay.Checked; }
-            set { checkBoxUseSystemRatesDelay.Checked = value; }
-        }
-
-        public int FirstRepeatDelay
-        {
-            get { return Decimal.ToInt32(numericUpDownFirstRepeatDelay.Value); }
-            set { numericUpDownFirstRepeatDelay.Value = new Decimal(value); }
-        }
-
-        public int HeldRepeatDelay
-        {
-            get { return Decimal.ToInt32(numericUpDownHeldRepeatDelay.Value); }
-            set { numericUpDownHeldRepeatDelay.Value = new Decimal(value); }
-        }
-
-        private void buttonOK_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.OK;
-            Close();
-        }
-
-        private void buttonCancel_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-        private void checkBoxDoRepeats_CheckedChanged(object sender, EventArgs e)
-        {
-          setEnabled();
-        }
-
-        private void checkBoxUseSystemRatesDelay_CheckedChanged(object sender, EventArgs e)
-        {
-          setEnabled();
-        }
-
-        private void setEnabled()
-        {
-          checkBoxUseSystemRatesDelay.Enabled = checkBoxDoRepeats.Checked;
-          numericUpDownFirstRepeatDelay.Enabled = checkBoxDoRepeats.Checked & !checkBoxUseSystemRatesDelay.Checked;
-          numericUpDownHeldRepeatDelay.Enabled = checkBoxDoRepeats.Checked & !checkBoxUseSystemRatesDelay.Checked;
-        }
-
+      InitializeComponent();
+      setEnabled();
     }
+
+    public bool DoRepeats
+    {
+      get { return checkBoxDoRepeats.Checked; }
+      set { checkBoxDoRepeats.Checked = value; }
+    }
+
+    public bool UseSystemRatesDelay
+    {
+      get { return checkBoxUseSystemRatesDelay.Checked; }
+      set { checkBoxUseSystemRatesDelay.Checked = value; }
+    }
+
+    public int FirstRepeatDelay
+    {
+      get { return Decimal.ToInt32(numericUpDownFirstRepeatDelay.Value); }
+      set { numericUpDownFirstRepeatDelay.Value = new Decimal(value); }
+    }
+
+    public int HeldRepeatDelay
+    {
+      get { return Decimal.ToInt32(numericUpDownHeldRepeatDelay.Value); }
+      set { numericUpDownHeldRepeatDelay.Value = new Decimal(value); }
+    }
+
+    private void buttonOK_Click(object sender, EventArgs e)
+    {
+      DialogResult = DialogResult.OK;
+      Close();
+    }
+
+    private void buttonCancel_Click(object sender, EventArgs e)
+    {
+      DialogResult = DialogResult.Cancel;
+      Close();
+    }
+
+    private void checkBoxDoRepeats_CheckedChanged(object sender, EventArgs e)
+    {
+      setEnabled();
+    }
+
+    private void checkBoxUseSystemRatesDelay_CheckedChanged(object sender, EventArgs e)
+    {
+      setEnabled();
+    }
+
+    private void setEnabled()
+    {
+      checkBoxUseSystemRatesDelay.Enabled = checkBoxDoRepeats.Checked;
+      numericUpDownFirstRepeatDelay.Enabled = checkBoxDoRepeats.Checked & !checkBoxUseSystemRatesDelay.Checked;
+      numericUpDownHeldRepeatDelay.Enabled = checkBoxDoRepeats.Checked & !checkBoxUseSystemRatesDelay.Checked;
+    }
+  }
 }

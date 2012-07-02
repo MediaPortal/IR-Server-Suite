@@ -9,22 +9,20 @@ namespace IRServer.Plugin
 {
   public partial class PhilipsMceUsbIrReceiverSpinelPlus
   {
-
     private static class ConfigManagement
     {
-
       /// <summary>
       /// Loads the settings.
       /// </summary>
       public static void LoadSettings(ref Config config)
       {
         Debug.WriteLine("LoadSettings()");
-        XmlSerializer ser = new XmlSerializer(typeof(Config));
+        XmlSerializer ser = new XmlSerializer(typeof (Config));
         StreamReader sr = new StreamReader(ConfigurationFile);
 
         try
         {
-          config = (Config)ser.Deserialize(sr);
+          config = (Config) ser.Deserialize(sr);
         }
         catch (Exception ex)
         {
@@ -41,7 +39,7 @@ namespace IRServer.Plugin
       public static void SaveSettings(Config config)
       {
         Debug.WriteLine("SaveSettings()");
-        XmlSerializer ser = new XmlSerializer(typeof(Config));
+        XmlSerializer ser = new XmlSerializer(typeof (Config));
         FileStream str = new FileStream(ConfigurationFile, FileMode.Create);
 
         try
@@ -55,8 +53,6 @@ namespace IRServer.Plugin
 
         str.Close();
       }
-
     }
-
   }
 }

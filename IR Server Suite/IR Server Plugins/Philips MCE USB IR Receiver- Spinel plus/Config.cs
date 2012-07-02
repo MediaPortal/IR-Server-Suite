@@ -7,7 +7,6 @@ namespace IRServer.Plugin
 {
   public partial class PhilipsMceUsbIrReceiverSpinelPlus
   {
-
     public class Config
     {
       private bool _doRepeats;
@@ -20,16 +19,19 @@ namespace IRServer.Plugin
         get { return _doRepeats; }
         set { _doRepeats = value; }
       }
+
       public bool useSystemRatesDelay
       {
         get { return _useSystemRatesDelay; }
         set { _useSystemRatesDelay = value; }
       }
+
       public int firstRepeatDelay
       {
         get { return _firstRepeatDelay; }
         set { _firstRepeatDelay = value; }
       }
+
       public int heldRepeatDelay
       {
         get { return _heldRepeatDelay; }
@@ -57,6 +59,5 @@ namespace IRServer.Plugin
         }
       }
     }
-
   }
 }
