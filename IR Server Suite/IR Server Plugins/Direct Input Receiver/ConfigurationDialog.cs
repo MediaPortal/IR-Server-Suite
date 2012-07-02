@@ -25,7 +25,7 @@ using SlimDX.DirectInput;
 
 namespace IRServer.Plugin
 {
-  internal partial class Configure : Form
+  internal partial class ConfigurationDialog : Form
   {
     #region Variables
 
@@ -65,11 +65,13 @@ namespace IRServer.Plugin
       }
     }
 
+    public float AxisLimit { get; set; }
+
     #endregion Properties
 
     #region Constructor
 
-    public Configure(IEnumerable<DeviceInstance> deviceList)
+    public ConfigurationDialog(IEnumerable<DeviceInstance> deviceList)
     {
       InitializeComponent();
 

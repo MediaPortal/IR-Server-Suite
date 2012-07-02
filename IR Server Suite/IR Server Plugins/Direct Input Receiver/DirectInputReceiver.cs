@@ -20,16 +20,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Management;
-using System.Text;
-using System.Windows.Forms;
-using System.Xml;
 using IRServer.Plugin.GamePad;
 using IRServer.Plugin.GamePad.Enums;
-using IRServer.Plugin.Properties;
 using IrssUtils;
 using SlimDX.DirectInput;
 
@@ -38,7 +32,7 @@ namespace IRServer.Plugin
   /// <summary>
   /// IR Server Plugin for Direct Input game controllers.
   /// </summary>
-  public class DirectInputReceiver : PluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
+  public partial class DirectInputReceiver
   {
 #if DEBUG
 
@@ -74,7 +68,6 @@ namespace IRServer.Plugin
 
     #region Constants
 
-    private const float AxisLimit = 0.6f;
     private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Direct Input Receiver.xml");
 
     #endregion Constants
@@ -136,143 +129,9 @@ namespace IRServer.Plugin
     private DirectInputListener _diListener;
 
     private string _selectedDeviceGUID;
+    private Config _config;
 
     #endregion Variables
-
-    /// <summary>
-    /// Name of the IR Server plugin.
-    /// </summary>
-    public override string Name
-    {
-      get { return "Direct Input"; }
-    }
-
-    /// <summary>
-    /// IR Server plugin version.
-    /// </summary>
-    public override string Version
-    {
-      get { return "1.4.2.0"; }
-    }
-
-    /// <summary>
-    /// The IR Server plugin's author.
-    /// </summary>
-    public override string Author
-    {
-      get { return "chefkoch, and-81, waeberd"; }
-    }
-
-    /// <summary>
-    /// A description of the IR Server plugin.
-    /// </summary>
-    public override string Description
-    {
-      get { return "Supports Direct Input game controllers"; }
-    }
-
-    /// <summary>
-    /// Gets a display icon for the plugin.
-    /// </summary>
-    /// <value>The icon.</value>
-    public override Icon DeviceIcon
-    {
-      get { return Resources.Icon; }
-    }
-
-    #region IConfigure Members
-
-    /// <summary>
-    /// Configure the IR Server plugin.
-    /// </summary>
-    public void Configure(IWin32Window owner)
-    {
-      LoadSettings();
-
-      InitDeviceList();
-
-      Configure config = new Configure(_deviceList);
-      config.DeviceGuid = _selectedDeviceGUID;
-
-      if (config.ShowDialog(owner) == DialogResult.OK)
-      {
-        if (!String.IsNullOrEmpty(config.DeviceGuid))
-        {
-          _selectedDeviceGUID = config.DeviceGuid;
-          SaveSettings();
-        }
-      }
-    }
-
-    #endregion
-
-    #region IMouseReceiver Members
-
-    /// <summary>
-    /// Callback for mouse events.
-    /// </summary>
-    public MouseHandler MouseCallback { get; set; }
-
-    #endregion
-
-    #region IRemoteReceiver Members
-
-    /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    public RemoteHandler RemoteCallback { get; set; }
-
-    #endregion
-
-    /// <summary>
-    /// Detect the presence of this device.
-    /// </summary>
-    public override DetectionResult Detect()
-    {
-      Shared.getStatus();
-      if (Shared._serviceInstalled)
-      {
-        IrssLog.Warn("{0,15}: not available on \"service\" installation mode", Name);
-        return DetectionResult.DeviceDisabled;
-      }
-      return DetectionResult.DevicePresent;
-    }
-
-    /// <summary>
-    /// Start the IR Server plugin.
-    /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
-    public override void Start()
-    {
-      LoadSettings();
-
-      RegisterDeviceNotification();
-      StartListener();
-    }
-
-    /// <summary>
-    /// Suspend the IR Server plugin when computer enters standby.
-    /// </summary>
-    public override void Suspend()
-    {
-      Stop();
-    }
-
-    /// <summary>
-    /// Resume the IR Server plugin when the computer returns from standby.
-    /// </summary>
-    public override void Resume()
-    {
-      Start();
-    }
-
-    /// <summary>
-    /// Stop the IR Server plugin.
-    /// </summary>
-    public override void Stop()
-    {
-      StopListener();
-    }
 
     private void RegisterDeviceNotification()
     {
@@ -359,53 +218,6 @@ namespace IRServer.Plugin
       }
 
       _deviceList = null;
-    }
-
-
-    private void LoadSettings()
-    {
-      XmlDocument doc = new XmlDocument();
-
-      try
-      {
-        doc.Load(ConfigurationFile);
-      }
-      catch
-      {
-        return;
-      }
-
-      try
-      {
-        _selectedDeviceGUID = doc.DocumentElement.Attributes["DeviceGUID"].Value;
-      }
-      catch
-      {
-      }
-    }
-
-    private void SaveSettings()
-    {
-      try
-      {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
-        {
-          writer.Formatting = Formatting.Indented;
-          writer.Indentation = 1;
-          writer.IndentChar = (char) 9;
-          writer.WriteStartDocument(true);
-          writer.WriteStartElement("settings"); // <settings>
-
-          writer.WriteAttributeString("DeviceGUID", _selectedDeviceGUID);
-
-          writer.WriteEndElement(); // </settings>
-          writer.WriteEndDocument();
-        }
-      }
-      catch (Exception ex)
-      {
-        Debug.WriteLine(ex.ToString());
-      }
     }
 
 
@@ -501,7 +313,7 @@ namespace IRServer.Plugin
       if (actionCode == -1)
       {
         if (betterState.AvailableAxes.HasFlag(Axes.X) &&
-            Math.Abs(betterState.GetAxis(Axes.X)) > AxisLimit)
+            Math.Abs(betterState.GetAxis(Axes.X)) > _config.AxisLimit)
         {
           if (betterState.GetAxis(Axes.X) > 0)
             actionCode = (int) joyButton.axisXUp; // right
@@ -509,7 +321,7 @@ namespace IRServer.Plugin
             actionCode = (int) joyButton.axisXDown; // left
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.Y) &&
-                 Math.Abs(betterState.GetAxis(Axes.Y)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.Y)) > _config.AxisLimit)
         {
           if (betterState.GetAxis(Axes.Y) > 0)
             actionCode = (int) joyButton.axisYUp; // down
@@ -517,7 +329,7 @@ namespace IRServer.Plugin
             actionCode = (int) joyButton.axisYDown; // up
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.Z) &&
-                 Math.Abs(betterState.GetAxis(Axes.Z)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.Z)) > _config.AxisLimit)
         {
           if (betterState.GetAxis(Axes.Z) > 0)
             actionCode = (int) joyButton.axisZUp;
@@ -525,7 +337,7 @@ namespace IRServer.Plugin
             actionCode = (int) joyButton.axisZDown;
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.RotationX) &&
-                 Math.Abs(betterState.GetAxis(Axes.RotationX)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.RotationX)) > _config.AxisLimit)
         {
           if (betterState.GetAxis(Axes.RotationX) > 0)
             actionCode = (int) joyButton.rotationXUp;
@@ -533,7 +345,7 @@ namespace IRServer.Plugin
             actionCode = (int) joyButton.rotationXDown;
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.RotationY) &&
-                 Math.Abs(betterState.GetAxis(Axes.RotationY)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.RotationY)) > _config.AxisLimit)
         {
           if (betterState.GetAxis(Axes.RotationY) > 0)
             actionCode = (int) joyButton.rotationYUp;
@@ -541,7 +353,7 @@ namespace IRServer.Plugin
             actionCode = (int) joyButton.rotationYDown;
         }
         else if (betterState.AvailableAxes.HasFlag(Axes.RotationZ) &&
-                 Math.Abs(betterState.GetAxis(Axes.RotationZ)) > AxisLimit)
+                 Math.Abs(betterState.GetAxis(Axes.RotationZ)) > _config.AxisLimit)
         {
           if (betterState.GetAxis(Axes.RotationZ) > 0)
             actionCode = (int) joyButton.rotationZUp;
