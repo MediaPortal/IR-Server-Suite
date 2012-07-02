@@ -34,10 +34,10 @@ namespace IRServer.Plugin
 
       public Config()
       {
-        this.reset();
+        this.Reset();
       }
 
-      public bool reset()
+      public bool Reset()
       {
         try
         {
