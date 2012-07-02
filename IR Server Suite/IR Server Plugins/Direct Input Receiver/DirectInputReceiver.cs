@@ -128,7 +128,6 @@ namespace IRServer.Plugin
     private IList<DeviceInstance> _deviceList;
     private DirectInputListener _diListener;
 
-    private string _selectedDeviceGUID;
     private Config _config;
 
     #endregion Variables
@@ -189,11 +188,11 @@ namespace IRServer.Plugin
       IrssLog.Debug("DirectInput: Start listening...");
 
 
-      if (String.IsNullOrEmpty(_selectedDeviceGUID))
+      if (String.IsNullOrEmpty(_config.DeviceGUID))
       {
         IrssLog.Info("No direct input device selected in plugin configuration, using first found");
         // Retreive the first position in the device list.
-        _selectedDeviceGUID = _deviceList[0].InstanceGuid.ToString();
+        _config.DeviceGUID = _deviceList[0].InstanceGuid.ToString();
       }
 
       _diListener = new DirectInputListener();
@@ -238,7 +237,7 @@ namespace IRServer.Plugin
         return false;
 
       foreach (DeviceInstance di in _deviceList)
-        if (_selectedDeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
+        if (_config.DeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
           return _diListener.InitDevice(di.InstanceGuid);
 
       return false;
