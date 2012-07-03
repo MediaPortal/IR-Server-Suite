@@ -11,7 +11,7 @@
     <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>Direct Input Receiver</AssemblyName>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
     <StartupObject>
     </StartupObject>
     <FileUpgradeFlags>
@@ -98,7 +98,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon.ico" />
+    <Content Include="Resources\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ConfigurationDialog.resx">
