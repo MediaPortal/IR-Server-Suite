@@ -65,7 +65,7 @@ namespace IRServer.Plugin
 
         try
         {
-          config._learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value, CultureInfo.InvariantCulture);
+          config.LearnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value, CultureInfo.InvariantCulture);
         }
         catch
         {
@@ -80,21 +80,21 @@ namespace IRServer.Plugin
 
         try
         {
-          config._enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value);
+          config.EnableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value);
         }
         catch
         {
         }
         try
         {
-          config._useSystemRatesRemote = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesRemote"].Value);
+          config.UseSystemRatesRemote = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesRemote"].Value);
         }
         catch
         {
         }
         try
         {
-          config._remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value,
+          config.RemoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value,
                                          CultureInfo.InvariantCulture);
         }
         catch
@@ -102,7 +102,7 @@ namespace IRServer.Plugin
         }
         try
         {
-          config._remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value,
+          config.RemoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value,
                                          CultureInfo.InvariantCulture);
         }
         catch
@@ -118,21 +118,21 @@ namespace IRServer.Plugin
 
         try
         {
-          config._enableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value);
+          config.EnableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value);
         }
         catch
         {
         }
         try
         {
-          config._useSystemRatesKeyboard = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesKeyboard"].Value);
+          config.UseSystemRatesKeyboard = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesKeyboard"].Value);
         }
         catch
         {
         }
         try
         {
-          config._keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value,
+          config.KeyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value,
                                            CultureInfo.InvariantCulture);
         }
         catch
@@ -140,7 +140,7 @@ namespace IRServer.Plugin
         }
         try
         {
-          config._keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value,
+          config.KeyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value,
                                            CultureInfo.InvariantCulture);
         }
         catch
@@ -148,14 +148,14 @@ namespace IRServer.Plugin
         }
         try
         {
-          config._handleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value);
+          config.HandleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value);
         }
         catch
         {
         }
         try
         {
-          config._useQwertzLayout = bool.Parse(doc.DocumentElement.Attributes["UseQwertzLayout"].Value);
+          config.UseQwertzLayout = bool.Parse(doc.DocumentElement.Attributes["UseQwertzLayout"].Value);
         }
         catch
         {
@@ -163,21 +163,21 @@ namespace IRServer.Plugin
 
         try
         {
-          config._enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value);
+          config.EnableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value);
         }
         catch
         {
         }
         try
         {
-          config._handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value);
+          config.HandleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value);
         }
         catch
         {
         }
         try
         {
-          config._mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value,
+          config.MouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value,
                                            CultureInfo.InvariantCulture);
         }
         catch
@@ -214,25 +214,25 @@ namespace IRServer.Plugin
             writer.WriteStartDocument(true);
             writer.WriteStartElement("settings"); // <settings>
 
-            writer.WriteAttributeString("LearnTimeout", config._learnTimeout.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("LearnTimeout", config.LearnTimeout.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("DisableMceServices", config._disableMceServices.ToString());
 
-            writer.WriteAttributeString("EnableRemoteInput", config._enableRemoteInput.ToString());
-            writer.WriteAttributeString("UseSystemRatesRemote", config._useSystemRatesRemote.ToString());
-            writer.WriteAttributeString("RemoteFirstRepeat", config._remoteFirstRepeat.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString("RemoteHeldRepeats", config._remoteHeldRepeats.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("EnableRemoteInput", config.EnableRemoteInput.ToString());
+            writer.WriteAttributeString("UseSystemRatesRemote", config.UseSystemRatesRemote.ToString());
+            writer.WriteAttributeString("RemoteFirstRepeat", config.RemoteFirstRepeat.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("RemoteHeldRepeats", config.RemoteHeldRepeats.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString("DisableAutomaticButtons", config._disableAutomaticButtons.ToString());
 
-            writer.WriteAttributeString("EnableKeyboardInput", config._enableKeyboardInput.ToString());
-            writer.WriteAttributeString("UseSystemRatesKeyboard", config._useSystemRatesKeyboard.ToString());
-            writer.WriteAttributeString("KeyboardFirstRepeat", config._keyboardFirstRepeat.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString("KeyboardHeldRepeats", config._keyboardHeldRepeats.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString("HandleKeyboardLocally", config._handleKeyboardLocally.ToString());
-            writer.WriteAttributeString("UseQwertzLayout", config._useQwertzLayout.ToString());
+            writer.WriteAttributeString("EnableKeyboardInput", config.EnableKeyboardInput.ToString());
+            writer.WriteAttributeString("UseSystemRatesKeyboard", config.UseSystemRatesKeyboard.ToString());
+            writer.WriteAttributeString("KeyboardFirstRepeat", config.KeyboardFirstRepeat.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("KeyboardHeldRepeats", config.KeyboardHeldRepeats.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("HandleKeyboardLocally", config.HandleKeyboardLocally.ToString());
+            writer.WriteAttributeString("UseQwertzLayout", config.UseQwertzLayout.ToString());
 
-            writer.WriteAttributeString("EnableMouseInput", config._enableMouseInput.ToString());
-            writer.WriteAttributeString("HandleMouseLocally", config._handleMouseLocally.ToString());
-            writer.WriteAttributeString("MouseSensitivity", config._mouseSensitivity.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("EnableMouseInput", config.EnableMouseInput.ToString());
+            writer.WriteAttributeString("HandleMouseLocally", config.HandleMouseLocally.ToString());
+            writer.WriteAttributeString("MouseSensitivity", config.MouseSensitivity.ToString(CultureInfo.InvariantCulture));
 
             writer.WriteEndElement(); // </settings>
             writer.WriteEndDocument();

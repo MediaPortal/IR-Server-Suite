@@ -26,20 +26,20 @@ namespace IRServer.Plugin
     {
       public bool _disableAutomaticButtons { get; set; }
       public bool _disableMceServices { get; set; }
-      public bool _enableKeyboardInput { get; set; }
-      public bool _enableMouseInput { get; set; }
-      public bool _enableRemoteInput { get; set; }
-      public bool _handleKeyboardLocally { get; set; }
-      public bool _handleMouseLocally { get; set; }
-      public int _keyboardFirstRepeat { get; set; }
-      public int _keyboardHeldRepeats { get; set; }
-      public int _learnTimeout { get; set; }
-      public double _mouseSensitivity { get; set; }
-      public int _remoteFirstRepeat { get; set; }
-      public int _remoteHeldRepeats { get; set; }
-      public bool _useQwertzLayout { get; set; }
-      public bool _useSystemRatesKeyboard { get; set; }
-      public bool _useSystemRatesRemote { get; set; }
+      public bool EnableKeyboardInput { get; set; }
+      public bool EnableMouseInput { get; set; }
+      public bool EnableRemoteInput { get; set; }
+      public bool HandleKeyboardLocally { get; set; }
+      public bool HandleMouseLocally { get; set; }
+      public int KeyboardFirstRepeat { get; set; }
+      public int KeyboardHeldRepeats { get; set; }
+      public int LearnTimeout { get; set; }
+      public double MouseSensitivity { get; set; }
+      public int RemoteFirstRepeat { get; set; }
+      public int RemoteHeldRepeats { get; set; }
+      public bool UseQwertzLayout { get; set; }
+      public bool UseSystemRatesKeyboard { get; set; }
+      public bool UseSystemRatesRemote { get; set; }
 
       public Config()
       {
@@ -53,21 +53,21 @@ namespace IRServer.Plugin
           _disableAutomaticButtons = false;
           _disableMceServices = true;
 
-          _enableKeyboardInput = false;
+          EnableKeyboardInput = false;
 
-          _enableMouseInput = false;
-          _enableRemoteInput = true;
-          _handleKeyboardLocally = true;
-          _handleMouseLocally = true;
-          _keyboardFirstRepeat = 350;
-          _keyboardHeldRepeats = 0;
-          _learnTimeout = 10000;
-          _mouseSensitivity = 1.0d;
-          _remoteFirstRepeat = 400;
-          _remoteHeldRepeats = 250;
-          _useQwertzLayout = false;
-          _useSystemRatesKeyboard = true;
-          _useSystemRatesRemote = false;
+          EnableMouseInput = false;
+          EnableRemoteInput = true;
+          HandleKeyboardLocally = true;
+          HandleMouseLocally = true;
+          KeyboardFirstRepeat = 350;
+          KeyboardHeldRepeats = 0;
+          LearnTimeout = 10000;
+          MouseSensitivity = 1.0d;
+          RemoteFirstRepeat = 400;
+          RemoteHeldRepeats = 250;
+          UseQwertzLayout = false;
+          UseSystemRatesKeyboard = true;
+          UseSystemRatesRemote = false;
           return true;
         }
         catch

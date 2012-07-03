@@ -216,46 +216,46 @@ namespace IRServer.Plugin
 
       ConfigurationDialog configDialog = new ConfigurationDialog();
 
-      configDialog.LearnTimeout = _config._learnTimeout;
+      configDialog.LearnTimeout = _config.LearnTimeout;
       configDialog.DisableMceServices = _config._disableMceServices;
 
-      configDialog.EnableRemote = _config._enableRemoteInput;
-      configDialog.UseSystemRatesForRemote = _config._useSystemRatesRemote;
-      configDialog.RemoteRepeatDelay = _config._remoteFirstRepeat;
-      configDialog.RemoteHeldDelay = _config._remoteHeldRepeats;
+      configDialog.EnableRemote = _config.EnableRemoteInput;
+      configDialog.UseSystemRatesForRemote = _config.UseSystemRatesRemote;
+      configDialog.RemoteRepeatDelay = _config.RemoteFirstRepeat;
+      configDialog.RemoteHeldDelay = _config.RemoteHeldRepeats;
       configDialog.DisableAutomaticButtons = _config._disableAutomaticButtons;
 
-      configDialog.EnableKeyboard = _config._enableKeyboardInput;
-      configDialog.UseSystemRatesForKeyboard = _config._useSystemRatesKeyboard;
-      configDialog.KeyboardRepeatDelay = _config._keyboardFirstRepeat;
-      configDialog.KeyboardHeldDelay = _config._keyboardHeldRepeats;
-      configDialog.HandleKeyboardLocal = _config._handleKeyboardLocally;
-      configDialog.UseQwertzLayout = _config._useQwertzLayout;
+      configDialog.EnableKeyboard = _config.EnableKeyboardInput;
+      configDialog.UseSystemRatesForKeyboard = _config.UseSystemRatesKeyboard;
+      configDialog.KeyboardRepeatDelay = _config.KeyboardFirstRepeat;
+      configDialog.KeyboardHeldDelay = _config.KeyboardHeldRepeats;
+      configDialog.HandleKeyboardLocal = _config.HandleKeyboardLocally;
+      configDialog.UseQwertzLayout = _config.UseQwertzLayout;
 
-      configDialog.EnableMouse = _config._enableMouseInput;
-      configDialog.HandleMouseLocal = _config._handleMouseLocally;
-      configDialog.MouseSensitivity = _config._mouseSensitivity;
+      configDialog.EnableMouse = _config.EnableMouseInput;
+      configDialog.HandleMouseLocal = _config.HandleMouseLocally;
+      configDialog.MouseSensitivity = _config.MouseSensitivity;
 
       if (configDialog.ShowDialog(owner) == DialogResult.OK)
       {
-        _config._learnTimeout = configDialog.LearnTimeout;
+        _config.LearnTimeout = configDialog.LearnTimeout;
         _config._disableMceServices = configDialog.DisableMceServices;
 
-        _config._enableRemoteInput = configDialog.EnableRemote;
-        _config._useSystemRatesRemote = configDialog.UseSystemRatesForRemote;
-        _config._remoteFirstRepeat = configDialog.RemoteRepeatDelay;
-        _config._remoteHeldRepeats = configDialog.RemoteHeldDelay;
+        _config.EnableRemoteInput = configDialog.EnableRemote;
+        _config.UseSystemRatesRemote = configDialog.UseSystemRatesForRemote;
+        _config.RemoteFirstRepeat = configDialog.RemoteRepeatDelay;
+        _config.RemoteHeldRepeats = configDialog.RemoteHeldDelay;
         _config._disableAutomaticButtons = configDialog.DisableAutomaticButtons;
 
-        _config._enableKeyboardInput = configDialog.EnableKeyboard;
-        _config._useSystemRatesKeyboard = configDialog.UseSystemRatesForKeyboard;
-        _config._keyboardFirstRepeat = configDialog.KeyboardRepeatDelay;
-        _config._keyboardHeldRepeats = configDialog.KeyboardHeldDelay;
-        _config._handleKeyboardLocally = configDialog.HandleKeyboardLocal;
+        _config.EnableKeyboardInput = configDialog.EnableKeyboard;
+        _config.UseSystemRatesKeyboard = configDialog.UseSystemRatesForKeyboard;
+        _config.KeyboardFirstRepeat = configDialog.KeyboardRepeatDelay;
+        _config.KeyboardHeldRepeats = configDialog.KeyboardHeldDelay;
+        _config.HandleKeyboardLocally = configDialog.HandleKeyboardLocal;
 
-        _config._enableMouseInput = configDialog.EnableMouse;
-        _config._handleMouseLocally = configDialog.HandleMouseLocal;
-        _config._mouseSensitivity = configDialog.MouseSensitivity;
+        _config.EnableMouseInput = configDialog.EnableMouse;
+        _config.HandleMouseLocally = configDialog.HandleMouseLocal;
+        _config.MouseSensitivity = configDialog.MouseSensitivity;
 
         ConfigManagement.SaveSettings(_config);
       }
@@ -303,7 +303,7 @@ namespace IRServer.Plugin
     {
       IrCode code;
 
-      LearnStatus status = _driver.Learn(_config._learnTimeout, out code);
+      LearnStatus status = _driver.Learn(_config.LearnTimeout, out code);
 
       if (code != null)
         data = code.ToByteArray();

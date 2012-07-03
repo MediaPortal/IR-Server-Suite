@@ -116,7 +116,7 @@ namespace IRServer.Plugin
       Trace.WriteLine(String.Format("Remote: {0}, {1}, {2}", Enum.GetName(typeof(IrProtocol), codeType), keyCode, firstPress));
 #endif
 
-      if (!_config._enableRemoteInput)
+      if (!_config.EnableRemoteInput)
         return;
 
       if (_ignoreAutomaticButtons && codeType == IrProtocol.RC6_MCE)
@@ -165,9 +165,9 @@ namespace IRServer.Plugin
       {
         TimeSpan timeBetween = DateTime.Now.Subtract(_lastRemoteButtonTime);
 
-        int firstRepeat = _config._remoteFirstRepeat;
-        int heldRepeats = _config._remoteHeldRepeats;
-        if (_config._useSystemRatesRemote)
+        int firstRepeat = _config.RemoteFirstRepeat;
+        int heldRepeats = _config.RemoteHeldRepeats;
+        if (_config.UseSystemRatesRemote)
         {
           firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
           heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
@@ -213,12 +213,12 @@ namespace IRServer.Plugin
       Trace.WriteLine(String.Format("Keyboard: {0}, {1}", keyCode, modifiers));
 #endif
 
-      if (!_config._enableKeyboardInput)
+      if (!_config.EnableKeyboardInput)
         return;
 
       if (keyCode != _lastKeyboardKeyCode && modifiers == _lastKeyboardModifiers)
       {
-        if (_config._handleKeyboardLocally)
+        if (_config.HandleKeyboardLocally)
         {
           KeyUp(_lastKeyboardKeyCode, 0);
           KeyDown(keyCode, 0);
@@ -236,7 +236,7 @@ namespace IRServer.Plugin
         uint turnOff = _lastKeyboardModifiers & ~modifiers;
         uint turnOn = modifiers & ~_lastKeyboardModifiers;
 
-        if (_config._handleKeyboardLocally)
+        if (_config.HandleKeyboardLocally)
         {
           KeyUp(0, turnOff);
           KeyDown(0, turnOn);
@@ -254,7 +254,7 @@ namespace IRServer.Plugin
         uint turnOff = _lastKeyboardModifiers & ~modifiers;
         uint turnOn = modifiers & ~_lastKeyboardModifiers;
 
-        if (_config._handleKeyboardLocally)
+        if (_config.HandleKeyboardLocally)
         {
           KeyUp(_lastKeyboardKeyCode, turnOff);
           KeyDown(keyCode, turnOn);
@@ -272,9 +272,9 @@ namespace IRServer.Plugin
         // Repeats ...
         TimeSpan timeBetween = DateTime.Now.Subtract(_lastKeyboardKeyTime);
 
-        int firstRepeat = _config._keyboardFirstRepeat;
-        int heldRepeats = _config._keyboardHeldRepeats;
-        if (_config._useSystemRatesRemote)
+        int firstRepeat = _config.KeyboardFirstRepeat;
+        int heldRepeats = _config.KeyboardHeldRepeats;
+        if (_config.UseSystemRatesRemote)
         {
           firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
           heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
@@ -291,7 +291,7 @@ namespace IRServer.Plugin
         else
           _keyboardKeyRepeated = true;
 
-        if (_config._handleKeyboardLocally)
+        if (_config.HandleKeyboardLocally)
           KeyDown(keyCode, modifiers);
         else
           KeyDownRemote(keyCode, modifiers);
@@ -309,7 +309,7 @@ namespace IRServer.Plugin
       Trace.WriteLine(String.Format("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left));
 #endif
 
-      if (!_config._enableMouseInput)
+      if (!_config.EnableMouseInput)
         return;
 
       #region Buttons
@@ -350,7 +350,7 @@ namespace IRServer.Plugin
 
       if (buttons != Mouse.MouseEvents.None)
       {
-        if (_config._handleMouseLocally)
+        if (_config.HandleMouseLocally)
           Mouse.Button(buttons);
       }
 
@@ -358,18 +358,18 @@ namespace IRServer.Plugin
 
       #region Movement Delta
 
-      deltaX = (int)(deltaX * _config._mouseSensitivity);
-      deltaY = (int)(deltaY * _config._mouseSensitivity);
+      deltaX = (int)(deltaX * _config.MouseSensitivity);
+      deltaY = (int)(deltaY * _config.MouseSensitivity);
 
       if (deltaX != 0 || deltaY != 0)
       {
-        if (_config._handleMouseLocally)
+        if (_config.HandleMouseLocally)
           Mouse.Move(deltaX, deltaY, false);
       }
 
       #endregion Movement Delta
 
-      if (!_config._handleMouseLocally)
+      if (!_config.HandleMouseLocally)
         MouseCallback(Name, deltaX, deltaY, (int) buttons);
     }
 
@@ -633,9 +633,9 @@ namespace IRServer.Plugin
         case 0x1B:
           return Keyboard.VKey.VK_X;
         case 0x1C:
-          return _config._useQwertzLayout ? Keyboard.VKey.VK_Z : Keyboard.VKey.VK_Y;
+          return _config.UseQwertzLayout ? Keyboard.VKey.VK_Z : Keyboard.VKey.VK_Y;
         case 0x1D:
-          return _config._useQwertzLayout ? Keyboard.VKey.VK_Y : Keyboard.VKey.VK_Z;
+          return _config.UseQwertzLayout ? Keyboard.VKey.VK_Y : Keyboard.VKey.VK_Z;
         case 0x1E:
           return Keyboard.VKey.VK_1;
         case 0x1F:
