@@ -35,19 +35,20 @@ namespace IRServer.Plugin
       {
         Debug.WriteLine("LoadSettings()");
         XmlSerializer ser = new XmlSerializer(typeof (Config));
-        StreamReader sr = new StreamReader(ConfigurationFile);
+        StreamReader sr = null;
 
         try
         {
-          config = (Config) ser.Deserialize(sr);
+          sr = new StreamReader(ConfigurationFile);
+          config = (Config)ser.Deserialize(sr);
         }
         catch (Exception ex)
         {
           Debug.WriteLine(ex.ToString());
           config = new Config();
         }
-
-        sr.Close();
+        if (sr != null)
+          sr.Close();
       }
 
       /// <summary>
