@@ -25,7 +25,7 @@ using System.Windows.Forms;
 
 namespace IRServer.Plugin
 {
-  internal partial class Configure : Form
+  internal partial class ConfigurationDialog : Form
   {
     #region Properties
 
@@ -130,9 +130,9 @@ namespace IRServer.Plugin
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Configure"/> class.
+    /// Initializes a new instance of the <see cref="ConfigurationDialog"/> class.
     /// </summary>
-    public Configure()
+    public ConfigurationDialog()
     {
       InitializeComponent();
       this.Icon = Properties.Resources.Icon;

@@ -1,6 +1,6 @@
 namespace IRServer.Plugin
 {
-  partial class Configure
+  partial class ConfigurationDialog
   {
     /// <summary>
     /// Required designer variable.

@@ -35,7 +35,6 @@ using Microsoft.Win32;
 
 namespace IRServer.Plugin
 {
-
   #region Enumerations
 
   /// <summary>
@@ -68,8 +67,7 @@ namespace IRServer.Plugin
   /// <summary>
   /// IR Server Plugin for Microsoft MCE Transceiver device.
   /// </summary>
-  public class MicrosoftMceTransceiver : PluginBase, IConfigure, ITransmitIR, ILearnIR, IRemoteReceiver,
-                                         IKeyboardReceiver, IMouseReceiver
+  public partial class MicrosoftMceTransceiver
   {
     #region Constants
 
@@ -90,32 +88,10 @@ namespace IRServer.Plugin
 
     #region Variables
 
-    #region Configuration
-
-    private bool _disableAutomaticButtons;
-    private bool _disableMceServices = true;
-
-    private bool _enableKeyboardInput;
-
-    private bool _enableMouseInput;
-    private bool _enableRemoteInput = true;
-    private bool _handleKeyboardLocally = true;
-    private bool _handleMouseLocally = true;
-    private int _keyboardFirstRepeat = 350;
-    private int _keyboardHeldRepeats;
-    private int _learnTimeout = 10000;
-    private double _mouseSensitivity = 1.0d;
-    private int _remoteFirstRepeat = 400;
-    private int _remoteHeldRepeats = 250;
-    private bool _useQwertzLayout;
-    private bool _useSystemRatesKeyboard = true;
-    private bool _useSystemRatesRemote;
-
-    #endregion Configuration
+    private Config _config;
 
     private Driver _driver;
     private bool _ignoreAutomaticButtons;
-    private KeyboardHandler _keyboardHandler;
 
     private bool _keyboardKeyRepeated;
 
@@ -128,530 +104,11 @@ namespace IRServer.Plugin
 
     private Mouse.MouseEvents _mouseButtons = Mouse.MouseEvents.None;
 
-    private MouseHandler _mouseHandler;
     private bool _remoteButtonRepeated;
-    private RemoteHandler _remoteHandler;
 
     #endregion Variables
 
     #region Implementation
-
-    /// <summary>
-    /// Name of the IR Server plugin.
-    /// </summary>
-    public override string Name
-    {
-      get { return "Microsoft MCE"; }
-    }
-
-    /// <summary>
-    /// IR Server plugin version.
-    /// </summary>
-    public override string Version
-    {
-      get { return "1.4.2.0"; }
-    }
-
-    /// <summary>
-    /// The IR Server plugin's author.
-    /// </summary>
-    public override string Author
-    {
-      get { return "and-81, inspired by Bruno Fleurette"; }
-    }
-
-    /// <summary>
-    /// A description of the IR Server plugin.
-    /// </summary>
-    public override string Description
-    {
-      get { return "Microsoft MCE Infrared Transceiver"; }
-    }
-
-    /// <summary>
-    /// Gets a display icon for the plugin.
-    /// </summary>
-    /// <value>The icon.</value>
-    public override Icon DeviceIcon
-    {
-      get { return Resources.Icon; }
-    }
-
-    #region IConfigure Members
-
-    /// <summary>
-    /// Configure the IR Server plugin.
-    /// </summary>
-    public void Configure(IWin32Window owner)
-    {
-      LoadSettings();
-
-      Configure config = new Configure();
-
-      config.LearnTimeout = _learnTimeout;
-      config.DisableMceServices = _disableMceServices;
-
-      config.EnableRemote = _enableRemoteInput;
-      config.UseSystemRatesForRemote = _useSystemRatesRemote;
-      config.RemoteRepeatDelay = _remoteFirstRepeat;
-      config.RemoteHeldDelay = _remoteHeldRepeats;
-      config.DisableAutomaticButtons = _disableAutomaticButtons;
-
-      config.EnableKeyboard = _enableKeyboardInput;
-      config.UseSystemRatesForKeyboard = _useSystemRatesKeyboard;
-      config.KeyboardRepeatDelay = _keyboardFirstRepeat;
-      config.KeyboardHeldDelay = _keyboardHeldRepeats;
-      config.HandleKeyboardLocal = _handleKeyboardLocally;
-      config.UseQwertzLayout = _useQwertzLayout;
-
-      config.EnableMouse = _enableMouseInput;
-      config.HandleMouseLocal = _handleMouseLocally;
-      config.MouseSensitivity = _mouseSensitivity;
-
-      if (config.ShowDialog(owner) == DialogResult.OK)
-      {
-        _learnTimeout = config.LearnTimeout;
-        _disableMceServices = config.DisableMceServices;
-
-        _enableRemoteInput = config.EnableRemote;
-        _useSystemRatesRemote = config.UseSystemRatesForRemote;
-        _remoteFirstRepeat = config.RemoteRepeatDelay;
-        _remoteHeldRepeats = config.RemoteHeldDelay;
-        _disableAutomaticButtons = config.DisableAutomaticButtons;
-
-        _enableKeyboardInput = config.EnableKeyboard;
-        _useSystemRatesKeyboard = config.UseSystemRatesForKeyboard;
-        _keyboardFirstRepeat = config.KeyboardRepeatDelay;
-        _keyboardHeldRepeats = config.KeyboardHeldDelay;
-        _handleKeyboardLocally = config.HandleKeyboardLocal;
-
-        _enableMouseInput = config.EnableMouse;
-        _handleMouseLocally = config.HandleMouseLocal;
-        _mouseSensitivity = config.MouseSensitivity;
-
-        SaveSettings();
-      }
-    }
-
-    #endregion
-
-    #region IKeyboardReceiver Members
-
-    /// <summary>
-    /// Callback for keyboard presses.
-    /// </summary>
-    public KeyboardHandler KeyboardCallback
-    {
-      get { return _keyboardHandler; }
-      set { _keyboardHandler = value; }
-    }
-
-    #endregion
-
-    #region ILearnIR Members
-
-    /// <summary>
-    /// Learn an infrared command.
-    /// </summary>
-    /// <param name="data">New infrared command.</param>
-    /// <returns>
-    /// Tells the calling code if the learn was Successful, Failed or Timed Out.
-    /// </returns>
-    public LearnStatus Learn(out byte[] data)
-    {
-      IrCode code;
-
-      LearnStatus status = _driver.Learn(_learnTimeout, out code);
-
-      if (code != null)
-        data = code.ToByteArray();
-      else
-        data = null;
-
-      return status;
-    }
-
-    #endregion
-
-    #region IMouseReceiver Members
-
-    /// <summary>
-    /// Callback for mouse events.
-    /// </summary>
-    public MouseHandler MouseCallback
-    {
-      get { return _mouseHandler; }
-      set { _mouseHandler = value; }
-    }
-
-    #endregion
-
-    #region IRemoteReceiver Members
-
-    /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteHandler; }
-      set { _remoteHandler = value; }
-    }
-
-    #endregion
-
-    #region ITransmitIR Members
-
-    /// <summary>
-    /// Lists the available blaster ports.
-    /// </summary>
-    public string[] AvailablePorts
-    {
-      get { return Enum.GetNames(typeof (BlasterPort)); }
-    }
-
-    /// <summary>
-    /// Transmit an infrared command.
-    /// </summary>
-    /// <param name="port">Port to transmit on.</param>
-    /// <param name="data">Data to transmit.</param>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public bool Transmit(string port, byte[] data)
-    {
-      BlasterPort blasterPort = BlasterPort.Both;
-      try
-      {
-        blasterPort = (BlasterPort) Enum.Parse(typeof (BlasterPort), port, true);
-      }
-      catch
-      {
-#if TRACE
-        Trace.WriteLine(String.Format("Invalid Blaster Port ({0}), using default ({1})", port, blasterPort));
-#endif
-      }
-
-      IrCode code = IrCode.FromByteArray(data);
-
-      if (code == null)
-        throw new ArgumentException("Invalid IR Command data", "data");
-
-      _driver.Send(code, (int) blasterPort);
-
-      return true;
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Detect the presence of this device.
-    /// </summary>
-    public override DetectionResult Detect()
-    {
-      try
-      {
-        Guid deviceGuid;
-        string devicePath;
-
-        if (FindDevice(out deviceGuid, out devicePath))
-        {
-          return DetectionResult.DevicePresent;
-        }
-      }
-      catch(Exception ex)
-      {
-        IrssLog.Error("{0,15}: exception {1}", Name, ex.Message);
-        return DetectionResult.DeviceException;
-      }
-
-      return DetectionResult.DeviceNotFound;
-    }
-
-    /// <summary>
-    /// Start the IR Server plugin.
-    /// </summary>
-    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    public override void Start()
-    {
-#if TRACE
-      Trace.WriteLine("Start MicrosoftMceTransceiver");
-#endif
-
-      if (_driver != null)
-        throw new InvalidOperationException("MicrosoftMceTransceiver already started");
-
-      LoadSettings();
-
-      // Put this in a try...catch so that if the registry keys don't exist we don't throw an ugly exception.
-      try
-      {
-        _ignoreAutomaticButtons = CheckAutomaticButtons();
-      }
-      catch
-      {
-        _ignoreAutomaticButtons = false;
-      }
-
-      if (_disableMceServices)
-        DisableMceServices();
-
-      Guid deviceGuid;
-      string devicePath;
-
-      Driver newDriver = null;
-
-      if (FindDevice(out deviceGuid, out devicePath))
-      {
-        if (deviceGuid == MicrosoftGuid)
-        {
-          if (Environment.OSVersion.Version.Major >= VistaVersionNumber)
-            newDriver = new DriverVista(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
-          else
-            newDriver = new DriverXP(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
-        }
-        else
-        {
-          newDriver = new DriverReplacement(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
-        }
-      }
-      else
-      {
-        throw new InvalidOperationException("Device not found");
-      }
-
-      newDriver.Start();
-
-      _driver = newDriver;
-    }
-
-    /// <summary>
-    /// Suspend the IR Server plugin when computer enters standby.
-    /// </summary>
-    public override void Suspend()
-    {
-#if TRACE
-      Trace.WriteLine("Suspend MicrosoftMceTransceiver");
-#endif
-
-      if (_driver != null)
-        _driver.Suspend();
-    }
-
-    /// <summary>
-    /// Resume the IR Server plugin when the computer returns from standby.
-    /// </summary>
-    public override void Resume()
-    {
-#if TRACE
-      Trace.WriteLine("Resume MicrosoftMceTransceiver");
-#endif
-
-      if (_driver != null)
-        _driver.Resume();
-    }
-
-    /// <summary>
-    /// Stop the IR Server plugin.
-    /// </summary>
-    public override void Stop()
-    {
-#if TRACE
-      Trace.WriteLine("Stop MicrosoftMceTransceiver");
-#endif
-
-      if (_driver != null)
-      {
-        try
-        {
-          _driver.Stop();
-        }
-        finally
-        {
-          _driver = null;
-        }
-      }
-    }
-
-    private void LoadSettings()
-    {
-      XmlDocument doc = new XmlDocument();
-
-      try
-      {
-        doc.Load(ConfigurationFile);
-      }
-      catch
-      {
-        return;
-      }
-
-      try
-      {
-        _learnTimeout = int.Parse(doc.DocumentElement.Attributes["LearnTimeout"].Value, CultureInfo.InvariantCulture);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _disableMceServices = bool.Parse(doc.DocumentElement.Attributes["DisableMceServices"].Value);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        _enableRemoteInput = bool.Parse(doc.DocumentElement.Attributes["EnableRemoteInput"].Value);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _useSystemRatesRemote = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesRemote"].Value);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _remoteFirstRepeat = int.Parse(doc.DocumentElement.Attributes["RemoteFirstRepeat"].Value,
-                                       CultureInfo.InvariantCulture);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _remoteHeldRepeats = int.Parse(doc.DocumentElement.Attributes["RemoteHeldRepeats"].Value,
-                                       CultureInfo.InvariantCulture);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _disableAutomaticButtons = bool.Parse(doc.DocumentElement.Attributes["DisableAutomaticButtons"].Value);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        _enableKeyboardInput = bool.Parse(doc.DocumentElement.Attributes["EnableKeyboardInput"].Value);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _useSystemRatesKeyboard = bool.Parse(doc.DocumentElement.Attributes["UseSystemRatesKeyboard"].Value);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _keyboardFirstRepeat = int.Parse(doc.DocumentElement.Attributes["KeyboardFirstRepeat"].Value,
-                                         CultureInfo.InvariantCulture);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _keyboardHeldRepeats = int.Parse(doc.DocumentElement.Attributes["KeyboardHeldRepeats"].Value,
-                                         CultureInfo.InvariantCulture);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _handleKeyboardLocally = bool.Parse(doc.DocumentElement.Attributes["HandleKeyboardLocally"].Value);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _useQwertzLayout = bool.Parse(doc.DocumentElement.Attributes["UseQwertzLayout"].Value);
-      }
-      catch
-      {
-      }
-
-      try
-      {
-        _enableMouseInput = bool.Parse(doc.DocumentElement.Attributes["EnableMouseInput"].Value);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value);
-      }
-      catch
-      {
-      }
-      try
-      {
-        _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value,
-                                         CultureInfo.InvariantCulture);
-      }
-      catch
-      {
-      }
-    }
-
-    private void SaveSettings()
-    {
-      try
-      {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
-        {
-          writer.Formatting = Formatting.Indented;
-          writer.Indentation = 1;
-          writer.IndentChar = (char) 9;
-          writer.WriteStartDocument(true);
-          writer.WriteStartElement("settings"); // <settings>
-
-          writer.WriteAttributeString("LearnTimeout", _learnTimeout.ToString(CultureInfo.InvariantCulture));
-          writer.WriteAttributeString("DisableMceServices", _disableMceServices.ToString());
-
-          writer.WriteAttributeString("EnableRemoteInput", _enableRemoteInput.ToString());
-          writer.WriteAttributeString("UseSystemRatesRemote", _useSystemRatesRemote.ToString());
-          writer.WriteAttributeString("RemoteFirstRepeat", _remoteFirstRepeat.ToString(CultureInfo.InvariantCulture));
-          writer.WriteAttributeString("RemoteHeldRepeats", _remoteHeldRepeats.ToString(CultureInfo.InvariantCulture));
-          writer.WriteAttributeString("DisableAutomaticButtons", _disableAutomaticButtons.ToString());
-
-          writer.WriteAttributeString("EnableKeyboardInput", _enableKeyboardInput.ToString());
-          writer.WriteAttributeString("UseSystemRatesKeyboard", _useSystemRatesKeyboard.ToString());
-          writer.WriteAttributeString("KeyboardFirstRepeat", _keyboardFirstRepeat.ToString(CultureInfo.InvariantCulture));
-          writer.WriteAttributeString("KeyboardHeldRepeats", _keyboardHeldRepeats.ToString(CultureInfo.InvariantCulture));
-          writer.WriteAttributeString("HandleKeyboardLocally", _handleKeyboardLocally.ToString());
-          writer.WriteAttributeString("UseQwertzLayout", _useQwertzLayout.ToString());
-
-          writer.WriteAttributeString("EnableMouseInput", _enableMouseInput.ToString());
-          writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
-          writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString(CultureInfo.InvariantCulture));
-
-          writer.WriteEndElement(); // </settings>
-          writer.WriteEndDocument();
-        }
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
-    }
 
     private void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
     {
@@ -659,7 +116,7 @@ namespace IRServer.Plugin
       Trace.WriteLine(String.Format("Remote: {0}, {1}, {2}", Enum.GetName(typeof(IrProtocol), codeType), keyCode, firstPress));
 #endif
 
-      if (!_enableRemoteInput)
+      if (!_config._enableRemoteInput)
         return;
 
       if (_ignoreAutomaticButtons && codeType == IrProtocol.RC6_MCE)
@@ -695,7 +152,7 @@ namespace IRServer.Plugin
         }
 
         // Only ignore Start if the services aren't disabled ...
-        if (keyCode == 0x7bf2 && !_disableMceServices)
+        if (keyCode == 0x7bf2 && !_config._disableMceServices)
         {
 #if TRACE
           Trace.WriteLine("Ignoring Start button due to automatic handling and the MCE services being active");
@@ -708,9 +165,9 @@ namespace IRServer.Plugin
       {
         TimeSpan timeBetween = DateTime.Now.Subtract(_lastRemoteButtonTime);
 
-        int firstRepeat = _remoteFirstRepeat;
-        int heldRepeats = _remoteHeldRepeats;
-        if (_useSystemRatesRemote)
+        int firstRepeat = _config._remoteFirstRepeat;
+        int heldRepeats = _config._remoteHeldRepeats;
+        if (_config._useSystemRatesRemote)
         {
           firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
           heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
@@ -746,8 +203,8 @@ namespace IRServer.Plugin
 
       _lastRemoteButtonTime = DateTime.Now;
 
-      if (_remoteHandler != null)
-        _remoteHandler(Name, keyCode.ToString());
+      if (RemoteCallback != null)
+        RemoteCallback(Name, keyCode.ToString());
     }
 
     private void KeyboardEvent(uint keyCode, uint modifiers)
@@ -756,12 +213,12 @@ namespace IRServer.Plugin
       Trace.WriteLine(String.Format("Keyboard: {0}, {1}", keyCode, modifiers));
 #endif
 
-      if (!_enableKeyboardInput)
+      if (!_config._enableKeyboardInput)
         return;
 
       if (keyCode != _lastKeyboardKeyCode && modifiers == _lastKeyboardModifiers)
       {
-        if (_handleKeyboardLocally)
+        if (_config._handleKeyboardLocally)
         {
           KeyUp(_lastKeyboardKeyCode, 0);
           KeyDown(keyCode, 0);
@@ -779,7 +236,7 @@ namespace IRServer.Plugin
         uint turnOff = _lastKeyboardModifiers & ~modifiers;
         uint turnOn = modifiers & ~_lastKeyboardModifiers;
 
-        if (_handleKeyboardLocally)
+        if (_config._handleKeyboardLocally)
         {
           KeyUp(0, turnOff);
           KeyDown(0, turnOn);
@@ -797,7 +254,7 @@ namespace IRServer.Plugin
         uint turnOff = _lastKeyboardModifiers & ~modifiers;
         uint turnOn = modifiers & ~_lastKeyboardModifiers;
 
-        if (_handleKeyboardLocally)
+        if (_config._handleKeyboardLocally)
         {
           KeyUp(_lastKeyboardKeyCode, turnOff);
           KeyDown(keyCode, turnOn);
@@ -815,9 +272,9 @@ namespace IRServer.Plugin
         // Repeats ...
         TimeSpan timeBetween = DateTime.Now.Subtract(_lastKeyboardKeyTime);
 
-        int firstRepeat = _keyboardFirstRepeat;
-        int heldRepeats = _keyboardHeldRepeats;
-        if (_useSystemRatesRemote)
+        int firstRepeat = _config._keyboardFirstRepeat;
+        int heldRepeats = _config._keyboardHeldRepeats;
+        if (_config._useSystemRatesRemote)
         {
           firstRepeat = 250 + (SystemInformation.KeyboardDelay * 250);
           heldRepeats = (int) (1000.0 / (2.5 + (SystemInformation.KeyboardSpeed * 0.888)));
@@ -834,7 +291,7 @@ namespace IRServer.Plugin
         else
           _keyboardKeyRepeated = true;
 
-        if (_handleKeyboardLocally)
+        if (_config._handleKeyboardLocally)
           KeyDown(keyCode, modifiers);
         else
           KeyDownRemote(keyCode, modifiers);
@@ -852,7 +309,7 @@ namespace IRServer.Plugin
       Trace.WriteLine(String.Format("Mouse: DX {0}, DY {1}, Right: {2}, Left: {3}", deltaX, deltaY, right, left));
 #endif
 
-      if (!_enableMouseInput)
+      if (!_config._enableMouseInput)
         return;
 
       #region Buttons
@@ -893,7 +350,7 @@ namespace IRServer.Plugin
 
       if (buttons != Mouse.MouseEvents.None)
       {
-        if (_handleMouseLocally)
+        if (_config._handleMouseLocally)
           Mouse.Button(buttons);
       }
 
@@ -901,84 +358,84 @@ namespace IRServer.Plugin
 
       #region Movement Delta
 
-      deltaX = (int) (deltaX * _mouseSensitivity);
-      deltaY = (int) (deltaY * _mouseSensitivity);
+      deltaX = (int)(deltaX * _config._mouseSensitivity);
+      deltaY = (int)(deltaY * _config._mouseSensitivity);
 
       if (deltaX != 0 || deltaY != 0)
       {
-        if (_handleMouseLocally)
+        if (_config._handleMouseLocally)
           Mouse.Move(deltaX, deltaY, false);
       }
 
       #endregion Movement Delta
 
-      if (!_handleMouseLocally)
-        _mouseHandler(Name, deltaX, deltaY, (int) buttons);
+      if (!_config._handleMouseLocally)
+        MouseCallback(Name, deltaX, deltaY, (int) buttons);
     }
 
     private void KeyUpRemote(uint keyCode, uint modifiers)
     {
-      if (_keyboardHandler == null)
+      if (KeyboardCallback == null)
         return;
 
       if (keyCode != 0)
       {
         Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
-        _keyboardHandler(Name, (int) vKey, true);
+        KeyboardCallback(Name, (int) vKey, true);
       }
 
       if (modifiers != 0)
       {
         if ((modifiers & (uint) KeyModifiers.LeftAlt) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_LMENU, true);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_LMENU, true);
         if ((modifiers & (uint) KeyModifiers.LeftControl) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_LCONTROL, true);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_LCONTROL, true);
         if ((modifiers & (uint) KeyModifiers.LeftShift) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_LSHIFT, true);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_LSHIFT, true);
         if ((modifiers & (uint) KeyModifiers.LeftWin) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_LWIN, true);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_LWIN, true);
 
         if ((modifiers & (uint) KeyModifiers.RightAlt) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_RMENU, true);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_RMENU, true);
         if ((modifiers & (uint) KeyModifiers.RightControl) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_RCONTROL, true);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_RCONTROL, true);
         if ((modifiers & (uint) KeyModifiers.RightShift) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_RSHIFT, true);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_RSHIFT, true);
         if ((modifiers & (uint) KeyModifiers.RightWin) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_RWIN, true);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_RWIN, true);
       }
     }
 
     private void KeyDownRemote(uint keyCode, uint modifiers)
     {
-      if (_keyboardHandler == null)
+      if (KeyboardCallback == null)
         return;
 
       if (modifiers != 0)
       {
         if ((modifiers & (uint) KeyModifiers.LeftAlt) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_LMENU, false);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_LMENU, false);
         if ((modifiers & (uint) KeyModifiers.LeftControl) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_LCONTROL, false);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_LCONTROL, false);
         if ((modifiers & (uint) KeyModifiers.LeftShift) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_LSHIFT, false);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_LSHIFT, false);
         if ((modifiers & (uint) KeyModifiers.LeftWin) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_LWIN, false);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_LWIN, false);
 
         if ((modifiers & (uint) KeyModifiers.RightAlt) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_RMENU, false);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_RMENU, false);
         if ((modifiers & (uint) KeyModifiers.RightControl) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_RCONTROL, false);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_RCONTROL, false);
         if ((modifiers & (uint) KeyModifiers.RightShift) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_RSHIFT, false);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_RSHIFT, false);
         if ((modifiers & (uint) KeyModifiers.RightWin) != 0)
-          _keyboardHandler(Name, (int) Keyboard.VKey.VK_RWIN, false);
+          KeyboardCallback(Name, (int) Keyboard.VKey.VK_RWIN, false);
       }
 
       if (keyCode != 0)
       {
         Keyboard.VKey vKey = ConvertMceKeyCodeToVKey(keyCode);
-        _keyboardHandler(Name, (int) vKey, false);
+        KeyboardCallback(Name, (int) vKey, false);
       }
     }
 
@@ -1176,9 +633,9 @@ namespace IRServer.Plugin
         case 0x1B:
           return Keyboard.VKey.VK_X;
         case 0x1C:
-          return _useQwertzLayout ? Keyboard.VKey.VK_Z : Keyboard.VKey.VK_Y;
+          return _config._useQwertzLayout ? Keyboard.VKey.VK_Z : Keyboard.VKey.VK_Y;
         case 0x1D:
-          return _useQwertzLayout ? Keyboard.VKey.VK_Y : Keyboard.VKey.VK_Z;
+          return _config._useQwertzLayout ? Keyboard.VKey.VK_Y : Keyboard.VKey.VK_Z;
         case 0x1E:
           return Keyboard.VKey.VK_1;
         case 0x1F:
