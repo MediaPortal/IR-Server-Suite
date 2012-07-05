@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using IRServer.Plugin.Properties;
 using System.Windows.Forms;
 using System.Drawing;
