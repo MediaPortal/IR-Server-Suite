@@ -42,8 +42,8 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
   /// <summary>
   /// MediaPortal Blast Zone Plugin for IR Server.
   /// </summary>
-  [PluginIcons("MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGreen.gif",
-    "MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGray.gif")]
+  [PluginIcons("MediaPortal.Plugins.IRSS.MPBlastZonePlugin.iconGreen.gif",
+    "MediaPortal.Plugins.IRSS.MPBlastZonePlugin.iconGray.gif")]
   public class MPBlastZonePlugin : GUIWindow, ISetupForm
   {
     #region Skin Elements

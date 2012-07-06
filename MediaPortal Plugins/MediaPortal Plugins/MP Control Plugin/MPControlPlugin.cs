@@ -45,8 +45,8 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
   /// <summary>
   /// MediaPortal Control Plugin for IR Server.
   /// </summary>
-  [PluginIcons("MediaPortal.Plugins.MPControlPlugin.IRSS.iconGreen.gif",
-    "MediaPortal.Plugins.MPControlPlugin.IRSS.iconGray.gif")]
+  [PluginIcons("MediaPortal.Plugins.IRSS.MPControlPlugin.iconGreen.gif",
+    "MediaPortal.Plugins.IRSS.MPControlPlugin.iconGray.gif")]
   public class MPControlPlugin : IPlugin, ISetupForm
   {
     #region Constants
