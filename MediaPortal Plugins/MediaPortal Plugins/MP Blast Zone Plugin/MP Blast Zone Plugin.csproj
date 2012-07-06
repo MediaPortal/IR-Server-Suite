@@ -8,7 +8,7 @@
     <ProjectGuid>{907DCA39-A5E0-4EFA-B1F6-5FBE2C1BCD25}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MediaPortal.Plugins.MPBlastZonePlugin.IRSS</RootNamespace>
+    <RootNamespace>MediaPortal.Plugins.IRSS.MPBlastZonePlugin</RootNamespace>
     <AssemblyName>MPBlastZonePlugin</AssemblyName>
     <StartupObject>
     </StartupObject>

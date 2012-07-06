@@ -32,18 +32,18 @@ using IrssUtils;
 using IrssUtils.Forms;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
+using MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms;
 using MediaPortal.Profile;
 using MPUtils;
 using Action = MediaPortal.GUI.Library.Action;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
 {
-  [PluginIcons("MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGreen.gif",
-    "MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGray.gif")]
-
   /// <summary>
   /// MediaPortal Blast Zone Plugin for IR Server.
   /// </summary>
+  [PluginIcons("MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGreen.gif",
+    "MediaPortal.Plugins.MPBlastZonePlugin.IRSS.iconGray.gif")]
   public class MPBlastZonePlugin : GUIWindow, ISetupForm
   {
     #region Skin Elements

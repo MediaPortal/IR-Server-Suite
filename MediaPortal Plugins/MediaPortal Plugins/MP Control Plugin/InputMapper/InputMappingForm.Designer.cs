@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using MediaPortal.UserInterface.Controls;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
 {
   partial class InputMappingForm
   {

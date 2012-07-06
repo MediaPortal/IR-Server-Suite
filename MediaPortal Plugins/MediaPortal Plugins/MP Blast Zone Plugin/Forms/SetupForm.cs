@@ -31,7 +31,7 @@ using IrssUtils.Forms;
 using MediaPortal.GUI.Library;
 using MPUtils.Forms;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
 {
   internal partial class SetupForm : Form
   {

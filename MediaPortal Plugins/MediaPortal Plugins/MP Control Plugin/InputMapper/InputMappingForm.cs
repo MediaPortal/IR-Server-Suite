@@ -29,14 +29,13 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using IrssUtils;
 using IrssUtils.Forms;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.UserInterface.Controls;
 using Action = MediaPortal.GUI.Library.Action;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
 {
   ///<summary>
   /// 

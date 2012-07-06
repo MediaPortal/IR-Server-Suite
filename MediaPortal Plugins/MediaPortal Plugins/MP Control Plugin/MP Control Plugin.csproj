@@ -8,7 +8,7 @@
     <ProjectGuid>{E8BEBBCC-1EE0-488D-8806-98ADCB7F0479}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MediaPortal.Plugins.MPControlPlugin.IRSS</RootNamespace>
+    <RootNamespace>MediaPortal.Plugins.IRSS.MPControlPlugin</RootNamespace>
     <AssemblyName>MPControlPlugin</AssemblyName>
     <StartupObject>
     </StartupObject>

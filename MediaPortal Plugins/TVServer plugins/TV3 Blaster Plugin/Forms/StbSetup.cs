@@ -31,7 +31,7 @@ using MPUtils;
 using TvDatabase;
 using TvLibrary.Log;
 
-namespace TvEngine
+namespace TvEngine.Plugins.IRSS.TV3BlasterPlugin.Forms
 {
   internal partial class StbSetup : UserControl
   {

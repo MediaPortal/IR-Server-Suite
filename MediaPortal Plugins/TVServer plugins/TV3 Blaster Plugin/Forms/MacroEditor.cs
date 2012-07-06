@@ -29,7 +29,7 @@ using IrssUtils.Exceptions;
 using IrssUtils.Forms;
 using TvLibrary.Log;
 
-namespace TvEngine.Forms
+namespace TvEngine.Plugins.IRSS.TV3BlasterPlugin.Forms
 {
   internal partial class MacroEditor : Form
   {

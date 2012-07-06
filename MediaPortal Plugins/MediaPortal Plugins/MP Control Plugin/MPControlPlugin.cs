@@ -34,18 +34,19 @@ using IrssUtils.Forms;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Hardware;
+using MediaPortal.Plugins.IRSS.MPControlPlugin.Forms;
+using MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper;
 using MediaPortal.Profile;
 using Microsoft.Win32;
 using MPUtils;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin
 {
+  /// <summary>
+  /// MediaPortal Control Plugin for IR Server.
+  /// </summary>
   [PluginIcons("MediaPortal.Plugins.MPControlPlugin.IRSS.iconGreen.gif",
     "MediaPortal.Plugins.MPControlPlugin.IRSS.iconGray.gif")]
-
-  /// <summary>
-    /// MediaPortal Control Plugin for IR Server.
-    /// </summary>
   public class MPControlPlugin : IPlugin, ISetupForm
   {
     #region Constants

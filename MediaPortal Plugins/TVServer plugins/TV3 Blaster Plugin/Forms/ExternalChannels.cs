@@ -28,7 +28,7 @@ using System.Windows.Forms;
 using IrssUtils;
 using TvDatabase;
 
-namespace TvEngine
+namespace TvEngine.Plugins.IRSS.TV3BlasterPlugin.Forms
 {
   internal partial class ExternalChannels : Form
   {

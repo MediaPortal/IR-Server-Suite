@@ -34,8 +34,9 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Hardware;
 using MPUtils;
 using MPUtils.Forms;
+using MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
 {
   internal partial class SetupForm : Form
   {

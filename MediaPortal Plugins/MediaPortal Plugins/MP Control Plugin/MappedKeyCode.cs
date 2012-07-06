@@ -23,7 +23,7 @@
 using System;
 using MediaPortal.Hardware;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin
 {
   internal class MappedKeyCode
   {

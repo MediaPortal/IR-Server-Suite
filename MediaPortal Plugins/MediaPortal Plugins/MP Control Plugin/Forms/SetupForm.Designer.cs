@@ -1,4 +1,4 @@
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
 {
   partial class SetupForm
   {
