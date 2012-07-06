@@ -34,7 +34,7 @@ using MediaPortal.Common.Utils;
 [assembly: CLSCompliant(true)]
 [assembly: NeutralResourcesLanguage("en")]
 
-[assembly: CompatibleVersion("1.1.6.27644")]
+[assembly: CompatibleVersion("1.2.100.0", "1.1.6.27644")]
 [assembly: UsesSubsystem("MP.SkinEngine.Core")]
 [assembly: UsesSubsystem("MP.SkinEngine.Controls")]
 //[assembly: UsesSubsystem("MP.Utils.Log")]
