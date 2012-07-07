@@ -11,7 +11,6 @@
     <RootNamespace>IrssScheduler</RootNamespace>
     <AssemblyName>IrssScheduler</AssemblyName>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
