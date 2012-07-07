@@ -11,7 +11,7 @@
     <RootNamespace>IRServer.Plugin</RootNamespace>
     <AssemblyName>Wii Remote Receiver</AssemblyName>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -76,7 +76,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon.ico" />
+    <Content Include="Resources\Icon.ico" />
     <None Include="WiimoteLib\docs\copyright.txt" />
     <None Include="WiimoteLib\docs\license.txt" />
     <None Include="WiimoteLib\docs\readme.txt" />
