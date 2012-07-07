@@ -26,6 +26,7 @@ using IRServer.Plugin.GamePad;
 using IRServer.Plugin.GamePad.Enums;
 using IrssUtils;
 using SlimDX.DirectInput;
+using System.Windows.Forms;
 
 namespace IRServer.Plugin
 {
