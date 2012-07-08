@@ -283,6 +283,8 @@ namespace IRServer.Plugin
     protected MouseCallback _mouseCallback;
     protected RemoteCallback _remoteCallback;
 
+    protected NotifyWindow _notifyWindow;
+
     #endregion Variables
 
     #region Constructors

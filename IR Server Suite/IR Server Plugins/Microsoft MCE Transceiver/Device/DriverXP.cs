@@ -182,7 +182,6 @@ namespace IRServer.Plugin
     private bool _deviceAvailable;
     private SafeFileHandle _eHomeHandle;
     private IrCode _learningCode;
-    private NotifyWindow _notifyWindow;
 
     private Thread _readThread;
     private ReadThreadMode _readThreadMode;
@@ -220,17 +219,23 @@ namespace IRServer.Plugin
         DebugWriteLine("Device Path: {0}", _devicePath);
         DebugWriteLine("Device Type: {0}", Enum.GetName(typeof (DeviceType), _deviceType));
 
-        _notifyWindow = new NotifyWindow();
-        _notifyWindow.Create();
-        _notifyWindow.Class = _deviceGuid;
-        _notifyWindow.RegisterDeviceArrival();
+        if (!MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent)
+        {
+          _notifyWindow = new NotifyWindow();
+          _notifyWindow.Create();
+          _notifyWindow.Class = _deviceGuid;
+          _notifyWindow.RegisterDeviceArrival();
+        }
 
         OpenDevice();
         StartReadThread();
         InitializeDevice();
 
-        _notifyWindow.DeviceArrival += OnDeviceArrival;
-        _notifyWindow.DeviceRemoval += OnDeviceRemoval;
+        if (!MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent)
+        {
+          _notifyWindow.DeviceArrival += OnDeviceArrival;
+          _notifyWindow.DeviceRemoval += OnDeviceRemoval;
+        }
       }
       catch
       {
@@ -251,8 +256,11 @@ namespace IRServer.Plugin
         if (_eHomeHandle == null)
           throw new InvalidOperationException("Cannot stop, device is not active");
 
-        _notifyWindow.DeviceArrival -= OnDeviceArrival;
-        _notifyWindow.DeviceRemoval -= OnDeviceRemoval;
+        if (!MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent)
+        {
+          _notifyWindow.DeviceArrival -= OnDeviceArrival;
+          _notifyWindow.DeviceRemoval -= OnDeviceRemoval;
+        }
 
         WriteSync(StopPacket);
         StopReadThread();
@@ -265,9 +273,12 @@ namespace IRServer.Plugin
       }
       finally
       {
-        _notifyWindow.UnregisterDeviceArrival();
-        _notifyWindow.Dispose();
-        _notifyWindow = null;
+        if (!MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent)
+        {
+          _notifyWindow.UnregisterDeviceArrival();
+          _notifyWindow.Dispose();
+          _notifyWindow = null;
+        }
 
         DebugClose();
       }
@@ -318,7 +329,8 @@ namespace IRServer.Plugin
         if (_eHomeHandle != null)
           throw new InvalidOperationException("Cannot resume, device is already active");
 
-        //_notifyWindow.RegisterDeviceArrival();
+        //if (!MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent)
+        //  _notifyWindow.RegisterDeviceArrival();
 
         OpenDevice();
         StartReadThread();
@@ -671,12 +683,15 @@ namespace IRServer.Plugin
         throw new Win32Exception(lastError);
       }
 
-      bool success = false;
-      _eHomeHandle.DangerousAddRef(ref success);
-      if (success)
-        _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
-      else
-        DebugWriteLine("Warning: Failed to initialize device removal notification");
+      if (!MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent)
+      {
+        bool success = false;
+        _eHomeHandle.DangerousAddRef(ref success);
+        if (success)
+          _notifyWindow.RegisterDeviceRemoval(_eHomeHandle.DangerousGetHandle());
+        else
+          DebugWriteLine("Warning: Failed to initialize device removal notification");
+      }
 
       _deviceAvailable = true;
     }
@@ -696,7 +711,8 @@ namespace IRServer.Plugin
         return;
       }
 
-      _notifyWindow.UnregisterDeviceRemoval();
+      if (!MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent)
+        _notifyWindow.UnregisterDeviceRemoval();
 
       _eHomeHandle.DangerousRelease();
 

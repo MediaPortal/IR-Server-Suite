@@ -22,6 +22,12 @@ namespace IRServer.Plugin
 {
   public partial class MicrosoftMceTransceiver
   {
+    /// <summary>
+    /// If enabled, the transceiver will be restarted on every usb device, which is being attached to the pc.
+    /// The notifywindow related code is being ignored, if enabled.
+    /// </summary>
+    public static bool RestartTransceiverOnUSBEvent;
+
     public class Config
     {
       public bool _disableAutomaticButtons { get; set; }
@@ -40,6 +46,16 @@ namespace IRServer.Plugin
       public bool UseQwertzLayout { get; set; }
       public bool UseSystemRatesKeyboard { get; set; }
       public bool UseSystemRatesRemote { get; set; }
+
+      /// <summary>
+      /// If enabled, the transceiver will be restarted on every usb device, which is being attached to the pc.
+      /// The notifywindow related code is being ignored, if enabled.
+      /// </summary>
+      public bool RestartTransceiverOnUSBEvent
+      {
+        get { return MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent; }
+        set { MicrosoftMceTransceiver.RestartTransceiverOnUSBEvent = value; }
+      }
 
       public Config()
       {
@@ -68,6 +84,7 @@ namespace IRServer.Plugin
           UseQwertzLayout = false;
           UseSystemRatesKeyboard = true;
           UseSystemRatesRemote = false;
+          RestartTransceiverOnUSBEvent = true;
           return true;
         }
         catch

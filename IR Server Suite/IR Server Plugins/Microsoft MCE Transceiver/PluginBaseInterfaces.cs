@@ -78,6 +78,11 @@ namespace IRServer.Plugin
     /// </summary>
     public override DetectionResult Detect()
     {
+      _config = new Config();
+      ConfigManagement.LoadSettings(ref _config);
+      if (_config.RestartTransceiverOnUSBEvent)
+        return DetectionResult.DeviceIsPlugAndPlay;
+
       try
       {
         Guid deviceGuid;
@@ -126,6 +131,8 @@ namespace IRServer.Plugin
       if (_config._disableMceServices)
         DisableMceServices();
 
+      if (_config.RestartTransceiverOnUSBEvent)
+        RegisterDeviceNotification();
       StartDriver();
     }
 

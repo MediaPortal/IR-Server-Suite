@@ -23,6 +23,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Management;
 using System.ServiceProcess;
 using System.Windows.Forms;
 using IrssUtils;
@@ -152,6 +153,48 @@ namespace IRServer.Plugin
         }
       }
     }
+
+    private void RegisterDeviceNotification()
+    {
+      Debug.WriteLine("MCE Transceiver: Registering device notifications...");
+
+      WqlEventQuery _q = new WqlEventQuery("__InstanceOperationEvent", "TargetInstance ISA 'Win32_USBControllerDevice' ");
+      _q.WithinInterval = TimeSpan.FromSeconds(1);
+      ManagementEventWatcher _w = new ManagementEventWatcher(_q);
+      _w.EventArrived += new EventArrivedEventHandler(onEventArrived);
+      _w.Start();
+    }
+
+    private void onEventArrived(object sender, EventArrivedEventArgs e)
+    {
+      ManagementBaseObject _o = e.NewEvent["TargetInstance"] as ManagementBaseObject;
+      if (_o == null) return;
+
+      ManagementObject mo = new ManagementObject(_o["Dependent"].ToString());
+      if (mo == null) return;
+
+      try
+      {
+        if (mo.GetPropertyValue("DeviceID").ToString() != string.Empty)
+        {
+          //connected
+          Debug.WriteLine("MCE Transceiver: An USB device has been connected");
+          try
+          {
+            StopDriver();
+          }
+          catch (Exception)
+          { }
+          StartDriver();
+        }
+      }
+      catch (ManagementException ex)
+      {
+        //disconnected
+        Debug.WriteLine("MCE Transceiver: An USB device has been disconnected");
+      }
+    }
+
 
     private void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
     {
