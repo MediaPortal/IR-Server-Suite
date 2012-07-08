@@ -38,6 +38,7 @@ using IRServer.Plugin.Properties;
 using IrssUtils;
 using Microsoft.Win32;
 using SlimDX.Multimedia;
+using SlimDX.RawInput;
 
 namespace IRServer.Plugin
 {
@@ -54,6 +55,8 @@ namespace IRServer.Plugin
       public string DeviceID;
       public string VendorID;
       public string ProductID;
+      public ushort Usage;
+      public ushort UsagePage;
     }
 
     #region Constants
@@ -101,6 +104,7 @@ namespace IRServer.Plugin
     private int _heldRepeatDelay;
 
     private bool _remoteButtonRepeated;
+    private List<string> _hidDevices;
     private List<Device> _supportedDevices;
 
     #endregion Variables
@@ -115,8 +119,6 @@ namespace IRServer.Plugin
       _config = new Config();
       ConfigManagement.LoadSettings(ref _config);
 
-      LoadDeviceXml();
-
       _firstRepeatDelay = _config.FirstRepeatDelay;
       _heldRepeatDelay = _config.HeldRepeatDelay;
 
@@ -129,9 +131,10 @@ namespace IRServer.Plugin
       // create receiver Window
       _receiverWindow = new ReceiverWindow("Microsoft MCE Basic");
       _receiverWindow.ProcMsg += ProcMessage;
-
+      Debug.WriteLine((new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94,
+                                                          0xfc, 0x57)).ToString());
       Debug.WriteLine("=================");
-      Debug.WriteLine("slimdx getdevices");
+      Debug.WriteLine("slimdx getdevices all");
       Debug.WriteLine("=================");
       var devList = SlimDX.RawInput.Device.GetDevices().OrderBy(di => di.DeviceName);
       foreach (var deviceInfo in devList)
@@ -139,18 +142,44 @@ namespace IRServer.Plugin
         Debug.WriteLine("name: {0}, type: {1}", deviceInfo.DeviceName, deviceInfo.DeviceType);
       }
 
+      Debug.WriteLine("=================");
+      Debug.WriteLine("slimdx getdevices hid");
+      Debug.WriteLine("=================");
+      _hidDevices = new List<string>();
+      foreach (var deviceInfo in devList.OrderBy(di => di.DeviceName))
+      {
+        SlimDX.RawInput.HidInfo hidInfo = deviceInfo as HidInfo;
+        if (hidInfo == null) continue;
+
+        Debug.WriteLine("name: {0}, type: {1}", hidInfo.DeviceName, hidInfo.DeviceType);
+        Debug.WriteLine("VendorId: {0}, ProductId: {1}, VersionNumber: {2}", hidInfo.VendorId, hidInfo.ProductId, hidInfo.VersionNumber);
+        _hidDevices.Add(hidInfo.DeviceName);
+      }
+
+      Debug.WriteLine("=================");
+      Debug.WriteLine("rawinput enumerate");
+      Debug.WriteLine("=================");
+      foreach (var dev in RawInput.EnumerateDevices().OrderBy(rid => rid.ID))
+      {
+        Debug.WriteLine("ID: {0}, Name: {1}", dev.ID, dev.Name);
+        Debug.WriteLine("Usage: {0}, UsagePage: {1}", dev.Usage, dev.UsagePage);
+      }
+
+      //LoadDeviceFromXml();
+      LoadDevicesFromSystem();
+
       // collect devices
       _deviceList = new List<RawInput.RAWINPUTDEVICE>();
 
-      //foreach (Device device in _supportedDevices)
-      //{
-          RawInput.RAWINPUTDEVICE _device = new RawInput.RAWINPUTDEVICE();
-          _device.usUsage = 0x0001;
-          _device.usUsagePage = 0x000c;
-          _device.dwFlags = RawInput.RawInputDeviceFlags.InputSink;
-          _device.hwndTarget = _receiverWindow.Handle;
-          _deviceList.Add(_device);
-      //}
+      foreach (Device device in _supportedDevices)
+      {
+          RawInput.RAWINPUTDEVICE rid = new RawInput.RAWINPUTDEVICE();
+          rid.usUsage = device.Usage;
+          rid.usUsagePage = device.UsagePage;
+          rid.dwFlags = RawInput.RawInputDeviceFlags.InputSink;
+          rid.hwndTarget = _receiverWindow.Handle;
+          _deviceList.Add(rid);
+      }
 
       if (!RegisterForRawInput(_deviceList.ToArray()))
       {
@@ -161,10 +190,25 @@ namespace IRServer.Plugin
       Debug.WriteLine("Start_Receiver(): completed");
     }
 
-    protected void LoadDeviceXml()
+    protected void LoadDevicesFromSystem()
+    {
+      _supportedDevices = new List<Device>();
+      foreach (var details in RawInput.EnumerateDevices())
+      {
+        if (!_hidDevices.Contains(details.ID)) continue;
+
+        _supportedDevices.Add(new Device()
+                                {
+                                  Usage = details.Usage,
+                                  UsagePage = details.UsagePage
+                                });
+      }
+    }
+
+    protected void LoadDeviceFromXml()
     {
 
-      if (!File.Exists(MCEBasic.eHomeTransceiverList))
+      //if (!File.Exists(MCEBasic.eHomeTransceiverList))
         File.WriteAllText(MCEBasic.eHomeTransceiverList, Resources.eHomeTransceiverList, Encoding.UTF8);
 
 
@@ -180,7 +224,19 @@ namespace IRServer.Plugin
         {
           XmlAttribute name = transceiverNode.Attributes["name"];
           XmlAttribute deviceid = transceiverNode.Attributes["deviceid"];
-          Device d = new Device() { Name = name.Value, DeviceID = deviceid.Value };
+          XmlAttribute vendorid = transceiverNode.Attributes["vendorid"];
+          XmlAttribute productid = transceiverNode.Attributes["productid"];
+          XmlAttribute usage = transceiverNode.Attributes["usage"];
+          XmlAttribute usagePage = transceiverNode.Attributes["usagePage"];
+          Device d = new Device()
+                       {
+                         Name = name.Value,
+                         DeviceID = deviceid.Value,
+                         VendorID = vendorid.Value,
+                         ProductID = productid.Value,
+                         Usage = ushort.Parse(usage.Value),
+                         UsagePage = ushort.Parse(usage.Value)
+                       };
           _supportedDevices.Add(d);
         }
       }
@@ -594,6 +650,7 @@ namespace IRServer.Plugin
               {
                 keyCode += (ulong)newArray[i] << (8 * (i - 1));
               }
+              Debug.WriteLine("RAW KEY CODE: {0}", keyCode);
               if (keyCode != 0)
               {
                 string codeString = string.Format("{0:X2}{1:X6}", newArray[0], keyCode);

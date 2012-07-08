@@ -399,10 +399,7 @@ namespace IRServer.Plugin
         // and retrieving further information on keyboard devices
         for (int i = 0; i < deviceCount; i++)
         {
-          string deviceName;
           uint pcbSize = 0;
-
-          RAWINPUTDEVICELIST rid;
 
           IntPtr location;
           int offset = dwSize*i;
@@ -412,7 +409,7 @@ namespace IRServer.Plugin
           else
             location = new IntPtr(pRawInputDeviceList.ToInt64() + offset);
 
-          rid = (RAWINPUTDEVICELIST) Marshal.PtrToStructure(location, typeof (RAWINPUTDEVICELIST));
+          RAWINPUTDEVICELIST rid = (RAWINPUTDEVICELIST) Marshal.PtrToStructure(location, typeof (RAWINPUTDEVICELIST));
 
           GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICENAME, IntPtr.Zero, ref pcbSize);
 
@@ -420,7 +417,7 @@ namespace IRServer.Plugin
           {
             IntPtr pData = Marshal.AllocHGlobal((int) pcbSize);
             GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICENAME, pData, ref pcbSize);
-            deviceName = Marshal.PtrToStringAnsi(pData);
+            string deviceName = Marshal.PtrToStringAnsi(pData);
 
             // Drop the "root" keyboard and mouse devices used for Terminal Services and the Remote Desktop
             if (deviceName.ToUpperInvariant().Contains("ROOT"))
