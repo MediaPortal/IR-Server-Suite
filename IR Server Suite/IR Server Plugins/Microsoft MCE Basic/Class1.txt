@@ -1,0 +1,38 @@
+﻿2012-07-08 11:31:51.520002 - name: \\?\HID#VID_413C&PID_8158&Col02#7&4dc5346&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.535003 - name: \\?\HID#VID_045E&PID_074F&Col01#6&1057925d&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.537003 - name: \\?\HID#VID_045E&PID_0745&MI_02&Col03#7&1190904c&0&0002#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.538003 - name: \\?\HID#VID_045E&PID_0745&MI_02&Col02#7&1190904c&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.540003 - name: \\?\HID#VID_045E&PID_0745&MI_02&Col01#7&1190904c&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.542003 - name: \\?\HID#VID_045E&PID_0745&MI_01&Col02#7&1246ad76&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+
+
+
+
+2012-07-08 11:31:51.555004 - name: \\?\Root#RDP_KBD#0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.556004 - name: \\?\HID#VID_413C&PID_8157#7&1e264713&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.558004 - name: \\?\HID#VID_045E&PID_0745&MI_00#7&361deb38&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+
+
+2012-07-08 11:31:51.550004 - name: \\?\HID#IrDeviceV2&Col01#2&3ad25118&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.552004 - name: \\?\HID#IrDeviceV2&Col01#2&2bf271a8&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.547004 - name: \\?\HID#IrDeviceV2&Col02#2&3ad25118&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.549004 - name: \\?\HID#IrDeviceV2&Col02#2&2bf271a8&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.543003 - name: \\?\HID#IrDeviceV2&Col03#2&3ad25118&0&0002#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.545004 - name: \\?\HID#IrDeviceV2&Col03#2&2bf271a8&0&0002#{4d1e55b2-f16f-11cf-88cb-001111000030}, type: HumanInputDevice
+2012-07-08 11:31:51.565005 - name: \\?\HID#IrDeviceV2&Col05#2&3ad25118&0&0004#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.567005 - name: \\?\HID#IrDeviceV2&Col05#2&2bf271a8&0&0004#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.562005 - name: \\?\HID#IrDeviceV2&Col06#2&3ad25118&0&0005#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.563005 - name: \\?\HID#IrDeviceV2&Col06#2&2bf271a8&0&0005#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.559004 - name: \\?\HID#IrDeviceV2&Col07#2&3ad25118&0&0006#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.560004 - name: \\?\HID#IrDeviceV2&Col07#2&2bf271a8&0&0006#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.575005 - name: \\?\HID#IrDeviceV2&Col08#2&3ad25118&0&0007#{378de44c-56ef-11d1-bc8c-00a0c91405dd}, type: Mouse
+2012-07-08 11:31:51.576005 - name: \\?\HID#IrDeviceV2&Col08#2&2bf271a8&0&0007#{378de44c-56ef-11d1-bc8c-00a0c91405dd}, type: Mouse
+
+
+2012-07-08 11:31:51.568005 - name: \\?\ACPI#PNP0303#4&8f64972&0#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}, type: Keyboard
+2012-07-08 11:31:51.578005 - name: \\?\ACPI#PNP0F13#4&8f64972&0#{378de44c-56ef-11d1-bc8c-00a0c91405dd}, type: Mouse
+
+2012-07-08 11:31:51.569005 - name: \\?\Root#RDP_MOU#0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}, type: Mouse
+2012-07-08 11:31:51.571005 - name: \\?\HID#VID_413C&PID_8158&Col01#7&4dc5346&0&0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}, type: Mouse
+2012-07-08 11:31:51.572005 - name: \\?\HID#VID_045E&PID_074F&Col02#6&1057925d&0&0001#{378de44c-56ef-11d1-bc8c-00a0c91405dd}, type: Mouse
+2012-07-08 11:31:51.574005 - name: \\?\HID#VID_045E&PID_0745&MI_01&Col01#7&1246ad76&0&0000#{378de44c-56ef-11d1-bc8c-00a0c91405dd}, type: Mouse
