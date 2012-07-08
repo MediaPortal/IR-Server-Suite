@@ -131,24 +131,24 @@ namespace IRServer.Plugin
     public void Configure(IWin32Window owner)
     {
       Debug.WriteLine("Configure()");
-      config = new Config();
-      ConfigManagement.LoadSettings(ref config);
+      _config = new Config();
+      ConfigManagement.LoadSettings(ref _config);
 
       ConfigurationDialog configDialog = new ConfigurationDialog();
 
-      configDialog.DoRepeats = config.DoRepeats;
-      configDialog.UseSystemRatesDelay = config.UseSystemRatesDelay;
-      configDialog.FirstRepeatDelay = config.FirstRepeatDelay;
-      configDialog.HeldRepeatDelay = config.HeldRepeatDelay;
+      configDialog.DoRepeats = _config.DoRepeats;
+      configDialog.UseSystemRatesDelay = _config.UseSystemRatesDelay;
+      configDialog.FirstRepeatDelay = _config.FirstRepeatDelay;
+      configDialog.HeldRepeatDelay = _config.HeldRepeatDelay;
 
       if (configDialog.ShowDialog(owner) == DialogResult.OK)
       {
-        config.DoRepeats = configDialog.DoRepeats;
-        config.UseSystemRatesDelay = configDialog.UseSystemRatesDelay;
-        config.FirstRepeatDelay = configDialog.FirstRepeatDelay;
-        config.HeldRepeatDelay = configDialog.HeldRepeatDelay;
+        _config.DoRepeats = configDialog.DoRepeats;
+        _config.UseSystemRatesDelay = configDialog.UseSystemRatesDelay;
+        _config.FirstRepeatDelay = configDialog.FirstRepeatDelay;
+        _config.HeldRepeatDelay = configDialog.HeldRepeatDelay;
 
-        ConfigManagement.SaveSettings(config);
+        ConfigManagement.SaveSettings(_config);
       }
       Debug.WriteLine("Configure(): Completed");
     }

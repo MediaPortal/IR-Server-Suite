@@ -66,6 +66,7 @@
     <Compile Include="GamePad\GamePadState.cs" />
     <Compile Include="GamePad\GamePadState.Test.cs" />
     <Compile Include="Helper\EnumExtensions.cs" />
+    <Compile Include="TestApplication.cs" />
     <Compile Include="PluginBaseInterfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConfigurationDialog.cs">

@@ -23,8 +23,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Xml;
-using System.Xml.Serialization;
-using System.IO;
 using IrssUtils;
 
 namespace IRServer.Plugin

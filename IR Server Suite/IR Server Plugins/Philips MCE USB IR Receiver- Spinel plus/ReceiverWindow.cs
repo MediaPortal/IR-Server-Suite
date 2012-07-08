@@ -23,7 +23,6 @@ using System.Windows.Forms;
 
 namespace IRServer.Plugin
 {
-
   #region Delegates
 
   /// <summary>
@@ -39,22 +38,12 @@ namespace IRServer.Plugin
   /// </summary>
   internal class ReceiverWindow : NativeWindow
   {
-    #region Variables
-
-    private ProcessMessage _processMessage;
-
-    #endregion Variables
-
     #region Properties
 
     /// <summary>
     /// Gets or Sets the Windows Message processing delegate.
     /// </summary>
-    public ProcessMessage ProcMsg
-    {
-      get { return _processMessage; }
-      set { _processMessage = value; }
-    }
+    public ProcessMessage ProcMsg { get; set; }
 
     #endregion Properties
 
@@ -86,8 +75,8 @@ namespace IRServer.Plugin
 
     protected override void WndProc(ref Message m)
     {
-      if (_processMessage != null)
-        _processMessage(ref m);
+      if (ProcMsg != null)
+        ProcMsg(ref m);
 
       base.WndProc(ref m);
     }

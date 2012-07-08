@@ -37,12 +37,12 @@ namespace IRServer.Plugin
     private class Device
     {
       public string Name;
-      public List<DeviceDetails> deviceDetails;
+      public List<DeviceDetails> DeviceDetails;
     }
 
     private class DeviceDetails
     {
-      public string hwID;
+      public string HwID;
       public ushort UsagePage;
       public ushort Usage;
     }
@@ -59,18 +59,18 @@ namespace IRServer.Plugin
                                                                 new Device()
                                                                   {
                                                                     Name = "Philips MCE USB IR Receiver- Spinel plus",
-                                                                    deviceDetails = new List<DeviceDetails>()
+                                                                    DeviceDetails = new List<DeviceDetails>()
                                                                                       {
                                                                                         new DeviceDetails()
                                                                                           {
-                                                                                            hwID =
+                                                                                            HwID =
                                                                                               "Vid_0471&Pid_20cc&Col03",
                                                                                             UsagePage = 0x000c,
                                                                                             Usage = 0x0001
                                                                                           },
                                                                                         new DeviceDetails()
                                                                                           {
-                                                                                            hwID =
+                                                                                            HwID =
                                                                                               "Vid_0471&Pid_20cc&Col04",
                                                                                             UsagePage = 0xffbc,
                                                                                             Usage = 0x0088
@@ -83,12 +83,12 @@ namespace IRServer.Plugin
 
     #region Global Variables
 
-    private Config config;
+    private Config _config;
     private List<RawInput.RAWINPUTDEVICE> _deviceList;
     private ReceiverWindow _receiverWindow;
     private RemoteHandler _remoteHandler;
     private bool _disposed;
-    private System.Threading.Timer _RepeatTimer;
+    private System.Threading.Timer _repeatTimer;
     private int _firstRepeatDelay;
     private int _heldRepeatDelay;
 
@@ -117,13 +117,13 @@ namespace IRServer.Plugin
     {
       Debug.Open("Philips MCE USB IR Receiver- Spinel plus.log");
       Debug.WriteLine("Start_Receiver()");
-      config = new Config();
-      ConfigManagement.LoadSettings(ref config);
+      _config = new Config();
+      ConfigManagement.LoadSettings(ref _config);
 
-      _firstRepeatDelay = config.FirstRepeatDelay;
-      _heldRepeatDelay = config.HeldRepeatDelay;
+      _firstRepeatDelay = _config.FirstRepeatDelay;
+      _heldRepeatDelay = _config.HeldRepeatDelay;
 
-      if (config.UseSystemRatesDelay)
+      if (_config.UseSystemRatesDelay)
       {
         _firstRepeatDelay = 250 + (SystemInformation.KeyboardDelay*250);
         _heldRepeatDelay = (int) (1000.0/(2.5 + (SystemInformation.KeyboardSpeed*0.888)));
@@ -139,7 +139,7 @@ namespace IRServer.Plugin
 
       foreach (Device device in supportedDevices)
       {
-        foreach (DeviceDetails details in device.deviceDetails)
+        foreach (DeviceDetails details in device.DeviceDetails)
         {
           _device = new RawInput.RAWINPUTDEVICE();
           _device.usUsage = details.Usage;
@@ -333,18 +333,18 @@ namespace IRServer.Plugin
 
                 _remoteHandler(Name, codeString);
 
-                if (config.DoRepeats)
+                if (_config.DoRepeats)
                 {
-                  _RepeatTimer = new System.Threading.Timer(new System.Threading.TimerCallback(repeatTimerCallback),
+                  _repeatTimer = new System.Threading.Timer(new System.Threading.TimerCallback(repeatTimerCallback),
                                                             (object) codeString, _firstRepeatDelay, _heldRepeatDelay);
                 }
               }
               else
               {
-                if (_RepeatTimer != null)
+                if (_repeatTimer != null)
                 {
-                  _RepeatTimer.Dispose();
-                  _RepeatTimer = null;
+                  _repeatTimer.Dispose();
+                  _repeatTimer = null;
                 }
               }
 

@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="ConfigManagement.cs" />
+    <Compile Include="TestApplication.cs" />
     <Compile Include="PluginBaseInterfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConfigurationDialog.cs">

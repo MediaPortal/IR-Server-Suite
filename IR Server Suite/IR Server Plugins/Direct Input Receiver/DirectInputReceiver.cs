@@ -35,38 +35,6 @@ namespace IRServer.Plugin
   /// </summary>
   public partial class DirectInputReceiver
   {
-#if DEBUG
-
-    private static void Remote(string deviceName, string code)
-    {
-      Console.WriteLine("Remote: {0}", code);
-    }
-
-    private static void Mouse(string deviceName, int x, int y, int buttons)
-    {
-      Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
-    }
-
-    [STAThread]
-    private static void Main()
-    {
-      DirectInputReceiver c = new DirectInputReceiver();
-
-      c.Configure(null);
-
-      c.RemoteCallback += Remote;
-      c.MouseCallback += Mouse;
-
-      c.Start();
-
-      Application.Run();
-
-      c.Stop();
-      c = null;
-    }
-
-#endif
-
     #region Constants
 
     private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Direct Input Receiver.xml");

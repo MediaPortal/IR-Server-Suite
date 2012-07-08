@@ -25,11 +25,8 @@ namespace IRServer.Plugin
     public class Config
     {
       public bool DoRepeats { get; set; }
-
       public bool UseSystemRatesDelay { get; set; }
-
       public int FirstRepeatDelay { get; set; }
-
       public int HeldRepeatDelay { get; set; }
 
       public Config()

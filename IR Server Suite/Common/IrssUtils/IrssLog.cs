@@ -78,10 +78,14 @@ namespace IrssUtils
 
     #region Variables
 
-    private static Level _logLevel = Level.Debug;
     private static StreamWriter _streamWriter;
 
     #endregion Variables
+
+    static IrssLog()
+    {
+      LogLevel = Level.Debug;
+    }
 
     #region Properties
 
@@ -89,11 +93,7 @@ namespace IrssUtils
     /// Level of detail to record in log file.
     /// </summary>
     /// <value>The log level.</value>
-    public static Level LogLevel
-    {
-      get { return _logLevel; }
-      set { _logLevel = value; }
-    }
+    public static Level LogLevel { get; set; }
 
     public static ILogger Logger { get; set; }
 
@@ -141,7 +141,7 @@ namespace IrssUtils
     [Obsolete]
     public static void Append(string fileName)
     {
-      if (_streamWriter != null || _logLevel == Level.Off)
+      if (_streamWriter != null || LogLevel == Level.Off)
         return;
 
       string filePath = Path.Combine(Common.FolderIrssLogs, fileName);
