@@ -126,33 +126,7 @@ namespace IRServer.Plugin
       if (_config._disableMceServices)
         DisableMceServices();
 
-      Guid deviceGuid;
-      string devicePath;
-
-      Driver newDriver = null;
-
-      if (FindDevice(out deviceGuid, out devicePath))
-      {
-        if (deviceGuid == MicrosoftGuid)
-        {
-          if (Environment.OSVersion.Version.Major >= VistaVersionNumber)
-            newDriver = new DriverVista(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
-          else
-            newDriver = new DriverXP(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
-        }
-        else
-        {
-          newDriver = new DriverReplacement(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
-        }
-      }
-      else
-      {
-        throw new InvalidOperationException("Device not found");
-      }
-
-      newDriver.Start();
-
-      _driver = newDriver;
+      StartDriver();
     }
 
     /// <summary>
@@ -190,17 +164,7 @@ namespace IRServer.Plugin
       Trace.WriteLine("Stop MicrosoftMceTransceiver");
 #endif
 
-      if (_driver != null)
-      {
-        try
-        {
-          _driver.Stop();
-        }
-        finally
-        {
-          _driver = null;
-        }
-      }
+      StopDriver();
     }
 
     #endregion

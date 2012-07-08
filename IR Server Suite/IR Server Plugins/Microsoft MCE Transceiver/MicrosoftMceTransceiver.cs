@@ -107,6 +107,52 @@ namespace IRServer.Plugin
 
     #region Implementation
 
+    private void StartDriver()
+    {
+      Guid deviceGuid;
+      string devicePath;
+
+      Driver newDriver = null;
+
+      if (FindDevice(out deviceGuid, out devicePath))
+      {
+        if (deviceGuid == MicrosoftGuid)
+        {
+          if (Environment.OSVersion.Version.Major >= VistaVersionNumber)
+            newDriver = new DriverVista(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
+          else
+            newDriver = new DriverXP(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
+        }
+        else
+        {
+          newDriver = new DriverReplacement(deviceGuid, devicePath, RemoteEvent, KeyboardEvent, MouseEvent);
+        }
+      }
+      else
+      {
+        throw new InvalidOperationException("Device not found");
+      }
+
+      newDriver.Start();
+
+      _driver = newDriver;
+    }
+
+    private void StopDriver()
+    {
+      if (_driver != null)
+      {
+        try
+        {
+          _driver.Stop();
+        }
+        finally
+        {
+          _driver = null;
+        }
+      }
+    }
+
     private void RemoteEvent(IrProtocol codeType, uint keyCode, bool firstPress)
     {
 #if TRACE
