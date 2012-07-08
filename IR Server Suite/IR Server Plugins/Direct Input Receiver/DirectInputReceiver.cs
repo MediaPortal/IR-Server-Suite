@@ -32,6 +32,7 @@ namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server Plugin for Direct Input game controllers.
+  /// Note: This plugin needs to be used in application mode, because of the HID stuff, the service mode is not possible.
   /// </summary>
   public partial class DirectInputReceiver
   {

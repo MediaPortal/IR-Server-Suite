@@ -62,6 +62,7 @@ namespace IRServer.Plugin
 
   /// <summary>
   /// IR Server Plugin for Microsoft MCE Transceiver device.
+  /// Note: It might happen that 'CreateFile' in OpenDevice results in an error 5 (Access Denied), when being used in application mode, without admin rights.
   /// </summary>
   public partial class MicrosoftMceTransceiver
   {
