@@ -70,6 +70,7 @@ namespace IRServer.Plugin
         }
 
         str.Close();
+      }
     }
   }
 }
