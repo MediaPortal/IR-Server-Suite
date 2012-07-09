@@ -157,7 +157,7 @@ namespace IRServer.Plugin
 
     private void RegisterDeviceNotification()
     {
-      Debug.WriteLine("MCE Transceiver: Registering device notifications...");
+      Logger.Info("MCE Transceiver: Registering device notifications...");
 
       WqlEventQuery _q = new WqlEventQuery("__InstanceOperationEvent", "TargetInstance ISA 'Win32_USBControllerDevice' ");
       _q.WithinInterval = TimeSpan.FromSeconds(1);
@@ -179,20 +179,23 @@ namespace IRServer.Plugin
         if (mo.GetPropertyValue("DeviceID").ToString() != string.Empty)
         {
           //connected
-          Debug.WriteLine("MCE Transceiver: An USB device has been connected");
+          Logger.Info("MCE Transceiver: An USB device has been connected");
           try
           {
             StopDriver();
           }
-          catch (Exception)
-          { }
+          catch (Exception ex)
+          {
+            Logger.Warning("MCE Transceiver: Error while stopping driver");
+            Logger.Warning(ex.ToString());
+          }
           StartDriver();
         }
       }
       catch (ManagementException ex)
       {
         //disconnected
-        Debug.WriteLine("MCE Transceiver: An USB device has been disconnected");
+        Logger.Info("MCE Transceiver: An USB device has been disconnected");
       }
     }
 

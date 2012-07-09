@@ -23,7 +23,6 @@ using System.Diagnostics;
 using IRServer.Plugin.Properties;
 using System.Windows.Forms;
 using System.Drawing;
-using IrssUtils;
 
 namespace IRServer.Plugin
 {
@@ -95,7 +94,7 @@ namespace IRServer.Plugin
       }
       catch (Exception ex)
       {
-        IrssLog.Error("{0,15}: exception {1}", Name, ex.Message);
+        Logger.Error("{0,15}: exception {1}", Name, ex.Message);
         return DetectionResult.DeviceException;
       }
 

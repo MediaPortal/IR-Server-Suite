@@ -1086,7 +1086,7 @@ namespace IRServer.Plugin
         }
         catch
         {
-          IrssUtils.IrssLog.Debug("IoControl: something went bad with StructToPtr or the other way around");
+          DebugWriteLine("IoControl: something went bad with StructToPtr or the other way around");
           if (_eHomeHandle != null)
             CancelIo(_eHomeHandle);
 
@@ -1097,8 +1097,8 @@ namespace IRServer.Plugin
           safeWaitHandle.DangerousRelease();
         }
       }
-      //IrssUtils.IrssLog.Debug("IoControl: End  of [{0}]", ioControlCode.ToString());
-      //IrssUtils.IrssLog.Close();
+      //DebugWriteLine("IoControl: End  of [{0}]", ioControlCode.ToString());
+      //DebugClose();
     }
 
     #endregion Device Control Functions
