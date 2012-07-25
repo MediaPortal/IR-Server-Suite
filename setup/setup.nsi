@@ -1080,6 +1080,8 @@ Function .onInit
   Call ReadPreviousSettings
   Call LoadPreviousSettings
 
+  !insertmacro MediaPortalNetFrameworkCheck
+
 FunctionEnd
 
 Function .onInstFailed
