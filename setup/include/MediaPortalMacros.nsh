@@ -780,7 +780,7 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
     StrCpy $0 ""
     StrCpy $0 "$0$(MISSING_COMPONENT_INTRO)$\r$\n"
     StrCpy $0 "$0$(MISSING_COMPONENT_INSTALL)$\r$\n$\r$\n"
-    StrCpy $0 "$0${MISSING_COMPONENTS}$\r$\n$\r$\n"
+    StrCpy $0 "$0     Microsoft .NET Framework 4 Full$\r$\n$\r$\n"
     StrCpy $0 "$0$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n"
     MessageBox MB_OK|MB_ICONSTOP "$0"
 
