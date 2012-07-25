@@ -778,6 +778,16 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
     !insertmacro ShowMissingComponent "     - Microsoft .NET Framework 3.5 Service Pack 1"
   ${EndIf}
 
+
+  ; check if .Net Framework 4 Full is installed
+  ReadRegDWORD $3 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" "Install"
+
+  ${LOG_TEXT} "INFO" ".Net 4 installed? $3"
+
+  ${If} $3 != 1  ; if no 4
+    !insertmacro ShowMissingComponent "     - Microsoft .NET Framework 4 Full"
+  ${EndIf}
+
   ${LOG_TEXT} "INFO" "============================"
 !macroend
 
