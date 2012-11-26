@@ -149,6 +149,12 @@ namespace IRServer.Plugin
             set { checkBoxHandleMouseLocal.Checked = value; }
         }
 
+        public bool KillImonM
+        {
+            get { return checkBoxKillImonM.Checked; }
+            set { checkBoxKillImonM.Checked = value; }
+        }
+        
         private void buttonOK_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
@@ -160,6 +166,5 @@ namespace IRServer.Plugin
             DialogResult = DialogResult.Cancel;
             Close();
         }
-
     }
 }
