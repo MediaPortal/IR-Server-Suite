@@ -274,8 +274,14 @@ namespace Translator
         if (String.IsNullOrEmpty(program.FileName))
           continue;
 
-        Icon icon = Win32.GetIconFor(program.FileName);
-        newList.Images.Add(icon);
+        if (!File.Exists(program.FileName))
+          continue;
+
+        Icon icon = Win32.GetIconFromFile(program.FileName);
+        if (icon != null)
+          newList.Images.Add(icon);
+        else
+          newList.Images.Add(Win32.ExclamationMark);
 
         ListViewItem item = new ListViewItem(program.Name, index++);
         item.ToolTipText = program.FileName;

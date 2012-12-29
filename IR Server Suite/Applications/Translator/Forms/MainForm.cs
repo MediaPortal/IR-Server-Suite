@@ -348,15 +348,7 @@ namespace Translator
     {
       imageListPrograms.Images.Clear();
       imageListPrograms.Images.Add(IrssUtils.Properties.Resources.WinLogo);
-
-      Icon large;
-      Icon small;
-
-      string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = Path.Combine(folder, "user32.dll");
-      Win32.ExtractIcons(file, 1, out large, out small);
-      imageListPrograms.Images.Add(large);
-
+      imageListPrograms.Images.Add(Win32.ExclamationMark);
 
       //imageListPrograms.Images.Add(Properties.Resources.NoIcon);
 
@@ -379,7 +371,7 @@ namespace Translator
         Icon icon = null;
 
         if (!String.IsNullOrEmpty(progSettings.FileName))
-          icon = Win32.GetIconFor(progSettings.FileName);
+          icon = Win32.GetIconFromFile(progSettings.FileName);
 
         if (icon != null)
         {
@@ -848,13 +840,12 @@ namespace Translator
         if (String.IsNullOrEmpty(programSettings.FileName))
           continue;
 
-        Icon icon = Win32.GetIconFor(programSettings.FileName);
+        ToolStripItem item = new ToolStripMenuItem();
+        item.Text = programSettings.Name;
+        item.Image = Win32.GetImageFromFile(programSettings.FileName);
+        item.Click += CopyMappingsFromOtherProgram;
 
-        Image image = null;
-        if (icon != null)
-          image = icon.ToBitmap();
-
-        copyMappingsFromToolStripMenuItem.DropDownItems.Add(programSettings.Name, image, CopyMappingsFromOtherProgram);
+        copyMappingsFromToolStripMenuItem.DropDownItems.Add(item);
       }
 
       copyMappingsFromToolStripMenuItem.Enabled = copyMappingsFromToolStripMenuItem.DropDownItems.Count > 0;

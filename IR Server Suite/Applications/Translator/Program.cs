@@ -468,8 +468,15 @@ namespace Translator
         ToolStripMenuItem launch = new ToolStripMenuItem("&Launch");
 
         foreach (ProgramSettings programSettings in Config.Programs)
-          launch.DropDownItems.Add(programSettings.Name,
-            Win32.GetImageFromFile(programSettings.FileName), ClickProgram);
+        {
+          ToolStripItem item = new ToolStripMenuItem();
+          item.Text = programSettings.Name;
+          item.Enabled = File.Exists(programSettings.FileName);
+          item.Image = Win32.GetImageFromFile(programSettings.FileName);
+          item.Click += ClickProgram;
+
+          launch.DropDownItems.Add(item);
+        }
 
         _notifyIcon.ContextMenuStrip.Items.Add(launch);
       }
