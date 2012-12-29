@@ -2314,6 +2314,9 @@ namespace IrssUtils
       if (String.IsNullOrEmpty(fileName))
         return null;
 
+      if (!File.Exists(fileName))
+        return null;
+
       Icon icon = Icon.ExtractAssociatedIcon(fileName);
       if (icon == null)
         return null;
@@ -2323,7 +2326,12 @@ namespace IrssUtils
 
     public static Image GetImageFromFile(string fileName)
     {
-      return GetIconFromFile(fileName).ToBitmap();
+      Icon icon = GetIconFromFile(fileName);
+
+      if (icon == null)
+        return null;
+
+      return icon.ToBitmap();
     }
 
 

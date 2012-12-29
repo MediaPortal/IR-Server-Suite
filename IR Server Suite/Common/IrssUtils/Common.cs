@@ -988,6 +988,9 @@ namespace IrssUtils
     /// <returns>string[] of IR Commands.</returns>
     public static string[] GetIRList(bool commandPrefix)
     {
+      if (!Directory.Exists(FolderIRCommands))
+        Directory.CreateDirectory(FolderIRCommands);
+
       string[] files = Directory.GetFiles(FolderIRCommands, '*' + FileExtensionIR);
       string[] list = new string[files.Length];
 
