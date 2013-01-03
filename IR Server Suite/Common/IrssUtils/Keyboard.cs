@@ -1152,7 +1152,7 @@ namespace IrssUtils
                 }
                 else if (special.StartsWith(CommandBeep, StringComparison.OrdinalIgnoreCase))
                 {
-                  string beepString = special.Substring(CommandPause.Length);
+                  string beepString = special.Substring(CommandBeep.Length);
                   if (String.IsNullOrEmpty(beepString))
                     throw new CommandStructureException(String.Format("Invalid beep command: {0}", special));
 
