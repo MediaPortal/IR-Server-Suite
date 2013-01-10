@@ -1,4 +1,4 @@
-namespace Commands
+namespace IrssCommands
 {
 
   partial class EditStackFile

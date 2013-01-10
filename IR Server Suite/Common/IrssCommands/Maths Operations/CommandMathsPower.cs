@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Maths Power macro command.
@@ -33,19 +33,19 @@ namespace Commands
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return Processor.CategoryMaths;
+      get { return Processor.CategoryMaths; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Maths Power";
+      get { return "Maths Power"; }
     }
 
     /// <summary>

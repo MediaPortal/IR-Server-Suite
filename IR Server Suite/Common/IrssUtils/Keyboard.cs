@@ -24,7 +24,6 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using IrssUtils.Exceptions;
 
 namespace IrssUtils
 {
@@ -1118,15 +1117,17 @@ namespace IrssUtils
               {
                 int endBrace = keystrokes.IndexOf(BraceClose, index);
 
-                if (endBrace == -1)
-                  throw new CommandStructureException(String.Format("Missing closing brace \"}\" after position {0}",
-                                                                    index));
+#warning fixe me exception
+                //if (endBrace == -1)
+                //  throw new CommandStructureException(String.Format("Missing closing brace \"}\" after position {0}",
+                //                                                    index));
 
                 index++;
 
                 int length = endBrace - index;
-                if (length < 1)
-                  throw new CommandStructureException("Invalid braced command \"{}\"");
+#warning fixe me exception
+                //if (length < 1)
+                //  throw new CommandStructureException("Invalid braced command \"{}\"");
 
                 string special = keystrokes.Substring(index, length);
 
@@ -1143,23 +1144,23 @@ namespace IrssUtils
                 else if (special.StartsWith(CommandPause, StringComparison.OrdinalIgnoreCase))
                 {
                   string pauseString = special.Substring(CommandPause.Length);
-                  if (String.IsNullOrEmpty(pauseString))
-                    throw new CommandStructureException(String.Format("Invalid pause command: {0}", special));
+#warning fixe me exception
+                  //if (String.IsNullOrEmpty(pauseString))
+                  //  throw new CommandStructureException(String.Format("Invalid pause command: {0}", special));
 
                   int time = int.Parse(pauseString);
 
                   Thread.Sleep(time);
                 }
-                else if (special.StartsWith(CommandBeep, StringComparison.OrdinalIgnoreCase))
-                {
-                  string beepString = special.Substring(CommandBeep.Length);
-                  if (String.IsNullOrEmpty(beepString))
-                    throw new CommandStructureException(String.Format("Invalid beep command: {0}", special));
+                //else if (special.StartsWith(CommandBeep, StringComparison.OrdinalIgnoreCase))
+                //{
+                //  string beepString = special.Substring(CommandBeep.Length);
+                //  if (String.IsNullOrEmpty(beepString))
+                //    throw new CommandStructureException(String.Format("Invalid beep command: {0}", special));
 
-                  string[] parameters = Common.SplitBeepCommand(beepString);
-
-                  Common.ProcessBeepCommand(parameters);
-                }
+                //  BeepCommand bc = new BeepCommand().CreateCommandFromString(beepString) as BeepCommand;
+                //  bc.Execute();
+                //}
                 else
                 {
                   int count = 1;
@@ -1182,8 +1183,9 @@ namespace IrssUtils
                   }
                   catch (Exception ex)
                   {
-                    throw new CommandStructureException(
-                      String.Format("Invalid virtual key code \"{0}\"", special), ex);
+#warning fixe me exception
+                    //throw new CommandStructureException(
+                    //  String.Format("Invalid virtual key code \"{0}\"", special), ex);
                   }
 
                   for (int repeat = 0; repeat < count; repeat++)

@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Abort special command.
@@ -33,31 +33,34 @@ namespace Commands
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return Processor.CategoryControl;
+      get { return Processor.CategoryControl; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Abort Macro";
+      get { return "Abort Macro"; }
     }
 
     /// <summary>
     /// Gets the user display text.
     /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
+    /// <value>The user display text.</value>
+    public override string UserDisplayText
     {
-      if (String.IsNullOrEmpty(Parameters[0]))
-        return GetUserInterfaceText();
-      else
-        return String.Format("{0} \"{1}\"", GetUserInterfaceText(), Parameters[0]);
+      get
+      {
+        if (String.IsNullOrEmpty(Parameters[0]))
+          return UserInterfaceText;
+        else
+          return String.Format("{0} \"{1}\"", UserInterfaceText, Parameters[0]);
+      }
     }
 
     /// <summary>
@@ -85,9 +88,9 @@ namespace Commands
       string[] processed = ProcessParameters(variables, Parameters);
 
       if (String.IsNullOrEmpty(processed[0]))
-        throw new MacroExecutionException(GetUserInterfaceText());
+        throw new MacroExecutionException(UserInterfaceText);
       else
-        throw new MacroExecutionException(String.Format("{0}: {1}", GetUserInterfaceText(), processed[0]));
+        throw new MacroExecutionException(String.Format("{0}: {1}", UserInterfaceText, processed[0]));
     }
 
     #endregion Implementation

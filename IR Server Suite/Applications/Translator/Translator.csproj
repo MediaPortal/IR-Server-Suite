@@ -24,12 +24,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\Bin\Translator\bin\x86\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\Bin\Translator\bin\x86\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -74,12 +74,6 @@
     <Compile Include="Forms\GetKeyCodeForm.Designer.cs">
       <DependentUpon>GetKeyCodeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\MacroEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MacroEditor.Designer.cs">
-      <DependentUpon>MacroEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,10 +106,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>GetKeyCodeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MacroEditor.resx">
-      <DependentUpon>MacroEditor.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -141,11 +131,15 @@
     <None Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\IrssCommands\IrssCommands.csproj">
+      <Project>{49cf376e-811c-4eb4-817f-a39c9529b608}</Project>
+      <Name>IrssCommands</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">
       <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
       <Name>IrssComms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\irssUtils\IrssUtils.csproj">
+    <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
     </ProjectReference>

@@ -25,12 +25,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\x86\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -48,14 +48,17 @@
     <Compile Include="..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <None Include="Forms\MacroEditor.cs">
+      <SubType>Form</SubType>
+    </None>
+    <None Include="Forms\MacroEditor.Designer.cs">
+      <DependentUpon>MacroEditor.cs</DependentUpon>
+    </None>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Audio.cs" />
     <Compile Include="CDRom.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Display.cs" />
-    <Compile Include="Exceptions\CommandStructureException.cs" />
-    <Compile Include="Exceptions\CommandExecutionException.cs" />
-    <Compile Include="Exceptions\MacroStructureException.cs" />
     <Compile Include="FocusForcer.cs">
     </Compile>
     <Compile Include="Forms\AboutForm.cs">
@@ -70,24 +73,6 @@
     <Compile Include="Forms\BlastCommand.Designer.cs">
       <DependentUpon>BlastCommand.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\BeepCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\BeepCommand.Designer.cs">
-      <DependentUpon>BeepCommand.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\CloseProgramCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CloseProgramCommand.Designer.cs">
-      <DependentUpon>CloseProgramCommand.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\WindowCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\WindowCommand.Designer.cs">
-      <DependentUpon>WindowCommand.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\DisplayPowerCommand.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,12 +85,12 @@
     <Compile Include="Forms\VariablesFileDialog.Designer.cs">
       <DependentUpon>VariablesFileDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\IfCommand.cs">
+    <None Include="Forms\IfCommand.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IfCommand.Designer.cs">
+    </None>
+    <None Include="Forms\IfCommand.Designer.cs">
       <DependentUpon>IfCommand.cs</DependentUpon>
-    </Compile>
+    </None>
     <Compile Include="Forms\LabelNameDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,26 +100,14 @@
     <Compile Include="Forms\SetVariableCommand.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SetVariableCommand.Designer.cs">
-      <DependentUpon>SetVariableCommand.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\HttpMessageCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\HttpMessageCommand.Designer.cs">
-      <DependentUpon>HttpMessageCommand.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\ShowPopupMessage.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ShowPopupMessage.Designer.cs">
       <DependentUpon>ShowPopupMessage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SmsKeyboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SmsKeyboard.Designer.cs">
-      <DependentUpon>SmsKeyboard.cs</DependentUpon>
+    <Compile Include="Forms\SetVariableCommand.Designer.cs">
+      <DependentUpon>SetVariableCommand.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\DisplayModeCommand.cs">
       <SubType>Form</SubType>
@@ -142,77 +115,29 @@
     <Compile Include="Forms\DisplayModeCommand.Designer.cs">
       <DependentUpon>DisplayModeCommand.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\EjectCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EjectCommand.Designer.cs">
-      <DependentUpon>EjectCommand.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\LearnIR.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\LearnIR.Designer.cs">
       <DependentUpon>LearnIR.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\MouseCommand.cs">
+    <None Include="Forms\CommandConfigForm.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MouseCommand.Designer.cs">
-      <DependentUpon>MouseCommand.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\TcpMessageCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\TcpMessageCommand.Designer.cs">
-      <DependentUpon>TcpMessageCommand.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ExternalProgram.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ExternalProgram.Designer.cs">
-      <DependentUpon>ExternalProgram.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\KeysCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\KeysCommand.Designer.cs">
-      <DependentUpon>KeysCommand.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MessageCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MessageCommand.Designer.cs">
-      <DependentUpon>MessageCommand.cs</DependentUpon>
-    </Compile>
+    </None>
+    <None Include="Forms\CommandConfigForm.Designer.cs">
+      <DependentUpon>CommandConfigForm.cs</DependentUpon>
+    </None>
     <Compile Include="Forms\PauseTime.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\PauseTime.Designer.cs">
       <DependentUpon>PauseTime.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\PopupMessage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PopupMessage.Designer.cs">
-      <DependentUpon>PopupMessage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SerialCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SerialCommand.Designer.cs">
-      <DependentUpon>SerialCommand.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\ServerAddress.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ServerAddress.Designer.cs">
       <DependentUpon>ServerAddress.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\VirtualKeyboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\VirtualKeyboard.Designer.cs">
-      <DependentUpon>VirtualKeyboard.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\WindowList.cs">
       <SubType>Form</SubType>
@@ -222,7 +147,7 @@
     </Compile>
     <Compile Include="HardwareMonitor.cs" />
     <Compile Include="IrssLog.cs" />
-    <Compile Include="IrssMacro.cs" />
+    <None Include="IrssMacro.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="IrssHelp.cs" />
     <Compile Include="MediaPortal.Core\Logging\ILogger.cs" />
@@ -235,12 +160,6 @@
     <Compile Include="MediaPortal.Core\Services\Logging\GroupLogger.cs" />
     <Compile Include="Mouse.cs" />
     <Compile Include="Network.cs" />
-    <Compile Include="Panels\KeystrokeCommandPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Panels\KeystrokeCommandPanel.Designer.cs">
-      <DependentUpon>KeystrokeCommandPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -249,7 +168,6 @@
     <Compile Include="ProcessHelper.cs" />
     <Compile Include="SystemRegistry.cs" />
     <Compile Include="IRServerInfo.cs" />
-    <Compile Include="VariableList.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="XML.cs" />
   </ItemGroup>
@@ -262,30 +180,22 @@
       <DependentUpon>BlastCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\BeepCommand.resx">
-      <DependentUpon>BeepCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CloseProgramCommand.resx">
-      <DependentUpon>CloseProgramCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\WindowCommand.resx">
-      <DependentUpon>WindowCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DisplayPowerCommand.resx">
       <DependentUpon>DisplayPowerCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="Forms\MacroEditor.resx">
+      <DependentUpon>MacroEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
     <EmbeddedResource Include="Forms\VariablesFileDialog.resx">
       <DependentUpon>VariablesFileDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IfCommand.resx">
+    <None Include="Forms\IfCommand.resx">
       <DependentUpon>IfCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
+    </None>
     <EmbeddedResource Include="Forms\LabelNameDialog.resx">
       <DependentUpon>LabelNameDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -294,76 +204,28 @@
       <DependentUpon>SetVariableCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HttpMessageCommand.resx">
-      <DependentUpon>HttpMessageCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ShowPopupMessage.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ShowPopupMessage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SmsKeyboard.resx">
-      <DependentUpon>SmsKeyboard.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DisplayModeCommand.resx">
       <DependentUpon>DisplayModeCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EjectCommand.resx">
-      <DependentUpon>EjectCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LearnIR.resx">
       <DependentUpon>LearnIR.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MouseCommand.resx">
-      <DependentUpon>MouseCommand.cs</DependentUpon>
+    <None Include="Forms\CommandConfigForm.resx">
+      <DependentUpon>CommandConfigForm.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TcpMessageCommand.resx">
-      <DependentUpon>TcpMessageCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ExternalProgram.resx">
-      <DependentUpon>ExternalProgram.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\KeysCommand.resx">
-      <DependentUpon>KeysCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MessageCommand.resx">
-      <DependentUpon>MessageCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    </None>
     <EmbeddedResource Include="Forms\PauseTime.resx">
       <DependentUpon>PauseTime.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PopupMessage.resx">
-      <DependentUpon>PopupMessage.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SerialCommand.resx">
-      <DependentUpon>SerialCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ServerAddress.resx">
       <DependentUpon>ServerAddress.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\VirtualKeyboard.resx">
-      <DependentUpon>VirtualKeyboard.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\WindowList.resx">
       <DependentUpon>WindowList.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Panels\KeystrokeCommandPanel.resx">
-      <DependentUpon>KeystrokeCommandPanel.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -422,6 +284,7 @@
     <Content Include="Graphics\TopRight.png" />
     <Content Include="Graphics\WinLogo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

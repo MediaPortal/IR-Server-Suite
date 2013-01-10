@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// The exception that is thrown when a macro execution error occurs.

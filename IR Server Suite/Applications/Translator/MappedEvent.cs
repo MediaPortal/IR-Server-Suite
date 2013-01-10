@@ -22,10 +22,10 @@
 
 using System;
 using System.Xml.Serialization;
+using IrssCommands;
 
 namespace Translator
 {
-
   #region Enumerations
 
   /// <summary>
@@ -77,8 +77,7 @@ namespace Translator
   {
     #region Variables
 
-    private string _command;
-    private MappingEvent _eventType;
+    private Command _command;
 
     //EventSchedule _schedule;
 
@@ -90,30 +89,60 @@ namespace Translator
     /// Type of event.
     /// </summary>
     [XmlAttribute]
-    public MappingEvent EventType
-    {
-      get { return _eventType; }
-      set { _eventType = value; }
-    }
+    public MappingEvent EventType { get; set; }
 
     /// <summary>
-    /// Command to execute when mapped event occurs.
+    /// Command to execute
     /// </summary>
-    [XmlAttribute]
-    public string Command
+    [XmlIgnore]
+    public Command Command
     {
-      get { return _command; }
-      set { _command = value; }
+      get
+      {
+        if (_command == null && !string.IsNullOrEmpty(CommandType))
+        {
+          try
+          {
+            _command = Processor.CreateCommand(CommandType, Parameters);
+          }
+          catch (Exception ex)
+          {
+            IrssUtils.IrssLog.Error("Command could not be created. Please check your commands library ({0}) for correct command plugins or replace existing mapping with available commands.", ex, Processor.LibraryFolder);
+          }
+        }
+
+        return _command;
+      }
+      set
+      {
+        _command = value;
+
+        if (ReferenceEquals(_command, null))
+        {
+          CommandType = string.Empty;
+          Parameters = null;
+          return;
+        }
+
+        CommandType = _command.GetType().FullName;
+        Parameters = _command.Parameters;
+      }
     }
+
+    [XmlAttribute]
+    public string CommandType { get; set; }
+
+    [XmlElement("parameter")]
+    public string[] Parameters { get; set; }
 
     #endregion Properties
 
     #region Constructors
 
     /// <summary>
-    /// Default constructor.
+    /// Initializes a new instance of the <see cref="MappedEvent"/> class.
     /// </summary>
-    public MappedEvent() : this(MappingEvent.None, String.Empty)
+    public MappedEvent()
     {
     }
 
@@ -122,12 +151,33 @@ namespace Translator
     /// </summary>
     /// <param name="eventType">Event to act on.</param>
     /// <param name="command">Command to execute when event occurs.</param>
-    public MappedEvent(MappingEvent eventType, string command)
+    public MappedEvent(MappingEvent eventType, Command command)
     {
-      _eventType = eventType;
-      _command = command;
+      EventType = eventType;
+      Command = command;
     }
 
     #endregion Constructors
+
+    #region Implementation
+
+    public string GetCommandDisplayText()
+    {
+      if (!ReferenceEquals(Command, null))
+        return Command.UserDisplayText;
+
+      if (!string.IsNullOrEmpty(CommandType))
+        return "!!!" + CommandType;
+
+      return string.Empty;
+    }
+
+    [XmlIgnore]
+    public bool IsCommandAvailable
+    {
+      get { return !ReferenceEquals(Command, null); }
+    }
+
+    #endregion Implementation
   }
 }

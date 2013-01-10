@@ -1,4 +1,4 @@
-namespace Translator
+namespace Translator.Forms
 {
   partial class EditProgramForm
   {

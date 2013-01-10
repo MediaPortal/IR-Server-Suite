@@ -21,40 +21,27 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Ports;
-using System.Text;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using IrssCommands;
 using IrssUtils;
 using IrssUtils.Forms;
 
-namespace Translator
+namespace Translator.Forms
 {
   internal partial class ButtonMappingForm : Form
   {
-    #region Constants
-
-    private const string Parameters =
-      @"\a = Alert (ascii 7)
-\b = Backspace (ascii 8)
-\f = Form Feed (ascii 12)
-\n = Line Feed (ascii 10)
-\r = Carriage Return (ascii 13)
-\t = Tab (ascii 9)
-\v = Vertical Tab (ascii 11)
-\x = Hex Value (\x0Fh = ascii char 15, \x8h = ascii char 8)
-\0 = Null (ascii 0)";
-
-    #endregion Constants
-
     #region Variables
 
     private readonly string _keyCode;
-    private string _command;
     private string _description;
 
     private LearnIR _learnIR;
+
+    private Command _currentCommand;
+    private BaseCommandConfig _currentCommandConfig;
+    private readonly Dictionary<string, Command> _commandStorage = new Dictionary<string, Command>();
+    private readonly Dictionary<string, Type> _uiTextCategoryCache = new Dictionary<string, Type>();
 
     #endregion Variables
 
@@ -70,294 +57,71 @@ namespace Translator
       get { return _description; }
     }
 
-    internal string Command
+    internal string CommandString
     {
-      get { return _command; }
+      get
+      {
+        if (CurrentCommand == null)
+          return string.Empty;
+
+        return CurrentCommand.UserDisplayText;
+      }
+    }
+
+    internal Command CurrentCommand
+    {
+      get
+      {
+        if (_currentCommand != null)
+        {
+          _currentCommand.Parameters = _currentCommandConfig.Parameters;
+          return _currentCommand;
+        }
+
+        return null;
+      }
     }
 
     #endregion Properties
 
     #region Constructors
 
-    public ButtonMappingForm(string keyCode, string description, string command)
+    public ButtonMappingForm(string keyCode, string description)
     {
       InitializeComponent();
-      SetImages();
 
       _keyCode = keyCode;
       _description = description;
-      _command = command;
+
+    }
+
+    public ButtonMappingForm(string keyCode, string description, Command command)
+      : this(keyCode, description)
+    {
+      if (ReferenceEquals(command, null)) return;
+
+      _currentCommand = command;
     }
 
     #endregion Constructors
-
-    private void SetImages()
-    {
-      this.checkBoxMouseScrollDown.Image = IrssUtils.Properties.Resources.ScrollDown;
-      this.checkBoxMouseScrollUp.Image = IrssUtils.Properties.Resources.ScrollUp;
-      this.checkBoxMouseClickRight.Image = IrssUtils.Properties.Resources.ClickRight;
-      this.checkBoxMouseClickMiddle.Image = IrssUtils.Properties.Resources.ClickMiddle;
-      this.checkBoxMouseClickLeft.Image = IrssUtils.Properties.Resources.ClickLeft;
-      this.checkBoxMouseMoveLeft.Image = IrssUtils.Properties.Resources.MoveLeft;
-      this.checkBoxMouseMoveDown.Image = IrssUtils.Properties.Resources.MoveDown;
-      this.checkBoxMouseMoveRight.Image = IrssUtils.Properties.Resources.MoveRight;
-      this.checkBoxMouseMoveUp.Image = IrssUtils.Properties.Resources.MoveUp;
-    }
-
-    private void SetupIRList()
-    {
-      comboBoxIRCode.Items.Clear();
-
-      string[] irList = Common.GetIRList(false);
-      if (irList != null && irList.Length > 0)
-      {
-        comboBoxIRCode.Items.AddRange(irList);
-        comboBoxIRCode.SelectedIndex = 0;
-      }
-    }
-
-    private void SetupMacroList()
-    {
-      comboBoxMacro.Items.Clear();
-
-      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
-      if (macroList != null && macroList.Length > 0)
-      {
-        comboBoxMacro.Items.AddRange(macroList);
-        comboBoxMacro.SelectedIndex = 0;
-      }
-    }
 
     private void ButtonMappingForm_Load(object sender, EventArgs e)
     {
       textBoxKeyCode.Text = _keyCode;
       textBoxButtonDesc.Text = _description;
-      textBoxCommand.Text = _command;
 
-      // Setup IR Blast tab
-      SetupIRList();
+      // setup command list
+      string[] categoryList = new string[] { Processor.CategorySpecial, Processor.CategoryGeneral, "Translator Commands" };
+      PopulateCommandList(categoryList);
 
-      // Setup macro tab
-      SetupMacroList();
-
-      comboBoxPort.Items.Clear();
-      comboBoxPort.Items.AddRange(Program.TransceiverInformation.Ports);
-      if (comboBoxPort.Items.Count > 0)
-        comboBoxPort.SelectedIndex = 0;
-
-      // Setup Serial tab
-      comboBoxComPort.Items.Clear();
-      comboBoxComPort.Items.AddRange(SerialPort.GetPortNames());
-      if (comboBoxComPort.Items.Count > 0)
-        comboBoxComPort.SelectedIndex = 0;
-
-      comboBoxParity.Items.Clear();
-      comboBoxParity.Items.AddRange(Enum.GetNames(typeof (Parity)));
-      comboBoxParity.SelectedIndex = 0;
-
-      comboBoxStopBits.Items.Clear();
-      comboBoxStopBits.Items.AddRange(Enum.GetNames(typeof (StopBits)));
-      comboBoxStopBits.SelectedIndex = 1;
-
-      // Setup Run tab
-      comboBoxWindowStyle.Items.Clear();
-      comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof (ProcessWindowStyle)));
-      comboBoxWindowStyle.SelectedIndex = 0;
-
-      // Setup Windows Message tab
-      radioButtonActiveWindow.Checked = true;
-
-      // Setup Misc tab
-      comboBoxMiscCommand.Items.Clear();
-      comboBoxMiscCommand.Items.Add(Common.UITextTranslator);
-      comboBoxMiscCommand.Items.Add(Common.UITextVirtualKB);
-      comboBoxMiscCommand.Items.Add(Common.UITextSmsKB);
-      comboBoxMiscCommand.Items.Add(Common.UITextTcpMsg);
-      comboBoxMiscCommand.Items.Add(Common.UITextHttpMsg);
-      comboBoxMiscCommand.Items.Add(Common.UITextEject);
-      comboBoxMiscCommand.Items.Add(Common.UITextPopup);
-      comboBoxMiscCommand.Items.Add(Common.UITextStandby);
-      comboBoxMiscCommand.Items.Add(Common.UITextHibernate);
-      comboBoxMiscCommand.Items.Add(Common.UITextReboot);
-      comboBoxMiscCommand.Items.Add(Common.UITextShutdown);
-      comboBoxMiscCommand.Items.Add(Common.UITextBeep);
-      comboBoxMiscCommand.Items.Add(Common.UITextSound);
-
-      if (!String.IsNullOrEmpty(_command))
+      if (_currentCommand != null)
       {
-        string prefix = _command;
-        string suffix = String.Empty;
+        _commandStorage[_currentCommand.UserInterfaceText] = _currentCommand;
 
-        int find = _command.IndexOf(": ", StringComparison.OrdinalIgnoreCase);
-
-        if (find != -1)
-        {
-          prefix = _command.Substring(0, find + 2);
-          suffix = _command.Substring(find + 2);
-        }
-
-        switch (prefix)
-        {
-          case Common.CmdPrefixBlast:
-            {
-              string[] commands = Common.SplitBlastCommand(suffix);
-
-              tabControl.SelectTab(tabPageBlastIR);
-              comboBoxIRCode.SelectedItem = commands[0];
-              comboBoxPort.SelectedItem = commands[1];
-              break;
-            }
-
-          case Common.CmdPrefixMacro:
-            {
-              tabControl.SelectTab(tabPageMacro);
-              comboBoxMacro.SelectedItem = suffix;
-              break;
-            }
-
-          case Common.CmdPrefixRun:
-            {
-              string[] commands = Common.SplitRunCommand(suffix);
-
-              tabControl.SelectTab(tabPageProgram);
-              textBoxApp.Text = commands[0];
-              textBoxAppStartFolder.Text = commands[1];
-              textBoxApplicationParameters.Text = commands[2];
-              comboBoxWindowStyle.SelectedItem = commands[3];
-              checkBoxNoWindow.Checked = bool.Parse(commands[4]);
-              checkBoxShellExecute.Checked = bool.Parse(commands[5]);
-              break;
-            }
-
-          case Common.CmdPrefixSerial:
-            {
-              string[] commands = Common.SplitSerialCommand(suffix);
-
-              tabControl.SelectTab(tabPageSerial);
-              textBoxSerialCommand.Text = commands[0];
-              comboBoxComPort.SelectedItem = commands[1];
-              numericUpDownBaudRate.Value = decimal.Parse(commands[2]);
-              comboBoxParity.SelectedItem = commands[3];
-              numericUpDownDataBits.Value = decimal.Parse(commands[4]);
-              comboBoxStopBits.SelectedItem = commands[5];
-              checkBoxWaitForResponse.Checked = bool.Parse(commands[6]);
-
-              break;
-            }
-
-          case Common.CmdPrefixWindowMsg:
-            {
-              string[] commands = Common.SplitWindowMessageCommand(suffix);
-
-              tabControl.SelectTab(tabPageMessage);
-              switch (commands[0].ToUpperInvariant())
-              {
-                case Common.TargetActive:
-                  radioButtonActiveWindow.Checked = true;
-                  break;
-                case Common.TargetApplication:
-                  radioButtonApplication.Checked = true;
-                  break;
-                case Common.TargetClass:
-                  radioButtonClass.Checked = true;
-                  break;
-                case Common.TargetWindow:
-                  radioButtonWindowTitle.Checked = true;
-                  break;
-              }
-
-              textBoxMsgTarget.Text = commands[1];
-              numericUpDownMsg.Value = decimal.Parse(commands[2]);
-              numericUpDownWParam.Value = decimal.Parse(commands[3]);
-              numericUpDownLParam.Value = decimal.Parse(commands[4]);
-              break;
-            }
-
-          case Common.CmdPrefixKeys:
-            {
-              tabControl.SelectTab(tabPageKeystrokes);
-              keystrokeCommandPanel.CommandString = suffix;
-              break;
-            }
-
-          case Common.CmdPrefixMouse:
-            {
-              tabControl.SelectTab(tabPageMouse);
-              switch (suffix)
-              {
-                case Common.MouseClickLeft:
-                  checkBoxMouseClickLeft.Checked = true;
-                  break;
-                case Common.MouseClickMiddle:
-                  checkBoxMouseClickMiddle.Checked = true;
-                  break;
-                case Common.MouseClickRight:
-                  checkBoxMouseClickRight.Checked = true;
-                  break;
-                case Common.MouseScrollDown:
-                  checkBoxMouseScrollDown.Checked = true;
-                  break;
-                case Common.MouseScrollUp:
-                  checkBoxMouseScrollUp.Checked = true;
-                  break;
-
-                default:
-                  if (suffix.StartsWith(Common.MouseMoveDown, StringComparison.OrdinalIgnoreCase))
-                    checkBoxMouseMoveDown.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveLeft, StringComparison.OrdinalIgnoreCase))
-                    checkBoxMouseMoveLeft.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveRight, StringComparison.OrdinalIgnoreCase))
-                    checkBoxMouseMoveRight.Checked = true;
-                  else if (suffix.StartsWith(Common.MouseMoveUp, StringComparison.OrdinalIgnoreCase))
-                    checkBoxMouseMoveUp.Checked = true;
-
-                  numericUpDownMouseMove.Value = Decimal.Parse(suffix.Substring(suffix.IndexOf(' ')));
-                  break;
-              }
-              break;
-            }
-
-          default:
-            {
-              tabControl.SelectTab(tabPageMisc);
-              switch (_command)
-              {
-                case Common.CmdPrefixHibernate:
-                  comboBoxMiscCommand.SelectedItem = Common.UITextHibernate;
-                  break;
-
-                case Common.CmdPrefixReboot:
-                  comboBoxMiscCommand.SelectedItem = Common.UITextReboot;
-                  break;
-
-                case Common.CmdPrefixShutdown:
-                  comboBoxMiscCommand.SelectedItem = Common.UITextShutdown;
-                  break;
-
-                case Common.CmdPrefixStandby:
-                  comboBoxMiscCommand.SelectedItem = Common.UITextStandby;
-                  break;
-
-                case Common.CmdPrefixTranslator:
-                  comboBoxMiscCommand.SelectedItem = Common.UITextTranslator;
-                  break;
-
-                case Common.CmdPrefixVirtualKB:
-                  comboBoxMiscCommand.SelectedItem = Common.UITextVirtualKB;
-                  break;
-
-                case Common.CmdPrefixSmsKB:
-                  comboBoxMiscCommand.SelectedItem = Common.UITextSmsKB;
-                  break;
-
-                default:
-                  if (prefix.Equals(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-                    comboBoxMiscCommand.SelectedItem = Common.UITextEject;
-                  break;
-              }
-              break;
-            }
-        }
+        if (ReferenceEquals(comboBoxCommands.SelectedItem, _currentCommand.UserInterfaceText))
+          comboBoxCommands_SelectedValueChanged(null, null);
+        else
+          comboBoxCommands.SelectedItem = _currentCommand.UserInterfaceText;
       }
     }
 
@@ -373,14 +137,6 @@ namespace Translator
         return;
       }
 
-      if (String.IsNullOrEmpty(_command))
-      {
-        MessageBox.Show(this, "You must click SET to confirm the command you want to assign to this button mapping",
-                        "Command Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        buttonSet.Focus();
-        return;
-      }
-
       DialogResult = DialogResult.OK;
       Close();
     }
@@ -391,324 +147,16 @@ namespace Translator
       Close();
     }
 
-    private void buttonParamQuestion_Click(object sender, EventArgs e)
-    {
-      MessageBox.Show(this, Parameters, "Parameters", MessageBoxButtons.OK, MessageBoxIcon.Information);
-    }
-
-    private void buttonSet_Click(object sender, EventArgs e)
-    {
-      switch (tabControl.SelectedTab.Name)
-      {
-        case "tabPageBlastIR":
-          {
-            textBoxCommand.Text = _command =
-                                  String.Format("{0}{1}|{2}",
-                                                Common.CmdPrefixBlast,
-                                                comboBoxIRCode.SelectedItem as string,
-                                                comboBoxPort.SelectedItem as string);
-            break;
-          }
-
-        case "tabPageMacro":
-          {
-            textBoxCommand.Text = _command = Common.CmdPrefixMacro + comboBoxMacro.SelectedItem;
-            break;
-          }
-
-        case "tabPageSerial":
-          {
-            textBoxCommand.Text = _command =
-                                  String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|{7}",
-                                                Common.CmdPrefixSerial,
-                                                textBoxSerialCommand.Text,
-                                                comboBoxComPort.SelectedItem as string,
-                                                numericUpDownBaudRate.Value,
-                                                comboBoxParity.SelectedItem as string,
-                                                numericUpDownDataBits.Value,
-                                                comboBoxStopBits.SelectedItem as string,
-                                                checkBoxWaitForResponse.Checked);
-            break;
-          }
-
-        case "tabPageProgram":
-          {
-            textBoxCommand.Text = _command =
-                                  String.Format("{0}{1}|{2}|{3}|{4}|{5}|{6}|False|{7}",
-                                                Common.CmdPrefixRun,
-                                                textBoxApp.Text,
-                                                textBoxAppStartFolder.Text,
-                                                textBoxApplicationParameters.Text,
-                                                comboBoxWindowStyle.SelectedItem as string,
-                                                checkBoxNoWindow.Checked,
-                                                checkBoxShellExecute.Checked,
-                                                checkBoxForceFocus.Checked);
-            break;
-          }
-
-        case "tabPageMessage":
-          {
-            string target = "ERROR";
-
-            if (radioButtonActiveWindow.Checked)
-            {
-              target = Common.TargetActive;
-              textBoxMsgTarget.Text = "*";
-            }
-            else if (radioButtonApplication.Checked)
-            {
-              target = Common.TargetApplication;
-            }
-            else if (radioButtonClass.Checked)
-            {
-              target = Common.TargetClass;
-            }
-            else if (radioButtonWindowTitle.Checked)
-            {
-              target = Common.TargetWindow;
-            }
-
-            textBoxCommand.Text = _command =
-                                  String.Format("{0}{1}|{2}|{3}|{4}|{5}",
-                                                Common.CmdPrefixWindowMsg,
-                                                target,
-                                                textBoxMsgTarget.Text,
-                                                numericUpDownMsg.Value,
-                                                numericUpDownWParam.Value,
-                                                numericUpDownLParam.Value);
-            break;
-          }
-
-        case "tabPageKeystrokes":
-          {
-            textBoxCommand.Text = _command = Common.CmdPrefixKeys + keystrokeCommandPanel.CommandString;
-            break;
-          }
-
-        case "tabPageMouse":
-          {
-            StringBuilder newCommand = new StringBuilder();
-            newCommand.Append(Common.CmdPrefixMouse);
-
-            if (checkBoxMouseClickLeft.Checked) newCommand.Append(Common.MouseClickLeft);
-            else if (checkBoxMouseClickRight.Checked) newCommand.Append(Common.MouseClickRight);
-            else if (checkBoxMouseClickMiddle.Checked) newCommand.Append(Common.MouseClickMiddle);
-            else if (checkBoxMouseScrollUp.Checked) newCommand.Append(Common.MouseScrollUp);
-            else if (checkBoxMouseScrollDown.Checked) newCommand.Append(Common.MouseScrollDown);
-            else
-            {
-              if (checkBoxMouseMoveUp.Checked) newCommand.Append(Common.MouseMoveUp);
-              else if (checkBoxMouseMoveDown.Checked) newCommand.Append(Common.MouseMoveDown);
-              else if (checkBoxMouseMoveLeft.Checked) newCommand.Append(Common.MouseMoveLeft);
-              else if (checkBoxMouseMoveRight.Checked) newCommand.Append(Common.MouseMoveRight);
-              else break;
-
-              newCommand.Append(numericUpDownMouseMove.Value.ToString());
-            }
-
-            textBoxCommand.Text = _command = newCommand.ToString();
-            break;
-          }
-
-        case "tabPageMisc":
-          {
-            switch (comboBoxMiscCommand.SelectedItem as string)
-            {
-              case Common.UITextTranslator:
-                textBoxCommand.Text = _command = Common.CmdPrefixTranslator;
-                break;
-
-              case Common.UITextVirtualKB:
-                textBoxCommand.Text = _command = Common.CmdPrefixVirtualKB;
-                break;
-
-              case Common.UITextSmsKB:
-                textBoxCommand.Text = _command = Common.CmdPrefixSmsKB;
-                break;
-
-              case Common.UITextTcpMsg:
-                TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
-                if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-                  textBoxCommand.Text = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
-                break;
-
-              case Common.UITextHttpMsg:
-                HttpMessageCommand httpMessageCommand = new HttpMessageCommand();
-                if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
-                  textBoxCommand.Text = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
-                break;
-
-              case Common.UITextEject:
-                EjectCommand ejectCommand = new EjectCommand();
-                if (ejectCommand.ShowDialog(this) == DialogResult.OK)
-                  textBoxCommand.Text = Common.CmdPrefixEject + ejectCommand.CommandString;
-                break;
-
-              case Common.UITextPopup:
-                PopupMessage popupMessage = new PopupMessage();
-                if (popupMessage.ShowDialog(this) == DialogResult.OK)
-                  textBoxCommand.Text = Common.CmdPrefixPopup + popupMessage.CommandString;
-                break;
-
-              case Common.UITextStandby:
-                textBoxCommand.Text = _command = Common.CmdPrefixStandby;
-                break;
-
-              case Common.UITextHibernate:
-                textBoxCommand.Text = _command = Common.CmdPrefixHibernate;
-                break;
-
-              case Common.UITextReboot:
-                textBoxCommand.Text = _command = Common.CmdPrefixReboot;
-                break;
-
-              case Common.UITextShutdown:
-                textBoxCommand.Text = _command = Common.CmdPrefixShutdown;
-                break;
-
-              case Common.UITextBeep:
-                BeepCommand beepCommand = new BeepCommand();
-                if (beepCommand.ShowDialog(this) == DialogResult.OK)
-                  textBoxCommand.Text = Common.CmdPrefixBeep + beepCommand.CommandString;
-                break;
-
-              case Common.UITextSound:
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.Filter = "Wave Files|*.wav";
-                openFileDialog.Multiselect = false;
-
-                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-                  textBoxCommand.Text = Common.CmdPrefixSound + openFileDialog.FileName;
-                break;
-            }
-
-            break;
-          }
-      }
-    }
-
     private void buttonTest_Click(object sender, EventArgs e)
     {
-      if (String.IsNullOrEmpty(_command))
+      try
       {
-        MessageBox.Show(this, "You must Set the command before you can Test it", "No command Set", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-        buttonSet.Focus();
-        return;
+        CurrentCommand.Execute(new VariableList());
       }
-
-      if (_command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+      catch (Exception ex)
       {
-        MessageBox.Show(this, "Keystroke commands cannot be tested here", "Cannot test Keystroke command",
-                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        MessageBox.Show(this, ex.ToString(), "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
-      else
-      {
-        try
-        {
-          Program.ProcessCommand(_command, false);
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show(this, ex.ToString(), "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-      }
-    }
-
-    private void buttonFindMsgTarget_Click(object sender, EventArgs e)
-    {
-      if (radioButtonApplication.Checked)
-      {
-        OpenFileDialog find = new OpenFileDialog();
-        find.Filter = "All files|*.*";
-        find.Multiselect = false;
-        find.Title = "Application to send message to";
-
-        if (find.ShowDialog(this) == DialogResult.OK)
-          textBoxMsgTarget.Text = find.FileName;
-      }
-      else if (radioButtonClass.Checked)
-      {
-        WindowList windowList = new WindowList(true);
-        if (windowList.ShowDialog(this) == DialogResult.OK)
-          textBoxMsgTarget.Text = windowList.SelectedItem;
-      }
-      else if (radioButtonWindowTitle.Checked)
-      {
-        WindowList windowList = new WindowList(false);
-        if (windowList.ShowDialog(this) == DialogResult.OK)
-          textBoxMsgTarget.Text = windowList.SelectedItem;
-      }
-    }
-
-    private void radioButtonActiveWindow_CheckedChanged(object sender, EventArgs e)
-    {
-      buttonFindMsgTarget.Enabled = false;
-      textBoxMsgTarget.Enabled = false;
-    }
-
-    private void radioButtonApplication_CheckedChanged(object sender, EventArgs e)
-    {
-      buttonFindMsgTarget.Enabled = true;
-      textBoxMsgTarget.Enabled = true;
-    }
-
-    private void radioButtonClass_CheckedChanged(object sender, EventArgs e)
-    {
-      buttonFindMsgTarget.Enabled = true;
-      textBoxMsgTarget.Enabled = true;
-    }
-
-    private void radioButtonWindowTitle_CheckedChanged(object sender, EventArgs e)
-    {
-      buttonFindMsgTarget.Enabled = true;
-      textBoxMsgTarget.Enabled = true;
-    }
-
-    private void buttonLocate_Click(object sender, EventArgs e)
-    {
-      OpenFileDialog find = new OpenFileDialog();
-      find.Filter = "All files|*.*";
-      find.Multiselect = false;
-      find.Title = "Application to launch";
-
-      if (find.ShowDialog(this) == DialogResult.OK)
-      {
-        textBoxApp.Text = find.FileName;
-        if (String.IsNullOrEmpty(textBoxAppStartFolder.Text))
-          textBoxAppStartFolder.Text = Path.GetDirectoryName(find.FileName);
-      }
-    }
-
-    private void buttonStartupFolder_Click(object sender, EventArgs e)
-    {
-      FolderBrowserDialog find = new FolderBrowserDialog();
-      find.Description = "Please specify the starting folder for the application";
-      find.ShowNewFolderButton = true;
-      if (find.ShowDialog(this) == DialogResult.OK)
-        textBoxAppStartFolder.Text = find.SelectedPath;
-    }
-
-    private void buttonLearnIR_Click(object sender, EventArgs e)
-    {
-      _learnIR = new LearnIR(
-        Program.LearnIR,
-        Program.BlastIR,
-        Program.TransceiverInformation.Ports);
-
-      _learnIR.ShowDialog(this);
-
-      _learnIR = null;
-
-      SetupIRList();
-    }
-
-    private void buttonNewMacro_Click(object sender, EventArgs e)
-    {
-      MacroEditor macroEditor = new MacroEditor();
-      macroEditor.ShowDialog(this);
-
-      SetupMacroList();
     }
 
     private void textBoxButtonDesc_TextChanged(object sender, EventArgs e)
@@ -716,24 +164,133 @@ namespace Translator
       _description = textBoxButtonDesc.Text;
     }
 
-    private void checkBoxMouse_CheckedChanged(object sender, EventArgs e)
+    #endregion Controls
+
+    private void comboBoxCommands_SelectedValueChanged(object sender, EventArgs e)
     {
-      CheckBox origin = (CheckBox) sender;
-
-      if (!origin.Checked)
-        return;
-
-      if (origin != checkBoxMouseClickLeft) checkBoxMouseClickLeft.Checked = false;
-      if (origin != checkBoxMouseClickRight) checkBoxMouseClickRight.Checked = false;
-      if (origin != checkBoxMouseClickMiddle) checkBoxMouseClickMiddle.Checked = false;
-      if (origin != checkBoxMouseMoveUp) checkBoxMouseMoveUp.Checked = false;
-      if (origin != checkBoxMouseMoveDown) checkBoxMouseMoveDown.Checked = false;
-      if (origin != checkBoxMouseMoveLeft) checkBoxMouseMoveLeft.Checked = false;
-      if (origin != checkBoxMouseMoveRight) checkBoxMouseMoveRight.Checked = false;
-      if (origin != checkBoxMouseScrollUp) checkBoxMouseScrollUp.Checked = false;
-      if (origin != checkBoxMouseScrollDown) checkBoxMouseScrollDown.Checked = false;
+      string uiText = comboBoxCommands.SelectedItem as string;
+      SetCurrentCommand(uiText);
     }
 
-    #endregion Controls
+    private void SetCurrentCommand(string uiText)
+    {
+      // save current values in temp storage
+      if (_currentCommand != null && _currentCommandConfig != null)
+      {
+        _currentCommand.Parameters = _currentCommandConfig.Parameters;
+        _commandStorage[_currentCommand.UserInterfaceText] = _currentCommand;
+      }
+
+      panel1.Controls.Clear();
+      //load if command is already cached
+      if (_commandStorage.ContainsKey(uiText))
+      {
+        _currentCommand = _commandStorage[uiText];
+      }
+      else
+      {
+        Type newType = _uiTextCategoryCache[uiText];
+        Command newCommand = (Command) Activator.CreateInstance(newType);
+        _currentCommand = newCommand;
+      }
+
+      _currentCommandConfig = _currentCommand.GetEditControl();
+      _currentCommandConfig.Dock = DockStyle.Fill;
+      panel1.Controls.Add(_currentCommandConfig);
+
+      buttonTest.Enabled = _currentCommand.IsTestAllowed;
+    }
+
+    private void PopulateCommandList(IList<string> categories)
+    {
+      comboBoxCommands.Items.Clear();
+      _uiTextCategoryCache.Clear();
+      //Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
+      //Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
+
+      //// Create requested categories ...
+      //foreach (string category in categories)
+      //{
+      //  TreeNode categoryNode = new TreeNode(category);
+      //  //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
+      //  categoryNodes.Add(category, categoryNode);
+      //}
+
+      List<Type> allCommands = new List<Type>();
+
+      Type[] specialCommands = Processor.GetBuiltInCommands();
+      allCommands.AddRange(specialCommands);
+
+      Type[] libCommands = Processor.GetLibraryCommands();
+      if (libCommands != null)
+        allCommands.AddRange(libCommands);
+
+      foreach (Type type in allCommands)
+      {
+        Command command = (Command) Activator.CreateInstance(type);
+        
+        string commandCategory = command.Category;
+        string commandTitle = command.UserInterfaceText;
+        //string key = String.Format("{0}: {1}", commandCategory, commandTitel);
+
+        //if (categoryNodes.ContainsKey(commandCategory))
+        if (categories.Contains(commandCategory))
+        {
+
+          comboBoxCommands.Items.Add(commandTitle);
+          _uiTextCategoryCache[commandTitle] = type;
+
+          //TreeNode newNode = new TreeNode(command.GetUserInterfaceText());
+          //newNode.Tag = type;
+
+          //categoryNodes[commandCategory].Nodes.Add(newNode);
+        }
+      }
+
+      //// Add list of existing IR Commands ...
+      //if (categoryNodes.ContainsKey(Processor.CategoryIRCommands))
+      //{
+      //  string[] irFiles = Processor.GetListIR();
+      //  if (irFiles != null)
+      //  {
+      //    foreach (string irFile in irFiles)
+      //    {
+      //      TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(irFile));
+      //      newNode.Tag = irFile;
+
+      //      categoryNodes[Processor.CategoryIRCommands].Nodes.Add(newNode);
+      //    }
+      //  }
+      //}
+
+      //// Add list of existing Macros ...
+      //if (categoryNodes.ContainsKey(Processor.CategoryMacros))
+      //{
+      //  string macroFolder = _macroFolder;
+      //  if (String.IsNullOrEmpty(_macroFolder))
+      //    macroFolder = Path.GetDirectoryName(_fileName);
+      //  string[] macros = Processor.GetListMacro(macroFolder);
+      //  if (macros != null)
+      //  {
+      //    foreach (string macro in macros)
+      //    {
+      //      TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(macro));
+      //      newNode.Tag = macro;
+
+      //      categoryNodes[Processor.CategoryMacros].Nodes.Add(newNode);
+      //    }
+      //  }
+      //}
+
+      // Put all commands into tree view ...
+      //foreach (TreeNode treeNode in categoryNodes.Values)
+      //  if (treeNode.Nodes.Count > 0)
+      //    treeViewCommandList.Nodes.Add(treeNode);
+
+      //treeViewCommandList.SelectedNode = treeViewCommandList.Nodes[0];
+      if (comboBoxCommands.Items.Count > 0 && _currentCommand == null)
+        comboBoxCommands.SelectedIndex = 0;
+      //treeViewCommandList.SelectedNode.Expand();
+    }
   }
 }

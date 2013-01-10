@@ -29,11 +29,12 @@ using System.IO;
 using System.Net;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using IrssCommands;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 using MSjogren.Samples.ShellLink;
-using Translator.Properties;
+using Translator.Forms;
 
 namespace Translator
 {
@@ -50,6 +51,13 @@ namespace Translator
     private LearnIR _learnIR;
 
     private int _selectedProgram;
+    private readonly Dictionary<string, Type> _uiTextCategoryCache = new Dictionary<string, Type>();
+
+    private string[] _macroCategories = new string[]
+        {
+          Processor.CategoryGeneral, Processor.CategoryIRCommands, Processor.CategoryMacros,
+          Processor.CategoryControl, Processor.CategoryMaths, Processor.CategoryStack, Processor.CategoryString, Processor.CategoryVariable
+        };
 
     #endregion Variables
 
@@ -85,6 +93,10 @@ namespace Translator
     }
 
     #endregion Constructor
+
+    #region Implementation
+
+    #region Main Form
 
     private void SetImages()
     {
@@ -151,10 +163,6 @@ namespace Translator
       this.editIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
       this.deleteIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
     }
-
-    #region Implementation
-
-    #region Main Form
 
     private void MainForm_Load(object sender, EventArgs e)
     {
@@ -570,16 +578,16 @@ namespace Translator
 
       foreach (ButtonMapping map in currentMappings)
       {
-        mappingsListView.Items.Add(
-          new ListViewItem(
-            new string[] {map.KeyCode, map.Description, map.Command}
-            )
-          );
+        if (map.IsCommandAvailable)
+          mappingsListView.Items.Add(
+            new ListViewItem(new string[] { map.KeyCode, map.Description, map.GetCommandDisplayText() }));
+        else
+          mappingsListView.Items.Add(
+            new ListViewItem(new string[] { map.KeyCode, map.Description, map.GetCommandDisplayText() })).ToolTipText = "Command was not found in CommandLibrary.";
       }
 
       mappingsListView_SelectedIndexChanged(null, null);
     }
-
 
     private void NewButtonMapping()
     {
@@ -604,7 +612,22 @@ namespace Translator
         if (keyCode.Equals(test.KeyCode, StringComparison.Ordinal))
         {
           existing = test;
-          map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
+          if (test.Command == null)
+          {
+            DialogResult dr = MessageBox.Show(this,
+                                              "The command " + test.GetCommandDisplayText() + " was not found in CommandLibrary and can not be modified." +
+                                              Environment.NewLine + Environment.NewLine +
+                                              "Do you want to replace the command with a another one?",
+                                              "Command not available", MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                                              MessageBoxDefaultButton.Button2);
+
+            if (dr == DialogResult.Yes)
+              map = new ButtonMappingForm(test.KeyCode, test.Description);
+            else
+              return;
+          }
+          else
+            map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
           break;
         }
       }
@@ -624,7 +647,7 @@ namespace Translator
           }
         }
 
-        map = new ButtonMappingForm(keyCode, description, String.Empty);
+        map = new ButtonMappingForm(keyCode, description);
       }
 
       if (map.ShowDialog(this) == DialogResult.OK)
@@ -632,11 +655,9 @@ namespace Translator
         if (existing == null) // Create new mapping
         {
           mappingsListView.Items.Add(
-            new ListViewItem(
-              new string[] { map.KeyCode, map.Description, map.Command }
-              ));
+            new ListViewItem(new string[] {map.KeyCode, map.Description, map.CurrentCommand.UserDisplayText}));
 
-          currentMappings.Add(new ButtonMapping(map.KeyCode, map.Description, map.Command));
+          currentMappings.Add(new ButtonMapping(map.KeyCode, map.Description, map.CurrentCommand));
         }
         else // Replace existing mapping
         {
@@ -645,12 +666,12 @@ namespace Translator
             if (mappingsListView.Items[index].SubItems[0].Text.Equals(map.KeyCode, StringComparison.Ordinal))
             {
               mappingsListView.Items[index].SubItems[1].Text = map.Description;
-              mappingsListView.Items[index].SubItems[2].Text = map.Command;
+              mappingsListView.Items[index].SubItems[2].Text = map.CurrentCommand.UserDisplayText;
             }
           }
 
           existing.Description = map.Description;
-          existing.Command = map.Command;
+          existing.Command = map.CurrentCommand;
         }
       }
     }
@@ -661,15 +682,20 @@ namespace Translator
 
     private void DeleteButtonMapping()
     {
-      if (mappingsListView.SelectedIndices.Count != 1)
-        return;
+      if (mappingsListView.SelectedIndices.Count != 1) return;
 
       List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
+      if (currentMappings == null) return;
 
+      int selectedIndex = mappingsListView.SelectedIndices[0];
       ListViewItem item = mappingsListView.SelectedItems[0];
       mappingsListView.Items.Remove(item);
+      // reselect an item
+      if (mappingsListView.Items.Count > 0)
+        if (mappingsListView.Items.Count <= selectedIndex)
+          mappingsListView.SelectedIndices.Add(mappingsListView.Items.Count - 1);
+        else
+          mappingsListView.SelectedIndices.Add(selectedIndex);
 
       ButtonMapping toRemove = null;
       foreach (ButtonMapping test in currentMappings)
@@ -704,15 +730,32 @@ namespace Translator
       {
         if (item.SubItems[0].Text.Equals(test.KeyCode, StringComparison.Ordinal))
         {
-          ButtonMappingForm map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
+          ButtonMappingForm map;
+
+          if (!test.IsCommandAvailable)
+          {
+            DialogResult dr = MessageBox.Show(this,
+                                              "The command " + test.GetCommandDisplayText() + " was not found in CommandLibrary and can not be modified." +
+                                              Environment.NewLine + Environment.NewLine +
+                                              "Do you want to replace the command with a another one?",
+                                              "Command not available", MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                                              MessageBoxDefaultButton.Button2);
+
+            if (dr == DialogResult.Yes)
+              map = new ButtonMappingForm(test.KeyCode, test.Description);
+            else
+              return;
+          }
+          else
+            map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
 
           if (map.ShowDialog(this) == DialogResult.OK)
           {
             item.SubItems[1].Text = map.Description;
-            item.SubItems[2].Text = map.Command;
+            item.SubItems[2].Text = map.CommandString;
 
             test.Description = map.Description;
-            test.Command = map.Command;
+            test.Command = map.CurrentCommand;
           }
 
           break;
@@ -779,7 +822,7 @@ namespace Translator
         if (test.KeyCode.Equals(keyCode, StringComparison.Ordinal))
         {
           MessageBox.Show(this,
-                          String.Format("{0} is already mapped to {1} ({2})", keyCode, test.Description, test.Command),
+                          String.Format("{0} is already mapped to {1} ({2})", keyCode, test.Description, test.GetCommandDisplayText()),
                           "Cannot remap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
           return;
         }
@@ -910,11 +953,17 @@ namespace Translator
 
       foreach (MappedEvent mappedEvent in Program.Config.Events)
       {
-        listViewEventMap.Items.Add(
-          new ListViewItem(
-            new string[] { Enum.GetName(typeof(MappingEvent), mappedEvent.EventType), mappedEvent.Command }
-            )
-          );
+        ListViewItem item = new ListViewItem(new string[] { Enum.GetName(typeof(MappingEvent), mappedEvent.EventType), mappedEvent.GetCommandDisplayText() });
+        if (mappedEvent.IsCommandAvailable)
+        {
+          item.Tag = mappedEvent.Command;
+        }
+        else
+        {
+          item.Tag = mappedEvent;
+          item.ToolTipText = "Command was not found in CommandLibrary.";
+        }
+        listViewEventMap.Items.Add(item);
       }
 
       // refresh combobox
@@ -932,7 +981,6 @@ namespace Translator
           addEventToolStripMenuItem.DropDownItems.Add(
             eventName, null, AddEvent);
     }
-
     private void RefreshEventCommands()
     {
       object wasSelected = null;
@@ -940,19 +988,33 @@ namespace Translator
         wasSelected = comboBoxCommands.SelectedItem;
 
       comboBoxCommands.Items.Clear();
+      _uiTextCategoryCache.Clear();
 
-      comboBoxCommands.Items.Add(Common.UITextRun);
-      comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
-      comboBoxCommands.Items.Add(Common.UITextKeys);
+      List<string> categories = new List<string>(){Processor.CategoryGeneral, Processor.CategorySpecial};
+      List<Type> allCommands = new List<Type>();
 
-      string[] list = Common.GetIRList(true);
-      if (list != null && list.Length > 0)
-        comboBoxCommands.Items.AddRange(list);
+      Type[] specialCommands = Processor.GetBuiltInCommands();
+      allCommands.AddRange(specialCommands);
 
-      list = IrssMacro.GetMacroList(Program.FolderMacros, true);
-      if (list != null && list.Length > 0)
-        comboBoxCommands.Items.AddRange(list);
+      Type[] libCommands = Processor.GetLibraryCommands();
+      if (libCommands != null)
+        allCommands.AddRange(libCommands);
+
+      foreach (Type type in allCommands)
+      {
+        Command command = (Command) Activator.CreateInstance(type);
+
+        string commandCategory = command.Category;
+        string commandTitle = command.UserInterfaceText;
+        //string key = String.Format("{0}: {1}", commandCategory, commandTitel);
+
+        if (categories.Contains(commandCategory))
+        {
+
+          comboBoxCommands.Items.Add(commandTitle);
+          _uiTextCategoryCache[commandTitle] = type;
+        }
+      }
 
       if (wasSelected != null && comboBoxCommands.Items.Contains(wasSelected))
         comboBoxCommands.SelectedItem = wasSelected;
@@ -960,21 +1022,36 @@ namespace Translator
         comboBoxCommands.SelectedIndex = 0;
     }
 
-
     private void CommitEvents()
     {
       Program.Config.Events.Clear();
+      MappedEvent map;
       MappingEvent eventType;
-      string command;
+      Command command;
 
       foreach (ListViewItem item in listViewEventMap.Items)
       {
         try
         {
-          eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), item.SubItems[0].Text, true);
-          command = item.SubItems[1].Text;
+          if (ReferenceEquals(item.Tag, null)) continue;
 
-          Program.Config.Events.Add(new MappedEvent(eventType, command));
+          eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), item.SubItems[0].Text, true);
+
+          // command is available, tag is a command
+          command = item.Tag as Command;
+          if (!ReferenceEquals(command, null))
+          {
+            Program.Config.Events.Add(new MappedEvent(eventType, command));
+            continue;
+          }
+
+          // command is not available, tag is the preserved mapped event
+          map = item.Tag as MappedEvent;
+          if (!ReferenceEquals(map, null))
+          {
+            Program.Config.Events.Add(map);
+          }
+
         }
         catch (Exception ex)
         {
@@ -1011,66 +1088,16 @@ namespace Translator
         return;
 
       string selected = comboBoxCommands.SelectedItem as string;
-      string command = String.Empty;
 
-      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
+      Type newType = _uiTextCategoryCache[selected];
+      Command newCommand = (Command)Activator.CreateInstance(newType);
+      if (!newCommand.Edit(this)) return;
+
+      foreach (ListViewItem item in listViewEventMap.SelectedItems)
       {
-        ExternalProgram externalProgram = new ExternalProgram();
-
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixRun + externalProgram.CommandString;
+        item.Tag = newCommand;
+        item.SubItems[1].Text = newCommand.UserDisplayText;
       }
-      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        SerialCommand serialCommand = new SerialCommand();
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixSerial + serialCommand.CommandString;
-      }
-      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        MessageCommand messageCommand = new MessageCommand();
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-      }
-      else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        KeysCommand keysCommand = new KeysCommand();
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixKeys + keysCommand.CommandString;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        BlastCommand blastCommand = new BlastCommand(
-          Program.BlastIR,
-          Common.FolderIRCommands,
-          Program.TransceiverInformation.Ports,
-          selected.Substring(Common.CmdPrefixBlast.Length));
-
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixBlast + blastCommand.CommandString;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-      {
-        command = selected;
-      }
-      else
-      {
-        IrssLog.Error("Invalid command set in Events: {0}", selected);
-        return;
-      }
-
-      foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
-        listViewItem.SubItems[1].Text = command;
     }
 
     private void listViewEventMap_KeyDown(object sender, KeyEventArgs e)
@@ -1085,64 +1112,24 @@ namespace Translator
       if (listViewEventMap.SelectedItems.Count != 1)
         return;
 
-      string command = listViewEventMap.SelectedItems[0].SubItems[1].Text;
+      ListViewItem item = listViewEventMap.SelectedItems[0];
+      if (ReferenceEquals(item.Tag, null)) return;
 
-      if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+      if (item.Tag is MappedEvent)
       {
-        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-        ExternalProgram externalProgram = new ExternalProgram(commands);
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixRun + externalProgram.CommandString;
-      }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-        SerialCommand serialCommand = new SerialCommand(commands);
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixSerial + serialCommand.CommandString;
-      }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-        MessageCommand messageCommand = new MessageCommand(commands);
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-      }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        KeysCommand keysCommand = new KeysCommand(command.Substring(Common.CmdPrefixKeys.Length));
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixKeys + keysCommand.CommandString;
-      }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-
-        BlastCommand blastCommand = new BlastCommand(
-          Program.BlastIR,
-          Common.FolderIRCommands,
-          Program.TransceiverInformation.Ports,
-          commands);
-
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixBlast + blastCommand.CommandString;
-      }
-      else
-      {
+        MessageBox.Show(this,
+                        "The command is not available and can not be edited. Please check your commands directory in application folder or set a new command below.",
+                        "Command unavailable", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
       }
 
-      listViewEventMap.SelectedItems[0].SubItems[1].Text = command;
+      Command cmd = item.Tag as Command;
+      if (ReferenceEquals(cmd, null)) return;
+
+      if (!cmd.Edit(this)) return;
+
+      item.Tag = cmd;
+      item.SubItems[1].Text = cmd.UserDisplayText;
     }
 
     #endregion
@@ -1153,10 +1140,15 @@ namespace Translator
     {
       listViewMacro.Items.Clear();
 
-      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
-      if (macroList != null && macroList.Length > 0)
-        foreach (string macroFile in macroList)
-          listViewMacro.Items.Add(macroFile);
+      string[] files = Processor.GetListMacro(Program.FolderMacros);
+      foreach (string file in files)
+      {
+        ListViewItem item = new ListViewItem();
+        item.Text = Path.GetFileNameWithoutExtension(file);
+        item.Tag = file;
+
+        listViewMacro.Items.Add(item);
+      }
 
       Program.UpdateNotifyMenu();
 
@@ -1166,7 +1158,7 @@ namespace Translator
 
     private void NewMacro(object sender, EventArgs e)
     {
-      MacroEditor macroEditor = new MacroEditor();
+      EditMacro macroEditor = new EditMacro(Program.CommandProcessor, Program.FolderMacros, _macroCategories);
       macroEditor.ShowDialog(this);
 
       RefreshMacroList();
@@ -1174,57 +1166,63 @@ namespace Translator
 
     private void EditMacro(object sender, EventArgs e)
     {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
+      if (listViewMacro.SelectedItems.Count != 1) return;
+      if (ReferenceEquals(listViewMacro.SelectedItems[0].Tag, null)) return;
 
-      string command = listViewMacro.SelectedItems[0].Text;
-      string fileName = Path.Combine(Program.FolderMacros, command + Common.FileExtensionMacro);
+      string file = listViewMacro.SelectedItems[0].Tag as string;
+      if (ReferenceEquals(file, null)) return;
 
-      if (File.Exists(fileName))
-      {
-        MacroEditor macroEditor = new MacroEditor(command);
-        macroEditor.ShowDialog(this);
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-        RefreshMacroList();
-      }
+
+      EditMacro macroEditor = new EditMacro(Program.CommandProcessor, Program.FolderMacros, _macroCategories, file);
+      macroEditor.ShowDialog(this);
+
+      RefreshMacroList();
     }
 
     private void DeleteMacro(object sender, EventArgs e)
     {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
+      if (listViewMacro.SelectedItems.Count != 1) return;
+      if (ReferenceEquals(listViewMacro.SelectedItems[0].Tag, null)) return;
 
-      string file = listViewMacro.SelectedItems[0].Text;
-      string fileName = Path.Combine(Program.FolderMacros, file + Common.FileExtensionMacro);
-      if (File.Exists(fileName))
+      string file = listViewMacro.SelectedItems[0].Tag as string;
+      if (ReferenceEquals(file, null)) return;
+
+      if (File.Exists(file))
       {
         if (
           MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
                           MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
         {
-          File.Delete(fileName);
+          File.Delete(file);
           listViewMacro.Items.Remove(listViewMacro.SelectedItems[0]);
         }
       }
       else
       {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
+        MessageBox.Show(this, "File not found: " + file, "Macro file missing", MessageBoxButtons.OK,
                         MessageBoxIcon.Exclamation);
       }
     }
 
     private void TestMacro(object sender, EventArgs e)
     {
-      if (listViewMacro.SelectedItems.Count != 1)
+      if (listViewMacro.SelectedItems.Count != 1) return;
+      if (ReferenceEquals(listViewMacro.SelectedItems[0].Tag, null)) return;
+
+      string file = listViewMacro.SelectedItems[0].Tag as string;
+      if (ReferenceEquals(file, null)) return;
+
+      if (!File.Exists(file))
+      {
+        MessageBox.Show(this, "File not found: " + file, "Macro file missing", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
         return;
+      }
 
       try
       {
-        Program.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
+        Macro macro = new Macro(file);
+        macro.Execute(Program.CommandProcessor);
       }
       catch (Exception ex)
       {
@@ -1235,11 +1233,15 @@ namespace Translator
 
     private void CreateShortcutForMacro(object sender, EventArgs e)
     {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
+      if (listViewMacro.SelectedItems.Count != 1) return;
+      if (ReferenceEquals(listViewMacro.SelectedItems[0].Tag, null)) return;
+
+      string file = listViewMacro.SelectedItems[0].Tag as string;
+      if (ReferenceEquals(file, null)) return;
+
+      string macroName = Path.GetFileNameWithoutExtension(file);
 
       string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-      string macroName = listViewMacro.SelectedItems[0].Text;
       string shortcutPath = Path.Combine(desktopPath, String.Format("Macro - {0}.lnk", macroName));
 
       ShellShortcut shortcut = new ShellShortcut(shortcutPath);
@@ -1255,8 +1257,7 @@ namespace Translator
 
       shortcut.Save();
     }
-
-
+    
     private void listViewMacro_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (listViewMacro.SelectedIndices.Count != 1)

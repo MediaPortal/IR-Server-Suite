@@ -4,7 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Edit Switch Command form.

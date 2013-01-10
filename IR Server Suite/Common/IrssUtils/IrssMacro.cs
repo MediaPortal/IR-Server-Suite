@@ -21,14 +21,13 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-using IrssUtils.Exceptions;
 
 namespace IrssUtils
 {
-
   #region Delegates
 
   /// <summary>
@@ -233,9 +232,6 @@ namespace IrssUtils
     /// <returns>string[] of Macros.</returns>
     public static string[] GetMacroList(string folder, bool commandPrefix)
     {
-      if (!Directory.Exists(folder))
-        Directory.CreateDirectory(folder);
-
       string[] files = Directory.GetFiles(folder, '*' + Common.FileExtensionMacro);
 
       for (int index = 0; index < files.Length; index++)

@@ -24,8 +24,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using IrssCommands;
 using IrssUtils;
-using IrssUtils.Exceptions;
 
 namespace Translator
 {
@@ -175,7 +175,7 @@ namespace Translator
           Marshal.Copy(dataStructure.lpData, dataBytes, 0, dataStructure.cbData);
           string strData = Encoding.ASCII.GetString(dataBytes);
 
-          Program.ProcessCommand(strData, false);
+          Program.ProcessCommand(strData);
         }
         catch (Exception ex)
         {

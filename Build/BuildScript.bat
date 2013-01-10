@@ -53,8 +53,8 @@ if not %ERRORLEVEL%==0 EXIT
 if not %2!==MPplugins! goto NoMPplugins
 echo.
 echo Building MediaPortal plugins...
-"%ProgramDir%\Microsoft Visual Studio 10.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
-rem "%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86 "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
+rem "%ProgramDir%\Microsoft Visual Studio 10.0\Common7\IDE\devenv.com" /rebuild %BUILD_TYPE% "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
+"%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86 "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
 if not %ERRORLEVEL%==0 EXIT
 :NoMPplugins
 

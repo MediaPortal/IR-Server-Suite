@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Macro
@@ -52,8 +52,20 @@ namespace Commands
 
       foreach (XmlNode item in commandSequence)
       {
-        string xml = item.Attributes["xml"].Value;
-        Command command = Processor.CreateCommand(xml);
+        string commandType = item.Attributes["CommandType"].Value;
+        string[] parameters = null;
+
+        XmlNodeList parameterSequence = item.SelectNodes("parameter");
+        if (!ReferenceEquals(parameterSequence, null))
+        {
+          if (parameterSequence.Count > 0)
+            parameters = new string[parameterSequence.Count];
+
+          for (int i = 0; i < parameterSequence.Count; i++)
+            parameters[i] = parameterSequence[i].InnerText;
+        }
+
+        Command command = Processor.CreateCommand(commandType, parameters);
         _commands.Add(command);
       }
     }
@@ -77,7 +89,11 @@ namespace Commands
         foreach (Command command in _commands)
         {
           writer.WriteStartElement("item");
-          writer.WriteAttributeString("xml", command.ToString());
+          writer.WriteAttributeString("CommandType", command.GetType().FullName);
+          foreach (string s in command.Parameters)
+          {
+            writer.WriteElementString("parameter", s);
+          }
           writer.WriteEndElement();
         }
 

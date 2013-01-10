@@ -183,19 +183,32 @@ namespace IrssUtils
       /// <summary>
       /// LogOff
       /// </summary>
-      LogOff = 0,
+      LogOff = 0x00,
       /// <summary>
       /// ShutDown
       /// </summary>
-      ShutDown = 1,
+      ShutDown = 0x01,
       /// <summary>
       /// Reboot
       /// </summary>
-      Reboot = 2,
+      Reboot = 0x02,
       /// <summary>
       /// PowerOff
       /// </summary>
-      PowerOff = 8,
+      PowerOff = 0x08,
+      /// <summary>
+      /// RestartApps
+      /// </summary>
+      RestartApps = 0x40,
+
+      /// <summary>
+      /// Force
+      /// </summary>
+      Force = 0x04,
+      /// <summary>
+      /// ForceIfHung
+      /// </summary>
+      ForceIfHung = 0x10,
     }
 
     #endregion
@@ -2152,6 +2165,12 @@ namespace IrssUtils
       IntPtr hWnd,
       int nIndex);
 
+    [DllImport("Kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool Beep(
+      uint frequency,
+      uint duration);
+      
     [DllImport("user32.dll")]
     private static extern int GetClassName(
       IntPtr hWnd,
@@ -2878,6 +2897,17 @@ namespace IrssUtils
       IntPtr ptr = handle.AddrOfPinnedObject();
       handle.Free();
       return ptr;
+    }
+
+    /// <summary>
+    /// Plays a beep.
+    /// </summary>
+    /// <param name="frequency">The frequency in hertz.</param>
+    /// <param name="duration">The duration in milliseconds.</param>
+    /// <returns><c>true</c> if successfuly, otherwise <c>false</c>.</returns>
+    public static bool PlayBeep(int frequency, int duration)
+    {
+      return Beep((uint)frequency, (uint)duration);
     }
 
     public static bool Check64Bit()

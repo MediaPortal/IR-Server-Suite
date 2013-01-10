@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using IrssUtils;
+
 #if TRACE
 using System.Diagnostics;
 #endif
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Edit Macro form.
@@ -95,7 +96,7 @@ namespace Commands
       Macro macro = new Macro(_fileName);
       foreach (Command command in macro.Commands)
       {
-        ListViewItem item = new ListViewItem(command.GetUserDisplayText());
+        ListViewItem item = new ListViewItem(command.UserDisplayText);
         item.Tag = command.ToString();
         listViewMacro.Items.Add(item);
       }
@@ -133,11 +134,11 @@ namespace Commands
       {
         Command command = (Command) Activator.CreateInstance(type);
 
-        string commandCategory = command.GetCategory();
+        string commandCategory = command.Category;
 
         if (categoryNodes.ContainsKey(commandCategory))
         {
-          TreeNode newNode = new TreeNode(command.GetUserInterfaceText());
+          TreeNode newNode = new TreeNode(command.UserInterfaceText);
           newNode.Tag = type;
 
           categoryNodes[commandCategory].Nodes.Add(newNode);
@@ -200,7 +201,7 @@ namespace Commands
 
       if (_commandProcessor.Edit(command, this))
       {
-        selected.Text = command.GetUserDisplayText();
+        selected.Text = command.UserDisplayText;
         selected.Tag = command.ToString();
       }
     }
@@ -298,7 +299,7 @@ namespace Commands
 
         if (_commandProcessor.Edit(command, this))
         {
-          newCommand.Text = command.GetUserDisplayText();
+          newCommand.Text = command.UserDisplayText;
           newCommand.Tag = command.ToString();
           listViewMacro.Items.Add(newCommand);
         }
@@ -308,7 +309,7 @@ namespace Commands
       {
         command = new CommandCallMacro(new string[] {treeViewCommandList.SelectedNode.Tag as string});
 
-        newCommand.Text = command.GetUserDisplayText();
+        newCommand.Text = command.UserDisplayText;
         newCommand.Tag = command.ToString();
         listViewMacro.Items.Add(newCommand);
       }
@@ -319,7 +320,7 @@ namespace Commands
 
         if (_commandProcessor.Edit(command, this))
         {
-          newCommand.Text = command.GetUserDisplayText();
+          newCommand.Text = command.UserDisplayText;
           newCommand.Tag = command.ToString();
           listViewMacro.Items.Add(newCommand);
         }
@@ -441,7 +442,7 @@ namespace Commands
         }
 
         if (textBoxName.Enabled)
-          _fileName = _macroFolder + name + Processor.FileExtensionMacro;
+          _fileName = Path.Combine(_macroFolder, name+ Processor.FileExtensionMacro);
 
         newMacro.Save(_fileName);
       }

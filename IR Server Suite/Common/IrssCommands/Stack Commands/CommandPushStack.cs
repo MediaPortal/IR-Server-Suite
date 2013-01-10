@@ -1,6 +1,6 @@
 using System.Windows.Forms;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Push Stack stack command.
@@ -32,19 +32,19 @@ namespace Commands
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return Processor.CategoryStack;
+      get { return Processor.CategoryStack; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Push Stack";
+      get { return "Push Stack"; }
     }
 
     /// <summary>

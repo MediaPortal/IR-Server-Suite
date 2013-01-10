@@ -25,8 +25,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using IrssCommands;
 using IrssUtils;
-using Translator.Properties;
 
 namespace Translator
 {
@@ -61,11 +61,6 @@ namespace Translator
     #region Constants
 
     // Menu descriptions
-    private const string CommandHibernate = "Hibernate";
-    private const string CommandLogOff = "LogOff";
-    private const string CommandReboot = "Reboot";
-    private const string CommandShutdown = "Shutdown";
-    private const string CommandStandby = "Standby";
     private const string DescAudio = "Adjust the system volume";
     private const string DescEject = "Eject a disc";
     private const string DescLaunch = "Launch an application";
@@ -84,11 +79,6 @@ namespace Translator
     private const int IconPower = 27;
     private const int IconTasks = 98;
     private const int IconWindows = 15;
-    private const string TagCommand = "Command: ";
-    private const string TagEject = "Eject: ";
-    private const string TagLaunch = "Launch: ";
-    private const string TagMacro = "Macro: ";
-    private const string TagMenu = "Menu: ";
     private const string UITextAudio = "Audio";
     private const string UITextEject = "Eject";
     private const string UITextLaunch = "Launch App";
@@ -285,31 +275,39 @@ namespace Translator
 
         ListViewItem item = new ListViewItem(program.Name, index++);
         item.ToolTipText = program.FileName;
-        item.Tag = TagLaunch + program.FileName;
 
+        Command command;
+        string[] parameters = program.GetRunCommandParameters();
+        try
+        {
+          command = Processor.CreateCommand(Common.CLASS_RunCommand, parameters);
+        }
+        catch (Exception)
+        {
+          continue;
+        }
+        item.Tag = command;
         listViewMenu.Items.Add(item);
       }
     }
 
     private void LoadMenuMacros()
     {
-      SetWindowTitle(UITextMacros);
+      //SetWindowTitle(UITextMacros);
 
-      listViewMenu.LargeImageList = null;
+      //listViewMenu.LargeImageList = null;
 
-      SetToListStyle();
+      //SetToListStyle();
 
-      string[] macros = IrssMacro.GetMacroList(Program.FolderMacros, false);
-      if (macros.Length == 0)
-        return;
+      //List<MacroCommand> mcList = IrssMacro.GetMacroList(Program.FolderMacros);
+      //foreach (MacroCommand mc in mcList)
+      //{
+      //  ListViewItem item = new ListViewItem();
+      //  item.Text = mc.MacroName;
+      //  item.Tag = mc;
 
-      foreach (string macro in macros)
-      {
-        ListViewItem item = new ListViewItem(macro);
-        item.Tag = TagMacro + macro;
-
-        listViewMenu.Items.Add(item);
-      }
+      //  listViewMenu.Items.Add(item);
+      //}
     }
 
     private void LoadMenuSystem()
@@ -451,68 +449,99 @@ namespace Translator
 
       item = new ListViewItem("Shutdown", 0);
       item.ToolTipText = "Shutdown windows";
-      item.Tag = TagCommand + CommandShutdown;
-      listViewMenu.Items.Add(item);
+      try
+      {
+        item.Tag = Processor.CreateCommand(Common.CLASS_ShutdownCommand, null as string[]);
+        listViewMenu.Items.Add(item);
+      }
+      catch (Exception)
+      {
+      }
 
       item = new ListViewItem("Reboot", 0);
       item.ToolTipText = "Reboot windows";
-      item.Tag = TagCommand + CommandReboot;
-      listViewMenu.Items.Add(item);
+      try
+      {
+        item.Tag = Processor.CreateCommand(Common.CLASS_RebootCommand, null as string[]);
+        listViewMenu.Items.Add(item);
+      }
+      catch (Exception)
+      {
+      }
 
       item = new ListViewItem("Logoff", 0);
       item.ToolTipText = "Logoff the current user";
-      item.Tag = TagCommand + CommandLogOff;
-      listViewMenu.Items.Add(item);
+      try
+      {
+        item.Tag = Processor.CreateCommand(Common.CLASS_LogOffCommand, null as string[]);
+        listViewMenu.Items.Add(item);
+      }
+      catch (Exception)
+      {
+      }
 
       item = new ListViewItem("Standby", 0);
       item.ToolTipText = "Enter low-power standby mode";
-      item.Tag = TagCommand + CommandStandby;
-      listViewMenu.Items.Add(item);
+      try
+      {
+        item.Tag = Processor.CreateCommand(Common.CLASS_StandByCommand, null as string[]);
+        listViewMenu.Items.Add(item);
+      }
+      catch (Exception)
+      {
+      }
 
       item = new ListViewItem("Hibernate", 0);
       item.ToolTipText = "Enter hibernate mode";
-      item.Tag = TagCommand + CommandHibernate;
-      listViewMenu.Items.Add(item);
+      try
+      {
+        item.Tag = Processor.CreateCommand(Common.CLASS_HibernateCommand, null as string[]);
+        listViewMenu.Items.Add(item);
+      }
+      catch (Exception)
+      {
+      }
     }
 
-    private void LoadMenuAudio()
-    {
-      SetWindowTitle(UITextAudio);
+#warning fixme - audio command
+    //private void LoadMenuAudio()
+    //{
+    //  SetWindowTitle(UITextAudio);
 
-      SetToIconStyle();
+    //  SetToIconStyle();
 
-      ImageList newList = new ImageList();
-      newList.ColorDepth = ColorDepth.Depth32Bit;
-      newList.ImageSize = new Size(32, 32);
+    //  ImageList newList = new ImageList();
+    //  newList.ColorDepth = ColorDepth.Depth32Bit;
+    //  newList.ImageSize = new Size(32, 32);
 
-      listViewMenu.LargeImageList = newList;
+    //  listViewMenu.LargeImageList = newList;
 
-      Icon large;
-      Icon small;
+    //  Icon large;
+    //  Icon small;
 
-      string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
-      string file = Path.Combine(folder, "shell32.dll");
+    //  string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
+    //  string file = Path.Combine(folder, "shell32.dll");
 
-      Win32.ExtractIcons(file, IconAudio, out large, out small);
-      newList.Images.Add(large);
+    //  Win32.ExtractIcons(file, IconAudio, out large, out small);
+    //  newList.Images.Add(large);
 
-      ListViewItem item;
+    //  ListViewItem item;
 
-      item = new ListViewItem("Volume Up", 0);
-      item.ToolTipText = "Increase the audio volume";
-      item.Tag = TagCommand + "Volume Up";
-      listViewMenu.Items.Add(item);
+    //  item = new ListViewItem("Volume Up", 0);
+    //  item.ToolTipText = "Increase the audio volume";
+    //  item.Tag = new VolumeUpCommand();
+    //  listViewMenu.Items.Add(item);
 
-      item = new ListViewItem("Volume Down", 0);
-      item.ToolTipText = "Decreases the audio volume";
-      item.Tag = TagCommand + "Volume Down";
-      listViewMenu.Items.Add(item);
+    //  item = new ListViewItem("Volume Down", 0);
+    //  item.ToolTipText = "Decreases the audio volume";
+    //  item.Tag = new VolumeDownCommand();
+    //  listViewMenu.Items.Add(item);
 
-      item = new ListViewItem("Volume Mute", 0);
-      item.ToolTipText = "Mutes the audio";
-      item.Tag = TagCommand + "Mute";
-      listViewMenu.Items.Add(item);
-    }
+    //  item = new ListViewItem("Volume Mute", 0);
+    //  item.ToolTipText = "Mutes the audio";
+    //  item.Tag = new VolumeMuteCommand();
+    //  listViewMenu.Items.Add(item);
+    //}
 
     private void LoadMenuEject()
     {
@@ -544,7 +573,18 @@ namespace Translator
         {
           item = new ListViewItem("Eject " + drive.Name, 0);
           item.ToolTipText = "Eject drive " + drive.Name;
-          item.Tag = TagEject + drive.Name;
+
+          Command command;
+          string[] parameters = new string[] { drive.Name };
+          try
+          {
+            command = Processor.CreateCommand(Common.CLASS_EjectCommand, parameters);
+          }
+          catch (Exception)
+          {
+            continue;
+          }
+          item.Tag = command;
           listViewMenu.Items.Add(item);
         }
       }
@@ -639,9 +679,10 @@ namespace Translator
         case Menus.Power:
           LoadMenuPower();
           break;
-        case Menus.Audio:
-          LoadMenuAudio();
-          break;
+#warning fixme - audio command
+        //case Menus.Audio:
+        //  LoadMenuAudio();
+        //  break;
         case Menus.Eject:
           LoadMenuEject();
           break;
@@ -721,27 +762,6 @@ namespace Translator
           workingArea.Y + (workingArea.Height / 2) - (newHeight / 2));
     }
 
-    private void Launch(string programFile)
-    {
-      Close();
-
-      foreach (ProgramSettings settings in Program.Config.Programs)
-      {
-        if (settings.FileName.Equals(programFile))
-        {
-          Program.ProcessCommand(Common.CmdPrefixRun + settings.RunCommandString, true);
-          break;
-        }
-      }
-    }
-
-    private void RunMacro(string macroName)
-    {
-      Close();
-
-      Program.ProcessCommand(Common.CmdPrefixMacro + macroName, true);
-    }
-
     private void TaskSwap(IntPtr window)
     {
       Close();
@@ -750,37 +770,6 @@ namespace Translator
         Win32.ShowDesktop();
       else
         Win32.ActivateWindowByHandle(window);
-    }
-
-    private void Command(string command)
-    {
-      Close();
-
-      switch (command)
-      {
-        case CommandShutdown:
-          Program.ProcessCommand(Common.CmdPrefixShutdown, true);
-          break;
-        case CommandReboot:
-          Program.ProcessCommand(Common.CmdPrefixReboot, true);
-          break;
-        case CommandLogOff:
-          Program.ProcessCommand(Common.CmdPrefixLogOff, true);
-          break;
-        case CommandStandby:
-          Program.ProcessCommand(Common.CmdPrefixStandby, true);
-          break;
-        case CommandHibernate:
-          Program.ProcessCommand(Common.CmdPrefixHibernate, true);
-          break;
-      }
-    }
-
-    private void Eject(string drive)
-    {
-      Close();
-
-      Program.ProcessCommand(Common.CmdPrefixEject + drive, true);
     }
 
     private void Close(IntPtr window)
@@ -856,18 +845,12 @@ namespace Translator
               break;
           }
         }
-        else if (selectedItem.Tag is string)
+        else if (selectedItem.Tag is Command)
         {
-          string tag = (string) selectedItem.Tag;
+          Command c = (Command)selectedItem.Tag;
 
-          if (tag.StartsWith(TagLaunch, StringComparison.OrdinalIgnoreCase))
-            Launch(tag.Substring(TagLaunch.Length));
-          else if (tag.StartsWith(TagMacro, StringComparison.OrdinalIgnoreCase))
-            RunMacro(tag.Substring(TagMacro.Length));
-          else if (tag.StartsWith(TagCommand, StringComparison.OrdinalIgnoreCase))
-            Command(tag.Substring(TagCommand.Length));
-          else if (tag.StartsWith(TagEject, StringComparison.OrdinalIgnoreCase))
-            Eject(tag.Substring(TagEject.Length));
+          Close();
+          Program.ProcessCommand(c, true);
         }
         else
         {
@@ -879,7 +862,6 @@ namespace Translator
         IrssLog.Error(ex);
       }
     }
-
 
     private void listViewMenu_ItemActivate(object sender, EventArgs e)
     {

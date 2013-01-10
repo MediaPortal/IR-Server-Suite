@@ -24,9 +24,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using IrssCommands;
 using IrssUtils;
 
-namespace Translator
+namespace Translator.Forms
 {
   internal partial class EditProgramForm : Form
   {
@@ -143,19 +144,9 @@ namespace Translator
     {
       try
       {
-        string[] launchCommand = new string[]
-                                   {
-                                     Filename,
-                                     StartupFolder,
-                                     Parameters,
-                                     Enum.GetName(typeof (ProcessWindowStyle), StartState),
-                                     false.ToString(),
-                                     UseShellExecute.ToString(),
-                                     false.ToString(),
-                                     ForceWindowFocus.ToString()
-                                   };
-
-        Common.ProcessRunCommand(launchCommand);
+        Command command = Processor.CreateCommand(Common.CLASS_RunCommand, GetRunCommandParameters());
+        if (!ReferenceEquals(command,null))
+          command.Execute(new VariableList());
       }
       catch (Exception ex)
       {
@@ -176,5 +167,20 @@ namespace Translator
     }
 
     #endregion Buttons
+
+    internal string[] GetRunCommandParameters()
+    {
+      return new[]
+        {
+          Filename.Trim(),
+          StartupFolder.Trim(),
+          Parameters.Trim(),
+          Enum.GetName(typeof (ProcessWindowStyle), WindowState),
+          false.ToString(),
+          UseShellExecute.ToString(),
+          false.ToString(),
+          ForceWindowFocus.ToString()
+        };
+    }
   }
 }

@@ -1,4 +1,4 @@
-namespace Commands
+namespace IrssCommands
 {
 
   partial class EditMacro
@@ -131,7 +131,7 @@ namespace Commands
       // toolStripButtonTop
       // 
       this.toolStripButtonTop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonTop.Image = global::Commands.Properties.Resources.MoveTop;
+      this.toolStripButtonTop.Image = global::IrssCommands.Properties.Resources.MoveTop;
       this.toolStripButtonTop.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonTop.Name = "toolStripButtonTop";
       this.toolStripButtonTop.Size = new System.Drawing.Size(21, 20);
@@ -141,7 +141,7 @@ namespace Commands
       // toolStripButtonUp
       // 
       this.toolStripButtonUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonUp.Image = global::Commands.Properties.Resources.MoveUp;
+      this.toolStripButtonUp.Image = global::IrssCommands.Properties.Resources.MoveUp;
       this.toolStripButtonUp.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonUp.Name = "toolStripButtonUp";
       this.toolStripButtonUp.Size = new System.Drawing.Size(21, 20);
@@ -156,7 +156,7 @@ namespace Commands
       // toolStripButtonEdit
       // 
       this.toolStripButtonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonEdit.Image = global::Commands.Properties.Resources.Edit;
+      this.toolStripButtonEdit.Image = global::IrssCommands.Properties.Resources.Edit;
       this.toolStripButtonEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonEdit.Name = "toolStripButtonEdit";
       this.toolStripButtonEdit.Size = new System.Drawing.Size(21, 20);
@@ -166,7 +166,7 @@ namespace Commands
       // toolStripButtonDelete
       // 
       this.toolStripButtonDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDelete.Image = global::Commands.Properties.Resources.Delete;
+      this.toolStripButtonDelete.Image = global::IrssCommands.Properties.Resources.Delete;
       this.toolStripButtonDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDelete.Name = "toolStripButtonDelete";
       this.toolStripButtonDelete.Size = new System.Drawing.Size(21, 20);
@@ -176,7 +176,7 @@ namespace Commands
       // toolStripButtonDeleteAll
       // 
       this.toolStripButtonDeleteAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDeleteAll.Image = global::Commands.Properties.Resources.DeleteAll;
+      this.toolStripButtonDeleteAll.Image = global::IrssCommands.Properties.Resources.DeleteAll;
       this.toolStripButtonDeleteAll.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDeleteAll.Name = "toolStripButtonDeleteAll";
       this.toolStripButtonDeleteAll.Size = new System.Drawing.Size(21, 20);
@@ -191,7 +191,7 @@ namespace Commands
       // toolStripButtonDown
       // 
       this.toolStripButtonDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDown.Image = global::Commands.Properties.Resources.MoveDown;
+      this.toolStripButtonDown.Image = global::IrssCommands.Properties.Resources.MoveDown;
       this.toolStripButtonDown.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDown.Name = "toolStripButtonDown";
       this.toolStripButtonDown.Size = new System.Drawing.Size(21, 20);
@@ -201,7 +201,7 @@ namespace Commands
       // toolStripButtonBottom
       // 
       this.toolStripButtonBottom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonBottom.Image = global::Commands.Properties.Resources.MoveBottom;
+      this.toolStripButtonBottom.Image = global::IrssCommands.Properties.Resources.MoveBottom;
       this.toolStripButtonBottom.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonBottom.Name = "toolStripButtonBottom";
       this.toolStripButtonBottom.Size = new System.Drawing.Size(21, 20);

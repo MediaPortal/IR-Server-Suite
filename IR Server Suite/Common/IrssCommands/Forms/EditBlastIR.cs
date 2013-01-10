@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using IrssUtils;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Edit Blast IR Command form.

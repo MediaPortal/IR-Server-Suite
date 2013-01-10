@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
 using IrssUtils;
 
@@ -34,17 +35,6 @@ namespace Translator
   [XmlRoot]
   public class Configuration
   {
-    #region Variables
-
-    private readonly List<MappedEvent> _mappedEvents;
-    private readonly List<ProgramSettings> _programSettings;
-    private readonly List<ButtonMapping> _systemWideMappings;
-    private bool _hideTrayIcon;
-    private string _processPriority;
-    private string _serverHost;
-
-    #endregion Variables
-
     #region Properties
 
     /// <summary>
@@ -52,63 +42,42 @@ namespace Translator
     /// </summary>
     /// <value>The server host.</value>
     [XmlElement]
-    public string ServerHost
-    {
-      get { return _serverHost; }
-      set { _serverHost = value; }
-    }
+    public string ServerHost { get; set; }
 
     /// <summary>
     /// Gets or sets the process priority.
     /// </summary>
     /// <value>The process priority.</value>
     [XmlElement]
-    public string ProcessPriority
-    {
-      get { return _processPriority; }
-      set { _processPriority = value; }
-    }
+    public string ProcessPriority { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to hide the tray icon.
     /// </summary>
     /// <value><c>true</c> to hide the tray icon; otherwise, <c>false</c>.</value>
     [XmlElement]
-    public bool HideTrayIcon
-    {
-      get { return _hideTrayIcon; }
-      set { _hideTrayIcon = value; }
-    }
+    public bool HideTrayIcon { get; set; }
 
     /// <summary>
     /// Gets system wide button mappings.
     /// </summary>
     /// <value>The system wide mappings.</value>
     [XmlArray]
-    public List<ButtonMapping> SystemWideMappings
-    {
-      get { return _systemWideMappings; }
-    }
+    public List<ButtonMapping> SystemWideMappings { get; private set; }
 
     /// <summary>
     /// Gets program settings.
     /// </summary>
     /// <value>The programs.</value>
     [XmlArray]
-    public List<ProgramSettings> Programs
-    {
-      get { return _programSettings; }
-    }
+    public List<ProgramSettings> Programs { get; private set; }
 
     /// <summary>
     /// Gets mapped events.
     /// </summary>
     /// <value>The events.</value>
     [XmlArray]
-    public List<MappedEvent> Events
-    {
-      get { return _mappedEvents; }
-    }
+    public List<MappedEvent> Events { get; private set; }
 
     #endregion Properties
 
@@ -119,13 +88,13 @@ namespace Translator
     /// </summary>
     public Configuration()
     {
-      _serverHost = "localhost";
-      _processPriority = "No Change";
-      _hideTrayIcon = false;
+      ServerHost = "localhost";
+      ProcessPriority = "No Change";
+      HideTrayIcon = false;
 
-      _systemWideMappings = new List<ButtonMapping>();
-      _programSettings = new List<ProgramSettings>();
-      _mappedEvents = new List<MappedEvent>();
+      SystemWideMappings = new List<ButtonMapping>();
+      Programs = new List<ProgramSettings>();
+      Events = new List<MappedEvent>();
     }
 
     #endregion Constructors
@@ -140,9 +109,9 @@ namespace Translator
     {
       // TODO: Improve import logic ...
 
-      _mappedEvents.AddRange(config.Events);
-      _programSettings.AddRange(config.Programs);
-      _systemWideMappings.AddRange(config.SystemWideMappings);
+      Events.AddRange(config.Events);
+      Programs.AddRange(config.Programs);
+      SystemWideMappings.AddRange(config.SystemWideMappings);
     }
 
     #endregion Implementation

@@ -22,12 +22,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\Bin\IR Server\bin\x86\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\Bin\IR Server\bin\x86\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -60,9 +60,9 @@
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IRServer.Shared\IRServer.Shared.csproj">
+    <ProjectReference Include="..\IRServer.Shared\IR Server Shared.csproj">
       <Project>{0C6A59C2-B5CC-48EF-A41F-0F1E463D8391}</Project>
-      <Name>IRServer.Shared</Name>
+      <Name>IR Server Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

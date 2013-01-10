@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Switch Statement macro command.
@@ -35,28 +35,28 @@ namespace Commands
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return Processor.CategoryControl;
+      get { return Processor.CategoryControl; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Switch Statement";
+      get { return "Switch Statement"; }
     }
 
     /// <summary>
     /// Gets the user display text.
     /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
+    /// <value>The user display text.</value>
+    public override string UserDisplayText
     {
-      return String.Format("Switch ({0}) ...", Parameters[0]);
+      get { return String.Format("Switch ({0}) ...", Parameters[0]); }
     }
 
     /// <summary>
