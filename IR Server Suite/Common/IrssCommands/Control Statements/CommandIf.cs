@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// If Statement macro command.
@@ -50,33 +50,36 @@ namespace Commands
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return Processor.CategoryControl;
+      get { return Processor.CategoryControl; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "If Statement";
+      get { return "If Statement"; }
     }
 
     /// <summary>
     /// Gets the user display text.
     /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
+    /// <value>The user display text.</value>
+    public override string UserDisplayText
     {
-      if (String.IsNullOrEmpty(Parameters[4]))
-        return String.Format("If ({0} {1} {2}) then goto \"{3}\"", Parameters[0], Parameters[1], Parameters[2],
-                             Parameters[3]);
-      else
-        return String.Format("If ({0} {1} {2}) then goto \"{3}\" else goto \"{4}\"", Parameters[0], Parameters[1],
-                             Parameters[2], Parameters[3], Parameters[4]);
+      get
+      {
+        if (String.IsNullOrEmpty(Parameters[4]))
+          return String.Format("If ({0} {1} {2}) then goto \"{3}\"", Parameters[0], Parameters[1], Parameters[2],
+                               Parameters[3]);
+        else
+          return String.Format("If ({0} {1} {2}) then goto \"{3}\" else goto \"{4}\"", Parameters[0], Parameters[1],
+                               Parameters[2], Parameters[3], Parameters[4]);
+      }
     }
 
     /// <summary>

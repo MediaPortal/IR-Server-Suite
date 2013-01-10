@@ -8,9 +8,9 @@
     <ProjectGuid>{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Commands.General</RootNamespace>
+    <RootNamespace>IrssCommands.General</RootNamespace>
     <AssemblyName>GeneralCommands</AssemblyName>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <SignAssembly>false</SignAssembly>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -22,109 +22,234 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\x86\Release\</OutputPath>
     <Optimize>true</Optimize>
+    <DefineConstants>
+    </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Speech" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="BeepCommand.cs" />
+    <Compile Include="CloseProgramCommand.cs" />
+    <Compile Include="Configuration\BeepConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\BeepConfig.designer.cs">
+      <DependentUpon>BeepConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\CloseProgramConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\CloseProgramConfig.Designer.cs">
+      <DependentUpon>CloseProgramConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\EjectConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\EjectConfig.Designer.cs">
+      <DependentUpon>EjectConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\HttpMessageConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\HttpMessageConfig.Designer.cs">
+      <DependentUpon>HttpMessageConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\KeystrokeConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\KeystrokeConfig.Designer.cs">
+      <DependentUpon>KeystrokeConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\SendWOLConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\SendWOLConfig.Designer.cs">
+      <DependentUpon>SendWOLConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\PauseConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\PauseConfig.designer.cs">
+      <DependentUpon>PauseConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\PopupConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\PopupConfig.Designer.cs">
+      <DependentUpon>PopupConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\RunConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\RunConfig.Designer.cs">
+      <DependentUpon>RunConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EjectCommand.cs" />
+    <Compile Include="Forms\SmsKeyboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SmsKeyboard.Designer.cs">
+      <DependentUpon>SmsKeyboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\VirtualKeyboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\VirtualKeyboard.Designer.cs">
+      <DependentUpon>VirtualKeyboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HttpMessageCommand.cs" />
+    <None Include="DisplayModeCommand.cs" />
+    <None Include="DisplayPowerCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CommandHibernate.cs" />
-    <Compile Include="CommandKeystrokes.cs" />
-    <Compile Include="CommandPause.cs" />
-    <Compile Include="CommandPopup.cs" />
-    <Compile Include="CommandReboot.cs" />
-    <Compile Include="CommandShutdown.cs" />
-    <Compile Include="CommandStandBy.cs" />
-    <Compile Include="CommandLogOff.cs" />
-    <Compile Include="CommandSendWOL.cs" />
-    <Compile Include="CommandRun.cs" />
-    <Compile Include="Forms\EditPopup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditPopup.Designer.cs">
-      <DependentUpon>EditPopup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditSendWOL.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditSendWOL.Designer.cs">
-      <DependentUpon>EditSendWOL.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditKeystrokes.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditKeystrokes.Designer.cs">
-      <DependentUpon>EditKeystrokes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditPause.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditPause.Designer.cs">
-      <DependentUpon>EditPause.cs</DependentUpon>
-    </Compile>
+    <Compile Include="HibernateCommand.cs" />
+    <Compile Include="KeystrokesCommand.cs" />
+    <Compile Include="SmsKeyboardCommand.cs" />
+    <Compile Include="PauseCommand.cs" />
+    <Compile Include="PopupCommand.cs" />
+    <Compile Include="RebootCommand.cs" />
+    <Compile Include="ShutdownCommand.cs" />
+    <Compile Include="StandByCommand.cs" />
+    <Compile Include="LogOffCommand.cs" />
+    <Compile Include="SendWOLCommand.cs" />
     <Compile Include="Forms\PopupMessage.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\PopupMessage.Designer.cs">
       <DependentUpon>PopupMessage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Win32.cs" />
+    <Compile Include="RunCommand.cs" />
+    <Compile Include="MouseCommand.cs" />
+    <Compile Include="Configuration\MouseConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\MouseConfig.Designer.cs">
+      <DependentUpon>MouseConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PlaySoundCommand.cs" />
+    <Compile Include="Configuration\PlaySoundConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\PlaySoundConfig.Designer.cs">
+      <DependentUpon>PlaySoundConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SerialCommand.cs" />
+    <Compile Include="Configuration\SerialConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\SerialConfig.Designer.cs">
+      <DependentUpon>SerialConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TcpMessageCommand.cs" />
+    <Compile Include="Configuration\TcpMessageConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\TcpMessageConfig.Designer.cs">
+      <DependentUpon>TcpMessageConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WindowsMessageCommand.cs" />
+    <Compile Include="Configuration\WindowsMessageConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\WindowsMessageConfig.Designer.cs">
+      <DependentUpon>WindowsMessageConfig.cs</DependentUpon>
+    </Compile>
+    <None Include="WindowStateCommand.cs" />
+    <Compile Include="Configuration\WindowStateConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\WindowStateConfig.Designer.cs">
+      <DependentUpon>WindowStateConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VirtualKeyboardCommand.cs" />
+    <None Include="VolumeCommands\VolumeDownCommand.cs" />
+    <None Include="VolumeCommands\VolumeMuteCommand.cs" />
+    <None Include="VolumeCommands\VolumeUpCommand.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\IrssCommands\IrssCommands.csproj">
+      <Project>{49cf376e-811c-4eb4-817f-a39c9529b608}</Project>
+      <Name>IrssCommands</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Command\Command.csproj">
-      <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
-      <Name>Command</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\VariableList\VariableList.csproj">
-      <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
-      <Name>VariableList</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\EditPopup.resx">
-      <DependentUpon>EditPopup.cs</DependentUpon>
+    <EmbeddedResource Include="Configuration\BeepConfig.resx">
+      <DependentUpon>BeepConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\CloseProgramConfig.resx">
+      <DependentUpon>CloseProgramConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\EjectConfig.resx">
+      <DependentUpon>EjectConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\HttpMessageConfig.resx">
+      <DependentUpon>HttpMessageConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\KeystrokeConfig.resx">
+      <DependentUpon>KeystrokeConfig.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditSendWOL.resx">
-      <DependentUpon>EditSendWOL.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\SendWOLConfig.resx">
+      <DependentUpon>SendWOLConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditKeystrokes.resx">
-      <DependentUpon>EditKeystrokes.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\PauseConfig.resx">
+      <DependentUpon>PauseConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditPause.resx">
-      <DependentUpon>EditPause.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\PopupConfig.resx">
+      <DependentUpon>PopupConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\RunConfig.resx">
+      <DependentUpon>RunConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PopupMessage.resx">
       <DependentUpon>PopupMessage.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SmsKeyboard.resx">
+      <DependentUpon>SmsKeyboard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VirtualKeyboard.resx">
+      <DependentUpon>VirtualKeyboard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\MouseConfig.resx">
+      <DependentUpon>MouseConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\PlaySoundConfig.resx">
+      <DependentUpon>PlaySoundConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\SerialConfig.resx">
+      <DependentUpon>SerialConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\TcpMessageConfig.resx">
+      <DependentUpon>TcpMessageConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\WindowsMessageConfig.resx">
+      <DependentUpon>WindowsMessageConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\WindowStateConfig.resx">
+      <DependentUpon>WindowStateConfig.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -138,7 +263,7 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>mkdir "$(SolutionDir)..\Bin\$(SolutionName)\$(OutDir)Commands"
+xcopy /Y "$(TargetPath)"  "$(SolutionDir)..\Bin\$(SolutionName)\$(OutDir)Commands\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

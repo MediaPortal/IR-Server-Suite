@@ -29,7 +29,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Base class for all IR Server Suite commands.
@@ -48,6 +48,22 @@ namespace Commands
     #region Properties
 
     /// <summary>
+    /// Gets the category of this command.
+    /// This method must be replaced in sub-classes.
+    /// </summary>
+    /// <value>The category of this command.</value>
+    public abstract string Category { get; }
+
+    /// <summary>
+    /// Gets the value, wether this command can be tested.
+    /// </summary>
+    /// <value>Whether the command can be tested.</value>
+    public virtual bool IsTestAllowed
+    {
+      get { return true; }
+    }
+
+    /// <summary>
     /// Gets or sets the command parameters.
     /// </summary>
     /// <value>The command parameters.</value>
@@ -55,6 +71,28 @@ namespace Commands
     {
       get { return _parameters; }
       set { _parameters = value; }
+    }
+
+    /// <summary>
+    /// Gets the user interface text.
+    /// This method must be replaced in sub-classes.
+    /// </summary>
+    /// <value>The user interface text.</value>
+    public abstract string UserInterfaceText { get; }
+
+    /// <summary>
+    /// Gets the user display text.
+    /// </summary>
+    /// <value>The user display text.</value>
+    public virtual string UserDisplayText
+    {
+      get
+      {
+        if (Parameters == null)
+          return UserInterfaceText;
+        else
+          return String.Format("{0} ({1})", UserInterfaceText, String.Join(", ", Parameters));
+      }
     }
 
     #endregion Properties
@@ -82,32 +120,6 @@ namespace Commands
     #region Implementation
 
     /// <summary>
-    /// Gets the category of this command.
-    /// This method must be replaced in sub-classes.
-    /// </summary>
-    /// <returns>The category of this command.</returns>
-    public abstract string GetCategory();
-
-    /// <summary>
-    /// Gets the user interface text.
-    /// This method must be replaced in sub-classes.
-    /// </summary>
-    /// <returns>The user interface text.</returns>
-    public abstract string GetUserInterfaceText();
-
-    /// <summary>
-    /// Gets the user display text.
-    /// </summary>
-    /// <returns>The user display text.</returns>
-    public virtual string GetUserDisplayText()
-    {
-      if (Parameters == null)
-        return GetUserInterfaceText();
-      else
-        return String.Format("{0} ({1})", GetUserInterfaceText(), String.Join(", ", Parameters));
-    }
-
-    /// <summary>
     /// Execute this command.
     /// </summary>
     /// <param name="variables">The variable list of the calling code.</param>
@@ -123,6 +135,15 @@ namespace Commands
     public virtual bool Edit(IWin32Window parent)
     {
       return true;
+    }
+
+    /// <summary>
+    /// Gets the edit control to be used within a common edit form.
+    /// </summary>
+    /// <returns>The edit control.</returns>
+    public virtual BaseCommandConfig GetEditControl()
+    {
+      return new NoConfig();
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-namespace Commands.General
+namespace IrssCommands.General
 {
   partial class PopupMessage
   {

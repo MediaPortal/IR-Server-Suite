@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E757F80C-23C5-4AD6-B178-16799E337E03}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Commands", "Commands", "{F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translator", "Applications\Translator\Translator.csproj", "{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssUtils", "Common\IrssUtils\IrssUtils.csproj", "{CA15769C-232E-4CA7-94FD-206A06CA3ABB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssComms", "Common\IrssComms\IrssComms.csproj", "{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneralCommands", "Commands\GeneralCommands\GeneralCommands.csproj", "{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellLink", "Common\ShellLink\ShellLink.csproj", "{28923F6E-8A68-4BC8-A507-825B09C3F64E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslatorCommands", "Commands\TranslatorCommands\TranslatorCommands.csproj", "{347C22FC-8CD9-4D53-9069-44208EB7BBA1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ExternalProjects_", "_ExternalProjects_", "{DA42CC0D-8011-4960-8748-824A044DFE52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrssCommands", "Common\IrssCommands\IrssCommands.csproj", "{49CF376E-811C-4EB4-817F-A39C9529B608}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Debug|x86.ActiveCfg = Debug|x86
+		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Debug|x86.Build.0 = Debug|x86
+		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Release|x86.ActiveCfg = Release|x86
+		{A8B8B9C6-9E88-486B-AE9C-F2D945ED05A6}.Release|x86.Build.0 = Release|x86
+		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Debug|x86.ActiveCfg = Debug|x86
+		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Debug|x86.Build.0 = Debug|x86
+		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Release|x86.ActiveCfg = Release|x86
+		{CA15769C-232E-4CA7-94FD-206A06CA3ABB}.Release|x86.Build.0 = Release|x86
+		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|x86.ActiveCfg = Debug|x86
+		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Debug|x86.Build.0 = Debug|x86
+		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|x86.ActiveCfg = Release|x86
+		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}.Release|x86.Build.0 = Release|x86
+		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Debug|x86.ActiveCfg = Debug|x86
+		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Debug|x86.Build.0 = Debug|x86
+		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Release|x86.ActiveCfg = Release|x86
+		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D}.Release|x86.Build.0 = Release|x86
+		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Debug|x86.ActiveCfg = Debug|x86
+		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Debug|x86.Build.0 = Debug|x86
+		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Release|x86.ActiveCfg = Release|x86
+		{28923F6E-8A68-4BC8-A507-825B09C3F64E}.Release|x86.Build.0 = Release|x86
+		{347C22FC-8CD9-4D53-9069-44208EB7BBA1}.Debug|x86.ActiveCfg = Debug|x86
+		{347C22FC-8CD9-4D53-9069-44208EB7BBA1}.Debug|x86.Build.0 = Debug|x86
+		{347C22FC-8CD9-4D53-9069-44208EB7BBA1}.Release|x86.ActiveCfg = Release|x86
+		{347C22FC-8CD9-4D53-9069-44208EB7BBA1}.Release|x86.Build.0 = Release|x86
+		{49CF376E-811C-4EB4-817F-A39C9529B608}.Debug|x86.ActiveCfg = Debug|x86
+		{49CF376E-811C-4EB4-817F-A39C9529B608}.Debug|x86.Build.0 = Debug|x86
+		{49CF376E-811C-4EB4-817F-A39C9529B608}.Release|x86.ActiveCfg = Release|x86
+		{49CF376E-811C-4EB4-817F-A39C9529B608}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CA15769C-232E-4CA7-94FD-206A06CA3ABB} = {E757F80C-23C5-4AD6-B178-16799E337E03}
+		{BCAFDF45-70DD-46FD-8B98-880DDA585AD2} = {E757F80C-23C5-4AD6-B178-16799E337E03}
+		{49CF376E-811C-4EB4-817F-A39C9529B608} = {E757F80C-23C5-4AD6-B178-16799E337E03}
+		{D1BAC7A9-FFB6-44BA-825F-32506831DC3D} = {F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}
+		{347C22FC-8CD9-4D53-9069-44208EB7BBA1} = {F0D3A774-FE5E-4419-B9B6-C11FF1C4BB50}
+		{28923F6E-8A68-4BC8-A507-825B09C3F64E} = {DA42CC0D-8011-4960-8748-824A044DFE52}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = ..
+	EndGlobalSection
+EndGlobal

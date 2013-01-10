@@ -1,4 +1,4 @@
-namespace Commands
+namespace IrssCommands
 {
 
   partial class EditSwitch
@@ -173,7 +173,7 @@ namespace Commands
       // toolStripButtonAdd
       // 
       this.toolStripButtonAdd.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonAdd.Image = global::Commands.Properties.Resources.Plus;
+      this.toolStripButtonAdd.Image = global::IrssCommands.Properties.Resources.Plus;
       this.toolStripButtonAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonAdd.Name = "toolStripButtonAdd";
       this.toolStripButtonAdd.Size = new System.Drawing.Size(23, 22);
@@ -183,7 +183,7 @@ namespace Commands
       // toolStripButtonEdit
       // 
       this.toolStripButtonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonEdit.Image = global::Commands.Properties.Resources.Edit;
+      this.toolStripButtonEdit.Image = global::IrssCommands.Properties.Resources.Edit;
       this.toolStripButtonEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonEdit.Name = "toolStripButtonEdit";
       this.toolStripButtonEdit.Size = new System.Drawing.Size(23, 22);
@@ -193,7 +193,7 @@ namespace Commands
       // toolStripButtonDelete
       // 
       this.toolStripButtonDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDelete.Image = global::Commands.Properties.Resources.Delete;
+      this.toolStripButtonDelete.Image = global::IrssCommands.Properties.Resources.Delete;
       this.toolStripButtonDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDelete.Name = "toolStripButtonDelete";
       this.toolStripButtonDelete.Size = new System.Drawing.Size(23, 22);
@@ -203,7 +203,7 @@ namespace Commands
       // toolStripButtonDeleteAll
       // 
       this.toolStripButtonDeleteAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDeleteAll.Image = global::Commands.Properties.Resources.DeleteAll;
+      this.toolStripButtonDeleteAll.Image = global::IrssCommands.Properties.Resources.DeleteAll;
       this.toolStripButtonDeleteAll.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDeleteAll.Name = "toolStripButtonDeleteAll";
       this.toolStripButtonDeleteAll.Size = new System.Drawing.Size(23, 22);

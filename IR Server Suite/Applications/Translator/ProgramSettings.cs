@@ -41,132 +41,61 @@ namespace Translator
 
     #endregion Constants
 
-    #region Variables
-
-    private readonly List<ButtonMapping> _buttonMappings;
-    private string _arguments;
-    private string _fileName;
-    private string _folder;
-    private bool _forceWindowFocus;
-    private bool _ignoreSystemWide;
-    private string _name;
-    private bool _useShellExecute;
-    private ProcessWindowStyle _windowState;
-
-    #endregion Variables
-
     #region Properties
 
     /// <summary>
     /// Program name.
     /// </summary>
     [XmlAttribute]
-    public string Name
-    {
-      get { return _name; }
-      set { _name = value; }
-    }
+    public string Name { get; set; }
 
     /// <summary>
     /// Program file name.
     /// </summary>
     [XmlAttribute]
-    public string FileName
-    {
-      get { return _fileName; }
-      set { _fileName = value; }
-    }
+    public string FileName { get; set; }
 
     /// <summary>
     /// Program start folder.
     /// </summary>
     [XmlAttribute]
-    public string Folder
-    {
-      get { return _folder; }
-      set { _folder = value; }
-    }
+    public string Folder { get; set; }
 
     /// <summary>
     /// Program launch command line arguments.
     /// </summary>
     [XmlAttribute]
-    public string Arguments
-    {
-      get { return _arguments; }
-      set { _arguments = value; }
-    }
+    public string Arguments { get; set; }
 
     /// <summary>
     /// Launch using shell execute.
     /// </summary>
     [XmlAttribute]
-    public bool UseShellExecute
-    {
-      get { return _useShellExecute; }
-      set { _useShellExecute = value; }
-    }
+    public bool UseShellExecute { get; set; }
 
     /// <summary>
     /// Force the new progam's window to be focused.
     /// </summary>
     [XmlAttribute]
-    public bool ForceWindowFocus
-    {
-      get { return _forceWindowFocus; }
-      set { _forceWindowFocus = value; }
-    }
+    public bool ForceWindowFocus { get; set; }
 
     /// <summary>
     /// Ignore system-wide Translator button mappings
     /// </summary>
     [XmlAttribute]
-    public bool IgnoreSystemWide
-    {
-      get { return _ignoreSystemWide; }
-      set { _ignoreSystemWide = value; }
-    }
+    public bool IgnoreSystemWide { get; set; }
 
     /// <summary>
     /// Startup window state.
     /// </summary>
     [XmlAttribute]
-    public ProcessWindowStyle WindowState
-    {
-      get { return _windowState; }
-      set { _windowState = value; }
-    }
+    public ProcessWindowStyle WindowState { get; set; }
 
     /// <summary>
     /// Gets a list of button mappings associated with this program.
     /// </summary>
     [XmlArray]
-    public List<ButtonMapping> ButtonMappings
-    {
-      get { return _buttonMappings; }
-    }
-
-
-    /// <summary>
-    /// Get the Command String to launch the program.
-    /// </summary>
-    /// <returns>Returns the Command String to launch the program.</returns>
-    [XmlIgnore]
-    internal string RunCommandString
-    {
-      get
-      {
-        return String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}",
-                             _fileName,
-                             _folder,
-                             _arguments,
-                             _windowState,
-                             false,
-                             _useShellExecute,
-                             false,
-                             _forceWindowFocus);
-      }
-    }
+    public List<ButtonMapping> ButtonMappings { get; private set; }
 
     #endregion Properties
 
@@ -177,17 +106,32 @@ namespace Translator
     /// </summary>
     public ProgramSettings()
     {
-      _name = NewProgramName;
-      _fileName = String.Empty;
-      _folder = String.Empty;
-      _arguments = String.Empty;
-      _useShellExecute = false;
-      _forceWindowFocus = false;
-      _ignoreSystemWide = false;
-      _windowState = ProcessWindowStyle.Normal;
-      _buttonMappings = new List<ButtonMapping>();
+      Name = NewProgramName;
+      FileName = String.Empty;
+      Folder = String.Empty;
+      Arguments = String.Empty;
+      UseShellExecute = false;
+      ForceWindowFocus = false;
+      IgnoreSystemWide = false;
+      WindowState = ProcessWindowStyle.Normal;
+      ButtonMappings = new List<ButtonMapping>();
     }
 
     #endregion Constructors
+
+    internal string[] GetRunCommandParameters()
+    {
+      return new[]
+        {
+          FileName.Trim(),
+          Folder.Trim(),
+          Arguments.Trim(),
+          Enum.GetName(typeof (ProcessWindowStyle), WindowState),
+          false.ToString(),
+          UseShellExecute.ToString(),
+          false.ToString(),
+          ForceWindowFocus.ToString()
+        };
+    }
   }
 }

@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using IrssUtils;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Provides a delegate to call to execute an IR Command.
@@ -143,6 +143,16 @@ namespace Commands
       get { return _blastIrPorts; }
       set { _blastIrPorts = value; }
     }
+
+    /// <summary>
+    /// Gets or Sets the path to a directory, where additional command libraries can be found.
+    /// </summary>
+    public static string LibraryFolder { get; set; }
+
+    /// <summary>
+    /// Gets or Sets the path to a directory, where the macro files can be found.
+    /// </summary>
+    public static string MacroFolder { get; set; }
 
     #endregion Properties
 
@@ -428,6 +438,20 @@ namespace Commands
       string splitAt = ", ";
 
       int splitPoint = commandString.IndexOf(splitAt, StringComparison.OrdinalIgnoreCase);
+
+      //string commandType;
+      //if (splitPoint == -1)
+      //{
+      //  //throw new ArgumentException("Invalid command string", "commandString");
+      //  commandType = commandString.Substring(0, splitPoint);
+      //  return CreateCommand(commandType);
+      //}
+      //else
+      //{
+      //  commandType = commandString.Substring(0, splitPoint);
+      //  string parametersXml = commandString.Substring(splitPoint + splitAt.Length);
+      //  return CreateCommand(commandType, parametersXml);
+      //}
       if (splitPoint == -1)
         throw new ArgumentException("Invalid command string", "commandString");
 
@@ -549,12 +573,16 @@ namespace Commands
       {
         List<Type> commands = new List<Type>();
 
-        string installFolder = SystemRegistry.GetInstallFolder();
-        if (String.IsNullOrEmpty(installFolder))
-          return null;
+#warning remove if done
+        //string installFolder = SystemRegistry.GetInstallFolder();
+        //if (String.IsNullOrEmpty(installFolder))
+        //  return null;
 
-        string folder = Path.Combine(installFolder, "Commands");
-        string[] files = Directory.GetFiles(folder, "*.dll", SearchOption.TopDirectoryOnly);
+        //string folder = Path.Combine(installFolder, "Commands");
+        if (!Directory.Exists(LibraryFolder))
+          return commands.ToArray();
+
+        string[] files = Directory.GetFiles(LibraryFolder, "*.dll", SearchOption.TopDirectoryOnly);
 
         foreach (string file in files)
         {

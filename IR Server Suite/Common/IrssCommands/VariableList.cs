@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// List of Variables for use in macros and commands.

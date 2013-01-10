@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Edit Maths Operation Command form.

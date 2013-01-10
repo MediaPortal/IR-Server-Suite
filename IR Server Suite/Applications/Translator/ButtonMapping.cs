@@ -20,7 +20,9 @@
 
 #endregion
 
+using System;
 using System.Xml.Serialization;
+using IrssCommands;
 
 namespace Translator
 {
@@ -31,9 +33,7 @@ namespace Translator
   {
     #region Variables
 
-    private string _command;
-    private string _description;
-    private string _keyCode;
+    private Command _command;
 
     #endregion Variables
 
@@ -43,31 +43,57 @@ namespace Translator
     /// Remote button key code.
     /// </summary>
     [XmlAttribute]
-    public string KeyCode
-    {
-      get { return _keyCode; }
-      set { _keyCode = value; }
-    }
+    public string KeyCode { get; set; }
 
     /// <summary>
     /// Remote button description.
     /// </summary>
     [XmlAttribute]
-    public string Description
-    {
-      get { return _description; }
-      set { _description = value; }
-    }
+    public string Description { get; set; }
 
     /// <summary>
-    /// Command to execute for the remote button.
+    /// Command to execute
     /// </summary>
-    [XmlAttribute]
-    public string Command
+    [XmlIgnore]
+    public Command Command
     {
-      get { return _command; }
-      set { _command = value; }
+      get
+      {
+        if (_command == null && !string.IsNullOrEmpty(CommandType))
+        {
+          try
+          {
+            _command = Processor.CreateCommand(CommandType, Parameters);
+          }
+          catch (Exception ex)
+          {
+            IrssUtils.IrssLog.Error("Command could not be created. Please check your commands library ({0}) for correct command plugins or replace existing mapping with available commands.",ex, Processor.LibraryFolder);
+          }
+        }
+
+        return _command;
+      }
+      set
+      {
+        _command = value;
+
+        if (ReferenceEquals(_command, null))
+        {
+          CommandType = string.Empty;
+          Parameters = null;
+          return;
+        }
+
+        CommandType = _command.GetType().FullName;
+        Parameters = _command.Parameters;
+      }
     }
+
+    [XmlAttribute]
+    public string CommandType { get; set; }
+
+    [XmlElement("parameter")]
+    public string[] Parameters { get; set; }
 
     #endregion Properties
 
@@ -86,13 +112,34 @@ namespace Translator
     /// <param name="keyCode">The remote key code.</param>
     /// <param name="description">The description.</param>
     /// <param name="command">The command to execute for this remote button.</param>
-    public ButtonMapping(string keyCode, string description, string command)
+    public ButtonMapping(string keyCode, string description, Command command)
     {
-      _keyCode = keyCode;
-      _description = description;
-      _command = command;
+      KeyCode = keyCode;
+      Description = description;
+      Command = command;
     }
 
     #endregion Constructors
+
+    #region Implementation
+
+    public string GetCommandDisplayText()
+    {
+      if (!ReferenceEquals(Command, null))
+        return Command.UserDisplayText;
+
+      if (!string.IsNullOrEmpty(CommandType))
+        return "!!!" + CommandType;
+
+      return string.Empty;
+    }
+
+    [XmlIgnore]
+    public bool IsCommandAvailable
+    {
+      get { return !ReferenceEquals(Command, null); }
+    }
+
+    #endregion Implementation
   }
 }

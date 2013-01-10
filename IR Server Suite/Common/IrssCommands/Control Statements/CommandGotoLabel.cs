@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Goto Label macro command.
@@ -33,28 +33,28 @@ namespace Commands
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return Processor.CategoryControl;
+      get { return Processor.CategoryControl; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Goto Label";
+      get { return "Goto Label"; }
     }
 
     /// <summary>
     /// Gets the user display text.
     /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
+    /// <value>The user display text.</value>
+    public override string UserDisplayText
     {
-      return String.Format("{0} \"{1}\"", GetUserInterfaceText(), Parameters[0]);
+      get { return String.Format("{0} \"{1}\"", UserInterfaceText, Parameters[0]); }
     }
 
     /// <summary>

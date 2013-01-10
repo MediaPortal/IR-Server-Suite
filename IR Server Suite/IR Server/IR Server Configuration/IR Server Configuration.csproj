@@ -39,18 +39,18 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <ApplicationManifest>IR Server Configuration.exe.manifest</ApplicationManifest>
+    <ApplicationManifest>IRServer.Configuration.exe.manifest</ApplicationManifest>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\Bin\IR Server\bin\x86\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\Bin\IR Server\bin\x86\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -122,13 +122,13 @@
       <Name>IrssUtils</Name>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\IR Server Plugins\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
+    <ProjectReference Include="..\IRServer.PluginInterface\IR Server Plugin Interface.csproj">
       <Project>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</Project>
       <Name>IR Server Plugin Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IRServer.Shared\IRServer.Shared.csproj">
+    <ProjectReference Include="..\IRServer.Shared\IR Server Shared.csproj">
       <Project>{0C6A59C2-B5CC-48EF-A41F-0F1E463D8391}</Project>
-      <Name>IRServer.Shared</Name>
+      <Name>IR Server Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -158,7 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="IR Server Configuration.exe.manifest" />
+    <None Include="IRServer.Configuration.exe.manifest" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

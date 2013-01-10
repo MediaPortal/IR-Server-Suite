@@ -21,18 +21,17 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using IrssCommands;
 using IrssComms;
 using IrssUtils;
-using IrssUtils.Exceptions;
-using IrssUtils.Forms;
 using Microsoft.Win32;
 using Translator.Properties;
 
@@ -78,6 +77,8 @@ namespace Translator
     private static bool _menuFormVisible;
     private static bool _registered;
 
+    private static Processor _processor;
+
     private static VariableList _variables;
 
     private static bool _connected;
@@ -108,6 +109,11 @@ namespace Translator
     internal static IRServerInfo TransceiverInformation
     {
       get { return _irServerInfo; }
+    }
+
+    internal static Processor CommandProcessor
+    {
+      get { return _processor; }
     }
 
     internal static NotifyIcon TrayIcon
@@ -153,7 +159,7 @@ namespace Translator
       // Check for multiple instances.
       if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length != 1)
       {
-        CopyDataWM.SendCopyDataMessage(Common.CmdPrefixShowTrayIcon);
+        CopyDataWM.SendCopyDataMessage(Common.WM_ShowTrayIcon);
         return;
       }
 
@@ -179,6 +185,11 @@ namespace Translator
       // Adjust process priority ...
       AdjustPriority(_config.ProcessPriority);
 
+      // Set directory for command plugin
+      string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+      Processor.LibraryFolder = Path.Combine(appPath, "Commands");
+      Processor.MacroFolder = FolderMacros;
+
 
       //foreach (ProgramSettings progSettings in _config.Programs)
       //{
@@ -191,7 +202,6 @@ namespace Translator
 
       //  AppProfile.Save(profile, "C:\\" + profile.Name + ".xml");
       //}
-
 
       // Setup notify icon ...
       _container = new Container();
@@ -300,51 +310,78 @@ namespace Translator
         if (command.StartsWith("-") || command.StartsWith("/"))
           command = command.Substring(1);
 
+        Command cmdToSend;
         switch (command)
         {
           case "BLAST":
             if (args.Length > index + 2)
-              CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + args[++index] + '|' + args[++index]);
+            {
+              string param1 = args[++index];
+              string param2 = args[++index];
+              cmdToSend = CreateCommandSafe(Common.CLASS_BlastIRCommand, new string[] {param1, param2});
+              if (!ReferenceEquals(cmdToSend, null))
+                CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
+            }
             else
               throw new CommandStructureException("Blast command requires two parameters (IR file, Port)");
             break;
 
           case "MACRO":
             if (args.Length > index + 1)
-              CopyDataWM.SendCopyDataMessage(Common.CmdPrefixMacro + args[++index]);
+            {
+              string macroFile = args[++index];
+              cmdToSend = CreateCommandSafe(Common.CLASS_CallMacroCommand, new string[] { macroFile });
+              if (!ReferenceEquals(cmdToSend, null))
+                CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
+            }
             else
               throw new CommandStructureException("Macro command requires a parameter (Macro file)");
             break;
 
           case "EJECT":
             if (args.Length > index + 1)
-              CopyDataWM.SendCopyDataMessage(Common.CmdPrefixEject + args[++index]);
+            {
+              string drive = args[++index];
+              cmdToSend = CreateCommandSafe(Common.CLASS_EjectCommand, new string[] {drive});
+              if (!ReferenceEquals(cmdToSend, null))
+                CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
+            }
             else
               throw new CommandStructureException("Eject command requires a parameter (Drive)");
             break;
 
           case "SHUTDOWN":
-            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixShutdown);
+            cmdToSend = CreateCommandSafe(Common.CLASS_ShutdownCommand, null);
+            if (!ReferenceEquals(cmdToSend, null))
+              CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
             break;
 
           case "REBOOT":
-            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixReboot);
+            cmdToSend = CreateCommandSafe(Common.CLASS_RebootCommand, null);
+            if (!ReferenceEquals(cmdToSend, null))
+              CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
             break;
 
           case "STANDBY":
-            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixStandby);
+            cmdToSend = CreateCommandSafe(Common.CLASS_StandByCommand, null);
+            if (!ReferenceEquals(cmdToSend, null))
+              CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
             break;
 
           case "HIBERNATE":
-            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixHibernate);
+            cmdToSend = CreateCommandSafe(Common.CLASS_HibernateCommand, null);
+            if (!ReferenceEquals(cmdToSend, null))
+              CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
             break;
 
           case "LOGOFF":
-            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixLogOff);
+            cmdToSend = CreateCommandSafe(Common.CLASS_LogOffCommand, null);
+            if (!ReferenceEquals(cmdToSend, null))
+              CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
             break;
 
           case "OSD":
-            CopyDataWM.SendCopyDataMessage(Common.CmdPrefixTranslator);
+            CopyDataWM.SendCopyDataMessage(Common.WM_ShowTranslatorOSD);
             break;
 
           case "CHANNEL":
@@ -360,7 +397,10 @@ namespace Translator
 
               foreach (char digit in channel)
               {
-                CopyDataWM.SendCopyDataMessage(Common.CmdPrefixBlast + digit + '|' + port);
+                cmdToSend = CreateCommandSafe(Common.CLASS_EjectCommand, new string[] { digit.ToString(), port });
+                if (!ReferenceEquals(cmdToSend, null))
+                  CopyDataWM.SendCopyDataMessage(cmdToSend.ToString());
+
                 if (delay > 0)
                   Thread.Sleep(delay);
               }
@@ -393,7 +433,7 @@ namespace Translator
       return dontRun;
     }
 
-    private static void ShowOSD()
+    internal static void ShowOSD()
     {
       IrssLog.Info("Show OSD");
 
@@ -471,9 +511,16 @@ namespace Translator
         {
           ToolStripItem item = new ToolStripMenuItem();
           item.Text = programSettings.Name;
-          item.Enabled = File.Exists(programSettings.FileName);
           item.Image = Win32.GetImageFromFile(programSettings.FileName);
-          item.Click += ClickProgram;
+
+          Command command = CreateCommandSafe(Common.CLASS_RunCommand, programSettings.GetRunCommandParameters());
+          item.Tag = command;
+          item.Click += ClickAction;
+          item.Enabled = File.Exists(programSettings.FileName) && command != null;
+
+          if (command == null)
+            item.ToolTipText =
+              "Was not able to create the RunCommand. Please check your command plugins and see log for more infos.";
 
           launch.DropDownItems.Add(item);
         }
@@ -481,6 +528,7 @@ namespace Translator
         _notifyIcon.ContextMenuStrip.Items.Add(launch);
       }
 
+#warning fixme IR
       //string[] irList = Common.GetIRList(false);
       //if (irList.Length > 0)
       //{
@@ -492,24 +540,28 @@ namespace Translator
       //  _notifyIcon.ContextMenuStrip.Items.Add(irCommands);
       //}
 
-      string[] macroList = IrssMacro.GetMacroList(FolderMacros, false);
-      if (macroList.Length > 0)
+
+      ToolStripMenuItem macros = new ToolStripMenuItem("&Macros");
+      string[] macroList = Processor.GetListMacro(FolderMacros);
+      foreach (string s in macroList)
       {
-        ToolStripMenuItem macros = new ToolStripMenuItem("&Macros");
+        string macroName = Path.GetFileNameWithoutExtension(s);
+        Macro macro = CreateMacroSafe(s);
+        if (macro == null) continue;
 
-        foreach (string macro in macroList)
-          macros.DropDownItems.Add(macro, null, ClickMacro);
-
-        _notifyIcon.ContextMenuStrip.Items.Add(macros);
+        macros.DropDownItems.Add(macroName, null, ClickAction).Tag = macro;
       }
+      if (macros.DropDownItems.Count > 0)
+        _notifyIcon.ContextMenuStrip.Items.Add(macros);
+
 
       ToolStripMenuItem actions = new ToolStripMenuItem("&Actions");
 
-      actions.DropDownItems.Add("System Standby", null, ClickAction);
-      actions.DropDownItems.Add("System Hibernate", null, ClickAction);
-      actions.DropDownItems.Add("System Reboot", null, ClickAction);
-      actions.DropDownItems.Add("System LogOff", null, ClickAction);
-      actions.DropDownItems.Add("System Shutdown", null, ClickAction);
+      actions.DropDownItems.Add("System Standby", null, ClickAction).Tag = CreateCommandSafe(Common.CLASS_StandByCommand, null);
+      actions.DropDownItems.Add("System Hibernate", null, ClickAction).Tag = CreateCommandSafe(Common.CLASS_HibernateCommand, null);
+      actions.DropDownItems.Add("System Reboot", null, ClickAction).Tag = CreateCommandSafe(Common.CLASS_RebootCommand, null);
+      actions.DropDownItems.Add("System LogOff", null, ClickAction).Tag = CreateCommandSafe(Common.CLASS_LogOffCommand, null);
+      actions.DropDownItems.Add("System Shutdown", null, ClickAction).Tag = CreateCommandSafe(Common.CLASS_ShutdownCommand, null);
 
       actions.DropDownItems.Add(new ToolStripSeparator());
 
@@ -517,14 +569,18 @@ namespace Translator
       DriveInfo[] drives = DriveInfo.GetDrives();
       foreach (DriveInfo drive in drives)
         if (drive.DriveType == DriveType.CDRom)
-          ejectMenu.DropDownItems.Add(drive.Name, null, ClickEjectAction);
-      actions.DropDownItems.Add(ejectMenu);
+        {
+          ejectMenu.DropDownItems.Add(drive.Name, null, ClickAction).Tag = CreateCommandSafe(Common.CLASS_EjectCommand,
+                                                                                             new string[] {drive.Name});
+        }
+      if (ejectMenu.DropDownItems.Count > 0)
+        actions.DropDownItems.Add(ejectMenu);
 
-      actions.DropDownItems.Add(new ToolStripSeparator());
+      //actions.DropDownItems.Add(new ToolStripSeparator());
 
-      actions.DropDownItems.Add("Volume Up", null, ClickAction);
-      actions.DropDownItems.Add("Volume Down", null, ClickAction);
-      actions.DropDownItems.Add("Volume Mute", null, ClickAction);
+      //actions.DropDownItems.Add("Volume Up", null, ClickAction).Tag = new VolumeUpCommand();
+      //actions.DropDownItems.Add("Volume Down", null, ClickAction).Tag = new VolumeDownCommand();
+      //actions.DropDownItems.Add("Volume Mute", null, ClickAction).Tag = new VolumeMuteCommand();
 
       _notifyIcon.ContextMenuStrip.Items.Add(actions);
 
@@ -534,126 +590,40 @@ namespace Translator
       _notifyIcon.ContextMenuStrip.Items.Add("&Quit", null, ClickQuit);
     }
 
-    private static void ClickProgram(object sender, EventArgs e)
-    {
-      IrssLog.Info("Click Launch Program");
-
-      ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-      if (menuItem == null)
-        return;
-
-      string program = menuItem.Text;
-      foreach (ProgramSettings programSettings in Config.Programs)
-      {
-        if (programSettings.Name.Equals(program, StringComparison.OrdinalIgnoreCase))
-        {
-          IrssLog.Info("Launching {0}", program);
-
-          ProcessCommand(Common.CmdPrefixRun + programSettings.RunCommandString, true);
-          return;
-        }
-      }
-
-      IrssLog.Warn("Failed to launch (could not find program details): {0}", program);
-    }
-
-    private static void ClickMacro(object sender, EventArgs e)
-    {
-      IrssLog.Info("Click Macro");
-
-      ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-      if (menuItem == null)
-        return;
-
-      try
-      {
-        ProcessCommand(Common.CmdPrefixMacro + menuItem.Text, true);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Macro failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
     private static void ClickAction(object sender, EventArgs e)
     {
       IrssLog.Info("Click Action");
 
       ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-      if (menuItem == null)
-        return;
+      if (menuItem == null) return;
+      if (menuItem.Tag == null) return;
 
-      try
+      if (menuItem.Tag is Command)
       {
-        switch (menuItem.Text)
+        Command command = (Command) menuItem.Tag;
+        try
         {
-          case "System Standby":
-            ProcessCommand(Common.CmdPrefixStandby, true);
-            break;
-
-          case "System Hibernate":
-            ProcessCommand(Common.CmdPrefixHibernate, true);
-            break;
-
-          case "System Reboot":
-            ProcessCommand(Common.CmdPrefixReboot, true);
-            break;
-
-          case "System LogOff":
-            ProcessCommand(Common.CmdPrefixLogOff, true);
-            break;
-
-          case "System Shutdown":
-            ProcessCommand(Common.CmdPrefixShutdown, true);
-            break;
-
-
-          case "Volume Up":
-            // TODO: Replace with Volume Commands
-            Win32.SendWindowsMessage(
-              Win32.GetDesktopWindowHandle(),
-              (int) Win32.WindowsMessage.WM_APPCOMMAND,
-              0,
-              65536 * (int) Win32.AppCommand.APPCOMMAND_VOLUME_UP);
-            break;
-
-          case "Volume Down":
-            Win32.SendWindowsMessage(
-              Win32.GetDesktopWindowHandle(),
-              (int) Win32.WindowsMessage.WM_APPCOMMAND,
-              0,
-              65536 * (int) Win32.AppCommand.APPCOMMAND_VOLUME_DOWN);
-            break;
-
-          case "Volume Mute":
-            Win32.SendWindowsMessage(
-              Win32.GetDesktopWindowHandle(),
-              (int) Win32.WindowsMessage.WM_APPCOMMAND,
-              0,
-              65536 * (int) Win32.AppCommand.APPCOMMAND_VOLUME_MUTE);
-            break;
-
-          default:
-            throw new ArgumentException(String.Format("Unknown action: {0}", menuItem.Text), "sender");
+          ProcessCommand(command, true);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+          MessageBox.Show(ex.Message, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
-      catch (Exception ex)
+      else if (menuItem.Tag is Macro)
       {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        Macro macro = (Macro) menuItem.Tag;
+        try
+        {
+          macro.Execute(CommandProcessor);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+          MessageBox.Show(ex.Message, "Action failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
       }
-    }
-
-    private static void ClickEjectAction(object sender, EventArgs e)
-    {
-      IrssLog.Info("Click Eject Action");
-
-      ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-      if (menuItem == null)
-        return;
-
-      ProcessCommand(Common.CmdPrefixEject + menuItem.Text, true);
     }
 
     private static void ClickOSD(object sender, EventArgs e)
@@ -840,7 +810,6 @@ namespace Translator
             {
               _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
-
               IrssLog.Info("Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
@@ -848,6 +817,7 @@ namespace Translator
               _registered = false;
               IrssLog.Warn("IR Server refused to register");
             }
+            UpdateCommandProcessor();
             break;
 
           case MessageType.LearnIR:
@@ -879,6 +849,7 @@ namespace Translator
             _notifyIcon.Icon = Resources.Icon16Connecting;
             _notifyIcon.Text = "Translator - Connecting ...";
 
+            UpdateCommandProcessor();
             break;
 
           case MessageType.Error:
@@ -1047,8 +1018,7 @@ namespace Translator
 
     private static void MapEvent(MappingEvent theEvent, bool async)
     {
-      if (_inConfiguration)
-        return;
+      if (_inConfiguration) return;
 
       string eventName = Enum.GetName(typeof (MappingEvent), theEvent);
 
@@ -1062,24 +1032,22 @@ namespace Translator
 
       foreach (MappedEvent mappedEvent in Config.Events)
       {
-        if (mappedEvent.EventType == theEvent)
+        if (mappedEvent.EventType != theEvent) continue;
+
+        if (ReferenceEquals(mappedEvent.Command, null))
         {
-          if (String.IsNullOrEmpty(mappedEvent.Command))
-          {
-            IrssLog.Warn("Event found ({0}) with no command set", eventName);
-          }
-          else
-          {
-            try
-            {
-              IrssLog.Info("Event mapped: {0}, {1}", eventName, mappedEvent.Command);
-              ProcessCommand(mappedEvent.Command, async);
-            }
-            catch (Exception ex)
-            {
-              IrssLog.Error(ex);
-            }
-          }
+          IrssLog.Warn("Event found ({0}) with no command set", eventName);
+          continue;
+        }
+
+        try
+        {
+          IrssLog.Info("Event mapped: {0}, {1}", eventName, mappedEvent.Command);
+          ProcessCommand(mappedEvent.Command, async);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
         }
       }
     }
@@ -1154,14 +1122,25 @@ namespace Translator
       }
     }
 
+    private static void UpdateCommandProcessor()
+    {
+      _processor = null;
+      if (!_registered) return;
+
+      _processor = new Processor(BlastIR, TransceiverInformation.Ports);
+    }
+
     /// <summary>
     /// Given a command this method processes the request accordingly.
     /// Throws exceptions only if run synchronously, if async exceptions are logged instead.
     /// </summary>
-    /// <param name="command">Command to process.</param>
+    /// <param name="command">Command string to process.</param>
     /// <param name="async">Process command asynchronously?</param>
-    internal static void ProcessCommand(string command, bool async)
+    internal static void ProcessCommand(string command, bool async = false)
     {
+      if (string.IsNullOrEmpty(command))
+        throw new ArgumentNullException("command");
+
       if (async)
       {
         try
@@ -1183,186 +1162,80 @@ namespace Translator
     }
 
     /// <summary>
-    /// Used by ProcessCommand to actually handle the command.
+    /// Given a command this method processes the request accordingly.
+    /// Throws exceptions only if run synchronously, if async exceptions are logged instead.
+    /// </summary>
+    /// <param name="command">Command to process.</param>
+    /// <param name="async">Process command asynchronously?</param>
+    internal static void ProcessCommand(Command command, bool async = false)
+    {
+      if (command == null)
+        throw new ArgumentNullException("command");
+
+      if (async)
+      {
+        try
+        {
+          Thread newThread = new Thread(ProcCommand);
+          newThread.Name = ProcessCommandThreadName;
+          newThread.IsBackground = true;
+          newThread.Start(command);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error(ex);
+        }
+      }
+      else
+      {
+        ProcCommand(command);
+      }
+    }
+
+    /// <summary>
+    /// Used by ProcessCommand to actually handle the command, if it is a string, otherwise it will call the other overload ProcCommand using the object as type Command.
     /// Can be called Synchronously or as a Parameterized Thread.
     /// </summary>
-    /// <param name="commandObj">Command string to process.</param>
+    /// <param name="commandObj">Command object to process. This could be a string or Command.</param>
     private static void ProcCommand(object commandObj)
     {
+      if (commandObj == null)
+        throw new ArgumentNullException("commandObj");
+
       try
       {
-        if (commandObj == null)
-          throw new ArgumentNullException("commandObj");
+        Command command = commandObj as Command;
+        if (command != null)
+        {
+          ProcCommand(command);
+          return;
+        }
 
-        string command = commandObj as string;
+        string strCommand = commandObj as string;
+        // is obj is not a command nor a string, stop here
+        if (strCommand == null) return;
 
-        if (String.IsNullOrEmpty(command))
-          throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
 
-        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+        // check for serialized Command
+        try
         {
-          string fileName = Path.Combine(FolderMacros,
-                                         command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro);
-          IrssMacro.ExecuteMacro(fileName, _variables, ProcCommand);
+          command = Processor.CreateCommand(strCommand);
         }
-        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        catch (Exception)
         {
-          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-          BlastIR(Path.Combine(Common.FolderIRCommands, commands[0] + Common.FileExtensionIR), commands[1]);
+          // catch all exception, as the provided text might not be a serialized command
         }
-        else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
+        if (command != null)
         {
-          int pauseTime = int.Parse(command.Substring(Common.CmdPrefixPause.Length));
-          Thread.Sleep(pauseTime);
+          ProcCommand(command);
+          return;
         }
-        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-          Common.ProcessRunCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-          Common.ProcessSerialCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-          Common.ProcessWindowMessageCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
-          Common.ProcessTcpMessageCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
-          Common.ProcessHttpCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-        {
-          string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-          if (_inConfiguration)
-            MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            Common.ProcessKeyCommand(keyCommand);
-        }
-        else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
-        {
-          string mouseCommand = command.Substring(Common.CmdPrefixMouse.Length);
-          Common.ProcessMouseCommand(mouseCommand);
-        }
-        else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-        {
-          string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
-          Common.ProcessEjectCommand(ejectCommand);
-        }
-        else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
 
-          ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
-          showPopupMessage.ShowDialog();
-        }
-        else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot Hibernate in configuration", Common.UITextHibernate, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          }
-          else
-          {
-            if (!Common.Hibernate())
-              IrssLog.Warn("Hibernate request was rejected by another application.");
-          }
-        }
-        else if (command.StartsWith(Common.CmdPrefixLogOff, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot Log off in configuration", Common.UITextLogOff, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          }
-          else
-          {
-            if (!Common.LogOff())
-              IrssLog.Warn("LogOff request failed.");
-          }
-        }
-        else if (command.StartsWith(Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot Reboot in configuration", Common.UITextReboot, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          }
-          else
-          {
-            if (!Common.Reboot())
-              IrssLog.Warn("Reboot request failed.");
-          }
-        }
-        else if (command.StartsWith(Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot ShutDown in configuration", Common.UITextShutdown, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          }
-          else
-          {
-            if (!Common.ShutDown())
-              IrssLog.Warn("ShutDown request failed.");
-          }
-        }
-        else if (command.StartsWith(Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot enter Standby in configuration", Common.UITextStandby, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          }
-          else
-          {
-            if (!Common.Standby())
-              IrssLog.Warn("Standby request was rejected by another application.");
-          }
-        }
-        else if (command.StartsWith(Common.CmdPrefixTranslator, StringComparison.OrdinalIgnoreCase))
-        {
+
+        // check for different strings which might have arrived through WindowMessages
+        if (strCommand.StartsWith(Common.WM_ShowTranslatorOSD))
           ShowOSD();
-        }
-        else if (command.StartsWith(Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB,
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-          }
-          else
-          {
-            VirtualKeyboard vk = new VirtualKeyboard();
-            if (vk.ShowDialog() == DialogResult.OK)
-              Keyboard.ProcessCommand(vk.TextOutput);
-          }
-        }
-        else if (command.StartsWith(Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          }
-          else
-          {
-            SmsKeyboard sms = new SmsKeyboard();
-            if (sms.ShowDialog() == DialogResult.OK)
-              Keyboard.ProcessCommand(sms.TextOutput);
-          }
-        }
-        else if (command.StartsWith(Common.CmdPrefixShowTrayIcon, StringComparison.OrdinalIgnoreCase))
+        else if (strCommand.StartsWith(Common.WM_ShowTrayIcon, StringComparison.OrdinalIgnoreCase))
         {
           if (!_notifyIcon.Visible)
           {
@@ -1370,11 +1243,26 @@ namespace Translator
             _notifyIcon.ShowBalloonTip(2000, "Translator", "Icon is now visible", ToolTipIcon.Info);
           }
         }
-        else
-        {
-          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
-                                      "commandObj");
-        }
+
+        //        if (String.IsNullOrEmpty(command))
+        //          throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
+
+        //        else if (command.StartsWith(MacroSelectCommand.PREFIX))
+        //        {
+        //          bc = new MacroCommand(FolderMacros).CreateCommandFromString(command);
+        //          ProcCommand(bc);
+        //        }
+        //#warning fixme BLAST
+        //        //else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        //        //{
+        //        //  string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
+        //        //  BlastIR(Path.Combine(Common.FolderIRCommands, commands[0] + Common.FileExtensionIR), commands[1]);
+        //        //}
+        //        else
+        //        {
+        //          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
+        //                                      "commandObj");
+        //        }
       }
       catch (Exception ex)
       {
@@ -1384,6 +1272,22 @@ namespace Translator
         else
           throw;
       }
+    }
+
+    /// <summary>
+    /// Used by ProcessCommand to actually handle the command, if it is a Command.
+    /// Can be called Synchronously or as a Parameterized Thread.
+    /// </summary>
+    /// <param name="command">Command to process.</param>
+    private static void ProcCommand(Command command)
+    {
+      if (command == null)
+        throw new ArgumentNullException("command");
+
+      //if (command is MacroCommand)
+      //  IrssMacro.ExecuteMacro(command as MacroCommand, _variables, ProcCommand);
+      //else
+      command.Execute(new VariableList());
     }
 
     /// <summary>
@@ -1406,6 +1310,32 @@ namespace Translator
         {
           IrssLog.Error(ex);
         }
+      }
+    }
+
+    internal static Command CreateCommandSafe(string commandType, string[] parameters)
+    {
+      try
+      {
+        return Processor.CreateCommand(commandType, parameters);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        return null;
+      }
+    }
+
+    internal static Macro CreateMacroSafe(string filename)
+    {
+      try
+      {
+        return new Macro(filename);
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        return null;
       }
     }
 

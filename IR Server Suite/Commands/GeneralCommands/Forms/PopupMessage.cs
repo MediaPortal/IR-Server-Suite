@@ -23,7 +23,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Commands.General
+namespace IrssCommands.General
 {
   /// <summary>
   /// Show a popup message.

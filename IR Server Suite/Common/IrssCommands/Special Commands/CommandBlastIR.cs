@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using IrssUtils;
 
-namespace Commands
+namespace IrssCommands
 {
   /// <summary>
   /// Blast IR macro command.
@@ -35,39 +35,42 @@ namespace Commands
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return Processor.CategorySpecial;
+      get { return Processor.CategorySpecial; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Blast IR";
+      get { return "Blast IR"; }
     }
 
     /// <summary>
     /// Gets the user display text.
     /// </summary>
-    /// <returns>The user display text.</returns>
-    public override string GetUserDisplayText()
+    /// <value>The user display text.</value>
+    public override string UserDisplayText
     {
-      string fileDir = Path.GetDirectoryName(Parameters[0]);
-      if (!fileDir.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
-        fileDir += Path.DirectorySeparatorChar;
+      get
+      {
+        string fileDir = Path.GetDirectoryName(Parameters[0]);
+        if (!fileDir.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+          fileDir += Path.DirectorySeparatorChar;
 
-      string fileName = Path.GetFileNameWithoutExtension(Parameters[0]);
+        string fileName = Path.GetFileNameWithoutExtension(Parameters[0]);
 
-      if (fileDir.StartsWith(Common.FolderIRCommands, StringComparison.OrdinalIgnoreCase))
-        fileDir = fileDir.Substring(Common.FolderIRCommands.Length);
-      else if (fileDir.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
-        fileDir = fileDir.Substring(Common.FolderAppData.Length);
+        if (fileDir.StartsWith(Common.FolderIRCommands, StringComparison.OrdinalIgnoreCase))
+          fileDir = fileDir.Substring(Common.FolderIRCommands.Length);
+        else if (fileDir.StartsWith(Common.FolderAppData, StringComparison.OrdinalIgnoreCase))
+          fileDir = fileDir.Substring(Common.FolderAppData.Length);
 
-      return String.Format("{0} ({1}, {2})", GetUserInterfaceText(), Path.Combine(fileDir, fileName), Parameters[1]);
+        return String.Format("{0} ({1}, {2})", UserInterfaceText, Path.Combine(fileDir, fileName), Parameters[1]);
+      }
     }
 
     /// <summary>
