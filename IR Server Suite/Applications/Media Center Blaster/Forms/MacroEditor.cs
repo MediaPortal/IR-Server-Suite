@@ -26,7 +26,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using IrssUtils;
-using IrssUtils.Exceptions;
 using IrssUtils.Forms;
 
 #if TRACE
@@ -75,27 +74,27 @@ namespace MediaCenterBlaster
     {
       comboBoxCommands.Items.Clear();
 
-      comboBoxCommands.Items.Add(Common.UITextRun);
-      comboBoxCommands.Items.Add(Common.UITextPause);
-      comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
-      comboBoxCommands.Items.Add(Common.UITextTcpMsg);
-      comboBoxCommands.Items.Add(Common.UITextHttpMsg);
-      comboBoxCommands.Items.Add(Common.UITextKeys);
-      comboBoxCommands.Items.Add(Common.UITextMouse);
-      comboBoxCommands.Items.Add(Common.UITextEject);
-      comboBoxCommands.Items.Add(Common.UITextPopup);
+      //comboBoxCommands.Items.Add(Common.UITextRun);
+      //comboBoxCommands.Items.Add(Common.UITextPause);
+      //comboBoxCommands.Items.Add(Common.UITextSerial);
+      //comboBoxCommands.Items.Add(Common.UITextWindowMsg);
+      //comboBoxCommands.Items.Add(Common.UITextTcpMsg);
+      //comboBoxCommands.Items.Add(Common.UITextHttpMsg);
+      //comboBoxCommands.Items.Add(Common.UITextKeys);
+      //comboBoxCommands.Items.Add(Common.UITextMouse);
+      //comboBoxCommands.Items.Add(Common.UITextEject);
+      //comboBoxCommands.Items.Add(Common.UITextPopup);
       comboBoxCommands.Items.Add(Common.UITextGotoScreen);
       comboBoxCommands.Items.Add(Common.UITextInputLayer);
       //comboBoxCommands.Items.Add(Common.UITextWindowState);
       comboBoxCommands.Items.Add(Common.UITextFocus);
       comboBoxCommands.Items.Add(Common.UITextExit);
-      comboBoxCommands.Items.Add(Common.UITextSendMPAction);
-      comboBoxCommands.Items.Add(Common.UITextSendMPMsg);
-      comboBoxCommands.Items.Add(Common.UITextStandby);
-      comboBoxCommands.Items.Add(Common.UITextHibernate);
-      comboBoxCommands.Items.Add(Common.UITextReboot);
-      comboBoxCommands.Items.Add(Common.UITextShutdown);
+      //comboBoxCommands.Items.Add(Common.UITextSendMPAction);
+      //comboBoxCommands.Items.Add(Common.UITextSendMPMsg);
+      //comboBoxCommands.Items.Add(Common.UITextStandby);
+      //comboBoxCommands.Items.Add(Common.UITextHibernate);
+      //comboBoxCommands.Items.Add(Common.UITextReboot);
+      //comboBoxCommands.Items.Add(Common.UITextShutdown);
 
       string[] fileList = Tray.GetFileList(true);
       if (fileList != null && fileList.Length > 0)
@@ -172,73 +171,74 @@ namespace MediaCenterBlaster
         string selected = comboBoxCommands.SelectedItem as string;
         string newCommand = null;
 
-        if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
-        {
-          ExternalProgram externalProgram = new ExternalProgram();
-          if (externalProgram.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
-        }
-        else if (selected.Equals(Common.UITextPause, StringComparison.OrdinalIgnoreCase))
-        {
-          PauseTime pauseTime = new PauseTime();
-          if (pauseTime.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
-        }
-        else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
-        {
-          SerialCommand serialCommand = new SerialCommand();
-          if (serialCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          MessageCommand messageCommand = new MessageCommand();
-          if (messageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
-          if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextHttpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          HttpMessageCommand httpMessageCommand = new HttpMessageCommand();
-          if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
-        {
-          KeysCommand keysCommand = new KeysCommand();
-          if (keysCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextMouse, StringComparison.OrdinalIgnoreCase))
-        {
-          MouseCommand mouseCommand = new MouseCommand();
-          if (mouseCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixMouse + mouseCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
-        {
-          EjectCommand ejectCommand = new EjectCommand();
-          if (ejectCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextPopup, StringComparison.OrdinalIgnoreCase))
-        {
-          PopupMessage popupMessage = new PopupMessage();
-          if (popupMessage.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
-        }
-          /*
-        else if (selected.Equals(Common.UITextWindowState, StringComparison.OrdinalIgnoreCase))
-        {
-          newCommand = Common.CmdPrefixWindowState;
-        }
-        */
-        else if (selected.Equals(Common.UITextFocus, StringComparison.OrdinalIgnoreCase))
+        #region old command handlind
+        //if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  ExternalProgram externalProgram = new ExternalProgram();
+        //  if (externalProgram.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
+        //}
+        //else if (selected.Equals(Common.UITextPause, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  PauseTime pauseTime = new PauseTime();
+        //  if (pauseTime.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
+        //}
+        //else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  SerialCommand serialCommand = new SerialCommand();
+        //  if (serialCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
+        //}
+        //else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  MessageCommand messageCommand = new MessageCommand();
+        //  if (messageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        //}
+        //else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
+        //  if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+        //}
+        //else if (selected.Equals(Common.UITextHttpMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  HttpMessageCommand httpMessageCommand = new HttpMessageCommand();
+        //  if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
+        //}
+        //else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  KeysCommand keysCommand = new KeysCommand();
+        //  if (keysCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
+        //}
+        //else if (selected.Equals(Common.UITextMouse, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  MouseCommand mouseCommand = new MouseCommand();
+        //  if (mouseCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixMouse + mouseCommand.CommandString;
+        //}
+        //else if (selected.Equals(Common.UITextEject, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  EjectCommand ejectCommand = new EjectCommand();
+        //  if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
+        //}
+        //else if (selected.Equals(Common.UITextPopup, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  PopupMessage popupMessage = new PopupMessage();
+        //  if (popupMessage.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
+        //}
+        /*
+      else if (selected.Equals(Common.UITextWindowState, StringComparison.OrdinalIgnoreCase))
+      {
+        newCommand = Common.CmdPrefixWindowState;
+      }
+      */
+        if (selected.Equals(Common.UITextFocus, StringComparison.OrdinalIgnoreCase))
         {
           newCommand = Common.CmdPrefixFocus;
         }
@@ -246,22 +246,22 @@ namespace MediaCenterBlaster
         {
           newCommand = Common.CmdPrefixExit;
         }
-        else if (selected.Equals(Common.UITextStandby, StringComparison.OrdinalIgnoreCase))
-        {
-          newCommand = Common.CmdPrefixStandby;
-        }
-        else if (selected.Equals(Common.UITextHibernate, StringComparison.OrdinalIgnoreCase))
-        {
-          newCommand = Common.CmdPrefixHibernate;
-        }
-        else if (selected.Equals(Common.UITextReboot, StringComparison.OrdinalIgnoreCase))
-        {
-          newCommand = Common.CmdPrefixReboot;
-        }
-        else if (selected.Equals(Common.UITextShutdown, StringComparison.OrdinalIgnoreCase))
-        {
-          newCommand = Common.CmdPrefixShutdown;
-        }
+        //else if (selected.Equals(Common.UITextStandby, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  newCommand = Common.CmdPrefixStandby;
+        //}
+        //else if (selected.Equals(Common.UITextHibernate, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  newCommand = Common.CmdPrefixHibernate;
+        //}
+        //else if (selected.Equals(Common.UITextReboot, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  newCommand = Common.CmdPrefixReboot;
+        //}
+        //else if (selected.Equals(Common.UITextShutdown, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  newCommand = Common.CmdPrefixShutdown;
+        //}
         else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
         {
           BlastCommand blastCommand = new BlastCommand(
@@ -273,14 +273,15 @@ namespace MediaCenterBlaster
           if (blastCommand.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
         }
-        else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-        {
-          newCommand = selected;
-        }
-        else
-        {
-          throw new CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
-        }
+        //else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  newCommand = selected;
+        //}
+        //else
+        //{
+        //  throw new CommandStructureException(String.Format("Unknown command in macro command list \"{0}\"", selected));
+        //}
+        #endregion
 
         if (!String.IsNullOrEmpty(newCommand))
           listBoxMacro.Items.Add(newCommand);
@@ -347,7 +348,7 @@ namespace MediaCenterBlaster
         string fileName = Path.Combine(Tray.FolderMacros, name + Common.FileExtensionMacro);
         WriteToFile(fileName);
 
-        Tray.ProcessCommand(Common.CmdPrefixMacro + name, false);
+        //Tray.ProcessCommand(Common.CmdPrefixMacro + name, false);
       }
       catch (Exception ex)
       {
@@ -407,91 +408,95 @@ namespace MediaCenterBlaster
         string selected = listBoxMacro.SelectedItem as string;
         string newCommand = null;
 
-        if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
+        #region Old command Handling
 
-          ExternalProgram executeProgram = new ExternalProgram(commands);
-          if (executeProgram.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
+        //if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
+
+        //  ExternalProgram executeProgram = new ExternalProgram(commands);
+        //  if (executeProgram.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
+        //}
+        if (selected.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
         {
           PauseTime pauseTime = new PauseTime(int.Parse(selected.Substring(Common.CmdPrefixPause.Length)));
           if (pauseTime.ShowDialog(this) == DialogResult.OK)
             newCommand = Common.CmdPrefixPause + pauseTime.Time.ToString();
         }
-        else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
+        //else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
 
-          SerialCommand serialCommand = new SerialCommand(commands);
-          if (serialCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
+        //  SerialCommand serialCommand = new SerialCommand(commands);
+        //  if (serialCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
 
-          MessageCommand messageCommand = new MessageCommand(commands);
-          if (messageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
+        //  MessageCommand messageCommand = new MessageCommand(commands);
+        //  if (messageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
 
-          TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
-          if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
+        //  TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
+        //  if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
 
-          HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
-          if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-        {
-          KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
-          if (keysCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
-        {
-          MouseCommand mouseCommand = new MouseCommand(selected.Substring(Common.CmdPrefixMouse.Length));
-          if (mouseCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixMouse + mouseCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-        {
-          EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
-          if (ejectCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
+        //  HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
+        //  if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
+        //  if (keysCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  MouseCommand mouseCommand = new MouseCommand(selected.Substring(Common.CmdPrefixMouse.Length));
+        //  if (mouseCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixMouse + mouseCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  EjectCommand ejectCommand = new EjectCommand(selected.Substring(Common.CmdPrefixEject.Length));
+        //  if (ejectCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixEject + ejectCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
 
-          PopupMessage popupMessage = new PopupMessage(commands);
-          if (popupMessage.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+        //  PopupMessage popupMessage = new PopupMessage(commands);
+        //  if (popupMessage.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
-          BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(Tray.BlastIR),
-            Common.FolderIRCommands,
-            Tray.TransceiverInformation.Ports,
-            commands);
+        //  BlastCommand blastCommand = new BlastCommand(
+        //    new BlastIrDelegate(Tray.BlastIR),
+        //    Common.FolderIRCommands,
+        //    Tray.TransceiverInformation.Ports,
+        //    commands);
 
-          if (blastCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
-        }
+        //  if (blastCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
+        //}
+
+        #endregion Old command Handling
 
         if (!String.IsNullOrEmpty(newCommand))
         {

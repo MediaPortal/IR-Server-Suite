@@ -21,10 +21,9 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
 using MediaPortal.GUI.Library;
 
-namespace Commands.MediaPortal
+namespace IrssCommands.MediaPortal
 {
   /// <summary>
   /// Send Message MediaPortal command.
@@ -45,30 +44,49 @@ namespace Commands.MediaPortal
     /// Initializes a new instance of the <see cref="CommandSendMessage"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSendMessage(string[] parameters) : base(parameters)
+    public CommandSendMessage(string[] parameters)
+      : base(parameters)
     {
     }
 
     #endregion Constructors
 
-    #region Public Methods
+    #region Implementation
 
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return "MediaPortal Commands";
+      get { return "MediaPortal Commands"; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Send Message";
+      get { return "Send Message"; }
+    }
+
+    /// <summary>
+    /// Gets the edit control to be used within a common edit form.
+    /// </summary>
+    /// <returns>The edit control.</returns>
+    public override BaseCommandConfig GetEditControl()
+    {
+      return new SendMessageConfig(Parameters);
+    }
+
+    /// <summary>
+    /// Gets the value, wether this command can be tested.
+    /// </summary>
+    /// <value>Whether the command can be tested.</value>
+    public override bool IsTestAllowed
+    {
+      get { return false; }
     }
 
     /// <summary>
@@ -92,23 +110,6 @@ namespace Commands.MediaPortal
       GUIWindowManager.SendThreadMessage(message);
     }
 
-    /// <summary>
-    /// Edit this command.
-    /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public override bool Edit(IWin32Window parent)
-    {
-      EditSendMessage edit = new EditSendMessage(Parameters);
-      if (edit.ShowDialog(parent) == DialogResult.OK)
-      {
-        Parameters = edit.Parameters;
-        return true;
-      }
-
-      return false;
-    }
-
-    #endregion Public Methods
+    #endregion Implementation
   }
 }

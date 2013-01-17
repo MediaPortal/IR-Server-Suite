@@ -21,10 +21,10 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
+using IrssCommands.MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 
-namespace Commands.MediaPortal
+namespace IrssCommands.MediaPortal
 {
   /// <summary>
   /// Goto Screen MediaPortal command.
@@ -39,36 +39,72 @@ namespace Commands.MediaPortal
     public CommandGotoScreen()
     {
       InitParameters(1);
+
+      Parameters[0] = "0";
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandGotoScreen"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandGotoScreen(string[] parameters) : base(parameters)
+    public CommandGotoScreen(string[] parameters)
+      : base(parameters)
     {
     }
 
     #endregion Constructors
 
-    #region Public Methods
+    #region Implementation
 
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return "MediaPortal Commands";
+      get { return "MediaPortal Commands"; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Goto Screen";
+      get { return "Goto Screen"; }
+    }
+
+    /// <summary>
+    /// Gets the user display text.
+    /// </summary>
+    /// <value>The user display text.</value>
+    public override string UserDisplayText
+    {
+      get
+      {
+        if (Parameters == null)
+          return UserInterfaceText;
+
+        return String.Format("{0} ({1})", UserInterfaceText, MPUtils.MPCommon.GetFriendlyWindowName(int.Parse(Parameters[0])));
+      }
+    }
+
+    /// <summary>
+    /// Gets the edit control to be used within a common edit form.
+    /// </summary>
+    /// <returns>The edit control.</returns>
+    public override BaseCommandConfig GetEditControl()
+    {
+      return new GotoScreenConfig(Parameters);
+    }
+
+    /// <summary>
+    /// Gets the value, wether this command can be tested.
+    /// </summary>
+    /// <value>Whether the command can be tested.</value>
+    public override bool IsTestAllowed
+    {
+      get { return false; }
     }
 
     /// <summary>
@@ -82,7 +118,6 @@ namespace Commands.MediaPortal
       string windowID = processed[0];
 
       int window = (int) GUIWindow.Window.WINDOW_INVALID;
-
       try
       {
         window = (int) Enum.Parse(typeof (GUIWindow.Window), "WINDOW_" + windowID, true);
@@ -99,28 +134,15 @@ namespace Commands.MediaPortal
         throw new CommandStructureException(String.Format("Failed to parse Goto screen command window id \"{0}\"",
                                                           windowID));
 
+#warning fixME use basic home
+      //if (window == (int)GUIWindow.Window.WINDOW_HOME && useBasicHome)
+      //  window = (int)GUIWindow.Window.WINDOW_SECOND_HOME;
+
       GUIGraphicsContext.ResetLastActivity();
       GUIWindowManager.SendThreadMessage(new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, window, 0,
                                                         null));
     }
 
-    /// <summary>
-    /// Edit this command.
-    /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public override bool Edit(IWin32Window parent)
-    {
-      EditGotoScreen edit = new EditGotoScreen(Parameters[0]);
-      if (edit.ShowDialog(parent) == DialogResult.OK)
-      {
-        Parameters[0] = edit.ScreenID;
-        return true;
-      }
-
-      return false;
-    }
-
-    #endregion Public Methods
+    #endregion Implementation
   }
 }

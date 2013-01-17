@@ -8,20 +8,20 @@
     <ProjectGuid>{966281F9-3898-4CB7-9940-99D49C21F170}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Commands.MediaPortal</RootNamespace>
+    <RootNamespace>IrssCommands.MediaPortal</RootNamespace>
     <AssemblyName>MediaPortalCommands</AssemblyName>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <SignAssembly>false</SignAssembly>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\x86\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -38,6 +38,40 @@
     <Compile Include="..\..\..\IR Server Suite\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <None Include="CommandSmsKeyboard.cs" />
+    <None Include="CommandVirtualKeyboard.cs" />
+    <Compile Include="Configuration\PopupConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\PopupConfig.Designer.cs">
+      <DependentUpon>PopupConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\SendActionConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\SendActionConfig.designer.cs">
+      <DependentUpon>SendActionConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\SendMessageConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\SendMessageConfig.designer.cs">
+      <DependentUpon>SendMessageConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\SendKeyConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\SendKeyConfig.designer.cs">
+      <DependentUpon>SendKeyConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CommandToggleLayer.cs" />
+    <Compile Include="CommandSendKey.cs" />
+    <Compile Include="Configuration\GotoScreenConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\GotoScreenConfig.Designer.cs">
+      <DependentUpon>GotoScreenConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandGotoScreen.cs" />
     <Compile Include="CommandExit.cs" />
@@ -49,47 +83,22 @@
     <Compile Include="CommandSendMessage.cs" />
     <Compile Include="CommandPopup.cs" />
     <Compile Include="CommandGetFocus.cs" />
-    <Compile Include="Forms\EditSendMessage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditSendMessage.Designer.cs">
-      <DependentUpon>EditSendMessage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditGotoScreen.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditGotoScreen.Designer.cs">
-      <DependentUpon>EditGotoScreen.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditSendAction.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditSendAction.Designer.cs">
-      <DependentUpon>EditSendAction.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditPopup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditPopup.Designer.cs">
-      <DependentUpon>EditPopup.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\EditSendMessage.resx">
-      <DependentUpon>EditSendMessage.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\PopupConfig.resx">
+      <DependentUpon>PopupConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditGotoScreen.resx">
-      <DependentUpon>EditGotoScreen.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\SendActionConfig.resx">
+      <DependentUpon>SendActionConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditSendAction.resx">
-      <DependentUpon>EditSendAction.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\SendMessageConfig.resx">
+      <DependentUpon>SendMessageConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditPopup.resx">
-      <DependentUpon>EditPopup.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\SendKeyConfig.resx">
+      <DependentUpon>SendKeyConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\GotoScreenConfig.resx">
+      <DependentUpon>GotoScreenConfig.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -105,20 +114,16 @@
       <Project>{6DA0E4DF-6230-4642-98B5-E690BB6942BB}</Project>
       <Name>Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Commands\Command\Command-Net35.csproj">
-      <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
-      <Name>Command-Net35</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Commands\VariableList\VariableList-Net35.csproj">
-      <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
-      <Name>VariableList-Net35</Name>
+    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssCommands\IrssCommands-net35.csproj">
+      <Project>{49cf376e-811c-4eb4-817f-a39c9529b608}</Project>
+      <Name>IrssCommands-net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils-Net35.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils-Net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\MPUtils\MPUtils.csproj">
-      <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
+      <Project>{08f57dd7-2c6e-484e-9cc5-835f70c5bc64}</Project>
       <Name>MPUtils</Name>
     </ProjectReference>
   </ItemGroup>
@@ -131,7 +136,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>mkdir "$(SolutionDir)..\Bin\$(SolutionName)\$(OutDir)Commands"
+xcopy /Y "$(TargetPath)"  "$(SolutionDir)..\Bin\$(SolutionName)\$(OutDir)Commands\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

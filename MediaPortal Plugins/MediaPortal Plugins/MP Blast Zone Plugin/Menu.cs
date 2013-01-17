@@ -22,238 +22,237 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Xml;
+using System.IO;
+using System.Xml.Serialization;
+using IrssCommands;
+using IrssUtils;
 
 namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
 {
   /// <summary>
   /// Represents the root element of the menu tree
   /// </summary>
-  internal class MenuRoot
+  [XmlRoot("root")]
+  public class MenuRoot
   {
-    #region Variables
+    #region Properties
 
-    private readonly List<MenuFolder> _items;
+    [XmlAttribute("version")]
+    public int Version
+    {
+      get { return 4; }
+      set { return; }
+    }
+    
+    [XmlElement("collection")]
+    public List<MenuFolder> Items { get; set; }
 
-    #endregion Variables
+    #endregion Properties
 
     #region Constructors
 
     public MenuRoot()
     {
-      _items = new List<MenuFolder>();
-    }
-
-    public MenuRoot(string fileName) : this()
-    {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(fileName);
-
-      XmlNodeList listCollections = doc.DocumentElement.SelectNodes("collection");
-
-      foreach (XmlNode nodeCollection in listCollections)
-      {
-        MenuFolder newCollection = new MenuFolder(nodeCollection.Attributes["name"].Value);
-        _items.Add(newCollection);
-
-        foreach (XmlNode nodeCommand in nodeCollection.SelectNodes("command"))
-        {
-          MenuCommand newCommand = new MenuCommand(nodeCommand.Attributes["name"].Value,
-                                                   nodeCommand.Attributes["value"].Value);
-          newCollection.Add(newCommand);
-        }
-      }
+      Items = new List<MenuFolder>();
     }
 
     #endregion Constructors
 
-    #region Methods
+    #region Static Methods
 
-    public void Save(string fileName)
+    /// <summary>
+    /// Save the supplied <see cref="MenuRoot"/> to file.
+    /// </summary>
+    /// <param name="menu"><see cref="MenuRoot"/> to save.</param>
+    /// <param name="fileName">File to save to.</param>
+    /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
+    public static bool Save(MenuRoot menu, string fileName)
     {
-      using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8))
+      try
       {
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char) 9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("menu"); // <menu>
+        XmlSerializer writer = new XmlSerializer(typeof(MenuRoot));
+        using (StreamWriter file = new StreamWriter(fileName))
+          writer.Serialize(file, menu);
 
-        foreach (MenuFolder collection in _items)
-        {
-          writer.WriteStartElement("collection"); // <collection>
-          writer.WriteAttributeString("name", collection.Name);
-
-          foreach (string command in collection.GetAllItems())
-          {
-            writer.WriteStartElement("command"); // <command>
-            writer.WriteAttributeString("name", collection.GetItem(command).Name);
-            writer.WriteAttributeString("value", collection.GetItem(command).Command);
-
-            writer.WriteEndElement(); // </command>
-          }
-
-          writer.WriteEndElement(); // </collection>
-        }
-
-        writer.WriteEndElement(); // </menu>
-        writer.WriteEndDocument();
+        return true;
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        return false;
       }
     }
 
-    public MenuFolder GetItem(string name)
+    /// <summary>
+    /// Load <see cref="MenuRoot"/> from a file.
+    /// </summary>
+    /// <param name="fileName">File to load from.</param>
+    /// <returns>Loaded <see cref="MenuRoot"/>.</returns>
+    public static MenuRoot Load(string fileName)
     {
-      foreach (MenuFolder item in _items)
-        if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-          return item;
+      MenuRoot menu;
 
-      return null;
+      try
+      {
+        //UpdateMappingFileFormat(fileName);
+
+        XmlSerializer reader = new XmlSerializer(typeof(MenuRoot));
+        using (StreamReader file = new StreamReader(fileName))
+          menu = (MenuRoot)reader.Deserialize(file);
+      }
+      catch (FileNotFoundException)
+      {
+        IrssLog.Warn("No input mapping file found ({0})", fileName);
+        menu = new MenuRoot();
+      }
+      catch (Exception ex)
+      {
+        IrssLog.Error(ex);
+        menu = new MenuRoot();
+      }
+
+      return menu;
     }
 
-    public void Add(MenuFolder item)
-    {
-      _items.Add(item);
-    }
-
-    public void Remove(MenuFolder item)
-    {
-      _items.Remove(item);
-    }
-
-    public void Clear()
-    {
-      _items.Clear();
-    }
-
-    public string[] GetAllItems()
-    {
-      string[] items = new string[_items.Count];
-      int index = 0;
-      foreach (MenuFolder item in _items)
-        items[index++] = item.Name;
-
-      return items;
-    }
-
-    #endregion Methods
+    #endregion Static Methods
   }
 
   /// <summary>
   /// Represents a folder of commands
   /// </summary>
-  internal class MenuFolder
+  public class MenuFolder
   {
-    #region Variables
-
-    private readonly List<MenuCommand> _items;
-    private readonly string _name;
-
-    #endregion Variables
-
     #region Constructors
 
-    public MenuFolder() : this("New Collection")
+    public MenuFolder() 
     {
+      Items = new List<MenuCommand>();
+      Name = "New Collection";
     }
 
     public MenuFolder(string name)
+      : this()
     {
-      _items = new List<MenuCommand>();
-
-      _name = name;
+      Name = name;
     }
 
     #endregion Constructors
 
     #region Properties
 
-    public string Name
-    {
-      get { return _name; }
-    }
+    [XmlAttribute("Name")]
+    public string Name { get; set; }
+
+    [XmlElement("MenuCommand")]
+    public List<MenuCommand> Items { get; set; }
 
     #endregion Properties
-
-    #region Methods
-
-    public MenuCommand GetItem(string name)
-    {
-      foreach (MenuCommand item in _items)
-        if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-          return item;
-
-      return null;
-    }
-
-    public void Add(MenuCommand item)
-    {
-      _items.Add(item);
-    }
-
-    public void Remove(MenuCommand item)
-    {
-      _items.Remove(item);
-    }
-
-    public void Clear()
-    {
-      _items.Clear();
-    }
-
-    public string[] GetAllItems()
-    {
-      string[] items = new string[_items.Count];
-      int index = 0;
-      foreach (MenuCommand item in _items)
-        items[index++] = item.Name;
-
-      return items;
-    }
-
-    #endregion Methods
   }
 
   /// <summary>
   /// Represents a menu item and it's command
   /// </summary>
-  internal class MenuCommand
+  public class MenuCommand
   {
     #region Variables
 
-    private string _command;
-    private string _name;
+    private Command _command;
 
     #endregion Variables
 
-    #region Constructors
+    //#region Constructors
 
-    public MenuCommand() : this("New Command", String.Empty)
-    {
-    }
+    //public MenuCommand(string name, string command)
+    //{
+    //  Name = name;
+    //  Command = command;
+    //}
 
-    public MenuCommand(string name, string command)
-    {
-      _name = name;
-      _command = command;
-    }
-
-    #endregion Constructors
+    //#endregion Constructors
 
     #region Properties
 
-    public string Name
+    [XmlAttribute("Name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Command to execute
+    /// </summary>
+    [XmlIgnore]
+    public Command Command
     {
-      get { return _name; }
-      set { _name = value; }
+      get
+      {
+        if (_command == null && !string.IsNullOrEmpty(CommandType))
+        {
+          try
+          {
+            _command = Processor.CreateCommand(CommandType, Parameters);
+          }
+          catch (Exception ex)
+          {
+            IrssUtils.IrssLog.Error(
+              "Command could not be created. Please check your commands library ({0}) for correct command plugins or replace existing mapping with available commands.",
+              ex, Processor.LibraryFolder);
+          }
+        }
+
+        return _command;
+      }
+      set
+      {
+        _command = value;
+
+        if (ReferenceEquals(_command, null))
+        {
+          CommandType = string.Empty;
+          Parameters = null;
+          return;
+        }
+
+        CommandType = _command.GetType().FullName;
+        Parameters = _command.Parameters;
+      }
     }
 
-    public string Command
-    {
-      get { return _command; }
-      set { _command = value; }
-    }
+    [XmlAttribute]
+    public string CommandType { get; set; }
+
+    [XmlElement("parameter")]
+    public string[] Parameters { get; set; }
 
     #endregion Properties
+
+    #region Implementation
+
+    [XmlIgnore]
+    public bool IsCommandAvailable
+    {
+      get { return !ReferenceEquals(Command, null); }
+    }
+
+    [XmlIgnore]
+    public DummyCommand DummyCommand
+    {
+      get { return new DummyCommand(CommandType, Parameters); }
+    }
+
+    public string GetCommandDisplayTextSafe()
+    {
+      if (IsCommandAvailable)
+        return Command.UserDisplayText;
+
+      return DummyCommand.UserDisplayText;
+    }
+
+    public object GetCommandSafe()
+    {
+      if (IsCommandAvailable)
+        return Command;
+
+      return DummyCommand;
+    }
+
+    #endregion Implementation
   }
 }

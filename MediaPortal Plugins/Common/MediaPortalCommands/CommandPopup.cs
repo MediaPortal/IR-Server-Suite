@@ -20,11 +20,7 @@
 
 #endregion
 
-using System.Windows.Forms;
-using MediaPortal.Dialogs;
-using MediaPortal.GUI.Library;
-
-namespace Commands.MediaPortal
+namespace IrssCommands.MediaPortal
 {
   /// <summary>
   /// Popup Message command.
@@ -45,30 +41,49 @@ namespace Commands.MediaPortal
     /// Initializes a new instance of the <see cref="CommandPopup"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandPopup(string[] parameters) : base(parameters)
+    public CommandPopup(string[] parameters)
+      : base(parameters)
     {
     }
 
     #endregion Constructors
 
-    #region Public Methods
+    #region Implementation
 
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return "MediaPortal Commands";
+      get { return "MediaPortal Commands"; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Popup Message";
+      get { return "Popup Message"; }
+    }
+
+    /// <summary>
+    /// Gets the edit control to be used within a common edit form.
+    /// </summary>
+    /// <returns>The edit control.</returns>
+    public override BaseCommandConfig GetEditControl()
+    {
+      return new PopupConfig(Parameters);
+    }
+
+    /// <summary>
+    /// Gets the value, wether this command can be tested.
+    /// </summary>
+    /// <value>Whether the command can be tested.</value>
+    public override bool IsTestAllowed
+    {
+      get { return false; }
     }
 
     /// <summary>
@@ -77,41 +92,12 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      GUIDialogNotify dlgNotify =
-        (GUIDialogNotify) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
-      if (dlgNotify == null)
-        throw new CommandExecutionException("Failed to create GUIDialogNotify");
-
       string[] processed = ProcessParameters(variables, Parameters);
-
       int timeout = int.Parse(processed[2]);
 
-      dlgNotify.Reset();
-      dlgNotify.ClearAll();
-      dlgNotify.SetHeading(processed[0]);
-      dlgNotify.SetText(processed[1]);
-      dlgNotify.TimeOut = timeout;
-
-      dlgNotify.DoModal(GUIWindowManager.ActiveWindow);
+      MPUtils.MPCommon.ShowNotifyDialog(processed[0], processed[1], timeout);
     }
 
-    /// <summary>
-    /// Edit this command.
-    /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public override bool Edit(IWin32Window parent)
-    {
-      EditPopup edit = new EditPopup(Parameters);
-      if (edit.ShowDialog(parent) == DialogResult.OK)
-      {
-        Parameters = edit.Parameters;
-        return true;
-      }
-
-      return false;
-    }
-
-    #endregion Public Methods
+    #endregion Implementation
   }
 }

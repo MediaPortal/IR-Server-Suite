@@ -26,7 +26,7 @@ using MediaPortal.Profile;
 using MediaPortal.Util;
 using MPUtils;
 
-namespace Commands.MediaPortal
+namespace IrssCommands.MediaPortal
 {
   /// <summary>
   /// Hibernate MediaPortal macro command.
@@ -58,19 +58,28 @@ namespace Commands.MediaPortal
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return "MediaPortal Commands";
+      get { return "MediaPortal Commands"; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Hibernate";
+      get { return "Hibernate"; }
+    }
+
+    /// <summary>
+    /// Gets the value, wether this command can be tested.
+    /// </summary>
+    /// <value>Whether the command can be tested.</value>
+    public override bool IsTestAllowed
+    {
+      get { return false; }
     }
 
     /// <summary>
@@ -79,26 +88,7 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      bool mpBasicHome = false;
-      using (Settings xmlreader = new Settings(MPCommon.MPConfigFile))
-        mpBasicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
-
-      GUIGraphicsContext.ResetLastActivity();
-      // Stop all media before hibernating
-      g_Player.Stop();
-
-      GUIMessage msg;
-
-      if (mpBasicHome)
-        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0,
-                             (int) GUIWindow.Window.WINDOW_SECOND_HOME, 0, null);
-      else
-        msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GOTO_WINDOW, 0, 0, 0, (int) GUIWindow.Window.WINDOW_HOME, 0,
-                             null);
-
-      GUIWindowManager.SendThreadMessage(msg);
-
-      WindowsController.ExitWindows(RestartOptions.Hibernate, false);
+      GUIGraphicsContext.OnAction(new Action(Action.ActionType.ACTION_HIBERNATE, 1, 0)); //1 = ignore prompt
     }
 
     #endregion Implementation

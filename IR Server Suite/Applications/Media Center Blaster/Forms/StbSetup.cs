@@ -21,12 +21,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
+using IrssCommands;
 using IrssUtils;
-using IrssUtils.Exceptions;
 using IrssUtils.Forms;
+using BlastIrDelegate = IrssUtils.BlastIrDelegate;
 
 namespace MediaCenterBlaster
 {
@@ -125,20 +127,24 @@ namespace MediaCenterBlaster
 
       _cardId = cardId;
 
+      // setup command list
+      string[] categoryList = new string[] { Processor.CategorySpecial, Processor.CategoryGeneral };
+      PopulateCommandList(categoryList);
+
       // Setup commands combo box
-      comboBoxCommands.Items.Add(Common.UITextRun);
-      comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
-      comboBoxCommands.Items.Add(Common.UITextTcpMsg);
-      comboBoxCommands.Items.Add(Common.UITextHttpMsg);
-      comboBoxCommands.Items.Add(Common.UITextKeys);
-      comboBoxCommands.Items.Add(Common.UITextPopup);
+      //comboBoxCommands.Items.Add(Common.UITextRun);
+      //comboBoxCommands.Items.Add(Common.UITextSerial);
+      //comboBoxCommands.Items.Add(Common.UITextWindowMsg);
+      //comboBoxCommands.Items.Add(Common.UITextTcpMsg);
+      //comboBoxCommands.Items.Add(Common.UITextHttpMsg);
+      //comboBoxCommands.Items.Add(Common.UITextKeys);
+      //comboBoxCommands.Items.Add(Common.UITextPopup);
 
-      string[] fileList = Tray.GetFileList(true);
-      if (fileList != null)
-        comboBoxCommands.Items.AddRange(fileList);
+      //string[] fileList = Tray.GetFileList(true);
+      //if (fileList != null)
+      //  comboBoxCommands.Items.AddRange(fileList);
 
-      comboBoxCommands.SelectedIndex = 0;
+      //comboBoxCommands.SelectedIndex = 0;
 
       // Setup command list
       ListViewItem item;
@@ -340,11 +346,74 @@ namespace MediaCenterBlaster
 
     #region Private Methods
 
+    private void PopulateCommandList(string[] categories)
+    {
+      treeViewCommandList.Nodes.Clear();
+      Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
+
+      // Create requested categories ...
+      foreach (string category in categories)
+      {
+        TreeNode categoryNode = new TreeNode(category);
+        //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
+        categoryNodes.Add(category, categoryNode);
+      }
+
+      List<Type> allCommands = new List<Type>();
+
+      Type[] specialCommands = Processor.GetBuiltInCommands();
+      allCommands.AddRange(specialCommands);
+
+      Type[] libCommands = Processor.GetLibraryCommands();
+      if (libCommands != null)
+        allCommands.AddRange(libCommands);
+
+      foreach (Type type in allCommands)
+      {
+        Command command = (Command)Activator.CreateInstance(type);
+
+        string commandCategory = command.Category;
+
+        if (categoryNodes.ContainsKey(commandCategory))
+        {
+          TreeNode newNode = new TreeNode(command.UserInterfaceText);
+          newNode.Tag = type;
+
+          categoryNodes[commandCategory].Nodes.Add(newNode);
+        }
+      }
+
+      // Put all commands into tree view ...
+      foreach (TreeNode treeNode in categoryNodes.Values)
+        if (treeNode.Nodes.Count > 0)
+          treeViewCommandList.Nodes.Add(treeNode);
+
+      treeViewCommandList.SelectedNode = treeViewCommandList.Nodes[0];
+      treeViewCommandList.SelectedNode.Expand();
+    }
+
+    private void treeViewCommandList_DoubleClick(object sender, EventArgs e)
+    {
+      if (treeViewCommandList.SelectedNode == null || treeViewCommandList.SelectedNode.Level == 0)
+        return;
+
+      Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
+      Command command = (Command)Activator.CreateInstance(commandType);
+
+      if (!Tray.CommandProcessor.Edit(command, this)) return;
+
+      listViewExternalCommands.SelectedItems[0].Tag = command;
+      listViewExternalCommands.SelectedItems[0].SubItems[1].Text = command.UserDisplayText;
+    }
+
     private void listViewExternalCommands_KeyDown(object sender, KeyEventArgs e)
     {
       if (listViewExternalCommands.SelectedIndices.Count > 0 && e.KeyCode == Keys.Delete)
         foreach (ListViewItem listViewItem in listViewExternalCommands.SelectedItems)
+        {
+          listViewItem.Tag = null;
           listViewItem.SubItems[1].Text = String.Empty;
+        }
     }
 
     private void checkBoxSendSelect_CheckedChanged(object sender, EventArgs e)
@@ -354,187 +423,127 @@ namespace MediaCenterBlaster
 
     private void listViewExternalCommands_DoubleClick(object sender, EventArgs e)
     {
-      if (listViewExternalCommands.SelectedIndices.Count != 1)
-        return;
+      if (listViewExternalCommands.SelectedItems.Count != 1) return;
 
-      try
-      {
-        string selected = listViewExternalCommands.SelectedItems[0].SubItems[1].Text;
-        string newCommand = null;
+      ListViewItem item = listViewExternalCommands.SelectedItems[0];
+      if (ReferenceEquals(item.Tag, null)) return;
 
-        if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
+      //if (item.Tag is MappedEvent)
+      //{
+      //  MessageBox.Show(this,
+      //                  "The command is not available and can not be edited. Please check your commands directory in application folder or set a new command below.",
+      //                  "Command unavailable", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      //  return;
+      //}
 
-          BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(Tray.BlastIR),
-            Common.FolderIRCommands,
-            Tray.TransceiverInformation.Ports,
-            commands);
+      Command cmd = item.Tag as Command;
+      if (ReferenceEquals(cmd, null)) return;
 
-          if (blastCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixSTB.Length));
+      if (!Tray.CommandProcessor.Edit(cmd, this)) return;
 
-          BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(Tray.BlastIR),
-            Common.FolderSTB,
-            Tray.TransceiverInformation.Ports,
-            commands);
+      item.Tag = cmd;
+      item.SubItems[1].Text = cmd.UserDisplayText;
 
-          if (blastCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixSTB + blastCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
+      //try
+      //{
+      //  string selected = listViewExternalCommands.SelectedItems[0].SubItems[1].Text;
+      //  string newCommand = null;
 
-          ExternalProgram executeProgram = new ExternalProgram(commands, ParameterInfo);
-          if (executeProgram.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
+        //if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixBlast.Length));
 
-          SerialCommand serialCommand = new SerialCommand(commands, ParameterInfo);
-          if (serialCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
+        //  BlastCommand blastCommand = new BlastCommand(
+        //    new BlastIrDelegate(Tray.BlastIR),
+        //    Common.FolderIRCommands,
+        //    Tray.TransceiverInformation.Ports,
+        //    commands);
 
-          MessageCommand messageCommand = new MessageCommand(commands);
-          if (messageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
+        //  if (blastCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitBlastCommand(selected.Substring(Common.CmdPrefixSTB.Length));
 
-          TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
-          if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
+        //  BlastCommand blastCommand = new BlastCommand(
+        //    new BlastIrDelegate(Tray.BlastIR),
+        //    Common.FolderSTB,
+        //    Tray.TransceiverInformation.Ports,
+        //    commands);
+        //  if (blastCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixSTB + blastCommand.CommandString;
+        //}
 
-          HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
-          if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-        {
-          KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
 
-          if (keysCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
 
-          PopupMessage popupMessage = new PopupMessage(commands);
-          if (popupMessage.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
-        }
 
-        if (!String.IsNullOrEmpty(newCommand))
-          listViewExternalCommands.SelectedItems[0].SubItems[1].Text = newCommand;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to edit command", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
 
-    private void buttonSet_Click(object sender, EventArgs e)
-    {
-      if (listViewExternalCommands.SelectedIndices.Count == 0 || comboBoxCommands.SelectedIndex == -1)
-        return;
 
-      try
-      {
-        string selected = comboBoxCommands.SelectedItem as string;
-        string newCommand = null;
+        //else if (selected.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitRunCommand(selected.Substring(Common.CmdPrefixRun.Length));
 
-        if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
-        {
-          ExternalProgram externalProgram = new ExternalProgram(ParameterInfo);
-          if (externalProgram.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixRun + externalProgram.CommandString;
-        }
-        else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
-        {
-          SerialCommand serialCommand = new SerialCommand(ParameterInfo);
-          if (serialCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          MessageCommand messageCommand = new MessageCommand();
-          if (messageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
-          if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextHttpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          HttpMessageCommand httpMessageCommand = new HttpMessageCommand();
-          if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
-        {
-          KeysCommand keysCommand = new KeysCommand();
-          if (keysCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
-        }
-        else if (selected.Equals(Common.UITextPopup, StringComparison.OrdinalIgnoreCase))
-        {
-          PopupMessage popupMessage = new PopupMessage();
-          if (popupMessage.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-        {
-          BlastCommand blastCommand = new BlastCommand(
-            new BlastIrDelegate(Tray.BlastIR),
-            Common.FolderIRCommands,
-            Tray.TransceiverInformation.Ports,
-            selected.Substring(Common.CmdPrefixBlast.Length));
+        //  ExternalProgram executeProgram = new ExternalProgram(commands, ParameterInfo);
+        //  if (executeProgram.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixRun + executeProgram.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitSerialCommand(selected.Substring(Common.CmdPrefixSerial.Length));
 
-          if (blastCommand.ShowDialog(this) == DialogResult.OK)
-            newCommand = Common.CmdPrefixBlast + blastCommand.CommandString;
-        }
-        else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-        {
-          newCommand = selected;
-        }
-        else
-        {
-          throw new CommandStructureException(String.Format("Invalid command in STB Setup: {0}", selected));
-        }
+        //  SerialCommand serialCommand = new SerialCommand(commands, ParameterInfo);
+        //  if (serialCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixSerial + serialCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitWindowMessageCommand(selected.Substring(Common.CmdPrefixWindowMsg.Length));
 
-        if (!String.IsNullOrEmpty(newCommand))
-          foreach (ListViewItem item in listViewExternalCommands.SelectedItems)
-            item.SubItems[1].Text = newCommand;
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to set command", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
+        //  MessageCommand messageCommand = new MessageCommand(commands);
+        //  if (messageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitTcpMessageCommand(selected.Substring(Common.CmdPrefixTcpMsg.Length));
+
+        //  TcpMessageCommand tcpMessageCommand = new TcpMessageCommand(commands);
+        //  if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitHttpMessageCommand(selected.Substring(Common.CmdPrefixHttpMsg.Length));
+
+        //  HttpMessageCommand httpMessageCommand = new HttpMessageCommand(commands);
+        //  if (httpMessageCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixHttpMsg + httpMessageCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  KeysCommand keysCommand = new KeysCommand(selected.Substring(Common.CmdPrefixKeys.Length));
+
+        //  if (keysCommand.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixKeys + keysCommand.CommandString;
+        //}
+        //else if (selected.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitPopupCommand(selected.Substring(Common.CmdPrefixPopup.Length));
+
+        //  PopupMessage popupMessage = new PopupMessage(commands);
+        //  if (popupMessage.ShowDialog(this) == DialogResult.OK)
+        //    newCommand = Common.CmdPrefixPopup + popupMessage.CommandString;
+        //}
+
+      //  if (!String.IsNullOrEmpty(newCommand))
+      //    listViewExternalCommands.SelectedItems[0].SubItems[1].Text = newCommand;
+      //}
+      //catch (Exception ex)
+      //{
+      //  IrssLog.Error(ex);
+      //  MessageBox.Show(this, ex.Message, "Failed to edit command", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      //}
     }
 
     #endregion Private Methods

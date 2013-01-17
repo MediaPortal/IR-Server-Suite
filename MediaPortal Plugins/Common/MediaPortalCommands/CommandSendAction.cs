@@ -21,11 +21,10 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
 using MediaPortal.GUI.Library;
 using Action = MediaPortal.GUI.Library.Action;
 
-namespace Commands.MediaPortal
+namespace IrssCommands.MediaPortal
 {
   /// <summary>
   /// Send Action MediaPortal command.
@@ -40,36 +39,74 @@ namespace Commands.MediaPortal
     public CommandSendAction()
     {
       InitParameters(3);
+
+      Parameters[0] = Enum.GetName(typeof(Action.ActionType), Action.ActionType.ACTION_SELECT_ITEM);
+      Parameters[1] = "0";
+      Parameters[2] = "0";
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandSendAction"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandSendAction(string[] parameters) : base(parameters)
+    public CommandSendAction(string[] parameters)
+      : base(parameters)
     {
     }
 
     #endregion Constructors
 
-    #region Public Methods
+    #region Implementation
 
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return "MediaPortal Commands";
+      get { return "MediaPortal Commands"; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Send Action";
+      get { return "Send Action"; }
+    }
+
+    /// <summary>
+    /// Gets the user display text.
+    /// </summary>
+    /// <value>The user display text.</value>
+    public override string UserDisplayText
+    {
+      get
+      {
+        if (Parameters == null)
+          return UserInterfaceText;
+
+        return String.Format("{0} ({1})", UserInterfaceText, MPUtils.MPCommon.GetFriendlyActionName(Parameters[0]));
+      }
+    }
+
+    /// <summary>
+    /// Gets the edit control to be used within a common edit form.
+    /// </summary>
+    /// <returns>The edit control.</returns>
+    public override BaseCommandConfig GetEditControl()
+    {
+      return new SendActionConfig(Parameters);
+    }
+
+    /// <summary>
+    /// Gets the value, wether this command can be tested.
+    /// </summary>
+    /// <value>Whether the command can be tested.</value>
+    public override bool IsTestAllowed
+    {
+      get { return false; }
     }
 
     /// <summary>
@@ -78,33 +115,17 @@ namespace Commands.MediaPortal
     /// <param name="variables">The variable list of the calling code.</param>
     public override void Execute(VariableList variables)
     {
-      string[] processed = ProcessParameters(variables, Parameters);
+      Action.ActionType type = (Action.ActionType) Enum.Parse(typeof (Action.ActionType), Parameters[0], true);
 
-      Action.ActionType type = (Action.ActionType) Enum.Parse(typeof (Action.ActionType), processed[0]);
-      float f1 = float.Parse(processed[1]);
-      float f2 = float.Parse(processed[2]);
+      float f1;
+      float.TryParse(Parameters[1], out f1);
+      float f2;
+      float.TryParse(Parameters[2], out f2);
 
       Action action = new Action(type, f1, f2);
       GUIGraphicsContext.OnAction(action);
     }
 
-    /// <summary>
-    /// Edit this command.
-    /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public override bool Edit(IWin32Window parent)
-    {
-      EditSendAction edit = new EditSendAction(Parameters);
-      if (edit.ShowDialog(parent) == DialogResult.OK)
-      {
-        Parameters = edit.Parameters;
-        return true;
-      }
-
-      return false;
-    }
-
-    #endregion Public Methods
+    #endregion Implementation
   }
 }
