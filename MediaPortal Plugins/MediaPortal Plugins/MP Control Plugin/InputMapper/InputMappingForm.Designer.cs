@@ -31,76 +31,70 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
     /// </summary>
     private void InitializeComponent()
     {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InputMappingForm));
       this.treeMapping = new System.Windows.Forms.TreeView();
-      this.labelExpand = new MediaPortal.UserInterface.Controls.MPLabel();
-      this.buttonDefault = new MediaPortal.UserInterface.Controls.MPButton();
-      this.buttonRemove = new MediaPortal.UserInterface.Controls.MPButton();
-      this.buttonDown = new MediaPortal.UserInterface.Controls.MPButton();
-      this.buttonUp = new MediaPortal.UserInterface.Controls.MPButton();
-      this.beveledLine1 = new MediaPortal.UserInterface.Controls.MPBeveledLine();
-      this.buttonApply = new MediaPortal.UserInterface.Controls.MPButton();
-      this.buttonOk = new MediaPortal.UserInterface.Controls.MPButton();
-      this.buttonCancel = new MediaPortal.UserInterface.Controls.MPButton();
+      this.buttonDefault = new System.Windows.Forms.Button();
+      this.buttonApply = new System.Windows.Forms.Button();
+      this.buttonOk = new System.Windows.Forms.Button();
+      this.buttonCancel = new System.Windows.Forms.Button();
       this.headerLabel = new MediaPortal.UserInterface.Controls.MPGradientLabel();
-      this.groupBoxAction = new MediaPortal.UserInterface.Controls.MPGroupBox();
-      this.radioButtonBlast = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.checkBoxGainFocus = new MediaPortal.UserInterface.Controls.MPCheckBox();
-      this.textBoxKeyCode = new MediaPortal.UserInterface.Controls.MPTextBox();
-      this.label1 = new MediaPortal.UserInterface.Controls.MPLabel();
-      this.textBoxKeyChar = new MediaPortal.UserInterface.Controls.MPTextBox();
-      this.radioButtonProcess = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.labelSound = new MediaPortal.UserInterface.Controls.MPLabel();
-      this.comboBoxSound = new MediaPortal.UserInterface.Controls.MPComboBox();
-      this.radioButtonAction = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.radioButtonActWindow = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.radioButtonToggle = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.radioButtonPower = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.comboBoxCmdProperty = new MediaPortal.UserInterface.Controls.MPComboBox();
-      this.groupBoxCondition = new MediaPortal.UserInterface.Controls.MPGroupBox();
-      this.radioButtonPlugin = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.radioButtonWindow = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.radioButtonFullscreen = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.radioButtonPlaying = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.radioButtonNoCondition = new MediaPortal.UserInterface.Controls.MPRadioButton();
-      this.comboBoxCondProperty = new MediaPortal.UserInterface.Controls.MPComboBox();
-      this.groupBoxLayer = new MediaPortal.UserInterface.Controls.MPGroupBox();
-      this.comboBoxLayer = new MediaPortal.UserInterface.Controls.MPComboBox();
-      this.labelLayer = new MediaPortal.UserInterface.Controls.MPLabel();
-      this.buttonNew = new MediaPortal.UserInterface.Controls.MPButton();
-      this.groupBoxAction.SuspendLayout();
+      this.groupBoxSound = new System.Windows.Forms.GroupBox();
+      this.comboBoxSound = new System.Windows.Forms.ComboBox();
+      this.groupBoxCondition = new System.Windows.Forms.GroupBox();
+      this.conditionPanel = new System.Windows.Forms.Panel();
+      this.conditionComboBox = new System.Windows.Forms.ComboBox();
+      this.groupBoxLayer = new System.Windows.Forms.GroupBox();
+      this.comboBoxLayer = new System.Windows.Forms.ComboBox();
+      this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+      this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+      this.groupBoxMapping = new System.Windows.Forms.GroupBox();
+      this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+      this.expandToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.collapseToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+      this.upToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.downToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.removeToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+      this.groupBoxCommand = new System.Windows.Forms.GroupBox();
+      this.treeViewCommandList = new System.Windows.Forms.TreeView();
+      this.buttonHelp = new System.Windows.Forms.Button();
+      this.groupBoxSound.SuspendLayout();
       this.groupBoxCondition.SuspendLayout();
       this.groupBoxLayer.SuspendLayout();
+      this.splitContainer1.Panel1.SuspendLayout();
+      this.splitContainer1.Panel2.SuspendLayout();
+      this.splitContainer1.SuspendLayout();
+      this.toolStripContainer1.ContentPanel.SuspendLayout();
+      this.toolStripContainer1.RightToolStripPanel.SuspendLayout();
+      this.toolStripContainer1.SuspendLayout();
+      this.groupBoxMapping.SuspendLayout();
+      this.toolStrip1.SuspendLayout();
+      this.splitContainer2.Panel1.SuspendLayout();
+      this.splitContainer2.Panel2.SuspendLayout();
+      this.splitContainer2.SuspendLayout();
+      this.groupBoxCommand.SuspendLayout();
       this.SuspendLayout();
       // 
       // treeMapping
       // 
       this.treeMapping.AllowDrop = true;
-      this.treeMapping.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.treeMapping.Dock = System.Windows.Forms.DockStyle.Fill;
       this.treeMapping.FullRowSelect = true;
       this.treeMapping.HideSelection = false;
-      this.treeMapping.Location = new System.Drawing.Point(16, 56);
+      this.treeMapping.Location = new System.Drawing.Point(3, 16);
       this.treeMapping.Name = "treeMapping";
-      this.treeMapping.Size = new System.Drawing.Size(312, 347);
+      this.treeMapping.Size = new System.Drawing.Size(383, 467);
       this.treeMapping.TabIndex = 0;
       this.treeMapping.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeMapping_AfterSelect);
-      // 
-      // labelExpand
-      // 
-      this.labelExpand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.labelExpand.AutoSize = true;
-      this.labelExpand.Location = new System.Drawing.Point(328, 386);
-      this.labelExpand.Name = "labelExpand";
-      this.labelExpand.Size = new System.Drawing.Size(13, 13);
-      this.labelExpand.TabIndex = 5;
-      this.labelExpand.Text = "+";
-      this.labelExpand.Click += new System.EventHandler(this.labelExpand_Click);
+      this.treeMapping.DoubleClick += new System.EventHandler(this.treeMapping_DoubleClick);
       // 
       // buttonDefault
       // 
       this.buttonDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonDefault.Location = new System.Drawing.Point(268, 454);
+      this.buttonDefault.Location = new System.Drawing.Point(439, 563);
       this.buttonDefault.Name = "buttonDefault";
       this.buttonDefault.Size = new System.Drawing.Size(75, 23);
       this.buttonDefault.TabIndex = 11;
@@ -108,52 +102,10 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.buttonDefault.UseVisualStyleBackColor = true;
       this.buttonDefault.Click += new System.EventHandler(this.buttonDefault_Click);
       // 
-      // buttonRemove
-      // 
-      this.buttonRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonRemove.Location = new System.Drawing.Point(272, 409);
-      this.buttonRemove.Name = "buttonRemove";
-      this.buttonRemove.Size = new System.Drawing.Size(56, 20);
-      this.buttonRemove.TabIndex = 4;
-      this.buttonRemove.Text = "Remove";
-      this.buttonRemove.UseVisualStyleBackColor = true;
-      this.buttonRemove.Click += new System.EventHandler(this.buttonRemove_Click);
-      // 
-      // buttonDown
-      // 
-      this.buttonDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonDown.Location = new System.Drawing.Point(97, 409);
-      this.buttonDown.Name = "buttonDown";
-      this.buttonDown.Size = new System.Drawing.Size(56, 20);
-      this.buttonDown.TabIndex = 2;
-      this.buttonDown.Text = "Down";
-      this.buttonDown.UseVisualStyleBackColor = true;
-      this.buttonDown.Click += new System.EventHandler(this.buttonDown_Click);
-      // 
-      // buttonUp
-      // 
-      this.buttonUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonUp.Location = new System.Drawing.Point(16, 409);
-      this.buttonUp.Name = "buttonUp";
-      this.buttonUp.Size = new System.Drawing.Size(56, 20);
-      this.buttonUp.TabIndex = 1;
-      this.buttonUp.Text = "Up";
-      this.buttonUp.UseVisualStyleBackColor = true;
-      this.buttonUp.Click += new System.EventHandler(this.buttonUp_Click);
-      // 
-      // beveledLine1
-      // 
-      this.beveledLine1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.beveledLine1.Location = new System.Drawing.Point(8, 444);
-      this.beveledLine1.Name = "beveledLine1";
-      this.beveledLine1.Size = new System.Drawing.Size(328, 2);
-      this.beveledLine1.TabIndex = 9;
-      // 
       // buttonApply
       // 
       this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonApply.Location = new System.Drawing.Point(346, 454);
+      this.buttonApply.Location = new System.Drawing.Point(518, 563);
       this.buttonApply.Name = "buttonApply";
       this.buttonApply.Size = new System.Drawing.Size(75, 23);
       this.buttonApply.TabIndex = 12;
@@ -164,7 +116,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       // buttonOk
       // 
       this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonOk.Location = new System.Drawing.Point(426, 454);
+      this.buttonOk.Location = new System.Drawing.Point(597, 563);
       this.buttonOk.Name = "buttonOk";
       this.buttonOk.Size = new System.Drawing.Size(75, 23);
       this.buttonOk.TabIndex = 13;
@@ -176,17 +128,18 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       // 
       this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.buttonCancel.Location = new System.Drawing.Point(505, 454);
+      this.buttonCancel.Location = new System.Drawing.Point(676, 563);
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(75, 23);
       this.buttonCancel.TabIndex = 14;
       this.buttonCancel.Text = "Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
+      this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
       // 
       // headerLabel
       // 
-      this.headerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.headerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.headerLabel.Caption = "";
       this.headerLabel.FirstColor = System.Drawing.SystemColors.InactiveCaption;
       this.headerLabel.Font = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -194,321 +147,293 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.headerLabel.Location = new System.Drawing.Point(16, 16);
       this.headerLabel.Name = "headerLabel";
       this.headerLabel.PaddingLeft = 2;
-      this.headerLabel.Size = new System.Drawing.Size(558, 24);
+      this.headerLabel.Size = new System.Drawing.Size(729, 24);
       this.headerLabel.TabIndex = 15;
       this.headerLabel.TextColor = System.Drawing.Color.WhiteSmoke;
       this.headerLabel.TextFont = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       // 
-      // groupBoxAction
+      // groupBoxSound
       // 
-      this.groupBoxAction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBoxAction.Controls.Add(this.radioButtonBlast);
-      this.groupBoxAction.Controls.Add(this.checkBoxGainFocus);
-      this.groupBoxAction.Controls.Add(this.textBoxKeyCode);
-      this.groupBoxAction.Controls.Add(this.label1);
-      this.groupBoxAction.Controls.Add(this.textBoxKeyChar);
-      this.groupBoxAction.Controls.Add(this.radioButtonProcess);
-      this.groupBoxAction.Controls.Add(this.labelSound);
-      this.groupBoxAction.Controls.Add(this.comboBoxSound);
-      this.groupBoxAction.Controls.Add(this.radioButtonAction);
-      this.groupBoxAction.Controls.Add(this.radioButtonActWindow);
-      this.groupBoxAction.Controls.Add(this.radioButtonToggle);
-      this.groupBoxAction.Controls.Add(this.radioButtonPower);
-      this.groupBoxAction.Controls.Add(this.comboBoxCmdProperty);
-      this.groupBoxAction.Enabled = false;
-      this.groupBoxAction.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.groupBoxAction.Location = new System.Drawing.Point(350, 233);
-      this.groupBoxAction.Name = "groupBoxAction";
-      this.groupBoxAction.Size = new System.Drawing.Size(224, 211);
-      this.groupBoxAction.TabIndex = 8;
-      this.groupBoxAction.TabStop = false;
-      this.groupBoxAction.Text = "Action";
-      // 
-      // radioButtonBlast
-      // 
-      this.radioButtonBlast.AutoSize = true;
-      this.radioButtonBlast.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonBlast.Location = new System.Drawing.Point(112, 68);
-      this.radioButtonBlast.Name = "radioButtonBlast";
-      this.radioButtonBlast.Size = new System.Drawing.Size(102, 17);
-      this.radioButtonBlast.TabIndex = 5;
-      this.radioButtonBlast.Text = "Blast IR / Macro";
-      this.radioButtonBlast.UseVisualStyleBackColor = true;
-      this.radioButtonBlast.Click += new System.EventHandler(this.radioButtonBlast_Click);
-      // 
-      // checkBoxGainFocus
-      // 
-      this.checkBoxGainFocus.AutoSize = true;
-      this.checkBoxGainFocus.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.checkBoxGainFocus.Location = new System.Drawing.Point(24, 92);
-      this.checkBoxGainFocus.Name = "checkBoxGainFocus";
-      this.checkBoxGainFocus.Size = new System.Drawing.Size(78, 17);
-      this.checkBoxGainFocus.TabIndex = 6;
-      this.checkBoxGainFocus.Text = "Gain Focus";
-      this.checkBoxGainFocus.UseVisualStyleBackColor = true;
-      this.checkBoxGainFocus.CheckedChanged += new System.EventHandler(this.checkBoxGainFocus_CheckedChanged);
-      // 
-      // textBoxKeyCode
-      // 
-      this.textBoxKeyCode.BorderColor = System.Drawing.Color.Empty;
-      this.textBoxKeyCode.Enabled = false;
-      this.textBoxKeyCode.Location = new System.Drawing.Point(152, 152);
-      this.textBoxKeyCode.MaxLength = 3;
-      this.textBoxKeyCode.Name = "textBoxKeyCode";
-      this.textBoxKeyCode.Size = new System.Drawing.Size(48, 20);
-      this.textBoxKeyCode.TabIndex = 10;
-      this.textBoxKeyCode.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBoxKeyCode_KeyUp);
-      this.textBoxKeyCode.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxKeyCode_KeyPress);
-      // 
-      // label1
-      // 
-      this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(24, 156);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(28, 13);
-      this.label1.TabIndex = 8;
-      this.label1.Text = "Key:";
-      // 
-      // textBoxKeyChar
-      // 
-      this.textBoxKeyChar.BorderColor = System.Drawing.Color.Empty;
-      this.textBoxKeyChar.Enabled = false;
-      this.textBoxKeyChar.Location = new System.Drawing.Point(72, 152);
-      this.textBoxKeyChar.MaxLength = 3;
-      this.textBoxKeyChar.Name = "textBoxKeyChar";
-      this.textBoxKeyChar.Size = new System.Drawing.Size(80, 20);
-      this.textBoxKeyChar.TabIndex = 9;
-      this.textBoxKeyChar.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBoxKeyChar_KeyUp);
-      this.textBoxKeyChar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxKeyChar_KeyPress);
-      // 
-      // radioButtonProcess
-      // 
-      this.radioButtonProcess.AutoSize = true;
-      this.radioButtonProcess.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonProcess.Location = new System.Drawing.Point(24, 68);
-      this.radioButtonProcess.Name = "radioButtonProcess";
-      this.radioButtonProcess.Size = new System.Drawing.Size(62, 17);
-      this.radioButtonProcess.TabIndex = 4;
-      this.radioButtonProcess.Text = "Process";
-      this.radioButtonProcess.UseVisualStyleBackColor = true;
-      this.radioButtonProcess.Click += new System.EventHandler(this.radioButtonProcess_Click);
-      // 
-      // labelSound
-      // 
-      this.labelSound.AutoSize = true;
-      this.labelSound.Location = new System.Drawing.Point(24, 184);
-      this.labelSound.Name = "labelSound";
-      this.labelSound.Size = new System.Drawing.Size(41, 13);
-      this.labelSound.TabIndex = 11;
-      this.labelSound.Text = "Sound:";
+      this.groupBoxSound.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxSound.Controls.Add(this.comboBoxSound);
+      this.groupBoxSound.Enabled = false;
+      this.groupBoxSound.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+      this.groupBoxSound.Location = new System.Drawing.Point(0, 246);
+      this.groupBoxSound.Name = "groupBoxSound";
+      this.groupBoxSound.Size = new System.Drawing.Size(281, 48);
+      this.groupBoxSound.TabIndex = 8;
+      this.groupBoxSound.TabStop = false;
+      this.groupBoxSound.Text = "Sound";
       // 
       // comboBoxSound
       // 
-      this.comboBoxSound.BorderColor = System.Drawing.Color.Empty;
+      this.comboBoxSound.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.comboBoxSound.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxSound.ForeColor = System.Drawing.Color.DarkRed;
-      this.comboBoxSound.Location = new System.Drawing.Point(72, 181);
+      this.comboBoxSound.Location = new System.Drawing.Point(6, 19);
       this.comboBoxSound.Name = "comboBoxSound";
-      this.comboBoxSound.Size = new System.Drawing.Size(128, 21);
+      this.comboBoxSound.Size = new System.Drawing.Size(269, 21);
       this.comboBoxSound.TabIndex = 12;
-      this.comboBoxSound.SelectionChangeCommitted += new System.EventHandler(this.comboBoxSound_SelectionChangeCommitted);
-      // 
-      // radioButtonAction
-      // 
-      this.radioButtonAction.AutoSize = true;
-      this.radioButtonAction.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonAction.Location = new System.Drawing.Point(24, 20);
-      this.radioButtonAction.Name = "radioButtonAction";
-      this.radioButtonAction.Size = new System.Drawing.Size(54, 17);
-      this.radioButtonAction.TabIndex = 0;
-      this.radioButtonAction.Text = "Action";
-      this.radioButtonAction.UseVisualStyleBackColor = true;
-      this.radioButtonAction.Click += new System.EventHandler(this.radioButtonAction_Click);
-      // 
-      // radioButtonActWindow
-      // 
-      this.radioButtonActWindow.AutoSize = true;
-      this.radioButtonActWindow.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonActWindow.Location = new System.Drawing.Point(112, 20);
-      this.radioButtonActWindow.Name = "radioButtonActWindow";
-      this.radioButtonActWindow.Size = new System.Drawing.Size(63, 17);
-      this.radioButtonActWindow.TabIndex = 1;
-      this.radioButtonActWindow.Text = "Window";
-      this.radioButtonActWindow.UseVisualStyleBackColor = true;
-      this.radioButtonActWindow.Click += new System.EventHandler(this.radioButtonActWindow_Click);
-      // 
-      // radioButtonToggle
-      // 
-      this.radioButtonToggle.AutoSize = true;
-      this.radioButtonToggle.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonToggle.Location = new System.Drawing.Point(112, 44);
-      this.radioButtonToggle.Name = "radioButtonToggle";
-      this.radioButtonToggle.Size = new System.Drawing.Size(86, 17);
-      this.radioButtonToggle.TabIndex = 3;
-      this.radioButtonToggle.Text = "Toggle Layer";
-      this.radioButtonToggle.UseVisualStyleBackColor = true;
-      this.radioButtonToggle.Click += new System.EventHandler(this.radioButtonToggle_Click);
-      // 
-      // radioButtonPower
-      // 
-      this.radioButtonPower.AutoSize = true;
-      this.radioButtonPower.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonPower.Location = new System.Drawing.Point(24, 44);
-      this.radioButtonPower.Name = "radioButtonPower";
-      this.radioButtonPower.Size = new System.Drawing.Size(80, 17);
-      this.radioButtonPower.TabIndex = 2;
-      this.radioButtonPower.Text = "Powerdown";
-      this.radioButtonPower.UseVisualStyleBackColor = true;
-      this.radioButtonPower.Click += new System.EventHandler(this.radioButtonPower_Click);
-      // 
-      // comboBoxCmdProperty
-      // 
-      this.comboBoxCmdProperty.BorderColor = System.Drawing.Color.Empty;
-      this.comboBoxCmdProperty.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxCmdProperty.ForeColor = System.Drawing.Color.DarkGreen;
-      this.comboBoxCmdProperty.Location = new System.Drawing.Point(24, 120);
-      this.comboBoxCmdProperty.Name = "comboBoxCmdProperty";
-      this.comboBoxCmdProperty.Size = new System.Drawing.Size(176, 21);
-      this.comboBoxCmdProperty.Sorted = true;
-      this.comboBoxCmdProperty.TabIndex = 7;
-      this.comboBoxCmdProperty.SelectedIndexChanged += new System.EventHandler(this.comboBoxCmdProperty_SelectedIndexChanged);
-      this.comboBoxCmdProperty.TextChanged += new System.EventHandler(this.comboBoxCmdProperty_TextChanged);
+      this.comboBoxSound.SelectionChangeCommitted += new System.EventHandler(this.SetSound);
       // 
       // groupBoxCondition
       // 
-      this.groupBoxCondition.Anchor = System.Windows.Forms.AnchorStyles.Right;
-      this.groupBoxCondition.Controls.Add(this.radioButtonPlugin);
-      this.groupBoxCondition.Controls.Add(this.radioButtonWindow);
-      this.groupBoxCondition.Controls.Add(this.radioButtonFullscreen);
-      this.groupBoxCondition.Controls.Add(this.radioButtonPlaying);
-      this.groupBoxCondition.Controls.Add(this.radioButtonNoCondition);
-      this.groupBoxCondition.Controls.Add(this.comboBoxCondProperty);
+      this.groupBoxCondition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxCondition.Controls.Add(this.conditionPanel);
+      this.groupBoxCondition.Controls.Add(this.conditionComboBox);
       this.groupBoxCondition.Enabled = false;
       this.groupBoxCondition.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.groupBoxCondition.Location = new System.Drawing.Point(350, 106);
+      this.groupBoxCondition.Location = new System.Drawing.Point(0, 55);
       this.groupBoxCondition.Name = "groupBoxCondition";
-      this.groupBoxCondition.Size = new System.Drawing.Size(224, 120);
+      this.groupBoxCondition.Size = new System.Drawing.Size(281, 159);
       this.groupBoxCondition.TabIndex = 7;
       this.groupBoxCondition.TabStop = false;
       this.groupBoxCondition.Text = "Condition";
       // 
-      // radioButtonPlugin
+      // conditionPanel
       // 
-      this.radioButtonPlugin.AutoSize = true;
-      this.radioButtonPlugin.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonPlugin.Location = new System.Drawing.Point(24, 67);
-      this.radioButtonPlugin.Name = "radioButtonPlugin";
-      this.radioButtonPlugin.Size = new System.Drawing.Size(104, 17);
-      this.radioButtonPlugin.TabIndex = 5;
-      this.radioButtonPlugin.Text = "Plugin is enabled";
-      this.radioButtonPlugin.UseVisualStyleBackColor = true;
-      this.radioButtonPlugin.CheckedChanged += new System.EventHandler(this.radioButtonPlugin_CheckedChanged);
+      this.conditionPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.conditionPanel.Location = new System.Drawing.Point(6, 46);
+      this.conditionPanel.Name = "conditionPanel";
+      this.conditionPanel.Size = new System.Drawing.Size(269, 107);
+      this.conditionPanel.TabIndex = 7;
       // 
-      // radioButtonWindow
+      // conditionComboBox
       // 
-      this.radioButtonWindow.AutoSize = true;
-      this.radioButtonWindow.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonWindow.Location = new System.Drawing.Point(24, 20);
-      this.radioButtonWindow.Name = "radioButtonWindow";
-      this.radioButtonWindow.Size = new System.Drawing.Size(63, 17);
-      this.radioButtonWindow.TabIndex = 0;
-      this.radioButtonWindow.Text = "Window";
-      this.radioButtonWindow.UseVisualStyleBackColor = true;
-      this.radioButtonWindow.CheckedChanged += new System.EventHandler(this.radioButtonWindow_CheckedChanged);
-      // 
-      // radioButtonFullscreen
-      // 
-      this.radioButtonFullscreen.AutoSize = true;
-      this.radioButtonFullscreen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonFullscreen.Location = new System.Drawing.Point(112, 20);
-      this.radioButtonFullscreen.Name = "radioButtonFullscreen";
-      this.radioButtonFullscreen.Size = new System.Drawing.Size(72, 17);
-      this.radioButtonFullscreen.TabIndex = 1;
-      this.radioButtonFullscreen.Text = "Fullscreen";
-      this.radioButtonFullscreen.UseVisualStyleBackColor = true;
-      this.radioButtonFullscreen.CheckedChanged += new System.EventHandler(this.radioButtonFullscreen_CheckedChanged);
-      // 
-      // radioButtonPlaying
-      // 
-      this.radioButtonPlaying.AutoSize = true;
-      this.radioButtonPlaying.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonPlaying.Location = new System.Drawing.Point(24, 44);
-      this.radioButtonPlaying.Name = "radioButtonPlaying";
-      this.radioButtonPlaying.Size = new System.Drawing.Size(58, 17);
-      this.radioButtonPlaying.TabIndex = 2;
-      this.radioButtonPlaying.Text = "Playing";
-      this.radioButtonPlaying.UseVisualStyleBackColor = true;
-      this.radioButtonPlaying.CheckedChanged += new System.EventHandler(this.radioButtonPlaying_CheckedChanged);
-      // 
-      // radioButtonNoCondition
-      // 
-      this.radioButtonNoCondition.AutoSize = true;
-      this.radioButtonNoCondition.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.radioButtonNoCondition.Location = new System.Drawing.Point(112, 44);
-      this.radioButtonNoCondition.Name = "radioButtonNoCondition";
-      this.radioButtonNoCondition.Size = new System.Drawing.Size(85, 17);
-      this.radioButtonNoCondition.TabIndex = 3;
-      this.radioButtonNoCondition.Text = "No Condition";
-      this.radioButtonNoCondition.UseVisualStyleBackColor = true;
-      this.radioButtonNoCondition.CheckedChanged += new System.EventHandler(this.radioButtonNoCondition_CheckedChanged);
-      // 
-      // comboBoxCondProperty
-      // 
-      this.comboBoxCondProperty.BorderColor = System.Drawing.Color.Empty;
-      this.comboBoxCondProperty.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxCondProperty.ForeColor = System.Drawing.Color.Blue;
-      this.comboBoxCondProperty.Location = new System.Drawing.Point(24, 90);
-      this.comboBoxCondProperty.Name = "comboBoxCondProperty";
-      this.comboBoxCondProperty.Size = new System.Drawing.Size(176, 21);
-      this.comboBoxCondProperty.Sorted = true;
-      this.comboBoxCondProperty.TabIndex = 4;
-      this.comboBoxCondProperty.SelectedIndexChanged += new System.EventHandler(this.comboBoxCondProperty_SelectedIndexChanged);
-      this.comboBoxCondProperty.TextChanged += new System.EventHandler(this.comboBoxCondProperty_TextChanged);
+      this.conditionComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.conditionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+      this.conditionComboBox.FormattingEnabled = true;
+      this.conditionComboBox.Location = new System.Drawing.Point(6, 19);
+      this.conditionComboBox.Name = "conditionComboBox";
+      this.conditionComboBox.Size = new System.Drawing.Size(269, 21);
+      this.conditionComboBox.TabIndex = 6;
+      this.conditionComboBox.SelectedIndexChanged += new System.EventHandler(this.conditionComboBox_SelectedIndexChanged);
       // 
       // groupBoxLayer
       // 
-      this.groupBoxLayer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxLayer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxLayer.Controls.Add(this.comboBoxLayer);
-      this.groupBoxLayer.Controls.Add(this.labelLayer);
       this.groupBoxLayer.Enabled = false;
       this.groupBoxLayer.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.groupBoxLayer.Location = new System.Drawing.Point(350, 48);
+      this.groupBoxLayer.Location = new System.Drawing.Point(0, 0);
       this.groupBoxLayer.Name = "groupBoxLayer";
-      this.groupBoxLayer.Size = new System.Drawing.Size(224, 52);
+      this.groupBoxLayer.Size = new System.Drawing.Size(281, 49);
       this.groupBoxLayer.TabIndex = 6;
       this.groupBoxLayer.TabStop = false;
       this.groupBoxLayer.Text = "Layer";
       // 
       // comboBoxLayer
       // 
-      this.comboBoxLayer.BorderColor = System.Drawing.Color.Empty;
+      this.comboBoxLayer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.comboBoxLayer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxLayer.ForeColor = System.Drawing.Color.DimGray;
-      this.comboBoxLayer.Location = new System.Drawing.Point(80, 20);
+      this.comboBoxLayer.Location = new System.Drawing.Point(6, 19);
       this.comboBoxLayer.Name = "comboBoxLayer";
-      this.comboBoxLayer.Size = new System.Drawing.Size(121, 21);
+      this.comboBoxLayer.Size = new System.Drawing.Size(269, 21);
       this.comboBoxLayer.TabIndex = 1;
-      this.comboBoxLayer.SelectionChangeCommitted += new System.EventHandler(this.comboBoxLayer_SelectionChangeCommitted);
+      this.comboBoxLayer.SelectionChangeCommitted += new System.EventHandler(this.SetLayer);
       // 
-      // labelLayer
+      // splitContainer1
       // 
-      this.labelLayer.AutoSize = true;
-      this.labelLayer.Location = new System.Drawing.Point(24, 23);
-      this.labelLayer.Name = "labelLayer";
-      this.labelLayer.Size = new System.Drawing.Size(36, 13);
-      this.labelLayer.TabIndex = 0;
-      this.labelLayer.Text = "Layer:";
+      this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.splitContainer1.Location = new System.Drawing.Point(16, 46);
+      this.splitContainer1.Name = "splitContainer1";
       // 
-      // buttonNew
+      // splitContainer1.Panel1
       // 
-      this.buttonNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonNew.Location = new System.Drawing.Point(189, 409);
-      this.buttonNew.Name = "buttonNew";
-      this.buttonNew.Size = new System.Drawing.Size(56, 20);
-      this.buttonNew.TabIndex = 3;
-      this.buttonNew.Text = "New";
-      this.buttonNew.UseVisualStyleBackColor = true;
-      this.buttonNew.Click += new System.EventHandler(this.buttonNew_Click);
+      this.splitContainer1.Panel1.Controls.Add(this.toolStripContainer1);
+      // 
+      // splitContainer1.Panel2
+      // 
+      this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+      this.splitContainer1.Size = new System.Drawing.Size(729, 511);
+      this.splitContainer1.SplitterDistance = 444;
+      this.splitContainer1.TabIndex = 16;
+      // 
+      // toolStripContainer1
+      // 
+      // 
+      // toolStripContainer1.ContentPanel
+      // 
+      this.toolStripContainer1.ContentPanel.Controls.Add(this.groupBoxMapping);
+      this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(389, 486);
+      this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
+      this.toolStripContainer1.Name = "toolStripContainer1";
+      // 
+      // toolStripContainer1.RightToolStripPanel
+      // 
+      this.toolStripContainer1.RightToolStripPanel.Controls.Add(this.toolStrip1);
+      this.toolStripContainer1.Size = new System.Drawing.Size(444, 511);
+      this.toolStripContainer1.TabIndex = 17;
+      this.toolStripContainer1.Text = "toolStripContainer1";
+      // 
+      // groupBoxMapping
+      // 
+      this.groupBoxMapping.Controls.Add(this.treeMapping);
+      this.groupBoxMapping.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.groupBoxMapping.Location = new System.Drawing.Point(0, 0);
+      this.groupBoxMapping.Name = "groupBoxMapping";
+      this.groupBoxMapping.Size = new System.Drawing.Size(389, 486);
+      this.groupBoxMapping.TabIndex = 1;
+      this.groupBoxMapping.TabStop = false;
+      this.groupBoxMapping.Text = "Mapping (DoubleClick on command nodes to edit)";
+      // 
+      // toolStrip1
+      // 
+      this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+      this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.expandToolStripButton,
+            this.collapseToolStripButton,
+            this.toolStripSeparator1,
+            this.upToolStripButton,
+            this.downToolStripButton,
+            this.toolStripSeparator2,
+            this.newToolStripButton,
+            this.removeToolStripButton});
+      this.toolStrip1.Location = new System.Drawing.Point(0, 3);
+      this.toolStrip1.Name = "toolStrip1";
+      this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+      this.toolStrip1.Size = new System.Drawing.Size(55, 155);
+      this.toolStrip1.TabIndex = 6;
+      this.toolStrip1.Text = "toolStrip1";
+      // 
+      // expandToolStripButton
+      // 
+      this.expandToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.expandToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("expandToolStripButton.Image")));
+      this.expandToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.expandToolStripButton.Name = "expandToolStripButton";
+      this.expandToolStripButton.Size = new System.Drawing.Size(53, 19);
+      this.expandToolStripButton.Text = "+";
+      this.expandToolStripButton.ToolTipText = "Expand all";
+      this.expandToolStripButton.Click += new System.EventHandler(this.Expand);
+      // 
+      // collapseToolStripButton
+      // 
+      this.collapseToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.collapseToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("collapseToolStripButton.Image")));
+      this.collapseToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.collapseToolStripButton.Name = "collapseToolStripButton";
+      this.collapseToolStripButton.Size = new System.Drawing.Size(53, 19);
+      this.collapseToolStripButton.Text = "-";
+      this.collapseToolStripButton.ToolTipText = "Collapse all";
+      this.collapseToolStripButton.Click += new System.EventHandler(this.Collapse);
+      // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(53, 6);
+      // 
+      // upToolStripButton
+      // 
+      this.upToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.upToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("upToolStripButton.Image")));
+      this.upToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.upToolStripButton.Name = "upToolStripButton";
+      this.upToolStripButton.Size = new System.Drawing.Size(53, 19);
+      this.upToolStripButton.Text = "Up";
+      this.upToolStripButton.Click += new System.EventHandler(this.buttonUp_Click);
+      // 
+      // downToolStripButton
+      // 
+      this.downToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.downToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("downToolStripButton.Image")));
+      this.downToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.downToolStripButton.Name = "downToolStripButton";
+      this.downToolStripButton.Size = new System.Drawing.Size(53, 19);
+      this.downToolStripButton.Text = "Down";
+      this.downToolStripButton.Click += new System.EventHandler(this.buttonDown_Click);
+      // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(53, 6);
+      // 
+      // newToolStripButton
+      // 
+      this.newToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.newToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripButton.Image")));
+      this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.newToolStripButton.Name = "newToolStripButton";
+      this.newToolStripButton.Size = new System.Drawing.Size(53, 19);
+      this.newToolStripButton.Text = "New";
+      this.newToolStripButton.Click += new System.EventHandler(this.buttonNew_Click);
+      // 
+      // removeToolStripButton
+      // 
+      this.removeToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.removeToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("removeToolStripButton.Image")));
+      this.removeToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.removeToolStripButton.Name = "removeToolStripButton";
+      this.removeToolStripButton.Size = new System.Drawing.Size(53, 19);
+      this.removeToolStripButton.Text = "Remove";
+      this.removeToolStripButton.Click += new System.EventHandler(this.buttonRemove_Click);
+      // 
+      // splitContainer2
+      // 
+      this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+      this.splitContainer2.Name = "splitContainer2";
+      this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+      // 
+      // splitContainer2.Panel1
+      // 
+      this.splitContainer2.Panel1.Controls.Add(this.groupBoxCondition);
+      this.splitContainer2.Panel1.Controls.Add(this.groupBoxLayer);
+      // 
+      // splitContainer2.Panel2
+      // 
+      this.splitContainer2.Panel2.Controls.Add(this.groupBoxSound);
+      this.splitContainer2.Panel2.Controls.Add(this.groupBoxCommand);
+      this.splitContainer2.Size = new System.Drawing.Size(281, 511);
+      this.splitContainer2.SplitterDistance = 213;
+      this.splitContainer2.TabIndex = 10;
+      // 
+      // groupBoxCommand
+      // 
+      this.groupBoxCommand.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxCommand.Controls.Add(this.treeViewCommandList);
+      this.groupBoxCommand.Location = new System.Drawing.Point(0, 3);
+      this.groupBoxCommand.Name = "groupBoxCommand";
+      this.groupBoxCommand.Size = new System.Drawing.Size(281, 237);
+      this.groupBoxCommand.TabIndex = 9;
+      this.groupBoxCommand.TabStop = false;
+      this.groupBoxCommand.Text = "Command (DoubleClick to assign a new command)";
+      // 
+      // treeViewCommandList
+      // 
+      this.treeViewCommandList.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.treeViewCommandList.FullRowSelect = true;
+      this.treeViewCommandList.Location = new System.Drawing.Point(3, 16);
+      this.treeViewCommandList.Name = "treeViewCommandList";
+      this.treeViewCommandList.Size = new System.Drawing.Size(275, 218);
+      this.treeViewCommandList.TabIndex = 14;
+      this.treeViewCommandList.DoubleClick += new System.EventHandler(this.treeViewCommandList_DoubleClick);
+      // 
+      // buttonHelp
+      // 
+      this.buttonHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonHelp.Location = new System.Drawing.Point(12, 563);
+      this.buttonHelp.Name = "buttonHelp";
+      this.buttonHelp.Size = new System.Drawing.Size(56, 23);
+      this.buttonHelp.TabIndex = 17;
+      this.buttonHelp.Text = "&Help";
+      this.buttonHelp.UseVisualStyleBackColor = true;
+      this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
       // 
       // InputMappingForm
       // 
@@ -516,75 +441,72 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScroll = true;
       this.CancelButton = this.buttonCancel;
-      this.ClientSize = new System.Drawing.Size(590, 487);
-      this.Controls.Add(this.labelExpand);
-      this.Controls.Add(this.treeMapping);
+      this.ClientSize = new System.Drawing.Size(761, 596);
+      this.Controls.Add(this.buttonHelp);
+      this.Controls.Add(this.splitContainer1);
       this.Controls.Add(this.buttonDefault);
-      this.Controls.Add(this.buttonRemove);
-      this.Controls.Add(this.buttonNew);
-      this.Controls.Add(this.buttonDown);
-      this.Controls.Add(this.buttonUp);
-      this.Controls.Add(this.beveledLine1);
       this.Controls.Add(this.buttonApply);
       this.Controls.Add(this.buttonOk);
       this.Controls.Add(this.buttonCancel);
       this.Controls.Add(this.headerLabel);
-      this.Controls.Add(this.groupBoxAction);
-      this.Controls.Add(this.groupBoxCondition);
-      this.Controls.Add(this.groupBoxLayer);
       this.MinimumSize = new System.Drawing.Size(598, 509);
       this.Name = "InputMappingForm";
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "MediaPortal - Setup";
-      this.groupBoxAction.ResumeLayout(false);
-      this.groupBoxAction.PerformLayout();
+      this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.InputMappingForm_HelpRequested);
+      this.groupBoxSound.ResumeLayout(false);
       this.groupBoxCondition.ResumeLayout(false);
-      this.groupBoxCondition.PerformLayout();
       this.groupBoxLayer.ResumeLayout(false);
-      this.groupBoxLayer.PerformLayout();
+      this.splitContainer1.Panel1.ResumeLayout(false);
+      this.splitContainer1.Panel2.ResumeLayout(false);
+      this.splitContainer1.ResumeLayout(false);
+      this.toolStripContainer1.ContentPanel.ResumeLayout(false);
+      this.toolStripContainer1.RightToolStripPanel.ResumeLayout(false);
+      this.toolStripContainer1.RightToolStripPanel.PerformLayout();
+      this.toolStripContainer1.ResumeLayout(false);
+      this.toolStripContainer1.PerformLayout();
+      this.groupBoxMapping.ResumeLayout(false);
+      this.toolStrip1.ResumeLayout(false);
+      this.toolStrip1.PerformLayout();
+      this.splitContainer2.Panel1.ResumeLayout(false);
+      this.splitContainer2.Panel2.ResumeLayout(false);
+      this.splitContainer2.ResumeLayout(false);
+      this.groupBoxCommand.ResumeLayout(false);
       this.ResumeLayout(false);
-      this.PerformLayout();
 
     }
 
     #endregion
 
-    private MPBeveledLine beveledLine1;
-    private MPButton buttonApply;
-    private MPButton buttonCancel;
-    private MPButton buttonDefault;
-    private MPButton buttonDown;
-    private MPButton buttonNew;
-    private MPButton buttonOk;
-    private MPButton buttonRemove;
-    private MPButton buttonUp;
-    private MPCheckBox checkBoxGainFocus;
-    private MPComboBox comboBoxCmdProperty;
-    private MPComboBox comboBoxCondProperty;
-    private MPComboBox comboBoxLayer;
-    private MPComboBox comboBoxSound;
-    private MPGroupBox groupBoxAction;
-    private MPGroupBox groupBoxCondition;
-    private MPGroupBox groupBoxLayer;
+    private Button buttonApply;
+    private Button buttonCancel;
+    private Button buttonDefault;
+    private Button buttonOk;
+    private ComboBox comboBoxLayer;
+    private GroupBox groupBoxSound;
+    private GroupBox groupBoxCondition;
+    private GroupBox groupBoxLayer;
     private MPGradientLabel headerLabel;
-    private MPLabel label1;
-    private MPLabel labelExpand;
-    private MPLabel labelLayer;
-    private MPLabel labelSound;
-    private MPRadioButton radioButtonAction;
-    private MPRadioButton radioButtonActWindow;
-    private MPRadioButton radioButtonBlast;
-    private MPRadioButton radioButtonFullscreen;
-    private MPRadioButton radioButtonNoCondition;
-    private MPRadioButton radioButtonPlaying;
-    private MPRadioButton radioButtonPlugin;
-    private MPRadioButton radioButtonPower;
-    private MPRadioButton radioButtonProcess;
-    private MPRadioButton radioButtonToggle;
-    private MPRadioButton radioButtonWindow;
-    private MPTextBox textBoxKeyChar;
-    private MPTextBox textBoxKeyCode;
     private TreeView treeMapping;
+    private SplitContainer splitContainer1;
+    private ToolStrip toolStrip1;
+    private ToolStripContainer toolStripContainer1;
+    private ToolStripButton expandToolStripButton;
+    private ToolStripButton collapseToolStripButton;
+    private ToolStripSeparator toolStripSeparator1;
+    private ToolStripButton upToolStripButton;
+    private ToolStripButton downToolStripButton;
+    private ToolStripSeparator toolStripSeparator2;
+    private ToolStripButton newToolStripButton;
+    private ToolStripButton removeToolStripButton;
+    private GroupBox groupBoxCommand;
+    private TreeView treeViewCommandList;
+    private ComboBox conditionComboBox;
+    private Panel conditionPanel;
+    private ComboBox comboBoxSound;
+    private SplitContainer splitContainer2;
+    private GroupBox groupBoxMapping;
+    private Button buttonHelp;
   }
 }

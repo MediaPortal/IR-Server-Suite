@@ -30,6 +30,8 @@ namespace MediaCenterBlaster
 {
   internal static class Program
   {
+    public const string CategoryMceBlasting = "MCE Blasting Commands";
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>

@@ -41,22 +41,28 @@ namespace MediaCenterBlaster
       this.labelMS = new System.Windows.Forms.Label();
       this.checkBoxSendSelect = new System.Windows.Forms.CheckBox();
       this.groupBoxCommands = new System.Windows.Forms.GroupBox();
-      this.buttonSet = new System.Windows.Forms.Button();
-      this.comboBoxCommands = new System.Windows.Forms.ComboBox();
       this.listViewExternalCommands = new System.Windows.Forms.ListView();
-      this.columnHeaderExternal = new System.Windows.Forms.ColumnHeader();
-      this.columnHeaderCommand = new System.Windows.Forms.ColumnHeader();
+      this.columnHeaderExternal = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeaderCommand = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+      this.groupBox1 = new System.Windows.Forms.GroupBox();
+      this.treeViewCommandList = new System.Windows.Forms.TreeView();
       this.groupBoxOptions.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRepeatDelay)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPauseTime)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRepeat)).BeginInit();
       this.groupBoxCommands.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+      this.splitContainer1.Panel1.SuspendLayout();
+      this.splitContainer1.Panel2.SuspendLayout();
+      this.splitContainer1.SuspendLayout();
+      this.groupBox1.SuspendLayout();
       this.SuspendLayout();
       // 
       // groupBoxOptions
       // 
-      this.groupBoxOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxOptions.Controls.Add(this.checkBoxUsePreChange);
       this.groupBoxOptions.Controls.Add(this.numericUpDownRepeatDelay);
       this.groupBoxOptions.Controls.Add(this.labelWait2);
@@ -68,9 +74,9 @@ namespace MediaCenterBlaster
       this.groupBoxOptions.Controls.Add(this.checkBoxDoubleSelect);
       this.groupBoxOptions.Controls.Add(this.labelMS);
       this.groupBoxOptions.Controls.Add(this.checkBoxSendSelect);
-      this.groupBoxOptions.Location = new System.Drawing.Point(296, 8);
+      this.groupBoxOptions.Location = new System.Drawing.Point(361, 8);
       this.groupBoxOptions.Name = "groupBoxOptions";
-      this.groupBoxOptions.Size = new System.Drawing.Size(200, 256);
+      this.groupBoxOptions.Size = new System.Drawing.Size(200, 259);
       this.groupBoxOptions.TabIndex = 1;
       this.groupBoxOptions.TabStop = false;
       this.groupBoxOptions.Text = "Options";
@@ -215,55 +221,27 @@ namespace MediaCenterBlaster
       // 
       // groupBoxCommands
       // 
-      this.groupBoxCommands.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBoxCommands.Controls.Add(this.buttonSet);
-      this.groupBoxCommands.Controls.Add(this.comboBoxCommands);
       this.groupBoxCommands.Controls.Add(this.listViewExternalCommands);
-      this.groupBoxCommands.Location = new System.Drawing.Point(8, 8);
+      this.groupBoxCommands.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.groupBoxCommands.Location = new System.Drawing.Point(0, 0);
       this.groupBoxCommands.Name = "groupBoxCommands";
-      this.groupBoxCommands.Size = new System.Drawing.Size(280, 296);
+      this.groupBoxCommands.Size = new System.Drawing.Size(238, 305);
       this.groupBoxCommands.TabIndex = 0;
       this.groupBoxCommands.TabStop = false;
       this.groupBoxCommands.Text = "Commands";
       // 
-      // buttonSet
-      // 
-      this.buttonSet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonSet.Location = new System.Drawing.Point(232, 264);
-      this.buttonSet.Name = "buttonSet";
-      this.buttonSet.Size = new System.Drawing.Size(40, 21);
-      this.buttonSet.TabIndex = 2;
-      this.buttonSet.Text = "Set";
-      this.buttonSet.UseVisualStyleBackColor = true;
-      this.buttonSet.Click += new System.EventHandler(this.buttonSet_Click);
-      // 
-      // comboBoxCommands
-      // 
-      this.comboBoxCommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.comboBoxCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxCommands.FormattingEnabled = true;
-      this.comboBoxCommands.Location = new System.Drawing.Point(8, 264);
-      this.comboBoxCommands.Name = "comboBoxCommands";
-      this.comboBoxCommands.Size = new System.Drawing.Size(216, 21);
-      this.comboBoxCommands.TabIndex = 1;
-      // 
       // listViewExternalCommands
       // 
-      this.listViewExternalCommands.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
       this.listViewExternalCommands.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeaderExternal,
             this.columnHeaderCommand});
+      this.listViewExternalCommands.Dock = System.Windows.Forms.DockStyle.Fill;
       this.listViewExternalCommands.FullRowSelect = true;
       this.listViewExternalCommands.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
       this.listViewExternalCommands.HideSelection = false;
-      this.listViewExternalCommands.Location = new System.Drawing.Point(8, 16);
+      this.listViewExternalCommands.Location = new System.Drawing.Point(3, 16);
       this.listViewExternalCommands.Name = "listViewExternalCommands";
-      this.listViewExternalCommands.Size = new System.Drawing.Size(264, 240);
+      this.listViewExternalCommands.Size = new System.Drawing.Size(232, 286);
       this.listViewExternalCommands.TabIndex = 0;
       this.listViewExternalCommands.UseCompatibleStateImageBehavior = false;
       this.listViewExternalCommands.View = System.Windows.Forms.View.Details;
@@ -280,21 +258,66 @@ namespace MediaCenterBlaster
       this.columnHeaderCommand.Text = "Command";
       this.columnHeaderCommand.Width = 170;
       // 
+      // splitContainer1
+      // 
+      this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.splitContainer1.Location = new System.Drawing.Point(0, 8);
+      this.splitContainer1.Name = "splitContainer1";
+      // 
+      // splitContainer1.Panel1
+      // 
+      this.splitContainer1.Panel1.Controls.Add(this.groupBoxCommands);
+      // 
+      // splitContainer1.Panel2
+      // 
+      this.splitContainer1.Panel2.Controls.Add(this.groupBox1);
+      this.splitContainer1.Size = new System.Drawing.Size(355, 305);
+      this.splitContainer1.SplitterDistance = 238;
+      this.splitContainer1.TabIndex = 2;
+      // 
+      // groupBox1
+      // 
+      this.groupBox1.Controls.Add(this.treeViewCommandList);
+      this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.groupBox1.Location = new System.Drawing.Point(0, 0);
+      this.groupBox1.Name = "groupBox1";
+      this.groupBox1.Size = new System.Drawing.Size(113, 305);
+      this.groupBox1.TabIndex = 0;
+      this.groupBox1.TabStop = false;
+      this.groupBox1.Text = "groupBox1";
+      // 
+      // treeViewCommandList
+      // 
+      this.treeViewCommandList.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.treeViewCommandList.FullRowSelect = true;
+      this.treeViewCommandList.Location = new System.Drawing.Point(3, 16);
+      this.treeViewCommandList.Name = "treeViewCommandList";
+      this.treeViewCommandList.Size = new System.Drawing.Size(107, 286);
+      this.treeViewCommandList.TabIndex = 2;
+      this.treeViewCommandList.DoubleClick += new System.EventHandler(this.treeViewCommandList_DoubleClick);
+      // 
       // StbSetup
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.Color.Transparent;
+      this.Controls.Add(this.splitContainer1);
       this.Controls.Add(this.groupBoxOptions);
-      this.Controls.Add(this.groupBoxCommands);
       this.MinimumSize = new System.Drawing.Size(504, 310);
       this.Name = "StbSetup";
-      this.Size = new System.Drawing.Size(504, 310);
+      this.Size = new System.Drawing.Size(569, 313);
       this.groupBoxOptions.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRepeatDelay)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPauseTime)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRepeat)).EndInit();
       this.groupBoxCommands.ResumeLayout(false);
+      this.splitContainer1.Panel1.ResumeLayout(false);
+      this.splitContainer1.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+      this.splitContainer1.ResumeLayout(false);
+      this.groupBox1.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -314,10 +337,11 @@ namespace MediaCenterBlaster
     private System.Windows.Forms.Label labelMS;
     private System.Windows.Forms.CheckBox checkBoxSendSelect;
     private System.Windows.Forms.GroupBox groupBoxCommands;
-    private System.Windows.Forms.Button buttonSet;
-    private System.Windows.Forms.ComboBox comboBoxCommands;
     private System.Windows.Forms.ListView listViewExternalCommands;
     private System.Windows.Forms.ColumnHeader columnHeaderExternal;
     private System.Windows.Forms.ColumnHeader columnHeaderCommand;
+    private System.Windows.Forms.SplitContainer splitContainer1;
+    private System.Windows.Forms.GroupBox groupBox1;
+    private System.Windows.Forms.TreeView treeViewCommandList;
   }
 }

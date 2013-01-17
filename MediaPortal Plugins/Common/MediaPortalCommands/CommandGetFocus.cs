@@ -22,7 +22,7 @@
 
 using MediaPortal.GUI.Library;
 
-namespace Commands.MediaPortal
+namespace IrssCommands.MediaPortal
 {
   /// <summary>
   /// Get Focus MediaPortal macro command.
@@ -43,7 +43,8 @@ namespace Commands.MediaPortal
     /// Initializes a new instance of the <see cref="CommandGetFocus"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public CommandGetFocus(string[] parameters) : base(parameters)
+    public CommandGetFocus(string[] parameters)
+      : base(parameters)
     {
     }
 
@@ -54,19 +55,28 @@ namespace Commands.MediaPortal
     /// <summary>
     /// Gets the category of this command.
     /// </summary>
-    /// <returns>The category of this command.</returns>
-    public override string GetCategory()
+    /// <value>The category of this command.</value>
+    public override string Category
     {
-      return "MediaPortal Commands";
+      get { return "MediaPortal Commands"; }
     }
 
     /// <summary>
     /// Gets the user interface text.
     /// </summary>
-    /// <returns>User interface text.</returns>
-    public override string GetUserInterfaceText()
+    /// <value>User interface text.</value>
+    public override string UserInterfaceText
     {
-      return "Get Focus";
+      get { return "Get Focus"; }
+    }
+
+    /// <summary>
+    /// Gets the value, wether this command can be tested.
+    /// </summary>
+    /// <value>Whether the command can be tested.</value>
+    public override bool IsTestAllowed
+    {
+      get { return false; }
     }
 
     /// <summary>
@@ -77,7 +87,8 @@ namespace Commands.MediaPortal
     {
       GUIGraphicsContext.ResetLastActivity();
       GUIMessage msg = new GUIMessage(GUIMessage.MessageType.GUI_MSG_GETFOCUS, 0, 0, 0, 0, 0, null);
-      GUIWindowManager.SendThreadMessage(msg);
+      //GUIWindowManager.SendThreadMessage(msg);
+      GUIGraphicsContext.SendMessage(msg);
     }
 
     #endregion Implementation

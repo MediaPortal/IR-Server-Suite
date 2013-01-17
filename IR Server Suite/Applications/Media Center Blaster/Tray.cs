@@ -25,10 +25,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
+using IrssCommands;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
@@ -57,25 +59,17 @@ namespace MediaCenterBlaster
 
     #region Variables
 
-    private static ClientMessageSink _handleMessage;
-
     private static Client _client;
 
-    private static bool _registered;
-
-    private static string _serverHost;
     private static bool _autoRun;
 
-    private static ExternalChannelConfig _externalChannelConfig;
-
-    private static bool _inConfiguration;
     private static string _learnIRFilename;
-
-    private static IRServerInfo _irServerInfo = new IRServerInfo();
 
     private static Container _container;
     private static NotifyIcon _notifyIcon;
     private static MediaState _mediaState;
+
+    private static SetupForm _setupForm;
 
     #endregion Variables
 
@@ -85,51 +79,31 @@ namespace MediaCenterBlaster
     /// Gets or sets the server host.
     /// </summary>
     /// <value>The server host.</value>
-    internal static string ServerHost
-    {
-      get { return _serverHost; }
-      set { _serverHost = value; }
-    }
+    internal static string ServerHost { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether in configuration.
     /// </summary>
     /// <value><c>true</c> if in configuration; otherwise, <c>false</c>.</value>
-    internal static bool InConfiguration
-    {
-      get { return _inConfiguration; }
-      set { _inConfiguration = value; }
-    }
+    internal static bool InConfiguration { get; set; }
 
     /// <summary>
     /// Gets or sets the message handler delegate.
     /// </summary>
     /// <value>The message handler delegate.</value>
-    internal static ClientMessageSink HandleMessage
-    {
-      get { return _handleMessage; }
-      set { _handleMessage = value; }
-    }
+    internal static ClientMessageSink HandleMessage { get; set; }
 
     /// <summary>
     /// Gets the transceiver information.
     /// </summary>
     /// <value>The transceiver information.</value>
-    internal static IRServerInfo TransceiverInformation
-    {
-      get { return _irServerInfo; }
-    }
+    internal static IRServerInfo TransceiverInformation { get; private set; }
 
-    internal static bool Registered
-    {
-      get { return _registered; }
-    }
+    internal static bool Registered { get; private set; }
 
-    internal static ExternalChannelConfig ExtChannelConfig
-    {
-      get { return _externalChannelConfig; }
-      set { _externalChannelConfig = value; }
-    }
+    internal static ExternalChannelConfig ExtChannelConfig { get; set; }
+
+    internal static Processor CommandProcessor { get; private set; }
 
     #endregion Properties
 
@@ -151,9 +125,29 @@ namespace MediaCenterBlaster
       UpdateTrayIcon("Media Center Blaster - Connecting ...", Resources.Icon16Connecting);
     }
 
+    static Tray()
+    {
+      TransceiverInformation = new IRServerInfo();
+
+      // Set directory for command plugin
+      string dllPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+      Processor.LibraryFolder = Path.Combine(dllPath, "Commands");
+      Processor.MacroFolder = FolderMacros;
+    }
+
     #endregion Constructor
 
     #region Implementation
+
+
+
+    private static void UpdateCommandProcessor()
+    {
+      CommandProcessor = new Processor(BlastIR, TransceiverInformation.Ports);
+
+      if (!ReferenceEquals(_setupForm, null) && !ReferenceEquals(_setupForm._macroPanel, null))
+        _setupForm._macroPanel.SetCommandProcessor(CommandProcessor);
+    }
 
     private void OnMSASEvent(object state, MediaStatusEventArgs args)
     {
@@ -210,7 +204,7 @@ namespace MediaCenterBlaster
 
         LoadExternalConfig();
 
-        if (String.IsNullOrEmpty(_serverHost))
+        if (String.IsNullOrEmpty(ServerHost))
         {
           if (!Configure())
             return false;
@@ -220,7 +214,7 @@ namespace MediaCenterBlaster
 
         try
         {
-          IPAddress serverIP = Network.GetIPFromName(_serverHost);
+          IPAddress serverIP = Network.GetIPFromName(ServerHost);
           IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
           clientStarted = StartClient(endPoint);
@@ -266,9 +260,9 @@ namespace MediaCenterBlaster
 
       try
       {
-        if (_registered)
+        if (Registered)
         {
-          _registered = false;
+          Registered = false;
 
           IrssMessage message = new IrssMessage(MessageType.UnregisterClient, MessageFlags.Request);
           _client.Send(message);
@@ -305,7 +299,7 @@ namespace MediaCenterBlaster
         XmlDocument doc = new XmlDocument();
         doc.Load(ConfigurationFile);
 
-        _serverHost = doc.DocumentElement.Attributes["ServerHost"].Value;
+        ServerHost = doc.DocumentElement.Attributes["ServerHost"].Value;
       }
       catch (FileNotFoundException)
       {
@@ -345,7 +339,7 @@ namespace MediaCenterBlaster
           writer.WriteStartDocument(true);
           writer.WriteStartElement("settings"); // <settings>
 
-          writer.WriteAttributeString("ServerHost", _serverHost);
+          writer.WriteAttributeString("ServerHost", ServerHost);
 
           writer.WriteEndElement(); // </settings>
           writer.WriteEndDocument();
@@ -359,7 +353,7 @@ namespace MediaCenterBlaster
 
     private void CreateDefaultSettings()
     {
-      _serverHost = "localhost";
+      ServerHost = "localhost";
 
       SaveSettings();
     }
@@ -373,16 +367,16 @@ namespace MediaCenterBlaster
 
       try
       {
-        _externalChannelConfig = ExternalChannelConfig.Load(fileName);
+        ExtChannelConfig = ExternalChannelConfig.Load(fileName);
       }
       catch (Exception ex)
       {
         IrssLog.Error(ex);
 
-        _externalChannelConfig = new ExternalChannelConfig(fileName);
+        ExtChannelConfig = new ExternalChannelConfig(fileName);
       }
 
-      _externalChannelConfig.CardId = 0;
+      ExtChannelConfig.CardId = 0;
     }
 
     /// <summary>
@@ -397,7 +391,7 @@ namespace MediaCenterBlaster
         if (data == null)
           throw new ArgumentException("Parameter is not of type string[]", "args");
 
-        ExternalChannelConfig config = _externalChannelConfig;
+        ExternalChannelConfig config = ExtChannelConfig;
 
         // Clean up the "data[0]" string into "channel".
         StringBuilder channel = new StringBuilder();
@@ -475,91 +469,109 @@ namespace MediaCenterBlaster
     /// <param name="command">The command.</param>
     /// <param name="channelDigit">The current channel digit.</param>
     /// <param name="channelFull">The channel full ID.</param>
-    internal static void ProcessExternalCommand(string command, int channelDigit, string channelFull)
+    internal static void SetVariables(int channelDigit, string channelFull)
     {
-      IrssLog.Debug("ProcessExternalCommand(\"{0}\", {1}, {2})", command, channelDigit, channelFull);
+      IrssLog.Debug("ProcessExternalCommand(\"{0}\", {1}, {2})", channelDigit, channelFull);
 
-      if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-
-        commands[2] = commands[2].Replace("%1", channelDigit.ToString());
-        commands[2] = commands[2].Replace("%2", channelFull);
-
-        Common.ProcessRunCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-
-        commands[0] = commands[0].Replace("%1", channelDigit.ToString());
-        commands[0] = commands[0].Replace("%2", channelFull);
-
-        Common.ProcessSerialCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-
-        commands[3] = commands[3].Replace("%1", channelDigit.ToString());
-        commands[3] = commands[3].Replace("%2", channelFull);
-
-        commands[4] = commands[4].Replace("%1", channelDigit.ToString());
-        commands[4] = commands[4].Replace("%2", channelFull);
-
-        Common.ProcessWindowMessageCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
-
-        commands[0] = commands[0].Replace("%1", channelDigit.ToString());
-        commands[0] = commands[0].Replace("%2", channelFull);
-
-        commands[2] = commands[2].Replace("%1", channelDigit.ToString());
-        commands[2] = commands[2].Replace("%2", channelFull);
-
-        Common.ProcessTcpMessageCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
-
-        commands[0] = commands[0].Replace("%1", channelDigit.ToString());
-        commands[0] = commands[0].Replace("%2", channelFull);
-
-        Common.ProcessHttpCommand(commands);
-      }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        string keysCommand = command.Substring(Common.CmdPrefixKeys.Length);
-
-        keysCommand = keysCommand.Replace("%1", channelDigit.ToString());
-        keysCommand = keysCommand.Replace("%2", channelFull);
-
-        if (_inConfiguration)
-          MessageBox.Show(keysCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        else
-          Common.ProcessKeyCommand(keysCommand);
-      }
-      else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
-
-        commands[0] = commands[0].Replace("%1", channelDigit.ToString());
-        commands[0] = commands[0].Replace("%2", channelFull);
-
-        commands[1] = commands[1].Replace("%1", channelDigit.ToString());
-        commands[1] = commands[1].Replace("%2", channelFull);
-
-        ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
-        showPopupMessage.ShowDialog();
-      }
-      else
-      {
-        ProcessCommand(command, false);
-      }
+      CommandProcessor.Variables.VariableSet("%1", channelDigit.ToString());
+      CommandProcessor.Variables.VariableSet("%2", channelFull);
     }
+
+    ///// <summary>
+    ///// Processes the external channel change command.
+    ///// </summary>
+    ///// <param name="command">The command.</param>
+    ///// <param name="channelDigit">The current channel digit.</param>
+    ///// <param name="channelFull">The channel full ID.</param>
+    //internal static void ProcessExternalCommand(string command, int channelDigit, string channelFull)
+    //{
+    //  IrssLog.Debug("ProcessExternalCommand(\"{0}\", {1}, {2})", command, channelDigit, channelFull);
+
+    //  CommandProcessor.Variables.VariableSet("%1", channelDigit.ToString());
+    //  CommandProcessor.Variables.VariableSet("%2", channelFull);
+    //  ProcessCommand(command);
+
+      //if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+      //{
+      //  string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
+
+      //  commands[2] = commands[2].Replace("%1", channelDigit.ToString());
+      //  commands[2] = commands[2].Replace("%2", channelFull);
+
+      //  Common.ProcessRunCommand(commands);
+      //}
+      //else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+      //{
+      //  string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
+
+      //  commands[0] = commands[0].Replace("%1", channelDigit.ToString());
+      //  commands[0] = commands[0].Replace("%2", channelFull);
+
+      //  Common.ProcessSerialCommand(commands);
+      //}
+      //else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+      //{
+      //  string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
+
+      //  commands[3] = commands[3].Replace("%1", channelDigit.ToString());
+      //  commands[3] = commands[3].Replace("%2", channelFull);
+
+      //  commands[4] = commands[4].Replace("%1", channelDigit.ToString());
+      //  commands[4] = commands[4].Replace("%2", channelFull);
+
+      //  Common.ProcessWindowMessageCommand(commands);
+      //}
+      //else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+      //{
+      //  string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
+
+      //  commands[0] = commands[0].Replace("%1", channelDigit.ToString());
+      //  commands[0] = commands[0].Replace("%2", channelFull);
+
+      //  commands[2] = commands[2].Replace("%1", channelDigit.ToString());
+      //  commands[2] = commands[2].Replace("%2", channelFull);
+
+      //  Common.ProcessTcpMessageCommand(commands);
+      //}
+      //else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+      //{
+      //  string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
+
+      //  commands[0] = commands[0].Replace("%1", channelDigit.ToString());
+      //  commands[0] = commands[0].Replace("%2", channelFull);
+
+      //  Common.ProcessHttpCommand(commands);
+      //}
+      //else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+      //{
+      //  string keysCommand = command.Substring(Common.CmdPrefixKeys.Length);
+
+      //  keysCommand = keysCommand.Replace("%1", channelDigit.ToString());
+      //  keysCommand = keysCommand.Replace("%2", channelFull);
+
+      //  if (_inConfiguration)
+      //    MessageBox.Show(keysCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+      //  else
+      //    Common.ProcessKeyCommand(keysCommand);
+      //}
+      //else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+      //{
+      //  string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
+
+      //  commands[0] = commands[0].Replace("%1", channelDigit.ToString());
+      //  commands[0] = commands[0].Replace("%2", channelFull);
+
+      //  commands[1] = commands[1].Replace("%1", channelDigit.ToString());
+      //  commands[1] = commands[1].Replace("%2", channelFull);
+
+      //  ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
+      //  showPopupMessage.ShowDialog();
+      //}
+      //else
+      //{
+      //  ProcessCommand(command, false);
+      //}
+    //}
 
     /// <summary>
     /// Learn an IR command.
@@ -576,7 +588,7 @@ namespace MediaCenterBlaster
           return false;
         }
 
-        if (!_registered)
+        if (!Registered)
         {
           IrssLog.Warn("Not registered to an active IR Server");
           return false;
@@ -612,7 +624,7 @@ namespace MediaCenterBlaster
     {
       IrssLog.Debug("BlastIR(): {0}, {1}", fileName, port);
 
-      if (!_registered)
+      if (!Registered)
         throw new ApplicationException("Cannot Blast, not registered to an active IR Server");
 
       using (FileStream file = File.OpenRead(fileName))
@@ -639,113 +651,131 @@ namespace MediaCenterBlaster
     /// </summary>
     /// <param name="command">Command to process.</param>
     /// <param name="async">Process command asynchronously?</param>
-    internal static void ProcessCommand(string command, bool async)
+    internal static void ProcessCommand(Command command, bool async = false)
     {
-      if (async)
-      {
-        try
-        {
-          Thread newThread = new Thread(new ParameterizedThreadStart(ProcCommand));
-          newThread.Name = ProcessCommandThreadName;
-          newThread.IsBackground = true;
-          newThread.Start(command);
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error(ex);
-        }
-      }
-      else
-      {
-        ProcCommand(command);
-      }
+      CommandProcessor.Execute(command, async);
     }
 
     /// <summary>
-    /// Used by ProcessCommand to actually handle the command.
+    /// Used by ProcessCommand to actually handle the command, if it is a string, otherwise it will call the other overload ProcCommand using the object as type Command.
     /// Can be called Synchronously or as a Parameterized Thread.
     /// </summary>
-    /// <param name="commandObj">Command string to process.</param>
-    private static void ProcCommand(object commandObj)
+    /// <param name="commandObj">Command object to process. This could be a string or Command.</param>
+    internal static void ProcessCommand(object commandObj)
     {
       try
       {
         if (commandObj == null)
           throw new ArgumentNullException("commandObj");
 
-        string command = commandObj as string;
+        Command command = commandObj as Command;
+        if (command != null)
+        {
+          ProcessCommand(command);
+          return;
+        }
 
-        if (String.IsNullOrEmpty(command))
-          throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
+        string strCommand = commandObj as string;
+        // is obj is not a command nor a string, stop here
+        if (strCommand == null) return;
 
-        if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+
+        // check for serialized Command
+        try
         {
-          string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
-          ProcMacro(fileName);
+          command = Processor.CreateCommand(strCommand);
         }
-        else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        catch (Exception)
         {
-          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-          BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+          // catch all exception, as the provided text might not be a serialized command
         }
-        else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
+        if (command != null)
         {
-          string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
-          BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
+          ProcessCommand(command);
+          return;
         }
-        else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
-        {
-          int pauseTime = int.Parse(command.Substring(Common.CmdPrefixPause.Length));
-          Thread.Sleep(pauseTime);
-        }
-        else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-          Common.ProcessRunCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-          Common.ProcessSerialCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-          Common.ProcessWindowMessageCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
-          Common.ProcessTcpMessageCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
-          Common.ProcessHttpCommand(commands);
-        }
-        else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-        {
-          string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-          if (_inConfiguration)
-            MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            Common.ProcessKeyCommand(keyCommand);
-        }
-        else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-        {
-          string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
-          Common.ProcessEjectCommand(ejectCommand);
-        }
-        else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
-          ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
-          showPopupMessage.ShowDialog();
-        }
-        else
-        {
-          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
-        }
+
+
+
+
+        //string command = commandObj as string;
+
+        //if (String.IsNullOrEmpty(command))
+        //  throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
+
+        //if (command.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string fileName = FolderMacros + command.Substring(Common.CmdPrefixMacro.Length) + Common.FileExtensionMacro;
+        //  ProcMacro(fileName);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
+        //  BlastIR(Common.FolderIRCommands + commands[0] + Common.FileExtensionIR, commands[1]);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixSTB.Length));
+        //  BlastIR(Common.FolderSTB + commands[0] + Common.FileExtensionIR, commands[1]);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  int pauseTime = int.Parse(command.Substring(Common.CmdPrefixPause.Length));
+        //  Thread.Sleep(pauseTime);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
+        //  Common.ProcessRunCommand(commands);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
+        //  Common.ProcessSerialCommand(commands);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
+        //  Common.ProcessWindowMessageCommand(commands);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitTcpMessageCommand(command.Substring(Common.CmdPrefixTcpMsg.Length));
+        //  Common.ProcessTcpMessageCommand(commands);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitHttpMessageCommand(command.Substring(Common.CmdPrefixHttpMsg.Length));
+        //  Common.ProcessHttpCommand(commands);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
+        //  if (_inConfiguration)
+        //    MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //  else
+        //    Common.ProcessKeyCommand(keyCommand);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string ejectCommand = command.Substring(Common.CmdPrefixEject.Length);
+        //  Common.ProcessEjectCommand(ejectCommand);
+        //}
+        //else if (command.StartsWith(Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+        //{
+        //  string[] commands = Common.SplitPopupCommand(command.Substring(Common.CmdPrefixPopup.Length));
+        //  ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
+        //  showPopupMessage.ShowDialog();
+        //}
+        //else
+        //{
+        //  throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command), "command");
+        //}
+
+
+
+
+
       }
       catch (Exception ex)
       {
@@ -757,73 +787,73 @@ namespace MediaCenterBlaster
       }
     }
 
-    /// <summary>
-    /// Called by ProcCommand to process the supplied Macro file.
-    /// </summary>
-    /// <param name="fileName">Macro file to process (absolute path).</param>
-    private static void ProcMacro(string fileName)
-    {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(fileName);
+    ///// <summary>
+    ///// Called by ProcCommand to process the supplied Macro file.
+    ///// </summary>
+    ///// <param name="fileName">Macro file to process (absolute path).</param>
+    //private static void ProcMacro(string fileName)
+    //{
+    //  XmlDocument doc = new XmlDocument();
+    //  doc.Load(fileName);
 
-      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
+    //  XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
 
-      foreach (XmlNode item in commandSequence)
-        ProcCommand(item.Attributes["command"].Value);
-    }
+    //  foreach (XmlNode item in commandSequence)
+    //    ProcCommand(item.Attributes["command"].Value);
+    //}
 
-    /// <summary>
-    /// Returns a list of Macros.
-    /// </summary>
-    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
-    /// <returns>string[] of Macros.</returns>
-    internal static string[] GetMacroList(bool commandPrefix)
-    {
-      string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
-      string[] list = new string[files.Length];
+    ///// <summary>
+    ///// Returns a list of Macros.
+    ///// </summary>
+    ///// <param name="commandPrefix">Add the command prefix to each list item.</param>
+    ///// <returns>string[] of Macros.</returns>
+    //internal static string[] GetMacroList(bool commandPrefix)
+    //{
+    //  string[] files = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
+    //  string[] list = new string[files.Length];
 
-      int i = 0;
-      foreach (string file in files)
-      {
-        if (commandPrefix)
-          list[i++] = Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
+    //  int i = 0;
+    //  foreach (string file in files)
+    //  {
+    //    //if (commandPrefix)
+    //    //  list[i++] = Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
+    //    //else
+    //      list[i++] = Path.GetFileNameWithoutExtension(file);
+    //  }
 
-      return list;
-    }
+    //  return list;
+    //}
 
-    /// <summary>
-    /// Returns a combined list of IR Commands and Macros.
-    /// </summary>
-    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
-    /// <returns>string[] of IR Commands and Macros.</returns>
-    internal static string[] GetFileList(bool commandPrefix)
-    {
-      string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
-      string[] IRFiles = Directory.GetFiles(Common.FolderIRCommands, '*' + Common.FileExtensionIR);
-      string[] list = new string[MacroFiles.Length + IRFiles.Length];
+    ///// <summary>
+    ///// Returns a combined list of IR Commands and Macros.
+    ///// </summary>
+    ///// <param name="commandPrefix">Add the command prefix to each list item.</param>
+    ///// <returns>string[] of IR Commands and Macros.</returns>
+    //internal static string[] GetFileList(bool commandPrefix)
+    //{
+    //  string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + Common.FileExtensionMacro);
+    //  string[] IRFiles = Directory.GetFiles(Common.FolderIRCommands, '*' + Common.FileExtensionIR);
+    //  string[] list = new string[MacroFiles.Length + IRFiles.Length];
 
-      int i = 0;
-      foreach (string file in MacroFiles)
-      {
-        if (commandPrefix)
-          list[i++] = Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
+    //  int i = 0;
+    //  foreach (string file in MacroFiles)
+    //  {
+    //    //if (commandPrefix)
+    //    //  list[i++] = Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
+    //    //else
+    //      list[i++] = Path.GetFileNameWithoutExtension(file);
+    //  }
 
-      foreach (string file in IRFiles)
-      {
-        if (commandPrefix)
-          list[i++] = Common.CmdPrefixBlast + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
+    //  foreach (string file in IRFiles)
+    //  {
+    //    if (commandPrefix)
+    //      list[i++] = Common.CmdPrefixBlast + Path.GetFileNameWithoutExtension(file);
+    //    else
+    //      list[i++] = Path.GetFileNameWithoutExtension(file);
+    //  }
 
-      return list;
-    }
+    //  return list;
+    //}
 
 
     private static void CommsFailure(object obj)
@@ -891,7 +921,7 @@ namespace MediaCenterBlaster
       _client.Dispose();
       _client = null;
 
-      _registered = false;
+      Registered = false;
     }
 
     private static void ReceivedMessage(IrssMessage received)
@@ -905,16 +935,17 @@ namespace MediaCenterBlaster
           case MessageType.RegisterClient:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
-              _registered = true;
+              TransceiverInformation = IRServerInfo.FromBytes(received.GetDataAsBytes());
+              Registered = true;
 
               IrssLog.Info("Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
-              _registered = false;
+              Registered = false;
               IrssLog.Warn("IR Server refused to register");
             }
+            UpdateCommandProcessor();
             break;
 
           case MessageType.RemoteEvent:
@@ -959,7 +990,8 @@ namespace MediaCenterBlaster
 
           case MessageType.ServerShutdown:
             IrssLog.Warn("IR Server Shutdown - Media Center Blaster disabled until IR Server returns");
-            _registered = false;
+            Registered = false;
+            UpdateCommandProcessor();
             break;
 
           case MessageType.Error:
@@ -967,8 +999,8 @@ namespace MediaCenterBlaster
             break;
         }
 
-        if (_handleMessage != null)
-          _handleMessage(received);
+        if (HandleMessage != null)
+          HandleMessage(received);
       }
       catch (Exception ex)
       {
@@ -983,15 +1015,17 @@ namespace MediaCenterBlaster
 
     private bool Configure()
     {
-      SetupForm setup = new SetupForm();
+      _setupForm = new SetupForm();
 
-      if (setup.ShowDialog() == DialogResult.OK)
+      if (_setupForm.ShowDialog() == DialogResult.OK)
       {
         SaveSettings();
 
+        _setupForm = null;
         return true;
       }
 
+      _setupForm = null;
       return false;
     }
 
@@ -999,7 +1033,7 @@ namespace MediaCenterBlaster
     {
       IrssLog.Info("Setup");
 
-      _inConfiguration = true;
+      InConfiguration = true;
 
       if (Configure())
       {
@@ -1008,14 +1042,14 @@ namespace MediaCenterBlaster
         Start();
       }
 
-      _inConfiguration = false;
+      InConfiguration = false;
     }
 
     private void ClickQuit(object sender, EventArgs e)
     {
       IrssLog.Info("Quit");
 
-      if (_inConfiguration)
+      if (InConfiguration)
       {
         IrssLog.Info("In Configuration");
         return;

@@ -23,10 +23,12 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
+using IrssCommands;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
@@ -53,14 +55,14 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     /// </summary>
     [SkinControl(50)] protected GUIFacadeControl facadeView;
 
-    /// <summary>
-    /// Main GUI label.
-    /// </summary>
-    [SkinControl(2)] protected GUILabelControl mainLabel;
-
     #endregion Skin Elements
 
     #region Constants
+
+    private const string GUI_PROPERTY_MAIN_LABEL = "#BLAST_ZONE.MAIN_LABEL";
+
+    private const int WindowID = 248101;
+
 
     /// <summary>
     /// The plugin version string.
@@ -68,9 +70,19 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     internal const string PluginVersion = "MP Blast Zone Plugin 1.4.2.0 for IR Server";
 
     private const string ProcessCommandThreadName = "ProcessCommand";
-    private const int WindowID = 248101;
     internal static readonly string FolderMacros = Path.Combine(IrssUtils.Common.FolderAppData, "MP Blast Zone Plugin\\Macro");
     internal static readonly string MenuFile = Path.Combine(IrssUtils.Common.FolderAppData, "MP Blast Zone Plugin\\Menu.xml");
+
+    internal static readonly string[] CommandCategories = new string[]
+        {
+          Processor.CategoryGeneral, Processor.CategorySpecial, Processor.CategoryMediaPortal
+        };
+
+    internal static readonly string[] MacroCategories = new string[]
+        {
+          Processor.CategoryGeneral, Processor.CategoryIRCommands, Processor.CategoryMacros, Processor.CategoryMediaPortal,
+          Processor.CategoryControl, Processor.CategoryMaths, Processor.CategoryStack, Processor.CategoryString, Processor.CategoryVariable
+        };
 
     #endregion Constants
 
@@ -78,57 +90,30 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
 
     private static Client _client;
 
-    private static ClientMessageSink _handleMessage;
-
-    private static bool _inConfiguration;
-
-    private static IRServerInfo _irServerInfo = new IRServerInfo();
     private static string _learnIRFilename;
-    private static MenuRoot _menu;
     private static bool _mpBasicHome;
-    private static bool _registered;
-    private static string _serverHost;
 
     #endregion Variables
 
     #region Properties
 
-    internal static MenuRoot Menu
-    {
-      get { return _menu; }
-    }
+    internal static MenuRoot Menu { get; private set; }
 
-    internal static bool IsRegistered
-    {
-      get { return _registered; }
-    }
+    internal static bool IsRegistered { get; private set; }
 
-    internal static string ServerHost
-    {
-      get { return _serverHost; }
-      set { _serverHost = value; }
-    }
+    internal static string ServerHost { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether in configuration.
     /// </summary>
     /// <value><c>true</c> if in configuration; otherwise, <c>false</c>.</value>
-    internal static bool InConfiguration
-    {
-      get { return _inConfiguration; }
-      set { _inConfiguration = value; }
-    }
+    internal static bool InConfiguration { get; set; }
 
-    internal static ClientMessageSink HandleMessage
-    {
-      get { return _handleMessage; }
-      set { _handleMessage = value; }
-    }
+    internal static ClientMessageSink HandleMessage { get; set; }
 
-    internal static IRServerInfo TransceiverInformation
-    {
-      get { return _irServerInfo; }
-    }
+    internal static IRServerInfo TransceiverInformation { get; private set; }
+
+    internal static Processor CommandProcessor { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether MediaPortal has basic home enabled.
@@ -152,7 +137,18 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
       LoadSettings();
 
       // Setup Menu Details
-      _menu = new MenuRoot(MenuFile);
+      Menu = MenuRoot.Load(MenuFile);
+    }
+
+    static MPBlastZonePlugin()
+    {
+      TransceiverInformation = new IRServerInfo();
+
+      // Set directory for command plugin
+      CommandProcessor = new Processor(BlastIR, TransceiverInformation.Ports);
+      string dllPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+      Processor.LibraryFolder = Path.Combine(dllPath, "Commands");
+      Processor.MacroFolder = FolderMacros;
     }
 
     #endregion Constructor
@@ -231,24 +227,20 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     /// </summary>
     public void ShowPlugin()
     {
-      try
-      {
-        _inConfiguration = true;
+        InConfiguration = true;
 
         Log.Debug("MPBlastZonePlugin: ShowPlugin()");
 
         SetupForm setupForm = new SetupForm();
         if (setupForm.ShowDialog() == DialogResult.OK)
+        {
           SaveSettings();
+          MenuRoot.Save(Menu, MenuFile);
+        }
 
         StopClient();
 
         Log.Debug("MPBlastZonePlugin: ShowPlugin() - End");
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex);
-      }
     }
 
     /// <summary>
@@ -287,7 +279,7 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     /// <returns><c>true</c> if successfully initialized, otherwise <c>false</c>.</returns>
     public override bool Init()
     {
-      _inConfiguration = false;
+      InConfiguration = false;
 
       Log.Info("MPBlastZonePlugin: Starting ({0})", PluginVersion);
 
@@ -328,7 +320,7 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     protected override void OnPageLoad()
     {
       if (facadeView.Count == 0)
-        PopulateListControl("\\");
+        PopulateListControl(Menu);
     }
 
     /// <summary>
@@ -339,22 +331,25 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     /// <param name="actionType">Type of the action.</param>
     protected override void OnClicked(int controlId, GUIControl control, Action.ActionType actionType)
     {
-      if (control == facadeView)
+      if (control == facadeView && actionType == Action.ActionType.ACTION_SELECT_ITEM &&
+          facadeView.SelectedListItem.MusicTag != null)
       {
-        if (actionType == Action.ActionType.ACTION_SELECT_ITEM)
+        MenuRoot menu = facadeView.SelectedListItem.MusicTag as MenuRoot;
+        if (!ReferenceEquals(menu, null))
         {
-          if (facadeView.SelectedListItem.IsFolder)
-          {
-            if (facadeView.SelectedListItem.Label.Equals("..", StringComparison.Ordinal))
-              PopulateListControl("\\");
-            else
-              PopulateListControl(facadeView.SelectedListItem.Label);
-          }
-          else
-          {
-            string command = GetCommand(facadeView.SelectedListItem.Path, facadeView.SelectedListItem.Label);
-            ProcessCommand(command, true);
-          }
+          PopulateListControl(menu);
+        }
+
+        MenuFolder collection = facadeView.SelectedListItem.MusicTag as MenuFolder;
+        if (!ReferenceEquals(collection, null))
+        {
+          PopulateListControl(collection);
+        }
+
+        Command command = facadeView.SelectedListItem.MusicTag as Command;
+        if (!ReferenceEquals(command, null))
+        {
+          CommandProcessor.Execute(command, true);
         }
       }
 
@@ -378,61 +373,48 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
 
     #region Implementation
 
-    private static string GetCommand(string path, string name)
+    private void PopulateListControl(MenuRoot menu)
     {
-      foreach (string collection in _menu.GetAllItems())
-        if (collection.Equals(path, StringComparison.OrdinalIgnoreCase))
-          foreach (string command in _menu.GetItem(collection).GetAllItems())
-            if (command.Equals(name, StringComparison.OrdinalIgnoreCase))
-              return _menu.GetItem(collection).GetItem(command).Command;
-
-      return null;
-    }
-
-    private void PopulateListControl(string path)
-    {
-      if (path.Equals("\\", StringComparison.Ordinal))
-        GUIControl.SetControlLabel(WindowID, mainLabel.GetID, "Blast Zone");
-      else
-        GUIControl.SetControlLabel(WindowID, mainLabel.GetID, path);
-
+      GUIPropertyManager.SetProperty(GUI_PROPERTY_MAIN_LABEL, "Blast Zone");
       GUIControl.ClearControl(WindowID, facadeView.GetID);
 
-      GUIListItem item;
-
-      foreach (string collection in _menu.GetAllItems())
+      foreach (MenuFolder collection in menu.Items)
       {
-        if (path.Equals("\\", StringComparison.Ordinal))
-        {
-          item = new GUIListItem(collection);
-          item.IsFolder = true;
-          item.Path = "\\";
-          item.IconImage = "defaultFolder.png";
-          item.IconImageBig = "defaultFolderBig.png";
-          facadeView.Add(item);
-        }
-        else if (collection.Equals(path, StringComparison.OrdinalIgnoreCase))
-        {
-          item = new GUIListItem("..");
-          item.IsFolder = true;
-          item.Path = "\\";
-          item.IconImage = "defaultFolderBack.png";
-          item.IconImageBig = "defaultFolderBackBig.png";
-          facadeView.Add(item);
-
-          foreach (string command in _menu.GetItem(collection).GetAllItems())
-          {
-            item = new GUIListItem(command);
-            item.IsFolder = false;
-            item.Path = collection;
-            item.IconImage = "check-box.png";
-            facadeView.Add(item);
-          }
-        }
+        GUIListItem item = new GUIListItem(collection.Name);
+        item.IsFolder = true;
+        item.Path = "\\";
+        item.IconImage = "defaultFolder.png";
+        item.IconImageBig = "defaultFolderBig.png";
+        item.MusicTag = collection;
+        facadeView.Add(item);
       }
+    }
 
-      //string strObjects = String.Format("{0} {1}", GUIControl.GetItemCount(GetID, (int)Controls.CONTROL_LIST_DIR).ToString(), GUILocalizeStrings.Get(632));
-      //GUIPropertyManager.SetProperty("#itemcount", strObjects);
+    private void PopulateListControl(MenuFolder collection)
+    {
+      GUIPropertyManager.SetProperty(GUI_PROPERTY_MAIN_LABEL, collection.Name);
+      GUIControl.ClearControl(WindowID, facadeView.GetID);
+
+      GUIListItem item = new GUIListItem("..");
+      item.IsFolder = true;
+      item.Path = "\\";
+      item.IconImage = "defaultFolderBack.png";
+      item.IconImageBig = "defaultFolderBackBig.png";
+      item.MusicTag = Menu;
+      facadeView.Add(item);
+
+      foreach (MenuCommand command in collection.Items)
+      {
+        if (!command.IsCommandAvailable) continue;
+
+        item = new GUIListItem(command.Name);
+        item.IsFolder = false;
+        item.Path = "\\";
+        item.IconImage = "check-box.png";
+        item.IconImageBig = "check-box.png";
+        item.MusicTag = command.Command;
+        facadeView.Add(item);
+      }
     }
 
     private static void CommsFailure(object obj)
@@ -448,7 +430,7 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
 
       Log.Warn("MPBlastZonePlugin: Attempting communications restart ...");
 
-      IPAddress serverIP = Network.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);
@@ -519,14 +501,14 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
           case MessageType.RegisterClient:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
-              _registered = true;
+              TransceiverInformation = IRServerInfo.FromBytes(received.GetDataAsBytes());
+              IsRegistered = true;
 
               Log.Debug("MPBlastZonePlugin: Registered to IR Server");
             }
             else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
             {
-              _registered = false;
+              IsRegistered = false;
               Log.Warn("MPBlastZonePlugin: IR Server refused to register");
             }
             break;
@@ -555,7 +537,7 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
 
           case MessageType.ServerShutdown:
             Log.Warn("MPBlastZonePlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
-            _registered = false;
+            IsRegistered = false;
             break;
 
           case MessageType.Error:
@@ -564,8 +546,8 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
             break;
         }
 
-        if (_handleMessage != null)
-          _handleMessage(received);
+        if (HandleMessage != null)
+          HandleMessage(received);
       }
       catch (Exception ex)
       {
@@ -589,7 +571,7 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
           return false;
         }
 
-        if (!_registered)
+        if (!IsRegistered)
         {
           Log.Warn("MPBlastZonePlugin: Not registered to an active IR Server");
           return false;
@@ -625,7 +607,7 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     {
       Log.Debug("MPControlPlugin - BlastIR(): {0}, {1}", fileName, port);
 
-      if (!_registered)
+      if (!IsRegistered)
         throw new InvalidOperationException("Cannot Blast, not registered to an active IR Server");
 
       using (FileStream file = File.OpenRead(fileName))
@@ -652,293 +634,304 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     /// </summary>
     /// <param name="command">Command to process.</param>
     /// <param name="async">Process command asynchronously?</param>
-    internal static void ProcessCommand(string command, bool async)
+    internal static void ProcessCommand(Command command, bool async = false)
     {
-      if (async)
-      {
-        try
-        {
-          Thread newThread = new Thread(ProcCommand);
-          newThread.Name = ProcessCommandThreadName;
-          newThread.IsBackground = true;
-          newThread.Start(command);
-        }
-        catch (Exception ex)
-        {
-          Log.Error(ex);
-        }
-      }
-      else
-      {
-        ProcCommand(command);
-      }
+      CommandProcessor.Execute(command, async);
     }
 
-    /// <summary>
-    /// Used by ProcessCommand to actually handle the command.
-    /// Can be called Synchronously or as a Parameterized Thread.
-    /// </summary>
-    /// <param name="commandObj">Command string to process.</param>
-    private static void ProcCommand(object commandObj)
-    {
-      try
-      {
-        if (commandObj == null)
-          throw new ArgumentNullException("commandObj");
+    ///// <summary>
+    ///// Given a command this method processes the request accordingly.
+    ///// Throws exceptions only if run synchronously, if async exceptions are logged instead.
+    ///// </summary>
+    ///// <param name="command">Command to process.</param>
+    ///// <param name="async">Process command asynchronously?</param>
+    //internal static void ProcessCommand(string command, bool async)
+    //{
+    //  if (async)
+    //  {
+    //    try
+    //    {
+    //      Thread newThread = new Thread(ProcCommand);
+    //      newThread.Name = ProcessCommandThreadName;
+    //      newThread.IsBackground = true;
+    //      newThread.Start(command);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //      Log.Error(ex);
+    //    }
+    //  }
+    //  else
+    //  {
+    //    ProcCommand(command);
+    //  }
+    //}
 
-        string command = commandObj as string;
+    ///// <summary>
+    ///// Used by ProcessCommand to actually handle the command.
+    ///// Can be called Synchronously or as a Parameterized Thread.
+    ///// </summary>
+    ///// <param name="commandObj">Command string to process.</param>
+    //private static void ProcCommand(object commandObj)
+    //{
+    //  try
+    //  {
+    //    if (commandObj == null)
+    //      throw new ArgumentNullException("commandObj");
 
-        if (String.IsNullOrEmpty(command))
-          throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
+    //    string command = commandObj as string;
 
-        if (command.StartsWith(IrssUtils.Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-        {
-          string fileName = Path.Combine(FolderMacros,
-                                         command.Substring(IrssUtils.Common.CmdPrefixMacro.Length) + IrssUtils.Common.FileExtensionMacro);
-          ProcMacro(fileName);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitBlastCommand(command.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
-          BlastIR(Path.Combine(IrssUtils.Common.FolderIRCommands, commands[0] + IrssUtils.Common.FileExtensionIR), commands[1]);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitBlastCommand(command.Substring(IrssUtils.Common.CmdPrefixSTB.Length));
-          BlastIR(Path.Combine(IrssUtils.Common.FolderSTB, commands[0] + IrssUtils.Common.FileExtensionIR), commands[1]);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
-        {
-          int pauseTime = int.Parse(command.Substring(IrssUtils.Common.CmdPrefixPause.Length));
-          Thread.Sleep(pauseTime);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitRunCommand(command.Substring(IrssUtils.Common.CmdPrefixRun.Length));
-          IrssUtils.Common.ProcessRunCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitSerialCommand(command.Substring(IrssUtils.Common.CmdPrefixSerial.Length));
-          IrssUtils.Common.ProcessSerialCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitWindowMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixWindowMsg.Length));
-          IrssUtils.Common.ProcessWindowMessageCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitTcpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixTcpMsg.Length));
-          IrssUtils.Common.ProcessTcpMessageCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitHttpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixHttpMsg.Length));
-          IrssUtils.Common.ProcessHttpCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-        {
-          string keyCommand = command.Substring(IrssUtils.Common.CmdPrefixKeys.Length);
-          if (_inConfiguration)
-            MessageBox.Show(keyCommand, IrssUtils.Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            IrssUtils.Common.ProcessKeyCommand(keyCommand);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
-        {
-          string mouseCommand = command.Substring(IrssUtils.Common.CmdPrefixMouse.Length);
-          IrssUtils.Common.ProcessMouseCommand(mouseCommand);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-        {
-          string ejectCommand = command.Substring(IrssUtils.Common.CmdPrefixEject.Length);
-          IrssUtils.Common.ProcessEjectCommand(ejectCommand);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitPopupCommand(command.Substring(IrssUtils.Common.CmdPrefixPopup.Length));
-          if (_inConfiguration)
-            MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
-        {
-          string screenID = command.Substring(IrssUtils.Common.CmdPrefixGotoScreen.Length);
+    //    if (String.IsNullOrEmpty(command))
+    //      throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
 
-          if (_inConfiguration)
-            MessageBox.Show(screenID, IrssUtils.Common.UITextGotoScreen, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            MPCommon.ProcessGoTo(screenID, _mpBasicHome);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSendMPAction, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitSendMPActionCommand(command.Substring(IrssUtils.Common.CmdPrefixSendMPAction.Length));
-          if (_inConfiguration)
-            MessageBox.Show(commands[0], IrssUtils.Common.UITextSendMPAction, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            MPCommon.ProcessSendMediaPortalAction(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSendMPMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitSendMPMsgCommand(command.Substring(IrssUtils.Common.CmdPrefixSendMPMsg.Length));
-          if (_inConfiguration)
-            MessageBox.Show(commands[0], IrssUtils.Common.UITextSendMPMsg, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            MPCommon.ProcessSendMediaPortalMessage(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot exit MediaPortal in configuration", IrssUtils.Common.UITextExit, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.ExitMP();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot Hibernate in configuration", IrssUtils.Common.UITextHibernate, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.Hibernate();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot Reboot in configuration", IrssUtils.Common.UITextReboot, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.Reboot();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot Shutdown in configuration", IrssUtils.Common.UITextShutdown, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.ShutDown();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot enter Standby in configuration", IrssUtils.Common.UITextStandby, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.Standby();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot show Virtual Keyboard in configuration", IrssUtils.Common.UITextVirtualKB,
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-          }
-          else
-          {
-            VirtualKeyboard vk = new VirtualKeyboard();
-            if (vk.ShowDialog() == DialogResult.OK)
-              Keyboard.ProcessCommand(vk.TextOutput);
-          }
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot show SMS Keyboard in configuration", IrssUtils.Common.UITextSmsKB, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          }
-          else
-          {
-            SmsKeyboard sms = new SmsKeyboard();
-            if (sms.ShowDialog() == DialogResult.OK)
-              Keyboard.ProcessCommand(sms.TextOutput);
-          }
-        }
-        else
-        {
-          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
-                                      "commandObj");
-        }
-      }
-      catch (Exception ex)
-      {
-        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
-            Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          Log.Error(ex);
-        else
-          throw;
-      }
-    }
+    //    if (command.StartsWith(IrssUtils.Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string fileName = Path.Combine(FolderMacros,
+    //                                     command.Substring(IrssUtils.Common.CmdPrefixMacro.Length) + IrssUtils.Common.FileExtensionMacro);
+    //      ProcMacro(fileName);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitBlastCommand(command.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
+    //      BlastIR(Path.Combine(IrssUtils.Common.FolderIRCommands, commands[0] + IrssUtils.Common.FileExtensionIR), commands[1]);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixSTB, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitBlastCommand(command.Substring(IrssUtils.Common.CmdPrefixSTB.Length));
+    //      BlastIR(Path.Combine(IrssUtils.Common.FolderSTB, commands[0] + IrssUtils.Common.FileExtensionIR), commands[1]);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      int pauseTime = int.Parse(command.Substring(IrssUtils.Common.CmdPrefixPause.Length));
+    //      Thread.Sleep(pauseTime);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitRunCommand(command.Substring(IrssUtils.Common.CmdPrefixRun.Length));
+    //      IrssUtils.Common.ProcessRunCommand(commands);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitSerialCommand(command.Substring(IrssUtils.Common.CmdPrefixSerial.Length));
+    //      IrssUtils.Common.ProcessSerialCommand(commands);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitWindowMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixWindowMsg.Length));
+    //      IrssUtils.Common.ProcessWindowMessageCommand(commands);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitTcpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixTcpMsg.Length));
+    //      IrssUtils.Common.ProcessTcpMessageCommand(commands);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitHttpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixHttpMsg.Length));
+    //      IrssUtils.Common.ProcessHttpCommand(commands);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string keyCommand = command.Substring(IrssUtils.Common.CmdPrefixKeys.Length);
+    //      if (InConfiguration)
+    //        MessageBox.Show(keyCommand, IrssUtils.Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    //      else
+    //        IrssUtils.Common.ProcessKeyCommand(keyCommand);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string mouseCommand = command.Substring(IrssUtils.Common.CmdPrefixMouse.Length);
+    //      IrssUtils.Common.ProcessMouseCommand(mouseCommand);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string ejectCommand = command.Substring(IrssUtils.Common.CmdPrefixEject.Length);
+    //      IrssUtils.Common.ProcessEjectCommand(ejectCommand);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitPopupCommand(command.Substring(IrssUtils.Common.CmdPrefixPopup.Length));
+    //      if (InConfiguration)
+    //        MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string screenID = command.Substring(IrssUtils.Common.CmdPrefixGotoScreen.Length);
 
-    /// <summary>
-    /// Called by ProcCommand to process the supplied Macro file.
-    /// </summary>
-    /// <param name="fileName">Macro file to process (absolute path).</param>
-    private static void ProcMacro(string fileName)
-    {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(fileName);
+    //      if (InConfiguration)
+    //        MessageBox.Show(screenID, IrssUtils.Common.UITextGotoScreen, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.ProcessGoTo(screenID, _mpBasicHome);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixSendMPAction, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitSendMPActionCommand(command.Substring(IrssUtils.Common.CmdPrefixSendMPAction.Length));
+    //      if (InConfiguration)
+    //        MessageBox.Show(commands[0], IrssUtils.Common.UITextSendMPAction, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.ProcessSendMediaPortalAction(commands);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixSendMPMsg, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      string[] commands = IrssUtils.Common.SplitSendMPMsgCommand(command.Substring(IrssUtils.Common.CmdPrefixSendMPMsg.Length));
+    //      if (InConfiguration)
+    //        MessageBox.Show(commands[0], IrssUtils.Common.UITextSendMPMsg, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.ProcessSendMediaPortalMessage(commands);
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      if (InConfiguration)
+    //        MessageBox.Show("Cannot exit MediaPortal in configuration", IrssUtils.Common.UITextExit, MessageBoxButtons.OK,
+    //                        MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.ExitMP();
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      if (InConfiguration)
+    //        MessageBox.Show("Cannot Hibernate in configuration", IrssUtils.Common.UITextHibernate, MessageBoxButtons.OK,
+    //                        MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.Hibernate();
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      if (InConfiguration)
+    //        MessageBox.Show("Cannot Reboot in configuration", IrssUtils.Common.UITextReboot, MessageBoxButtons.OK,
+    //                        MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.Reboot();
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      if (InConfiguration)
+    //        MessageBox.Show("Cannot Shutdown in configuration", IrssUtils.Common.UITextShutdown, MessageBoxButtons.OK,
+    //                        MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.ShutDown();
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      if (InConfiguration)
+    //        MessageBox.Show("Cannot enter Standby in configuration", IrssUtils.Common.UITextStandby, MessageBoxButtons.OK,
+    //                        MessageBoxIcon.Information);
+    //      else
+    //        MPCommon.Standby();
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      if (InConfiguration)
+    //      {
+    //        MessageBox.Show("Cannot show Virtual Keyboard in configuration", IrssUtils.Common.UITextVirtualKB,
+    //                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+    //      }
+    //      else
+    //      {
+    //        VirtualKeyboard vk = new VirtualKeyboard();
+    //        if (vk.ShowDialog() == DialogResult.OK)
+    //          Keyboard.ProcessCommand(vk.TextOutput);
+    //      }
+    //    }
+    //    else if (command.StartsWith(IrssUtils.Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      if (InConfiguration)
+    //      {
+    //        MessageBox.Show("Cannot show SMS Keyboard in configuration", IrssUtils.Common.UITextSmsKB, MessageBoxButtons.OK,
+    //                        MessageBoxIcon.Information);
+    //      }
+    //      else
+    //      {
+    //        SmsKeyboard sms = new SmsKeyboard();
+    //        if (sms.ShowDialog() == DialogResult.OK)
+    //          Keyboard.ProcessCommand(sms.TextOutput);
+    //      }
+    //    }
+    //    else
+    //    {
+    //      throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
+    //                                  "commandObj");
+    //    }
+    //  }
+    //  catch (Exception ex)
+    //  {
+    //    if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
+    //        Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+    //      Log.Error(ex);
+    //    else
+    //      throw;
+    //  }
+    //}
 
-      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
+    ///// <summary>
+    ///// Called by ProcCommand to process the supplied Macro file.
+    ///// </summary>
+    ///// <param name="fileName">Macro file to process (absolute path).</param>
+    //private static void ProcMacro(string fileName)
+    //{
+    //  XmlDocument doc = new XmlDocument();
+    //  doc.Load(fileName);
 
-      foreach (XmlNode item in commandSequence)
-        ProcCommand(item.Attributes["command"].Value);
-    }
+    //  XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
 
-    /// <summary>
-    /// Returns a list of Macros.
-    /// </summary>
-    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
-    /// <returns>string[] of Macros.</returns>
-    internal static string[] GetMacroList(bool commandPrefix)
-    {
-      string[] files = Directory.GetFiles(FolderMacros, '*' + IrssUtils.Common.FileExtensionMacro);
-      string[] list = new string[files.Length];
+    //  foreach (XmlNode item in commandSequence)
+    //    ProcCommand(item.Attributes["command"].Value);
+    //}
 
-      int i = 0;
-      foreach (string file in files)
-      {
-        if (commandPrefix)
-          list[i++] = IrssUtils.Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
+    ///// <summary>
+    ///// Returns a list of Macros.
+    ///// </summary>
+    ///// <param name="commandPrefix">Add the command prefix to each list item.</param>
+    ///// <returns>string[] of Macros.</returns>
+    //internal static string[] GetMacroList(bool commandPrefix)
+    //{
+    //  string[] files = Directory.GetFiles(FolderMacros, '*' + IrssUtils.Common.FileExtensionMacro);
+    //  string[] list = new string[files.Length];
 
-      return list;
-    }
+    //  int i = 0;
+    //  foreach (string file in files)
+    //  {
+    //    if (commandPrefix)
+    //      list[i++] = IrssUtils.Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
+    //    else
+    //      list[i++] = Path.GetFileNameWithoutExtension(file);
+    //  }
 
-    /// <summary>
-    /// Returns a combined list of IR Commands and Macros.
-    /// </summary>
-    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
-    /// <returns>string[] of IR Commands and Macros.</returns>
-    internal static string[] GetFileList(bool commandPrefix)
-    {
-      string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + IrssUtils.Common.FileExtensionMacro);
-      string[] IRFiles = Directory.GetFiles(IrssUtils.Common.FolderIRCommands, '*' + IrssUtils.Common.FileExtensionIR);
-      string[] list = new string[MacroFiles.Length + IRFiles.Length];
+    //  return list;
+    //}
 
-      int i = 0;
-      foreach (string file in MacroFiles)
-      {
-        if (commandPrefix)
-          list[i++] = IrssUtils.Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
+    ///// <summary>
+    ///// Returns a combined list of IR Commands and Macros.
+    ///// </summary>
+    ///// <param name="commandPrefix">Add the command prefix to each list item.</param>
+    ///// <returns>string[] of IR Commands and Macros.</returns>
+    //internal static string[] GetFileList(bool commandPrefix)
+    //{
+    //  string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + IrssUtils.Common.FileExtensionMacro);
+    //  string[] IRFiles = Directory.GetFiles(IrssUtils.Common.FolderIRCommands, '*' + IrssUtils.Common.FileExtensionIR);
+    //  string[] list = new string[MacroFiles.Length + IRFiles.Length];
 
-      foreach (string file in IRFiles)
-      {
-        if (commandPrefix)
-          list[i++] = IrssUtils.Common.CmdPrefixBlast + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
+    //  int i = 0;
+    //  foreach (string file in MacroFiles)
+    //  {
+    //    if (commandPrefix)
+    //      list[i++] = IrssUtils.Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
+    //    else
+    //      list[i++] = Path.GetFileNameWithoutExtension(file);
+    //  }
 
-      return list;
-    }
+    //  foreach (string file in IRFiles)
+    //  {
+    //    if (commandPrefix)
+    //      list[i++] = IrssUtils.Common.CmdPrefixBlast + Path.GetFileNameWithoutExtension(file);
+    //    else
+    //      list[i++] = Path.GetFileNameWithoutExtension(file);
+    //  }
+
+    //  return list;
+    //}
 
     /// <summary>
     /// Loads the settings.

@@ -29,56 +29,58 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SetupForm));
       this.treeViewMenu = new System.Windows.Forms.TreeView();
       this.buttonChangeServer = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.tabControl = new System.Windows.Forms.TabControl();
       this.tabPageMenuSetup = new System.Windows.Forms.TabPage();
-      this.buttonSetCommand = new System.Windows.Forms.Button();
-      this.groupBoxTreeCommands = new System.Windows.Forms.GroupBox();
-      this.buttonEditTree = new System.Windows.Forms.Button();
-      this.buttonAdd = new System.Windows.Forms.Button();
-      this.buttonDeleteAll = new System.Windows.Forms.Button();
-      this.buttonDelete = new System.Windows.Forms.Button();
-      this.buttonBottom = new System.Windows.Forms.Button();
-      this.buttonDown = new System.Windows.Forms.Button();
-      this.buttonUp = new System.Windows.Forms.Button();
-      this.buttonTop = new System.Windows.Forms.Button();
-      this.comboBoxCommands = new System.Windows.Forms.ComboBox();
-      this.buttonNewCommand = new System.Windows.Forms.Button();
-      this.tabPageIR = new System.Windows.Forms.TabPage();
-      this.listViewIR = new System.Windows.Forms.ListView();
-      this.buttonNewIR = new System.Windows.Forms.Button();
-      this.buttonEditIR = new System.Windows.Forms.Button();
-      this.buttonDeleteIR = new System.Windows.Forms.Button();
+      this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+      this.groupBoxMenu = new System.Windows.Forms.GroupBox();
+      this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+      this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+      this.toolStripButtonTop = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonUp = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+      this.toolStripButtonAddCategory = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonAddCommand = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonEdit = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonDelete = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonDeleteAll = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.toolStripButtonDown = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButtonBottom = new System.Windows.Forms.ToolStripButton();
+      this.treeViewCommandList = new System.Windows.Forms.TreeView();
       this.tabPageMacros = new System.Windows.Forms.TabPage();
-      this.listViewMacro = new System.Windows.Forms.ListView();
-      this.buttonTestMacro = new System.Windows.Forms.Button();
-      this.buttonDeleteMacro = new System.Windows.Forms.Button();
-      this.buttonEditMacro = new System.Windows.Forms.Button();
-      this.buttonNewMacro = new System.Windows.Forms.Button();
+      this.tabPageIR = new System.Windows.Forms.TabPage();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.buttonHelp = new System.Windows.Forms.Button();
+      this.groupBox1 = new System.Windows.Forms.GroupBox();
       this.tabControl.SuspendLayout();
       this.tabPageMenuSetup.SuspendLayout();
-      this.groupBoxTreeCommands.SuspendLayout();
-      this.tabPageIR.SuspendLayout();
-      this.tabPageMacros.SuspendLayout();
+      this.splitContainer1.Panel1.SuspendLayout();
+      this.splitContainer1.Panel2.SuspendLayout();
+      this.splitContainer1.SuspendLayout();
+      this.groupBoxMenu.SuspendLayout();
+      this.toolStripContainer1.ContentPanel.SuspendLayout();
+      this.toolStripContainer1.RightToolStripPanel.SuspendLayout();
+      this.toolStripContainer1.SuspendLayout();
+      this.toolStrip1.SuspendLayout();
+      this.groupBox1.SuspendLayout();
       this.SuspendLayout();
       // 
       // treeViewMenu
       // 
-      this.treeViewMenu.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.treeViewMenu.Dock = System.Windows.Forms.DockStyle.Fill;
       this.treeViewMenu.FullRowSelect = true;
       this.treeViewMenu.HideSelection = false;
       this.treeViewMenu.LabelEdit = true;
-      this.treeViewMenu.Location = new System.Drawing.Point(8, 8);
+      this.treeViewMenu.Location = new System.Drawing.Point(0, 0);
       this.treeViewMenu.Name = "treeViewMenu";
-      this.treeViewMenu.Size = new System.Drawing.Size(432, 288);
+      this.treeViewMenu.Size = new System.Drawing.Size(138, 309);
       this.treeViewMenu.TabIndex = 0;
+      this.treeViewMenu.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewMenu_AfterSelect);
       this.treeViewMenu.DoubleClick += new System.EventHandler(this.treeViewMenu_DoubleClick);
       // 
       // buttonChangeServer
@@ -118,9 +120,9 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
       // 
       // tabControl
       // 
-      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl.Controls.Add(this.tabPageMenuSetup);
       this.tabControl.Controls.Add(this.tabPageMacros);
       this.tabControl.Controls.Add(this.tabPageIR);
@@ -133,11 +135,7 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
       // 
       // tabPageMenuSetup
       // 
-      this.tabPageMenuSetup.Controls.Add(this.buttonSetCommand);
-      this.tabPageMenuSetup.Controls.Add(this.groupBoxTreeCommands);
-      this.tabPageMenuSetup.Controls.Add(this.comboBoxCommands);
-      this.tabPageMenuSetup.Controls.Add(this.buttonNewCommand);
-      this.tabPageMenuSetup.Controls.Add(this.treeViewMenu);
+      this.tabPageMenuSetup.Controls.Add(this.splitContainer1);
       this.tabPageMenuSetup.Location = new System.Drawing.Point(4, 22);
       this.tabPageMenuSetup.Name = "tabPageMenuSetup";
       this.tabPageMenuSetup.Padding = new System.Windows.Forms.Padding(3);
@@ -146,215 +144,187 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
       this.tabPageMenuSetup.Text = "Menu Setup";
       this.tabPageMenuSetup.UseVisualStyleBackColor = true;
       // 
-      // buttonSetCommand
+      // splitContainer1
       // 
-      this.buttonSetCommand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonSetCommand.Location = new System.Drawing.Point(128, 304);
-      this.buttonSetCommand.Name = "buttonSetCommand";
-      this.buttonSetCommand.Size = new System.Drawing.Size(48, 24);
-      this.buttonSetCommand.TabIndex = 3;
-      this.buttonSetCommand.Text = "Set:";
-      this.buttonSetCommand.UseVisualStyleBackColor = true;
-      this.buttonSetCommand.Click += new System.EventHandler(this.buttonSetCommand_Click);
+      this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.splitContainer1.Location = new System.Drawing.Point(3, 3);
+      this.splitContainer1.Name = "splitContainer1";
       // 
-      // groupBoxTreeCommands
+      // splitContainer1.Panel1
       // 
-      this.groupBoxTreeCommands.Controls.Add(this.buttonEditTree);
-      this.groupBoxTreeCommands.Controls.Add(this.buttonAdd);
-      this.groupBoxTreeCommands.Controls.Add(this.buttonDeleteAll);
-      this.groupBoxTreeCommands.Controls.Add(this.buttonDelete);
-      this.groupBoxTreeCommands.Controls.Add(this.buttonBottom);
-      this.groupBoxTreeCommands.Controls.Add(this.buttonDown);
-      this.groupBoxTreeCommands.Controls.Add(this.buttonUp);
-      this.groupBoxTreeCommands.Controls.Add(this.buttonTop);
-      this.groupBoxTreeCommands.Location = new System.Drawing.Point(448, 3);
-      this.groupBoxTreeCommands.Name = "groupBoxTreeCommands";
-      this.groupBoxTreeCommands.Size = new System.Drawing.Size(40, 293);
-      this.groupBoxTreeCommands.TabIndex = 1;
-      this.groupBoxTreeCommands.TabStop = false;
+      this.splitContainer1.Panel1.Controls.Add(this.groupBoxMenu);
       // 
-      // buttonEditTree
+      // splitContainer1.Panel2
       // 
-      this.buttonEditTree.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.Edit;
-      this.buttonEditTree.Location = new System.Drawing.Point(8, 120);
-      this.buttonEditTree.Name = "buttonEditTree";
-      this.buttonEditTree.Size = new System.Drawing.Size(24, 24);
-      this.buttonEditTree.TabIndex = 3;
-      this.toolTips.SetToolTip(this.buttonEditTree, "Edit the selected item");
-      this.buttonEditTree.UseVisualStyleBackColor = true;
-      this.buttonEditTree.Click += new System.EventHandler(this.buttonEditTree_Click);
+      this.splitContainer1.Panel2.Controls.Add(this.groupBox1);
+      this.splitContainer1.Size = new System.Drawing.Size(490, 328);
+      this.splitContainer1.SplitterDistance = 235;
+      this.splitContainer1.TabIndex = 6;
       // 
-      // buttonAdd
+      // groupBoxMenu
       // 
-      this.buttonAdd.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.Plus;
-      this.buttonAdd.Location = new System.Drawing.Point(8, 88);
-      this.buttonAdd.Name = "buttonAdd";
-      this.buttonAdd.Size = new System.Drawing.Size(24, 24);
-      this.buttonAdd.TabIndex = 2;
-      this.toolTips.SetToolTip(this.buttonAdd, "Add a new collection");
-      this.buttonAdd.UseVisualStyleBackColor = true;
-      this.buttonAdd.Click += new System.EventHandler(this.buttonAdd_Click);
+      this.groupBoxMenu.Controls.Add(this.toolStripContainer1);
+      this.groupBoxMenu.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.groupBoxMenu.Location = new System.Drawing.Point(0, 0);
+      this.groupBoxMenu.Name = "groupBoxMenu";
+      this.groupBoxMenu.Size = new System.Drawing.Size(235, 328);
+      this.groupBoxMenu.TabIndex = 0;
+      this.groupBoxMenu.TabStop = false;
+      this.groupBoxMenu.Text = "Menu";
       // 
-      // buttonDeleteAll
+      // toolStripContainer1
       // 
-      this.buttonDeleteAll.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.DeleteAll;
-      this.buttonDeleteAll.Location = new System.Drawing.Point(8, 184);
-      this.buttonDeleteAll.Name = "buttonDeleteAll";
-      this.buttonDeleteAll.Size = new System.Drawing.Size(24, 24);
-      this.buttonDeleteAll.TabIndex = 5;
-      this.toolTips.SetToolTip(this.buttonDeleteAll, "Delete all items");
-      this.buttonDeleteAll.UseVisualStyleBackColor = true;
-      this.buttonDeleteAll.Click += new System.EventHandler(this.buttonDeleteAll_Click);
+      this.toolStripContainer1.BottomToolStripPanelVisible = false;
       // 
-      // buttonDelete
+      // toolStripContainer1.ContentPanel
       // 
-      this.buttonDelete.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.Delete;
-      this.buttonDelete.Location = new System.Drawing.Point(8, 152);
-      this.buttonDelete.Name = "buttonDelete";
-      this.buttonDelete.Size = new System.Drawing.Size(24, 24);
-      this.buttonDelete.TabIndex = 4;
-      this.toolTips.SetToolTip(this.buttonDelete, "Delete selected item");
-      this.buttonDelete.UseVisualStyleBackColor = true;
-      this.buttonDelete.Click += new System.EventHandler(this.buttonDelete_Click);
+      this.toolStripContainer1.ContentPanel.Controls.Add(this.treeViewMenu);
+      this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(138, 309);
+      this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.toolStripContainer1.LeftToolStripPanelVisible = false;
+      this.toolStripContainer1.Location = new System.Drawing.Point(3, 16);
+      this.toolStripContainer1.Name = "toolStripContainer1";
       // 
-      // buttonBottom
+      // toolStripContainer1.RightToolStripPanel
       // 
-      this.buttonBottom.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.MoveBottom;
-      this.buttonBottom.Location = new System.Drawing.Point(8, 256);
-      this.buttonBottom.Name = "buttonBottom";
-      this.buttonBottom.Size = new System.Drawing.Size(24, 24);
-      this.buttonBottom.TabIndex = 7;
-      this.toolTips.SetToolTip(this.buttonBottom, "Move selected item to the bottom");
-      this.buttonBottom.UseVisualStyleBackColor = true;
-      this.buttonBottom.Click += new System.EventHandler(this.buttonBottom_Click);
+      this.toolStripContainer1.RightToolStripPanel.Controls.Add(this.toolStrip1);
+      this.toolStripContainer1.Size = new System.Drawing.Size(229, 309);
+      this.toolStripContainer1.TabIndex = 5;
+      this.toolStripContainer1.Text = "toolStripContainer1";
+      this.toolStripContainer1.TopToolStripPanelVisible = false;
       // 
-      // buttonDown
+      // toolStrip1
       // 
-      this.buttonDown.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.MoveDown;
-      this.buttonDown.Location = new System.Drawing.Point(8, 224);
-      this.buttonDown.Name = "buttonDown";
-      this.buttonDown.Size = new System.Drawing.Size(24, 24);
-      this.buttonDown.TabIndex = 6;
-      this.toolTips.SetToolTip(this.buttonDown, "Move selected item down");
-      this.buttonDown.UseVisualStyleBackColor = true;
-      this.buttonDown.Click += new System.EventHandler(this.buttonDown_Click);
+      this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+      this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButtonTop,
+            this.toolStripButtonUp,
+            this.toolStripSeparator1,
+            this.toolStripButtonAddCategory,
+            this.toolStripButtonAddCommand,
+            this.toolStripButtonEdit,
+            this.toolStripButtonDelete,
+            this.toolStripButtonDeleteAll,
+            this.toolStripSeparator2,
+            this.toolStripButtonDown,
+            this.toolStripButtonBottom});
+      this.toolStrip1.Location = new System.Drawing.Point(0, 3);
+      this.toolStrip1.Name = "toolStrip1";
+      this.toolStrip1.Size = new System.Drawing.Size(91, 221);
+      this.toolStrip1.TabIndex = 0;
       // 
-      // buttonUp
+      // toolStripButtonTop
       // 
-      this.buttonUp.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.MoveUp;
-      this.buttonUp.Location = new System.Drawing.Point(8, 48);
-      this.buttonUp.Name = "buttonUp";
-      this.buttonUp.Size = new System.Drawing.Size(24, 24);
-      this.buttonUp.TabIndex = 1;
-      this.toolTips.SetToolTip(this.buttonUp, "Move selected item up");
-      this.buttonUp.UseVisualStyleBackColor = true;
-      this.buttonUp.Click += new System.EventHandler(this.buttonUp_Click);
+      this.toolStripButtonTop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonTop.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonTop.Image")));
+      this.toolStripButtonTop.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonTop.Name = "toolStripButtonTop";
+      this.toolStripButtonTop.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonTop.Text = "Top";
+      this.toolStripButtonTop.Click += new System.EventHandler(this.toolStripButtonTop_Click);
       // 
-      // buttonTop
+      // toolStripButtonUp
       // 
-      this.buttonTop.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.MoveTop;
-      this.buttonTop.Location = new System.Drawing.Point(8, 16);
-      this.buttonTop.Name = "buttonTop";
-      this.buttonTop.Size = new System.Drawing.Size(24, 24);
-      this.buttonTop.TabIndex = 0;
-      this.toolTips.SetToolTip(this.buttonTop, "Move selected item to the top");
-      this.buttonTop.UseVisualStyleBackColor = true;
-      this.buttonTop.Click += new System.EventHandler(this.buttonTop_Click);
+      this.toolStripButtonUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonUp.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonUp.Image")));
+      this.toolStripButtonUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonUp.Name = "toolStripButtonUp";
+      this.toolStripButtonUp.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonUp.Text = "Up";
+      this.toolStripButtonUp.Click += new System.EventHandler(this.toolStripButtonUp_Click);
       // 
-      // comboBoxCommands
+      // toolStripSeparator1
       // 
-      this.comboBoxCommands.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.comboBoxCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxCommands.FormattingEnabled = true;
-      this.comboBoxCommands.Location = new System.Drawing.Point(184, 305);
-      this.comboBoxCommands.Name = "comboBoxCommands";
-      this.comboBoxCommands.Size = new System.Drawing.Size(256, 21);
-      this.comboBoxCommands.TabIndex = 4;
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(89, 6);
       // 
-      // buttonNewCommand
+      // toolStripButtonAddCategory
       // 
-      this.buttonNewCommand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonNewCommand.Location = new System.Drawing.Point(8, 304);
-      this.buttonNewCommand.Name = "buttonNewCommand";
-      this.buttonNewCommand.Size = new System.Drawing.Size(96, 24);
-      this.buttonNewCommand.TabIndex = 2;
-      this.buttonNewCommand.Text = "New Command";
-      this.buttonNewCommand.UseVisualStyleBackColor = true;
-      this.buttonNewCommand.Click += new System.EventHandler(this.buttonNewCommand_Click);
+      this.toolStripButtonAddCategory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonAddCategory.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonAddCategory.Image")));
+      this.toolStripButtonAddCategory.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonAddCategory.Name = "toolStripButtonAddCategory";
+      this.toolStripButtonAddCategory.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonAddCategory.Text = "AddCategory";
+      this.toolStripButtonAddCategory.Click += new System.EventHandler(this.toolStripButtonAddCategory_Click);
       // 
-      // tabPageIR
+      // toolStripButtonAddCommand
       // 
-      this.tabPageIR.Controls.Add(this.listViewIR);
-      this.tabPageIR.Controls.Add(this.buttonNewIR);
-      this.tabPageIR.Controls.Add(this.buttonEditIR);
-      this.tabPageIR.Controls.Add(this.buttonDeleteIR);
-      this.tabPageIR.Location = new System.Drawing.Point(4, 22);
-      this.tabPageIR.Name = "tabPageIR";
-      this.tabPageIR.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageIR.Size = new System.Drawing.Size(496, 334);
-      this.tabPageIR.TabIndex = 2;
-      this.tabPageIR.Text = "IR Commands";
-      this.tabPageIR.UseVisualStyleBackColor = true;
+      this.toolStripButtonAddCommand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonAddCommand.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonAddCommand.Image")));
+      this.toolStripButtonAddCommand.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonAddCommand.Name = "toolStripButtonAddCommand";
+      this.toolStripButtonAddCommand.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonAddCommand.Text = "AddCommand";
+      this.toolStripButtonAddCommand.Click += new System.EventHandler(this.toolStripButtonAddCommand_Click);
       // 
-      // listViewIR
+      // toolStripButtonEdit
       // 
-      this.listViewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.listViewIR.FullRowSelect = true;
-      this.listViewIR.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-      this.listViewIR.HideSelection = false;
-      this.listViewIR.LabelEdit = true;
-      this.listViewIR.Location = new System.Drawing.Point(8, 8);
-      this.listViewIR.MultiSelect = false;
-      this.listViewIR.Name = "listViewIR";
-      this.listViewIR.Size = new System.Drawing.Size(480, 288);
-      this.listViewIR.TabIndex = 0;
-      this.listViewIR.UseCompatibleStateImageBehavior = false;
-      this.listViewIR.View = System.Windows.Forms.View.List;
-      this.listViewIR.DoubleClick += new System.EventHandler(this.listViewIR_DoubleClick);
-      this.listViewIR.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewIR_AfterLabelEdit);
+      this.toolStripButtonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonEdit.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonEdit.Image")));
+      this.toolStripButtonEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonEdit.Name = "toolStripButtonEdit";
+      this.toolStripButtonEdit.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonEdit.Text = "Edit";
+      this.toolStripButtonEdit.Click += new System.EventHandler(this.toolStripButtonEdit_Click);
       // 
-      // buttonNewIR
+      // toolStripButtonDelete
       // 
-      this.buttonNewIR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonNewIR.Location = new System.Drawing.Point(8, 304);
-      this.buttonNewIR.Name = "buttonNewIR";
-      this.buttonNewIR.Size = new System.Drawing.Size(56, 24);
-      this.buttonNewIR.TabIndex = 1;
-      this.buttonNewIR.Text = "New";
-      this.buttonNewIR.UseVisualStyleBackColor = true;
-      this.buttonNewIR.Click += new System.EventHandler(this.buttonNewIR_Click);
+      this.toolStripButtonDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonDelete.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonDelete.Image")));
+      this.toolStripButtonDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonDelete.Name = "toolStripButtonDelete";
+      this.toolStripButtonDelete.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonDelete.Text = "Delete";
+      this.toolStripButtonDelete.Click += new System.EventHandler(this.toolStripButtonDelete_Click);
       // 
-      // buttonEditIR
+      // toolStripButtonDeleteAll
       // 
-      this.buttonEditIR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonEditIR.Location = new System.Drawing.Point(72, 304);
-      this.buttonEditIR.Name = "buttonEditIR";
-      this.buttonEditIR.Size = new System.Drawing.Size(56, 24);
-      this.buttonEditIR.TabIndex = 2;
-      this.buttonEditIR.Text = "Edit";
-      this.buttonEditIR.UseVisualStyleBackColor = true;
-      this.buttonEditIR.Click += new System.EventHandler(this.buttonEditIR_Click);
+      this.toolStripButtonDeleteAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonDeleteAll.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonDeleteAll.Image")));
+      this.toolStripButtonDeleteAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonDeleteAll.Name = "toolStripButtonDeleteAll";
+      this.toolStripButtonDeleteAll.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonDeleteAll.Text = "DeleteAll";
+      this.toolStripButtonDeleteAll.Click += new System.EventHandler(this.toolStripButtonDeleteAll_Click);
       // 
-      // buttonDeleteIR
+      // toolStripSeparator2
       // 
-      this.buttonDeleteIR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonDeleteIR.Location = new System.Drawing.Point(136, 304);
-      this.buttonDeleteIR.Name = "buttonDeleteIR";
-      this.buttonDeleteIR.Size = new System.Drawing.Size(56, 24);
-      this.buttonDeleteIR.TabIndex = 3;
-      this.buttonDeleteIR.Text = "Delete";
-      this.buttonDeleteIR.UseVisualStyleBackColor = true;
-      this.buttonDeleteIR.Click += new System.EventHandler(this.buttonDeleteIR_Click);
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(89, 6);
+      // 
+      // toolStripButtonDown
+      // 
+      this.toolStripButtonDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonDown.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonDown.Image")));
+      this.toolStripButtonDown.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonDown.Name = "toolStripButtonDown";
+      this.toolStripButtonDown.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonDown.Text = "Down";
+      this.toolStripButtonDown.Click += new System.EventHandler(this.toolStripButtonDown_Click);
+      // 
+      // toolStripButtonBottom
+      // 
+      this.toolStripButtonBottom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.toolStripButtonBottom.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonBottom.Image")));
+      this.toolStripButtonBottom.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButtonBottom.Name = "toolStripButtonBottom";
+      this.toolStripButtonBottom.Size = new System.Drawing.Size(89, 19);
+      this.toolStripButtonBottom.Text = "Bottom";
+      this.toolStripButtonBottom.Click += new System.EventHandler(this.toolStripButtonBottom_Click);
+      // 
+      // treeViewCommandList
+      // 
+      this.treeViewCommandList.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.treeViewCommandList.FullRowSelect = true;
+      this.treeViewCommandList.Location = new System.Drawing.Point(3, 16);
+      this.treeViewCommandList.Name = "treeViewCommandList";
+      this.treeViewCommandList.Size = new System.Drawing.Size(245, 309);
+      this.treeViewCommandList.TabIndex = 14;
+      this.treeViewCommandList.DoubleClick += new System.EventHandler(this.treeViewCommandList_DoubleClick);
       // 
       // tabPageMacros
       // 
-      this.tabPageMacros.Controls.Add(this.listViewMacro);
-      this.tabPageMacros.Controls.Add(this.buttonTestMacro);
-      this.tabPageMacros.Controls.Add(this.buttonDeleteMacro);
-      this.tabPageMacros.Controls.Add(this.buttonEditMacro);
-      this.tabPageMacros.Controls.Add(this.buttonNewMacro);
       this.tabPageMacros.Location = new System.Drawing.Point(4, 22);
       this.tabPageMacros.Name = "tabPageMacros";
       this.tabPageMacros.Padding = new System.Windows.Forms.Padding(3);
@@ -363,68 +333,15 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
       this.tabPageMacros.Text = "Macros";
       this.tabPageMacros.UseVisualStyleBackColor = true;
       // 
-      // listViewMacro
+      // tabPageIR
       // 
-      this.listViewMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.listViewMacro.FullRowSelect = true;
-      this.listViewMacro.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-      this.listViewMacro.HideSelection = false;
-      this.listViewMacro.LabelEdit = true;
-      this.listViewMacro.Location = new System.Drawing.Point(8, 8);
-      this.listViewMacro.MultiSelect = false;
-      this.listViewMacro.Name = "listViewMacro";
-      this.listViewMacro.Size = new System.Drawing.Size(480, 288);
-      this.listViewMacro.TabIndex = 0;
-      this.listViewMacro.UseCompatibleStateImageBehavior = false;
-      this.listViewMacro.View = System.Windows.Forms.View.List;
-      this.listViewMacro.DoubleClick += new System.EventHandler(this.listViewMacro_DoubleClick);
-      this.listViewMacro.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.listViewMacro_AfterLabelEdit);
-      // 
-      // buttonTestMacro
-      // 
-      this.buttonTestMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonTestMacro.Location = new System.Drawing.Point(208, 304);
-      this.buttonTestMacro.Name = "buttonTestMacro";
-      this.buttonTestMacro.Size = new System.Drawing.Size(56, 24);
-      this.buttonTestMacro.TabIndex = 4;
-      this.buttonTestMacro.Text = "Test";
-      this.buttonTestMacro.UseVisualStyleBackColor = true;
-      this.buttonTestMacro.Click += new System.EventHandler(this.buttonTestMacro_Click);
-      // 
-      // buttonDeleteMacro
-      // 
-      this.buttonDeleteMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonDeleteMacro.Location = new System.Drawing.Point(136, 304);
-      this.buttonDeleteMacro.Name = "buttonDeleteMacro";
-      this.buttonDeleteMacro.Size = new System.Drawing.Size(56, 24);
-      this.buttonDeleteMacro.TabIndex = 3;
-      this.buttonDeleteMacro.Text = "Delete";
-      this.buttonDeleteMacro.UseVisualStyleBackColor = true;
-      this.buttonDeleteMacro.Click += new System.EventHandler(this.buttonDeleteMacro_Click);
-      // 
-      // buttonEditMacro
-      // 
-      this.buttonEditMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonEditMacro.Location = new System.Drawing.Point(72, 304);
-      this.buttonEditMacro.Name = "buttonEditMacro";
-      this.buttonEditMacro.Size = new System.Drawing.Size(56, 24);
-      this.buttonEditMacro.TabIndex = 2;
-      this.buttonEditMacro.Text = "Edit";
-      this.buttonEditMacro.UseVisualStyleBackColor = true;
-      this.buttonEditMacro.Click += new System.EventHandler(this.buttonEditMacro_Click);
-      // 
-      // buttonNewMacro
-      // 
-      this.buttonNewMacro.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.buttonNewMacro.Location = new System.Drawing.Point(8, 304);
-      this.buttonNewMacro.Name = "buttonNewMacro";
-      this.buttonNewMacro.Size = new System.Drawing.Size(56, 24);
-      this.buttonNewMacro.TabIndex = 1;
-      this.buttonNewMacro.Text = "New";
-      this.buttonNewMacro.UseVisualStyleBackColor = true;
-      this.buttonNewMacro.Click += new System.EventHandler(this.buttonNewMacro_Click);
+      this.tabPageIR.Location = new System.Drawing.Point(4, 22);
+      this.tabPageIR.Name = "tabPageIR";
+      this.tabPageIR.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageIR.Size = new System.Drawing.Size(496, 334);
+      this.tabPageIR.TabIndex = 2;
+      this.tabPageIR.Text = "IR Commands";
+      this.tabPageIR.UseVisualStyleBackColor = true;
       // 
       // buttonHelp
       // 
@@ -437,6 +354,17 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
       this.toolTips.SetToolTip(this.buttonHelp, "Click here for help");
       this.buttonHelp.UseVisualStyleBackColor = true;
       this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
+      // 
+      // groupBox1
+      // 
+      this.groupBox1.Controls.Add(this.treeViewCommandList);
+      this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.groupBox1.Location = new System.Drawing.Point(0, 0);
+      this.groupBox1.Name = "groupBox1";
+      this.groupBox1.Size = new System.Drawing.Size(251, 328);
+      this.groupBox1.TabIndex = 15;
+      this.groupBox1.TabStop = false;
+      this.groupBox1.Text = "DoubleClick to assign a new Command";
       // 
       // SetupForm
       // 
@@ -457,11 +385,21 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
       this.Text = "MediaPortal Blast Zone Plugin";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SetupForm_FormClosing);
       this.Load += new System.EventHandler(this.SetupForm_Load);
+      this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.SetupForm_HelpRequested);
       this.tabControl.ResumeLayout(false);
       this.tabPageMenuSetup.ResumeLayout(false);
-      this.groupBoxTreeCommands.ResumeLayout(false);
-      this.tabPageIR.ResumeLayout(false);
-      this.tabPageMacros.ResumeLayout(false);
+      this.splitContainer1.Panel1.ResumeLayout(false);
+      this.splitContainer1.Panel2.ResumeLayout(false);
+      this.splitContainer1.ResumeLayout(false);
+      this.groupBoxMenu.ResumeLayout(false);
+      this.toolStripContainer1.ContentPanel.ResumeLayout(false);
+      this.toolStripContainer1.RightToolStripPanel.ResumeLayout(false);
+      this.toolStripContainer1.RightToolStripPanel.PerformLayout();
+      this.toolStripContainer1.ResumeLayout(false);
+      this.toolStripContainer1.PerformLayout();
+      this.toolStrip1.ResumeLayout(false);
+      this.toolStrip1.PerformLayout();
+      this.groupBox1.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -475,29 +413,25 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
     private System.Windows.Forms.TabControl tabControl;
     private System.Windows.Forms.TabPage tabPageMenuSetup;
     private System.Windows.Forms.TabPage tabPageIR;
-    private System.Windows.Forms.Button buttonNewIR;
-    private System.Windows.Forms.Button buttonEditIR;
-    private System.Windows.Forms.Button buttonDeleteIR;
     private System.Windows.Forms.TabPage tabPageMacros;
-    private System.Windows.Forms.Button buttonTestMacro;
-    private System.Windows.Forms.Button buttonDeleteMacro;
-    private System.Windows.Forms.Button buttonEditMacro;
-    private System.Windows.Forms.Button buttonNewMacro;
-    private System.Windows.Forms.Button buttonNewCommand;
-    private System.Windows.Forms.GroupBox groupBoxTreeCommands;
-    private System.Windows.Forms.Button buttonBottom;
-    private System.Windows.Forms.Button buttonDown;
-    private System.Windows.Forms.Button buttonUp;
-    private System.Windows.Forms.Button buttonTop;
-    private System.Windows.Forms.ComboBox comboBoxCommands;
-    private System.Windows.Forms.Button buttonAdd;
     private System.Windows.Forms.ToolTip toolTips;
-    private System.Windows.Forms.Button buttonDeleteAll;
-    private System.Windows.Forms.Button buttonDelete;
-    private System.Windows.Forms.Button buttonSetCommand;
     private System.Windows.Forms.Button buttonHelp;
-    private System.Windows.Forms.Button buttonEditTree;
-    private System.Windows.Forms.ListView listViewIR;
-    private System.Windows.Forms.ListView listViewMacro;
+    private System.Windows.Forms.ToolStripContainer toolStripContainer1;
+    private System.Windows.Forms.ToolStrip toolStrip1;
+    private System.Windows.Forms.ToolStripButton toolStripButtonTop;
+    private System.Windows.Forms.ToolStripButton toolStripButtonUp;
+    private System.Windows.Forms.ToolStripButton toolStripButtonAddCategory;
+    private System.Windows.Forms.ToolStripButton toolStripButtonEdit;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+    private System.Windows.Forms.ToolStripButton toolStripButtonDelete;
+    private System.Windows.Forms.ToolStripButton toolStripButtonDeleteAll;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+    private System.Windows.Forms.ToolStripButton toolStripButtonDown;
+    private System.Windows.Forms.ToolStripButton toolStripButtonBottom;
+    private System.Windows.Forms.GroupBox groupBoxMenu;
+    private System.Windows.Forms.SplitContainer splitContainer1;
+    private System.Windows.Forms.TreeView treeViewCommandList;
+    private System.Windows.Forms.ToolStripButton toolStripButtonAddCommand;
+    private System.Windows.Forms.GroupBox groupBox1;
   }
 }

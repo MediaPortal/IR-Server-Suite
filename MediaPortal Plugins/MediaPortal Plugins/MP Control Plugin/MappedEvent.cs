@@ -21,6 +21,8 @@
 #endregion
 
 using System;
+using System.Xml.Serialization;
+using IrssCommands;
 using MediaPortal.GUI.Library;
 
 namespace MediaPortal.Plugins.IRSS.MPControlPlugin
@@ -28,7 +30,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
   /// <summary>
   /// MappedEvent class is used to pass events into the Event Mapper feature.
   /// </summary>
-  internal class MappedEvent
+  public class MappedEvent
   {
     #region Enumerations
 
@@ -207,112 +209,110 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
       }
     }
 
-    /// <summary>
-    /// Creates a MappedEvent object from supplied eventString and commandString.
-    /// </summary>
-    /// <param name="eventString">This string has either the event name by itself or both the event name and a parameter to match.</param>
-    /// <param name="commandString">This is the command to execute when the mapped event occurs.</param>
-    /// <returns>Returns a MappedEvent object.</returns>
-    public static MappedEvent FromStrings(string eventString, string commandString)
-    {
-      if (String.IsNullOrEmpty(eventString))
-        return null;
-
-      if (String.IsNullOrEmpty(commandString))
-        return null;
-
-      string[] eventStringElements = eventString.Split(',', '=');
-
-      if (eventStringElements.Length == 1)
-      {
-        return new MappedEvent(
-          (MappingEvent) Enum.Parse(typeof (MappingEvent), eventStringElements[0], true),
-          commandString);
-      }
-      else if (eventStringElements.Length == 3)
-      {
-        return new MappedEvent(
-          (MappingEvent) Enum.Parse(typeof (MappingEvent), eventStringElements[0], true),
-          eventStringElements[1],
-          eventStringElements[2],
-          commandString);
-      }
-      else
-      {
-        return null;
-      }
-    }
-
     #endregion Static Methods
 
     #region Variables
 
-    private readonly string _command;
-    private readonly MappingEvent _eventType;
-    private readonly bool _matchParam;
-    private readonly string _param;
-    private readonly string _paramValue;
+    private Command _command;
 
     #endregion Variables
 
     #region Properties
 
     /// <summary>
-    /// Is there a parameter to match for this event?
-    /// </summary>
-    public bool MatchParam
-    {
-      get { return _matchParam; }
-    }
-
-    /// <summary>
     /// Type of event.
     /// </summary>
-    public MappingEvent EventType
+    [XmlAttribute]
+    public MappingEvent EventType { get; set; }
+
+    /// <summary>
+    /// Is there a parameter to match for this event?
+    /// </summary>
+    [XmlIgnore]
+    public bool MatchParam
     {
-      get { return _eventType; }
+      get { return !string.IsNullOrEmpty(Param); }
     }
 
     /// <summary>
     /// Parameter to match.
     /// </summary>
-    public string Param
-    {
-      get { return _param; }
-    }
+    [XmlAttribute]
+    public string Param { get; set; }
 
     /// <summary>
     /// Value of the parameter to match.
     /// </summary>
-    public string ParamValue
-    {
-      get { return _paramValue; }
-    }
+    [XmlAttribute]
+    public string ParamValue { get; set; }
 
     /// <summary>
-    /// Command to execute when mapped event occurs.
+    /// Command to execute
     /// </summary>
-    public string Command
+    [XmlIgnore]
+    public Command Command
     {
-      get { return _command; }
+      get
+      {
+        if (_command == null && !string.IsNullOrEmpty(CommandType))
+        {
+          try
+          {
+            _command = Processor.CreateCommand(CommandType, Parameters);
+          }
+          catch (Exception ex)
+          {
+            IrssUtils.IrssLog.Error("Command could not be created. Please check your commands library ({0}) for correct command plugins or replace existing mapping with available commands.", ex, Processor.LibraryFolder);
+          }
+        }
+
+        return _command;
+      }
+      set
+      {
+        _command = value;
+
+        if (ReferenceEquals(_command, null))
+        {
+          CommandType = string.Empty;
+          Parameters = null;
+          return;
+        }
+
+        CommandType = _command.GetType().FullName;
+        Parameters = _command.Parameters;
+      }
     }
+
+    [XmlAttribute]
+    public string CommandType { get; set; }
+
+    [XmlElement("parameter")]
+    public string[] Parameters { get; set; }
 
     #endregion Properties
 
     #region Constructors
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="MappedEvent"/> class.
+    /// </summary>
+    public MappedEvent()
+    {
+    }
+
+    /// <summary>
     /// Used to run the Event Mapper.
     /// </summary>
     /// <param name="eventType">Event to act on.</param>
     /// <param name="command">Command to execute when event occurs.</param>
-    public MappedEvent(MappingEvent eventType, string command)
+    public MappedEvent(MappingEvent eventType, Command command)
     {
-      _matchParam = false;
-      _eventType = eventType;
-      _param = String.Empty;
-      _paramValue = String.Empty;
-      _command = command;
+      EventType = eventType;
+      Command = command;
+
+      Param = null;
+      ParamValue = null;
     }
 
     /// <summary>
@@ -322,21 +322,34 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     /// <param name="param">Parameter to match.</param>
     /// <param name="paramValue">Value of parameter to match.</param>
     /// <param name="command">Command to execute when event occurs.</param>
-    public MappedEvent(MappingEvent eventType, string param, string paramValue, string command)
+    public MappedEvent(MappingEvent eventType, string param, string paramValue, Command command)
       : this(eventType, command)
     {
-      _matchParam = true;
-      _param = param;
-      _paramValue = paramValue;
+      Param = param;
+      ParamValue = paramValue;
     }
 
     #endregion Constructors
 
-    /*
-    public MappedEvent(string schedule, string command)
-    {
+    #region Implementation
 
+    public string GetCommandDisplayText()
+    {
+      if (!ReferenceEquals(Command, null))
+        return Command.UserDisplayText;
+
+      if (!string.IsNullOrEmpty(CommandType))
+        return "!!!" + CommandType;
+
+      return string.Empty;
     }
-    */
+
+    [XmlIgnore]
+    public bool IsCommandAvailable
+    {
+      get { return !ReferenceEquals(Command, null); }
+    }
+
+    #endregion Implementation
   }
 }

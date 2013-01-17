@@ -24,13 +24,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Serialization;
+using IrssCommands;
 using IrssComms;
 using IrssUtils;
-using IrssUtils.Forms;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Hardware;
@@ -58,10 +60,14 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
 
     private const string ProcessCommandThreadName = "ProcessCommand";
 
+    internal static readonly string SettingsFile = Path.Combine(IrssUtils.Common.FolderAppData,
+                                                               "MP Control Plugin\\settings.xml");
+
     internal static readonly string EventMappingFile = Path.Combine(IrssUtils.Common.FolderAppData,
                                                                     "MP Control Plugin\\EventMapping.xml");
 
-    internal static readonly string FolderMacros = Path.Combine(IrssUtils.Common.FolderAppData, "MP Control Plugin\\Macro");
+    internal static readonly string FolderMacros = Path.Combine(IrssUtils.Common.FolderAppData,
+                                                                "MP Control Plugin\\Macro");
 
     internal static readonly string MultiMappingFile = Path.Combine(IrssUtils.Common.FolderAppData,
                                                                     "MP Control Plugin\\MultiMapping.xml");
@@ -69,197 +75,96 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     internal static readonly string RemotePresetsFolder = Path.Combine(IrssUtils.Common.FolderAppData,
                                                                        "MP Control Plugin\\Remote Presets");
 
-    internal static readonly string RemotesFile = Path.Combine(IrssUtils.Common.FolderAppData, "MP Control Plugin\\Remotes.xml");
+    internal static readonly string RemotesFile = Path.Combine(IrssUtils.Common.FolderAppData,
+                                                               "MP Control Plugin\\Remotes.xml");
+
+    internal static readonly string[] CommandCategories = new string[]
+        {
+          Processor.CategoryGeneral, Processor.CategorySpecial, Processor.CategoryMediaPortal
+        };
+
+    internal static readonly string[] MacroCategories = new string[]
+        {
+          Processor.CategoryGeneral, Processor.CategoryIRCommands, Processor.CategoryMacros, Processor.CategoryMediaPortal,
+          Processor.CategoryControl, Processor.CategoryMaths, Processor.CategoryStack, Processor.CategoryString, Processor.CategoryVariable
+        };
 
     #endregion Constants
 
     #region Variables
 
+    private static SetupForm setupForm;
+
     private static Client _client;
     private static InputHandler _defaultInputHandler;
-    private static bool _eventMapperEnabled;
-    private static List<MappedEvent> _eventMappings;
-    private static ClientMessageSink _handleMessage;
-
-    private static bool _inConfiguration;
-    private static IRServerInfo _irServerInfo = new IRServerInfo();
 
     private static string _learnIRFilename;
 
-    private static bool _mouseModeAcceleration;
-
-    private static bool _mouseModeActive;
-    private static RemoteButton _mouseModeButton = RemoteButton.None;
-    private static bool _mouseModeEnabled;
     private static RemoteButton _mouseModeLastButton = RemoteButton.None;
     private static long _mouseModeLastButtonTicks;
     private static bool _mouseModeLeftHeld;
     private static bool _mouseModeMiddleHeld;
     private static int _mouseModeRepeatCount;
     private static bool _mouseModeRightHeld;
-    private static int _mouseModeStep;
-    private static bool _mpBasicHome;
     private static List<InputHandler> _multiInputHandlers;
 
-    private static RemoteButton _multiMappingButton;
-    private static bool _multiMappingEnabled;
     private static int _multiMappingSet;
-    private static string[] _multiMaps;
     private static bool _registered;
 
     private static MappedKeyCode[] _remoteMap;
-    private static bool _requireFocus;
-    private static string _serverHost;
+
+    public MPControlPlugin()
+    {
+      
+    }
+
+    static MPControlPlugin()
+    {
+      TransceiverInformation = new IRServerInfo();
+      //Config.MouseModeButton = RemoteButton.None;
+
+      // Set directory for command plugin
+      CommandProcessor = new Processor(BlastIR, TransceiverInformation.Ports);
+      string dllPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+      Processor.LibraryFolder = Path.Combine(dllPath, "Commands");
+      Processor.MacroFolder = FolderMacros;
+    }
 
     #endregion Variables
 
     #region Properties
 
-    internal static string ServerHost
-    {
-      get { return _serverHost; }
-      set { _serverHost = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether MediaPortal will require focus to handle input.
-    /// </summary>
-    /// <value><c>true</c> if requires focus; otherwise, <c>false</c>.</value>
-    internal static bool RequireFocus
-    {
-      get { return _requireFocus; }
-      set { _requireFocus = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether multi mapping is enabled.
-    /// </summary>
-    /// <value><c>true</c> if multi mapping is enabled; otherwise, <c>false</c>.</value>
-    internal static bool MultiMappingEnabled
-    {
-      get { return _multiMappingEnabled; }
-      set { _multiMappingEnabled = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the event mapper is enabled.
-    /// </summary>
-    /// <value><c>true</c> if the event mapper is enabled; otherwise, <c>false</c>.</value>
-    internal static bool EventMapperEnabled
-    {
-      get { return _eventMapperEnabled; }
-      set { _eventMapperEnabled = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets the mouse mode button.
-    /// </summary>
-    /// <value>The mouse mode button.</value>
-    internal static RemoteButton MouseModeButton
-    {
-      get { return _mouseModeButton; }
-      set { _mouseModeButton = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether mouse mode is enabled.
-    /// </summary>
-    /// <value><c>true</c> if mouse mode is enabled; otherwise, <c>false</c>.</value>
-    internal static bool MouseModeEnabled
-    {
-      get { return _mouseModeEnabled; }
-      set { _mouseModeEnabled = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether mouse mode is active.
-    /// </summary>
-    /// <value><c>true</c> if mouse mode is active; otherwise, <c>false</c>.</value>
-    internal static bool MouseModeActive
-    {
-      get { return _mouseModeActive; }
-      set { _mouseModeActive = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets the mouse mode step distance.
-    /// </summary>
-    /// <value>The mouse mode step distance.</value>
-    internal static int MouseModeStep
-    {
-      get { return _mouseModeStep; }
-      set { _mouseModeStep = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether mouse mode acceleration is enabled.
-    /// </summary>
-    /// <value>
-    /// <c>true</c> if mouse mode acceleration is enabled; otherwise, <c>false</c>.
-    /// </value>
-    internal static bool MouseModeAcceleration
-    {
-      get { return _mouseModeAcceleration; }
-      set { _mouseModeAcceleration = value; }
-    }
+    internal static Configuration Config { get; set; }
 
     /// <summary>
     /// Gets the event mappings.
     /// </summary>
     /// <value>The event mappings.</value>
-    internal static List<MappedEvent> EventMappings
-    {
-      get { return _eventMappings; }
-    }
-
-    /// <summary>
-    /// Gets or sets the multi mapping button.
-    /// </summary>
-    /// <value>The multi mapping button.</value>
-    internal static RemoteButton MultiMappingButton
-    {
-      get { return _multiMappingButton; }
-      set { _multiMappingButton = value; }
-    }
+    internal static EventMappings EventMappings { get; private set; }
 
     /// <summary>
     /// Gets the multi maps.
     /// </summary>
     /// <value>The multi maps.</value>
-    internal static string[] MultiMaps
-    {
-      get { return _multiMaps; }
-    }
+    internal static MultiMappings MultiMappings { get; private set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether in configuration.
     /// </summary>
     /// <value><c>true</c> if in configuration; otherwise, <c>false</c>.</value>
-    internal static bool InConfiguration
-    {
-      get { return _inConfiguration; }
-      set { _inConfiguration = value; }
-    }
+    internal static bool InConfiguration { get; set; }
 
-    internal static ClientMessageSink HandleMessage
-    {
-      get { return _handleMessage; }
-      set { _handleMessage = value; }
-    }
+    internal static ClientMessageSink HandleMessage { get; set; }
 
-    internal static IRServerInfo TransceiverInformation
-    {
-      get { return _irServerInfo; }
-    }
+    internal static IRServerInfo TransceiverInformation { get; private set; }
+
+    internal static Processor CommandProcessor { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether MediaPortal has basic home enabled.
     /// </summary>
     /// <value><c>true</c> if MediaPortal has basic home enabled; otherwise, <c>false</c>.</value>
-    internal static bool MP_BasicHome
-    {
-      get { return _mpBasicHome; }
-    }
+    internal static bool MP_BasicHome { get; private set; }
 
     #endregion Properties
 
@@ -270,12 +175,13 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     /// </summary>
     public void Start()
     {
-      _inConfiguration = false;
+      InConfiguration = false;
 
       Log.Info("MPControlPlugin: Starting ({0})", PluginVersion);
 
       // Load basic settings
-      LoadSettings();
+      LoadMediaPortalSettings();
+      Config = Configuration.Load(SettingsFile);
 
       // Load the remote button mappings
       _remoteMap = LoadRemoteMap(RemotesFile);
@@ -284,19 +190,19 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
       LoadDefaultMapping();
 
       // Load multi-mappings
-      if (MultiMappingEnabled)
-        LoadMultiMappings();
+      if (Config.MultiMappingEnabled)
+        MultiMappings = MultiMappings.Load(MultiMappingFile);
 
-      IPAddress serverIP = Network.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(Config.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!StartClient(endPoint))
         Log.Error("MPControlPlugin: Failed to start local comms, IR input and IR blasting is disabled for this session");
 
       // Load the event mapper mappings
-      if (EventMapperEnabled)
+      if (Config.EventMapperEnabled)
       {
-        LoadEventMappings();
+        EventMappings = EventMappings.Load(EventMappingFile);
 
         MapEvent(MappedEvent.MappingEvent.MediaPortal_Start);
 
@@ -318,7 +224,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     {
       SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
 
-      if (EventMapperEnabled)
+      if (Config.EventMapperEnabled)
       {
         GUIWindowManager.Receivers -= OnMessage;
 
@@ -329,7 +235,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
 
       _defaultInputHandler = null;
 
-      if (MultiMappingEnabled)
+      if (Config.MultiMappingEnabled)
         for (int i = 0; i < _multiInputHandlers.Count; i++)
           _multiInputHandlers[i] = null;
 
@@ -412,28 +318,25 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     /// </summary>
     public void ShowPlugin()
     {
-      try
+      LoadMediaPortalSettings();
+      Config = Configuration.Load(SettingsFile);
+      EventMappings = EventMappings.Load(EventMappingFile);
+      MultiMappings = MultiMappings.Load(MultiMappingFile);
+
+      InConfiguration = true;
+      Log.Debug("MPControlPlugin: ShowPlugin()");
+
+      setupForm = new SetupForm();
+      if (setupForm.ShowDialog() == DialogResult.OK)
       {
-        LoadSettings();
-        LoadDefaultMapping();
-        LoadMultiMappings();
-
-        _inConfiguration = true;
-
-        Log.Debug("MPControlPlugin: ShowPlugin()");
-
-        SetupForm setupForm = new SetupForm();
-        if (setupForm.ShowDialog() == DialogResult.OK)
-          SaveSettings();
-
-        StopClient();
-        
-        Log.Debug("MPControlPlugin: ShowPlugin() - End");
+        Configuration.Save(Config, SettingsFile);
+        EventMappings.Save(EventMappings, EventMappingFile);
+        MultiMappings.Save(MultiMappings, MultiMappingFile);
       }
-      catch (Exception ex)
-      {
-        Log.Error(ex);
-      }
+
+      StopClient();
+
+      Log.Debug("MPControlPlugin: ShowPlugin() - End");
     }
 
     /// <summary>
@@ -462,13 +365,13 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     /// <returns>true if handled successfully, otherwise false.</returns>
     private static bool HandleMouseMode(RemoteButton button)
     {
-      if (button == MouseModeButton)
+      if (button == Config.MouseModeButton)
       {
-        MouseModeActive = !MouseModeActive; // Toggle Mouse Mode
+        Config.MouseModeActive = !Config.MouseModeActive; // Toggle Mouse Mode
 
         string notifyMessage;
 
-        if (MouseModeActive)
+        if (Config.MouseModeActive)
         {
           notifyMessage = "Mouse Mode is now ON";
         }
@@ -496,7 +399,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
 
         return true;
       }
-      else if (MouseModeActive)
+      else if (Config.MouseModeActive)
       {
         // Determine repeat count ...
         long ticks = DateTime.Now.Ticks;
@@ -509,9 +412,9 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
         _mouseModeLastButton = button;
 
 
-        int distance = MouseModeStep;
+        int distance = Config.MouseModeStep;
 
-        if (MouseModeAcceleration)
+        if (Config.MouseModeAcceleration)
           distance += (2 * _mouseModeRepeatCount);
 
         switch (button)
@@ -679,7 +582,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     private static void RemoteHandler(string deviceName, string keyCode)
     {
       // If user has stipulated that MP must have focus to recognize commands ...
-      if (RequireFocus && !GUIGraphicsContext.HasFocus)
+      if (Config.RequireFocus && !GUIGraphicsContext.HasFocus)
         return;
 
       foreach (MappedKeyCode mapping in _remoteMap)
@@ -687,19 +590,19 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
         if (!mapping.KeyCode.Equals(keyCode, StringComparison.OrdinalIgnoreCase))
           continue;
 
-        if (MultiMappingEnabled && mapping.Button == MultiMappingButton)
+        if (Config.MultiMappingEnabled && mapping.Button == Config.MultiMappingButton)
         {
           ChangeMultiMapping();
           return;
         }
 
-        if (MouseModeEnabled)
+        if (Config.MouseModeEnabled)
           if (HandleMouseMode(mapping.Button))
             return;
 
         // Get & execute Mapping
         bool gotMapped;
-        if (MultiMappingEnabled)
+        if (Config.MultiMappingEnabled)
           gotMapped = _multiInputHandlers[_multiMappingSet].MapAction((int) mapping.Button);
         else
           gotMapped = _defaultInputHandler.MapAction((int) mapping.Button);
@@ -730,7 +633,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
 
       Log.Warn("MPControlPlugin: Attempting communications restart ...");
 
-      IPAddress serverIP = Network.GetIPFromName(_serverHost);
+      IPAddress serverIP = Network.GetIPFromName(Config.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       StartClient(endPoint);
@@ -790,7 +693,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
         switch (received.Type)
         {
           case MessageType.RemoteEvent:
-            if (!_inConfiguration)
+            if (!InConfiguration)
             {
               string deviceName = received.MessageData[IrssMessage.DEVICE_NAME] as string;
               string keyCode = received.MessageData[IrssMessage.KEY_CODE] as string;
@@ -813,7 +716,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
           case MessageType.RegisterClient:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              _irServerInfo = IRServerInfo.FromBytes(received.GetDataAsBytes());
+              TransceiverInformation = IRServerInfo.FromBytes(received.GetDataAsBytes());
               _registered = true;
 
               Log.Debug("MPControlPlugin: Registered to IR Server");
@@ -823,6 +726,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
               _registered = false;
               Log.Warn("MPControlPlugin: IR Server refused to register");
             }
+            UpdateCommandProcessor();
             break;
 
           case MessageType.LearnIR:
@@ -850,6 +754,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
           case MessageType.ServerShutdown:
             Log.Warn("MPControlPlugin: IR Server Shutdown - Plugin disabled until IR Server returns");
             _registered = false;
+            UpdateCommandProcessor();
             break;
 
           case MessageType.Error:
@@ -858,8 +763,8 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
             break;
         }
 
-        if (_handleMessage != null)
-          _handleMessage(received);
+        if (HandleMessage != null)
+          HandleMessage(received);
       }
       catch (Exception ex)
       {
@@ -875,55 +780,6 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     private void OnMessage(GUIMessage msg)
     {
       MapEvent(msg);
-    }
-
-    /// <summary>
-    /// Changes the multi mapping.
-    /// </summary>
-    private static void ChangeMultiMapping()
-    {
-      // Cycle through Multi-Mappings ...
-      _multiMappingSet = (_multiMappingSet + 1) % MultiMaps.Length;
-
-      // Show the mapping set name on screen ...
-      string setName = MultiMaps[_multiMappingSet];
-
-      Log.Debug("MPControlPlugin: Multi-Mapping has cycled to \"{0}\"", setName);
-
-      MPCommon.ShowNotifyDialog("Multi-Mapping", setName, 2);
-    }
-
-    /// <summary>
-    /// Changes the multi mapping.
-    /// </summary>
-    /// <param name="multiMapping">The multi mapping.</param>
-    private static void ChangeMultiMapping(string multiMapping)
-    {
-      Log.Debug("MPControlPlugin: ChangeMultiMapping: {0}", multiMapping);
-
-      if (multiMapping.Equals("TOGGLE", StringComparison.OrdinalIgnoreCase))
-      {
-        ChangeMultiMapping();
-        return;
-      }
-
-      for (int index = 0; index < MultiMaps.Length; index++)
-      {
-        if (MultiMaps[index].Equals(multiMapping, StringComparison.CurrentCultureIgnoreCase))
-        {
-          _multiMappingSet = index;
-
-          // Show the mapping set name on screen ...
-          string setName = MultiMaps[_multiMappingSet];
-
-          Log.Debug("MPControlPlugin: Multi-Mapping has changed to \"{0}\"", setName);
-
-          MPCommon.ShowNotifyDialog("Multi-Mapping", setName, 2);
-          return;
-        }
-      }
-
-      Log.Warn("MPControlPlugin: Could not find Multi-Mapping \"{0}\"", multiMapping);
     }
 
     /// <summary>
@@ -967,28 +823,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
       return remoteMap.ToArray();
     }
 
-    /// <summary>
-    /// Loads the event mappings.
-    /// </summary>
-    private static void LoadEventMappings()
-    {
-      try
-      {
-        XmlDocument doc = new XmlDocument();
-        doc.Load(EventMappingFile);
-
-        XmlNodeList eventList = doc.DocumentElement.SelectNodes("mapping");
-
-        _eventMappings = new List<MappedEvent>(eventList.Count);
-
-        foreach (XmlNode item in eventList)
-          EventMappings.Add(MappedEvent.FromStrings(item.Attributes["event"].Value, item.Attributes["command"].Value));
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex);
-      }
-    }
+    #region Event Mapping
 
     /// <summary>
     /// Run the event mapper over the supplied GUIMessage.
@@ -997,82 +832,85 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     private static void MapEvent(GUIMessage msg)
     {
       MappedEvent.MappingEvent eventType = MappedEvent.GetEventType(msg.Message);
-      if (eventType == MappedEvent.MappingEvent.None)
-        return;
+      if (eventType == MappedEvent.MappingEvent.None) return;
 
-      foreach (MappedEvent mappedEvent in EventMappings)
+      foreach (MappedEvent mappedEvent in EventMappings.Events)
       {
-        if (mappedEvent.EventType == eventType)
+        if (mappedEvent.EventType != eventType) continue;
+        bool matched = true;
+
+        if (mappedEvent.MatchParam)
         {
-          bool matched = true;
+          string paramValueString = mappedEvent.ParamValue;
+          int paramValueInt = -1;
+          int.TryParse(mappedEvent.ParamValue, out paramValueInt);
+          bool paramValueBool = false;
+          bool.TryParse(mappedEvent.ParamValue, out paramValueBool);
 
-          if (mappedEvent.MatchParam)
+          switch (mappedEvent.Param)
           {
-            string paramValueString = mappedEvent.ParamValue;
-            int paramValueInt = -1;
-            int.TryParse(mappedEvent.ParamValue, out paramValueInt);
-            bool paramValueBool = false;
-            bool.TryParse(mappedEvent.ParamValue, out paramValueBool);
-
-            switch (mappedEvent.Param)
-            {
-              case "Label 1":
-                matched = (msg.Label.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));
-                break;
-              case "Label 2":
-                matched = (msg.Label2.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));
-                break;
-              case "Label 3":
-                matched = (msg.Label3.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));
-                break;
-              case "Label 4":
-                matched = (msg.Label4.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));
-                break;
-              case "Parameter 1":
-                matched = (msg.Param1 == paramValueInt);
-                break;
-              case "Parameter 2":
-                matched = (msg.Param2 == paramValueInt);
-                break;
-              case "Parameter 3":
-                matched = (msg.Param3 == paramValueInt);
-                break;
-              case "Parameter 4":
-                matched = (msg.Param4 == paramValueInt);
-                break;
-              case "Sender Control ID":
-                matched = (msg.SenderControlId == paramValueInt);
-                break;
-              case "Send To Target Window":
-                matched = (msg.SendToTargetWindow == paramValueBool);
-                break;
-              case "Target Control ID":
-                matched = (msg.TargetControlId == paramValueInt);
-                break;
-              case "Target Window ID":
-                matched = (msg.TargetWindowId == paramValueInt);
-                break;
-              default:
-                matched = false;
-                break;
-            }
+            case "Label 1":
+              matched = (msg.Label.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));
+              break;
+            case "Label 2":
+              matched = (msg.Label2.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));
+              break;
+            case "Label 3":
+              matched = (msg.Label3.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));
+              break;
+            case "Label 4":
+              matched = (msg.Label4.Equals(paramValueString, StringComparison.OrdinalIgnoreCase));
+              break;
+            case "Parameter 1":
+              matched = (msg.Param1 == paramValueInt);
+              break;
+            case "Parameter 2":
+              matched = (msg.Param2 == paramValueInt);
+              break;
+            case "Parameter 3":
+              matched = (msg.Param3 == paramValueInt);
+              break;
+            case "Parameter 4":
+              matched = (msg.Param4 == paramValueInt);
+              break;
+            case "Sender Control ID":
+              matched = (msg.SenderControlId == paramValueInt);
+              break;
+            case "Send To Target Window":
+              matched = (msg.SendToTargetWindow == paramValueBool);
+              break;
+            case "Target Control ID":
+              matched = (msg.TargetControlId == paramValueInt);
+              break;
+            case "Target Window ID":
+              matched = (msg.TargetWindowId == paramValueInt);
+              break;
+            default:
+              matched = false;
+              break;
           }
+        }
 
-          if (!matched)
-            continue;
+        if (!matched) continue;
 
-          Log.Debug("MPControlPlugin: Event Mapper - Event \"{0}\"",
-                    Enum.GetName(typeof (MappedEvent.MappingEvent), eventType));
+        if (ReferenceEquals(mappedEvent.Command, null))
+        {
+          Log.Warn("MPControlPlugin: Mapped command to event ({0}) is not available. (Command: {1})",
+                   Enum.GetName(typeof(MappedEvent.MappingEvent), eventType), mappedEvent.EventType);
+          continue;
+        }
 
-          try
-          {
-            ProcessCommand(mappedEvent.Command, false);
-          }
-          catch (Exception ex)
-          {
-            Log.Error("MPControlPlugin: Failed to execute Event Mapper command \"{0}\" - {1}", mappedEvent.EventType,
-                      ex.ToString());
-          }
+        Log.Debug("MPControlPlugin: Event Mapper - Event \"{0}\"",
+                  Enum.GetName(typeof(MappedEvent.MappingEvent), eventType));
+
+        try
+        {
+          ProcessCommand(mappedEvent.Command);
+        }
+        catch (Exception ex)
+        {
+          Log.Error("MPControlPlugin: Failed to execute Event Mapper command \"{0}\" - {1}", mappedEvent.EventType,
+                    ex.ToString());
         }
       }
     }
@@ -1083,28 +921,87 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     /// <param name="eventType">MappedEvent to run through the event mapper.</param>
     private static void MapEvent(MappedEvent.MappingEvent eventType)
     {
-      foreach (MappedEvent mappedEvent in EventMappings)
+      foreach (MappedEvent mappedEvent in EventMappings.Events)
       {
-        if (mappedEvent.EventType == eventType)
+        if (mappedEvent.EventType != eventType) continue;
+        if (mappedEvent.MatchParam) continue;
+
+        Log.Debug("MPControlPlugin: Event Mapper - Event \"{0}\"",
+                  Enum.GetName(typeof(MappedEvent.MappingEvent), eventType));
+
+        if (ReferenceEquals(mappedEvent.Command, null))
         {
-          if (mappedEvent.MatchParam)
-            continue;
+          Log.Warn("MPControlPlugin: Mapped command to event ({0}) is not available. (Command: {1})",
+                   Enum.GetName(typeof(MappedEvent.MappingEvent), eventType), mappedEvent.EventType);
+          continue;
+        }
 
-          Log.Debug("MPControlPlugin: Event Mapper - Event \"{0}\"",
-                    Enum.GetName(typeof (MappedEvent.MappingEvent), eventType));
-
-          try
-          {
-            ProcessCommand(mappedEvent.Command, false);
-          }
-          catch (Exception ex)
-          {
-            Log.Error("MPControlPlugin: Failed to execute Event Mapper command \"{0}\" - {1}", mappedEvent.EventType,
-                      ex.ToString());
-          }
+        try
+        {
+          ProcessCommand(mappedEvent.Command);
+        }
+        catch (Exception ex)
+        {
+          Log.Error("MPControlPlugin: Failed to execute Event Mapper command \"{0}\" - {1}", mappedEvent.EventType,
+                    ex.ToString());
         }
       }
     }
+
+    #endregion
+
+    #region Multi Mapping
+
+    /// <summary>
+    /// Changes the multi mapping.
+    /// </summary>
+    private static void ChangeMultiMapping()
+    {
+      // Cycle through Multi-Mappings ...
+      _multiMappingSet = (_multiMappingSet + 1) % MultiMappings.Count;
+
+      // Show the mapping set name on screen ...
+      string setName = MultiMappings[_multiMappingSet];
+
+      Log.Debug("MPControlPlugin: Multi-Mapping has cycled to \"{0}\"", setName);
+
+      MPCommon.ShowNotifyDialog("Multi-Mapping", setName, 2);
+    }
+
+    /// <summary>
+    /// Changes the multi mapping.
+    /// </summary>
+    /// <param name="multiMapping">The multi mapping.</param>
+    private static void ChangeMultiMapping(string multiMapping)
+    {
+      Log.Debug("MPControlPlugin: ChangeMultiMapping: {0}", multiMapping);
+
+      if (multiMapping.Equals("TOGGLE", StringComparison.OrdinalIgnoreCase))
+      {
+        ChangeMultiMapping();
+        return;
+      }
+
+      for (int index = 0; index < MultiMappings.Count; index++)
+      {
+        if (MultiMappings[index].Equals(multiMapping, StringComparison.CurrentCultureIgnoreCase))
+        {
+          _multiMappingSet = index;
+
+          // Show the mapping set name on screen ...
+          string setName = MultiMappings[_multiMappingSet];
+
+          Log.Debug("MPControlPlugin: Multi-Mapping has changed to \"{0}\"", setName);
+
+          MPCommon.ShowNotifyDialog("Multi-Mapping", setName, 2);
+          return;
+        }
+      }
+
+      Log.Warn("MPControlPlugin: Could not find Multi-Mapping \"{0}\"", multiMapping);
+    }
+
+    #endregion
 
     /// <summary>
     /// Handles the PowerModeChanged event of the SystemEvents control.
@@ -1137,36 +1034,11 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     }
 
     /// <summary>
-    /// Loads multi-mappings for input handling.
-    /// </summary>
-    internal static void LoadMultiMappings()
-    {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(MultiMappingFile);
-
-      XmlNodeList mappings = doc.DocumentElement.SelectNodes("map");
-
-      _multiInputHandlers = new List<InputHandler>(mappings.Count);
-      _multiMaps = new string[mappings.Count];
-
-      for (int index = 0; index < mappings.Count; index++)
-      {
-        string map = mappings.Item(index).Attributes["name"].Value;
-
-        _multiMaps[index] = map;
-        _multiInputHandlers.Add(new InputHandler(map));
-
-        if (!_multiInputHandlers[index].IsLoaded)
-          Log.Error("MPControlPlugin: Error loading default mapping file for {0}", map);
-      }
-    }
-
-    /// <summary>
     /// Call this when entering standby to ensure that the Event Mapper is informed.
     /// </summary>
     internal static void OnSuspend()
     {
-      if (!_inConfiguration && EventMapperEnabled)
+      if (!InConfiguration && Config.EventMapperEnabled)
         MapEvent(MappedEvent.MappingEvent.PC_Suspend);
     }
 
@@ -1175,7 +1047,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     /// </summary>
     internal static void OnResume()
     {
-      if (!_inConfiguration && EventMapperEnabled)
+      if (!InConfiguration && Config.EventMapperEnabled)
         MapEvent(MappedEvent.MappingEvent.PC_Resume);
     }
 
@@ -1251,349 +1123,192 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
       }
     }
 
+
+
+    ///// <summary>
+    ///// Given a command this method processes the request accordingly.
+    ///// Throws exceptions only if run synchronously, if async exceptions are logged instead.
+    ///// </summary>
+    ///// <param name="command">Command string to process.</param>
+    ///// <param name="async">Process command asynchronously?</param>
+    //internal static void ProcessCommand(string command, bool async = false)
+    //{
+    //  if (command == null)
+    //    throw new ArgumentNullException("command");
+
+    //  if (async)
+    //  {
+    //    try
+    //    {
+    //      Thread newThread = new Thread(ProcCommand);
+    //      newThread.Name = ProcessCommandThreadName;
+    //      newThread.IsBackground = true;
+    //      newThread.Start(command);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //      IrssLog.Error(ex);
+    //    }
+    //  }
+    //  else
+    //  {
+    //    ProcCommand(command);
+    //  }
+    //}
+
     /// <summary>
     /// Given a command this method processes the request accordingly.
     /// Throws exceptions only if run synchronously, if async exceptions are logged instead.
     /// </summary>
     /// <param name="command">Command to process.</param>
     /// <param name="async">Process command asynchronously?</param>
-    internal static void ProcessCommand(string command, bool async)
+    internal static void ProcessCommand(Command command, bool async = false)
     {
-      if (async)
-      {
-        try
-        {
-          Thread newThread = new Thread(ProcCommand);
-          newThread.Name = ProcessCommandThreadName;
-          newThread.IsBackground = true;
-          newThread.Start(command);
-        }
-        catch (Exception ex)
-        {
-          Log.Error(ex);
-        }
-      }
-      else
-      {
-        ProcCommand(command);
-      }
+      CommandProcessor.Execute(command, async);
+      //if (command == null)
+      //  throw new ArgumentNullException("command");
+
+      //if (async)
+      //{
+      //  try
+      //  {
+      //    Thread newThread = new Thread(ProcCommand);
+      //    newThread.Name = ProcessCommandThreadName;
+      //    newThread.IsBackground = true;
+      //    newThread.Start(command);
+      //  }
+      //  catch (Exception ex)
+      //  {
+      //    IrssLog.Error(ex);
+      //  }
+      //}
+      //else
+      //{
+      //  ProcCommand(command);
+      //}
     }
 
-    /// <summary>
-    /// Used by ProcessCommand to actually handle the command.
-    /// Can be called Synchronously or as a Parameterized Thread.
-    /// </summary>
-    /// <param name="commandObj">Command string to process.</param>
-    private static void ProcCommand(object commandObj)
-    {
-      try
-      {
-        if (commandObj == null)
-          throw new ArgumentNullException("commandObj");
+//    /// <summary>
+//    /// Used by ProcessCommand to actually handle the command, if it is a string, otherwise it will call the other overload ProcCommand using the object as type Command.
+//    /// Can be called Synchronously or as a Parameterized Thread.
+//    /// </summary>
+//    /// <param name="commandObj">Command object to process. This could be a string or Command.</param>
+//    private static void ProcCommand(object commandObj)
+//    {
+//      if (commandObj == null)
+//        throw new ArgumentNullException("commandObj");
 
-        string command = commandObj as string;
+//      try
+//      {
+//        Command command = commandObj as Command;
+//        if (command != null)
+//        {
+//          ProcCommand(command);
+//          return;
+//        }
 
-        if (String.IsNullOrEmpty(command))
-          throw new ArgumentException("commandObj translates to empty or null string", "commandObj");
+//        string strCommand = commandObj as string;
+//        // is obj is not a command nor a string, stop here
+//        if (strCommand == null) return;
 
-        if (command.StartsWith(IrssUtils.Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-        {
-          string fileName = Path.Combine(FolderMacros,
-                                         command.Substring(IrssUtils.Common.CmdPrefixMacro.Length) + IrssUtils.Common.FileExtensionMacro);
-          ProcMacro(fileName);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitBlastCommand(command.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
-          BlastIR(Path.Combine(IrssUtils.Common.FolderIRCommands, commands[0] + IrssUtils.Common.FileExtensionIR), commands[1]);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixPause, StringComparison.OrdinalIgnoreCase))
-        {
-          int pauseTime = int.Parse(command.Substring(IrssUtils.Common.CmdPrefixPause.Length));
-          Thread.Sleep(pauseTime);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitRunCommand(command.Substring(IrssUtils.Common.CmdPrefixRun.Length));
-          IrssUtils.Common.ProcessRunCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitSerialCommand(command.Substring(IrssUtils.Common.CmdPrefixSerial.Length));
-          IrssUtils.Common.ProcessSerialCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitWindowMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixWindowMsg.Length));
-          IrssUtils.Common.ProcessWindowMessageCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixTcpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitTcpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixTcpMsg.Length));
-          IrssUtils.Common.ProcessTcpMessageCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixHttpMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitHttpMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixHttpMsg.Length));
-          IrssUtils.Common.ProcessHttpCommand(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-        {
-          string keyCommand = command.Substring(IrssUtils.Common.CmdPrefixKeys.Length);
-          if (_inConfiguration)
-            MessageBox.Show(keyCommand, IrssUtils.Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            IrssUtils.Common.ProcessKeyCommand(keyCommand);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
-        {
-          string mouseCommand = command.Substring(IrssUtils.Common.CmdPrefixMouse.Length);
-          IrssUtils.Common.ProcessMouseCommand(mouseCommand);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixEject, StringComparison.OrdinalIgnoreCase))
-        {
-          string ejectCommand = command.Substring(IrssUtils.Common.CmdPrefixEject.Length);
-          IrssUtils.Common.ProcessEjectCommand(ejectCommand);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixMultiMap, StringComparison.OrdinalIgnoreCase))
-        {
-          string multiMapping = command.Substring(IrssUtils.Common.CmdPrefixMultiMap.Length);
-          if (_inConfiguration)
-            MessageBox.Show(multiMapping, IrssUtils.Common.UITextMultiMap, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            ChangeMultiMapping(multiMapping);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixPopup, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitPopupCommand(command.Substring(IrssUtils.Common.CmdPrefixPopup.Length));
-          if (_inConfiguration)
-            MessageBox.Show(commands[1], commands[0], MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            MPCommon.ShowNotifyDialog(commands[0], commands[1], int.Parse(commands[2]));
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
-        {
-          string screenID = command.Substring(IrssUtils.Common.CmdPrefixGotoScreen.Length);
 
-          if (_inConfiguration)
-            MessageBox.Show(screenID, IrssUtils.Common.UITextGotoScreen, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            MPCommon.ProcessGoTo(screenID, _mpBasicHome);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSendMPAction, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitSendMPActionCommand(command.Substring(IrssUtils.Common.CmdPrefixSendMPAction.Length));
-          if (_inConfiguration)
-            MessageBox.Show(commands[0], IrssUtils.Common.UITextSendMPAction, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            MPCommon.ProcessSendMediaPortalAction(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSendMPMsg, StringComparison.OrdinalIgnoreCase))
-        {
-          string[] commands = IrssUtils.Common.SplitSendMPMsgCommand(command.Substring(IrssUtils.Common.CmdPrefixSendMPMsg.Length));
-          if (_inConfiguration)
-            MessageBox.Show(commands[0], IrssUtils.Common.UITextSendMPMsg, MessageBoxButtons.OK, MessageBoxIcon.Information);
-          else
-            MPCommon.ProcessSendMediaPortalMessage(commands);
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixInputLayer, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot toggle the input handler layer while in configuration", IrssUtils.Common.UITextInputLayer,
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-          }
-          else
-          {
-            InputHandler inputHandler;
+//        // check for serialized Command
+//        try
+//        {
+//          command = Processor.CreateCommand(strCommand);
+//        }
+//        catch (Exception)
+//        {
+//          // catch all exception, as the provided text might not be a serialized command
+//        }
+//        if (command != null)
+//        {
+//          ProcCommand(command);
+//          return;
+//        }
 
-            if (_multiMappingEnabled)
-              inputHandler = _multiInputHandlers[_multiMappingSet];
-            else
-              inputHandler = _defaultInputHandler;
+//#warning fixme multimap
+//        //else if (command.StartsWith(IrssUtils.Common.CmdPrefixMultiMap, StringComparison.OrdinalIgnoreCase))
+//        //{
+//        //  string multiMapping = command.Substring(IrssUtils.Common.CmdPrefixMultiMap.Length);
+//        //  if (_inConfiguration)
+//        //    MessageBox.Show(multiMapping, IrssUtils.Common.UITextMultiMap, MessageBoxButtons.OK, MessageBoxIcon.Information);
+//        //  else
+//        //    ChangeMultiMapping(multiMapping);
+//        //}
+//#warning fixme input layer
+//        //else if (command.StartsWith(IrssUtils.Common.CmdPrefixInputLayer, StringComparison.OrdinalIgnoreCase))
+//        //{
+//        //  if (_inConfiguration)
+//        //  {
+//        //    MessageBox.Show("Cannot toggle the input handler layer while in configuration", IrssUtils.Common.UITextInputLayer,
+//        //                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+//        //  }
+//        //  else
+//        //  {
+//        //    InputHandler inputHandler;
 
-            if (inputHandler.CurrentLayer == 1)
-              inputHandler.CurrentLayer = 2;
-            else
-              inputHandler.CurrentLayer = 1;
-          }
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixExit, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot exit MediaPortal in configuration", IrssUtils.Common.UITextExit, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.ExitMP();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot Hibernate in configuration", IrssUtils.Common.UITextHibernate, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.Hibernate();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixReboot, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot Reboot in configuration", IrssUtils.Common.UITextReboot, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.Reboot();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixShutdown, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot Shutdown in configuration", IrssUtils.Common.UITextShutdown, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.ShutDown();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixStandby, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-            MessageBox.Show("Cannot enter Standby in configuration", IrssUtils.Common.UITextStandby, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          else
-            MPCommon.Standby();
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot show Virtual Keyboard in configuration", IrssUtils.Common.UITextVirtualKB,
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-          }
-          else
-          {
-            VirtualKeyboard vk = new VirtualKeyboard();
-            if (vk.ShowDialog() == DialogResult.OK)
-              Keyboard.ProcessCommand(vk.TextOutput);
-          }
-        }
-        else if (command.StartsWith(IrssUtils.Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
-        {
-          if (_inConfiguration)
-          {
-            MessageBox.Show("Cannot show SMS Keyboard in configuration", IrssUtils.Common.UITextSmsKB, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-          }
-          else
-          {
-            SmsKeyboard sms = new SmsKeyboard();
-            if (sms.ShowDialog() == DialogResult.OK)
-              Keyboard.ProcessCommand(sms.TextOutput);
-          }
-        }
-        else
-        {
-          throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
-                                      "commandObj");
-        }
-      }
-      catch (Exception ex)
-      {
-        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
-            Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-          Log.Error(ex);
-        else
-          throw;
-      }
-    }
+//        //    if (_multiMappingEnabled)
+//        //      inputHandler = _multiInputHandlers[_multiMappingSet];
+//        //    else
+//        //      inputHandler = _defaultInputHandler;
+
+//        //    if (inputHandler.CurrentLayer == 1)
+//        //      inputHandler.CurrentLayer = 2;
+//        //    else
+//        //      inputHandler.CurrentLayer = 1;
+//        //  }
+//        //}
+//        //else
+//        //{
+//        //  throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
+//        //                              "commandObj");
+//        //}
+//      }
+//      catch (Exception ex)
+//      {
+//        if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
+//            Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
+//          Log.Error(ex);
+//        else
+//          throw;
+//      }
+//    }
+
+    ///// <summary>
+    ///// Used by ProcessCommand to actually handle the command, if it is a Command.
+    ///// Can be called Synchronously or as a Parameterized Thread.
+    ///// </summary>
+    ///// <param name="command">Command to process.</param>
+    //private static void ProcCommand(Command command)
+    //{
+    //  if (command == null)
+    //    throw new ArgumentNullException("command");
+
+    //  if (InConfiguration)
+    //  {
+    //    MessageBox.Show(command.UserDisplayText, command.UserInterfaceText, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    //    return;
+    //  }
+
+    //  //if (command is MacroCommand)
+    //  //  IrssMacro.ExecuteMacro(command as MacroCommand, _variables, ProcCommand);
+    //  //else
+    //  command.Execute(new VariableList());
+    //}
 
     /// <summary>
-    /// Called by ProcCommand to process the supplied Macro file.
+    /// Loads the settings only. No Mappings.
     /// </summary>
-    /// <param name="fileName">Macro file to process (absolute path).</param>
-    private static void ProcMacro(string fileName)
+    private static void LoadMediaPortalSettings()
     {
-      XmlDocument doc = new XmlDocument();
-      doc.Load(fileName);
-
-      XmlNodeList commandSequence = doc.DocumentElement.SelectNodes("item");
-
-      foreach (XmlNode item in commandSequence)
-        ProcCommand(item.Attributes["command"].Value);
-    }
-
-    /// <summary>
-    /// Returns a list of Macros.
-    /// </summary>
-    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
-    /// <returns>string[] of Macros.</returns>
-    internal static string[] GetMacroList(bool commandPrefix)
-    {
-      string[] files = Directory.GetFiles(FolderMacros, '*' + IrssUtils.Common.FileExtensionMacro);
-      string[] list = new string[files.Length];
-
-      int i = 0;
-      foreach (string file in files)
-      {
-        if (commandPrefix)
-          list[i++] = IrssUtils.Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
-
-      return list;
-    }
-
-    /// <summary>
-    /// Returns a combined list of IR Commands and Macros.
-    /// </summary>
-    /// <param name="commandPrefix">Add the command prefix to each list item.</param>
-    /// <returns>string[] of IR Commands and Macros.</returns>
-    internal static string[] GetFileList(bool commandPrefix)
-    {
-      string[] MacroFiles = Directory.GetFiles(FolderMacros, '*' + IrssUtils.Common.FileExtensionMacro);
-      string[] IRFiles = Directory.GetFiles(IrssUtils.Common.FolderIRCommands, '*' + IrssUtils.Common.FileExtensionIR);
-      string[] list = new string[MacroFiles.Length + IRFiles.Length];
-
-      int i = 0;
-      foreach (string file in MacroFiles)
-      {
-        if (commandPrefix)
-          list[i++] = IrssUtils.Common.CmdPrefixMacro + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
-
-      foreach (string file in IRFiles)
-      {
-        if (commandPrefix)
-          list[i++] = IrssUtils.Common.CmdPrefixBlast + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
-
-      return list;
-    }
-
-    /// <summary>
-    /// Loads the settings.
-    /// </summary>
-    private static void LoadSettings()
-    {
+      // load settings from MP
       try
       {
         using (Settings xmlreader = new Settings(MPCommon.MPConfigFile))
         {
-          ServerHost = xmlreader.GetValueAsString("MPControlPlugin", "ServerHost", "localhost");
-
-          RequireFocus = xmlreader.GetValueAsBool("MPControlPlugin", "RequireFocus", true);
-          MultiMappingEnabled = xmlreader.GetValueAsBool("MPControlPlugin", "MultiMappingEnabled", false);
-          MultiMappingButton =
-            (RemoteButton) xmlreader.GetValueAsInt("MPControlPlugin", "MultiMappingButton", (int) RemoteButton.Start);
-          EventMapperEnabled = xmlreader.GetValueAsBool("MPControlPlugin", "EventMapperEnabled", false);
-          MouseModeButton =
-            (RemoteButton) xmlreader.GetValueAsInt("MPControlPlugin", "MouseModeButton", (int) RemoteButton.Teletext);
-          MouseModeEnabled = xmlreader.GetValueAsBool("MPControlPlugin", "MouseModeEnabled", false);
-          MouseModeStep = xmlreader.GetValueAsInt("MPControlPlugin", "MouseModeStep", 10);
-          MouseModeAcceleration = xmlreader.GetValueAsBool("MPControlPlugin", "MouseModeAcceleration", true);
-
           // MediaPortal settings ...
-          _mpBasicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
+          MP_BasicHome = xmlreader.GetValueAsBool("general", "startbasichome", false);
         }
       }
       catch (Exception ex)
@@ -1602,31 +1317,15 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
       }
     }
 
-    /// <summary>
-    /// Saves the settings.
-    /// </summary>
-    private static void SaveSettings()
+    private static void UpdateCommandProcessor()
     {
-      try
-      {
-        using (Settings xmlwriter = new Settings(MPCommon.MPConfigFile))
-        {
-          xmlwriter.SetValue("MPControlPlugin", "ServerHost", ServerHost);
+      //CommandProcessor = null;
+      //if (!_registered) return;
 
-          xmlwriter.SetValueAsBool("MPControlPlugin", "RequireFocus", RequireFocus);
-          xmlwriter.SetValueAsBool("MPControlPlugin", "MultiMappingEnabled", MultiMappingEnabled);
-          xmlwriter.SetValue("MPControlPlugin", "MultiMappingButton", (int) MultiMappingButton);
-          xmlwriter.SetValueAsBool("MPControlPlugin", "EventMapperEnabled", EventMapperEnabled);
-          xmlwriter.SetValue("MPControlPlugin", "MouseModeButton", (int) MouseModeButton);
-          xmlwriter.SetValueAsBool("MPControlPlugin", "MouseModeEnabled", MouseModeEnabled);
-          xmlwriter.SetValue("MPControlPlugin", "MouseModeStep", MouseModeStep);
-          xmlwriter.SetValueAsBool("MPControlPlugin", "MouseModeAcceleration", MouseModeAcceleration);
-        }
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex);
-      }
+      CommandProcessor = new Processor(BlastIR, TransceiverInformation.Ports);
+
+      if (!ReferenceEquals(setupForm, null) && !ReferenceEquals(setupForm._macroPanel, null))
+        setupForm._macroPanel.SetCommandProcessor(CommandProcessor);
     }
 
     #endregion Implementation

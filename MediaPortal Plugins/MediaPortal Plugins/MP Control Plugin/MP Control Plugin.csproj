@@ -44,18 +44,61 @@
     <Compile Include="..\..\..\IR Server Suite\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Forms\MPControlPluginShowException.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Helper\EventMappings.cs" />
+    <Compile Include="InputMapper\Conditions\Configuration\BaseConditionConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\BaseConditionConfig.Designer.cs">
+      <DependentUpon>BaseConditionConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\FullscreenConditionConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\FullscreenConditionConfig.Designer.cs">
+      <DependentUpon>FullscreenConditionConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\PluginEnabledConditionConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\PluginEnabledConditionConfig.Designer.cs">
+      <DependentUpon>PluginEnabledConditionConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\WindowConditionConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\WindowConditionConfig.Designer.cs">
+      <DependentUpon>WindowConditionConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\PlayerConditionConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\PlayerConditionConfig.Designer.cs">
+      <DependentUpon>PlayerConditionConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\NoCondition.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\Configuration\NoCondition.Designer.cs">
+      <DependentUpon>NoCondition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputMapper\Conditions\DummyCondition.cs" />
+    <Compile Include="InputMapper\Conditions\FullscreenCondition.cs" />
+    <Compile Include="InputMapper\Conditions\PluginEnabledCondition.cs" />
+    <Compile Include="InputMapper\Conditions\PlayerCondition.cs" />
+    <Compile Include="InputMapper\Conditions\WindowCondition.cs" />
+    <Compile Include="InputMapper\Conditions\NoCondition.cs" />
+    <Compile Include="InputMapper\Conditions\Condition.cs" />
+    <Compile Include="InputMapper\InputMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InputMapper\InputMappingForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="InputMapper\InputMappingForm.Designer.cs">
       <DependentUpon>InputMappingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MacroEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MacroEditor.Designer.cs">
-      <DependentUpon>MacroEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SetupForm.cs">
       <SubType>Form</SubType>
@@ -73,6 +116,7 @@
     <Compile Include="Forms\MultiMapNameBox.Designer.cs">
       <DependentUpon>MultiMapNameBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helper\MultiMappings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
@@ -89,13 +133,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\MacroEditor.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MacroEditor.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\SetupForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>SetupForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputMapper\Conditions\Configuration\FullscreenConditionConfig.resx">
+      <DependentUpon>FullscreenConditionConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputMapper\Conditions\Configuration\PluginEnabledConditionConfig.resx">
+      <DependentUpon>PluginEnabledConditionConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputMapper\Conditions\Configuration\WindowConditionConfig.resx">
+      <DependentUpon>WindowConditionConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputMapper\Conditions\Configuration\PlayerConditionConfig.resx">
+      <DependentUpon>PlayerConditionConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputMapper\Conditions\Configuration\NoCondition.resx">
+      <DependentUpon>NoCondition.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InputMapper\InputMappingForm.resx">
       <DependentUpon>InputMappingForm.cs</DependentUpon>
@@ -134,12 +189,16 @@
       <Project>{6DA0E4DF-6230-4642-98B5-E690BB6942BB}</Project>
       <Name>Utils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssCommands\IrssCommands-net35.csproj">
+      <Project>{49cf376e-811c-4eb4-817f-a39c9529b608}</Project>
+      <Name>IrssCommands-net35</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssComms\IrssComms-Net35.csproj">
-      <Project>{BCAFDF45-70DD-46FD-8B98-880DDA585AD2}</Project>
+      <Project>{bcafdf45-70dd-46fd-8b98-880dda585ad2}</Project>
       <Name>IrssComms-Net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils-Net35.csproj">
-      <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
+      <Project>{ca15769c-232e-4ca7-94fd-206a06ca3abb}</Project>
       <Name>IrssUtils-Net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\MPUtils\MPUtils.csproj">
@@ -154,4 +213,17 @@
   <ItemGroup>
     <None Include="ILMerge.bat" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="AppData\Remote Presets\Abstract Remote Model.xml" />
+    <Content Include="AppData\Remote Presets\Direct Input.xml" />
+    <Content Include="AppData\Remote Presets\FusionREMOTE.xml" />
+    <Content Include="AppData\Remote Presets\Imon PAD.xml" />
+    <Content Include="AppData\Remote Presets\Microsoft MCE.xml" />
+    <Content Include="AppData\Remote Presets\Template.xml" />
+    <Content Include="AppData\Remote Presets\Windows Messages.xml" />
+    <Content Include="AppData\Remote Presets\XBCDRC - Xbox Remote.xml" />
+    <Content Include="AppData\Remotes.xml" />
+    <Content Include="InputMapping\MPControlPlugin.xml" />
+  </ItemGroup>
+  <ItemGroup />
 </Project>

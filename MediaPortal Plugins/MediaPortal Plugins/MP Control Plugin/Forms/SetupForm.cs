@@ -21,20 +21,24 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
+using IrssCommands.Forms;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
 using MediaPortal.GUI.Library;
 using MediaPortal.Hardware;
 using MPUtils;
-using MPUtils.Forms;
 using MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper;
+using IrssCommands;
 
 namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
 {
@@ -44,6 +48,9 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
 
     private LearnIR _learnIR;
 
+    internal MacroPanel _macroPanel;
+    private IRCommandPanel _irCommandPanel;
+
     #endregion Variables
 
     #region Constructor
@@ -51,85 +58,81 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
     public SetupForm()
     {
       InitializeComponent();
+      StartCatchingExceptions();
+
+      // add macro panel
+      _macroPanel = new MacroPanel(MPControlPlugin.CommandProcessor, MPControlPlugin.FolderMacros, MPControlPlugin.MacroCategories);
+      _macroPanel.Dock = DockStyle.Fill;
+      tabPageMacros.Controls.Add(_macroPanel);
+
+      // add macro panel
+      _irCommandPanel = new IRCommandPanel(NewIRCommand, EditIRCommand);
+      _irCommandPanel.Dock = DockStyle.Fill;
+      tabPageIR.Controls.Add(_irCommandPanel);
+    }
+
+    ~SetupForm()
+    {
+      StopCatchingExceptions();
     }
 
     #endregion Constructor
 
+    #region Implementation
+
+    #region Form
+
     private void SetupForm_Load(object sender, EventArgs e)
     {
-      if (String.IsNullOrEmpty(MPControlPlugin.ServerHost))
+      if (String.IsNullOrEmpty(MPControlPlugin.Config.ServerHost))
       {
         ServerAddress serverAddress = new ServerAddress();
         serverAddress.ShowDialog(this);
 
-        MPControlPlugin.ServerHost = serverAddress.ServerHost;
+        MPControlPlugin.Config.ServerHost = serverAddress.ServerHost;
       }
 
-      IPAddress serverIP = Network.GetIPFromName(MPControlPlugin.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(MPControlPlugin.Config.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       if (!MPControlPlugin.StartClient(endPoint))
         MessageBox.Show(this, "Failed to start local comms. IR functions temporarily disabled.",
                         "MP Control Plugin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-      checkBoxRequiresFocus.Checked = MPControlPlugin.RequireFocus;
-      checkBoxMultiMapping.Checked = MPControlPlugin.MultiMappingEnabled;
-      checkBoxEventMapper.Checked = MPControlPlugin.EventMapperEnabled;
-      checkBoxMouseMode.Checked = MPControlPlugin.MouseModeEnabled;
+      checkBoxRequiresFocus.Checked = MPControlPlugin.Config.RequireFocus;
+      checkBoxMultiMapping.Checked = MPControlPlugin.Config.MultiMappingEnabled;
+      checkBoxEventMapper.Checked = MPControlPlugin.Config.EventMapperEnabled;
+      checkBoxMouseMode.Checked = MPControlPlugin.Config.MouseModeEnabled;
 
-      RefreshIRList();
-      RefreshMacroList();
+      // macros tab
+      _macroPanel.RefreshList();
+
+      // ircommands tab
+      _irCommandPanel.RefreshList();
 
       // Mouse Mode ...
-      foreach (string button in Enum.GetNames(typeof (RemoteButton)))
+      foreach (string button in Enum.GetNames(typeof(RemoteButton)))
         if (!button.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxMouseModeButton.Items.Add(button);
 
-      comboBoxMouseModeButton.SelectedItem = Enum.GetName(typeof (RemoteButton), MPControlPlugin.MouseModeButton);
+      comboBoxMouseModeButton.SelectedItem = Enum.GetName(typeof(RemoteButton), MPControlPlugin.Config.MouseModeButton);
 
-      numericUpDownMouseStep.Value = new decimal(MPControlPlugin.MouseModeStep);
+      numericUpDownMouseStep.Value = new decimal(MPControlPlugin.Config.MouseModeStep);
 
-      checkBoxMouseAcceleration.Checked = MPControlPlugin.MouseModeAcceleration;
+      checkBoxMouseAcceleration.Checked = MPControlPlugin.Config.MouseModeAcceleration;
 
       // Multi-Mapping ...
-      foreach (string button in Enum.GetNames(typeof (RemoteButton)))
+      foreach (string button in Enum.GetNames(typeof(RemoteButton)))
         if (!button.Equals("None", StringComparison.OrdinalIgnoreCase))
           comboBoxMultiButton.Items.Add(button);
 
-      comboBoxMultiButton.SelectedItem = Enum.GetName(typeof (RemoteButton), MPControlPlugin.MultiMappingButton);
-
-      foreach (string map in MPControlPlugin.MultiMaps)
-        listBoxMappings.Items.Add(map);
+      comboBoxMultiButton.SelectedItem = Enum.GetName(typeof(RemoteButton), MPControlPlugin.Config.MultiMappingButton);
+      RefeshMultiMappingList();
 
       // Event Mapper ...
-      RefreshEventMapperCommands();
-
-      comboBoxEvents.Items.Clear();
-      foreach (string eventType in Enum.GetNames(typeof (MappedEvent.MappingEvent)))
-        if (!eventType.Equals("None", StringComparison.OrdinalIgnoreCase))
-          comboBoxEvents.Items.Add(eventType);
-
-      // TODO: Add Enter/Exit screen events.
-      //comboBoxEvents.Items.Add("Enter screen");
-      //comboBoxEvents.Items.Add("Exit screen");
-
-      comboBoxParameter.Items.Clear();
-      comboBoxParameter.Items.Add("Ignore Parameters");
-      comboBoxParameter.Items.Add("Label 1");
-      comboBoxParameter.Items.Add("Label 2");
-      comboBoxParameter.Items.Add("Label 3");
-      comboBoxParameter.Items.Add("Label 4");
-      comboBoxParameter.Items.Add("Parameter 1");
-      comboBoxParameter.Items.Add("Parameter 2");
-      comboBoxParameter.Items.Add("Parameter 3");
-      comboBoxParameter.Items.Add("Parameter 4");
-      comboBoxParameter.Items.Add("Send To Target Window");
-      comboBoxParameter.Items.Add("Sender Control ID");
-      comboBoxParameter.Items.Add("Target Control ID");
-      comboBoxParameter.Items.Add("Target Window ID");
-      comboBoxParameter.SelectedIndex = 0;
-
-      LoadEvents();
+      InitParametersList();
+      PopulateCommandList();
+      RefreshEventList();
 
       // Remote Control Presets ...
       comboBoxRemotePresets.Items.Clear();
@@ -152,6 +155,63 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
     {
       MPControlPlugin.HandleMessage -= ReceivedMessage;
     }
+
+    private void buttonOK_Click(object sender, EventArgs e)
+    {
+      MPControlPlugin.Config.RequireFocus = checkBoxRequiresFocus.Checked;
+      MPControlPlugin.Config.MultiMappingEnabled = checkBoxMultiMapping.Checked;
+      MPControlPlugin.Config.EventMapperEnabled = checkBoxEventMapper.Checked;
+      MPControlPlugin.Config.MouseModeEnabled = checkBoxMouseMode.Checked;
+
+      MPControlPlugin.Config.MouseModeButton =
+        (RemoteButton)Enum.Parse(typeof(RemoteButton), comboBoxMouseModeButton.SelectedItem as string, true);
+      MPControlPlugin.Config.MouseModeStep = Decimal.ToInt32(numericUpDownMouseStep.Value);
+      MPControlPlugin.Config.MouseModeAcceleration = checkBoxMouseAcceleration.Checked;
+
+      MPControlPlugin.Config.MultiMappingButton =
+        (RemoteButton)Enum.Parse(typeof(RemoteButton), comboBoxMultiButton.SelectedItem as string, true);
+
+      CommitMultiMappings();
+      CommitEvents();
+      SaveRemotes(MPControlPlugin.RemotesFile);
+
+      DialogResult = DialogResult.OK;
+      Close();
+    }
+
+    private void buttonCancel_Click(object sender, EventArgs e)
+    {
+      DialogResult = DialogResult.Cancel;
+      Close();
+    }
+
+    private void buttonChangeServer_Click(object sender, EventArgs e)
+    {
+      MPControlPlugin.StopClient();
+
+      ServerAddress serverAddress = new ServerAddress(MPControlPlugin.Config.ServerHost);
+      serverAddress.ShowDialog(this);
+
+      MPControlPlugin.Config.ServerHost = serverAddress.ServerHost;
+
+      IPAddress serverIP = Network.GetIPFromName(MPControlPlugin.Config.ServerHost);
+      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
+
+      MPControlPlugin.StartClient(endPoint);
+    }
+
+    private void buttonHelp_Click(object sender, EventArgs e)
+    {
+      IrssHelp.Open(this.GetType().FullName + "_" + tabControl.SelectedTab.Name);
+    }
+
+    private void SetupForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      buttonHelp_Click(null, null);
+      hlpevent.Handled = true;
+    }
+
+    #endregion Form
 
     #region Local Methods
 
@@ -315,204 +375,78 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
       }
     }
 
-    private void RefreshIRList()
-    {
-      listViewIR.Items.Clear();
-
-      string[] irList = IrssUtils.Common.GetIRList(false);
-      if (irList != null && irList.Length > 0)
-        foreach (string irFile in irList)
-          listViewIR.Items.Add(irFile);
-    }
-
-    private void RefreshMacroList()
-    {
-      listViewMacro.Items.Clear();
-
-      string[] macroList = MPControlPlugin.GetMacroList(false);
-      if (macroList != null && macroList.Length > 0)
-        foreach (string macroFile in macroList)
-          listViewMacro.Items.Add(macroFile);
-    }
-
-    private void RefreshEventMapperCommands()
-    {
-      comboBoxCommands.Items.Clear();
-
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextRun);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextSerial);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextWindowMsg);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextTcpMsg);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextKeys);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextEject);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextGotoScreen);
-      //comboBoxCommands.Items.Add(IrssUtils.Common.UITextWindowState);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextExit);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextStandby);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextHibernate);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextReboot);
-      comboBoxCommands.Items.Add(IrssUtils.Common.UITextShutdown);
-
-      string[] fileList = MPControlPlugin.GetFileList(true);
-
-      if (fileList != null && fileList.Length > 0)
-        comboBoxCommands.Items.AddRange(fileList);
-    }
-
-    private void EditIR()
-    {
-      if (listViewIR.SelectedItems.Count != 1)
-        return;
-
-      try
-      {
-        string command = listViewIR.SelectedItems[0].Text;
-        string fileName = Path.Combine(IrssUtils.Common.FolderIRCommands, command + IrssUtils.Common.FileExtensionIR);
-
-        if (File.Exists(fileName))
-        {
-          _learnIR = new LearnIR(
-            MPControlPlugin.LearnIR,
-            MPControlPlugin.BlastIR,
-            MPControlPlugin.TransceiverInformation.Ports,
-            command);
-
-          _learnIR.ShowDialog(this);
-
-          _learnIR = null;
-        }
-        else
-        {
-          RefreshIRList();
-          RefreshEventMapperCommands();
-
-          throw new FileNotFoundException("IR file missing", fileName);
-        }
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to edit IR file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    private void EditMacro()
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      try
-      {
-        string command = listViewMacro.SelectedItems[0].Text;
-        string fileName = Path.Combine(MPControlPlugin.FolderMacros, command + IrssUtils.Common.FileExtensionMacro);
-
-        if (File.Exists(fileName))
-        {
-          MacroEditor macroEditor = new MacroEditor(command);
-          macroEditor.ShowDialog(this);
-        }
-        else
-        {
-          RefreshMacroList();
-          RefreshEventMapperCommands();
-
-          throw new FileNotFoundException("Macro file missing", fileName);
-        }
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to edit macro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    private void LoadEvents()
-    {
-      if (!File.Exists(MPControlPlugin.EventMappingFile))
-        return;
-
-      XmlDocument doc = new XmlDocument();
-      doc.Load(MPControlPlugin.EventMappingFile);
-
-      XmlNodeList eventList = doc.DocumentElement.SelectNodes("mapping");
-
-      string[] items = new string[2];
-      foreach (XmlNode item in eventList)
-      {
-        items[0] = item.Attributes["event"].Value;
-        items[1] = item.Attributes["command"].Value;
-        listViewEventMap.Items.Add(new ListViewItem(items));
-      }
-    }
-
-    private void SaveEvents()
-    {
-      using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.EventMappingFile, Encoding.UTF8))
-      {
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char) 9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("events"); // <events>
-
-        foreach (ListViewItem item in listViewEventMap.Items)
-        {
-          writer.WriteStartElement("mapping"); // <mapping>
-
-          writer.WriteAttributeString("event", item.SubItems[0].Text);
-          writer.WriteAttributeString("command", item.SubItems[1].Text);
-
-          writer.WriteEndElement(); // </mapping>
-        }
-
-        writer.WriteEndElement(); // </events>
-        writer.WriteEndDocument();
-      }
-    }
-
-    private void SaveMultiMappings()
-    {
-      using (XmlTextWriter writer = new XmlTextWriter(MPControlPlugin.MultiMappingFile, Encoding.UTF8))
-      {
-        writer.Formatting = Formatting.Indented;
-        writer.Indentation = 1;
-        writer.IndentChar = (char) 9;
-        writer.WriteStartDocument(true);
-        writer.WriteStartElement("mappings"); // <mappings>
-
-        foreach (string item in listBoxMappings.Items)
-        {
-          writer.WriteStartElement("map");
-          writer.WriteAttributeString("name", item);
-          writer.WriteEndElement();
-        }
-
-        writer.WriteEndElement(); // </mappings>
-        writer.WriteEndDocument();
-      }
-    }
-
     private delegate void DelegateAddNode(string keyCode);
 
     #endregion Local Methods
 
-    #region Buttons
+    #region Remotes tab
 
-    private void buttonHelp_Click(object sender, EventArgs e)
+    private void buttonLoadPreset_Click(object sender, EventArgs e)
     {
-      try
+      string fileName = Path.Combine(MPControlPlugin.RemotePresetsFolder,
+                                     (comboBoxRemotePresets.SelectedItem as string) + ".xml");
+      LoadRemotes(fileName);
+    }
+
+    private void buttonMapButtons_Click(object sender, EventArgs e)
+    {
+      InputMappingForm inputMappingForm = new InputMappingForm("MPControlPlugin");
+      inputMappingForm.ShowDialog(this);
+    }
+
+    private void buttonClearAll_Click(object sender, EventArgs e)
+    {
+      treeViewRemotes.Nodes.Clear();
+
+      labelStatus.Text = "Cleared All";
+      labelStatus.ForeColor = Color.Purple;
+    }
+
+    private void treeViewRemotes_KeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.KeyCode)
       {
-        string file = Path.Combine(SystemRegistry.GetInstallFolder(), "IR Server Suite.chm");
-        Help.ShowHelp(this, file, HelpNavigator.Topic, "Plugins\\MP Control Plugin\\index.html");
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex);
-        MessageBox.Show(this, ex.Message, "Failed to load help", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        case Keys.Delete:
+          {
+            if (treeViewRemotes.SelectedNode != null)
+            {
+              switch (treeViewRemotes.SelectedNode.Level)
+              {
+                case 0:
+                  if (
+                    MessageBox.Show(this, "Are you sure you want to remove this entire Remote?", "Remove remote",
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    treeViewRemotes.Nodes.Remove(treeViewRemotes.SelectedNode);
+                  break;
+
+                case 1:
+                  if (
+                    MessageBox.Show(this, "Are you sure you want to remove this Button?", "Remove button",
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    treeViewRemotes.SelectedNode.Parent.Nodes.Remove(treeViewRemotes.SelectedNode);
+                  break;
+
+                default:
+                  treeViewRemotes.SelectedNode.Parent.Nodes.Remove(treeViewRemotes.SelectedNode);
+                  break;
+              }
+            }
+            break;
+          }
+
+        default:
+          {
+            e.SuppressKeyPress = false;
+            break;
+          }
       }
     }
 
-    private void buttonNewIR_Click(object sender, EventArgs e)
+    #endregion Remotes tab
+
+    #region IRCommands tab
+
+    private void NewIRCommand()
     {
       _learnIR = new LearnIR(
         MPControlPlugin.LearnIR,
@@ -522,190 +456,43 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
       _learnIR.ShowDialog(this);
 
       _learnIR = null;
-
-      RefreshIRList();
-      RefreshEventMapperCommands();
     }
 
-    private void buttonEditIR_Click(object sender, EventArgs e)
+    private void EditIRCommand(string fileName)
     {
-      EditIR();
+      string command = Path.GetFileNameWithoutExtension(fileName);
+
+      _learnIR = new LearnIR(
+        MPControlPlugin.LearnIR,
+        MPControlPlugin.BlastIR,
+        MPControlPlugin.TransceiverInformation.Ports,
+        command);
+
+      _learnIR.ShowDialog(this);
+
+      _learnIR = null;
     }
 
-    private void buttonDeleteIR_Click(object sender, EventArgs e)
+    #endregion IRCommands tab
+
+    #region MultiMapping tab
+
+    private void RefeshMultiMappingList()
     {
-      if (listViewIR.SelectedItems.Count != 1)
-        return;
+      listBoxMappings.Items.Clear();
 
-      string file = listViewIR.SelectedItems[0].Text;
-      string fileName = Path.Combine(IrssUtils.Common.FolderIRCommands, file + IrssUtils.Common.FileExtensionIR);
-      if (File.Exists(fileName))
-      {
-        if (
-          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-          File.Delete(fileName);
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-      }
-
-      RefreshIRList();
-      RefreshEventMapperCommands();
+      foreach (string map in MPControlPlugin.MultiMappings)
+        listBoxMappings.Items.Add(map);
     }
 
-    private void buttonNewMacro_Click(object sender, EventArgs e)
+    private void CommitMultiMappings()
     {
-      MacroEditor macroEditor = new MacroEditor();
-      macroEditor.ShowDialog(this);
+      MPControlPlugin.MultiMappings.Clear();
 
-      RefreshMacroList();
-      RefreshEventMapperCommands();
-    }
-
-    private void buttonEditMacro_Click(object sender, EventArgs e)
-    {
-      EditMacro();
-    }
-
-    private void buttonDeleteMacro_Click(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      string file = listViewMacro.SelectedItems[0].Text;
-      string fileName = Path.Combine(MPControlPlugin.FolderMacros, file + IrssUtils.Common.FileExtensionMacro);
-      if (File.Exists(fileName))
+      foreach (string item in listBoxMappings.Items)
       {
-        if (
-          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-          File.Delete(fileName);
+        MPControlPlugin.MultiMappings.Add(item);
       }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-      }
-
-      RefreshMacroList();
-      RefreshEventMapperCommands();
-    }
-
-    private void buttonTestMacro_Click(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      try
-      {
-        MPControlPlugin.ProcessCommand(IrssUtils.Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex);
-        MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    private void buttonClearEventParams_Click(object sender, EventArgs e)
-    {
-      comboBoxParameter.SelectedIndex = 0;
-      textBoxParamValue.Text = String.Empty;
-    }
-
-    private void buttonAddEvent_Click(object sender, EventArgs e)
-    {
-      string[] items = new string[2];
-
-      if ((comboBoxParameter.SelectedItem as string).Equals("Ignore Parameters", StringComparison.OrdinalIgnoreCase))
-      {
-        items[0] = comboBoxEvents.SelectedItem as string;
-      }
-      else
-      {
-        items[0] = comboBoxEvents.SelectedItem as string;
-        items[0] += ",";
-        items[0] += comboBoxParameter.SelectedItem as string;
-        items[0] += "=";
-        items[0] += textBoxParamValue.Text;
-      }
-
-      items[1] = String.Empty;
-
-      listViewEventMap.Items.Add(new ListViewItem(items));
-    }
-
-    private void buttonSetCommand_Click(object sender, EventArgs e)
-    {
-      if (comboBoxCommands.SelectedIndex == -1)
-        return;
-
-      string selected = comboBoxCommands.SelectedItem as string;
-      string newCommand = null;
-
-      if (selected.Equals(IrssUtils.Common.UITextRun, StringComparison.OrdinalIgnoreCase))
-      {
-        ExternalProgram externalProgram = new ExternalProgram();
-        if (externalProgram.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixRun + externalProgram.CommandString;
-      }
-      else if (selected.Equals(IrssUtils.Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        SerialCommand serialCommand = new SerialCommand();
-        if (serialCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixSerial + serialCommand.CommandString;
-      }
-      else if (selected.Equals(IrssUtils.Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        MessageCommand messageCommand = new MessageCommand();
-        if (messageCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-      }
-      else if (selected.Equals(IrssUtils.Common.UITextTcpMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        TcpMessageCommand tcpMessageCommand = new TcpMessageCommand();
-        if (tcpMessageCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixTcpMsg + tcpMessageCommand.CommandString;
-      }
-      else if (selected.Equals(IrssUtils.Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        KeysCommand keysCommand = new KeysCommand();
-        if (keysCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixKeys + keysCommand.CommandString;
-      }
-      else if (selected.Equals(IrssUtils.Common.UITextEject, StringComparison.OrdinalIgnoreCase))
-      {
-        EjectCommand ejectCommand = new EjectCommand();
-        if (ejectCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixEject + ejectCommand.CommandString;
-      }
-      else if (selected.Equals(IrssUtils.Common.UITextGotoScreen, StringComparison.OrdinalIgnoreCase))
-      {
-        GoToScreen goToScreen = new GoToScreen();
-        if (goToScreen.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixGotoScreen + goToScreen.CommandString;
-      }
-      else if (selected.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        BlastCommand blastCommand = new BlastCommand(
-          MPControlPlugin.BlastIR,
-          IrssUtils.Common.FolderIRCommands,
-          MPControlPlugin.TransceiverInformation.Ports,
-          selected.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
-
-        if (blastCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixBlast + blastCommand.CommandString;
-      }
-      else
-      {
-        newCommand = selected;
-      }
-
-      foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
-        listViewItem.SubItems[1].Text = newCommand;
     }
 
     private void buttonNew_Click(object sender, EventArgs e)
@@ -716,8 +503,8 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
 
       string mappingName = multiMapNameBox.MapName;
 
-      string pathCustom = Path.Combine(MPCommon.CustomInputDevice, "MPControlPlugin.xml");
-      string pathDefault = Path.Combine(MPCommon.CustomInputDefault, "MPControlPlugin.xml");
+      string pathCustom = Path.Combine(MPCommon.InputDeviceMappings, "MPControlPlugin.xml");
+      string pathDefault = Path.Combine(MPCommon.DefaultInputDeviceMappings, "MPControlPlugin.xml");
 
       string sourceFile;
       if (File.Exists(pathCustom))
@@ -734,7 +521,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
         return;
       }
 
-      string destinationFile = Path.Combine(MPCommon.CustomInputDevice, mappingName + ".xml");
+      string destinationFile = Path.Combine(MPCommon.InputDeviceMappings, mappingName + ".xml");
 
       File.Copy(sourceFile, destinationFile, true);
 
@@ -781,182 +568,199 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
       }
     }
 
-    private void buttonMapButtons_Click(object sender, EventArgs e)
+    private void listBoxMappings_DoubleClick(object sender, EventArgs e)
     {
-      InputMappingForm inputMappingForm = new InputMappingForm("MPControlPlugin");
-      inputMappingForm.ShowDialog(this);
-    }
-
-    private void buttonClearAll_Click(object sender, EventArgs e)
-    {
-      treeViewRemotes.Nodes.Clear();
-
-      labelStatus.Text = "Cleared All";
-      labelStatus.ForeColor = Color.Purple;
-    }
-
-    private void buttonOK_Click(object sender, EventArgs e)
-    {
-      MPControlPlugin.RequireFocus = checkBoxRequiresFocus.Checked;
-      MPControlPlugin.MultiMappingEnabled = checkBoxMultiMapping.Checked;
-      MPControlPlugin.EventMapperEnabled = checkBoxEventMapper.Checked;
-      MPControlPlugin.MouseModeEnabled = checkBoxMouseMode.Checked;
-
-      MPControlPlugin.MouseModeButton =
-        (RemoteButton) Enum.Parse(typeof (RemoteButton), comboBoxMouseModeButton.SelectedItem as string, true);
-      MPControlPlugin.MouseModeStep = Decimal.ToInt32(numericUpDownMouseStep.Value);
-      MPControlPlugin.MouseModeAcceleration = checkBoxMouseAcceleration.Checked;
-
-      MPControlPlugin.MultiMappingButton =
-        (RemoteButton) Enum.Parse(typeof (RemoteButton), comboBoxMultiButton.SelectedItem as string, true);
-
-      SaveMultiMappings();
-
-      SaveRemotes(MPControlPlugin.RemotesFile);
-
-      SaveEvents();
-
-      DialogResult = DialogResult.OK;
-      Close();
-    }
-
-    private void buttonCancel_Click(object sender, EventArgs e)
-    {
-      DialogResult = DialogResult.Cancel;
-      Close();
-    }
-
-    private void buttonChangeServer_Click(object sender, EventArgs e)
-    {
-      MPControlPlugin.StopClient();
-
-      ServerAddress serverAddress = new ServerAddress(MPControlPlugin.ServerHost);
-      serverAddress.ShowDialog(this);
-
-      MPControlPlugin.ServerHost = serverAddress.ServerHost;
-
-      IPAddress serverIP = Network.GetIPFromName(MPControlPlugin.ServerHost);
-      IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
-
-      MPControlPlugin.StartClient(endPoint);
-    }
-
-    private void buttonLoadPreset_Click(object sender, EventArgs e)
-    {
-      string fileName = Path.Combine(MPControlPlugin.RemotePresetsFolder,
-                                     (comboBoxRemotePresets.SelectedItem as string) + ".xml");
-      LoadRemotes(fileName);
-    }
-
-    #endregion Buttons
-
-    #region Other Controls
-
-    private void listViewIR_DoubleClick(object sender, EventArgs e)
-    {
-      EditIR();
-    }
-
-    private void listViewMacro_DoubleClick(object sender, EventArgs e)
-    {
-      EditMacro();
-    }
-
-    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
+      if (listBoxMappings.SelectedIndex != -1)
       {
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label))
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = Path.Combine(IrssUtils.Common.FolderIRCommands, originItem.Text + IrssUtils.Common.FileExtensionIR);
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      string name = e.Label.Trim();
-
-      if (!IrssUtils.Common.IsValidFileName(name))
-      {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = Path.Combine(IrssUtils.Common.FolderIRCommands, name + IrssUtils.Common.FileExtensionIR);
-
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        InputMappingForm inputMappingForm = new InputMappingForm(listBoxMappings.SelectedItem as string);
+        inputMappingForm.ShowDialog(this);
       }
     }
 
-    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    #endregion MultiMapping tab
+
+    #region EventMapping tab
+
+    private void InitParametersList()
     {
-      ListView origin = sender as ListView;
-      if (origin == null)
+      comboBoxParameter.Items.Clear();
+      comboBoxParameter.Items.Add("Ignore Parameters");
+      comboBoxParameter.Items.Add("Label 1");
+      comboBoxParameter.Items.Add("Label 2");
+      comboBoxParameter.Items.Add("Label 3");
+      comboBoxParameter.Items.Add("Label 4");
+      comboBoxParameter.Items.Add("Parameter 1");
+      comboBoxParameter.Items.Add("Parameter 2");
+      comboBoxParameter.Items.Add("Parameter 3");
+      comboBoxParameter.Items.Add("Parameter 4");
+      comboBoxParameter.Items.Add("Send To Target Window");
+      comboBoxParameter.Items.Add("Sender Control ID");
+      comboBoxParameter.Items.Add("Target Control ID");
+      comboBoxParameter.Items.Add("Target Window ID");
+      comboBoxParameter.SelectedIndex = 0;
+    }
+
+    private void RefreshEventList()
+    {
+      listViewEventMap.Items.Clear();
+
+      foreach (MappedEvent mappedEvent in MPControlPlugin.EventMappings.Events)
       {
-        e.CancelEdit = true;
-        return;
+        string[] subItems = new string[4];
+        subItems[0] = Enum.GetName(typeof(MappedEvent.MappingEvent), mappedEvent.EventType);
+        subItems[1] = string.IsNullOrEmpty(mappedEvent.Param) ? string.Empty : mappedEvent.Param;
+        subItems[2] = string.IsNullOrEmpty(mappedEvent.ParamValue) ? string.Empty : mappedEvent.ParamValue;
+        subItems[3] = mappedEvent.GetCommandDisplayText();
+
+        ListViewItem item = new ListViewItem(subItems);
+        if (mappedEvent.IsCommandAvailable)
+        {
+          item.Tag = mappedEvent.Command;
+        }
+        else
+        {
+          item.Tag = mappedEvent;
+          item.ToolTipText = "Command was not found in CommandLibrary.";
+        }
+        listViewEventMap.Items.Add(item);
       }
 
-      if (String.IsNullOrEmpty(e.Label))
+      // refresh combobox
+      comboBoxEvents.Items.Clear();
+      foreach (string eventName in Enum.GetNames(typeof(MappedEvent.MappingEvent)))
+        if (!eventName.Equals("None", StringComparison.OrdinalIgnoreCase))
+          comboBoxEvents.Items.Add(eventName);
+
+      // TODO: Add Enter/Exit screen events.
+      //comboBoxEvents.Items.Add("Enter screen");
+      //comboBoxEvents.Items.Add("Exit screen");
+
+      comboBoxEvents.SelectedIndex = 0;
+    }
+    private void PopulateCommandList()
+    {
+      treeViewCommandList.Nodes.Clear();
+      Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(MPControlPlugin.CommandCategories.Length);
+
+      // Create requested categories ...
+      foreach (string category in MPControlPlugin.CommandCategories)
       {
-        e.CancelEdit = true;
-        return;
+        TreeNode categoryNode = new TreeNode(category);
+        //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
+        categoryNodes.Add(category, categoryNode);
       }
 
-      ListViewItem originItem = origin.Items[e.Item];
+      List<Type> allCommands = new List<Type>();
 
-      string oldFileName = Path.Combine(MPControlPlugin.FolderMacros, originItem.Text + IrssUtils.Common.FileExtensionMacro);
-      if (!File.Exists(oldFileName))
+      Type[] specialCommands = Processor.GetBuiltInCommands();
+      allCommands.AddRange(specialCommands);
+
+      Type[] libCommands = Processor.GetLibraryCommands();
+      if (libCommands != null)
+        allCommands.AddRange(libCommands);
+
+      foreach (Type type in allCommands)
       {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
+        Command command = (Command)Activator.CreateInstance(type);
+
+        string commandCategory = command.Category;
+
+        if (categoryNodes.ContainsKey(commandCategory))
+        {
+          TreeNode newNode = new TreeNode(command.UserInterfaceText);
+          newNode.Tag = type;
+
+          categoryNodes[commandCategory].Nodes.Add(newNode);
+        }
       }
 
-      string name = e.Label.Trim();
+      // Put all commands into tree view ...
+      foreach (TreeNode treeNode in categoryNodes.Values)
+        if (treeNode.Nodes.Count > 0)
+          treeViewCommandList.Nodes.Add(treeNode);
 
-      if (!IrssUtils.Common.IsValidFileName(name))
+      treeViewCommandList.SelectedNode = treeViewCommandList.Nodes[0];
+      treeViewCommandList.SelectedNode.Expand();
+    }
+
+    private void CommitEvents()
+    {
+      MPControlPlugin.EventMappings.Events.Clear();
+
+      foreach (ListViewItem item in listViewEventMap.Items)
       {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
+        try
+        {
+          if (ReferenceEquals(item.Tag, null)) continue;
+
+          // command is available, tag is a command
+          Command command = item.Tag as Command;
+          if (!ReferenceEquals(command, null))
+          {
+            MappedEvent.MappingEvent eventType =
+              (MappedEvent.MappingEvent) Enum.Parse(typeof (MappedEvent.MappingEvent), item.SubItems[0].Text, true);
+            string param = item.SubItems[1].Text;
+            string paramValue = item.SubItems[2].Text;
+
+            if (string.IsNullOrEmpty(param))
+              MPControlPlugin.EventMappings.Events.Add(new MappedEvent(eventType, command));
+            else
+              MPControlPlugin.EventMappings.Events.Add(new MappedEvent(eventType, param, paramValue, command));
+            continue;
+          }
+
+          // command is not available, tag is the preserved mapped event
+          MappedEvent map = item.Tag as MappedEvent;
+          if (!ReferenceEquals(map, null))
+            MPControlPlugin.EventMappings.Events.Add(map);
+        }
+        catch (Exception ex)
+        {
+          IrssLog.Error("Bad item in event list: {0}, {1}\n{2}", item.SubItems[0].Text, item.SubItems[1].Text,
+                        ex.Message);
+        }
       }
+    }
 
-      try
+    private void buttonClearEventParams_Click(object sender, EventArgs e)
+    {
+      comboBoxParameter.SelectedIndex = 0;
+      textBoxParamValue.Text = string.Empty;
+    }
+
+    private void AddEvent(object sender, EventArgs e)
+    {
+      string[] subItems = new string[4];
+      subItems[0] = comboBoxEvents.SelectedItem as string;
+      subItems[1] = comboBoxParameter.SelectedItem as string;
+      subItems[2] = textBoxParamValue.Text;
+      if (subItems[1].Equals("Ignore Parameters", StringComparison.OrdinalIgnoreCase))
       {
-        string newFileName = Path.Combine(MPControlPlugin.FolderMacros, name + IrssUtils.Common.FileExtensionMacro);
-
-        File.Move(oldFileName, newFileName);
+        subItems[1] = string.Empty;
+        subItems[2] = string.Empty;
       }
-      catch (Exception ex)
+      subItems[3] = string.Empty;
+
+      ListViewItem item = new ListViewItem(subItems);
+      listViewEventMap.SelectedIndices.Clear();
+      listViewEventMap.Items.Add(item);
+      item.Selected = true;
+    }
+
+    private void SetCommandToEvent(object sender, EventArgs e)
+    {
+      if (treeViewCommandList.SelectedNode == null || treeViewCommandList.SelectedNode.Level == 0) return;
+
+      Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
+      if (ReferenceEquals(commandType, null)) return;
+
+      Command command = (Command)Activator.CreateInstance(commandType);
+      if (!MPControlPlugin.CommandProcessor.Edit(command, this)) return;
+
+      foreach (ListViewItem item in listViewEventMap.SelectedItems)
       {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        item.Tag = command;
+        item.SubItems[3].Text = command.UserDisplayText;
       }
     }
 
@@ -969,112 +773,58 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
 
     private void listViewEventMap_DoubleClick(object sender, EventArgs e)
     {
-      if (listViewEventMap.SelectedItems.Count != 1)
+      if (listViewEventMap.SelectedItems.Count != 1) return;
+
+      ListViewItem item = listViewEventMap.SelectedItems[0];
+      if (ReferenceEquals(item.Tag, null)) return;
+
+      if (item.Tag is MappedEvent)
+      {
+        MessageBox.Show(this,
+                        "The command is not available and can not be edited. Please check your commands directory in application folder or set a new command below.",
+                        "Command unavailable", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
-
-      string command = listViewEventMap.SelectedItems[0].SubItems[1].Text;
-      string newCommand = null;
-
-      if (command.StartsWith(IrssUtils.Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = IrssUtils.Common.SplitRunCommand(command.Substring(IrssUtils.Common.CmdPrefixRun.Length));
-        ExternalProgram externalProgram = new ExternalProgram(commands);
-        if (externalProgram.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixRun + externalProgram.CommandString;
-      }
-      else if (command.StartsWith(IrssUtils.Common.CmdPrefixGotoScreen, StringComparison.OrdinalIgnoreCase))
-      {
-        GoToScreen goToScreen = new GoToScreen(command.Substring(IrssUtils.Common.CmdPrefixGotoScreen.Length));
-        if (goToScreen.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixGotoScreen + goToScreen.CommandString;
-      }
-      else if (command.StartsWith(IrssUtils.Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = IrssUtils.Common.SplitSerialCommand(command.Substring(IrssUtils.Common.CmdPrefixSerial.Length));
-        SerialCommand serialCommand = new SerialCommand(commands);
-        if (serialCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixSerial + serialCommand.CommandString;
-      }
-      else if (command.StartsWith(IrssUtils.Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = IrssUtils.Common.SplitWindowMessageCommand(command.Substring(IrssUtils.Common.CmdPrefixWindowMsg.Length));
-        MessageCommand messageCommand = new MessageCommand(commands);
-        if (messageCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-      }
-      else if (command.StartsWith(IrssUtils.Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        KeysCommand keysCommand = new KeysCommand(command.Substring(IrssUtils.Common.CmdPrefixKeys.Length));
-        if (keysCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixKeys + keysCommand.CommandString;
-      }
-      else if (command.StartsWith(IrssUtils.Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = IrssUtils.Common.SplitBlastCommand(command.Substring(IrssUtils.Common.CmdPrefixBlast.Length));
-
-        BlastCommand blastCommand = new BlastCommand(
-          MPControlPlugin.BlastIR,
-          IrssUtils.Common.FolderIRCommands,
-          MPControlPlugin.TransceiverInformation.Ports,
-          commands);
-
-        if (blastCommand.ShowDialog(this) == DialogResult.OK)
-          newCommand = IrssUtils.Common.CmdPrefixBlast + blastCommand.CommandString;
       }
 
-      if (!String.IsNullOrEmpty(newCommand))
-        listViewEventMap.SelectedItems[0].SubItems[1].Text = newCommand;
+      Command cmd = item.Tag as Command;
+      if (ReferenceEquals(cmd, null)) return;
+
+      if (!MPControlPlugin.CommandProcessor.Edit(cmd, this)) return;
+
+      item.Tag = cmd;
+      item.SubItems[3].Text = cmd.UserDisplayText;
     }
 
-    private void listBoxMappings_DoubleClick(object sender, EventArgs e)
+    #endregion EventMapping tab
+
+    #region Exception Handling
+
+    private void StartCatchingExceptions()
     {
-      if (listBoxMappings.SelectedIndex != -1)
-      {
-        InputMappingForm inputMappingForm = new InputMappingForm(listBoxMappings.SelectedItem as string);
-        inputMappingForm.ShowDialog(this);
-      }
+      Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+      AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
     }
 
-    private void treeViewRemotes_KeyDown(object sender, KeyEventArgs e)
+    private void StopCatchingExceptions()
     {
-      switch (e.KeyCode)
-      {
-        case Keys.Delete:
-          {
-            if (treeViewRemotes.SelectedNode != null)
-            {
-              switch (treeViewRemotes.SelectedNode.Level)
-              {
-                case 0:
-                  if (
-                    MessageBox.Show(this, "Are you sure you want to remove this entire Remote?", "Remove remote",
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    treeViewRemotes.Nodes.Remove(treeViewRemotes.SelectedNode);
-                  break;
-
-                case 1:
-                  if (
-                    MessageBox.Show(this, "Are you sure you want to remove this Button?", "Remove button",
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    treeViewRemotes.SelectedNode.Parent.Nodes.Remove(treeViewRemotes.SelectedNode);
-                  break;
-
-                default:
-                  treeViewRemotes.SelectedNode.Parent.Nodes.Remove(treeViewRemotes.SelectedNode);
-                  break;
-              }
-            }
-            break;
-          }
-
-        default:
-          {
-            e.SuppressKeyPress = false;
-            break;
-          }
-      }
+      AppDomain.CurrentDomain.UnhandledException -= new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+      Application.ThreadException -= new ThreadExceptionEventHandler(Application_ThreadException);
     }
 
-    #endregion Other Controls
+    void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+      MPControlPluginShowException ex = new MPControlPluginShowException(e.Exception);
+      ex.ShowDialog(this);
+    }
+
+    void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+      MPControlPluginShowException ex = new MPControlPluginShowException(e.ExceptionObject as Exception);
+      ex.ShowDialog(this);
+    }
+
+    #endregion Exception Handling
+
+    #endregion Implementation
   }
 }

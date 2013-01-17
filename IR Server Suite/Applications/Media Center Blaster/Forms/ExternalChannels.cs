@@ -69,26 +69,26 @@ namespace MediaCenterBlaster
       comboBoxQuickSetup.Items.Add("Clear all");
     }
 
-    private static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit,
-                                                      string fullChannelString)
-    {
-      string[] commands = Common.SplitRunCommand(runCommand);
+    //private static void ProcessExternalChannelProgram(string runCommand, int currentChannelDigit,
+    //                                                  string fullChannelString)
+    //{
+    //  string[] commands = Common.SplitRunCommand(runCommand);
 
-      commands[2] = commands[2].Replace("%1", currentChannelDigit.ToString());
-      commands[2] = commands[2].Replace("%2", fullChannelString);
+    //  commands[2] = commands[2].Replace("%1", currentChannelDigit.ToString());
+    //  commands[2] = commands[2].Replace("%2", fullChannelString);
 
-      Common.ProcessRunCommand(commands);
-    }
+    //  Common.ProcessRunCommand(commands);
+    //}
 
-    private static void ProcessSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
-    {
-      string[] commands = Common.SplitSerialCommand(serialCommand);
+    //private static void ProcessSerialCommand(string serialCommand, int currentChannelDigit, string fullChannelString)
+    //{
+    //  string[] commands = Common.SplitSerialCommand(serialCommand);
 
-      commands[0] = commands[0].Replace("%1", currentChannelDigit.ToString());
-      commands[0] = commands[0].Replace("%2", fullChannelString);
+    //  commands[0] = commands[0].Replace("%1", currentChannelDigit.ToString());
+    //  commands[0] = commands[0].Replace("%2", fullChannelString);
 
-      Common.ProcessSerialCommand(commands);
-    }
+    //  Common.ProcessSerialCommand(commands);
+    //}
 
     #region Buttons
 
