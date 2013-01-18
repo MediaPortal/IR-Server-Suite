@@ -237,6 +237,8 @@ namespace IrssCommands
     /// <returns>List of IR Command files.</returns>
     public static string[] GetListIR()
     {
+      Directory.CreateDirectory(Common.FolderIRCommands);
+
       string[] files = Directory.GetFiles(Common.FolderIRCommands, '*' + FileExtensionIR, SearchOption.TopDirectoryOnly);
       Array.Sort(files);
 
@@ -252,6 +254,8 @@ namespace IrssCommands
     {
       if (String.IsNullOrEmpty(folder))
         throw new ArgumentNullException("folder");
+
+      Directory.CreateDirectory(folder);
 
       string[] files = Directory.GetFiles(folder, '*' + FileExtensionMacro, SearchOption.TopDirectoryOnly);
       Array.Sort(files);

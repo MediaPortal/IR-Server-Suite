@@ -48,12 +48,12 @@
     <Compile Include="..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <None Include="Forms\MacroEditor.cs">
+    <Compile Include="Forms\ShowException.cs">
       <SubType>Form</SubType>
-    </None>
-    <None Include="Forms\MacroEditor.Designer.cs">
-      <DependentUpon>MacroEditor.cs</DependentUpon>
-    </None>
+    </Compile>
+    <Compile Include="Forms\ShowException.Designer.cs">
+      <DependentUpon>ShowException.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Audio.cs" />
     <Compile Include="CDRom.cs" />
@@ -85,12 +85,6 @@
     <Compile Include="Forms\VariablesFileDialog.Designer.cs">
       <DependentUpon>VariablesFileDialog.cs</DependentUpon>
     </Compile>
-    <None Include="Forms\IfCommand.cs">
-      <SubType>Form</SubType>
-    </None>
-    <None Include="Forms\IfCommand.Designer.cs">
-      <DependentUpon>IfCommand.cs</DependentUpon>
-    </None>
     <Compile Include="Forms\LabelNameDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,12 +115,6 @@
     <Compile Include="Forms\LearnIR.Designer.cs">
       <DependentUpon>LearnIR.cs</DependentUpon>
     </Compile>
-    <None Include="Forms\CommandConfigForm.cs">
-      <SubType>Form</SubType>
-    </None>
-    <None Include="Forms\CommandConfigForm.Designer.cs">
-      <DependentUpon>CommandConfigForm.cs</DependentUpon>
-    </None>
     <Compile Include="Forms\PauseTime.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -166,6 +154,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ProcessHelper.cs" />
+    <Compile Include="ShellLink\ShellLinkNative.cs" />
+    <Compile Include="ShellLink\ShellShortcut.cs" />
     <Compile Include="SystemRegistry.cs" />
     <Compile Include="IRServerInfo.cs" />
     <Compile Include="Win32.cs" />
@@ -184,18 +174,13 @@
       <DependentUpon>DisplayPowerCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="Forms\MacroEditor.resx">
-      <DependentUpon>MacroEditor.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </None>
+    <EmbeddedResource Include="Forms\ShowException.resx">
+      <DependentUpon>ShowException.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\VariablesFileDialog.resx">
       <DependentUpon>VariablesFileDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="Forms\IfCommand.resx">
-      <DependentUpon>IfCommand.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </None>
     <EmbeddedResource Include="Forms\LabelNameDialog.resx">
       <DependentUpon>LabelNameDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -212,10 +197,6 @@
       <DependentUpon>LearnIR.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="Forms\CommandConfigForm.resx">
-      <DependentUpon>CommandConfigForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </None>
     <EmbeddedResource Include="Forms\PauseTime.resx">
       <DependentUpon>PauseTime.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -235,6 +216,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Graphics\AddFolder.png" />
     <Content Include="Graphics\Advanced.png" />
     <Content Include="Graphics\Background.png" />
     <Content Include="Graphics\Bottom.png" />
@@ -255,11 +237,15 @@
     <Content Include="Graphics\Edit.png" />
     <Content Include="Graphics\Export.png" />
     <Content Include="Graphics\ExportDocument.png" />
+    <Content Include="Graphics\FolderOpen.png" />
+    <Content Include="Graphics\Folder.png" />
     <Content Include="Graphics\Help.png" />
     <Content Include="Graphics\Import.png" />
     <Content Include="Graphics\ImportDocument.png" />
     <Content Include="Graphics\Info.png" />
     <Content Include="Graphics\CloseDocument.png" />
+    <Content Include="Graphics\MoveBottom.png" />
+    <Content Include="Graphics\MoveTop.png" />
     <Content Include="Graphics\SaveAs.png" />
     <Content Include="Graphics\SaveAll.png" />
     <Content Include="Graphics\Left.png" />
@@ -284,7 +270,6 @@
     <Content Include="Graphics\TopRight.png" />
     <Content Include="Graphics\WinLogo.png" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

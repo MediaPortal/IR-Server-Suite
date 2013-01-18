@@ -145,8 +145,8 @@ namespace Translator.Forms
       try
       {
         Command command = Processor.CreateCommand(Common.CLASS_RunCommand, GetRunCommandParameters());
-        if (!ReferenceEquals(command,null))
-          command.Execute(new VariableList());
+        if (!ReferenceEquals(command, null))
+          Program.CommandProcessor.Execute(command, false);
       }
       catch (Exception ex)
       {

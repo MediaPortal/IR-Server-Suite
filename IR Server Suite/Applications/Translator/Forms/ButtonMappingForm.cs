@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 using IrssCommands;
 using IrssUtils;
@@ -40,8 +41,7 @@ namespace Translator.Forms
 
     private Command _currentCommand;
     private BaseCommandConfig _currentCommandConfig;
-    private readonly Dictionary<string, Command> _commandStorage = new Dictionary<string, Command>();
-    private readonly Dictionary<string, Type> _uiTextCategoryCache = new Dictionary<string, Type>();
+    private readonly Dictionary<Type, Command> _commandStorage = new Dictionary<Type, Command>();
 
     #endregion Variables
 
@@ -116,12 +116,8 @@ namespace Translator.Forms
 
       if (_currentCommand != null)
       {
-        _commandStorage[_currentCommand.UserInterfaceText] = _currentCommand;
-
-        if (ReferenceEquals(comboBoxCommands.SelectedItem, _currentCommand.UserInterfaceText))
-          comboBoxCommands_SelectedValueChanged(null, null);
-        else
-          comboBoxCommands.SelectedItem = _currentCommand.UserInterfaceText;
+        _commandStorage[_currentCommand.GetType()] = _currentCommand;
+        SetCurrentCommand(_currentCommand.GetType());
       }
     }
 
@@ -151,7 +147,7 @@ namespace Translator.Forms
     {
       try
       {
-        CurrentCommand.Execute(new VariableList());
+        Program.CommandProcessor.Execute(CurrentCommand, false);
       }
       catch (Exception ex)
       {
@@ -166,55 +162,45 @@ namespace Translator.Forms
 
     #endregion Controls
 
-    private void comboBoxCommands_SelectedValueChanged(object sender, EventArgs e)
-    {
-      string uiText = comboBoxCommands.SelectedItem as string;
-      SetCurrentCommand(uiText);
-    }
-
-    private void SetCurrentCommand(string uiText)
+    private void SetCurrentCommand(Type type)
     {
       // save current values in temp storage
       if (_currentCommand != null && _currentCommandConfig != null)
       {
         _currentCommand.Parameters = _currentCommandConfig.Parameters;
-        _commandStorage[_currentCommand.UserInterfaceText] = _currentCommand;
+        _commandStorage[_currentCommand.GetType()] = _currentCommand;
       }
 
-      panel1.Controls.Clear();
-      //load if command is already cached
-      if (_commandStorage.ContainsKey(uiText))
+      splitContainer1.Panel2.Controls.Clear();
+      if (_commandStorage.ContainsKey(type))
       {
-        _currentCommand = _commandStorage[uiText];
+        _currentCommand = _commandStorage[type];
       }
       else
       {
-        Type newType = _uiTextCategoryCache[uiText];
-        Command newCommand = (Command) Activator.CreateInstance(newType);
+        Command newCommand = (Command) Activator.CreateInstance(type);
         _currentCommand = newCommand;
       }
 
       _currentCommandConfig = _currentCommand.GetEditControl();
       _currentCommandConfig.Dock = DockStyle.Fill;
-      panel1.Controls.Add(_currentCommandConfig);
+      splitContainer1.Panel2.Controls.Add(_currentCommandConfig);
 
       buttonTest.Enabled = _currentCommand.IsTestAllowed;
     }
 
-    private void PopulateCommandList(IList<string> categories)
+    private void PopulateCommandList(string[] categories)
     {
-      comboBoxCommands.Items.Clear();
-      _uiTextCategoryCache.Clear();
-      //Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
-      //Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
+      treeViewCommandList.Nodes.Clear();
+      Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
 
-      //// Create requested categories ...
-      //foreach (string category in categories)
-      //{
-      //  TreeNode categoryNode = new TreeNode(category);
-      //  //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
-      //  categoryNodes.Add(category, categoryNode);
-      //}
+      // Create requested categories ...
+      foreach (string category in categories)
+      {
+        TreeNode categoryNode = new TreeNode(category);
+        //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
+        categoryNodes.Add(category, categoryNode);
+      }
 
       List<Type> allCommands = new List<Type>();
 
@@ -227,70 +213,139 @@ namespace Translator.Forms
 
       foreach (Type type in allCommands)
       {
-        Command command = (Command) Activator.CreateInstance(type);
-        
+        Command command = (Command)Activator.CreateInstance(type);
+
         string commandCategory = command.Category;
-        string commandTitle = command.UserInterfaceText;
-        //string key = String.Format("{0}: {1}", commandCategory, commandTitel);
 
-        //if (categoryNodes.ContainsKey(commandCategory))
-        if (categories.Contains(commandCategory))
+        if (categoryNodes.ContainsKey(commandCategory))
         {
+          TreeNode newNode = new TreeNode(command.UserInterfaceText);
+          newNode.Tag = type;
 
-          comboBoxCommands.Items.Add(commandTitle);
-          _uiTextCategoryCache[commandTitle] = type;
-
-          //TreeNode newNode = new TreeNode(command.GetUserInterfaceText());
-          //newNode.Tag = type;
-
-          //categoryNodes[commandCategory].Nodes.Add(newNode);
+          categoryNodes[commandCategory].Nodes.Add(newNode);
         }
       }
 
-      //// Add list of existing IR Commands ...
-      //if (categoryNodes.ContainsKey(Processor.CategoryIRCommands))
-      //{
-      //  string[] irFiles = Processor.GetListIR();
-      //  if (irFiles != null)
-      //  {
-      //    foreach (string irFile in irFiles)
-      //    {
-      //      TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(irFile));
-      //      newNode.Tag = irFile;
-
-      //      categoryNodes[Processor.CategoryIRCommands].Nodes.Add(newNode);
-      //    }
-      //  }
-      //}
-
-      //// Add list of existing Macros ...
-      //if (categoryNodes.ContainsKey(Processor.CategoryMacros))
-      //{
-      //  string macroFolder = _macroFolder;
-      //  if (String.IsNullOrEmpty(_macroFolder))
-      //    macroFolder = Path.GetDirectoryName(_fileName);
-      //  string[] macros = Processor.GetListMacro(macroFolder);
-      //  if (macros != null)
-      //  {
-      //    foreach (string macro in macros)
-      //    {
-      //      TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(macro));
-      //      newNode.Tag = macro;
-
-      //      categoryNodes[Processor.CategoryMacros].Nodes.Add(newNode);
-      //    }
-      //  }
-      //}
-
       // Put all commands into tree view ...
-      //foreach (TreeNode treeNode in categoryNodes.Values)
-      //  if (treeNode.Nodes.Count > 0)
-      //    treeViewCommandList.Nodes.Add(treeNode);
+      foreach (TreeNode treeNode in categoryNodes.Values)
+        if (treeNode.Nodes.Count > 0)
+          treeViewCommandList.Nodes.Add(treeNode);
 
-      //treeViewCommandList.SelectedNode = treeViewCommandList.Nodes[0];
-      if (comboBoxCommands.Items.Count > 0 && _currentCommand == null)
-        comboBoxCommands.SelectedIndex = 0;
-      //treeViewCommandList.SelectedNode.Expand();
+      treeViewCommandList.SelectedNode = treeViewCommandList.Nodes[0];
+      treeViewCommandList.SelectedNode.Expand();
     }
+
+    private void treeViewCommandList_AfterSelect(object sender, TreeViewEventArgs e)
+    {
+      if (treeViewCommandList.SelectedNode == null || treeViewCommandList.SelectedNode.Level == 0)
+        return;
+
+      Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
+      SetCurrentCommand(commandType);
+
+
+      //ListViewItem newCommand = new ListViewItem();
+      //Command command;
+      //command = (Command) Activator.CreateInstance(commandType);
+
+      //if (_commandProcessor.Edit(command, this))
+      //{
+      //  newCommand.Text = command.UserDisplayText;
+      //  newCommand.Tag = command.ToString();
+      //  listViewMacro.Items.Add(newCommand);
+      //}
+    }
+
+    //private void PopulateCommandList(IList<string> categories)
+    //{
+    //  comboBoxCommands.Items.Clear();
+    //  _uiTextCategoryCache.Clear();
+    //  //Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
+    //  //Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
+
+    //  //// Create requested categories ...
+    //  //foreach (string category in categories)
+    //  //{
+    //  //  TreeNode categoryNode = new TreeNode(category);
+    //  //  //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
+    //  //  categoryNodes.Add(category, categoryNode);
+    //  //}
+
+    //  List<Type> allCommands = new List<Type>();
+
+    //  Type[] specialCommands = Processor.GetBuiltInCommands();
+    //  allCommands.AddRange(specialCommands);
+
+    //  Type[] libCommands = Processor.GetLibraryCommands();
+    //  if (libCommands != null)
+    //    allCommands.AddRange(libCommands);
+
+    //  foreach (Type type in allCommands)
+    //  {
+    //    Command command = (Command) Activator.CreateInstance(type);
+        
+    //    string commandCategory = command.Category;
+    //    string commandTitle = command.UserInterfaceText;
+    //    //string key = String.Format("{0}: {1}", commandCategory, commandTitel);
+
+    //    //if (categoryNodes.ContainsKey(commandCategory))
+    //    if (categories.Contains(commandCategory))
+    //    {
+
+    //      comboBoxCommands.Items.Add(commandTitle);
+    //      _uiTextCategoryCache[commandTitle] = type;
+
+    //      //TreeNode newNode = new TreeNode(command.GetUserInterfaceText());
+    //      //newNode.Tag = type;
+
+    //      //categoryNodes[commandCategory].Nodes.Add(newNode);
+    //    }
+    //  }
+
+    //  //// Add list of existing IR Commands ...
+    //  //if (categoryNodes.ContainsKey(Processor.CategoryIRCommands))
+    //  //{
+    //  //  string[] irFiles = Processor.GetListIR();
+    //  //  if (irFiles != null)
+    //  //  {
+    //  //    foreach (string irFile in irFiles)
+    //  //    {
+    //  //      TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(irFile));
+    //  //      newNode.Tag = irFile;
+
+    //  //      categoryNodes[Processor.CategoryIRCommands].Nodes.Add(newNode);
+    //  //    }
+    //  //  }
+    //  //}
+
+    //  //// Add list of existing Macros ...
+    //  //if (categoryNodes.ContainsKey(Processor.CategoryMacros))
+    //  //{
+    //  //  string macroFolder = _macroFolder;
+    //  //  if (String.IsNullOrEmpty(_macroFolder))
+    //  //    macroFolder = Path.GetDirectoryName(_fileName);
+    //  //  string[] macros = Processor.GetListMacro(macroFolder);
+    //  //  if (macros != null)
+    //  //  {
+    //  //    foreach (string macro in macros)
+    //  //    {
+    //  //      TreeNode newNode = new TreeNode(Path.GetFileNameWithoutExtension(macro));
+    //  //      newNode.Tag = macro;
+
+    //  //      categoryNodes[Processor.CategoryMacros].Nodes.Add(newNode);
+    //  //    }
+    //  //  }
+    //  //}
+
+    //  // Put all commands into tree view ...
+    //  //foreach (TreeNode treeNode in categoryNodes.Values)
+    //  //  if (treeNode.Nodes.Count > 0)
+    //  //    treeViewCommandList.Nodes.Add(treeNode);
+
+    //  //treeViewCommandList.SelectedNode = treeViewCommandList.Nodes[0];
+    //  if (comboBoxCommands.Items.Count > 0 && _currentCommand == null)
+    //    comboBoxCommands.SelectedIndex = 0;
+    //  //treeViewCommandList.SelectedNode.Expand();
+    //}
   }
 }

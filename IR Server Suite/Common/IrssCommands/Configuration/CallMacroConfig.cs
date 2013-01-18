@@ -66,8 +66,8 @@ namespace IrssCommands
     {
       listView.Items.Clear();
 
-      string[] files = Directory.GetFiles(Processor.MacroFolder, "*" + Processor.FileExtensionMacro,
-                                          SearchOption.TopDirectoryOnly);
+      string[] files = Processor.GetListMacro(Processor.MacroFolder);
+
       foreach (string file in files)
       {
         ListViewItem item = new ListViewItem();

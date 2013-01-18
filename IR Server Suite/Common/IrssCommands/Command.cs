@@ -128,22 +128,32 @@ namespace IrssCommands
     }
 
     /// <summary>
-    /// Edit this command.
-    /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public virtual bool Edit(IWin32Window parent)
-    {
-      return true;
-    }
-
-    /// <summary>
     /// Gets the edit control to be used within a common edit form.
     /// </summary>
     /// <returns>The edit control.</returns>
     public virtual BaseCommandConfig GetEditControl()
     {
       return new NoConfig();
+    }
+
+    /// <summary>
+    /// Edit this command.
+    /// </summary>
+    /// <param name="parent">The parent window.</param>
+    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
+    public virtual bool Edit(IWin32Window parent)
+    {
+      if (ReferenceEquals(Parameters, null) || Parameters.Length == 0)
+        return true;
+
+      CommandConfigForm edit = new CommandConfigForm(this);
+      if (edit.ShowDialog(parent) == DialogResult.OK)
+      {
+        Parameters = edit.Parameters;
+        return true;
+      }
+
+      return false;
     }
 
     /// <summary>

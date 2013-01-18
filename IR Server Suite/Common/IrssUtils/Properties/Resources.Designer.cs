@@ -60,6 +60,13 @@ namespace IrssUtils.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap AddFolder {
+            get {
+                object obj = ResourceManager.GetObject("AddFolder", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap Advanced {
             get {
                 object obj = ResourceManager.GetObject("Advanced", resourceCulture);
@@ -207,6 +214,20 @@ namespace IrssUtils.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap Folder {
+            get {
+                object obj = ResourceManager.GetObject("Folder", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap FolderOpen {
+            get {
+                object obj = ResourceManager.GetObject("FolderOpen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap Help {
             get {
                 object obj = ResourceManager.GetObject("Help", resourceCulture);
@@ -242,6 +263,13 @@ namespace IrssUtils.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap MoveBottom {
+            get {
+                object obj = ResourceManager.GetObject("MoveBottom", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap MoveDown {
             get {
                 object obj = ResourceManager.GetObject("MoveDown", resourceCulture);
@@ -259,6 +287,13 @@ namespace IrssUtils.Properties {
         public static System.Drawing.Bitmap MoveRight {
             get {
                 object obj = ResourceManager.GetObject("MoveRight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap MoveTop {
+            get {
+                object obj = ResourceManager.GetObject("MoveTop", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

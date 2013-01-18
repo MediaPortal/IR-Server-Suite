@@ -49,20 +49,12 @@ namespace IrssCommands
     }
 
     /// <summary>
-    /// Edit this command.
+    /// Gets the edit control to be used within a common edit form.
     /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public override bool Edit(IWin32Window parent)
+    /// <returns>The edit control.</returns>
+    public override BaseCommandConfig GetEditControl()
     {
-      EditStringOperation edit = new EditStringOperation(Parameters);
-      if (edit.ShowDialog(parent) == DialogResult.OK)
-      {
-        Parameters = edit.Parameters;
-        return true;
-      }
-
-      return false;
+      return new MathsStringConfig(Parameters);
     }
 
     /// <summary>

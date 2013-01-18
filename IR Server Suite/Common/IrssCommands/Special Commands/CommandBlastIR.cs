@@ -77,6 +77,16 @@ namespace IrssCommands
     /// Edit this command.
     /// </summary>
     /// <param name="parent">The parent window.</param>
+    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
+    public override bool Edit(IWin32Window parent)
+    {
+      throw new CommandExecutionException("This overload is not allowed for BlastIR. Use Processor.Edit() instead.");
+    }
+
+    /// <summary>
+    /// Edit this command.
+    /// </summary>
+    /// <param name="parent">The parent window.</param>
     /// <param name="blastIrDelegate">The blast ir delegate.</param>
     /// <param name="blastPorts">The blast ports.</param>
     /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>

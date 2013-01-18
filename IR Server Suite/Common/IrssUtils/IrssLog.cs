@@ -85,6 +85,7 @@ namespace IrssUtils
     static IrssLog()
     {
       LogLevel = Level.Debug;
+      Logger = new NoLogger();
     }
 
     #region Properties

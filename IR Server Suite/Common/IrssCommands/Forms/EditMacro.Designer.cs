@@ -52,6 +52,7 @@ namespace IrssCommands
       this.groupBoxMacroName = new System.Windows.Forms.GroupBox();
       this.toolTips = new System.Windows.Forms.ToolTip(this.components);
       this.splitContainer = new System.Windows.Forms.SplitContainer();
+      this.buttonHelp = new System.Windows.Forms.Button();
       this.groupBoxCommandSequence.SuspendLayout();
       this.toolStripCommandSequence.SuspendLayout();
       this.groupBoxCommands.SuspendLayout();
@@ -130,8 +131,7 @@ namespace IrssCommands
       // 
       // toolStripButtonTop
       // 
-      this.toolStripButtonTop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonTop.Image = global::IrssCommands.Properties.Resources.MoveTop;
+      this.toolStripButtonTop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.toolStripButtonTop.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonTop.Name = "toolStripButtonTop";
       this.toolStripButtonTop.Size = new System.Drawing.Size(21, 20);
@@ -140,8 +140,7 @@ namespace IrssCommands
       // 
       // toolStripButtonUp
       // 
-      this.toolStripButtonUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonUp.Image = global::IrssCommands.Properties.Resources.MoveUp;
+      this.toolStripButtonUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.toolStripButtonUp.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonUp.Name = "toolStripButtonUp";
       this.toolStripButtonUp.Size = new System.Drawing.Size(21, 20);
@@ -155,8 +154,7 @@ namespace IrssCommands
       // 
       // toolStripButtonEdit
       // 
-      this.toolStripButtonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonEdit.Image = global::IrssCommands.Properties.Resources.Edit;
+      this.toolStripButtonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.toolStripButtonEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonEdit.Name = "toolStripButtonEdit";
       this.toolStripButtonEdit.Size = new System.Drawing.Size(21, 20);
@@ -165,8 +163,7 @@ namespace IrssCommands
       // 
       // toolStripButtonDelete
       // 
-      this.toolStripButtonDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDelete.Image = global::IrssCommands.Properties.Resources.Delete;
+      this.toolStripButtonDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.toolStripButtonDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDelete.Name = "toolStripButtonDelete";
       this.toolStripButtonDelete.Size = new System.Drawing.Size(21, 20);
@@ -175,8 +172,7 @@ namespace IrssCommands
       // 
       // toolStripButtonDeleteAll
       // 
-      this.toolStripButtonDeleteAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDeleteAll.Image = global::IrssCommands.Properties.Resources.DeleteAll;
+      this.toolStripButtonDeleteAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.toolStripButtonDeleteAll.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDeleteAll.Name = "toolStripButtonDeleteAll";
       this.toolStripButtonDeleteAll.Size = new System.Drawing.Size(21, 20);
@@ -190,8 +186,7 @@ namespace IrssCommands
       // 
       // toolStripButtonDown
       // 
-      this.toolStripButtonDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonDown.Image = global::IrssCommands.Properties.Resources.MoveDown;
+      this.toolStripButtonDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.toolStripButtonDown.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonDown.Name = "toolStripButtonDown";
       this.toolStripButtonDown.Size = new System.Drawing.Size(21, 20);
@@ -200,8 +195,7 @@ namespace IrssCommands
       // 
       // toolStripButtonBottom
       // 
-      this.toolStripButtonBottom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButtonBottom.Image = global::IrssCommands.Properties.Resources.MoveBottom;
+      this.toolStripButtonBottom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.toolStripButtonBottom.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonBottom.Name = "toolStripButtonBottom";
       this.toolStripButtonBottom.Size = new System.Drawing.Size(21, 20);
@@ -237,7 +231,7 @@ namespace IrssCommands
       this.buttonCancel.Name = "buttonCancel";
       this.buttonCancel.Size = new System.Drawing.Size(56, 24);
       this.buttonCancel.TabIndex = 4;
-      this.buttonCancel.Text = "Cancel";
+      this.buttonCancel.Text = "&Cancel";
       this.buttonCancel.UseVisualStyleBackColor = true;
       this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
       // 
@@ -248,7 +242,7 @@ namespace IrssCommands
       this.buttonTest.Name = "buttonTest";
       this.buttonTest.Size = new System.Drawing.Size(56, 24);
       this.buttonTest.TabIndex = 2;
-      this.buttonTest.Text = "Test";
+      this.buttonTest.Text = "&Test";
       this.toolTips.SetToolTip(this.buttonTest, "Test this macro");
       this.buttonTest.UseVisualStyleBackColor = true;
       this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
@@ -260,7 +254,7 @@ namespace IrssCommands
       this.buttonOK.Name = "buttonOK";
       this.buttonOK.Size = new System.Drawing.Size(56, 24);
       this.buttonOK.TabIndex = 3;
-      this.buttonOK.Text = "OK";
+      this.buttonOK.Text = "&OK";
       this.buttonOK.UseVisualStyleBackColor = true;
       this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
       // 
@@ -299,6 +293,17 @@ namespace IrssCommands
       this.splitContainer.SplitterWidth = 6;
       this.splitContainer.TabIndex = 1;
       // 
+      // buttonHelp
+      // 
+      this.buttonHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.buttonHelp.Location = new System.Drawing.Point(70, 304);
+      this.buttonHelp.Name = "buttonHelp";
+      this.buttonHelp.Size = new System.Drawing.Size(58, 24);
+      this.buttonHelp.TabIndex = 5;
+      this.buttonHelp.Text = "&Help";
+      this.buttonHelp.UseVisualStyleBackColor = true;
+      this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
+      // 
       // EditMacro
       // 
       this.AcceptButton = this.buttonOK;
@@ -306,6 +311,7 @@ namespace IrssCommands
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.buttonCancel;
       this.ClientSize = new System.Drawing.Size(520, 337);
+      this.Controls.Add(this.buttonHelp);
       this.Controls.Add(this.groupBoxMacroName);
       this.Controls.Add(this.buttonTest);
       this.Controls.Add(this.splitContainer);
@@ -318,6 +324,7 @@ namespace IrssCommands
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Macro Editor";
+      this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.EditMacro_HelpRequested);
       this.groupBoxCommandSequence.ResumeLayout(false);
       this.groupBoxCommandSequence.PerformLayout();
       this.toolStripCommandSequence.ResumeLayout(false);
@@ -356,6 +363,7 @@ namespace IrssCommands
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     private System.Windows.Forms.ToolStripButton toolStripButtonDown;
     private System.Windows.Forms.ToolStripButton toolStripButtonBottom;
+    private System.Windows.Forms.Button buttonHelp;
   }
 
 }

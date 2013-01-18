@@ -45,6 +45,7 @@ namespace IrssCommands
         throw new ArgumentNullException("categories");
 
       InitializeComponent();
+      SetupImages();
 
       _commandProcessor = commandProcessor;
       _macroFolder = macroFolder;
@@ -77,6 +78,7 @@ namespace IrssCommands
         throw new ArgumentNullException("fileName");
 
       InitializeComponent();
+      SetupImages();
 
       _commandProcessor = commandProcessor;
       _macroFolder = macroFolder;
@@ -102,6 +104,27 @@ namespace IrssCommands
       }
 
       PopulateCommandList(categories);
+    }
+
+    private void SetupImages()
+    {
+      toolStripButtonEdit.Image = IrssUtils.Properties.Resources.Edit;
+      toolStripButtonDelete.Image = IrssUtils.Properties.Resources.Delete;
+      toolStripButtonDeleteAll.Image = IrssUtils.Properties.Resources.DeleteAll;
+
+      toolStripButtonTop.Image = IrssUtils.Properties.Resources.MoveTop;
+      toolStripButtonUp.Image = IrssUtils.Properties.Resources.MoveUp;
+      toolStripButtonDown.Image = IrssUtils.Properties.Resources.MoveDown;
+      toolStripButtonBottom.Image = IrssUtils.Properties.Resources.MoveBottom;
+
+      toolStripButtonEdit.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      toolStripButtonDelete.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      toolStripButtonDeleteAll.DisplayStyle = ToolStripItemDisplayStyle.Image;
+
+      toolStripButtonTop.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      toolStripButtonUp.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      toolStripButtonDown.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      toolStripButtonBottom.DisplayStyle = ToolStripItemDisplayStyle.Image;
     }
 
     #endregion Constructor
@@ -453,6 +476,17 @@ namespace IrssCommands
 
       DialogResult = DialogResult.OK;
       Close();
+    }
+
+    private void EditMacro_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      buttonHelp_Click(null, null);
+      hlpevent.Handled = true;
+    }
+
+    private void buttonHelp_Click(object sender, EventArgs e)
+    {
+      IrssHelp.Open(GetType().FullName);
     }
 
     #endregion Implementation

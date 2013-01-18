@@ -82,23 +82,6 @@ namespace IrssCommands.General
     }
 
     /// <summary>
-    /// Edit this command.
-    /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public override bool Edit(IWin32Window parent)
-    {
-      CommandConfigForm edit = new CommandConfigForm(this);
-      if (edit.ShowDialog(parent) == DialogResult.OK)
-      {
-        Parameters = edit.Parameters;
-        return true;
-      }
-
-      return false;
-    }
-
-    /// <summary>
     /// Execute this command.
     /// </summary>
     /// <param name="variables">The variable list of the calling code.</param>

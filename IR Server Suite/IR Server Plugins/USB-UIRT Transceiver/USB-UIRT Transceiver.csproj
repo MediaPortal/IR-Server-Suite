@@ -73,7 +73,7 @@
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\IRServer\IRServer.PluginInterface\IR Server Plugin Interface.csproj">
+    <ProjectReference Include="..\..\IR Server\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
       <Project>{d8b3d28f-62ce-4ca7-86ce-b7ead614a94c}</Project>
       <Name>IR Server Plugin Interface</Name>
     </ProjectReference>
