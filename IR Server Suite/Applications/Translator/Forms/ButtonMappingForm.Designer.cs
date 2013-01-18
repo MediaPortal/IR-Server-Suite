@@ -36,14 +36,17 @@ namespace Translator.Forms
       this.textBoxKeyCode = new System.Windows.Forms.TextBox();
       this.textBoxButtonDesc = new System.Windows.Forms.TextBox();
       this.groupBoxSet = new System.Windows.Forms.GroupBox();
-      this.panel1 = new System.Windows.Forms.Panel();
-      this.comboBoxCommands = new System.Windows.Forms.ComboBox();
+      this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+      this.treeViewCommandList = new System.Windows.Forms.TreeView();
       this.buttonTest = new System.Windows.Forms.Button();
       this.buttonCancel = new System.Windows.Forms.Button();
       this.buttonOK = new System.Windows.Forms.Button();
       this.toolTip = new System.Windows.Forms.ToolTip(this.components);
       this.groupBoxButton.SuspendLayout();
       this.groupBoxSet.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+      this.splitContainer1.Panel1.SuspendLayout();
+      this.splitContainer1.SuspendLayout();
       this.SuspendLayout();
       // 
       // groupBoxButton
@@ -110,8 +113,7 @@ namespace Translator.Forms
       this.groupBoxSet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBoxSet.Controls.Add(this.panel1);
-      this.groupBoxSet.Controls.Add(this.comboBoxCommands);
+      this.groupBoxSet.Controls.Add(this.splitContainer1);
       this.groupBoxSet.Location = new System.Drawing.Point(8, 94);
       this.groupBoxSet.Name = "groupBoxSet";
       this.groupBoxSet.Size = new System.Drawing.Size(530, 352);
@@ -119,27 +121,29 @@ namespace Translator.Forms
       this.groupBoxSet.TabStop = false;
       this.groupBoxSet.Text = "Command";
       // 
-      // panel1
+      // splitContainer1
       // 
-      this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.panel1.Location = new System.Drawing.Point(8, 46);
-      this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(514, 300);
-      this.panel1.TabIndex = 5;
+      this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.splitContainer1.Location = new System.Drawing.Point(3, 16);
+      this.splitContainer1.Name = "splitContainer1";
+      this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
       // 
-      // comboBoxCommands
+      // splitContainer1.Panel1
       // 
-      this.comboBoxCommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.comboBoxCommands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-      this.comboBoxCommands.FormattingEnabled = true;
-      this.comboBoxCommands.Location = new System.Drawing.Point(8, 19);
-      this.comboBoxCommands.Name = "comboBoxCommands";
-      this.comboBoxCommands.Size = new System.Drawing.Size(514, 21);
-      this.comboBoxCommands.TabIndex = 4;
-      this.comboBoxCommands.SelectedValueChanged += new System.EventHandler(this.comboBoxCommands_SelectedValueChanged);
+      this.splitContainer1.Panel1.Controls.Add(this.treeViewCommandList);
+      this.splitContainer1.Size = new System.Drawing.Size(524, 333);
+      this.splitContainer1.SplitterDistance = 115;
+      this.splitContainer1.TabIndex = 6;
+      // 
+      // treeViewCommandList
+      // 
+      this.treeViewCommandList.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.treeViewCommandList.FullRowSelect = true;
+      this.treeViewCommandList.Location = new System.Drawing.Point(0, 0);
+      this.treeViewCommandList.Name = "treeViewCommandList";
+      this.treeViewCommandList.Size = new System.Drawing.Size(524, 115);
+      this.treeViewCommandList.TabIndex = 1;
+      this.treeViewCommandList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewCommandList_AfterSelect);
       // 
       // buttonTest
       // 
@@ -199,6 +203,9 @@ namespace Translator.Forms
       this.groupBoxButton.ResumeLayout(false);
       this.groupBoxButton.PerformLayout();
       this.groupBoxSet.ResumeLayout(false);
+      this.splitContainer1.Panel1.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+      this.splitContainer1.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -215,8 +222,8 @@ namespace Translator.Forms
     private System.Windows.Forms.Button buttonCancel;
     private System.Windows.Forms.Button buttonOK;
     private System.Windows.Forms.ToolTip toolTip;
-    private System.Windows.Forms.Panel panel1;
-    private System.Windows.Forms.ComboBox comboBoxCommands;
+    private System.Windows.Forms.SplitContainer splitContainer1;
+    private System.Windows.Forms.TreeView treeViewCommandList;
 
   }
 }

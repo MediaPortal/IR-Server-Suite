@@ -22,12 +22,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Security.Principal;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace IrssUtils
 {
@@ -196,14 +192,6 @@ namespace IrssUtils
     public const string UITextLoadVars = "Load Variables";
     public const string UITextMouseMode = "Set Mouse Mode";
 
-    // For MediaPortal ...
-    public const string UITextMultiMap = "Set Multi-Mapping";
-    public const string UITextPause = "Pause";
-    public const string UITextSaveVars = "Save Variables";
-    public const string UITextSendMPAction = "Send MediaPortal Action";
-    public const string UITextSendMPMsg = "Send MediaPortal Message";
-    public const string UITextSetVar = "Set Variable";
-
     #endregion User Interface Text
 
     #endregion Strings
@@ -211,30 +199,6 @@ namespace IrssUtils
     #endregion Constants
 
     #region Methods
-
-    /// <summary>
-    /// Returns a list of IR Commands.
-    /// </summary>
-    /// <returns>string[] of IR Commands.</returns>
-    public static string[] GetIRList(bool commandPrefix)
-    {
-      if (!Directory.Exists(FolderIRCommands))
-        Directory.CreateDirectory(FolderIRCommands);
-
-      string[] files = Directory.GetFiles(FolderIRCommands, '*' + FileExtensionIR);
-      string[] list = new string[files.Length];
-
-      int i = 0;
-      foreach (string file in files)
-      {
-        if (commandPrefix)
-          list[i++] = CmdPrefixBlast + Path.GetFileNameWithoutExtension(file);
-        else
-          list[i++] = Path.GetFileNameWithoutExtension(file);
-      }
-
-      return list;
-    }
 
     /// <summary>
     /// Determines the validity of a given filename.

@@ -32,9 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
@@ -60,7 +58,7 @@
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IRServer.Shared\IR Server Shared.csproj">
+    <ProjectReference Include="..\IR Server Shared\IR Server Shared.csproj">
       <Project>{0C6A59C2-B5CC-48EF-A41F-0F1E463D8391}</Project>
       <Name>IR Server Shared</Name>
     </ProjectReference>

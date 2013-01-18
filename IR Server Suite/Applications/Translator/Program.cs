@@ -54,7 +54,6 @@ namespace Translator
     #region Components
 
     private static Client _client;
-    private static Configuration _config;
     private static Container _container;
     private static CopyDataWM _copyDataWM;
     private static MainForm _mainForm;
@@ -77,8 +76,6 @@ namespace Translator
     private static bool _menuFormVisible;
     private static bool _registered;
 
-    private static Processor _processor;
-
     private static VariableList _variables;
 
     private static bool _connected;
@@ -94,11 +91,7 @@ namespace Translator
       set { _configFile = value; }
     }
 
-    internal static Configuration Config
-    {
-      get { return _config; }
-      set { _config = value; }
-    }
+    internal static Configuration Config { get; set; }
 
     internal static ClientMessageSink HandleMessage
     {
@@ -111,10 +104,7 @@ namespace Translator
       get { return _irServerInfo; }
     }
 
-    internal static Processor CommandProcessor
-    {
-      get { return _processor; }
-    }
+    internal static Processor CommandProcessor { get; private set; }
 
     internal static NotifyIcon TrayIcon
     {
@@ -175,20 +165,21 @@ namespace Translator
       _variables = new VariableList();
 
       // Load configuration ...
-      _config = Configuration.Load(_configFile);
-      if (_config == null)
+      Config = Configuration.Load(_configFile);
+      if (Config == null)
       {
         IrssLog.Warn("Failed to load configuration file ({0}), creating new configuration", _configFile);
-        _config = new Configuration();
+        Config = new Configuration();
       }
 
       // Adjust process priority ...
-      AdjustPriority(_config.ProcessPriority);
+      AdjustPriority(Config.ProcessPriority);
 
       // Set directory for command plugin
       string appPath = Path.GetDirectoryName(Application.ExecutablePath);
       Processor.LibraryFolder = Path.Combine(appPath, "Commands");
       Processor.MacroFolder = FolderMacros;
+      CommandProcessor = new Processor(BlastIR, TransceiverInformation.Ports);
 
 
       //foreach (ProgramSettings progSettings in _config.Programs)
@@ -210,7 +201,7 @@ namespace Translator
       _notifyIcon.Icon = Resources.Icon16Connecting;
       _notifyIcon.Text = "Translator - Connecting ...";
       _notifyIcon.DoubleClick += ClickSetup;
-      _notifyIcon.Visible = !_config.HideTrayIcon;
+      _notifyIcon.Visible = !Config.HideTrayIcon;
 
       // Setup the main form ...
       _mainForm = new MainForm();
@@ -218,7 +209,7 @@ namespace Translator
       // Start server communications ...
       bool clientStarted = false;
 
-      IPAddress serverIP = Network.GetIPFromName(_config.ServerHost);
+      IPAddress serverIP = Network.GetIPFromName(Config.ServerHost);
       IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
       try
@@ -528,28 +519,15 @@ namespace Translator
         _notifyIcon.ContextMenuStrip.Items.Add(launch);
       }
 
-#warning fixme IR
-      //string[] irList = Common.GetIRList(false);
-      //if (irList.Length > 0)
-      //{
-      //  ToolStripMenuItem irCommands = new ToolStripMenuItem("&IR Commands");
-
-      //  foreach (string irCommand in irList)
-      //    irCommands.DropDownItems.Add(irCommand, null, new EventHandler(ClickIrCommand));
-
-      //  _notifyIcon.ContextMenuStrip.Items.Add(irCommands);
-      //}
-
-
       ToolStripMenuItem macros = new ToolStripMenuItem("&Macros");
       string[] macroList = Processor.GetListMacro(FolderMacros);
       foreach (string s in macroList)
       {
-        string macroName = Path.GetFileNameWithoutExtension(s);
+        string name = Path.GetFileNameWithoutExtension(s);
         Macro macro = CreateMacroSafe(s);
         if (macro == null) continue;
 
-        macros.DropDownItems.Add(macroName, null, ClickAction).Tag = macro;
+        macros.DropDownItems.Add(name, null, ClickAction).Tag = macro;
       }
       if (macros.DropDownItems.Count > 0)
         _notifyIcon.ContextMenuStrip.Items.Add(macros);
@@ -603,7 +581,7 @@ namespace Translator
         Command command = (Command) menuItem.Tag;
         try
         {
-          ProcessCommand(command, true);
+          CommandProcessor.Execute(command, true);
         }
         catch (Exception ex)
         {
@@ -683,7 +661,7 @@ namespace Translator
       {
         Thread.Sleep(1000);
 
-        IPAddress serverIP = Network.GetIPFromName(_config.ServerHost);
+        IPAddress serverIP = Network.GetIPFromName(Config.ServerHost);
         IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
 
         try
@@ -934,7 +912,7 @@ namespace Translator
       if (active == null)
       {
         // Try system wide button mappings ...
-        foreach (ButtonMapping buttonMap in _config.SystemWideMappings)
+        foreach (ButtonMapping buttonMap in Config.SystemWideMappings)
         {
           if (buttonMap.KeyCode.Equals(button, StringComparison.Ordinal))
           {
@@ -976,7 +954,7 @@ namespace Translator
         if (!active.IgnoreSystemWide)
         {
           // Try system wide button mappings ...
-          foreach (ButtonMapping buttonMap in _config.SystemWideMappings)
+          foreach (ButtonMapping buttonMap in Config.SystemWideMappings)
           {
             if (buttonMap.KeyCode.Equals(button, StringComparison.Ordinal))
             {
@@ -1043,7 +1021,7 @@ namespace Translator
         try
         {
           IrssLog.Info("Event mapped: {0}, {1}", eventName, mappedEvent.Command);
-          ProcessCommand(mappedEvent.Command, async);
+          CommandProcessor.Execute(mappedEvent.Command, async);
         }
         catch (Exception ex)
         {
@@ -1124,41 +1102,14 @@ namespace Translator
 
     private static void UpdateCommandProcessor()
     {
-      _processor = null;
-      if (!_registered) return;
+      // chefkoch, cp should not set be null
+      //CommandProcessor = null;
+      //if (!_registered) return;
 
-      _processor = new Processor(BlastIR, TransceiverInformation.Ports);
-    }
-
-    /// <summary>
-    /// Given a command this method processes the request accordingly.
-    /// Throws exceptions only if run synchronously, if async exceptions are logged instead.
-    /// </summary>
-    /// <param name="command">Command string to process.</param>
-    /// <param name="async">Process command asynchronously?</param>
-    internal static void ProcessCommand(string command, bool async = false)
-    {
-      if (string.IsNullOrEmpty(command))
-        throw new ArgumentNullException("command");
-
-      if (async)
-      {
-        try
-        {
-          Thread newThread = new Thread(ProcCommand);
-          newThread.Name = ProcessCommandThreadName;
-          newThread.IsBackground = true;
-          newThread.Start(command);
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error(ex);
-        }
-      }
-      else
-      {
-        ProcCommand(command);
-      }
+      CommandProcessor = new Processor(BlastIR, TransceiverInformation.Ports);
+      
+      if (!ReferenceEquals(_mainForm, null) && !ReferenceEquals(_mainForm._macroPanel, null))
+        _mainForm._macroPanel.SetCommandProcessor(CommandProcessor);
     }
 
     /// <summary>
@@ -1169,27 +1120,7 @@ namespace Translator
     /// <param name="async">Process command asynchronously?</param>
     internal static void ProcessCommand(Command command, bool async = false)
     {
-      if (command == null)
-        throw new ArgumentNullException("command");
-
-      if (async)
-      {
-        try
-        {
-          Thread newThread = new Thread(ProcCommand);
-          newThread.Name = ProcessCommandThreadName;
-          newThread.IsBackground = true;
-          newThread.Start(command);
-        }
-        catch (Exception ex)
-        {
-          IrssLog.Error(ex);
-        }
-      }
-      else
-      {
-        ProcCommand(command);
-      }
+      CommandProcessor.Execute(command, async);
     }
 
     /// <summary>
@@ -1197,17 +1128,17 @@ namespace Translator
     /// Can be called Synchronously or as a Parameterized Thread.
     /// </summary>
     /// <param name="commandObj">Command object to process. This could be a string or Command.</param>
-    private static void ProcCommand(object commandObj)
+    internal static void ProcessCommand(object commandObj)
     {
-      if (commandObj == null)
-        throw new ArgumentNullException("commandObj");
-
       try
       {
+        if (commandObj == null)
+          throw new ArgumentNullException("commandObj");
+
         Command command = commandObj as Command;
         if (command != null)
         {
-          ProcCommand(command);
+          ProcessCommand(command);
           return;
         }
 
@@ -1227,7 +1158,7 @@ namespace Translator
         }
         if (command != null)
         {
-          ProcCommand(command);
+          ProcessCommand(command);
           return;
         }
 
@@ -1272,22 +1203,6 @@ namespace Translator
         else
           throw;
       }
-    }
-
-    /// <summary>
-    /// Used by ProcessCommand to actually handle the command, if it is a Command.
-    /// Can be called Synchronously or as a Parameterized Thread.
-    /// </summary>
-    /// <param name="command">Command to process.</param>
-    private static void ProcCommand(Command command)
-    {
-      if (command == null)
-        throw new ArgumentNullException("command");
-
-      //if (command is MacroCommand)
-      //  IrssMacro.ExecuteMacro(command as MacroCommand, _variables, ProcCommand);
-      //else
-      command.Execute(new VariableList());
     }
 
     /// <summary>

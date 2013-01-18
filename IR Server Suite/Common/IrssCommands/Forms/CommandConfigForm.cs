@@ -56,6 +56,7 @@ namespace IrssCommands
 
       _command = command;
       _commandConfig = _command.GetEditControl();
+      _commandConfig.Dock = DockStyle.Fill;
 
       this.Text = _command.UserInterfaceText;
       this.buttonTest.Enabled = _command.IsTestAllowed;
@@ -81,6 +82,17 @@ namespace IrssCommands
     {
       _command.Parameters = Parameters;
       _command.Execute(new VariableList());
+    }
+
+    private void CommandConfigForm_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      buttonHelp_Click(null, null);
+      hlpevent.Handled = true;
+    }
+
+    private void buttonHelp_Click(object sender, EventArgs e)
+    {
+      IrssUtils.IrssHelp.Open(_command.GetType().FullName);
     }
 
     #endregion Controls

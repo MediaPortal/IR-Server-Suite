@@ -50,9 +50,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
@@ -96,11 +94,11 @@
       <Name>IrssUtils</Name>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\IRServer.PluginInterface\IR Server Plugin Interface.csproj">
+    <ProjectReference Include="..\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
       <Project>{d8b3d28f-62ce-4ca7-86ce-b7ead614a94c}</Project>
       <Name>IR Server Plugin Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IRServer.Shared\IR Server Shared.csproj">
+    <ProjectReference Include="..\IR Server Shared\IR Server Shared.csproj">
       <Project>{0C6A59C2-B5CC-48EF-A41F-0F1E463D8391}</Project>
       <Name>IR Server Shared</Name>
     </ProjectReference>

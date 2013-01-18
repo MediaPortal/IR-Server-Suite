@@ -27,9 +27,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using IrssCommands;
+using IrssCommands.Forms;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
@@ -44,6 +46,14 @@ namespace Translator
 
     private const string SystemWide = "System Wide";
 
+    private string[] _eventCategories = new string[] {Processor.CategoryGeneral, Processor.CategorySpecial};
+
+    private string[] _macroCategories = new string[]
+        {
+          Processor.CategoryGeneral, Processor.CategoryIRCommands, Processor.CategoryMacros,
+          Processor.CategoryControl, Processor.CategoryMaths, Processor.CategoryStack, Processor.CategoryString, Processor.CategoryVariable
+        };
+
     #endregion Constants
 
     #region Variables
@@ -53,11 +63,8 @@ namespace Translator
     private int _selectedProgram;
     private readonly Dictionary<string, Type> _uiTextCategoryCache = new Dictionary<string, Type>();
 
-    private string[] _macroCategories = new string[]
-        {
-          Processor.CategoryGeneral, Processor.CategoryIRCommands, Processor.CategoryMacros,
-          Processor.CategoryControl, Processor.CategoryMaths, Processor.CategoryStack, Processor.CategoryString, Processor.CategoryVariable
-        };
+    internal MacroPanel _macroPanel;
+    internal IRCommandPanel _irPanel;
 
     #endregion Variables
 
@@ -69,6 +76,19 @@ namespace Translator
     public MainForm()
     {
       InitializeComponent();
+
+      // add macro panel
+      _macroPanel = new MacroPanel(Program.CommandProcessor, Program.FolderMacros, _macroCategories);
+      // todo: fix shortcut creation / launch
+      //_macroPanel.DoCreateShortcutForMacro += CreateShortcutForMacro;
+      _macroPanel.Dock = DockStyle.Fill;
+      tabPageMacros.Controls.Add(_macroPanel);
+
+      // add ir command panel
+      _irPanel = new IRCommandPanel(NewIRCommand, EditIRCommand);
+      _irPanel.Dock = DockStyle.Fill;
+      tabPageIR.Controls.Add(_irPanel);
+
       SetImages();
 
       RefreshProgramList();
@@ -76,9 +96,7 @@ namespace Translator
 
       RefreshMappingList();
       RefreshEventList();
-      RefreshEventCommands();
-      RefreshIRList();
-      RefreshMacroList();
+      PopulateCommandList(_eventCategories);
 
       try
       {
@@ -140,32 +158,13 @@ namespace Translator
       // evens tab
       this.addEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
       this.removeEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-
-      // macros tab
-      this.newMacroToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
-      this.editMacroToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteMacroToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
-      this.createShortcutForMacroToolStripButton.Image = IrssUtils.Properties.Resources.Shortcut;
-      this.testMacroToolStripButton.Image = IrssUtils.Properties.Resources.MoveRight;
-
-      this.addMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.editMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-      this.createShortcutForMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Shortcut;
-      this.testMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
-
-      // ir commands tab
-      this.newIRToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
-      this.editIRToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteIRToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
-
-      this.addIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.editIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
     }
 
     private void MainForm_Load(object sender, EventArgs e)
     {
+      _macroPanel.RefreshList();
+      _irPanel.RefreshList();
+
       Program.HandleMessage += ReceivedMessage;
     }
 
@@ -194,15 +193,15 @@ namespace Translator
       switch (tabControl.SelectedTab.Name)
       {
         case "tabPageIRCodes":
-          RefreshIRList();
+          _irPanel.RefreshList();
           break;
 
-        case "tabPageMacro":
-          RefreshMacroList();
+        case "tabPageMacros":
+          _macroPanel.RefreshList();
           break;
 
         case "tabPageEvents":
-          RefreshEventCommands();
+          RefreshEventList();
           break;
 
         case "tabPagePrograms":
@@ -953,7 +952,11 @@ namespace Translator
 
       foreach (MappedEvent mappedEvent in Program.Config.Events)
       {
-        ListViewItem item = new ListViewItem(new string[] { Enum.GetName(typeof(MappingEvent), mappedEvent.EventType), mappedEvent.GetCommandDisplayText() });
+        string[] subItems = new string[2];
+        subItems[0] = Enum.GetName(typeof(MappingEvent), mappedEvent.EventType);
+        subItems[1] = mappedEvent.GetCommandDisplayText();
+
+        ListViewItem item = new ListViewItem(subItems);
         if (mappedEvent.IsCommandAvailable)
         {
           item.Tag = mappedEvent.Command;
@@ -981,16 +984,20 @@ namespace Translator
           addEventToolStripMenuItem.DropDownItems.Add(
             eventName, null, AddEvent);
     }
-    private void RefreshEventCommands()
+
+    private void PopulateCommandList(string[] categories)
     {
-      object wasSelected = null;
-      if (comboBoxCommands.SelectedIndex != -1)
-        wasSelected = comboBoxCommands.SelectedItem;
+      treeViewCommandList.Nodes.Clear();
+      Dictionary<string, TreeNode> categoryNodes = new Dictionary<string, TreeNode>(categories.Length);
 
-      comboBoxCommands.Items.Clear();
-      _uiTextCategoryCache.Clear();
+      // Create requested categories ...
+      foreach (string category in categories)
+      {
+        TreeNode categoryNode = new TreeNode(category);
+        //categoryNode.NodeFont = new Font(treeViewCommandList.Font, FontStyle.Underline);
+        categoryNodes.Add(category, categoryNode);
+      }
 
-      List<string> categories = new List<string>(){Processor.CategoryGeneral, Processor.CategorySpecial};
       List<Type> allCommands = new List<Type>();
 
       Type[] specialCommands = Processor.GetBuiltInCommands();
@@ -1002,32 +1009,31 @@ namespace Translator
 
       foreach (Type type in allCommands)
       {
-        Command command = (Command) Activator.CreateInstance(type);
+        Command command = (Command)Activator.CreateInstance(type);
 
         string commandCategory = command.Category;
-        string commandTitle = command.UserInterfaceText;
-        //string key = String.Format("{0}: {1}", commandCategory, commandTitel);
 
-        if (categories.Contains(commandCategory))
+        if (categoryNodes.ContainsKey(commandCategory))
         {
+          TreeNode newNode = new TreeNode(command.UserInterfaceText);
+          newNode.Tag = type;
 
-          comboBoxCommands.Items.Add(commandTitle);
-          _uiTextCategoryCache[commandTitle] = type;
+          categoryNodes[commandCategory].Nodes.Add(newNode);
         }
       }
 
-      if (wasSelected != null && comboBoxCommands.Items.Contains(wasSelected))
-        comboBoxCommands.SelectedItem = wasSelected;
-      else
-        comboBoxCommands.SelectedIndex = 0;
+      // Put all commands into tree view ...
+      foreach (TreeNode treeNode in categoryNodes.Values)
+        if (treeNode.Nodes.Count > 0)
+          treeViewCommandList.Nodes.Add(treeNode);
+
+      treeViewCommandList.SelectedNode = treeViewCommandList.Nodes[0];
+      treeViewCommandList.SelectedNode.Expand();
     }
 
     private void CommitEvents()
     {
       Program.Config.Events.Clear();
-      MappedEvent map;
-      MappingEvent eventType;
-      Command command;
 
       foreach (ListViewItem item in listViewEventMap.Items)
       {
@@ -1035,23 +1041,20 @@ namespace Translator
         {
           if (ReferenceEquals(item.Tag, null)) continue;
 
-          eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), item.SubItems[0].Text, true);
-
           // command is available, tag is a command
-          command = item.Tag as Command;
+          Command command = item.Tag as Command;
           if (!ReferenceEquals(command, null))
           {
+            MappingEvent eventType = (MappingEvent) Enum.Parse(typeof (MappingEvent), item.SubItems[0].Text, true);
+
             Program.Config.Events.Add(new MappedEvent(eventType, command));
             continue;
           }
 
           // command is not available, tag is the preserved mapped event
-          map = item.Tag as MappedEvent;
+          MappedEvent map = item.Tag as MappedEvent;
           if (!ReferenceEquals(map, null))
-          {
             Program.Config.Events.Add(map);
-          }
-
         }
         catch (Exception ex)
         {
@@ -1063,12 +1066,14 @@ namespace Translator
 
     private void AddEvent(string mappingEvent)
     {
-      ListViewItem newItem =
-        new ListViewItem(new string[] { mappingEvent, String.Empty });
+      string[] subItems = new string[2];
+      subItems[0] = mappingEvent;
+      subItems[1] = string.Empty;
 
+      ListViewItem item = new ListViewItem(subItems);
       listViewEventMap.SelectedIndices.Clear();
-      listViewEventMap.Items.Add(newItem);
-      newItem.Selected = true;
+      listViewEventMap.Items.Add(item);
+      item.Selected = true;
     }
     private void AddEvent(object sender, EventArgs e)
     {
@@ -1082,274 +1087,84 @@ namespace Translator
       }
     }
 
-    private void SetCommandToEvent(object sender, EventArgs e)
-    {
-      if (comboBoxCommands.SelectedIndex == -1 || listViewEventMap.SelectedItems.Count == 0)
-        return;
-
-      string selected = comboBoxCommands.SelectedItem as string;
-
-      Type newType = _uiTextCategoryCache[selected];
-      Command newCommand = (Command)Activator.CreateInstance(newType);
-      if (!newCommand.Edit(this)) return;
-
-      foreach (ListViewItem item in listViewEventMap.SelectedItems)
-      {
-        item.Tag = newCommand;
-        item.SubItems[1].Text = newCommand.UserDisplayText;
-      }
-    }
-
     private void listViewEventMap_KeyDown(object sender, KeyEventArgs e)
     {
-      if (e.KeyCode == Keys.Delete)
-        foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
-          listViewEventMap.Items.Remove(listViewItem);
+
     }
 
     private void listViewEventMap_DoubleClick(object sender, EventArgs e)
     {
-      if (listViewEventMap.SelectedItems.Count != 1)
-        return;
+      if (listViewEventMap.SelectedItems.Count == 0) return;
 
-      ListViewItem item = listViewEventMap.SelectedItems[0];
-      if (ReferenceEquals(item.Tag, null)) return;
-
-      if (item.Tag is MappedEvent)
+      foreach (ListViewItem item in listViewEventMap.SelectedItems)
       {
-        MessageBox.Show(this,
-                        "The command is not available and can not be edited. Please check your commands directory in application folder or set a new command below.",
-                        "Command unavailable", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        return;
+        if (ReferenceEquals(item.Tag, null)) continue;
+
+        Command command = item.Tag as Command;
+        if (ReferenceEquals(command, null)) continue;
+
+        if (!Program.CommandProcessor.Edit(command, this)) continue;
+
+        item.Tag = command;
+        item.SubItems[1].Text = command.UserDisplayText;
       }
+    }
 
-      Command cmd = item.Tag as Command;
-      if (ReferenceEquals(cmd, null)) return;
+    private void listViewEventMap_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      splitContainer1.Panel2.Enabled = listViewEventMap.SelectedItems.Count != 0;
+    }
 
-      if (!cmd.Edit(this)) return;
+    private void treeViewCommandList_DoubleClick(object sender, EventArgs e)
+    {
+      if (treeViewCommandList.SelectedNode == null || treeViewCommandList.SelectedNode.Level == 0)
+        return;
 
-      item.Tag = cmd;
-      item.SubItems[1].Text = cmd.UserDisplayText;
+      if (listViewEventMap.SelectedItems.Count == 0) return;
+
+      Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
+      Command command = (Command)Activator.CreateInstance(commandType);
+
+      if (!Program.CommandProcessor.Edit(command, this)) return;
+
+      foreach (ListViewItem item in listViewEventMap.SelectedItems)
+      {
+        item.Tag = command;
+        item.SubItems[1].Text = command.UserDisplayText;
+      }
     }
 
     #endregion
 
     #region Macros Tab
 
-    private void RefreshMacroList()
+    private void CreateShortcutForMacro(string fileName)
     {
-      listViewMacro.Items.Clear();
-
-      string[] files = Processor.GetListMacro(Program.FolderMacros);
-      foreach (string file in files)
-      {
-        ListViewItem item = new ListViewItem();
-        item.Text = Path.GetFileNameWithoutExtension(file);
-        item.Tag = file;
-
-        listViewMacro.Items.Add(item);
-      }
-
-      Program.UpdateNotifyMenu();
-
-      listViewMacro_SelectedIndexChanged(null, null);
-    }
-
-
-    private void NewMacro(object sender, EventArgs e)
-    {
-      EditMacro macroEditor = new EditMacro(Program.CommandProcessor, Program.FolderMacros, _macroCategories);
-      macroEditor.ShowDialog(this);
-
-      RefreshMacroList();
-    }
-
-    private void EditMacro(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1) return;
-      if (ReferenceEquals(listViewMacro.SelectedItems[0].Tag, null)) return;
-
-      string file = listViewMacro.SelectedItems[0].Tag as string;
-      if (ReferenceEquals(file, null)) return;
-
-
-      EditMacro macroEditor = new EditMacro(Program.CommandProcessor, Program.FolderMacros, _macroCategories, file);
-      macroEditor.ShowDialog(this);
-
-      RefreshMacroList();
-    }
-
-    private void DeleteMacro(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1) return;
-      if (ReferenceEquals(listViewMacro.SelectedItems[0].Tag, null)) return;
-
-      string file = listViewMacro.SelectedItems[0].Tag as string;
-      if (ReferenceEquals(file, null)) return;
-
-      if (File.Exists(file))
-      {
-        if (
-          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-        {
-          File.Delete(file);
-          listViewMacro.Items.Remove(listViewMacro.SelectedItems[0]);
-        }
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + file, "Macro file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-      }
-    }
-
-    private void TestMacro(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1) return;
-      if (ReferenceEquals(listViewMacro.SelectedItems[0].Tag, null)) return;
-
-      string file = listViewMacro.SelectedItems[0].Tag as string;
-      if (ReferenceEquals(file, null)) return;
-
-      if (!File.Exists(file))
-      {
-        MessageBox.Show(this, "File not found: " + file, "Macro file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-        return;
-      }
-
-      try
-      {
-        Macro macro = new Macro(file);
-        macro.Execute(Program.CommandProcessor);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    private void CreateShortcutForMacro(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1) return;
-      if (ReferenceEquals(listViewMacro.SelectedItems[0].Tag, null)) return;
-
-      string file = listViewMacro.SelectedItems[0].Tag as string;
-      if (ReferenceEquals(file, null)) return;
-
-      string macroName = Path.GetFileNameWithoutExtension(file);
+      string macroName = Path.GetFileNameWithoutExtension(fileName);
 
       string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
       string shortcutPath = Path.Combine(desktopPath, String.Format("Macro - {0}.lnk", macroName));
 
       ShellShortcut shortcut = new ShellShortcut(shortcutPath);
 
-      string translatorFolder = Path.Combine(SystemRegistry.GetInstallFolder(), "Translator");
+      string translatorExe = Assembly.GetEntryAssembly().Location;
+      string translatorFolder = Path.GetDirectoryName(translatorExe);
 
       //shortcut.Arguments        = String.Format("-MACRO \"{0}\"", Path.Combine(Program.FolderMacros, macroName + Common.FileExtensionMacro));
       shortcut.Arguments = String.Format("-MACRO \"{0}\"", macroName);
       shortcut.Description = "Launch Macro: " + macroName;
-      shortcut.Path = Path.Combine(translatorFolder, "Translator.exe");
+      shortcut.Path = translatorExe;
       shortcut.WorkingDirectory = translatorFolder;
       shortcut.WindowStyle = ProcessWindowStyle.Normal;
 
       shortcut.Save();
-    }
-    
-    private void listViewMacro_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedIndices.Count != 1)
-      {
-        editMacroToolStripButton.Enabled = false;
-        editMacroToolStripMenuItem.Enabled = false;
-        deleteMacroToolStripButton.Enabled = false;
-        deleteMacroToolStripMenuItem.Enabled = false;
-        testMacroToolStripButton.Enabled = false;
-        testMacroToolStripMenuItem.Enabled = false;
-        createShortcutForMacroToolStripButton.Enabled = false;
-        createShortcutForMacroToolStripMenuItem.Enabled = false;
-      }
-      else
-      {
-        editMacroToolStripButton.Enabled = true;
-        editMacroToolStripMenuItem.Enabled = true;
-        deleteMacroToolStripButton.Enabled = true;
-        deleteMacroToolStripMenuItem.Enabled = true;
-        testMacroToolStripButton.Enabled = true;
-        testMacroToolStripMenuItem.Enabled = true;
-        createShortcutForMacroToolStripButton.Enabled = true;
-        createShortcutForMacroToolStripMenuItem.Enabled = true;
-      }
-    }
-
-    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label))
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = Path.Combine(Program.FolderMacros, originItem.Text + Common.FileExtensionMacro);
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      string name = e.Label.Trim();
-
-      if (!Common.IsValidFileName(name))
-      {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
     }
 
     #endregion
 
     #region IRCommands Tab
 
-    private void RefreshIRList()
-    {
-      listViewIR.Items.Clear();
-
-      string[] irList = Common.GetIRList(false);
-      if (irList != null && irList.Length > 0)
-        foreach (string irFile in irList)
-          listViewIR.Items.Add(irFile);
-
-      listViewIR_SelectedIndexChanged(null, null);
-    }
-
-
-    private void NewIRCommand(object sender, EventArgs e)
+    private void NewIRCommand()
     {
       _learnIR = new LearnIR(
         Program.LearnIR,
@@ -1359,128 +1174,21 @@ namespace Translator
       _learnIR.ShowDialog(this);
 
       _learnIR = null;
-
-      RefreshIRList();
     }
 
-    private void EditIRCommand(object sender, EventArgs e)
+    private void EditIRCommand(string fileName)
     {
-      if (listViewIR.SelectedItems.Count != 1)
-        return;
+      string command = Path.GetFileNameWithoutExtension(fileName);
 
-      string command = listViewIR.SelectedItems[0].Text;
-      string fileName = Path.Combine(Common.FolderIRCommands, command + Common.FileExtensionIR);
+      _learnIR = new LearnIR(
+        Program.LearnIR,
+        Program.BlastIR,
+        Program.TransceiverInformation.Ports,
+        command);
 
-      if (File.Exists(fileName))
-      {
-        _learnIR = new LearnIR(
-          Program.LearnIR,
-          Program.BlastIR,
-          Program.TransceiverInformation.Ports,
-          command);
+      _learnIR.ShowDialog(this);
 
-        _learnIR.ShowDialog(this);
-
-        _learnIR = null;
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-        RefreshIRList();
-      }
-    }
-
-    private void DeleteIRCommand(object sender, EventArgs e)
-    {
-      if (listViewIR.SelectedItems.Count != 1)
-        return;
-
-      string file = listViewIR.SelectedItems[0].Text;
-      string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
-      if (File.Exists(fileName))
-      {
-        if (
-          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-        {
-          File.Delete(fileName);
-          listViewIR.Items.Remove(listViewIR.SelectedItems[0]);
-        }
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-      }
-    }
-
-
-    private void listViewIR_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (listViewIR.SelectedIndices.Count != 1)
-      {
-        editIRToolStripButton.Enabled = false;
-        editIRToolStripMenuItem.Enabled = false;
-        deleteIRToolStripButton.Enabled = false;
-        deleteIRToolStripMenuItem.Enabled = false;
-      }
-      else
-      {
-        editIRToolStripButton.Enabled = true;
-        editIRToolStripMenuItem.Enabled = true;
-        deleteIRToolStripButton.Enabled = true;
-        deleteIRToolStripMenuItem.Enabled = true;
-      }
-    }
-
-    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label))
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      string name = e.Label.Trim();
-
-      if (!Common.IsValidFileName(name))
-      {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
-
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
+      _learnIR = null;
     }
 
     #endregion

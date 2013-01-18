@@ -88,51 +88,50 @@ namespace IrssCommands
     /// <param name="commandProcessor">The command processor.</param>
     public void Execute(Processor commandProcessor)
     {
-      string[] processed = ProcessParameters(commandProcessor.Variables, Parameters);
-      Macro macro = new Macro(processed[0]);
+      Macro macro = new Macro(Parameters[0]);
       macro.Execute(commandProcessor);
     }
 
-    /// <summary>
-    /// Edit this command.
-    /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public override bool Edit(IWin32Window parent)
-    {
-      //OpenFileDialog openFileDialog = new OpenFileDialog();
-      //openFileDialog.CheckFileExists = true;
-      //openFileDialog.Multiselect = false;
-      //openFileDialog.Filter = "Macro Files|*" + Processor.FileExtensionMacro;
+    ///// <summary>
+    ///// Edit this command.
+    ///// </summary>
+    ///// <param name="parent">The parent window.</param>
+    ///// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
+    //public override bool Edit(IWin32Window parent)
+    //{
+    //  //OpenFileDialog openFileDialog = new OpenFileDialog();
+    //  //openFileDialog.CheckFileExists = true;
+    //  //openFileDialog.Multiselect = false;
+    //  //openFileDialog.Filter = "Macro Files|*" + Processor.FileExtensionMacro;
 
-      //openFileDialog.InitialDirectory = Processor.MacroFolder;
+    //  //openFileDialog.InitialDirectory = Processor.MacroFolder;
       
-      //if (!string.IsNullOrEmpty(Parameters[0]))
-      //{
-      //  string dir = Path.GetDirectoryName(Parameters[0]);
-      //  if (Directory.Exists(dir))
-      //    openFileDialog.InitialDirectory = dir;
-      //}
+    //  //if (!string.IsNullOrEmpty(Parameters[0]))
+    //  //{
+    //  //  string dir = Path.GetDirectoryName(Parameters[0]);
+    //  //  if (Directory.Exists(dir))
+    //  //    openFileDialog.InitialDirectory = dir;
+    //  //}
 
-      //if (openFileDialog.ShowDialog(parent) == DialogResult.OK)
-      //{
-      //  Parameters[0] = openFileDialog.FileName;
-      //  return true;
-      //}
+    //  //if (openFileDialog.ShowDialog(parent) == DialogResult.OK)
+    //  //{
+    //  //  Parameters[0] = openFileDialog.FileName;
+    //  //  return true;
+    //  //}
 
-      //return false;
-      CommandConfigForm edit = new CommandConfigForm(this);
-      if (edit.ShowDialog(parent) == DialogResult.OK)
-      {
-        if (ReferenceEquals(edit.Parameters, null)) return false;
-        if (ReferenceEquals(edit.Parameters, new string[] {})) return false;
+    //  //return false;
+    //  CommandConfigForm edit = new CommandConfigForm(this);
+    //  if (edit.ShowDialog(parent) == DialogResult.OK)
+    //  {
+    //    if (ReferenceEquals(edit.Parameters, null)) return false;
+    //    if (ReferenceEquals(edit.Parameters, new string[] {})) return false;
 
-        Parameters = edit.Parameters;
-        return true;
-      }
+    //    Parameters = edit.Parameters;
+    //    return true;
+    //  }
 
-      return false;
-    }
+    //  return false;
+    //}
 
     #endregion Implementation
   }

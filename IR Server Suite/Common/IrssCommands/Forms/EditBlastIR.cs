@@ -95,8 +95,9 @@ namespace IrssCommands
       {
         OpenFileDialog openFileDialog = new OpenFileDialog();
         openFileDialog.Filter = "IR Command Files|*" + Processor.FileExtensionIR;
-        if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-          parameters[0] = openFileDialog.FileName;
+        if (openFileDialog.ShowDialog(this) != DialogResult.OK) return;
+        
+        parameters[0] = openFileDialog.FileName;
       }
 
       _fileName = parameters[0];

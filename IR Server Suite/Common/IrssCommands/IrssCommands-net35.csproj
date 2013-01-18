@@ -74,6 +74,60 @@
     <Compile Include="Configuration\CallMacroConfig.Designer.cs">
       <DependentUpon>CallMacroConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Configuration\IfConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\IfConfig.Designer.cs">
+      <DependentUpon>IfConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\AbortMacroConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\AbortMacroConfig.Designer.cs">
+      <DependentUpon>AbortMacroConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\SwapVariablesConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\SwapVariablesConfig.Designer.cs">
+      <DependentUpon>SwapVariablesConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\SetVariableConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\SetVariableConfig.Designer.cs">
+      <DependentUpon>SetVariableConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\SwitchConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\SwitchConfig.Designer.cs">
+      <DependentUpon>SwitchConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\VariablesFileConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\VariablesFileConfig.Designer.cs">
+      <DependentUpon>VariablesFileConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\StackConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\StackConfig.Designer.cs">
+      <DependentUpon>StackConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\MathsStringConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\MathsStringConfig.Designer.cs">
+      <DependentUpon>MathsStringConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\LabelConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Configuration\LabelConfig.Designer.cs">
+      <DependentUpon>LabelConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Exceptions\CommandExecutionException.cs" />
     <Compile Include="Exceptions\CommandStructureException.cs" />
     <Compile Include="Forms\CommandConfigForm.cs">
@@ -94,16 +148,23 @@
     <Compile Include="Configuration\BaseCommandConfig.Designer.cs">
       <DependentUpon>BaseCommandConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\IRCommandPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\IRCommandPanel.Designer.cs">
+      <DependentUpon>IRCommandPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MacroPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\MacroPanel.Designer.cs">
+      <DependentUpon>MacroPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DummyCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Control Statements\CommandAbortMacro.cs" />
     <Compile Include="Exceptions\MacroExecutionException.cs" />
     <Compile Include="Exceptions\MacroStructureException.cs" />
-    <Compile Include="Forms\EditAbortMessage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditAbortMessage.designer.cs">
-      <DependentUpon>EditAbortMessage.cs</DependentUpon>
-    </Compile>
     <Compile Include="Maths Operations\CommandMathsSubtract.cs" />
     <Compile Include="Maths Operations\CommandMathsMultiply.cs" />
     <Compile Include="Maths Operations\CommandMathsDivide.cs" />
@@ -112,12 +173,6 @@
     <Compile Include="Maths Operations\CommandMathsAbsolute.cs" />
     <Compile Include="Maths Operations\CommandMathsSquareRoot.cs" />
     <Compile Include="String Operations\CommandStringJoin.cs" />
-    <Compile Include="Forms\EditStackFile.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditStackFile.designer.cs">
-      <DependentUpon>EditStackFile.cs</DependentUpon>
-    </Compile>
     <Compile Include="Stack Commands\CommandClearStack.cs" />
     <Compile Include="Stack Commands\CommandLoadStack.cs" />
     <Compile Include="Stack Commands\CommandSaveStack.cs" />
@@ -136,59 +191,11 @@
     <Compile Include="Forms\EditBlastIR.designer.cs">
       <DependentUpon>EditBlastIR.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\EditIf.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditIf.designer.cs">
-      <DependentUpon>EditIf.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditLabel.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditLabel.designer.cs">
-      <DependentUpon>EditLabel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\EditMacro.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\EditMacro.designer.cs">
       <DependentUpon>EditMacro.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditMathsOperation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditMathsOperation.designer.cs">
-      <DependentUpon>EditMathsOperation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditSetVariable.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditSetVariable.designer.cs">
-      <DependentUpon>EditSetVariable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditStringOperation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditStringOperation.designer.cs">
-      <DependentUpon>EditStringOperation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditSwapVariables.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditSwapVariables.designer.cs">
-      <DependentUpon>EditSwapVariables.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditSwitch.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditSwitch.designer.cs">
-      <DependentUpon>EditSwitch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditVariablesFile.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditVariablesFile.designer.cs">
-      <DependentUpon>EditVariablesFile.cs</DependentUpon>
     </Compile>
     <Compile Include="Processor.cs" />
     <Compile Include="Variable Commands\CommandClearVariables.cs" />
@@ -212,75 +219,58 @@
     <EmbeddedResource Include="Configuration\CallMacroConfig.resx">
       <DependentUpon>CallMacroConfig.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\IfConfig.resx">
+      <DependentUpon>IfConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\AbortMacroConfig.resx">
+      <DependentUpon>AbortMacroConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\SwapVariablesConfig.resx">
+      <DependentUpon>SwapVariablesConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\SetVariableConfig.resx">
+      <DependentUpon>SetVariableConfig.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\CommandConfigForm.resx">
       <DependentUpon>CommandConfigForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditAbortMessage.resx">
-      <DependentUpon>EditAbortMessage.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\SwitchConfig.resx">
+      <DependentUpon>SwitchConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditStackFile.resx">
-      <DependentUpon>EditStackFile.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Configuration\VariablesFileConfig.resx">
+      <DependentUpon>VariablesFileConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\StackConfig.resx">
+      <DependentUpon>StackConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\MathsStringConfig.resx">
+      <DependentUpon>MathsStringConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\LabelConfig.resx">
+      <DependentUpon>LabelConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditBlastIR.resx">
       <DependentUpon>EditBlastIR.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditIf.resx">
-      <DependentUpon>EditIf.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditLabel.resx">
-      <DependentUpon>EditLabel.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditMacro.resx">
       <DependentUpon>EditMacro.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditMathsOperation.resx">
-      <DependentUpon>EditMathsOperation.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditSetVariable.resx">
-      <DependentUpon>EditSetVariable.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditStringOperation.resx">
-      <DependentUpon>EditStringOperation.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditSwapVariables.resx">
-      <DependentUpon>EditSwapVariables.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditSwitch.resx">
-      <DependentUpon>EditSwitch.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditVariablesFile.resx">
-      <DependentUpon>EditVariablesFile.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Configuration\NoConfig.resx">
       <DependentUpon>NoConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IRCommandPanel.resx">
+      <DependentUpon>IRCommandPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MacroPanel.resx">
+      <DependentUpon>MacroPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Graphics\Delete.png" />
-    <Content Include="Graphics\DeleteAll.png" />
-    <Content Include="Graphics\Edit.png" />
-    <Content Include="Graphics\MoveBottom.png" />
-    <Content Include="Graphics\MoveDown.png" />
-    <Content Include="Graphics\MoveTop.png" />
-    <Content Include="Graphics\MoveUp.png" />
-    <Content Include="Graphics\Plus.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -310,9 +300,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IrssUtils\IrssUtils-net35.csproj">
+    <ProjectReference Include="..\IrssUtils\IrssUtils-Net35.csproj">
       <Project>{ca15769c-232e-4ca7-94fd-206a06ca3abb}</Project>
-      <Name>IrssUtils-net35</Name>
+      <Name>IrssUtils-Net35</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

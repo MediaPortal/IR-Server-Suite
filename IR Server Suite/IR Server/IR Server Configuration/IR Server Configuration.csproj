@@ -12,18 +12,7 @@
     <AssemblyName>IR Server Configuration</AssemblyName>
     <StartupObject>IRServer.Configuration.Program</StartupObject>
     <ApplicationIcon>Resources\iconGreen.ico</ApplicationIcon>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-    <Win32Resource>
-    </Win32Resource>
-    <SignAssembly>false</SignAssembly>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -39,7 +28,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <ApplicationManifest>IRServer.Configuration.exe.manifest</ApplicationManifest>
+    <ApplicationManifest>IR Server Configuration.exe.manifest</ApplicationManifest>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -63,9 +52,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
@@ -122,43 +109,21 @@
       <Name>IrssUtils</Name>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\IRServer.PluginInterface\IR Server Plugin Interface.csproj">
+    <ProjectReference Include="..\IR Server Plugin Interface\IR Server Plugin Interface.csproj">
       <Project>{D8B3D28F-62CE-4CA7-86CE-B7EAD614A94C}</Project>
       <Name>IR Server Plugin Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IRServer.Shared\IR Server Shared.csproj">
+    <ProjectReference Include="..\IR Server Shared\IR Server Shared.csproj">
       <Project>{0C6A59C2-B5CC-48EF-A41F-0F1E463D8391}</Project>
       <Name>IR Server Shared</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\iconGreen.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="IRServer.Configuration.exe.manifest" />
+    <None Include="IR Server Configuration.exe.manifest" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -58,20 +58,12 @@ namespace IrssCommands
     }
 
     /// <summary>
-    /// Edit this command.
+    /// Gets the edit control to be used within a common edit form.
     /// </summary>
-    /// <param name="parent">The parent window.</param>
-    /// <returns><c>true</c> if the command was modified; otherwise <c>false</c>.</returns>
-    public override bool Edit(IWin32Window parent)
+    /// <returns>The edit control.</returns>
+    public override BaseCommandConfig GetEditControl()
     {
-      EditLabel edit = new EditLabel(Parameters[0]);
-      if (edit.ShowDialog(parent) == DialogResult.OK)
-      {
-        Parameters[0] = edit.LabelName;
-        return true;
-      }
-
-      return false;
+      return new LabelConfig(Parameters);
     }
 
     #endregion Implementation

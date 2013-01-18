@@ -24,12 +24,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>..\..\..\Bin\Translator\bin\x86\Debug\</OutputPath>
+    <OutputPath>..\..\..\Bin\Applications\bin\x86\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>..\..\..\Bin\Translator\bin\x86\Release\</OutputPath>
+    <OutputPath>..\..\..\Bin\Applications\bin\x86\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -142,10 +142,6 @@
     <ProjectReference Include="..\..\Common\IrssUtils\IrssUtils.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\ShellLink\ShellLink.csproj">
-      <Project>{28923F6E-8A68-4BC8-A507-825B09C3F64E}</Project>
-      <Name>ShellLink</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
