@@ -326,10 +326,10 @@ Section "-Core"
 
   ; common files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
-  File "..\IR Server Suite\Common\IrssScheduler\bin\${Build_Type}\IrssScheduler.*"
-  File "..\IR Server Suite\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
-  File "..\IR Server Suite\Common\ShellLink\bin\${Build_Type}\ShellLink.*"
+  File "..\IR Server Suite\Common\IrssCommands\bin\x86\${Build_Type}\IrssCommands.*"
+  File "..\IR Server Suite\Common\IrssComms\bin\x86\${Build_Type}\IrssComms.*"
+  File "..\IR Server Suite\Common\IrssScheduler\bin\x86\${Build_Type}\IrssScheduler.*"
+  File "..\IR Server Suite\Common\IrssUtils\bin\x86\${Build_Type}\IrssUtils.*"
 
   ; startmenu needs to be created before creating shortcuts
   CreateDirectory "${STARTMENU_GROUP}"
@@ -343,7 +343,7 @@ Section "-Core"
   CreateDirectory "${COMMON_APPDATA}\Set Top Boxes"
   SetOutPath "${COMMON_APPDATA}\Set Top Boxes"
   SetOverwrite ifnewer
-  File /r /x .svn "..\IR Server Suite\Set Top Boxes\*.*"
+  File /r "..\IR Server Suite\Set Top Boxes\*.*"
   SetOverwrite on
 SectionEnd
 
@@ -357,23 +357,25 @@ ${MementoSection} "IR Server" SectionIRServer
 
   SetOutPath "$DIR_INSTALL"
   ${LOG_TEXT} "INFO" "Installing IR Server..."
-  File "${svn_ROOT_IRSS}\bin\${Build_Type}\IR Server.???"
-  File "..\IR Server Suite\IR Server\IR Server\Install.cmd"
-  File "..\IR Server Suite\IR Server\IR Server\Uninstall.cmd"
+  File "..\bin\IR Server\bin\x86\${Build_Type}\IR Server.*"
 
-  ${LOG_TEXT} "INFO" "Installing IR Server Configuration..."
-  File "..\IR Server Suite\IR Server\IR Server Configuration\bin\${Build_Type}\IR Server Configuration.*"
-  File "..\IR Server Suite\IR Server\SourceGrid\DevAge*"
-  File "..\IR Server Suite\IR Server\SourceGrid\SourceGrid*"
+  ; IR Server Configuration
+  File "..\bin\IR Server\bin\x86\${Build_Type}\IR Server Configuration.*"
+  File "..\bin\IR Server\bin\x86\${Build_Type}\DevAge.Core.dll"
+  File "..\bin\IR Server\bin\x86\${Build_Type}\DevAge.Windows.Forms.dll"
+  File "..\bin\IR Server\bin\x86\${Build_Type}\SourceGrid.dll"
 
-  ${LOG_TEXT} "INFO" "Installing IR Server Tray..."
-  File "..\IR Server Suite\IR Server\IR Server Tray\bin\${Build_Type}\IR Server Tray.*"
+  ; IR Server Tray
+  File "..\bin\IR Server\bin\x86\${Build_Type}\IR Server Tray.*"
 
-  File "..\IR Server Suite\IR Server\IRServer.Shared\bin\${Build_Type}\IRServer.Shared.*"
-  File "..\IR Server Suite\IR Server Plugins\IR Server Plugin Interface\bin\${Build_Type}\IRServerPluginInterface.*"
+  ; IR Server Shared
+  File "..\bin\IR Server\bin\x86\${Build_Type}\IR Server Shared.*"
+
+  ; IR Server Plugin Interface
+  File "..\bin\IR Server\bin\x86\${Build_Type}\IR Server Plugin Interface.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
-  File /r "${svn_ROOT_IRSS}\bin\${Build_Type}\Plugins"
+  File /r "..\bin\IR Server\bin\x86\${Build_Type}\Plugins"
   
   ; Create App Data Folder for IR Server configuration files
   CreateDirectory "${COMMON_APPDATA}\IR Server"
@@ -381,7 +383,7 @@ ${MementoSection} "IR Server" SectionIRServer
   ; Copy Abstract Remote maps
   SetOutPath "${COMMON_APPDATA}\IR Server\Abstract Remote Maps"
   SetOverwrite ifnewer
-  File /r /x .svn "..\IR Server Suite\IR Server\IR Server\Abstract Remote Maps\*.*"
+  File /r "..\IR Server Suite\IR Server\IR Server\Abstract Remote Maps\*.*"
   File "..\IR Server Suite\IR Server\IR Server\RemoteTable.xsd"
   SetOverwrite on
 
@@ -418,8 +420,6 @@ ${MementoSectionEnd}
 
   ; remove files
   Delete "$DIR_INSTALL\IR Server.*"
-  Delete "$DIR_INSTALL\Install.cmd"
-  Delete "$DIR_INSTALL\Uninstall.cmd"
 
   Delete "$DIR_INSTALL\IR Server Configuration.*"
   Delete "$DIR_INSTALL\DevAge*"
@@ -427,8 +427,8 @@ ${MementoSectionEnd}
 
   Delete "$DIR_INSTALL\IR Server Tray.*"
 
-  Delete "$DIR_INSTALL\IRServer.Shared.*"
-  Delete "$DIR_INSTALL\IRServerPluginInterface.*"
+  Delete "$DIR_INSTALL\IR Server Shared.*"
+  Delete "$DIR_INSTALL\IR Server Plugin Interface.*"
 !macroend
 
 ;======================================
@@ -446,6 +446,9 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Process"
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Control Plugin\bin\${Build_Type}\MPControlPlugin.*"
+  SetOutPath "$MPdir.Plugins\Process\Commands"
+  File "..\bin\MediaPortal plugins\bin\x86\${Build_Type}\Commands\MediaPortalCommands.dll"
+  File "..\bin\MediaPortal plugins\bin\x86\${Build_Type}\net35\Commands\GeneralCommands.dll"
 
   ; Write default input mapping
   SetOutPath "$MPdir.Base\defaults\InputDeviceMappings"
@@ -455,7 +458,7 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   CreateDirectory "${COMMON_APPDATA}\MP Control Plugin"
   SetOutPath "${COMMON_APPDATA}\MP Control Plugin"
   SetOverwrite ifnewer
-  File /r /x .svn "..\MediaPortal Plugins\MediaPortal Plugins\MP Control Plugin\AppData\*.*"
+  File /r "..\MediaPortal Plugins\MediaPortal Plugins\MP Control Plugin\AppData\*.*"
   SetOverwrite on
 
   ; Create Macro folder
@@ -467,6 +470,11 @@ ${MementoSectionEnd}
 
   ${KILLPROCESS} "MediaPortal.exe"
   ${KILLPROCESS} "configuration.exe"
+
+  ; remove files
+  Delete "$MPdir.Plugins\Process\Commands\MediaPortalCommands.dll"
+  Delete "$MPdir.Plugins\Process\Commands\GeneralCommands.dll"
+  RMDir "$MPdir.Plugins\Process\Commands"
 
   ; Delete plugin dll
   Delete "$MPdir.Plugins\Process\MPControlPlugin.*"
@@ -489,6 +497,9 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   ; Write plugin dll
   SetOutPath "$MPdir.Plugins\Windows"
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\bin\${Build_Type}\MPBlastZonePlugin.*"
+  SetOutPath "$MPdir.Plugins\Windows\Commands"
+  File "..\bin\MediaPortal plugins\bin\x86\${Build_Type}\Commands\MediaPortalCommands.dll"
+  File "..\bin\MediaPortal plugins\bin\x86\${Build_Type}\net35\Commands\GeneralCommands.dll"
 
   ; Write app data
   CreateDirectory "${COMMON_APPDATA}\MP Blast Zone Plugin"
@@ -499,10 +510,10 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
 
   ; Write skin files
   SetOutPath "$MPdir.Skin\Default"
-  File /r /x .svn "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
+  File /r "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   SetOutPath "$MPdir.Skin\Defaultwide"
-  File /r /x .svn "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
+  File /r "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\Skin\*.*"
 
   ; Create Macro folder
   CreateDirectory "${COMMON_APPDATA}\MP Blast Zone Plugin\Macro"
@@ -513,6 +524,11 @@ ${MementoSectionEnd}
 
   ${KILLPROCESS} "MediaPortal.exe"
   ${KILLPROCESS} "configuration.exe"
+
+  ; remove files
+  Delete "$MPdir.Plugins\Windows\Commands\MediaPortalCommands.dll"
+  Delete "$MPdir.Plugins\Windows\Commands\GeneralCommands.dll"
+  RMDir "$MPdir.Plugins\Windows\Commands"
 
   Delete "$MPdir.Plugins\Windows\MPBlastZonePlugin.*"
 !macroend
@@ -586,7 +602,7 @@ ${MementoSection} "Abstractor" SectionAbstractor
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Abstractor\bin\${Build_Type}\Abstractor.*"
+  File "..\IR Server Suite\Applications\Abstractor\bin\x86\${Build_Type}\Abstractor.*"
 
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\Abstractor.lnk" "$DIR_INSTALL\Abstractor.exe" "" "$DIR_INSTALL\Abstractor.exe" 0
@@ -681,7 +697,10 @@ ${MementoSection} "Translator" SectionTranslator
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Translator\bin\${Build_Type}\Translator.*"
+  File "..\bin\Applications\bin\x86\${Build_Type}\Translator.*"
+  SetOutPath "$DIR_INSTALL\Commands"
+  File "..\bin\Applications\bin\x86\${Build_Type}\Commands\GeneralCommands.dll"
+  File "..\bin\Applications\bin\x86\${Build_Type}\Commands\TranslatorCommands.dll"
 
   ; create folders
   CreateDirectory "${COMMON_APPDATA}\Translator"
@@ -710,6 +729,10 @@ ${MementoSectionEnd}
   Delete "${STARTMENU_GROUP}\Translator.lnk"
 
   ; remove files
+  Delete "$DIR_INSTALL\Commands\GeneralCommands.dll"
+  Delete "$DIR_INSTALL\Commands\TranslatorCommands.dll"
+  RMDir "$DIR_INSTALL\Commands"
+
   Delete "$DIR_INSTALL\Translator.*"
 !macroend
 
