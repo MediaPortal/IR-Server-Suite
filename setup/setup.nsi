@@ -242,7 +242,7 @@ UninstPage custom un.UninstallModePage un.UninstallModePageLeave
 !ifdef MPplugins
   !insertmacro "${MacroName}" "SectionMPControlPlugin"
   !insertmacro "${MacroName}" "SectionMPBlastZonePlugin"
-  !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
+;  !insertmacro "${MacroName}" "SectionTV3BlasterPlugin"
 !endif
 
   #SectionGroupTools
@@ -562,7 +562,7 @@ Var RestartTvService
 !macroend
 
 ;======================================
-
+/*
 SectionGroup "TV Server plugins" SectionGroupTV3
 
 ${MementoUnselectedSection} "TV Server Blaster Plugin" SectionTV3BlasterPlugin
@@ -590,7 +590,7 @@ ${MementoSectionEnd}
 !macroend
 
 SectionGroupEnd
-
+*/
 !endif
 
 ;======================================
@@ -745,7 +745,7 @@ ${MementoUnselectedSection} "Virtual Remote" SectionVirtualRemote
   SetOutPath "$DIR_INSTALL"
   File "..\IR Server Suite\Applications\Virtual Remote\bin\${Build_Type}\VirtualRemote.*"
   File "..\IR Server Suite\Applications\Virtual Remote Skin Editor\bin\${Build_Type}\VirtualRemoteSkinEditor.*"
-  File "..\IR Server Suite\Applications\Web Remote\bin\${Build_Type}\WebRemote.*"
+;  File "..\IR Server Suite\Applications\Web Remote\bin\${Build_Type}\WebRemote.*"
 
   ; Installing skins
   SetOutPath "$DIR_INSTALL\Virtual Remote\Skins"
@@ -761,7 +761,7 @@ ${MementoUnselectedSection} "Virtual Remote" SectionVirtualRemote
   CreateShortCut "${STARTMENU_GROUP}\Virtual Remote.lnk" "$DIR_INSTALL\VirtualRemote.exe" "" "$DIR_INSTALL\VirtualRemote.exe" 0
   CreateShortCut "${STARTMENU_GROUP}\Virtual Remote Skin Editor.lnk" "$DIR_INSTALL\VirtualRemoteSkinEditor.exe" "" "$DIR_INSTALL\VirtualRemoteSkinEditor.exe" 0
   CreateShortCut "${STARTMENU_GROUP}\Virtual Remote for Smart Devices.lnk" "$DIR_INSTALL\Virtual Remote\Smart Devices"
-  CreateShortCut "${STARTMENU_GROUP}\Web Remote.lnk" "$DIR_INSTALL\WebRemote.exe" "" "$DIR_INSTALL\WebRemote.exe" 0
+;  CreateShortCut "${STARTMENU_GROUP}\Web Remote.lnk" "$DIR_INSTALL\WebRemote.exe" "" "$DIR_INSTALL\WebRemote.exe" 0
 
 ${MementoSectionEnd}
 !macro Remove_${SectionVirtualRemote}
@@ -771,12 +771,12 @@ ${MementoSectionEnd}
   Delete "${STARTMENU_GROUP}\Virtual Remote.lnk"
   Delete "${STARTMENU_GROUP}\Virtual Remote Skin Editor.lnk"
   Delete "${STARTMENU_GROUP}\Virtual Remote for Smart Devices.lnk"
-  Delete "${STARTMENU_GROUP}\Web Remote.lnk"
+;  Delete "${STARTMENU_GROUP}\Web Remote.lnk"
 
   ; remove files
   Delete "$DIR_INSTALL\VirtualRemote.*"
   Delete "$DIR_INSTALL\VirtualRemoteSkinEditor.*"
-  Delete "$DIR_INSTALL\WebRemote.*"
+;  Delete "$DIR_INSTALL\WebRemote.*"
   RMDir /R "$DIR_INSTALL\Virtual Remote"
 !macroend
 
@@ -1250,8 +1250,8 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupMP}             "$(DESC_SectionGroupMP)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPControlPlugin}     "$(DESC_SectionMPControlPlugin)"
     !insertmacro MUI_DESCRIPTION_TEXT ${SectionMPBlastZonePlugin}   "$(DESC_SectionMPBlastZonePlugin)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupTV3}            "$(DESC_SectionGroupTV3)"
-    !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGroupTV3}            "$(DESC_SectionGroupTV3)"
+;    !insertmacro MUI_DESCRIPTION_TEXT ${SectionTV3BlasterPlugin}    "$(DESC_SectionTV3BlasterPlugin)"
 !endif
 
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionTranslator}          "$(DESC_SectionTranslator)"
