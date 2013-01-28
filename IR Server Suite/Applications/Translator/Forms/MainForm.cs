@@ -179,7 +179,8 @@ namespace Translator
 
     private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
     {
-      IrssHelp.Open(sender);
+      contentsToolStripMenuItem_Click(null, null);
+      hlpevent.Handled = true;
     }
 
 
@@ -331,7 +332,7 @@ namespace Translator
 
     private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      IrssHelp.Open(this);
+      IrssHelp.Open(this.GetType().FullName + "_" + tabControl.SelectedTab.Name);
     }
 
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
