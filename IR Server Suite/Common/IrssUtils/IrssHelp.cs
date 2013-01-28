@@ -32,7 +32,7 @@ namespace IrssUtils
   {
     public static void Open(string obj)
     {
-      Process.Start(String.Format(@"http://wiki.team-mediaportal.com/help/irss/{0}", obj.Replace(".", "_")));
+      Process.Start(String.Format(@"http://wiki.team-mediaportal.com/REDIRECTS/{0}", obj.Replace(".", "_")));
     }
 
     public static void Open(object obj)
