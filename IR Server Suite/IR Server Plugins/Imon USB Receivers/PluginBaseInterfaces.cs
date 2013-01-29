@@ -91,24 +91,26 @@ namespace IRServer.Plugin
             DebugWriteLine("Start()");
             DebugWriteLine("Start(): DeviceDriverMode = {0}", Enum.GetName(typeof(DeviceType), DevType));
             // ensure that iMon manager will not interfere with us
-            KilliMonManager();
-
-            if (DevType == DeviceType.DOS)
-            {
-                DebugWriteLine("Start(): Starting DOS device");
-                Start_DOS();
+           
+             KilliMonManager();
+            
+                if (DevType == DeviceType.DOS)
+                {
+                    DebugWriteLine("Start(): Starting DOS device");
+                    Start_DOS();
+                }
+                else if (DevType == DeviceType.HID)
+                {
+                    DebugWriteLine("Start(): Starting HID device");
+                    Start_HID();
+                }
+                else
+                {
+                    DebugWriteLine("Start(): No iMon devices found!");
+                    throw new ApplicationException("No iMon devices found!");
+                }
+            
             }
-            else if (DevType == DeviceType.HID)
-            {
-                DebugWriteLine("Start(): Starting HID device");
-                Start_HID();
-            }
-            else
-            {
-                DebugWriteLine("Start(): No iMon devices found!");
-                throw new ApplicationException("No iMon devices found!");
-            }
-        }
 
         /// <summary>
         /// Suspend the IR Server plugin for HID devices when computer enters standby.
@@ -183,6 +185,8 @@ namespace IRServer.Plugin
             config.EnableMouse = _enableMouseInput;
             config.HandleMouseLocal = _handleMouseLocally;
             config.MouseSensitivity = _mouseSensitivity;
+
+            config.KillImonM = _killImonM;
             
             if (config.ShowDialog(owner) == DialogResult.OK)
             {
@@ -208,6 +212,8 @@ namespace IRServer.Plugin
                 _enableMouseInput = config.EnableMouse;
                 _handleMouseLocally = config.HandleMouseLocal;
                 _mouseSensitivity = config.MouseSensitivity;
+
+                _killImonM = config.KillImonM;
                 
                 SaveSettings();
                 if (_DriverMode == DeviceType.DOS)

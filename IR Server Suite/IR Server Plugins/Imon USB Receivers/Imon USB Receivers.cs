@@ -359,7 +359,10 @@ namespace IRServer.Plugin
             "Vid_15c2&Pid_0038",
             "Vid_15c2&Pid_0036",
             "Vid_15c2&Pid_0035",
-            "Vid_15c2&Pid_0039"
+            "Vid_15c2&Pid_0039",
+			"Vid_15c2&Pid_0041",
+            "Vid_15c2&Pid_0045",
+
         };
 
         private RawInput.RAWINPUTDEVICE[] _deviceTree;
@@ -395,6 +398,7 @@ namespace IRServer.Plugin
         private bool _enableMouseInput;
         private bool _handleMouseLocally = true;
         private double _mouseSensitivity = 1.0d;
+        private bool _killImonM;
 
         #endregion Configuration
 
@@ -527,44 +531,44 @@ namespace IRServer.Plugin
                 dataBytes = GetData();
                 if (dataBytes.Length == DosDeviceBufferSize)
                 {
-                  try
-                  {
-                    if (dataBytes[7] != 0xF0)
+                    try
                     {
-                      string temp = "";
-                      foreach (byte x in dataBytes)
-                        temp += String.Format("{0:X2}", x);
-                      if (col == 3)
-                      {
-                        col = 0;
-                        Debug.Write(temp + "\n");
-                      }
-                      else
-                      {
-                        col++;
-                        Debug.Write(temp + "  ");
-                      }
-                    }
+                        if (dataBytes[7] != 0xF0)
+                        {
+                            string temp = "";
+                            foreach (byte x in dataBytes)
+                                temp += String.Format("{0:X2}", x);
+                            if (col == 3)
+                            {
+                                col = 0;
+                                Debug.Write(temp + "\n");
+                            }
+                            else
+                            {
+                                col++;
+                                Debug.Write(temp + "  ");
+                            }
+                        }
 
-                    // Rubbish data:
-                    // FF, FF, FF, FF, FF, FF, 9F, FF, 
-                    // 00, 00, 00, 00, 00, 00, 00, F0, 
-                    if ((dataBytes[0] != 0xFF || dataBytes[1] != 0xFF || dataBytes[2] != 0xFF || dataBytes[3] != 0xFF ||
-                         dataBytes[4] != 0xFF || dataBytes[5] != 0xFF) &&
-                        (dataBytes[0] != 0x00 || dataBytes[1] != 0x00 || dataBytes[2] != 0x00 || dataBytes[3] != 0x00 ||
-                         dataBytes[4] != 0x00 || dataBytes[5] != 0x00))
-                    {
-                      ProcessInput(dataBytes);
+                        // Rubbish data:
+                        // FF, FF, FF, FF, FF, FF, 9F, FF, 
+                        // 00, 00, 00, 00, 00, 00, 00, F0, 
+                        if ((dataBytes[0] != 0xFF || dataBytes[1] != 0xFF || dataBytes[2] != 0xFF || dataBytes[3] != 0xFF ||
+                             dataBytes[4] != 0xFF || dataBytes[5] != 0xFF) &&
+                            (dataBytes[0] != 0x00 || dataBytes[1] != 0x00 || dataBytes[2] != 0x00 || dataBytes[3] != 0x00 ||
+                             dataBytes[4] != 0x00 || dataBytes[5] != 0x00))
+                        {
+                            ProcessInput(dataBytes);
+                        }
+                        Thread.Sleep(5);
                     }
-                    Thread.Sleep(5);
-                  }
-                  catch
-                  {
-                    DebugWriteLine("Error processing input command!");
-                  }
+                    catch
+                    {
+                        DebugWriteLine("Error processing input command!");
+                    }
                 }
             }
-            
+
             if (deviceBufferPtr != IntPtr.Zero)
                 Marshal.FreeHGlobal(deviceBufferPtr);
         }
@@ -756,7 +760,7 @@ namespace IRServer.Plugin
             int lastError = Marshal.GetLastWin32Error();
 
             if (_deviceHandle.IsInvalid)
-            {   
+            {
                 DebugWriteLine("Start_HID(): Failed to get open device");
                 // throw new Win32Exception(lastError, "Failed to get open device");
             }
@@ -989,7 +993,7 @@ namespace IRServer.Plugin
                 {
                     DebugWriteLine("Configured Hardware Mode: {0}\n", _remoteMode);
                 }
-    
+
                 _processReceiveThread = true;
                 _receiveThread = new Thread(ReceiveThread);
                 _receiveThread.Name = "iMon Receive Thread";
@@ -1158,6 +1162,9 @@ namespace IRServer.Plugin
                 _handleMouseLocally = bool.Parse(doc.DocumentElement.Attributes["HandleMouseLocally"].Value);
                 _mouseSensitivity = double.Parse(doc.DocumentElement.Attributes["MouseSensitivity"].Value);
                 _keyPadSensitivity = int.Parse(doc.DocumentElement.Attributes["KeyPadSensitivity"].Value);
+
+                _killImonM = bool.Parse(doc.DocumentElement.Attributes["KillImonM"].Value);
+
             }
             catch (Exception ex)
             {
@@ -1179,6 +1186,30 @@ namespace IRServer.Plugin
                 _enableMouseInput = true;
                 _handleMouseLocally = true;
                 _mouseSensitivity = 1.0d;
+
+                _killImonM = true;
+            }
+        }
+
+        /// <summary>
+        /// Load Setting For Kill Imon Manager from Config file.
+        /// </summary>
+        private void LoadKillImonM_Setting()
+        {
+            DebugWriteLine("LoadKillImonM_Setting(): LoadSettings specially for Kill Imon Manager()");
+            try
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(ConfigurationFile);
+
+                _killImonM = bool.Parse(doc.DocumentElement.Attributes["KillImonM"].Value);
+            }
+            catch (Exception ex)
+            {
+                // Possibility to add a link for load catch setting from LoadSetting()  
+                // with LoadSetting() directly
+                DebugWriteLine(ex.ToString());
+                _killImonM = true;
             }
         }
 
@@ -1216,6 +1247,8 @@ namespace IRServer.Plugin
                 writer.WriteAttributeString("HandleMouseLocally", _handleMouseLocally.ToString());
                 writer.WriteAttributeString("MouseSensitivity", _mouseSensitivity.ToString());
                 writer.WriteAttributeString("KeyPadSensitivity", _keyPadSensitivity.ToString());
+
+                writer.WriteAttributeString("KillImonM", _killImonM.ToString());
 
 
                 writer.WriteEndElement(); // </settings>
@@ -1302,10 +1335,10 @@ namespace IRServer.Plugin
                                 // on very rare systems RemoteDeviceName is reported wrong, no idea why. Lets change it!
                                 if (RemoteDeviceName.StartsWith(@"\??\"))
                                 {
-                                  DebugWriteLine("FindDevices_HID(): Changing to right RemoteDeviceName...");
-                                  DebugWriteLine("FindDevices_HID():    reported RemoteDeviceName: \"{0}\"", RemoteDeviceName);
-                                  RemoteDeviceName = @"\\?\" + RemoteDeviceName.Substring(4);
-                                  DebugWriteLine("FindDevices_HID():   corrected RemoteDeviceName: \"{0}\"", RemoteDeviceName);
+                                    DebugWriteLine("FindDevices_HID(): Changing to right RemoteDeviceName...");
+                                    DebugWriteLine("FindDevices_HID():    reported RemoteDeviceName: \"{0}\"", RemoteDeviceName);
+                                    RemoteDeviceName = @"\\?\" + RemoteDeviceName.Substring(4);
+                                    DebugWriteLine("FindDevices_HID():   corrected RemoteDeviceName: \"{0}\"", RemoteDeviceName);
                                 }
                             }
                             // check for keyboard device - MI_00&Col02#
@@ -2783,40 +2816,53 @@ namespace IRServer.Plugin
 
         private void KilliMonManager()
         {
-            DebugWriteLine("KilliMonManager()");
-            string iMonPath = FindiMonPath();
-            string iMonEXE = iMonPath + @"\iMON.exe";
-            if (iMonPath != string.Empty)
+                    
+            // Load Checkbox setting for Kill Imon Manager before Start Driver
+            LoadKillImonM_Setting();
+
+            if (_killImonM)              
             {
-                DebugWriteLine("KilliMonManager(): Found iMon Manager - Version {0}",
-                               FileVersionInfo.GetVersionInfo(iMonEXE).FileVersion);
-                Console.WriteLine("KilliMonManager(): Found iMon Manager - Version {0}",
-                                  FileVersionInfo.GetVersionInfo(iMonEXE).FileVersion);
-            }
-            bool hasExited = false;
-            Process[] VFDproc = Process.GetProcessesByName("iMON");
-            if (VFDproc.Length > 0)
-            {
-                DebugWriteLine("KilliMonManager(): Killing iMon Manager process");
-                VFDproc[0].Kill();
-                hasExited = false;
-                while (!hasExited)
+                DebugWriteLine("KilliMonManager(): Set for Kill Imon Manager");
+                DebugWriteLine("KilliMonManager()");
+                string iMonPath = FindiMonPath();
+                string iMonEXE = iMonPath + @"\iMON.exe";
+                if (iMonPath != string.Empty)
                 {
-                    Thread.Sleep(100);
-                    VFDproc[0].Dispose();
-                    VFDproc = Process.GetProcessesByName("iMON");
-                    if (VFDproc.Length == 0) hasExited = true;
+                    DebugWriteLine("KilliMonManager(): Found iMon Manager - Version {0}",
+                                   FileVersionInfo.GetVersionInfo(iMonEXE).FileVersion);
+                    Console.WriteLine("KilliMonManager(): Found iMon Manager - Version {0}",
+                                      FileVersionInfo.GetVersionInfo(iMonEXE).FileVersion);
                 }
+                bool hasExited = false;
+                Process[] VFDproc = Process.GetProcessesByName("iMON");
+                if (VFDproc.Length > 0)
+                {
+                    DebugWriteLine("KilliMonManager(): Killing iMon Manager process");
+                    VFDproc[0].Kill();
+                    hasExited = false;
+                    while (!hasExited)
+                    {
+                        Thread.Sleep(100);
+                        VFDproc[0].Dispose();
+                        VFDproc = Process.GetProcessesByName("iMON");
+                        if (VFDproc.Length == 0) hasExited = true;
+                    }
+                }
+                else
+                {
+                 DebugWriteLine("KilliMonManager(): iMon Manager not running");
+                }
+                 DebugWriteLine("KilliMonManager(): completed");
             }
             else
             {
-                DebugWriteLine("KilliMonManager(): iMon Manager not running");
+                DebugWriteLine("KilliMonManager(): Set for Not Kill Imon Manager !!! WARNING NOT RECOMMENDED !!!");
             }
-            DebugWriteLine("KilliMonManager(): completed");
-        }
 
+        }
         #endregion
 
 
+        
     }
 }
