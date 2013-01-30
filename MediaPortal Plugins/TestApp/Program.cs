@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using MediaPortal.Plugins.IRSS.MPBlastZonePlugin;
-using MediaPortal.Plugins.IRSS.MPControlPlugin;
 
 namespace TestApp
 {
@@ -15,10 +13,7 @@ namespace TestApp
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-
-      MPBlastZonePlugin plugin = new MPBlastZonePlugin();
-
-      plugin.ShowPlugin();
+      Application.Run(new Form1());
     }
   }
 }
