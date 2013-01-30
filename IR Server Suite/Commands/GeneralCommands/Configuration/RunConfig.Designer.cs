@@ -50,7 +50,7 @@
       // buttonStartupFolder
       // 
       this.buttonStartupFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonStartupFolder.Location = new System.Drawing.Point(395, 35);
+      this.buttonStartupFolder.Location = new System.Drawing.Point(319, 35);
       this.buttonStartupFolder.Name = "buttonStartupFolder";
       this.buttonStartupFolder.Size = new System.Drawing.Size(24, 20);
       this.buttonStartupFolder.TabIndex = 18;
@@ -62,7 +62,7 @@
       // buttonLocate
       // 
       this.buttonLocate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonLocate.Location = new System.Drawing.Point(395, 3);
+      this.buttonLocate.Location = new System.Drawing.Point(319, 3);
       this.buttonLocate.Name = "buttonLocate";
       this.buttonLocate.Size = new System.Drawing.Size(24, 20);
       this.buttonLocate.TabIndex = 15;
@@ -102,14 +102,12 @@
       // 
       // comboBoxWindowStyle
       // 
-      this.comboBoxWindowStyle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
       this.comboBoxWindowStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxWindowStyle.FormattingEnabled = true;
       this.comboBoxWindowStyle.Location = new System.Drawing.Point(91, 99);
       this.comboBoxWindowStyle.MaxDropDownItems = 4;
       this.comboBoxWindowStyle.Name = "comboBoxWindowStyle";
-      this.comboBoxWindowStyle.Size = new System.Drawing.Size(112, 21);
+      this.comboBoxWindowStyle.Size = new System.Drawing.Size(150, 21);
       this.comboBoxWindowStyle.TabIndex = 22;
       // 
       // labelWindowStyle
@@ -136,7 +134,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxApplicationParameters.Location = new System.Drawing.Point(91, 67);
       this.textBoxApplicationParameters.Name = "textBoxApplicationParameters";
-      this.textBoxApplicationParameters.Size = new System.Drawing.Size(296, 20);
+      this.textBoxApplicationParameters.Size = new System.Drawing.Size(220, 20);
       this.textBoxApplicationParameters.TabIndex = 20;
       // 
       // labelStartupFolder
@@ -154,7 +152,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxAppStartFolder.Location = new System.Drawing.Point(91, 35);
       this.textBoxAppStartFolder.Name = "textBoxAppStartFolder";
-      this.textBoxAppStartFolder.Size = new System.Drawing.Size(296, 20);
+      this.textBoxAppStartFolder.Size = new System.Drawing.Size(220, 20);
       this.textBoxAppStartFolder.TabIndex = 17;
       // 
       // labelApplication
@@ -172,13 +170,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxApp.Location = new System.Drawing.Point(91, 3);
       this.textBoxApp.Name = "textBoxApp";
-      this.textBoxApp.Size = new System.Drawing.Size(296, 20);
+      this.textBoxApp.Size = new System.Drawing.Size(220, 20);
       this.textBoxApp.TabIndex = 14;
       // 
       // buttonParamQuestion
       // 
       this.buttonParamQuestion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonParamQuestion.Location = new System.Drawing.Point(395, 67);
+      this.buttonParamQuestion.Location = new System.Drawing.Point(319, 67);
       this.buttonParamQuestion.Name = "buttonParamQuestion";
       this.buttonParamQuestion.Size = new System.Drawing.Size(24, 20);
       this.buttonParamQuestion.TabIndex = 26;
@@ -214,8 +212,9 @@
       this.Controls.Add(this.labelApplication);
       this.Controls.Add(this.buttonLocate);
       this.Controls.Add(this.textBoxApp);
+      this.MinimumSize = new System.Drawing.Size(347, 179);
       this.Name = "RunConfig";
-      this.Size = new System.Drawing.Size(423, 179);
+      this.Size = new System.Drawing.Size(347, 179);
       this.ResumeLayout(false);
       this.PerformLayout();
 
