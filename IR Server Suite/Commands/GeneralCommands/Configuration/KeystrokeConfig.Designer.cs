@@ -29,7 +29,6 @@
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
-      this.buttonKeyHelp = new System.Windows.Forms.Button();
       this.labelKeystrokes = new System.Windows.Forms.Label();
       this.textBoxKeys = new System.Windows.Forms.TextBox();
       this.contextMenuStripKeystrokes = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -101,21 +100,10 @@
       this.contextMenuStripKeystrokes.SuspendLayout();
       this.SuspendLayout();
       // 
-      // buttonKeyHelp
-      // 
-      this.buttonKeyHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.buttonKeyHelp.Location = new System.Drawing.Point(164, 3);
-      this.buttonKeyHelp.Name = "buttonKeyHelp";
-      this.buttonKeyHelp.Size = new System.Drawing.Size(64, 24);
-      this.buttonKeyHelp.TabIndex = 5;
-      this.buttonKeyHelp.Text = "Help";
-      this.buttonKeyHelp.UseVisualStyleBackColor = true;
-      this.buttonKeyHelp.Click += new System.EventHandler(this.buttonKeyHelp_Click);
-      // 
       // labelKeystrokes
       // 
-      this.labelKeystrokes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.labelKeystrokes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.labelKeystrokes.Location = new System.Drawing.Point(3, 7);
       this.labelKeystrokes.Name = "labelKeystrokes";
       this.labelKeystrokes.Size = new System.Drawing.Size(147, 16);
@@ -125,9 +113,9 @@
       // 
       // textBoxKeys
       // 
-      this.textBoxKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.textBoxKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxKeys.ContextMenuStrip = this.contextMenuStripKeystrokes;
       this.textBoxKeys.Location = new System.Drawing.Point(3, 33);
       this.textBoxKeys.Multiline = true;
@@ -657,14 +645,13 @@
       this.windowsKeyToolStripMenuItem.Text = "Windows Key";
       this.windowsKeyToolStripMenuItem.Click += new System.EventHandler(this.KeystrokeToolStripMenuItem_Click);
       // 
-      // KeystrokeCommandPanel
+      // KeystrokeConfig
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.Controls.Add(this.labelKeystrokes);
       this.Controls.Add(this.textBoxKeys);
-      this.Controls.Add(this.buttonKeyHelp);
-      this.Name = "KeystrokeCommandPanel";
+      this.Name = "KeystrokeConfig";
       this.Size = new System.Drawing.Size(231, 115);
       this.contextMenuStripKeystrokes.ResumeLayout(false);
       this.ResumeLayout(false);
@@ -674,7 +661,6 @@
 
     #endregion
 
-    private System.Windows.Forms.Button buttonKeyHelp;
     private System.Windows.Forms.Label labelKeystrokes;
     private System.Windows.Forms.TextBox textBoxKeys;
     private System.Windows.Forms.ContextMenuStrip contextMenuStripKeystrokes;

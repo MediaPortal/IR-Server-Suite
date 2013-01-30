@@ -260,11 +260,6 @@ namespace IrssCommands.General
       textBoxKeys.SelectionLength = 0;
     }
 
-    private void buttonKeyHelp_Click(object sender, EventArgs e)
-    {
-      Process.Start(new ProcessStartInfo {UseShellExecute = true, FileName = HELP_URL});
-    }
-
     #endregion Implementation
   }
 }
