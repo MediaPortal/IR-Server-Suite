@@ -6,6 +6,13 @@ namespace IrssCommands.General
 {
   public partial class MouseConfig : BaseCommandConfig
   {
+    #region Constants
+
+    private const int minCoordinate = -10000;
+    private const int maxCoordinate = 10000;
+
+    #endregion Constants
+
     #region Properties
 
     /// <summary>
@@ -51,13 +58,45 @@ namespace IrssCommands.General
     private MouseConfig()
     {
       InitializeComponent();
+      SetImages();
+
+      numericUpDownX.Minimum = numericUpDownY.Minimum = minCoordinate;
+      numericUpDownX.Maximum = numericUpDownX.Maximum = maxCoordinate;
 
       // Create an instance of HookProc.
       MouseHookProcedure = UpdateCurrentPosition;
-      hHook = SetWindowsHookEx(WH_MOUSE,
+
+      // chefkoch, 2013-01-31
+      // this is only working if mouse hovers the window
+      //hHook = SetWindowsHookEx(WH_MOUSE,
+      //                         MouseHookProcedure,
+      //                         (IntPtr) 0,
+      //                         AppDomain.GetCurrentThreadId());
+
+      // this is the correct global hook
+      hHook = SetWindowsHookEx(WH_MOUSE_LL,
                                MouseHookProcedure,
-                               (IntPtr) 0,
-                               AppDomain.GetCurrentThreadId());
+                               (IntPtr)0,
+                               0);
+    }
+
+    private void SetImages()
+    {
+      checkBoxMouseMoveUp.Image = IrssUtils.Properties.Resources.MoveUp;
+      checkBoxMouseMoveRight.Image = IrssUtils.Properties.Resources.MoveRight;
+      checkBoxMouseMoveDown.Image = IrssUtils.Properties.Resources.MoveDown;
+      checkBoxMouseMoveLeft.Image = IrssUtils.Properties.Resources.MoveLeft;
+
+      checkBoxMouseClickLeft.Image = IrssUtils.Properties.Resources.ClickLeft;
+      checkBoxMouseClickMiddle.Image = IrssUtils.Properties.Resources.ClickMiddle;
+      checkBoxMouseClickRight.Image = IrssUtils.Properties.Resources.ClickRight;
+
+      checkBoxMouseDoubleLeft.Image = IrssUtils.Properties.Resources.DoubleClickLeft;
+      checkBoxMouseDoubleMiddle.Image = IrssUtils.Properties.Resources.DoubleClickMiddle;
+      checkBoxMouseDoubleRight.Image = IrssUtils.Properties.Resources.DoubleClickRight;
+
+      checkBoxMouseScrollUp.Image = IrssUtils.Properties.Resources.ScrollUp;
+      checkBoxMouseScrollDown.Image = IrssUtils.Properties.Resources.ScrollDown;
     }
 
     /// <summary>
@@ -168,6 +207,30 @@ namespace IrssCommands.General
       return CallNextHookEx(hHook, nCode, wParam, lParam);
     }
 
+    private void SetXY(object sender, KeyEventArgs e)
+    {
+      if (e.KeyCode == Keys.F8)
+      {
+        int x = int.Parse(labelCurrentX.Text);
+        int y = int.Parse(labelCurrentY.Text);
+
+        if (x < minCoordinate)
+          x = minCoordinate;
+        if (y < minCoordinate)
+          y = minCoordinate;
+
+        if (x > maxCoordinate)
+          x = maxCoordinate;
+        if (y > maxCoordinate)
+          y = maxCoordinate;
+
+        numericUpDownX.Value = x;
+        numericUpDownY.Value = y;
+
+        e.Handled = true;
+      }
+    }
+
     #endregion Implementation
 
     #region Win32
@@ -180,6 +243,7 @@ namespace IrssCommands.General
     //Declare the mouse hook constant.
     //For other hook types, you can obtain these values from Winuser.h in the Microsoft SDK.
     public const int WH_MOUSE = 7;
+    public const int WH_MOUSE_LL = 14;
 
     //Declare MouseHookProcedure as a HookProc type.
     private HookProc MouseHookProcedure;

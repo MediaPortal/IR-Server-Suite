@@ -29,7 +29,6 @@
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MouseConfig));
       this.toolTip = new System.Windows.Forms.ToolTip(this.components);
       this.checkBoxMouseMoveLeft = new System.Windows.Forms.CheckBox();
       this.checkBoxMouseMoveUp = new System.Windows.Forms.CheckBox();
@@ -53,6 +52,7 @@
       this.groupBoxDoubleClick = new System.Windows.Forms.GroupBox();
       this.groupBoxClick = new System.Windows.Forms.GroupBox();
       this.groupBoxPosition = new System.Windows.Forms.GroupBox();
+      this.label1 = new System.Windows.Forms.Label();
       this.labelCurrentY = new System.Windows.Forms.Label();
       this.labelCurrentX = new System.Windows.Forms.Label();
       this.labelY = new System.Windows.Forms.Label();
@@ -71,7 +71,6 @@
       // 
       this.checkBoxMouseMoveLeft.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.checkBoxMouseMoveLeft.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveLeft.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseMoveLeft.Image")));
       this.checkBoxMouseMoveLeft.Location = new System.Drawing.Point(24, 50);
       this.checkBoxMouseMoveLeft.Name = "checkBoxMouseMoveLeft";
       this.checkBoxMouseMoveLeft.Size = new System.Drawing.Size(32, 32);
@@ -84,7 +83,6 @@
       // 
       this.checkBoxMouseMoveUp.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.checkBoxMouseMoveUp.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveUp.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseMoveUp.Image")));
       this.checkBoxMouseMoveUp.Location = new System.Drawing.Point(56, 18);
       this.checkBoxMouseMoveUp.Name = "checkBoxMouseMoveUp";
       this.checkBoxMouseMoveUp.Size = new System.Drawing.Size(32, 32);
@@ -97,7 +95,6 @@
       // 
       this.checkBoxMouseMoveDown.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.checkBoxMouseMoveDown.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveDown.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseMoveDown.Image")));
       this.checkBoxMouseMoveDown.Location = new System.Drawing.Point(56, 82);
       this.checkBoxMouseMoveDown.Name = "checkBoxMouseMoveDown";
       this.checkBoxMouseMoveDown.Size = new System.Drawing.Size(32, 32);
@@ -140,7 +137,6 @@
       // 
       this.checkBoxMouseMoveRight.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.checkBoxMouseMoveRight.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveRight.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseMoveRight.Image")));
       this.checkBoxMouseMoveRight.Location = new System.Drawing.Point(88, 50);
       this.checkBoxMouseMoveRight.Name = "checkBoxMouseMoveRight";
       this.checkBoxMouseMoveRight.Size = new System.Drawing.Size(32, 32);
@@ -152,7 +148,6 @@
       // checkBoxMouseDoubleLeft
       // 
       this.checkBoxMouseDoubleLeft.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseDoubleLeft.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseDoubleLeft.Image")));
       this.checkBoxMouseDoubleLeft.Location = new System.Drawing.Point(16, 24);
       this.checkBoxMouseDoubleLeft.Name = "checkBoxMouseDoubleLeft";
       this.checkBoxMouseDoubleLeft.Size = new System.Drawing.Size(32, 32);
@@ -164,7 +159,6 @@
       // checkBoxMouseDoubleMiddle
       // 
       this.checkBoxMouseDoubleMiddle.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseDoubleMiddle.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseDoubleMiddle.Image")));
       this.checkBoxMouseDoubleMiddle.Location = new System.Drawing.Point(56, 24);
       this.checkBoxMouseDoubleMiddle.Name = "checkBoxMouseDoubleMiddle";
       this.checkBoxMouseDoubleMiddle.Size = new System.Drawing.Size(32, 32);
@@ -176,7 +170,6 @@
       // checkBoxMouseDoubleRight
       // 
       this.checkBoxMouseDoubleRight.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseDoubleRight.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseDoubleRight.Image")));
       this.checkBoxMouseDoubleRight.Location = new System.Drawing.Point(96, 24);
       this.checkBoxMouseDoubleRight.Name = "checkBoxMouseDoubleRight";
       this.checkBoxMouseDoubleRight.Size = new System.Drawing.Size(32, 32);
@@ -188,7 +181,6 @@
       // checkBoxMouseClickLeft
       // 
       this.checkBoxMouseClickLeft.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseClickLeft.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseClickLeft.Image")));
       this.checkBoxMouseClickLeft.Location = new System.Drawing.Point(16, 24);
       this.checkBoxMouseClickLeft.Name = "checkBoxMouseClickLeft";
       this.checkBoxMouseClickLeft.Size = new System.Drawing.Size(32, 32);
@@ -200,7 +192,6 @@
       // checkBoxMouseClickMiddle
       // 
       this.checkBoxMouseClickMiddle.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseClickMiddle.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseClickMiddle.Image")));
       this.checkBoxMouseClickMiddle.Location = new System.Drawing.Point(56, 24);
       this.checkBoxMouseClickMiddle.Name = "checkBoxMouseClickMiddle";
       this.checkBoxMouseClickMiddle.Size = new System.Drawing.Size(32, 32);
@@ -212,7 +203,6 @@
       // checkBoxMouseClickRight
       // 
       this.checkBoxMouseClickRight.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseClickRight.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseClickRight.Image")));
       this.checkBoxMouseClickRight.Location = new System.Drawing.Point(96, 24);
       this.checkBoxMouseClickRight.Name = "checkBoxMouseClickRight";
       this.checkBoxMouseClickRight.Size = new System.Drawing.Size(32, 32);
@@ -225,7 +215,6 @@
       // 
       this.checkBoxMouseScrollDown.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.checkBoxMouseScrollDown.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseScrollDown.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseScrollDown.Image")));
       this.checkBoxMouseScrollDown.Location = new System.Drawing.Point(24, 87);
       this.checkBoxMouseScrollDown.Name = "checkBoxMouseScrollDown";
       this.checkBoxMouseScrollDown.Size = new System.Drawing.Size(32, 32);
@@ -238,7 +227,6 @@
       // 
       this.checkBoxMouseScrollUp.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.checkBoxMouseScrollUp.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseScrollUp.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxMouseScrollUp.Image")));
       this.checkBoxMouseScrollUp.Location = new System.Drawing.Point(24, 31);
       this.checkBoxMouseScrollUp.Name = "checkBoxMouseScrollUp";
       this.checkBoxMouseScrollUp.Size = new System.Drawing.Size(32, 32);
@@ -255,7 +243,7 @@
             0,
             0,
             0});
-      this.numericUpDownX.Location = new System.Drawing.Point(45, 26);
+      this.numericUpDownX.Location = new System.Drawing.Point(45, 20);
       this.numericUpDownX.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -266,6 +254,7 @@
       this.numericUpDownX.TabIndex = 13;
       this.numericUpDownX.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.toolTip.SetToolTip(this.numericUpDownX, "Distance from the left edge of the screen space");
+      this.numericUpDownX.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SetXY);
       // 
       // numericUpDownY
       // 
@@ -275,7 +264,7 @@
             0,
             0,
             0});
-      this.numericUpDownY.Location = new System.Drawing.Point(45, 68);
+      this.numericUpDownY.Location = new System.Drawing.Point(45, 62);
       this.numericUpDownY.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -286,12 +275,13 @@
       this.numericUpDownY.TabIndex = 15;
       this.numericUpDownY.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
       this.toolTip.SetToolTip(this.numericUpDownY, "Distance from the top of the screen space");
+      this.numericUpDownY.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SetXY);
       // 
       // checkBoxMouseMoveToPos
       // 
       this.checkBoxMouseMoveToPos.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.checkBoxMouseMoveToPos.Appearance = System.Windows.Forms.Appearance.Button;
-      this.checkBoxMouseMoveToPos.Location = new System.Drawing.Point(13, 110);
+      this.checkBoxMouseMoveToPos.Location = new System.Drawing.Point(13, 119);
       this.checkBoxMouseMoveToPos.Name = "checkBoxMouseMoveToPos";
       this.checkBoxMouseMoveToPos.Size = new System.Drawing.Size(96, 24);
       this.checkBoxMouseMoveToPos.TabIndex = 11;
@@ -300,6 +290,7 @@
       this.toolTip.SetToolTip(this.checkBoxMouseMoveToPos, "Move the mouse pointer to specific screen coordinates");
       this.checkBoxMouseMoveToPos.UseVisualStyleBackColor = true;
       this.checkBoxMouseMoveToPos.CheckedChanged += new System.EventHandler(this.checkBoxMouse_CheckedChanged);
+      this.checkBoxMouseMoveToPos.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SetXY);
       // 
       // groupBoxMovement
       // 
@@ -368,6 +359,7 @@
       // groupBoxPosition
       // 
       this.groupBoxPosition.Anchor = System.Windows.Forms.AnchorStyles.None;
+      this.groupBoxPosition.Controls.Add(this.label1);
       this.groupBoxPosition.Controls.Add(this.labelCurrentY);
       this.groupBoxPosition.Controls.Add(this.labelCurrentX);
       this.groupBoxPosition.Controls.Add(this.numericUpDownX);
@@ -382,12 +374,22 @@
       this.groupBoxPosition.TabStop = false;
       this.groupBoxPosition.Text = "Position";
       // 
+      // label1
+      // 
+      this.label1.AutoSize = true;
+      this.label1.ForeColor = System.Drawing.SystemColors.GrayText;
+      this.label1.Location = new System.Drawing.Point(6, 101);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(113, 13);
+      this.label1.TabIndex = 17;
+      this.label1.Text = "Press F8 to set current";
+      // 
       // labelCurrentY
       // 
       this.labelCurrentY.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.labelCurrentY.AutoSize = true;
       this.labelCurrentY.Enabled = false;
-      this.labelCurrentY.Location = new System.Drawing.Point(50, 91);
+      this.labelCurrentY.Location = new System.Drawing.Point(50, 84);
       this.labelCurrentY.Name = "labelCurrentY";
       this.labelCurrentY.Size = new System.Drawing.Size(31, 13);
       this.labelCurrentY.TabIndex = 16;
@@ -399,7 +401,7 @@
       this.labelCurrentX.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.labelCurrentX.AutoSize = true;
       this.labelCurrentX.Enabled = false;
-      this.labelCurrentX.Location = new System.Drawing.Point(50, 49);
+      this.labelCurrentX.Location = new System.Drawing.Point(50, 42);
       this.labelCurrentX.Name = "labelCurrentX";
       this.labelCurrentX.Size = new System.Drawing.Size(31, 13);
       this.labelCurrentX.TabIndex = 16;
@@ -410,7 +412,7 @@
       // 
       this.labelY.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.labelY.AutoSize = true;
-      this.labelY.Location = new System.Drawing.Point(19, 69);
+      this.labelY.Location = new System.Drawing.Point(19, 63);
       this.labelY.Name = "labelY";
       this.labelY.Size = new System.Drawing.Size(20, 13);
       this.labelY.TabIndex = 14;
@@ -421,7 +423,7 @@
       // 
       this.labelX.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.labelX.AutoSize = true;
-      this.labelX.Location = new System.Drawing.Point(19, 28);
+      this.labelX.Location = new System.Drawing.Point(19, 22);
       this.labelX.Name = "labelX";
       this.labelX.Size = new System.Drawing.Size(20, 13);
       this.labelX.TabIndex = 12;
@@ -440,6 +442,7 @@
       this.MinimumSize = new System.Drawing.Size(519, 160);
       this.Name = "MouseConfig";
       this.Size = new System.Drawing.Size(519, 160);
+      this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SetXY);
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMouseMove)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownX)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numericUpDownY)).EndInit();
@@ -482,5 +485,6 @@
     private System.Windows.Forms.CheckBox checkBoxMouseMoveToPos;
     private System.Windows.Forms.Label labelCurrentX;
     private System.Windows.Forms.Label labelCurrentY;
+    private System.Windows.Forms.Label label1;
   }
 }
