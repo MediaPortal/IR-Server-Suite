@@ -444,6 +444,11 @@ ${MementoSection} "MP Control Plugin" SectionMPControlPlugin
   ${KILLPROCESS} "configuration.exe"
 
   ; Write plugin dll
+  SetOutPath "$MPdir.Base"
+  File "..\IR Server Suite\Common\IrssCommands\bin\x86\${Build_Type}\net35\IrssCommands.dll"
+  File "..\IR Server Suite\Common\IrssComms\bin\x86\${Build_Type}\net35\IrssComms.dll"
+  File "..\IR Server Suite\Common\IrssUtils\bin\x86\${Build_Type}\net35\IrssUtils.dll"
+  File "..\MediaPortal Plugins\Common\MPUtils\bin\${Build_Type}\MPUtils.dll"
   SetOutPath "$MPdir.Plugins\Process"
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Control Plugin\bin\${Build_Type}\MPControlPlugin.*"
   SetOutPath "$MPdir.Plugins\Process\Commands"
@@ -495,6 +500,11 @@ ${MementoUnselectedSection} "MP Blast Zone Plugin" SectionMPBlastZonePlugin
   SetShellVarContext all
 
   ; Write plugin dll
+  SetOutPath "$MPdir.Base"
+  File "..\IR Server Suite\Common\IrssCommands\bin\x86\${Build_Type}\net35\IrssCommands.dll"
+  File "..\IR Server Suite\Common\IrssComms\bin\x86\${Build_Type}\net35\IrssComms.dll"
+  File "..\IR Server Suite\Common\IrssUtils\bin\x86\${Build_Type}\net35\IrssUtils.dll"
+  File "..\MediaPortal Plugins\Common\MPUtils\bin\${Build_Type}\MPUtils.dll"
   SetOutPath "$MPdir.Plugins\Windows"
   File "..\MediaPortal Plugins\MediaPortal Plugins\MP Blast Zone Plugin\bin\${Build_Type}\MPBlastZonePlugin.*"
   SetOutPath "$MPdir.Plugins\Windows\Commands"
@@ -935,6 +945,11 @@ Section "Uninstall"
   !insertmacro SectionList "RemoveSection"
 
 !ifdef MPplugins
+  Delete "$MPdir.Base\IrssCommands.dll"
+  Delete "$MPdir.Base\IrssComms.dll"
+  Delete "$MPdir.Base\IrssUtils.dll"
+  Delete "$MPdir.Base\MPUtils.dll"
+
   ; start tvservice, if it was closed before
   !insertmacro StartTVService
 !endif

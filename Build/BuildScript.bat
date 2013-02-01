@@ -57,6 +57,10 @@ if not %ERRORLEVEL%==0 EXIT
 if not %2!==MPplugins! goto NoMPplugins
 echo.
 echo Building MediaPortal plugins...
+RmDir "..\IR Server Suite\Common\IrssCommands\obj" /s /q
+RmDir "..\IR Server Suite\Common\IrssComms\obj" /s /q
+RmDir "..\IR Server Suite\Common\IrssUtils\obj" /s /q
+
 "%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86 "..\MediaPortal Plugins\MediaPortal plugins.sln" >> %LOG%
 if not %ERRORLEVEL%==0 EXIT
 :NoMPplugins

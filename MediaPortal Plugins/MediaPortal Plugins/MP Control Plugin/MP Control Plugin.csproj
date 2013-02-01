@@ -10,21 +10,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MediaPortal.Plugins.IRSS.MPControlPlugin</RootNamespace>
     <AssemblyName>MPControlPlugin</AssemblyName>
-    <StartupObject>
-    </StartupObject>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <SignAssembly>false</SignAssembly>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
@@ -162,7 +155,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)ILMerge.bat" "$(TargetDir)" $(ConfigurationName)</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\MediaPortal-1\Common-MP-TVE3\Common.Utils\Common.Utils.csproj">
@@ -190,28 +182,25 @@
       <Name>Utils</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssCommands\IrssCommands-net35.csproj">
-      <Project>{49cf376e-811c-4eb4-817f-a39c9529b608}</Project>
+      <Project>{A7048AD2-9759-4422-AF4E-4B067F75BCF2}</Project>
       <Name>IrssCommands-net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssComms\IrssComms-Net35.csproj">
-      <Project>{bcafdf45-70dd-46fd-8b98-880dda585ad2}</Project>
+      <Project>{DC329501-277B-4732-9D16-2A5293AAEC05}</Project>
       <Name>IrssComms-Net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils-Net35.csproj">
-      <Project>{ca15769c-232e-4ca7-94fd-206a06ca3abb}</Project>
+      <Project>{062ECE3C-B75C-4767-A6FD-E653386F08AB}</Project>
       <Name>IrssUtils-Net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\MPUtils\MPUtils.csproj">
-      <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>
+      <Project>{08f57dd7-2c6e-484e-9cc5-835f70c5bc64}</Project>
       <Name>MPUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="iconGray.gif" />
     <EmbeddedResource Include="iconGreen.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ILMerge.bat" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AppData\Remote Presets\Abstract Remote Model.xml" />
