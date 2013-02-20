@@ -89,6 +89,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.treeMapping.Size = new System.Drawing.Size(383, 467);
       this.treeMapping.TabIndex = 0;
       this.treeMapping.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeMapping_AfterSelect);
+      this.treeMapping.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.treeMapping_HelpRequested);
       this.treeMapping.DoubleClick += new System.EventHandler(this.treeMapping_DoubleClick);
       // 
       // buttonDefault
@@ -159,7 +160,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.groupBoxSound.Controls.Add(this.comboBoxSound);
       this.groupBoxSound.Enabled = false;
       this.groupBoxSound.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.groupBoxSound.Location = new System.Drawing.Point(0, 246);
+      this.groupBoxSound.Location = new System.Drawing.Point(0, 247);
       this.groupBoxSound.Name = "groupBoxSound";
       this.groupBoxSound.Size = new System.Drawing.Size(281, 48);
       this.groupBoxSound.TabIndex = 8;
@@ -189,10 +190,11 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.groupBoxCondition.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
       this.groupBoxCondition.Location = new System.Drawing.Point(0, 55);
       this.groupBoxCondition.Name = "groupBoxCondition";
-      this.groupBoxCondition.Size = new System.Drawing.Size(281, 159);
+      this.groupBoxCondition.Size = new System.Drawing.Size(281, 158);
       this.groupBoxCondition.TabIndex = 7;
       this.groupBoxCondition.TabStop = false;
-      this.groupBoxCondition.Text = "Condition";
+      this.groupBoxCondition.Text = "Condition (F1 to get more info)";
+      this.groupBoxCondition.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.ConditionHelpRequested);
       // 
       // conditionPanel
       // 
@@ -201,8 +203,9 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
             | System.Windows.Forms.AnchorStyles.Right)));
       this.conditionPanel.Location = new System.Drawing.Point(6, 46);
       this.conditionPanel.Name = "conditionPanel";
-      this.conditionPanel.Size = new System.Drawing.Size(269, 107);
+      this.conditionPanel.Size = new System.Drawing.Size(269, 106);
       this.conditionPanel.TabIndex = 7;
+      this.conditionPanel.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.ConditionHelpRequested);
       // 
       // conditionComboBox
       // 
@@ -215,6 +218,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.conditionComboBox.Size = new System.Drawing.Size(269, 21);
       this.conditionComboBox.TabIndex = 6;
       this.conditionComboBox.SelectedIndexChanged += new System.EventHandler(this.conditionComboBox_SelectedIndexChanged);
+      this.conditionComboBox.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.ConditionHelpRequested);
       // 
       // groupBoxLayer
       // 
@@ -288,7 +292,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.groupBoxMapping.Size = new System.Drawing.Size(389, 486);
       this.groupBoxMapping.TabIndex = 1;
       this.groupBoxMapping.TabStop = false;
-      this.groupBoxMapping.Text = "Mapping (DoubleClick on command nodes to edit)";
+      this.groupBoxMapping.Text = "Mapping (DoubleClick on command nodes to edit / F1 to get more info)";
       // 
       // toolStrip1
       // 
@@ -398,7 +402,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.splitContainer2.Panel2.Controls.Add(this.groupBoxSound);
       this.splitContainer2.Panel2.Controls.Add(this.groupBoxCommand);
       this.splitContainer2.Size = new System.Drawing.Size(281, 511);
-      this.splitContainer2.SplitterDistance = 213;
+      this.splitContainer2.SplitterDistance = 212;
       this.splitContainer2.TabIndex = 10;
       // 
       // groupBoxCommand
@@ -409,10 +413,10 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.groupBoxCommand.Controls.Add(this.treeViewCommandList);
       this.groupBoxCommand.Location = new System.Drawing.Point(0, 3);
       this.groupBoxCommand.Name = "groupBoxCommand";
-      this.groupBoxCommand.Size = new System.Drawing.Size(281, 237);
+      this.groupBoxCommand.Size = new System.Drawing.Size(281, 238);
       this.groupBoxCommand.TabIndex = 9;
       this.groupBoxCommand.TabStop = false;
-      this.groupBoxCommand.Text = "Command (DoubleClick to assign a new command)";
+      this.groupBoxCommand.Text = "Command (DoubleClick to assign / F1 to get more info)";
       // 
       // treeViewCommandList
       // 
@@ -420,8 +424,9 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       this.treeViewCommandList.FullRowSelect = true;
       this.treeViewCommandList.Location = new System.Drawing.Point(3, 16);
       this.treeViewCommandList.Name = "treeViewCommandList";
-      this.treeViewCommandList.Size = new System.Drawing.Size(275, 218);
+      this.treeViewCommandList.Size = new System.Drawing.Size(275, 219);
       this.treeViewCommandList.TabIndex = 14;
+      this.treeViewCommandList.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.treeViewCommandList_HelpRequested);
       this.treeViewCommandList.DoubleClick += new System.EventHandler(this.treeViewCommandList_DoubleClick);
       // 
       // buttonHelp

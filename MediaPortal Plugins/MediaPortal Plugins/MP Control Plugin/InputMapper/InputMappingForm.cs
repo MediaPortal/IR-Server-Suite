@@ -21,15 +21,12 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using IrssUtils.Forms;
 using MPUtils;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
@@ -48,9 +45,6 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
     private readonly List<string> _pluginList = new List<string>();
 
     private readonly string _inputClassName;
-    private readonly Array _nativeActionList = Enum.GetValues(typeof (Action.ActionType));
-
-    private readonly Array _nativeWindowsList = Enum.GetValues(typeof (GUIWindow.Window));
     
     private const string NO_SOUND = "No Sound";
     private readonly string[] _soundList = new string[] {NO_SOUND, "back.wav", "click.wav", "cursor.wav"};
@@ -87,14 +81,6 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       newToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
       removeToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
 
-      #region comments
-
-      //_actionList.Clear();
-      //foreach (Action.ActionType actn in _nativeActionList)
-      //  _actionList.Add(GetFriendlyName(actn.ToString()));
-
-      #endregion
-
       // prepare combo boxes
       comboBoxLayer.DataSource = _layerList;
       comboBoxSound.DataSource = _soundList;
@@ -105,14 +91,20 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       if (!File.Exists(mappingsFile))
       {
         string defaultFile = MPCommon.GetDefaultMappingFilePath(_inputClassName);
-        //if (!File.Exists(defaultFile))
-        //add extraction from properties or error message
-
-        File.Copy(defaultFile, mappingsFile, true);
+        if (File.Exists(defaultFile))
+        {
+          File.Copy(defaultFile, mappingsFile, true);
+        }
+        {
+          MessageBox.Show(String.Format(
+            "The following location have been checked for an existing mapping file,{0} but nothing has been found.{0}{0}{1}{0}{2}",
+            Environment.NewLine, mappingsFile, defaultFile));
+        }
       }
 
       inputMapping = InputMapping.Load(mappingsFile);
       RefreshTreeView();
+      treeMapping_AfterSelect(null, null);
     }
 
     #endregion Constructor
@@ -349,11 +341,18 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
     //            |-- sound
     private void treeMapping_AfterSelect(object sender, TreeViewEventArgs e)
     {
-      if (e.Action == TreeViewAction.Unknown) return;
+      if (ReferenceEquals(e, null) || ReferenceEquals(e.Node, null) || ReferenceEquals(e.Node.Tag, null))
+      {
+        groupBoxLayer.Enabled = false;
+        groupBoxCondition.Enabled = false;
+        groupBoxCommand.Enabled = false;
+        groupBoxSound.Enabled = false;
+        toolStrip1.Enabled = false;
+        return;
+      }
+      toolStrip1.Enabled = true;
 
       TreeNode node = e.Node;
-      if (ReferenceEquals(node.Tag, null)) return;
-
       if (node.Tag is InputMapping.Remote || node.Tag is InputMapping.Button)
       {
         groupBoxLayer.Enabled = false;
@@ -365,7 +364,6 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
         comboBoxLayer.SelectedIndex = 0;
         return;
       }
-
       Layer layer = node.Tag as Layer;
       if (layer != null)
       {
@@ -435,6 +433,42 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
         node.Tag = command;
         node.Text = command.UserDisplayText;
       }
+    }
+
+    private void treeMapping_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      TreeNode node = treeMapping.SelectedNode;
+      if (ReferenceEquals(node, null) || ReferenceEquals(node.Tag, null) ||
+          node.Tag is InputMapping.Remote || node.Tag is InputMapping.Button || node.Tag is Layer || node.Tag is Sound)
+      {
+        InputMappingForm_HelpRequested(sender, hlpevent);
+        return;
+      }
+      
+      if (node.Tag is Command || node.Tag is Condition)
+      {
+        IrssUtils.IrssHelp.Open(node.Tag.GetType().FullName);
+        hlpevent.Handled = true;
+        return;
+      }
+
+      DummyCommand dummyCommand = node.Tag as DummyCommand;
+      if (!ReferenceEquals(dummyCommand, null))
+      {
+        IrssUtils.IrssHelp.Open(dummyCommand.CommandType);
+        hlpevent.Handled = true;
+        return;
+      }
+
+      DummyCondition dummyCondition = node.Tag as DummyCondition;
+      if (!ReferenceEquals(dummyCondition, null))
+      {
+        IrssUtils.IrssHelp.Open(dummyCondition.ConditionType);
+        hlpevent.Handled = true;
+        return;
+      }
+
+      InputMappingForm_HelpRequested(sender, hlpevent);
     }
 
     #endregion mapping treenode
@@ -605,6 +639,19 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       node.Text = _currentCondition.UserDisplayText;
     }
 
+    private void ConditionHelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      string uiText = conditionComboBox.SelectedItem as string;
+      if (string.IsNullOrEmpty(uiText))
+      {
+        InputMappingForm_HelpRequested(sender, hlpevent);
+        return;
+      }
+
+      Type type = _uiTextCategoryCache[uiText];
+      IrssUtils.IrssHelp.Open(type.FullName);
+    }
+
     #endregion Condition
 
     #region Command
@@ -670,6 +717,27 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
         mappingNode.Text = command.UserDisplayText;
         mappingNode.Tag = command;
       }
+    }
+
+    private void treeViewCommandList_HelpRequested(object sender, HelpEventArgs hlpevent)
+    {
+      if (ReferenceEquals(treeViewCommandList.SelectedNode, null))
+      {
+        MessageBox.Show("No Command selected.");
+        InputMappingForm_HelpRequested(sender, hlpevent);
+        return;
+      }
+
+      Type commandType = treeViewCommandList.SelectedNode.Tag as Type;
+      if (ReferenceEquals(commandType, null))
+      {
+        MessageBox.Show("No Command selected.");
+        InputMappingForm_HelpRequested(sender, hlpevent);
+        return;
+      }
+      
+      IrssUtils.IrssHelp.Open(commandType.FullName);
+      hlpevent.Handled = true;
     }
 
     private void Visualize(Command command)
@@ -1099,6 +1167,10 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
 
     private void buttonNew_Click(object sender, EventArgs e)
     {
+      TreeNode node = treeMapping.SelectedNode;
+      if (ReferenceEquals(node, null)) return;
+
+      // Prepare
       Layer layer = new Layer {Value = 0};
       TreeNode newLayer = new TreeNode(layer.UserDisplayText);
       newLayer.Tag = layer;
@@ -1119,8 +1191,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
       newSound.Tag = sound;
       newSound.ForeColor = Color.DarkRed;
 
-
-      TreeNode node = treeMapping.SelectedNode;
+      // Add
       if (node.Tag is Layer)
       {
         newCondition.Nodes.Add(newCommand);
