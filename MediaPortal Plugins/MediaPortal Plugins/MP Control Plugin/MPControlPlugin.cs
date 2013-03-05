@@ -682,6 +682,8 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
       if (RequireFocus && !GUIGraphicsContext.HasFocus)
         return;
 
+      IrssUtils.Win32.SetThreadExecutionState(IrssUtils.Win32.EXECUTION_STATE.ES_DISPLAY_REQUIRED);
+
       foreach (MappedKeyCode mapping in _remoteMap)
       {
         if (!mapping.KeyCode.Equals(keyCode, StringComparison.OrdinalIgnoreCase))
