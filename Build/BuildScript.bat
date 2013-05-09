@@ -2,9 +2,8 @@
 
 REM set paths
 set GIT_ROOT=..
-set MP_ROOT=..\..\MediaPortal-1
 
-set DeployVersionGIT="%MP_ROOT%\Tools\Script & Batch tools\DeployVersionGIT\DeployVersionGIT\bin\Release\DeployVersionGIT.exe"
+set DeployVersionGIT="%GIT_ROOT%\External\DeployVersionGIT.exe"
 
 REM detect if BUILD_TYPE should be release or debug
 if not %1!==Debug! goto RELEASE
