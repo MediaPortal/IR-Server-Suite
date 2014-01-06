@@ -34,7 +34,7 @@ using MediaPortal.Common.Utils;
 [assembly: CLSCompliant(true)]
 [assembly: NeutralResourcesLanguage("en")]
 
-[assembly: CompatibleVersion("*.*.*.*", "1.1.6.27644")]
+[assembly: CompatibleVersion("9.9.9.9", "1.1.6.27644")]
 [assembly: UsesSubsystem("TVE.DB")]
 [assembly: UsesSubsystem("TVE.Controller")]
 [assembly: UsesSubsystem("TVE.Config")]
