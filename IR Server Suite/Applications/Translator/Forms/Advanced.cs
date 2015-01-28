@@ -44,6 +44,16 @@ namespace Translator
     }
 
     /// <summary>
+    /// Gets or sets the log verbosity level.
+    /// </summary>
+    /// <value>The log verbosity level.</value>
+    public string LogVerbosity
+    {
+        get { return comboBoxVerbosity.SelectedItem as string; }
+        set { comboBoxVerbosity.SelectedItem = value; }
+    }
+
+    /// <summary>
     /// Gets or sets a value indicating whether to hide the tray icon.
     /// </summary>
     /// <value><c>true</c> to hide tray icon; otherwise, <c>false</c>.</value>
@@ -67,6 +77,10 @@ namespace Translator
       comboBoxPriority.Items.Add("No Change");
       comboBoxPriority.Items.AddRange(Enum.GetNames(typeof (ProcessPriorityClass)));
       comboBoxPriority.SelectedIndex = 0;
+
+      comboBoxVerbosity.Items.AddRange(Enum.GetNames(typeof(IrssUtils.IrssLog.Level)));
+      comboBoxVerbosity.SelectedIndex = 0;
+
     }
 
     #endregion Constructor

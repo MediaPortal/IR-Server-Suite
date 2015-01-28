@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("Technotrend Receiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the Technotrend receivers")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

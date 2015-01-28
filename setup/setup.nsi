@@ -45,6 +45,7 @@
 #---------------------------------------------------------------------------
 # path definitions
 !define svn_ROOT_IRSS ".."
+!define svn_BIN_IRSS "${svn_ROOT_IRSS}\bin\${Build_Type}"
 !define svn_ROOT_MP "${svn_ROOT_IRSS}\..\..\..\..\MediaPortal-1"
 
 !define svn_MPplugins "..\MediaPortal Plugins"
@@ -155,7 +156,7 @@ Var frominstall
 #---------------------------------------------------------------------------
 Name          "${PRODUCT_NAME}"
 BrandingText  "${PRODUCT_NAME} ${VERSION} by ${PRODUCT_PUBLISHER}"
-OutFile       "..\${PRODUCT_NAME} - ${VERSION}.exe"
+OutFile       "..\Build\${PRODUCT_NAME} - ${VERSION}.exe"
 InstallDir    ""
 
 XPStyle on
@@ -326,10 +327,10 @@ Section "-Core"
 
   ; common files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Common\IrssComms\bin\${Build_Type}\IrssComms.*"
-  File "..\IR Server Suite\Common\IrssScheduler\bin\${Build_Type}\IrssScheduler.*"
-  File "..\IR Server Suite\Common\IrssUtils\bin\${Build_Type}\IrssUtils.*"
-  File "..\IR Server Suite\Common\ShellLink\bin\${Build_Type}\ShellLink.*"
+  File "${svn_BIN_IRSS}\IrssComms.*"
+  File "${svn_BIN_IRSS}\IrssScheduler.*"
+  File "${svn_BIN_IRSS}\IrssUtils.*"
+  File "${svn_BIN_IRSS}\ShellLink.*"
 
   ; startmenu needs to be created before creating shortcuts
   CreateDirectory "${STARTMENU_GROUP}"
@@ -357,23 +358,23 @@ ${MementoSection} "IR Server" SectionIRServer
 
   SetOutPath "$DIR_INSTALL"
   ${LOG_TEXT} "INFO" "Installing IR Server..."
-  File "${svn_ROOT_IRSS}\bin\${Build_Type}\IR Server.???"
+  File "${svn_BIN_IRSS}\IR Server.???"
   File "..\IR Server Suite\IR Server\IR Server\Install.cmd"
   File "..\IR Server Suite\IR Server\IR Server\Uninstall.cmd"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Configuration..."
-  File "..\IR Server Suite\IR Server\IR Server Configuration\bin\${Build_Type}\IR Server Configuration.*"
+  File "${svn_BIN_IRSS}\IR Server Configuration.*"
   File "..\IR Server Suite\IR Server\SourceGrid\DevAge*"
   File "..\IR Server Suite\IR Server\SourceGrid\SourceGrid*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Tray..."
-  File "..\IR Server Suite\IR Server\IR Server Tray\bin\${Build_Type}\IR Server Tray.*"
+  File "${svn_BIN_IRSS}\IR Server Tray.*"
 
-  File "..\IR Server Suite\IR Server\IRServer.Shared\bin\${Build_Type}\IRServer.Shared.*"
-  File "..\IR Server Suite\IR Server Plugins\IR Server Plugin Interface\bin\${Build_Type}\IRServerPluginInterface.*"
+  File "${svn_BIN_IRSS}\IRServer.Shared.*"
+  File "${svn_BIN_IRSS}\IRServerPluginInterface.*"
 
   ${LOG_TEXT} "INFO" "Installing IR Server Plugins..."
-  File /r "${svn_ROOT_IRSS}\bin\${Build_Type}\Plugins"
+  File /r "${svn_BIN_IRSS}\Plugins"
   
   ; Create App Data Folder for IR Server configuration files
   CreateDirectory "${COMMON_APPDATA}\IR Server"
@@ -586,7 +587,7 @@ ${MementoSection} "Abstractor" SectionAbstractor
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Abstractor\bin\${Build_Type}\Abstractor.*"
+  File "${svn_BIN_IRSS}\Abstractor.*"
 
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\Abstractor.lnk" "$DIR_INSTALL\Abstractor.exe" "" "$DIR_INSTALL\Abstractor.exe" 0
@@ -609,7 +610,7 @@ ${MementoSection} "Debug Client" SectionDebugClient
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Debug Client\bin\${Build_Type}\DebugClient.*"
+  File "${svn_BIN_IRSS}\DebugClient.*"
 
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\Debug Client.lnk" "$DIR_INSTALL\DebugClient.exe" "" "$DIR_INSTALL\DebugClient.exe" 0
@@ -632,7 +633,7 @@ ${MementoUnselectedSection} "IR File Tool" SectionIRFileTool
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\IR File Tool\bin\${Build_Type}\IRFileTool.*"
+  File "${svn_BIN_IRSS}\IRFileTool.*"
 
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\IR File Tool.lnk" "$DIR_INSTALL\IRFileTool.exe" "" "$DIR_INSTALL\IRFileTool.exe" 0
@@ -655,7 +656,7 @@ ${MementoUnselectedSection} "Keyboard Input Relay" SectionKeyboardInputRelay
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Keyboard Input Relay\bin\${Build_Type}\KeyboardInputRelay.*"
+  File "${svn_BIN_IRSS}\KeyboardInputRelay.*"
 
   ; create start menu shortcuts
   CreateShortCut "${STARTMENU_GROUP}\Keyboard Input Relay.lnk" "$DIR_INSTALL\KeyboardInputRelay.exe" "" "$DIR_INSTALL\KeyboardInputRelay.exe" 0
@@ -681,7 +682,7 @@ ${MementoSection} "Translator" SectionTranslator
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Translator\bin\${Build_Type}\Translator.*"
+  File "${svn_BIN_IRSS}\Translator.*"
 
   ; create folders
   CreateDirectory "${COMMON_APPDATA}\Translator"
@@ -720,9 +721,9 @@ ${MementoUnselectedSection} "Virtual Remote" SectionVirtualRemote
 
   ; Installing Virtual Remote and Web Remote
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Virtual Remote\bin\${Build_Type}\VirtualRemote.*"
-  File "..\IR Server Suite\Applications\Virtual Remote Skin Editor\bin\${Build_Type}\VirtualRemoteSkinEditor.*"
-  File "..\IR Server Suite\Applications\Web Remote\bin\${Build_Type}\WebRemote.*"
+  File "${svn_BIN_IRSS}\VirtualRemote.*"
+  File "${svn_BIN_IRSS}\VirtualRemoteSkinEditor.*"
+  File "${svn_BIN_IRSS}\WebRemote.*"
 
   ; Installing skins
   SetOutPath "$DIR_INSTALL\Virtual Remote\Skins"
@@ -768,8 +769,8 @@ ${MementoUnselectedSection} "IR Blast" SectionIRBlast
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\IR Blast\bin\${Build_Type}\IRBlast.*"
-  File "..\IR Server Suite\Applications\IR Blast (No Window)\bin\${Build_Type}\IRBlast-NoWindow.*"
+  File "${svn_BIN_IRSS}\IRBlast.*"
+  File "${svn_BIN_IRSS}\IRBlast-NoWindow.*"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionIRBlast}
@@ -787,7 +788,7 @@ ${MementoUnselectedSection} "Dreambox Tuner" SectionDboxTuner
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\Dbox Tuner\bin\${Build_Type}\DboxTuner.*"
+  File "${svn_BIN_IRSS}\DboxTuner.*"
 
   ; create folders
   CreateDirectory "${COMMON_APPDATA}\Dbox Tuner"
@@ -807,7 +808,7 @@ ${MementoUnselectedSection} "Hauppauge PVR Tuner" SectionHcwPvrTuner
 
   ; install files
   SetOutPath "$DIR_INSTALL"
-  File "..\IR Server Suite\Applications\HCW PVR Tuner\bin\${Build_Type}\HcwPvrTuner.*"
+  File "${svn_BIN_IRSS}\HcwPvrTuner.*"
 
 ${MementoSectionEnd}
 !macro Remove_${SectionHcwPvrTuner}

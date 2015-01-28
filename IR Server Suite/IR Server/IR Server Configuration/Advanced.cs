@@ -83,6 +83,12 @@ namespace IRServer.Configuration
       set { comboBoxPriority.SelectedItem = value; }
     }
 
+    public string LogVerbosity
+    {
+        get { return comboBoxVerbosity.SelectedItem as string; }
+        set { comboBoxVerbosity.SelectedItem = value; }
+    }
+
     #endregion Properties
 
     #region Constructor
@@ -97,8 +103,12 @@ namespace IRServer.Configuration
         comboBoxComputer.Items.AddRange(networkPCs.ToArray());
 
       comboBoxPriority.Items.Add("No Change");
-      comboBoxPriority.Items.AddRange(Enum.GetNames(typeof (ProcessPriorityClass)));
+      comboBoxPriority.Items.AddRange(Enum.GetNames(typeof(ProcessPriorityClass)));
       comboBoxPriority.SelectedIndex = 0;
+
+      comboBoxVerbosity.Items.AddRange(Enum.GetNames(typeof(IrssLog.Level)));
+      comboBoxPriority.SelectedIndex = 0;
+   
     }
 
     #endregion Constructor
@@ -148,5 +158,6 @@ namespace IRServer.Configuration
     }
 
     #endregion Controls
+
   }
 }

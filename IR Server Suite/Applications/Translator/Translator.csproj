@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,26 +10,51 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Translator</RootNamespace>
     <AssemblyName>Translator</AssemblyName>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
     <StartupObject>Translator.Program</StartupObject>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -56,29 +81,11 @@
     <Compile Include="Forms\Advanced.Designer.cs">
       <DependentUpon>Advanced.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ButtonMappingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ButtonMappingForm.Designer.cs">
-      <DependentUpon>ButtonMappingForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\EditProgramForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\EditProgramForm.Designer.cs">
       <DependentUpon>EditProgramForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetKeyCodeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetKeyCodeForm.Designer.cs">
-      <DependentUpon>GetKeyCodeForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MacroEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MacroEditor.Designer.cs">
-      <DependentUpon>MacroEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -86,59 +93,45 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\MenuForm.cs">
+    <Compile Include="Forms\LauncherForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\MenuForm.Designer.cs">
-      <DependentUpon>MenuForm.cs</DependentUpon>
+    <Compile Include="Forms\LauncherForm.Designer.cs">
+      <DependentUpon>LauncherForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MappedEvent.cs" />
     <Compile Include="CopyDataWM.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgramSettings.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Forms\Advanced.resx">
       <DependentUpon>Advanced.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ButtonMappingForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ButtonMappingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditProgramForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>EditProgramForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetKeyCodeForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetKeyCodeForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MacroEditor.resx">
-      <DependentUpon>MacroEditor.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MenuForm.resx">
+    <EmbeddedResource Include="Forms\LauncherForm.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>MenuForm.cs</DependentUpon>
+      <DependentUpon>LauncherForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="EventSchedule.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Icon.ico" />
+    <None Include="Resources\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\IrssComms\IrssComms.csproj">
@@ -149,13 +142,12 @@
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
       <Name>IrssUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\ShellLink\ShellLink.csproj">
-      <Project>{28923F6E-8A68-4BC8-A507-825B09C3F64E}</Project>
-      <Name>ShellLink</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icon16Connecting.ico" />
+    <None Include="Resources\Icon16Connecting.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Icon16.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

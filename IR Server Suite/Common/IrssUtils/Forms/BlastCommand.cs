@@ -98,6 +98,7 @@ namespace IrssUtils.Forms
       InitializeComponent();
 
       _blastIrDelegate = blastIrDelegate;
+      buttonTest.Enabled = _blastIrDelegate != null;
 
       _baseFolder = baseFolder;
 

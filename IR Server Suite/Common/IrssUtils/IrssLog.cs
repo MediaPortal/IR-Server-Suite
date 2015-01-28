@@ -124,14 +124,17 @@ namespace IrssUtils
         }
         catch (Exception ex)
         {
-          Logger.Error(ex);
+            if (LogLevel >= Level.Error) Logger.Error(ex);
         }
       }
 
       Logger = FileLogger.CreateFileLogger(filePath, MediaPortal.Core.Logging.LogLevel.All, false, true);
 
-      Logger.Info("Log Opened");
-      Logger.Info(Assembly.GetCallingAssembly().FullName);
+      if (LogLevel >= Level.Info)
+      {
+          Logger.Info("Log Opened");
+          Logger.Info(Assembly.GetCallingAssembly().FullName);
+      }
     }
 
     /// <summary>
@@ -198,7 +201,7 @@ namespace IrssUtils
     /// </summary>
     public static void Close()
     {
-      Logger.Info("Log Closed");
+        if (LogLevel >= Level.Info)  Logger.Info("Log Closed");
     }
 
     #endregion Log file opening and closing
@@ -211,7 +214,7 @@ namespace IrssUtils
     /// <param name="ex">Exception to log.</param>
     public static void Error(Exception ex)
     {
-      Logger.Error(ex);
+        if (LogLevel >= Level.Error) Logger.Error(ex);
     }
 
     /// <summary>
@@ -221,7 +224,7 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Error(string format, params object[] args)
     {
-      Logger.Error(format, args);
+        if (LogLevel >= Level.Error) Logger.Error(format, args);
     }
 
     /// <summary>
@@ -232,7 +235,7 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Error(string format, Exception ex, params object[] args)
     {
-      Logger.Error(format, ex, args);
+        if (LogLevel >= Level.Error) Logger.Error(format, ex, args);
     }
 
     /// <summary>
@@ -242,7 +245,7 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Warn(string format, params object[] args)
     {
-      Logger.Warn(format, args);
+        if (LogLevel >= Level.Warn) Logger.Warn(format, args);
     }
 
     /// <summary>
@@ -253,7 +256,7 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Warn(string format, Exception ex, params object[] args)
     {
-      Logger.Warn(format, ex, args);
+        if (LogLevel >= Level.Warn) Logger.Warn(format, ex, args);
     }
 
     /// <summary>
@@ -263,7 +266,7 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Info(string format, params object[] args)
     {
-      Logger.Info(format, args);
+        if (LogLevel >= Level.Info) Logger.Info(format, args);
     }
 
     /// <summary>
@@ -274,7 +277,7 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Info(string format, Exception ex, params object[] args)
     {
-      Logger.Info(format, ex, args);
+        if (LogLevel >= Level.Info) Logger.Info(format, ex, args);
     }
 
     /// <summary>
@@ -284,7 +287,7 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Debug(string format, params object[] args)
     {
-      Logger.Debug(format, args);
+        if (LogLevel >= Level.Debug) Logger.Debug(format, args);
     }
 
     /// <summary>
@@ -295,7 +298,7 @@ namespace IrssUtils
     /// <param name="args">String format arguments.</param>
     public static void Debug(string format, Exception ex, params object[] args)
     {
-      Logger.Debug(format, ex, args);
+        if (LogLevel >= Level.Debug) Logger.Debug(format, ex, args);
     }
 
     #endregion Log recording methods

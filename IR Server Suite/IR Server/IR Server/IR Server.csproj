@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +14,7 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <ApplicationIcon>Resources\iconGreen.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -35,7 +36,31 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>
+    </DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -47,7 +72,20 @@
     <OutputPath>..\..\..\bin\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevAge.Core, Version=4.10.2845.21697, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SourceGrid\DevAge.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core">
@@ -135,8 +173,8 @@
     <Content Include="Abstract Remote Maps\iMon USB\Imon PAD.xml" />
     <Content Include="Abstract Remote Maps\iMon USB\Imon Volume Knob.xml" />
     <Content Include="Abstract Remote Maps\iMon USB\Microsoft MCE.xml" />
-    <None Include="app.config" />
     <None Include="PostBuild.bat" />
+    <None Include="Properties\app.manifest" />
     <None Include="Resources\iconGreen.ico" />
     <None Include="RemoteTable.xsc">
       <DependentUpon>RemoteTable.xsd</DependentUpon>
@@ -194,7 +232,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>"$(ProjectDir)PostBuild.bat" "$(SolutionDir)" $(ConfigurationName) "$(TargetDir)"
-    </PostBuildEvent>
+</PostBuildEvent>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>

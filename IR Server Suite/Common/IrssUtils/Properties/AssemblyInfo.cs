@@ -32,5 +32,4 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("IR Server Suite Utils")]
 [assembly: AssemblyDescription("IR Server Suite Utility Library")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]
 [assembly: NeutralResourcesLanguage("en")]

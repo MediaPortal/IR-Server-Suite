@@ -41,6 +41,7 @@ namespace Translator
     private readonly List<ButtonMapping> _systemWideMappings;
     private bool _hideTrayIcon;
     private string _processPriority;
+    private string _logVerbosity;
     private string _serverHost;
 
     #endregion Variables
@@ -70,6 +71,17 @@ namespace Translator
     }
 
     /// <summary>
+    /// Gets or sets the Log  verbosity level.
+    /// </summary>
+    /// <value>The verbosity level.</value>
+    [XmlElement]
+    public string LogVerbosity
+    {
+        get { return _logVerbosity; }
+        set { _logVerbosity = value; }
+    }
+
+      /// <summary>
     /// Gets or sets a value indicating whether to hide the tray icon.
     /// </summary>
     /// <value><c>true</c> to hide the tray icon; otherwise, <c>false</c>.</value>
@@ -121,6 +133,7 @@ namespace Translator
     {
       _serverHost = "localhost";
       _processPriority = "No Change";
+      _logVerbosity = "Off";
       _hideTrayIcon = false;
 
       _systemWideMappings = new List<ButtonMapping>();

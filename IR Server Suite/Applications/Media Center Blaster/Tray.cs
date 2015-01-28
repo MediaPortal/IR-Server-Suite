@@ -566,7 +566,7 @@ namespace MediaCenterBlaster
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    internal static bool LearnIR(string fileName)
+    internal static bool LearnIR(string fileName, LearnStatusDelegate learnStatus=null)
     {
       try
       {
@@ -938,7 +938,7 @@ namespace MediaCenterBlaster
           case MessageType.LearnIR:
             if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
             {
-              IrssLog.Debug("Learned IR Successfully");
+              IrssLog.Debug("Learnt IR Successfully");
 
               byte[] dataBytes = received.GetDataAsBytes();
 

@@ -76,8 +76,8 @@ namespace IRServer
     public static ServiceController[] serviceControllers;
     private static IntPtr irsWindow;
 
-    public static IrsStatus _irsStatus;
-    public static bool _serviceInstalled;
+    public static IrsStatus irsStatus;
+    public static bool serviceInstalled;
 
     #endregion
 
@@ -180,7 +180,7 @@ namespace IRServer
     {
       IrssLog.Info("Restarting IR Server");
 
-      switch (Shared._irsStatus)
+      switch (Shared.irsStatus)
       {
         case IrsStatus.RunningService:
           {
@@ -329,16 +329,16 @@ namespace IRServer
 
     public static void getStatus()
     {
-      _irsStatus = IrsStatus.NotRunning;
-      _serviceInstalled = false;
+      irsStatus = IrsStatus.NotRunning;
+      serviceInstalled = false;
       serviceControllers = ServiceController.GetServices();
       foreach (ServiceController serviceController in serviceControllers)
       {
         if (serviceController.ServiceName == ServerName)
         {
-          _serviceInstalled = true;
+          serviceInstalled = true;
           if (serviceController.Status == ServiceControllerStatus.Running)
-            _irsStatus = IrsStatus.RunningService;
+            irsStatus = IrsStatus.RunningService;
         }
       }
 
@@ -346,7 +346,7 @@ namespace IRServer
       {
         irsWindow = Win32.FindWindowByTitle(ServerWindowName);
         if (irsWindow != IntPtr.Zero)
-          _irsStatus = IrsStatus.RunningApplication;
+          irsStatus = IrsStatus.RunningApplication;
       }
       catch { }
     }

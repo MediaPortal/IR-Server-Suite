@@ -20,6 +20,7 @@ namespace IRServer
     public static IRServerMode Mode { get; set; }
     public static string HostComputer { get; set; }
     public static string ProcessPriority { get; set; }
+    public static string LogVerbosity { get; set; }
     public static string[] PluginNameReceive { get; set; }
     public static string PluginNameTransmit { get; set; }
 
@@ -34,6 +35,7 @@ namespace IRServer
       Mode = IRServerMode.ServerMode;
       HostComputer = String.Empty;
       ProcessPriority = "No Change";
+      LogVerbosity = "Off";
       PluginNameReceive = null;
       PluginNameTransmit = String.Empty;
 
@@ -105,6 +107,15 @@ namespace IRServer
 
       try
       {
+          LogVerbosity = doc.DocumentElement.Attributes["LogVerbosity"].Value;
+      }
+      catch (Exception ex)
+      {
+          IrssLog.Warn(ex.ToString());
+      }
+
+      try
+      {
         PluginNameTransmit = doc.DocumentElement.Attributes["PluginTransmit"].Value;
       }
       catch (Exception ex)
@@ -145,6 +156,7 @@ namespace IRServer
           writer.WriteAttributeString("Mode", Enum.GetName(typeof(IRServerMode), Mode));
           writer.WriteAttributeString("HostComputer", HostComputer);
           writer.WriteAttributeString("ProcessPriority", ProcessPriority);
+          writer.WriteAttributeString("LogVerbosity", LogVerbosity);
           writer.WriteAttributeString("PluginTransmit", PluginNameTransmit);
 
           if (PluginNameReceive != null)

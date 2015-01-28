@@ -32,1539 +32,1336 @@ using System.Xml.Serialization;
 using IrssComms;
 using IrssUtils;
 using IrssUtils.Forms;
-using MSjogren.Samples.ShellLink;
 using Translator.Properties;
 
 namespace Translator
 {
-  internal partial class MainForm : Form
-  {
-    #region Constants
-
-    private const string SystemWide = "System Wide";
-
-    #endregion Constants
-
-    #region Variables
-
-    private LearnIR _learnIR;
-
-    private int _selectedProgram;
-
-    #endregion Variables
-
-    #region Constructor
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MainForm"/> class.
-    /// </summary>
-    public MainForm()
+    internal partial class MainForm : Form
     {
-      InitializeComponent();
-      SetImages();
 
-      RefreshProgramList();
-      programsListView.Items[0].Selected = true;
+        // --------------------------------------------------------------------------------------------------
+        #region Attributes
 
-      RefreshMappingList();
-      RefreshEventList();
-      RefreshEventCommands();
-      RefreshIRList();
-      RefreshMacroList();
+        // Constant
+        private const string SystemWide = "System Wide";
+        private const string _listBoxHistoryEventsInitialMsg = "  Press a remote button to show its event...";
+        private const string _mappingsGridViewCellInitialMsg = "This property should be assigned";
+        private const string _mappingsGridViewCellDuplicateMsg = "Code mapped {0} times";
 
-      try
-      {
-        checkBoxAutoRun.Checked = SystemRegistry.GetAutoRun("Translator");
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
+        // Variable
+        private int _selectedProgram;
+        private CommandManager commandManager;
+        private bool _programsListViewRefreshAppend = false;
+        private bool _mappingRowMode = true;
+        private bool _mappingBypassSelectionChanged = false;
 
-        checkBoxAutoRun.Checked = false;
-      }
-    }
-
-    #endregion Constructor
-
-    private void SetImages()
-    {
-      // main menu
-      this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
-      this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
-      this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
-      this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
-
-      this.serverToolStripMenuItem.Image = IrssUtils.Properties.Resources.ChangeServer;
-
-      this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
-      this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
-
-      // programs panel
-      this.addProgramToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
-      this.addProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-      this.editProgramToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
-      this.editProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-      this.removeProgramToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
-      this.removeProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-
-      this.addProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.editProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
-      this.removeProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-
-      // mappings panel
-      this.newMappingToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
-      this.editMappingToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteMappingToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
-      this.clearMappingsToolStripButton.Image = IrssUtils.Properties.Resources.DeleteAll;
-      this.remapToolStripButton.Image = IrssUtils.Properties.Resources.Remap;
-
-      this.newMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.editMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-      this.clearMappingsToolStripMenuItem.Image = IrssUtils.Properties.Resources.DeleteAll;
-      this.remapToolStripMenuItem.Image = IrssUtils.Properties.Resources.Remap;
-      this.copyMappingsFromToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
-
-      // evens tab
-      this.addEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.removeEventToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-
-      // macros tab
-      this.newMacroToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
-      this.editMacroToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteMacroToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
-      this.createShortcutForMacroToolStripButton.Image = IrssUtils.Properties.Resources.Shortcut;
-      this.testMacroToolStripButton.Image = IrssUtils.Properties.Resources.MoveRight;
-
-      this.addMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.editMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-      this.createShortcutForMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.Shortcut;
-      this.testMacroToolStripMenuItem.Image = IrssUtils.Properties.Resources.MoveRight;
-
-      // ir commands tab
-      this.newIRToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
-      this.editIRToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteIRToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
-
-      this.addIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
-      this.editIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
-      this.deleteIRToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
-    }
-
-    #region Implementation
-
-    #region Main Form
-
-    private void MainForm_Load(object sender, EventArgs e)
-    {
-      Program.HandleMessage += ReceivedMessage;
-    }
-
-    private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-    {
-      Program.HandleMessage -= ReceivedMessage;
-
-      CommitEvents();
-
-      Configuration.Save(Program.Config, Program.ConfigFile);
-    }
-
-    private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
-    {
-      IrssHelp.Open(sender);
-    }
-
-
-    private void buttonOK_Click(object sender, EventArgs e)
-    {
-      Close();
-    }
-
-    private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      switch (tabControl.SelectedTab.Name)
-      {
-        case "tabPageIRCodes":
-          RefreshIRList();
-          break;
-
-        case "tabPageMacro":
-          RefreshMacroList();
-          break;
-
-        case "tabPageEvents":
-          RefreshEventCommands();
-          break;
-
-        case "tabPagePrograms":
-          break;
-      }
-    }
-
-    private void checkBoxAutoRun_CheckedChanged(object sender, EventArgs e)
-    {
-      if (checkBoxAutoRun.Checked)
-        SystemRegistry.SetAutoRun("Translator", Application.ExecutablePath);
-      else
-        SystemRegistry.RemoveAutoRun("Translator");
-    }
-
-
-    #region Menus
-
-    private void NewConfig(object sender, EventArgs e)
-    {
-      if (
-        MessageBox.Show(this, "Are you sure you want to start a new configuration?", "New Configuration",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-        return;
-
-      Program.Config = new Configuration();
-
-      RefreshProgramList();
-      RefreshMappingList();
-      RefreshEventList();
-    }
-
-    private void OpenConfig(object sender, EventArgs e)
-    {
-      openFileDialog.Title = "Open settings file ...";
-
-      if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-      {
-        Configuration newConfig = Configuration.Load(openFileDialog.FileName);
-
-        if (newConfig == null)
-          return;
-
-        Program.Config = newConfig;
-
-        RefreshProgramList();
-        RefreshMappingList();
-        RefreshEventList();
-      }
-    }
-
-    private void ImportConfig(object sender, EventArgs e)
-    {
-      openFileDialog.Title = "Import settings ...";
-
-      if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-      {
-        Configuration newConfig = Configuration.Load(openFileDialog.FileName);
-        if (newConfig == null)
-          return;
-
-        Program.Config.Import(newConfig);
-
-        RefreshProgramList();
-        RefreshMappingList();
-        RefreshEventList();
-      }
-    }
-
-    private void ExportConfig(object sender, EventArgs e)
-    {
-      if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
-      {
-        if (!Configuration.Save(Program.Config, saveFileDialog.FileName))
-          MessageBox.Show(this, "Failed to export settings to file", "Export failed", MessageBoxButtons.OK,
-                          MessageBoxIcon.Error);
-      }
-    }
-
-
-    private void SetServer(object sender, EventArgs e)
-    {
-      ServerAddress serverAddress = new ServerAddress(Program.Config.ServerHost);
-      if (serverAddress.ShowDialog(this) == DialogResult.OK)
-      {
-        Program.StopClient();
-
-        Program.Config.ServerHost = serverAddress.ServerHost;
-
-        IPAddress serverIP = Network.GetIPFromName(Program.Config.ServerHost);
-        IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
-
-        Program.StartClient(endPoint);
-      }
-    }
-
-    private void ShowAdvancedSettings(object sender, EventArgs e)
-    {
-      Advanced advanced = new Advanced();
-      advanced.ProcessPriority = Program.Config.ProcessPriority;
-      advanced.HideTrayIcon = Program.Config.HideTrayIcon;
-
-      if (advanced.ShowDialog(this) == DialogResult.OK)
-      {
-        if (!advanced.ProcessPriority.Equals(Program.Config.ProcessPriority, StringComparison.OrdinalIgnoreCase))
+        // Properties
+        private bool _edited;
+        private bool Edited
         {
-          Program.Config.ProcessPriority = advanced.ProcessPriority;
-          Program.AdjustPriority(Program.Config.ProcessPriority);
-        }
-
-        Program.Config.HideTrayIcon = advanced.HideTrayIcon;
-        Program.TrayIcon.Visible = !Program.Config.HideTrayIcon;
-      }
-    }
-
-
-    private void CloseMainForm(object sender, EventArgs e)
-    {
-      this.Close();
-    }
-
-    private void ExitApplication(object sender, EventArgs e)
-    {
-      Application.Exit();
-    }
-
-
-    private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      IrssHelp.Open(this);
-    }
-
-    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      new AboutForm().ShowDialog();
-    }
-
-    private void removeEventToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
-        listViewEventMap.Items.Remove(listViewItem);
-    }
-
-    #endregion Menus
-
-    #endregion Main Form
-
-    #region Programs Panel
-
-    private void RefreshProgramList()
-    {
-      imageListPrograms.Images.Clear();
-      imageListPrograms.Images.Add(IrssUtils.Properties.Resources.WinLogo);
-      imageListPrograms.Images.Add(Win32.ExclamationMark);
-
-      //imageListPrograms.Images.Add(Properties.Resources.NoIcon);
-
-      string wasSelected = string.Empty;
-      if (programsListView.Items.Count > 0)
-        wasSelected = programsListView.Items[_selectedProgram].Text;
-
-      programsListView.Items.Clear();
-      _selectedProgram = 0;
-
-      // Add System-Wide ...
-      ListViewItem newItem = new ListViewItem(SystemWide, 0);
-      newItem.ToolTipText = "Defines mappings that effect the whole computer";
-      programsListView.Items.Add(newItem);
-
-      // Add other programs ...
-      int imageIndex = 2;
-      foreach (ProgramSettings progSettings in Program.Config.Programs)
-      {
-        Icon icon = null;
-
-        if (!String.IsNullOrEmpty(progSettings.FileName))
-          icon = Win32.GetIconFromFile(progSettings.FileName);
-
-        if (icon != null)
-        {
-          imageListPrograms.Images.Add(icon);
-          newItem = new ListViewItem(progSettings.Name, imageIndex++);
-          newItem.ToolTipText = progSettings.FileName;
-        }
-        else
-        {
-          newItem = new ListViewItem(progSettings.Name, 1);
-          newItem.ToolTipText = "Please check program file path";
-        }
-
-        programsListView.Items.Add(newItem);
-
-        if (progSettings.Name.Equals(wasSelected))
-          newItem.Selected = true;
-      }
-
-      if (wasSelected.Equals(SystemWide) || programsListView.SelectedItems.Count == 0)
-        programsListView.Items[0].Selected = true;
-
-      Program.UpdateNotifyMenu();
-    }
-
-
-    private void AddProgram()
-    {
-      ProgramSettings progSettings = new ProgramSettings();
-
-      if (EditProgram(progSettings))
-      {
-        Program.Config.Programs.Add(progSettings);
-
-        RefreshProgramList();
-
-        // TODO: Detect and offer preconfigured settings ...
-        /*
-        string programFile = Path.GetFileName(progSettings.FileName);
-        string settingsFile = Path.Combine(Program.FolderDefaultSettings, programFile + ".xml");
-        if (File.Exists(settingsFile))
-        {
-          if (MessageBox.Show(this, String.Format("Do you want to use the default settings for {0} ({1})?", progSettings.Name, programFile), "Default settings available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-          {
-            AppProfile appProfile = LoadDefaultSettings(settingsFile);
-
-            if (appProfile != null)
+            get { return _edited; }
+            set
             {
-              progSettings.ButtonMappings.AddRange(appProfile.ButtonMappings);
-
-              RefreshButtonList();
+                _edited = value;
+                this.saveToolStripMenuItem.Enabled = _edited;
+                this.SaveToolStripButton.Enabled = _edited;
             }
-          }
         }
-        */
-      }
-    }
 
-    private void AddProgram(object sender, EventArgs e)
-    {
-      AddProgram();
-    }
-
-    private bool EditProgram()
-    {
-      if (_selectedProgram == 0)
-        return false;
-      //if (programsListView.SelectedItems.Count == 0)
-      //  return;
-
-      string selectedItem = programsListView.Items[_selectedProgram].Text;
-      //string selectedItem = programsListView.SelectedItems[0].Text;
-
-      return EditProgram(selectedItem);
-      //EditProgram(selectedItem);
-    }
-
-    private void EditProgram(object sender, EventArgs e)
-    {
-      EditProgram();
-    }
-
-    private bool EditProgram(string programName)
-    {
-      foreach (ProgramSettings progSettings in Program.Config.Programs)
-      {
-        if (progSettings.Name.Equals(programName))
+        private bool _connected;
+        public bool Connected
         {
-          if (EditProgram(progSettings))
-          {
+            get { return _connected; }
+            set
+            {
+                _connected = value;
+                if (_connected)
+                {
+                    this.SafeInvoke(() =>
+                    {
+                        this.labelConnect.Image = IrssUtils.Properties.Resources.Connect;
+                        this.toolTip.SetToolTip(this.labelConnect, "connected to IR server");
+                    });
+                } 
+                else
+                {
+                    this.SafeInvoke(() =>
+                    {
+                        this.labelConnect.Image = IrssUtils.Properties.Resources.Disconnect;
+                        this.toolTip.SetToolTip(this.labelConnect, "disconnected");
+                    });
+                }
+            }
+        }
+
+
+        #endregion Attributes
+
+        // --------------------------------------------------------------------------------------------------
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainForm"/> class.
+        /// </summary>
+        public MainForm()
+        {
+            InitializeComponent();
+            InitializeCommandManager();
+            SetImages();
+
             RefreshProgramList();
-            return true;
-          }
-          else
-          {
-            return false;
-          }
-        }
-      }
+            programsListView.Items[0].Selected = true;
 
-      return false;
-    }
+            // refresh Event tab
+            listBoxHistoryEvents.Items.Add(_listBoxHistoryEventsInitialMsg);
+            listBoxTranslatorEvents.Items.Clear();
+            foreach (string eventName in Enum.GetNames(typeof(MappingEvent)))
+                if (!eventName.Equals("None", StringComparison.OrdinalIgnoreCase))
+                    listBoxTranslatorEvents.Items.Add(eventName);
 
-    private bool EditProgram(ProgramSettings progSettings)
-    {
-      EditProgramForm editProg = new EditProgramForm(progSettings);
+            listBoxTranslatorEvents.ClearSelected();
 
-      if (editProg.ShowDialog(this) == DialogResult.OK)
-      {
-        progSettings.Name = editProg.DisplayName;
-        progSettings.FileName = editProg.Filename;
-        progSettings.Folder = editProg.StartupFolder;
-        progSettings.Arguments = editProg.Parameters;
-        progSettings.WindowState = editProg.StartState;
-        progSettings.UseShellExecute = editProg.UseShellExecute;
-        progSettings.IgnoreSystemWide = editProg.IgnoreSystemWide;
+            // Refresh Mapping list
+            RefreshMappingList();
 
-        Program.UpdateNotifyMenu();
-        return true;
-      }
+            mappingsGridView.CurrentCell = null;
+            mappingsGridView.ClearSelection();
 
-      return false;
-    }
+            Edited = false;
+            Connected = false;
 
-    private void DeleteProgram(object sender, EventArgs e)
-    {
-      if (programsListView.SelectedItems.Count == 0)
-        return;
-
-      string selectedItem = programsListView.SelectedItems[0].Text;
-
-      string message = String.Format("Are you sure you want to remove all mappings for {0}?", selectedItem);
-      string caption = String.Format("Remove {0}?", selectedItem);
-
-      if (MessageBox.Show(this, message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-      {
-        foreach (ProgramSettings progSettings in Program.Config.Programs)
-        {
-          if (progSettings.Name.Equals(selectedItem))
-          {
-            Program.Config.Programs.Remove(progSettings);
-            break;
-          }
         }
 
-        RefreshProgramList();
-      }
-    }
-
-
-    private void programsListView_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      // only update '_selectedProgram' related things if there is a new item selected
-      // do nothing, if nothing is selected
-      if (programsListView.SelectedItems.Count > 0)
-      {
-        _selectedProgram = programsListView.SelectedIndices[0];
-        RefreshMappingList();
-      }
-
-      if (programsListView.SelectedIndices.Count != 1 || _selectedProgram == 0)
-      {
-        editProgramToolStripMenuItem.Text = "&Edit ...";
-        removeProgramToolStripMenuItem.Text = "&Remove ...";
-
-        editProgramToolStripButton.Enabled = false;
-        editProgramToolStripMenuItem.Enabled = false;
-        removeProgramToolStripButton.Enabled = false;
-        removeProgramToolStripMenuItem.Enabled = false;
-      }
-      else
-      {
-        string program = programsListView.Items[_selectedProgram].Text;
-
-        editProgramToolStripMenuItem.Text = String.Format("&Edit \"{0}\"", program);
-        removeProgramToolStripMenuItem.Text = String.Format("&Remove \"{0}\"", program);
-
-        editProgramToolStripButton.Enabled = true;
-        editProgramToolStripMenuItem.Enabled = true;
-        removeProgramToolStripButton.Enabled = true;
-        removeProgramToolStripMenuItem.Enabled = true;
-      }
-    }
-
-    #endregion Programs Panel
-
-    #region Mappings Panel
-
-    private void RefreshMappingList()
-    {
-      mappingsListView.Items.Clear();
-
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      foreach (ButtonMapping map in currentMappings)
-      {
-        mappingsListView.Items.Add(
-          new ListViewItem(
-            new string[] {map.KeyCode, map.Description, map.Command}
-            )
-          );
-      }
-
-      mappingsListView_SelectedIndexChanged(null, null);
-    }
-
-
-    private void NewButtonMapping()
-    {
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      GetKeyCodeForm getKeyCode = new GetKeyCodeForm();
-      getKeyCode.ShowDialog(this);
-
-      string keyCode = getKeyCode.KeyCode;
-      string deviceName = getKeyCode.DeviceName;
-
-      if (String.IsNullOrEmpty(keyCode))
-        return;
-
-      ButtonMappingForm map = null;
-      ButtonMapping existing = null;
-
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (keyCode.Equals(test.KeyCode, StringComparison.Ordinal))
+        private void SetImages()
         {
-          existing = test;
-          map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
-          break;
-        }
-      }
+            // main menu
+            this.newToolStripMenuItem.Image = IrssUtils.Properties.Resources.NewDocument;
+            this.saveToolStripMenuItem.Image = IrssUtils.Properties.Resources.Save;
+            this.openToolStripMenuItem.Image = IrssUtils.Properties.Resources.OpenDocument;
+            this.importToolStripMenuItem.Image = IrssUtils.Properties.Resources.ImportDocument;
+            this.exportToolStripMenuItem.Image = IrssUtils.Properties.Resources.ExportDocument;
 
-      if (map == null)
-      {
-        string description = String.Empty;
+            this.serverToolStripMenuItem.Image = IrssUtils.Properties.Resources.ChangeServer;
+            this.advancedToolStripMenuItem.Image = IrssUtils.Properties.Resources.Advanced;
 
-        // TODO: Implement abstract remote button descriptions.
-        if (deviceName.Equals("Abstract", StringComparison.OrdinalIgnoreCase))
-        {
-          switch (keyCode.ToLowerInvariant())
-          {
-            case "Red":
-              description = "Red teletext button";
-              break;
-          }
+            this.contentsToolStripMenuItem.Image = IrssUtils.Properties.Resources.Help;
+            this.aboutToolStripMenuItem.Image = IrssUtils.Properties.Resources.Info;
+
+            // programs panel
+            this.addProgramToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
+            this.addProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            this.editProgramToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
+            this.editProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            this.removeProgramToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
+            this.removeProgramToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+
+            this.addProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
+            this.editProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
+            this.removeProgramToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
+
+            // mappings panel
+            this.buttonAddCommand.Image = IrssUtils.Properties.Resources.ScrollLeft;
+            this.SaveToolStripButton.Image = IrssUtils.Properties.Resources.Save;
+
+            this.newMappingToolStripButton.Image = IrssUtils.Properties.Resources.Plus;
+            this.testMappingToolStripButton.Image = IrssUtils.Properties.Resources.Run;
+            this.editMappingToolStripButton.Image = IrssUtils.Properties.Resources.Edit;
+            this.deleteMappingToolStripButton.Image = IrssUtils.Properties.Resources.Delete;
+            this.copyMappingDropDownButton.Image = IrssUtils.Properties.Resources.CopyDocument;
+            
+            this.newMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Plus;
+            this.testMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Run;
+            this.editMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Edit;
+            this.deleteMappingToolStripMenuItem.Image = IrssUtils.Properties.Resources.Delete;
+            this.copyMappingsToolStripMenuItem.Image = IrssUtils.Properties.Resources.CopyDocument;
+
+            // Events panel
+            this.clearAllToolStripMenuItem.Image = IrssUtils.Properties.Resources.DeleteAll;
+
         }
 
-        map = new ButtonMappingForm(keyCode, description, String.Empty);
-      }
+        #endregion Constructor
 
-      if (map.ShowDialog(this) == DialogResult.OK)
-      {
-        if (existing == null) // Create new mapping
-        {
-          mappingsListView.Items.Add(
-            new ListViewItem(
-              new string[] { map.KeyCode, map.Description, map.Command }
-              ));
 
-          currentMappings.Add(new ButtonMapping(map.KeyCode, map.Description, map.Command));
-        }
-        else // Replace existing mapping
+        // --------------------------------------------------------------------------------------------------
+        #region Main Form
+
+        private void buttonAddCommand_Click(object sender, EventArgs e)
         {
-          for (int index = 0; index < mappingsListView.Items.Count; index++)
-          {
-            if (mappingsListView.Items[index].SubItems[0].Text.Equals(map.KeyCode, StringComparison.Ordinal))
+            if (tabControl.SelectedTab == tabPageEvents)
             {
-              mappingsListView.Items[index].SubItems[1].Text = map.Description;
-              mappingsListView.Items[index].SubItems[2].Text = map.Command;
+                InsertEvent();
             }
-          }
-
-          existing.Description = map.Description;
-          existing.Command = map.Command;
+            else if (tabControl.SelectedTab == tabPageCommands)
+            {
+                InsertCommand();
+            }
         }
-      }
-    }
-    private void NewButtonMapping(object sender, EventArgs e)
-    {
-      NewButtonMapping();
-    }
 
-    private void DeleteButtonMapping()
-    {
-      if (mappingsListView.SelectedIndices.Count != 1)
-        return;
-
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      ListViewItem item = mappingsListView.SelectedItems[0];
-      mappingsListView.Items.Remove(item);
-
-      ButtonMapping toRemove = null;
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (test.KeyCode.Equals(item.SubItems[0].Text, StringComparison.Ordinal))
+        private void SaveConfig()
         {
-          toRemove = test;
-          break;
+            Configuration.Save(Program.Config, Program.ConfigFile);
+            Edited = false;
         }
-      }
 
-      if (toRemove != null)
-        currentMappings.Remove(toRemove);
-    }
-    private void DeleteButtonMapping(object sender, EventArgs e)
-    {
-      DeleteButtonMapping();
-    }
-
-    private void EditButtonMapping()
-    {
-      if (mappingsListView.SelectedIndices.Count != 1)
-        return;
-
-      ListViewItem item = mappingsListView.SelectedItems[0];
-
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (item.SubItems[0].Text.Equals(test.KeyCode, StringComparison.Ordinal))
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-          ButtonMappingForm map = new ButtonMappingForm(test.KeyCode, test.Description, test.Command);
+            if (Edited == true)
+            {
+                var result = MessageBox.Show(this, "Configuration has changed.\n\rDo you want to save it before you quit ?", "Translator",
+                                  MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
-          if (map.ShowDialog(this) == DialogResult.OK)
-          {
-            item.SubItems[1].Text = map.Description;
-            item.SubItems[2].Text = map.Command;
-
-            test.Description = map.Description;
-            test.Command = map.Command;
-          }
-
-          break;
+                if (result == DialogResult.Yes) SaveConfig();
+                else if (result == DialogResult.Cancel || result == DialogResult.Abort) e.Cancel = true;
+            }
         }
-      }
-    }
-    private void EditButtonMapping(object sender, EventArgs e)
-    {
-      EditButtonMapping();
-    }
 
-    private void ClearButtonMappings()
-    {
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      if (
-        MessageBox.Show(this, "Are you sure you want to clear all remote button mappings?", "Warning",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-        return;
-
-      currentMappings.Clear();
-      mappingsListView.Items.Clear();
-    }
-    private void ClearButtonMappings(object sender, EventArgs e)
-    {
-      ClearButtonMappings();
-    }
-
-    private void RemapButtonMapping()
-    {
-      if (mappingsListView.SelectedIndices.Count != 1)
-        return;
-
-      ListViewItem item = mappingsListView.SelectedItems[0];
-
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      ButtonMapping toModify = null;
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (test.KeyCode.Equals(item.SubItems[0].Text, StringComparison.Ordinal))
+        private void MainForm_HelpRequested(object sender, HelpEventArgs hlpevent)
         {
-          toModify = test;
-          break;
+            IrssHelp.Open(sender);
         }
-      }
 
-      if (toModify == null)
-        return;
-
-      GetKeyCodeForm getKeyCode = new GetKeyCodeForm();
-      getKeyCode.ShowDialog(this);
-
-      string keyCode = getKeyCode.KeyCode;
-      if (String.IsNullOrEmpty(keyCode))
-        return;
-
-      foreach (ButtonMapping test in currentMappings)
-      {
-        if (test.KeyCode.Equals(keyCode, StringComparison.Ordinal))
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-          MessageBox.Show(this,
-                          String.Format("{0} is already mapped to {1} ({2})", keyCode, test.Description, test.Command),
-                          "Cannot remap", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-          return;
+            switch (tabControl.SelectedTab.Name)
+            {
+                case "tabPageEvents":
+                    break;
+
+                case "tabPageCommands":
+                    commandManager.IRServer = Program.TransceiverInformation;
+                    break;
+            }
         }
-      }
 
-      item.SubItems[0].Text = keyCode;
+        #endregion Main Form
 
-      toModify.KeyCode = keyCode;
-    }
-    private void RemapButtonMapping(object sender, EventArgs e)
-    {
-      RemapButtonMapping();
-    }
 
-    private void CopyMappingsFromOtherProgram(string programName)
-    {
-      if (programName.Equals(SystemWide))
-      {
-        ImportButtons(Program.Config.SystemWideMappings);
-        return;
-      }
+        // --------------------------------------------------------------------------------------------------
+        #region Menus
 
-      foreach (ProgramSettings programSettings in Program.Config.Programs)
-      {
-        if (programSettings.Name.Equals(programName, StringComparison.OrdinalIgnoreCase))
+        private void SaveToolStripButton_Click(object sender, EventArgs e)
         {
-          ImportButtons(programSettings.ButtonMappings);
-          return;
+            SaveConfig();
         }
-      }
-    }
-    private void CopyMappingsFromOtherProgram(object sender, EventArgs e)
-    {
-      ToolStripMenuItem origin = sender as ToolStripMenuItem;
-      if (origin == null)
-        return;
 
-      CopyMappingsFromOtherProgram(origin.Text);
-      RefreshMappingList();
-    }
-
-
-    private void mappingsContextMenuStrip_Opening(object sender, CancelEventArgs e)
-    {
-      copyMappingsFromToolStripMenuItem.DropDownItems.Clear();
-
-      string selectedItem = programsListView.Items[_selectedProgram].Text;
-
-      if (_selectedProgram > 0)
-        copyMappingsFromToolStripMenuItem.DropDownItems.Add(SystemWide, IrssUtils.Properties.Resources.WinLogo,
-                                                           CopyMappingsFromOtherProgram);
-
-      foreach (ProgramSettings programSettings in Program.Config.Programs)
-      {
-        if (programSettings.Name.Equals(selectedItem))
-          continue;
-
-        if (String.IsNullOrEmpty(programSettings.FileName))
-          continue;
-
-        ToolStripItem item = new ToolStripMenuItem();
-        item.Text = programSettings.Name;
-        item.Image = Win32.GetImageFromFile(programSettings.FileName);
-        item.Click += CopyMappingsFromOtherProgram;
-
-        copyMappingsFromToolStripMenuItem.DropDownItems.Add(item);
-      }
-
-      copyMappingsFromToolStripMenuItem.Enabled = copyMappingsFromToolStripMenuItem.DropDownItems.Count > 0;
-    }
-
-    private void mappingsListView_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (mappingsListView.SelectedIndices.Count != 1)
-      {
-        editMappingToolStripButton.Enabled = false;
-        editMappingToolStripMenuItem.Enabled = false;
-        deleteMappingToolStripButton.Enabled = false;
-        deleteMappingToolStripMenuItem.Enabled = false;
-        remapToolStripButton.Enabled = false;
-        remapToolStripMenuItem.Enabled = false;
-      }
-      else
-      {
-        editMappingToolStripButton.Enabled = true;
-        editMappingToolStripMenuItem.Enabled = true;
-        deleteMappingToolStripButton.Enabled = true;
-        deleteMappingToolStripMenuItem.Enabled = true;
-        remapToolStripButton.Enabled = true;
-        remapToolStripMenuItem.Enabled = true;
-      }
-    }
-
-    private void mappingsListView_KeyDown(object sender, KeyEventArgs e)
-    {
-      e.Handled = true;
-
-      switch (e.KeyData)
-      {
-        case Keys.OemMinus:
-        case Keys.Delete:
-          DeleteButtonMapping();
-          break;
-
-        case Keys.F2:
-        case Keys.Enter:
-          EditButtonMapping();
-          break;
-
-        case Keys.Oemplus:
-        case Keys.Insert:
-          NewButtonMapping();
-          break;
-
-        default:
-          e.Handled = false;
-          break;
-      }
-    }
-
-    #endregion Mappings Panel
-
-    #region Events Tab
-
-    private void RefreshEventList()
-    {
-      listViewEventMap.Items.Clear();
-
-      foreach (MappedEvent mappedEvent in Program.Config.Events)
-      {
-        listViewEventMap.Items.Add(
-          new ListViewItem(
-            new string[] { Enum.GetName(typeof(MappingEvent), mappedEvent.EventType), mappedEvent.Command }
-            )
-          );
-      }
-
-      // refresh combobox
-      comboBoxEvents.Items.Clear();
-      foreach (string eventName in Enum.GetNames(typeof(MappingEvent)))
-        if (!eventName.Equals("None", StringComparison.OrdinalIgnoreCase))
-          comboBoxEvents.Items.Add(eventName);
-
-      comboBoxEvents.SelectedIndex = 0;
-
-      // refresh context menu
-      addEventToolStripMenuItem.DropDownItems.Clear();
-      foreach (string eventName in Enum.GetNames(typeof(MappingEvent)))
-        if (!eventName.Equals("None", StringComparison.OrdinalIgnoreCase))
-          addEventToolStripMenuItem.DropDownItems.Add(
-            eventName, null, AddEvent);
-    }
-
-    private void RefreshEventCommands()
-    {
-      object wasSelected = null;
-      if (comboBoxCommands.SelectedIndex != -1)
-        wasSelected = comboBoxCommands.SelectedItem;
-
-      comboBoxCommands.Items.Clear();
-
-      comboBoxCommands.Items.Add(Common.UITextRun);
-      comboBoxCommands.Items.Add(Common.UITextSerial);
-      comboBoxCommands.Items.Add(Common.UITextWindowMsg);
-      comboBoxCommands.Items.Add(Common.UITextKeys);
-
-      string[] list = Common.GetIRList(true);
-      if (list != null && list.Length > 0)
-        comboBoxCommands.Items.AddRange(list);
-
-      list = IrssMacro.GetMacroList(Program.FolderMacros, true);
-      if (list != null && list.Length > 0)
-        comboBoxCommands.Items.AddRange(list);
-
-      if (wasSelected != null && comboBoxCommands.Items.Contains(wasSelected))
-        comboBoxCommands.SelectedItem = wasSelected;
-      else
-        comboBoxCommands.SelectedIndex = 0;
-    }
-
-
-    private void CommitEvents()
-    {
-      Program.Config.Events.Clear();
-      MappingEvent eventType;
-      string command;
-
-      foreach (ListViewItem item in listViewEventMap.Items)
-      {
-        try
+        private void NewConfig(object sender, EventArgs e)
         {
-          eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), item.SubItems[0].Text, true);
-          command = item.SubItems[1].Text;
+            if (
+              MessageBox.Show(this, "Are you sure you want to start a new configuration?", "New Configuration",
+                              MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                return;
 
-          Program.Config.Events.Add(new MappedEvent(eventType, command));
+            Program.Config = new Configuration();
+
+            RefreshProgramList();
+            RefreshMappingList();
+
+            Edited = true;
         }
-        catch (Exception ex)
+
+        private void OpenConfig(object sender, EventArgs e)
         {
-          IrssLog.Error("Bad item in event list: {0}, {1}\n{2}", item.SubItems[0].Text, item.SubItems[1].Text,
-                        ex.Message);
+            if (Edited == true)
+            {
+                var result = MessageBox.Show(this, "Configuration has changed.\n\rDo you want to save it before opening another one ?", "Translator",
+                                  MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes) SaveConfig();
+                else if (result == DialogResult.Cancel || result == DialogResult.Abort) return;
+            }
+
+            openFileDialog.Title = "Open settings file ...";
+
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                Configuration newConfig = Configuration.Load(openFileDialog.FileName);
+
+                if (newConfig == null)
+                    return;
+
+                Program.Config = newConfig;
+
+                RefreshProgramList();
+                RefreshMappingList();
+
+                Edited = false;
+
+            }
         }
-      }
-    }
 
-    private void AddEvent(string mappingEvent)
-    {
-      ListViewItem newItem =
-        new ListViewItem(new string[] { mappingEvent, String.Empty });
-
-      listViewEventMap.SelectedIndices.Clear();
-      listViewEventMap.Items.Add(newItem);
-      newItem.Selected = true;
-    }
-    private void AddEvent(object sender, EventArgs e)
-    {
-      if (Equals(sender, buttonAddEvent))
-      {
-        AddEvent(comboBoxEvents.SelectedItem as string);
-      }
-      else
-      {
-        AddEvent(sender.ToString());
-      }
-    }
-
-    private void SetCommandToEvent(object sender, EventArgs e)
-    {
-      if (comboBoxCommands.SelectedIndex == -1 || listViewEventMap.SelectedItems.Count == 0)
-        return;
-
-      string selected = comboBoxCommands.SelectedItem as string;
-      string command = String.Empty;
-
-      if (selected.Equals(Common.UITextRun, StringComparison.OrdinalIgnoreCase))
-      {
-        ExternalProgram externalProgram = new ExternalProgram();
-
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixRun + externalProgram.CommandString;
-      }
-      else if (selected.Equals(Common.UITextSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        SerialCommand serialCommand = new SerialCommand();
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixSerial + serialCommand.CommandString;
-      }
-      else if (selected.Equals(Common.UITextWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        MessageCommand messageCommand = new MessageCommand();
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-      }
-      else if (selected.Equals(Common.UITextKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        KeysCommand keysCommand = new KeysCommand();
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixKeys + keysCommand.CommandString;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        BlastCommand blastCommand = new BlastCommand(
-          Program.BlastIR,
-          Common.FolderIRCommands,
-          Program.TransceiverInformation.Ports,
-          selected.Substring(Common.CmdPrefixBlast.Length));
-
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixBlast + blastCommand.CommandString;
-      }
-      else if (selected.StartsWith(Common.CmdPrefixMacro, StringComparison.OrdinalIgnoreCase))
-      {
-        command = selected;
-      }
-      else
-      {
-        IrssLog.Error("Invalid command set in Events: {0}", selected);
-        return;
-      }
-
-      foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
-        listViewItem.SubItems[1].Text = command;
-    }
-
-    private void listViewEventMap_KeyDown(object sender, KeyEventArgs e)
-    {
-      if (e.KeyCode == Keys.Delete)
-        foreach (ListViewItem listViewItem in listViewEventMap.SelectedItems)
-          listViewEventMap.Items.Remove(listViewItem);
-    }
-
-    private void listViewEventMap_DoubleClick(object sender, EventArgs e)
-    {
-      if (listViewEventMap.SelectedItems.Count != 1)
-        return;
-
-      string command = listViewEventMap.SelectedItems[0].SubItems[1].Text;
-
-      if (command.StartsWith(Common.CmdPrefixRun, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitRunCommand(command.Substring(Common.CmdPrefixRun.Length));
-        ExternalProgram externalProgram = new ExternalProgram(commands);
-        if (externalProgram.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixRun + externalProgram.CommandString;
-      }
-      else if (command.StartsWith(Common.CmdPrefixSerial, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitSerialCommand(command.Substring(Common.CmdPrefixSerial.Length));
-        SerialCommand serialCommand = new SerialCommand(commands);
-        if (serialCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixSerial + serialCommand.CommandString;
-      }
-      else if (command.StartsWith(Common.CmdPrefixWindowMsg, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitWindowMessageCommand(command.Substring(Common.CmdPrefixWindowMsg.Length));
-        MessageCommand messageCommand = new MessageCommand(commands);
-        if (messageCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixWindowMsg + messageCommand.CommandString;
-      }
-      else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
-      {
-        KeysCommand keysCommand = new KeysCommand(command.Substring(Common.CmdPrefixKeys.Length));
-        if (keysCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixKeys + keysCommand.CommandString;
-      }
-      else if (command.StartsWith(Common.CmdPrefixBlast, StringComparison.OrdinalIgnoreCase))
-      {
-        string[] commands = Common.SplitBlastCommand(command.Substring(Common.CmdPrefixBlast.Length));
-
-        BlastCommand blastCommand = new BlastCommand(
-          Program.BlastIR,
-          Common.FolderIRCommands,
-          Program.TransceiverInformation.Ports,
-          commands);
-
-        if (blastCommand.ShowDialog(this) == DialogResult.Cancel)
-          return;
-
-        command = Common.CmdPrefixBlast + blastCommand.CommandString;
-      }
-      else
-      {
-        return;
-      }
-
-      listViewEventMap.SelectedItems[0].SubItems[1].Text = command;
-    }
-
-    #endregion
-
-    #region Macros Tab
-
-    private void RefreshMacroList()
-    {
-      listViewMacro.Items.Clear();
-
-      string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, false);
-      if (macroList != null && macroList.Length > 0)
-        foreach (string macroFile in macroList)
-          listViewMacro.Items.Add(macroFile);
-
-      Program.UpdateNotifyMenu();
-
-      listViewMacro_SelectedIndexChanged(null, null);
-    }
-
-
-    private void NewMacro(object sender, EventArgs e)
-    {
-      MacroEditor macroEditor = new MacroEditor();
-      macroEditor.ShowDialog(this);
-
-      RefreshMacroList();
-    }
-
-    private void EditMacro(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      string command = listViewMacro.SelectedItems[0].Text;
-      string fileName = Path.Combine(Program.FolderMacros, command + Common.FileExtensionMacro);
-
-      if (File.Exists(fileName))
-      {
-        MacroEditor macroEditor = new MacroEditor(command);
-        macroEditor.ShowDialog(this);
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-        RefreshMacroList();
-      }
-    }
-
-    private void DeleteMacro(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      string file = listViewMacro.SelectedItems[0].Text;
-      string fileName = Path.Combine(Program.FolderMacros, file + Common.FileExtensionMacro);
-      if (File.Exists(fileName))
-      {
-        if (
-          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        private void ImportConfig(object sender, EventArgs e)
         {
-          File.Delete(fileName);
-          listViewMacro.Items.Remove(listViewMacro.SelectedItems[0]);
+            openFileDialog.Title = "Import settings ...";
+
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                Configuration newConfig = Configuration.Load(openFileDialog.FileName);
+                if (newConfig == null)
+                    return;
+
+                Program.Config.Import(newConfig);
+
+                RefreshProgramList();
+                RefreshMappingList();
+
+                Edited = true;
+            }
         }
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "Macro file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-      }
-    }
 
-    private void TestMacro(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      try
-      {
-        Program.ProcessCommand(Common.CmdPrefixMacro + listViewMacro.SelectedItems[0].Text, false);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(this, ex.Message, "Test failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    private void CreateShortcutForMacro(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedItems.Count != 1)
-        return;
-
-      string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-      string macroName = listViewMacro.SelectedItems[0].Text;
-      string shortcutPath = Path.Combine(desktopPath, String.Format("Macro - {0}.lnk", macroName));
-
-      ShellShortcut shortcut = new ShellShortcut(shortcutPath);
-
-      string translatorFolder = Path.Combine(SystemRegistry.GetInstallFolder(), "Translator");
-
-      //shortcut.Arguments        = String.Format("-MACRO \"{0}\"", Path.Combine(Program.FolderMacros, macroName + Common.FileExtensionMacro));
-      shortcut.Arguments = String.Format("-MACRO \"{0}\"", macroName);
-      shortcut.Description = "Launch Macro: " + macroName;
-      shortcut.Path = Path.Combine(translatorFolder, "Translator.exe");
-      shortcut.WorkingDirectory = translatorFolder;
-      shortcut.WindowStyle = ProcessWindowStyle.Normal;
-
-      shortcut.Save();
-    }
-
-
-    private void listViewMacro_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (listViewMacro.SelectedIndices.Count != 1)
-      {
-        editMacroToolStripButton.Enabled = false;
-        editMacroToolStripMenuItem.Enabled = false;
-        deleteMacroToolStripButton.Enabled = false;
-        deleteMacroToolStripMenuItem.Enabled = false;
-        testMacroToolStripButton.Enabled = false;
-        testMacroToolStripMenuItem.Enabled = false;
-        createShortcutForMacroToolStripButton.Enabled = false;
-        createShortcutForMacroToolStripMenuItem.Enabled = false;
-      }
-      else
-      {
-        editMacroToolStripButton.Enabled = true;
-        editMacroToolStripMenuItem.Enabled = true;
-        deleteMacroToolStripButton.Enabled = true;
-        deleteMacroToolStripMenuItem.Enabled = true;
-        testMacroToolStripButton.Enabled = true;
-        testMacroToolStripMenuItem.Enabled = true;
-        createShortcutForMacroToolStripButton.Enabled = true;
-        createShortcutForMacroToolStripMenuItem.Enabled = true;
-      }
-    }
-
-    private void listViewMacro_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label))
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = Path.Combine(Program.FolderMacros, originItem.Text + Common.FileExtensionMacro);
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      string name = e.Label.Trim();
-
-      if (!Common.IsValidFileName(name))
-      {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = Path.Combine(Program.FolderMacros, name + Common.FileExtensionMacro);
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    #endregion
-
-    #region IRCommands Tab
-
-    private void RefreshIRList()
-    {
-      listViewIR.Items.Clear();
-
-      string[] irList = Common.GetIRList(false);
-      if (irList != null && irList.Length > 0)
-        foreach (string irFile in irList)
-          listViewIR.Items.Add(irFile);
-
-      listViewIR_SelectedIndexChanged(null, null);
-    }
-
-
-    private void NewIRCommand(object sender, EventArgs e)
-    {
-      _learnIR = new LearnIR(
-        Program.LearnIR,
-        Program.BlastIR,
-        Program.TransceiverInformation.Ports);
-
-      _learnIR.ShowDialog(this);
-
-      _learnIR = null;
-
-      RefreshIRList();
-    }
-
-    private void EditIRCommand(object sender, EventArgs e)
-    {
-      if (listViewIR.SelectedItems.Count != 1)
-        return;
-
-      string command = listViewIR.SelectedItems[0].Text;
-      string fileName = Path.Combine(Common.FolderIRCommands, command + Common.FileExtensionIR);
-
-      if (File.Exists(fileName))
-      {
-        _learnIR = new LearnIR(
-          Program.LearnIR,
-          Program.BlastIR,
-          Program.TransceiverInformation.Ports,
-          command);
-
-        _learnIR.ShowDialog(this);
-
-        _learnIR = null;
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-        RefreshIRList();
-      }
-    }
-
-    private void DeleteIRCommand(object sender, EventArgs e)
-    {
-      if (listViewIR.SelectedItems.Count != 1)
-        return;
-
-      string file = listViewIR.SelectedItems[0].Text;
-      string fileName = Path.Combine(Common.FolderIRCommands, file + Common.FileExtensionIR);
-      if (File.Exists(fileName))
-      {
-        if (
-          MessageBox.Show(this, String.Format("Are you sure you want to delete \"{0}\"?", file), "Confirm delete",
-                          MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        private void ExportConfig(object sender, EventArgs e)
         {
-          File.Delete(fileName);
-          listViewIR.Items.Remove(listViewIR.SelectedItems[0]);
+            if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                if (!Configuration.Save(Program.Config, saveFileDialog.FileName))
+                    MessageBox.Show(this, "Failed to export settings to file", "Export failed", MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+            }
         }
-      }
-      else
-      {
-        MessageBox.Show(this, "File not found: " + fileName, "IR file missing", MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-      }
-    }
 
-
-    private void listViewIR_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (listViewIR.SelectedIndices.Count != 1)
-      {
-        editIRToolStripButton.Enabled = false;
-        editIRToolStripMenuItem.Enabled = false;
-        deleteIRToolStripButton.Enabled = false;
-        deleteIRToolStripMenuItem.Enabled = false;
-      }
-      else
-      {
-        editIRToolStripButton.Enabled = true;
-        editIRToolStripMenuItem.Enabled = true;
-        deleteIRToolStripButton.Enabled = true;
-        deleteIRToolStripMenuItem.Enabled = true;
-      }
-    }
-
-    private void listViewIR_AfterLabelEdit(object sender, LabelEditEventArgs e)
-    {
-      ListView origin = sender as ListView;
-      if (origin == null)
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      if (String.IsNullOrEmpty(e.Label))
-      {
-        e.CancelEdit = true;
-        return;
-      }
-
-      ListViewItem originItem = origin.Items[e.Item];
-
-      string oldFileName = Path.Combine(Common.FolderIRCommands, originItem.Text + Common.FileExtensionIR);
-      if (!File.Exists(oldFileName))
-      {
-        MessageBox.Show("File not found: " + oldFileName, "Cannot rename, Original file not found", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      string name = e.Label.Trim();
-
-      if (!Common.IsValidFileName(name))
-      {
-        MessageBox.Show("File name not valid: " + name, "Cannot rename, New file name not valid", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-        e.CancelEdit = true;
-        return;
-      }
-
-      try
-      {
-        string newFileName = Path.Combine(Common.FolderIRCommands, name + Common.FileExtensionIR);
-
-        File.Move(oldFileName, newFileName);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-        MessageBox.Show(ex.Message, "Failed to rename file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    #endregion
-
-
-    private List<ButtonMapping> GetCurrentButtonMappings()
-    {
-      if (_selectedProgram == 0)
-      {
-        return Program.Config.SystemWideMappings;
-      }
-      else
-      {
-        string selectedItem = programsListView.Items[_selectedProgram].Text;
-
-        foreach (ProgramSettings progSettings in Program.Config.Programs)
-          if (progSettings.Name.Equals(selectedItem))
-            return progSettings.ButtonMappings;
-      }
-
-      return null;
-    }
-
-    private AppProfile LoadDefaultSettings(string settingsFile)
-    {
-      try
-      {
-        XmlSerializer reader = new XmlSerializer(typeof (AppProfile));
-        using (StreamReader file = new StreamReader(settingsFile))
-          return (AppProfile) reader.Deserialize(file);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error(ex);
-      }
-
-      return null;
-    }
-
-    private void ImportButtons(List<ButtonMapping> buttonMappings)
-    {
-      List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
-      if (currentMappings == null)
-        return;
-
-      foreach (ButtonMapping newMapping in buttonMappings)
-      {
-        bool alreadyExists = false;
-
-        foreach (ButtonMapping existingMapping in currentMappings)
+        private void SetServer(object sender, EventArgs e)
         {
-          if (existingMapping.KeyCode.Equals(newMapping.KeyCode, StringComparison.Ordinal))
-          {
-            // Change the existing mapping to the new one
-            existingMapping.Description = newMapping.Description;
-            existingMapping.Command = newMapping.Command;
-            alreadyExists = true;
-            break;
-          }
+            ServerAddress serverAddress = new ServerAddress(Program.Config.ServerHost);
+            if (serverAddress.ShowDialog(this) == DialogResult.OK)
+            {
+                Program.StopClient();
+
+                Program.Config.ServerHost = serverAddress.ServerHost;
+
+                IPAddress serverIP = Network.GetIPFromName(Program.Config.ServerHost);
+                IPEndPoint endPoint = new IPEndPoint(serverIP, Server.DefaultPort);
+
+                Program.StartClient(endPoint);
+                commandManager.IRServer = Program.TransceiverInformation;
+
+                Edited = true;
+            }
         }
 
-        if (!alreadyExists)
-          currentMappings.Add(newMapping);
-      }
+        private void ShowAdvancedSettings(object sender, EventArgs e)
+        {
+            Advanced advanced = new Advanced();
+            advanced.ProcessPriority = Program.Config.ProcessPriority;
+            advanced.LogVerbosity = Program.Config.LogVerbosity;
+            advanced.HideTrayIcon = Program.Config.HideTrayIcon;
+            try
+            {
+                advanced.checkBoxAutoRun.Checked = SystemRegistry.GetAutoRun("Translator");
+            }
+            catch (Exception ex)
+            {
+                IrssLog.Error(ex);
+                advanced.checkBoxAutoRun.Checked = false;
+            }
+
+            if (advanced.ShowDialog(this) == DialogResult.OK)
+            {
+                Edited = true;
+
+                IrssLog.Info("Log Verbosity Level: " + advanced.LogVerbosity.ToString());
+                Program.Config.LogVerbosity = advanced.LogVerbosity;
+                IrssLog.LogLevel = (IrssLog.Level)Enum.Parse(typeof(IrssLog.Level), advanced.LogVerbosity);
+
+                if (!advanced.ProcessPriority.Equals(Program.Config.ProcessPriority, StringComparison.OrdinalIgnoreCase))
+                {
+                    Program.Config.ProcessPriority = advanced.ProcessPriority;
+                    Program.AdjustPriority(Program.Config.ProcessPriority);
+                }
+
+                Program.Config.HideTrayIcon = advanced.HideTrayIcon;
+                Program.TrayIcon.Visible = !Program.Config.HideTrayIcon;
+
+                if (advanced.checkBoxAutoRun.Checked)
+                    SystemRegistry.SetAutoRun("Translator", Application.ExecutablePath);
+                else
+                    SystemRegistry.RemoveAutoRun("Translator");
+
+            }
+        }
+
+        private void ExitApplication(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void contentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IrssHelp.Open(this);
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new AboutForm().ShowDialog();
+        }
+
+        private void tabControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Shift || e.Alt || e.Control) return;
+            if (e.KeyCode == Keys.Enter)
+            {
+                buttonAddCommand_Click(null, null);
+                e.Handled = true;
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #endregion Menus
+
+
+        // --------------------------------------------------------------------------------------------------
+        #region Programs Panel
+
+        private void RefreshProgramList()
+        {
+            imageListPrograms.Images.Clear();
+            imageListPrograms.Images.Add(IrssUtils.Properties.Resources.WinLogo);
+
+            Icon large;
+            Icon small;
+
+            string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
+            string file = Path.Combine(folder, "user32.dll");
+            Win32.ExtractIcons(file, 1, out large, out small);
+            imageListPrograms.Images.Add(large);
+
+
+            //imageListPrograms.Images.Add(Properties.Resources.NoIcon);
+
+            string wasSelected = string.Empty;
+            if (programsListView.Items.Count > 0)
+                wasSelected = programsListView.Items[_selectedProgram].Text;
+
+            programsListView.Items.Clear();
+            _selectedProgram = 0;
+
+            // Add System-Wide ...
+            ListViewItem newItem = new ListViewItem(SystemWide, 0);
+            newItem.ToolTipText = "Defines mappings that effect the whole computer";
+            programsListView.Items.Add(newItem);
+
+            // Add other programs ...
+            int imageIndex = 2;
+            foreach (ProgramSettings progSettings in Program.Config.Programs)
+            {
+                Icon icon = null;
+
+                if (!String.IsNullOrEmpty(progSettings.FileName))
+                    icon = Win32.GetIconFor(progSettings.FileName);
+
+                if (icon != null)
+                {
+                    imageListPrograms.Images.Add(icon);
+                    newItem = new ListViewItem(progSettings.Name, imageIndex++);
+                    newItem.ToolTipText = progSettings.FileName;
+                }
+                else
+                {
+                    newItem = new ListViewItem(progSettings.Name, 1);
+                    newItem.ToolTipText = "Please check program file path";
+                }
+
+                programsListView.Items.Add(newItem);
+
+                if (progSettings.Name.Equals(wasSelected))
+                    newItem.Selected = true;
+            }
+
+            if (wasSelected.Equals(SystemWide) || programsListView.SelectedItems.Count == 0)
+                programsListView.Items[0].Selected = true;
+
+
+            // Update the "Copy to" items of the mappings
+            copyMappingsToolStripMenuItem.DropDownItems.Clear();
+            copyMappingDropDownButton.DropDownItems.Clear();
+
+            copyMappingsToolStripMenuItem.DropDownItems.Add(SystemWide, IrssUtils.Properties.Resources.WinLogo,
+                                                                CopyButtonMapping);
+            copyMappingDropDownButton.DropDownItems.Add(SystemWide, IrssUtils.Properties.Resources.WinLogo,
+                                                                CopyButtonMapping);
+
+            foreach (ProgramSettings programSettings in Program.Config.Programs)
+            {
+                if (String.IsNullOrEmpty(programSettings.FileName)) continue;
+                Icon icon = Win32.GetIconFor(programSettings.FileName);
+                Image image = null;
+                if (icon != null) image = icon.ToBitmap();
+
+                copyMappingsToolStripMenuItem.DropDownItems.Add(programSettings.Name, image, CopyButtonMapping);
+                copyMappingDropDownButton.DropDownItems.Add(programSettings.Name, image, CopyButtonMapping);
+
+            }
+
+            Program.UpdateNotifyMenu();
+        }
+
+        private void AddProgram(object sender, EventArgs e)
+        {
+            ProgramSettings progSettings = new ProgramSettings();
+
+            if (EditProgram(progSettings))
+            {
+                Program.Config.Programs.Add(progSettings);
+
+                RefreshProgramList();
+            }
+        }
+
+        private void EditProgram(object sender, EventArgs e)
+        {
+            if (_selectedProgram == 0) return;
+            string programName = programsListView.Items[_selectedProgram].Text;
+
+            foreach (ProgramSettings progSettings in Program.Config.Programs)
+            {
+                if (progSettings.Name.Equals(programName))
+                {
+                    if (EditProgram(progSettings))
+                    {
+                        RefreshProgramList();
+                        return;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
+        }
+
+        private void DeleteProgram(object sender, EventArgs e)
+        {
+            if (programsListView.SelectedItems.Count == 0)
+                return;
+
+            string selectedItem = programsListView.SelectedItems[0].Text;
+
+            string message = String.Format("Are you sure you want to remove all mappings for {0}?", selectedItem);
+            string caption = String.Format("Remove {0}?", selectedItem);
+
+            if (MessageBox.Show(this, message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                foreach (ProgramSettings progSettings in Program.Config.Programs)
+                {
+                    if (progSettings.Name.Equals(selectedItem))
+                    {
+                        Program.Config.Programs.Remove(progSettings);
+                        break;
+                    }
+                }
+
+                RefreshProgramList();
+            }
+        }
+
+        private void programsListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // only update '_selectedProgram' related things if there is a new item selected
+            // do nothing, if nothing is selected
+            if (programsListView.SelectedItems.Count > 0 )
+            {
+                _selectedProgram = programsListView.SelectedIndices[0];
+                RefreshMappingList(_programsListViewRefreshAppend);
+                _programsListViewRefreshAppend = false;
+
+            }
+            
+            listBoxTranslatorEvents.Enabled = programsListView.SelectedIndices.Count == 1 && _selectedProgram == 0;
+
+            if (programsListView.SelectedIndices.Count != 1 || _selectedProgram == 0)
+            {
+                editProgramToolStripMenuItem.Text = "&Edit ...";
+                removeProgramToolStripMenuItem.Text = "&Remove ...";
+
+                editProgramToolStripButton.Enabled = false;
+                editProgramToolStripMenuItem.Enabled = false;
+                removeProgramToolStripButton.Enabled = false;
+                removeProgramToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                string program = programsListView.Items[_selectedProgram].Text;
+
+                editProgramToolStripMenuItem.Text = String.Format("&Edit \"{0}\"", program);
+                removeProgramToolStripMenuItem.Text = String.Format("&Remove \"{0}\"", program);
+
+                editProgramToolStripButton.Enabled = true;
+                editProgramToolStripMenuItem.Enabled = true;
+                removeProgramToolStripButton.Enabled = true;
+                removeProgramToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        #endregion Programs Panel
+
+
+        // --------------------------------------------------------------------------------------------------
+        #region Mappings Panel
+
+        private void RefreshMappingList(bool append = false)
+        {
+            if (!append)
+            {
+                //mappingsGridView.Rows.Clear(); // doesn't work... don't know why...
+                for (int i = mappingsGridView.Rows.Count; i > 0; i--) 
+                    mappingsGridView.Rows.Remove(mappingsGridView.Rows[0]);
+            }
+
+            int idx = 0;
+
+            // Populate the System/Program events
+            List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+            if (currentMappings == null) return;
+            foreach (ButtonMapping map in currentMappings)
+            {
+                var item = new string[] { map.KeyCode, map.Command, map.Description };
+                if (append) mappingsGridView.Rows.Insert(idx++, item); 
+                else mappingsGridView.Rows.Add(item); 
+            }
+
+            // Populate the Translator events
+            if (_selectedProgram == 0)
+            {
+                foreach (MappedEvent mappedEvent in Program.Config.Events)
+                {
+                    var item = new string[] { Enum.GetName(typeof(MappingEvent), mappedEvent.EventType), mappedEvent.Command, mappedEvent.Description };
+                    if (append) mappingsGridView.Rows.Insert(idx++, item);
+                    else mappingsGridView.Rows.Add(item);
+                }
+            }
+
+            mappingsGridView_SelectedIndexChanged(null, null);
+            SpotInvalidCellsInMappingList();
+        }
+
+        private void CommitMappingList()
+        {
+            List<ButtonMapping> currentMappings = GetCurrentButtonMappings();
+            currentMappings.Clear();
+
+            if (_selectedProgram == 0)
+                Program.Config.Events.Clear();
+
+            foreach (DataGridViewRow item in mappingsGridView.Rows)
+            {
+                string button = item.Cells[0].Value.ToString();
+                string command = item.Cells[1].Value.ToString();
+                string description = item.Cells[2].Value.ToString();
+
+                if (Enum.IsDefined(typeof(MappingEvent), button)) {
+                    // Translator events
+                    try
+                    {
+                        MappingEvent eventType = (MappingEvent)Enum.Parse(typeof(MappingEvent), button, true);
+                        if (_selectedProgram == 0) // safeguard
+                            Program.Config.Events.Add(new MappedEvent(eventType, command, description));
+                    }
+                    catch { }
+                }
+                else 
+                {
+                    // System/program event
+                    currentMappings.Add(new ButtonMapping(button, description, command));
+                }
+            }
+
+            SpotInvalidCellsInMappingList();
+            mappingsGridView_SelectedIndexChanged(null, null);
+        }
+
+        private void SpotInvalidCellsInMappingList()
+        {
+            foreach (DataGridViewRow row in mappingsGridView.Rows)
+            {
+                string code = row.Cells[0].Value.ToString();
+                string command = row.Cells[1].Value.ToString();
+
+                // Keycode
+                if (String.IsNullOrEmpty(code))
+                {
+                    row.Cells[0].ErrorText = _mappingsGridViewCellInitialMsg;
+                }
+                else
+                {
+                    int count = 0;
+                    foreach (DataGridViewRow srow in mappingsGridView.Rows)
+                    {
+                        count += srow.Cells[0].Value.ToString() == code ? 1 : 0;
+                    }
+
+                    if (count > 1)
+                        row.Cells[0].ErrorText = String.Format(_mappingsGridViewCellDuplicateMsg, count);
+                    else
+                        row.Cells[0].ErrorText = "";
+                }
+
+                // Command
+                if (String.IsNullOrEmpty(command))
+                {
+                    row.Cells[1].ErrorText = _mappingsGridViewCellInitialMsg;
+                }
+                else if (command.IndexOf(Common.CmdPrefixMacro) == 0)
+                {
+                    string[] macroList = IrssMacro.GetMacroList(Program.FolderMacros, true);
+                    bool found = false;
+                    if (macroList != null && macroList.Length > 0)
+                    {
+                        foreach (string macro in macroList)
+                        {
+                            if (macro == command)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (found) row.Cells[1].ErrorText = ""; 
+                    else row.Cells[1].ErrorText = "Macro not found";
+                }
+                else
+                {
+                    row.Cells[1].ErrorText = "";
+                }
+            }
+        }
+
+        private void MappingSetModeRow(bool rowMode)
+        {
+            _mappingRowMode = rowMode;
+            if (rowMode)
+            {
+                if (mappingsGridView.SelectedCells.Count > 0)
+                {
+                    List<DataGridViewRow> selectedRows = new List<DataGridViewRow>();
+                    foreach (DataGridViewCell cell in mappingsGridView.SelectedCells)
+                    {
+                        DataGridViewRow row = cell.OwningRow;
+                        if (!selectedRows.Contains(row)) selectedRows.Add(row);
+                    }
+
+                    _mappingBypassSelectionChanged = true;
+                    for (int i = selectedRows.Count-1; i >= 0; i-- )
+                    {
+                        _mappingBypassSelectionChanged = i > 0;
+                        foreach (DataGridViewCell cell in selectedRows[i].Cells) cell.Selected = true;
+                    }
+                    _mappingBypassSelectionChanged = false;
+
+                }
+            } 
+            else 
+            {
+                foreach ( DataGridViewCell cell in mappingsGridView.SelectedCells)
+                    if (cell != mappingsGridView.CurrentCell)
+                        cell.Selected = false;
+            }
+        }
+
+
+        /// <summary>
+        /// Insert a command to the selected mapping item.
+        /// </summary>
+        /// <param name="cmd">Command to insert. Default: fetch the selected command from the form.</param>
+        private void InsertCommand(string cmd = null)
+        {
+            if (mappingsGridView.CurrentCell == null) return;
+            int row = mappingsGridView.CurrentCell.RowIndex;
+            if (row < 0) return;
+
+            if (cmd == null) 
+            {
+                cmd = commandManager.CommandFetch();
+                if (String.IsNullOrEmpty(cmd)) return;
+            }
+
+            mappingsGridView.Rows[row].Cells[1].Value = cmd;
+            mappingsGridView.Focus();
+            buttonAddCommand.Enabled = false;
+
+            Edited = true;
+            CommitMappingList();
+        }
+
+        /// <summary>
+        /// Insert an event to the selected mapping item.
+        /// </summary>
+        /// <param name="cmd">Event to insert. Default: fetch the selected event from the form.</param>
+        private void InsertEvent(string cmd = null)
+        {
+            if (mappingsGridView.CurrentCell == null) return;
+            int row = mappingsGridView.CurrentCell.RowIndex;
+            if (row < 0) return;
+
+            if (cmd == null)
+            {
+                cmd = EventGet();
+                if (String.IsNullOrEmpty(cmd)) return;
+            }
+
+            foreach (DataGridViewRow crow in mappingsGridView.Rows)
+            {
+                if (crow.Cells[0].Value.ToString() == cmd)
+                {
+                    // already exists
+                    return;
+                }
+            }
+
+            // avoid problem by deselecting events
+            listBoxTranslatorEvents.SelectedIndex = -1;
+            listBoxHistoryEvents.SelectedIndex = -1;
+
+            mappingsGridView.Rows[row].Cells[0].Value = cmd;
+            MappingSetModeRow(true);
+            mappingsGridView.Focus();
+            buttonAddCommand.Enabled = false;
+
+            Edited = true;
+            CommitMappingList();
+        }
+
+        private void NewButtonMapping(object sender, EventArgs e)
+        {
+            int row = mappingsGridView.Rows.Count;
+            mappingsGridView.Rows.Add(new string[] { "", "", "" });
+            mappingsGridView.CurrentCell = mappingsGridView.Rows[row].Cells[0];
+            mappingsGridView.Rows[row].Cells[0].ErrorText = _mappingsGridViewCellInitialMsg;
+            mappingsGridView.Rows[row].Cells[1].ErrorText = _mappingsGridViewCellInitialMsg;
+            MappingSetModeRow(true);
+            mappingsGridView_SelectedIndexChanged(null, null);
+        }
+
+        private void DeleteButtonMapping(object sender, EventArgs e)
+        {
+            if (!_mappingRowMode || mappingsGridView.SelectedCells.Count == 0) return;
+
+            List<DataGridViewRow> selectedRows = new List<DataGridViewRow>();
+            foreach (DataGridViewCell cell in mappingsGridView.SelectedCells)
+            {
+                DataGridViewRow row = cell.OwningRow;
+                if (!selectedRows.Contains(row)) selectedRows.Add(row);
+            }
+
+            foreach (DataGridViewRow item in selectedRows)
+            {
+                mappingsGridView.Rows.Remove(item);
+            }
+
+            Edited = true;
+            MappingSetModeRow(true);
+            CommitMappingList();
+        }
+
+        private void TestButtonMapping(object sender, EventArgs e)
+        {
+            if (mappingsGridView.CurrentCell == null) return;
+            int row = mappingsGridView.CurrentCell.RowIndex;
+            mappingsGridView.CurrentCell = mappingsGridView.Rows[row].Cells[1];
+            string cmd = mappingsGridView.Rows[row].Cells[1].Value.ToString();
+            if (cmd == "") return;
+            splitContainerMain.Enabled = false;
+            Program.ProcessCommand(cmd, false);
+            splitContainerMain.Enabled = true;
+        }
+
+        private void EditButtonMapping(object sender, EventArgs e)
+        {
+            if (mappingsGridView.CurrentCell == null) return;
+            int row = mappingsGridView.CurrentCell.RowIndex;
+            mappingsGridView.CurrentCell = mappingsGridView.Rows[row].Cells[1];
+            mappingsGridView_DoubleClick(null, null);
+        }
+
+        private void CopyButtonMapping(object sender, EventArgs e)
+        {
+            ToolStripMenuItem destination = sender as ToolStripMenuItem;
+            if (destination == null)  return;
+            string programName = destination.Text;
+
+            if (!_mappingRowMode || mappingsGridView.SelectedCells.Count == 0) return;
+
+            // Find the destination program
+            int idx = -1;
+            for (int i = 0; i < programsListView.Items.Count; i++)
+            {
+                if (programsListView.Items[i].Text == programName)
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx < 0) return;
+
+            _programsListViewRefreshAppend = true;
+
+            // Keep only selected rows in the mapping list
+            for (int i = 0; i < mappingsGridView.Rows.Count; )
+            {
+                DataGridViewRow item = mappingsGridView.Rows[i];
+                if (item.Cells[0].Selected) 
+                {
+                    i++;
+                    // Erase Translator events
+                    if (Enum.IsDefined(typeof(MappingEvent), item.Cells[0].Value.ToString()) && idx>0)
+                        item.Cells[0].Value = "";
+                }
+                else
+                {
+                    mappingsGridView.Rows.Remove(item);
+                }
+            }
+
+            // Switch to destination program and keep current mapping list
+            if (idx == _selectedProgram) programsListView_SelectedIndexChanged(null, null);
+            else programsListView.Items[idx].Selected = true;
+            _programsListViewRefreshAppend = false;
+
+            // Finalize edition
+            Edited = true;
+            CommitMappingList();
+        }
+        
+        private void mappingsGridView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_mappingBypassSelectionChanged) return;
+
+            if (mappingsGridView.SelectedCells.Count == 0 || !_mappingRowMode)
+            {
+                // No row selected, Cell mode
+
+                copyMappingsToolStripMenuItem.Enabled = copyMappingDropDownButton.Enabled = false;
+
+                bool cmdSelected = false;
+                if (mappingsGridView.CurrentCell == null )
+                {
+                    listBoxTranslatorEvents.Enabled = false;
+                    commandManager.Enabled = false;
+                    buttonAddCommand.Enabled = false;
+                }
+                else
+                {
+                    cmdSelected =  mappingsGridView.SelectedCells[0].ColumnIndex == 1 
+                                && mappingsGridView.SelectedCells[0].Value.ToString() != "" ;
+                }
+
+                testMappingToolStripButton.Enabled = cmdSelected && _connected;
+                testMappingToolStripMenuItem.Enabled = cmdSelected && _connected;
+                editMappingToolStripButton.Enabled = cmdSelected;
+                editMappingToolStripMenuItem.Enabled = cmdSelected;
+
+                deleteMappingToolStripButton.Enabled = false;
+                deleteMappingToolStripMenuItem.Enabled = false;
+
+            }
+            else
+            {
+                // In Row mode
+
+                // Enforce row selection
+                MappingSetModeRow(true);
+
+                bool cmdCol =  mappingsGridView.SelectedCells.Count==3 
+                            && mappingsGridView.SelectedCells[0].OwningRow.Cells[1].Value.ToString() != "";
+
+                testMappingToolStripButton.Enabled = cmdCol && _connected;
+                testMappingToolStripMenuItem.Enabled = cmdCol && _connected;
+                editMappingToolStripButton.Enabled = cmdCol;
+                editMappingToolStripMenuItem.Enabled = cmdCol;
+
+                deleteMappingToolStripButton.Enabled = true;
+                deleteMappingToolStripMenuItem.Enabled = true;
+
+                copyMappingDropDownButton.Enabled = copyMappingsToolStripMenuItem.Enabled = true;
+
+                listBoxTranslatorEvents.Enabled = true;
+                commandManager.Enabled = true;
+            }
+        }
+
+        private void mappingsGridView_DoubleClick(object sender, EventArgs e)
+        {
+            int column = mappingsGridView.CurrentCell.ColumnIndex;
+            if (column < 2) 
+            { 
+                tabControl.SelectedIndex = column;
+                if (column == 1)
+                {
+                    string cmd = commandManager.CommandEdit(mappingsGridView.CurrentCell.Value.ToString());
+                    if (cmd != null)
+                    {
+                        mappingsGridView.CurrentCell.Value = cmd;
+                        Edited = true;
+                    }
+                }
+            }
+
+            MappingSetModeRow(true);
+            mappingsGridView.Focus();
+
+            if (column == 2) mappingsGridView.BeginEdit(true);
+        }
+
+        private void mappingsGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            if (row >= 0)
+            {
+                DataGridViewCell clicked = mappingsGridView.Rows[row].Cells[col];
+                if (!mappingsGridView.SelectedCells.Contains(clicked))
+                {
+                    if (e.Button == System.Windows.Forms.MouseButtons.Left && Control.ModifierKeys == Keys.Control)
+                    {
+                        if (!clicked.Selected) 
+                            clicked.Selected = true;
+                    }
+                    else if (e.Button == System.Windows.Forms.MouseButtons.Left && Control.ModifierKeys == Keys.Shift)
+                    {
+                        // Define Range selection
+
+                        int minRow = mappingsGridView.Rows.Count;
+                        int maxRow = -1;
+                        foreach (DataGridViewCell cell in mappingsGridView.SelectedCells)
+                        {
+                            int idx = cell.RowIndex;
+                            if (idx < minRow) minRow = idx;
+                            if (idx > maxRow) maxRow = idx;
+                        }
+
+                        int rangeStart;
+                        int rangeEnd;
+                        if (row < minRow)
+                        {
+                            rangeStart = row;
+                            rangeEnd = minRow;
+                        }
+                        else if (row > maxRow)
+                        {
+                            rangeStart = maxRow;
+                            rangeEnd = row;
+                        }
+                        else
+                        {
+                            rangeStart = minRow;
+                            rangeEnd = row;
+                        }
+
+                        // Deselelect previous cells
+                        _mappingBypassSelectionChanged = true;
+                        DataGridViewSelectedCellCollection selectedCells = mappingsGridView.SelectedCells;
+                        foreach (DataGridViewCell cell in selectedCells)
+                        {
+                            int idx = cell.RowIndex;
+                            if (idx < rangeStart || idx > rangeEnd) cell.Selected = false;
+                        }
+                        _mappingBypassSelectionChanged = false;
+
+                        // Select Cells in Range
+                        for (int i = rangeStart; i <= rangeEnd; i++ )
+                            mappingsGridView.Rows[i].Cells[0].Selected = true;
+                    } 
+                    else
+                    {
+                        mappingsGridView.CurrentCell = clicked;
+                    }
+                }
+            }
+            MappingSetModeRow(true);
+        }
+
+        private void mappingsGridView_Click(object sender, EventArgs e)
+        {
+            MappingSetModeRow(true);
+        }
+
+        private void mappingsGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            int row = e.RowIndex;
+            if (mappingsGridView.Rows[row].Cells[0].Value.ToString() != "" && mappingsGridView.Rows[row].Cells[1].Value.ToString() != "")
+            {
+                Edited = true;
+                CommitMappingList();
+            }
+
+            Edited = true;
+            CommitMappingList();
+        }
+
+        #endregion Mappings Panel
+
+
+        // --------------------------------------------------------------------------------------------------
+        #region Events Tab
+
+        /// <summary>
+        /// Add an event item to the Remote Events log.
+        /// </summary>
+        /// <param name="item">the event description, in a form of "sender : key"</param>
+        public void EventAdd(string item)
+        {
+            if (item == null) return;
+            this.SafeInvoke(() => {
+
+                if (listBoxHistoryEvents.Items.Count == 1 && listBoxHistoryEvents.Items[0].ToString() == _listBoxHistoryEventsInitialMsg)
+                {
+                    listBoxHistoryEvents.Items.Clear();
+                }
+
+                listBoxHistoryEvents.TopIndex = listBoxHistoryEvents.Items.Add(item);
+                listBoxHistoryEvents.Enabled = true;
+            });
+        }
+
+        /// <summary>
+        /// Add an event by its device-name and key-code to the Remote Events log.
+        /// </summary>
+        /// <param name="deviceName">REmote device name</param>
+        /// <param name="keyCode">Key-code</param>
+        public void EventAdd(string deviceName, string keyCode)
+        {
+            EventAdd(String.Format("{0} : {1}", deviceName, keyCode));
+        }
+
+        /// <summary>
+        /// Get the selected event and returns its keycode.
+        /// </summary>
+        /// <returns>the keycode of the selected event, or null if no selection.</returns>
+        public string EventGet()
+        {
+            string cmd = null;
+            if (listBoxHistoryEvents.SelectedIndex >= 0)
+            {
+                string str = listBoxHistoryEvents.SelectedItem.ToString();
+                int idx = str.IndexOf(" : ");
+                if (idx>0) cmd = str.Substring(idx + 3);
+            } 
+            else if (listBoxTranslatorEvents.SelectedIndex >= 0)
+            {
+                cmd = listBoxTranslatorEvents.SelectedItem.ToString();
+            }
+
+            return cmd;
+        }
+
+        private void listBoxEvents_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            bool selected = false;
+
+            if (sender == listBoxHistoryEvents)
+            {
+                selected = listBoxHistoryEvents.SelectedIndex >= 0;
+                if (selected)  listBoxTranslatorEvents.SelectedIndex = -1;
+            }
+            else if (sender == listBoxTranslatorEvents)
+            {
+                selected = listBoxTranslatorEvents.SelectedIndex >= 0;
+                if (selected)  listBoxHistoryEvents.SelectedIndex = -1;
+            }
+
+            // Retrieve the associated mapping (if any) in the mapping panel
+            DataGridViewRow exists = null;
+            if (selected)
+            {
+                string keycode = EventGet();
+                foreach (DataGridViewRow crow in mappingsGridView.Rows)
+                {
+                    if (crow.Cells[0].Value.ToString() == keycode)
+                    {
+                        exists = crow;
+                        break;
+                    }
+                }
+            }
+
+            buttonAddCommand.Enabled = false;
+
+            if (exists != null)
+            {
+                // Select the matching row in Mapping
+                mappingsGridView.CurrentCell = exists.Cells[0];
+                MappingSetModeRow(true);
+            }
+            else
+            {
+                // Select the current "Command" column in Mapping
+                if (mappingsGridView.CurrentCell == null) return;
+                int row = mappingsGridView.CurrentCell.RowIndex;
+                if (row < 0) return;
+                this.mappingsGridView.CurrentCell = mappingsGridView.Rows[row].Cells[0];
+
+                if (selected)
+                {
+                    buttonAddCommand.Enabled = true;
+                    this.toolTip.SetToolTip(this.buttonAddCommand, "Map this event (Enter)");
+                    MappingSetModeRow(false);
+                }
+            }
+        }
+
+        private void listBoxEvents_DoubleClick(object sender, EventArgs e)
+        {
+            InsertEvent();
+        }
+
+        private void listBoxEvents_Enter(object sender, EventArgs e)
+        {
+            listBoxEvents_SelectedIndexChanged(sender, null);
+        }
+
+        private void listBoxEvents_Leave(object sender, EventArgs e)
+        {
+            if (!buttonAddCommand.Focused)
+            {
+                listBoxHistoryEvents.ClearSelected();
+                listBoxTranslatorEvents.ClearSelected();
+                MappingSetModeRow(true);
+            }
+        }
+
+        private void listBoxEventsClearAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listBoxHistoryEvents.Items.Clear();
+            listBoxHistoryEvents.Items.Add(_listBoxHistoryEventsInitialMsg);
+            listBoxHistoryEvents.Enabled = false;
+        }
+
+        #endregion Events Tab
+
+
+        // --------------------------------------------------------------------------------------------------
+        #region Commands Tab
+
+        /// <summary>
+        /// Insert the CommandList control into the window
+        /// </summary>
+        private void InitializeCommandManager()
+        {
+            this.commandManager = new CommandManager(Program.TransceiverInformation, Program.BlastIR, Program.LearnIR, Program.ProcessCommand);
+            this.commandManager.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.commandManager.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.commandManager.Name = "commandManager";
+            this.commandManager.CommandGenerated += commandManager_CommandGenerated;
+            this.commandManager.treeViewCommandList.AfterSelect += commandManager_AfterSelect;
+            this.commandManager.treeViewCommandList.Enter += commandManager_Enter;
+            this.commandManager.treeViewCommandList.Leave += commandManager_Leave;
+
+            this.splitContainerMain.Panel2MinSize = 250; // Do it here to avoid bug in VS designer
+            this.tabPageCommands.Controls.Add(this.commandManager);
+        }
+
+        private void commandManager_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            buttonAddCommand.Enabled = false;
+
+            // Select "Command" column in Mapping
+            int row = mappingsGridView.CurrentCell.RowIndex;
+            if (row < 0) return;
+            this.mappingsGridView.CurrentCell = mappingsGridView.Rows[row].Cells[1];
+
+            if (String.IsNullOrEmpty(commandManager.SelectedCommand))
+                MappingSetModeRow(true);
+            else
+            {
+                buttonAddCommand.Enabled = true;
+                this.toolTip.SetToolTip(this.buttonAddCommand, "Map this command (Enter)");
+                MappingSetModeRow(false);
+            }
+            mappingsGridView_SelectedIndexChanged(null, null);
+        }
+
+        private void commandManager_Enter(object sender, EventArgs e)
+        {
+            commandManager_AfterSelect(null, null);
+        }
+
+        private void commandManager_Leave(object sender, EventArgs e)
+        {
+            MappingSetModeRow(true);
+        }
+
+        private void commandManager_CommandGenerated(object sender, CommandGeneratedEventArgs e)
+        {
+
+            if (e.test)
+            {
+                // Test the command
+                // TODO
+            }
+            else
+            {
+                // Insert command in the list
+                InsertCommand(e.command);
+            }
+        }
+
+        #endregion Commands Tab
+
+
+        // --------------------------------------------------------------------------------------------------
+        #region Implementation
+
+        private bool EditProgram(ProgramSettings progSettings)
+        {
+            EditProgramForm editProg = new EditProgramForm(progSettings);
+
+            if (editProg.ShowDialog(this) == DialogResult.OK)
+            {
+                progSettings.Name = editProg.DisplayName;
+                progSettings.FileName = editProg.Filename;
+                progSettings.Folder = editProg.StartupFolder;
+                progSettings.Arguments = editProg.Parameters;
+                progSettings.WindowState = editProg.StartState;
+                progSettings.UseShellExecute = editProg.UseShellExecute;
+                progSettings.IgnoreSystemWide = editProg.IgnoreSystemWide;
+
+                Program.UpdateNotifyMenu();
+                return true;
+            }
+
+            return false;
+        }
+
+        private List<ButtonMapping> GetCurrentButtonMappings()
+        {
+            if (_selectedProgram == 0)
+            {
+                return Program.Config.SystemWideMappings;
+            }
+            else
+            {
+                string selectedItem = programsListView.Items[_selectedProgram].Text;
+
+                foreach (ProgramSettings progSettings in Program.Config.Programs)
+                    if (progSettings.Name.Equals(selectedItem))
+                        return progSettings.ButtonMappings;
+            }
+
+            return null;
+        }
+
+        private AppProfile LoadDefaultSettings(string settingsFile)
+        {
+            try
+            {
+                XmlSerializer reader = new XmlSerializer(typeof(AppProfile));
+                using (StreamReader file = new StreamReader(settingsFile))
+                    return (AppProfile)reader.Deserialize(file);
+            }
+            catch (Exception ex)
+            {
+                IrssLog.Error(ex);
+            }
+
+            return null;
+        }
+
+        #endregion Implementation
+
+
     }
-
-    private void ReceivedMessage(IrssMessage received)
-    {
-      if (_learnIR != null && received.Type == MessageType.LearnIR)
-      {
-        if ((received.Flags & MessageFlags.Success) == MessageFlags.Success)
-        {
-          _learnIR.LearnStatus("Learned IR successfully", true);
-        }
-        else if ((received.Flags & MessageFlags.Timeout) == MessageFlags.Timeout)
-        {
-          _learnIR.LearnStatus("Learn IR timed out", false);
-        }
-        else if ((received.Flags & MessageFlags.Failure) == MessageFlags.Failure)
-        {
-          _learnIR.LearnStatus("Learn IR failed", false);
-        }
-      }
-    }
-
-    #endregion Implementation
-  }
 }

@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("RC102 Receiver")]
 [assembly: AssemblyDescription("Support for RC102 and compatible IR receivers")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

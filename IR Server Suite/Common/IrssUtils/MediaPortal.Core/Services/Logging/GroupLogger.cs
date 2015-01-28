@@ -30,7 +30,7 @@ namespace MediaPortal.Core.Services.Logging
 {
   public class GroupLogger : ILogger
   {
-    protected List<ILogger> _loggerList = new List<ILogger>();
+    protected List<ILogger> pLoggerList = new List<ILogger>();
 
      /// <summary>
     /// Creates a new <see cref="GroupLogger"/> instance and initializes it with the given
@@ -45,100 +45,100 @@ namespace MediaPortal.Core.Services.Logging
 
     public void Add(ILogger logger)
     {
-      _loggerList.Add(logger);
+      pLoggerList.Add(logger);
     }
 
     #region Implementation of ILogger
 
     public bool LogMethodNames
     {
-      get { return _loggerList[0].LogMethodNames; }
+      get { return pLoggerList[0].LogMethodNames; }
       set
       {
-        foreach (ILogger logger in _loggerList)
+        foreach (ILogger logger in pLoggerList)
           logger.LogMethodNames = value;
       }
     }
 
     public LogLevel Level
     {
-      get { return _loggerList[0].Level; }
+      get { return pLoggerList[0].Level; }
       set
       {
-        foreach (ILogger logger in _loggerList)
+        foreach (ILogger logger in pLoggerList)
           logger.Level = value;
       }
     }
 
     public void Debug(string format, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Debug(format, args);
     }
 
     public void Debug(string format, Exception ex, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Debug(format, ex, args);
     }
 
     public void Info(string format, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Info(format, args);
     }
 
     public void Info(string format, Exception ex, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Info(format, ex, args);
     }
 
     public void Warn(string format, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Warn(format, args);
     }
 
     public void Warn(string format, Exception ex, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Warn(format, ex, args);
     }
 
     public void Error(string format, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Error(format, args);
     }
 
     public void Error(string format, Exception ex, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Error(format, ex, args);
     }
 
     public void Error(Exception ex)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Error(ex);
     }
 
     public void Critical(string format, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Critical(format, args);
     }
 
     public void Critical(string format, Exception ex, params object[] args)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Critical(format, ex, args);
     }
 
     public void Critical(Exception ex)
     {
-      foreach (ILogger logger in _loggerList)
+      foreach (ILogger logger in pLoggerList)
         logger.Critical(ex);
     }
 

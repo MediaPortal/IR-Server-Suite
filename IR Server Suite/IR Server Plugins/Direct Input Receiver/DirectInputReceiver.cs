@@ -132,7 +132,7 @@ namespace IRServer.Plugin
           RestartListener();
         }
       }
-      catch (ManagementException ex)
+      catch
       {
         //disconnected
         IrssLog.Debug("DirectInput: An USB device has been disconnected");

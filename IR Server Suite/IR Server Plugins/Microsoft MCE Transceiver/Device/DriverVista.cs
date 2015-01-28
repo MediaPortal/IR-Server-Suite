@@ -764,6 +764,8 @@ namespace IRServer.Plugin
 
     private bool _isSystem64Bit;
 
+    private readonly object _startStopLock = new object();
+
     #endregion Variables
 
     #region Constructor
@@ -1147,7 +1149,6 @@ namespace IRServer.Plugin
     public override void Suspend()
     {
       DebugWriteLine("Suspend()");
-      StopDevice();
     }
 
     /// <summary>
@@ -1165,6 +1166,8 @@ namespace IRServer.Plugin
           return;
         }
 
+        // Restart the device otherwise the blasters will not work
+        StopDevice();
         StartDevice();
       }
       catch (Exception ex)
@@ -1277,17 +1280,21 @@ namespace IRServer.Plugin
     /// </summary>
     void StartDevice()
     {
-      _notifyWindow = new NotifyWindow();
-      _notifyWindow.Create();
-      _notifyWindow.Class = _deviceGuid;
+      lock (_startStopLock)
+      {
+        _notifyWindow = new NotifyWindow();
+        _notifyWindow.Create();
+        _notifyWindow.Class = _deviceGuid;
+        _notifyWindow.RegisterDeviceArrival();
 
-      OpenDevice();
-      InitializeDevice();
+        OpenDevice();
+        InitializeDevice();
 
-      StartReadThread(ReadThreadMode.Receiving);
+        StartReadThread(ReadThreadMode.Receiving);
 
-      _notifyWindow.DeviceArrival += OnDeviceArrival;
-      _notifyWindow.DeviceRemoval += OnDeviceRemoval;
+        _notifyWindow.DeviceArrival += OnDeviceArrival;
+        _notifyWindow.DeviceRemoval += OnDeviceRemoval;
+      }
     }
 
     /// <summary>
@@ -1297,14 +1304,17 @@ namespace IRServer.Plugin
     {
       try
       {
-        if (_notifyWindow != null)
+        lock (_startStopLock)
         {
-          _notifyWindow.DeviceArrival -= OnDeviceArrival;
-          _notifyWindow.DeviceRemoval -= OnDeviceRemoval;
-        }
+          if (_notifyWindow != null)
+          {
+            _notifyWindow.DeviceArrival -= OnDeviceArrival;
+            _notifyWindow.DeviceRemoval -= OnDeviceRemoval;
+          }
 
-        StopReadThread();
-        CloseDevice();
+          StopReadThread();
+          CloseDevice();
+        }
       }
       catch (Exception ex)
       {
@@ -1358,7 +1368,7 @@ namespace IRServer.Plugin
     {
       DebugWriteLine("StartReadThread({0})", Enum.GetName(typeof(ReadThreadMode), mode));
 
-      if (_readThread != null)
+      if (_readThread != null && _readThread.IsAlive)
       {
         DebugWriteLine("Read thread already started");
         return;
