@@ -450,7 +450,7 @@ namespace Translator
                 Icon icon = null;
 
                 if (!String.IsNullOrEmpty(progSettings.FileName))
-                    icon = Win32.GetIconFor(progSettings.FileName);
+                    icon = Win32.GetIconFromFile(progSettings.FileName);
 
                 if (icon != null)
                 {
@@ -486,7 +486,7 @@ namespace Translator
             foreach (ProgramSettings programSettings in Program.Config.Programs)
             {
                 if (String.IsNullOrEmpty(programSettings.FileName)) continue;
-                Icon icon = Win32.GetIconFor(programSettings.FileName);
+                Icon icon = Win32.GetIconFromFile(programSettings.FileName);
                 Image image = null;
                 if (icon != null) image = icon.ToBitmap();
 
