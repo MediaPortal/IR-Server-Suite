@@ -593,7 +593,7 @@ namespace TvEngine.Plugins.IRSS.TV3BlasterPlugin
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    internal static bool LearnIR(string fileName)
+    internal static bool LearnIR(string fileName, LearnStatusDelegate learnStatus = null)
     {
       try
       {

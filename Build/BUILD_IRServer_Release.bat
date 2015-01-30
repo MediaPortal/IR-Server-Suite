@@ -1,3 +1,3 @@
 @ECHO OFF
 
-call BuildScript.bat
+call BuildScript.bat %*
