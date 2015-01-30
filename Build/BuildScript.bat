@@ -2,7 +2,6 @@
 
 REM set paths
 set GIT_ROOT=..
-set MP_ROOT=..\..\MediaPortal-1
 
 set DeployVersionGIT="%GIT_ROOT%\External\DeployVersionGIT.exe"
 
@@ -36,8 +35,7 @@ echo.
 echo.
 echo Removing old binaries...
 RMDir /S /Q ..\bin\%BUILD_TYPE% >> %LOG%
-echo %ERRORLEVEL%
-if %ERRORLEVEL% GTR 1 GOTO END
+if not %ERRORLEVEL%==0 EXIT
 
 
 echo.
@@ -85,7 +83,7 @@ echo Reading the git revision...
 rem SET /p version=<version.txt >> build.log
 SET version=%errorlevel%
 DEL version.txt >> %LOG%
-SET version=91
+
 
 echo.
 if not %2!==MPplugins! goto NoMPplugins

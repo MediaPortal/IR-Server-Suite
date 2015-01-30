@@ -579,7 +579,7 @@ namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    internal static bool LearnIR(string fileName)
+    internal static bool LearnIR(string fileName, LearnStatusDelegate learnStatus=null)
     {
       try
       {
