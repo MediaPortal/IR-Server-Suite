@@ -570,7 +570,23 @@ namespace IrssUtils
         /// <returns>Returns string[] of command elements.</returns>
         private static string[] SplitCommand(string command, int elements)
         {
-      if (String.IsNullOrEmpty(command))
+            if (String.IsNullOrEmpty(command))
+                throw new ArgumentNullException("command");
+
+            string[] commands = command.Split(new Char [] {'|'});
+
+            if (elements == 0 || commands.Length != elements)
+            {
+                if (command != "")
+                    throw new CommandStructureException(String.Format("Command structure does not split as expected: {0}", command));
+                return null;
+            }
+
+            return commands;
+
+            /** This alternative code allows to use the | character in the commands but is disabled for backward-compatibility **
+
+            if (String.IsNullOrEmpty(command))
                 throw new ArgumentNullException("command");
 
             if (elements == 0)
@@ -626,6 +642,7 @@ namespace IrssUtils
                 throw new CommandStructureException(String.Format("Command structure does not split as expected: {0}", command));
 
             return commands;
+            */
         }
 
 
@@ -637,6 +654,13 @@ namespace IrssUtils
         public static string JoinCommand(string[] command)
         {
             if (command == null) return "";
+
+            return String.Join("|", command);
+            
+            
+            /** This alternative code allows to use the | character in the commands but is disabled for backward-compatibility **
+            if (command == null) return "";
+
 
             // first estimated length, defined by rule of thumbs
             StringBuilder commands = new StringBuilder(256);
@@ -675,6 +699,8 @@ namespace IrssUtils
                 started = true;
             }
             return commands.ToString();
+
+            */
         }
 
         #endregion Command Splitters
