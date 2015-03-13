@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("WinLirc Transceiver")]
 [assembly: AssemblyDescription("IR Server plugin to support WinLirc")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

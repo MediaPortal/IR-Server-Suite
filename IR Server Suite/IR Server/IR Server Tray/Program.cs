@@ -126,7 +126,7 @@ namespace IRServer.Tray
 
     private static Icon getIcon()
     {
-      return (Shared._irsStatus == IrsStatus.NotRunning) ? _iconGray : _iconGreen;
+      return (Shared.irsStatus == IrsStatus.NotRunning) ? _iconGray : _iconGreen;
     }
 
     #endregion

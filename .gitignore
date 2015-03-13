@@ -5,3 +5,12 @@ obj
 *.sln.cache
 *.user
 _ReSharper.*
+
+*.log
+
+/*.exe
+/*.zip
+/Build/_BuildReport_Files
+/Build/*.html
+/Build/*.xml
+/Build/*.txt

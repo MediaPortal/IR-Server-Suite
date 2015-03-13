@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("FusionREMOTE Receiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the DViCO FusionREMOTE Receiver USB device")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

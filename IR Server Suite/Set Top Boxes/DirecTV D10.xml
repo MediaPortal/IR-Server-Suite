@@ -12,5 +12,5 @@
 	<Digit7>STB: DirecTV D10\7</Digit7>
 	<Digit8>STB: DirecTV D10\8</Digit8>
 	<Digit9>STB: DirecTV D10\9</Digit9>
-	<SelectCommand>STB: STB: DirecTV D10\ENTER</SelectCommand>
+	<SelectCommand>STB: DirecTV D10\ENTER</SelectCommand>
 </config>

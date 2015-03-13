@@ -64,6 +64,11 @@
   !define WEB_REQUIREMENTS "http://wiki.team-mediaportal.com/GeneralRequirements"
 !endif
 
+!ifdef WEB_DOWNLOAD_NET_FRAMEWORK
+  !undef WEB_DOWNLOAD_NET_FRAMEWORK
+!endif
+!define WEB_DOWNLOAD_NET_FRAMEWORK "http://www.microsoft.com/download/details.aspx?id=17851"
+
 !ifndef MP_REG_UNINSTALL
   !define MP_REG_UNINSTALL  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MediaPortal"
 !endif
@@ -765,17 +770,22 @@ DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MediaPort
 !macro MediaPortalNetFrameworkCheck
   ${LOG_TEXT} "INFO" ".: Microsoft .Net Framework Check :."
 
-  ; check if .Net Framework 3.5 is installed
-  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "Install"
-  ; check if .Net Framework 3.5 SP1 is installed
-  ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "SP"
+  ; check if .Net Framework 4 Full is installed
+  ReadRegDWORD $3 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" "Install"
 
-  ${LOG_TEXT} "INFO" ".Net 3.5 installed? $0"
-  ${LOG_TEXT} "INFO" ".Net 3.5 ServicePack: $1"
+  ${LOG_TEXT} "INFO" ".Net 4 installed? $3"
 
-  ${If} $0 != 1  ; if no 3.5
-  ${OrIf} $1 < 1  ; if 3.5, but no sp1
-    !insertmacro ShowMissingComponent "     - Microsoft .NET Framework 3.5 Service Pack 1"
+  ${If} $3 != 1  ; if no 4
+
+    StrCpy $0 ""
+    StrCpy $0 "$0$(MISSING_COMPONENT_INTRO)$\r$\n"
+    StrCpy $0 "$0$(MISSING_COMPONENT_INSTALL)$\r$\n$\r$\n"
+    StrCpy $0 "$0     Microsoft .NET Framework 4 Full$\r$\n$\r$\n"
+    StrCpy $0 "$0$(TEXT_MSGBOX_INSTALLATION_CANCELD)$\r$\n$\r$\n"
+    MessageBox MB_OK|MB_ICONSTOP "$0"
+
+    ExecShell open "${WEB_DOWNLOAD_NET_FRAMEWORK}"
+    Abort
   ${EndIf}
 
   ${LOG_TEXT} "INFO" "============================"

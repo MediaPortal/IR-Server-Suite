@@ -36,7 +36,9 @@ namespace IRServer.Plugin
       /// </summary>
       public static void LoadSettings(ref Config config)
       {
+#if !TEST_APPLICATION
         IrssLog.Info("LoadSettings()");
+#endif
         //XmlSerializer ser = new XmlSerializer(typeof (Config));
         //StreamReader sr = new StreamReader(ConfigurationFile);
 
@@ -189,7 +191,9 @@ namespace IRServer.Plugin
       /// </summary>
       public static void SaveSettings(Config config)
       {
+#if !TEST_APPLICATION
         IrssLog.Info("SaveSettings()");
+#endif
         //XmlSerializer ser = new XmlSerializer(typeof(Config));
         //FileStream str = new FileStream(ConfigurationFile, FileMode.Create);
 

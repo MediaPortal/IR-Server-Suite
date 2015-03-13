@@ -188,11 +188,11 @@ namespace IRServer.Plugin
 
     private struct KeyboardHookStruct
     {
-      public readonly int dwExtraInfo;
-      public readonly int flags;
-      public readonly int scanCode;
-      public readonly int time;
       public readonly int virtualKey;
+      public readonly int scanCode;
+      public readonly int flags;
+      public readonly int time;
+      public readonly int dwExtraInfo;
 
       /// <summary>
       /// Initializes a new instance of the <see cref="KeyboardHookStruct"/> struct.

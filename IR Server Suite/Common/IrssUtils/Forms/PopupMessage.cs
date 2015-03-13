@@ -40,10 +40,11 @@ namespace IrssUtils.Forms
     {
       get
       {
-        return String.Format("{0}|{1}|{2}",
-                             textBoxHeading.Text,
-                             textBoxText.Text,
-                             numericUpDownTimeout.Value);
+          return Common.JoinCommand(new string[] {
+                           textBoxHeading.Text,
+                           textBoxText.Text,
+                           numericUpDownTimeout.Value.ToString()
+                           });
       }
     }
 

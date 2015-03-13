@@ -36,20 +36,20 @@ namespace MediaPortal.Core.Services.Logging
   /// </summary>
   public class CrashLoggerBase
   {
-    protected string _filename;
-    protected DateTime _crashTime;
+    protected string pFilename;
+    protected DateTime pCrashTime;
 
     public CrashLoggerBase(string logFilesPath)
     {
-      _crashTime = DateTime.Now;
+      pCrashTime = DateTime.Now;
 
-      string crashLogPath = Path.Combine(logFilesPath, "Crash_" + _crashTime.ToString("dd.MM.yyyy_HHmm"));
+      string crashLogPath = Path.Combine(logFilesPath, "Crash_" + pCrashTime.ToString("dd.MM.yyyy_HHmm"));
       if (!Directory.Exists(crashLogPath))
         Directory.CreateDirectory(crashLogPath);
 
       CopyLogFiles(logFilesPath, crashLogPath);
 
-      _filename = Path.Combine(crashLogPath, "Crash.log");
+      pFilename = Path.Combine(crashLogPath, "Crash.log");
     }
 
     protected string ExceptionInfo(Exception ex)

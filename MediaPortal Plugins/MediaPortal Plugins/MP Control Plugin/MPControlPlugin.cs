@@ -682,6 +682,8 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
       if (RequireFocus && !GUIGraphicsContext.HasFocus)
         return;
 
+      IrssUtils.Win32.SetThreadExecutionState(IrssUtils.Win32.EXECUTION_STATE.ES_DISPLAY_REQUIRED);
+
       foreach (MappedKeyCode mapping in _remoteMap)
       {
         if (!mapping.KeyCode.Equals(keyCode, StringComparison.OrdinalIgnoreCase))
@@ -1184,7 +1186,7 @@ namespace MediaPortal.Plugins.IRSS.MPControlPlugin
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    internal static bool LearnIR(string fileName)
+    internal static bool LearnIR(string fileName, LearnStatusDelegate learnStatus=null)
     {
       try
       {

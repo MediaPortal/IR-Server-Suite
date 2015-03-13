@@ -764,6 +764,8 @@ namespace IRServer.Plugin
 
     private bool _isSystem64Bit;
 
+    private readonly object _startStopLock = new object();
+
     #endregion Variables
 
     #region Constructor
@@ -1121,18 +1123,7 @@ namespace IRServer.Plugin
         _isSystem64Bit = IrssUtils.Win32.Check64Bit();
         DebugWriteLine("Operating system arch is {0}", _isSystem64Bit ? "x64" : "x86");
 
-        _notifyWindow = new NotifyWindow();
-        _notifyWindow.Create();
-        _notifyWindow.Class = _deviceGuid;
-        //_notifyWindow.RegisterDeviceArrival();
-
-        OpenDevice();
-        InitializeDevice();
-
-        StartReadThread(ReadThreadMode.Receiving);
-
-        _notifyWindow.DeviceArrival += OnDeviceArrival;
-        _notifyWindow.DeviceRemoval += OnDeviceRemoval;
+        StartDevice();
       }
       catch
       {
@@ -1148,27 +1139,8 @@ namespace IRServer.Plugin
     {
       DebugWriteLine("Stop()");
 
-      try
-      {
-        _notifyWindow.DeviceArrival -= OnDeviceArrival;
-        _notifyWindow.DeviceRemoval -= OnDeviceRemoval;
-
-        StopReadThread();
-        CloseDevice();
-      }
-      catch (Exception ex)
-      {
-        DebugWriteLine(ex.ToString());
-        throw;
-      }
-      finally
-      {
-        _notifyWindow.UnregisterDeviceArrival();
-        _notifyWindow.Dispose();
-        _notifyWindow = null;
-
-        DebugClose();
-      }
+      StopDevice();
+      DebugClose();
     }
 
     /// <summary>
@@ -1193,6 +1165,10 @@ namespace IRServer.Plugin
           DebugWriteLine("Device not found");
           return;
         }
+
+        // Restart the device otherwise the blasters will not work
+        StopDevice();
+        StartDevice();
       }
       catch (Exception ex)
       {
@@ -1300,6 +1276,63 @@ namespace IRServer.Plugin
     }
 
     /// <summary>
+    /// Starts listening for messages from the device.
+    /// </summary>
+    void StartDevice()
+    {
+      lock (_startStopLock)
+      {
+        _notifyWindow = new NotifyWindow();
+        _notifyWindow.Create();
+        _notifyWindow.Class = _deviceGuid;
+        _notifyWindow.RegisterDeviceArrival();
+
+        OpenDevice();
+        InitializeDevice();
+
+        StartReadThread(ReadThreadMode.Receiving);
+
+        _notifyWindow.DeviceArrival += OnDeviceArrival;
+        _notifyWindow.DeviceRemoval += OnDeviceRemoval;
+      }
+    }
+
+    /// <summary>
+    /// Stops listening for messages from the device.
+    /// </summary>
+    void StopDevice()
+    {
+      try
+      {
+        lock (_startStopLock)
+        {
+          if (_notifyWindow != null)
+          {
+            _notifyWindow.DeviceArrival -= OnDeviceArrival;
+            _notifyWindow.DeviceRemoval -= OnDeviceRemoval;
+          }
+
+          StopReadThread();
+          CloseDevice();
+        }
+      }
+      catch (Exception ex)
+      {
+        DebugWriteLine(ex.ToString());
+        throw;
+      }
+      finally
+      {
+        if (_notifyWindow != null)
+        {
+          _notifyWindow.UnregisterDeviceArrival();
+          _notifyWindow.Dispose();
+          _notifyWindow = null;
+        }
+      }
+    }
+
+    /// <summary>
     /// Converts an IrCode into raw data for the device.
     /// </summary>
     /// <param name="code">IrCode to convert.</param>
@@ -1335,7 +1368,7 @@ namespace IRServer.Plugin
     {
       DebugWriteLine("StartReadThread({0})", Enum.GetName(typeof(ReadThreadMode), mode));
 
-      if (_readThread != null)
+      if (_readThread != null && _readThread.IsAlive)
       {
         DebugWriteLine("Read thread already started");
         return;
@@ -1516,6 +1549,7 @@ namespace IRServer.Plugin
         receiveParams.ByteCount = DeviceBufferSize;
         Marshal.StructureToPtr(receiveParams, receiveParamsPtr, false);
 
+        _readThreadMode = _readThreadModeNext;
         while (_readThreadMode != ReadThreadMode.Stop)
         {
           // Cycle thread if device stopped reading.

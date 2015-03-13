@@ -28,122 +28,125 @@ using IrssUtils;
 
 namespace Translator
 {
-  internal partial class EditProgramForm : Form
-  {
-    #region Properties
-
-    public string DisplayName
+    internal partial class EditProgramForm : Form
     {
-      get { return textBoxDisplayName.Text; }
-      set { textBoxDisplayName.Text = value; }
-    }
+        #region Properties
 
-    public string Filename
-    {
-      get { return textBoxApp.Text; }
-      set { textBoxApp.Text = value; }
-    }
+        public string DisplayName
+        {
+            get { return textBoxDisplayName.Text; }
+            set { textBoxDisplayName.Text = value; }
+        }
 
-    public string StartupFolder
-    {
-      get { return textBoxAppStartFolder.Text; }
-      set { textBoxAppStartFolder.Text = value; }
-    }
+        public string Filename
+        {
+            get { return textBoxApp.Text; }
+            set { textBoxApp.Text = value; }
+        }
 
-    public string Parameters
-    {
-      get { return textBoxApplicationParameters.Text; }
-      set { textBoxApplicationParameters.Text = value; }
-    }
+        public string StartupFolder
+        {
+            get { return textBoxAppStartFolder.Text; }
+            set { textBoxAppStartFolder.Text = value; }
+        }
 
-    public ProcessWindowStyle StartState
-    {
-      get
-      {
-        return
-          (ProcessWindowStyle) Enum.Parse(typeof (ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true);
-      }
-      set { comboBoxWindowStyle.SelectedItem = Enum.GetName(typeof (ProcessWindowStyle), value); }
-    }
+        public string Parameters
+        {
+            get { return textBoxApplicationParameters.Text; }
+            set { textBoxApplicationParameters.Text = value; }
+        }
 
-    public bool UseShellExecute
-    {
-      get { return checkBoxShellExecute.Checked; }
-      set { checkBoxShellExecute.Checked = value; }
-    }
+        public ProcessWindowStyle StartState
+        {
+            get
+            {
+                return
+                  (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), comboBoxWindowStyle.SelectedItem as string, true);
+            }
+            set { comboBoxWindowStyle.SelectedItem = Enum.GetName(typeof(ProcessWindowStyle), value); }
+        }
 
-    public bool ForceWindowFocus
-    {
-      get { return checkBoxForceFocus.Checked; }
-      set { checkBoxForceFocus.Checked = value; }
-    }
+        public bool UseShellExecute
+        {
+            get { return checkBoxShellExecute.Checked; }
+            set { checkBoxShellExecute.Checked = value; }
+        }
 
-    public bool IgnoreSystemWide
-    {
-      get { return checkBoxIgnoreSystemWide.Checked; }
-      set { checkBoxIgnoreSystemWide.Checked = value; }
-    }
+        public bool ForceWindowFocus
+        {
+            get { return checkBoxForceFocus.Checked; }
+            set { checkBoxForceFocus.Checked = value; }
+        }
 
-    #endregion Properties
+        public bool IgnoreSystemWide
+        {
+            get { return checkBoxIgnoreSystemWide.Checked; }
+            set { checkBoxIgnoreSystemWide.Checked = value; }
+        }
 
-    #region Constructor
+        #endregion Properties
 
-    public EditProgramForm(ProgramSettings progSettings)
-    {
-      InitializeComponent();
+        #region Constructor
 
-      comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof (ProcessWindowStyle)));
+        public EditProgramForm(ProgramSettings progSettings)
+        {
+            InitializeComponent();
 
-      if (progSettings != null)
-      {
-        DisplayName = progSettings.Name;
-        Filename = progSettings.FileName;
-        StartupFolder = progSettings.Folder;
-        Parameters = progSettings.Arguments;
-        StartState = progSettings.WindowState;
-        UseShellExecute = progSettings.UseShellExecute;
-        ForceWindowFocus = progSettings.ForceWindowFocus;
-        IgnoreSystemWide = progSettings.IgnoreSystemWide;
-      }
-    }
+            comboBoxWindowStyle.Items.AddRange(Enum.GetNames(typeof(ProcessWindowStyle)));
 
-    #endregion Constructor
+            if (progSettings != null)
+            {
+                DisplayName = progSettings.Name;
+                Filename = progSettings.FileName;
+                StartupFolder = progSettings.Folder;
+                Parameters = progSettings.Arguments;
+                StartState = progSettings.WindowState;
+                UseShellExecute = progSettings.UseShellExecute;
+                ForceWindowFocus = progSettings.ForceWindowFocus;
+                IgnoreSystemWide = progSettings.IgnoreSystemWide;
 
-    #region Buttons
+                this.buttonTest.Image = IrssUtils.Properties.Resources.Run;
 
-    private void buttonLocate_Click(object sender, EventArgs e)
-    {
-      OpenFileDialog find = new OpenFileDialog();
-      find.Filter = "All files|*.*";
-      find.Multiselect = false;
-      find.Title = "Application to launch";
+            }
+        }
 
-      if (find.ShowDialog(this) == DialogResult.OK)
-      {
-        textBoxApp.Text = find.FileName;
-        if (String.IsNullOrEmpty(textBoxAppStartFolder.Text))
-          textBoxAppStartFolder.Text = Path.GetDirectoryName(find.FileName);
+        #endregion Constructor
 
-        if (String.IsNullOrEmpty(textBoxDisplayName.Text) ||
-            textBoxDisplayName.Text.Equals(ProgramSettings.NewProgramName, StringComparison.Ordinal))
-          textBoxDisplayName.Text = Path.GetFileNameWithoutExtension(find.FileName);
-      }
-    }
+        #region Buttons
 
-    private void buttonStartupFolder_Click(object sender, EventArgs e)
-    {
-      FolderBrowserDialog find = new FolderBrowserDialog();
-      find.Description = "Please specify the starting folder for the application";
-      find.ShowNewFolderButton = true;
-      if (find.ShowDialog(this) == DialogResult.OK)
-        textBoxAppStartFolder.Text = find.SelectedPath;
-    }
+        private void buttonLocate_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog find = new OpenFileDialog();
+            find.Filter = "All files|*.*";
+            find.Multiselect = false;
+            find.Title = "Application to launch";
 
-    private void buttonTest_Click(object sender, EventArgs e)
-    {
-      try
-      {
-        string[] launchCommand = new string[]
+            if (find.ShowDialog(this) == DialogResult.OK)
+            {
+                textBoxApp.Text = find.FileName;
+                if (String.IsNullOrEmpty(textBoxAppStartFolder.Text))
+                    textBoxAppStartFolder.Text = Path.GetDirectoryName(find.FileName);
+
+                if (String.IsNullOrEmpty(textBoxDisplayName.Text) ||
+                    textBoxDisplayName.Text.Equals(ProgramSettings.NewProgramName, StringComparison.Ordinal))
+                    textBoxDisplayName.Text = Path.GetFileNameWithoutExtension(find.FileName);
+            }
+        }
+
+        private void buttonStartupFolder_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog find = new FolderBrowserDialog();
+            find.Description = "Please specify the starting folder for the application";
+            find.ShowNewFolderButton = true;
+            if (find.ShowDialog(this) == DialogResult.OK)
+                textBoxAppStartFolder.Text = find.SelectedPath;
+        }
+
+        private void buttonTest_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string[] launchCommand = new string[]
                                    {
                                      Filename,
                                      StartupFolder,
@@ -155,26 +158,33 @@ namespace Translator
                                      ForceWindowFocus.ToString()
                                    };
 
-        Common.ProcessRunCommand(launchCommand);
-      }
-      catch (Exception ex)
-      {
-        IrssLog.Error("Test Application: {0}", ex.ToString());
-      }
-    }
+                Common.ProcessRunCommand(launchCommand);
+            }
+            catch (Exception ex)
+            {
+                IrssLog.Error("Test Application: {0}", ex.ToString());
+            }
+        }
 
-    private void buttonOK_Click(object sender, EventArgs e)
-    {
-      DialogResult = DialogResult.OK;
-      Close();
-    }
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
 
-    private void buttonCancel_Click(object sender, EventArgs e)
-    {
-      DialogResult = DialogResult.Cancel;
-      Close();
-    }
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
 
-    #endregion Buttons
-  }
+        #endregion Buttons
+
+        private void textBoxApp_TextChanged(object sender, EventArgs e)
+        {
+            bool hasText = !String.IsNullOrEmpty(textBoxApp.Text);
+            this.buttonTest.Enabled = hasText;
+            this.buttonOK.Enabled = hasText;
+        }
+    }
 }

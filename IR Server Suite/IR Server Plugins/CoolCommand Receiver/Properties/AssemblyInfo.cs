@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("CoolCommand Receiver")]
 [assembly: AssemblyDescription("IR Server Plugin for the Leadtek Winfast CoolCommand Receiver device")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

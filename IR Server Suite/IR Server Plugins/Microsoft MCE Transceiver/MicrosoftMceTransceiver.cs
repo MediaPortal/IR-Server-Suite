@@ -73,11 +73,13 @@ namespace IRServer.Plugin
 
     private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Microsoft MCE Transceiver.xml");
 
-    private static readonly Guid MicrosoftGuid = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94,
-                                                          0xfc, 0x57);
+    //private static readonly Guid MicrosoftGuid = new Guid(0x7951772d, 0xcd50, 0x49b7, 0xb1, 0x03, 0x2b, 0xaa, 0xc4, 0x94,
+    //                                                      0xfc, 0x57);
+    private static readonly Guid MicrosoftGuid = new Guid("7951772d-cd50-49b7-b103-2baac494fc57");
 
-    private static readonly Guid ReplacementGuid = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f,
-                                                            0xb1, 0x72, 0x8b);
+    //private static readonly Guid ReplacementGuid = new Guid(0x00873fdf, 0x61a8, 0x11d1, 0xaa, 0x5e, 0x00, 0xc0, 0x4f,
+    //                                                        0xb1, 0x72, 0x8b);
+    private static readonly Guid ReplacementGuid = new Guid("00873fdf-61a8-11d1-aa5e-00c04fb1728b");
 
     #endregion Constants
 

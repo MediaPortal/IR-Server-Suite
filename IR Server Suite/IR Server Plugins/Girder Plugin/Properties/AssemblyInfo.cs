@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("Girder Plugin")]
 [assembly: AssemblyDescription("IR Server plugin to support Girder 3.x plugins")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

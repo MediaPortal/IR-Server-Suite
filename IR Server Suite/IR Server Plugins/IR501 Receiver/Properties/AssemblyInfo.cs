@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("IR501 Receiver")]
 [assembly: AssemblyDescription("Support for the IR501 IR receiver")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]
