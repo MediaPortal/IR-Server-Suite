@@ -13,8 +13,9 @@
 		</button>
 		<button name="Play">
 			<code value="1128"/>
+			<code value="1132"/> <!-- Imon mini code -->
 		</button>
-		<button name="Open">
+		<button name="Info"> <!-- was "Open" previously -->
 			<code value="1114"/>
 		</button>
 		<button name="Rewind">
@@ -25,6 +26,7 @@
 		</button>
 		<button name="Forward">
 			<code value="1192"/>
+			<code value="1068"/> <!-- Imon mini code -->
 		</button>
 		<button name="Replay">
 			<code value="1208"/>
@@ -34,25 +36,25 @@
 		</button>
 		<button name="Skip">
 			<code value="1066"/>
+			<code value="1196"/> <!-- Imon mini code -->
 		</button>
-
 		<button name="Back">
 			<code value="1032"/>
 		</button>
 		<button name="Ok">
 			<code value="1148"/>
 		</button>
-		<button name="WinStart">
+		<button name="Winstart">
 			<code value="1194"/>
 		</button>
-		<button name="WinMenu">
+		<button name="Winmenu">
 			<code value="1060"/>
 		</button>
 
-		<button name="LeftClick">
+		<button name="Leftclick">
 			<code value="1226"/>
 		</button>
-		<button name="RightClick">
+		<button name="Rightclick">
 			<code value="1228"/>
 		</button>
 
@@ -65,100 +67,102 @@
 		<button name="Eject">
 			<code value="1086"/>
 		</button>
-		<button name="AppLauncher">
+		<button name="Applauncher">
 			<code value="1124"/>
 		</button>
 		<button name="Start">
 			<code value="1178"/>
 		</button>
-		<button name="TaskSwitcher">
+		<button name="Taskswitcher">
 			<code value="1150"/>
 		</button>
 
 		<button name="Mute">
 			<code value="1218"/>
 		</button>
-		<button name="VolumeUp">
+		<button name="Volumeup">
 			<code value="1038"/>
 		</button>
-		<button name="ChannelUp">
+		<button name="Channelup">
 			<code value="1022"/>
 		</button>
 		<button name="Timer">
 			<code value="1198"/>
 		</button>
-		<button name="VolumeDown">
+		<button name="Volumedown">
 			<code value="1042"/>
 		</button>
-		<button name="ChannelDown">
+		<button name="Channeldown">
 			<code value="1014"/>
 		</button>
 
-		<button name="NumPad1">
+		<button name="1">
 			<code value="1058"/>
 		</button>
-		<button name="NumPad2">
+		<button name="2">
 			<code value="1242"/>
 		</button>
-		<button name="NumPad3">
+		<button name="3">
 			<code value="1050"/>
 		</button>
-		<button name="NumPad4">
+		<button name="4">
 			<code value="1138"/>
 		</button>
-		<button name="NumPad5">
+		<button name="5">
 			<code value="1090"/>
 		</button>
-		<button name="NumPad6">
+		<button name="6">
 			<code value="1170"/>
 		</button>
-		<button name="NumPad7">
+		<button name="7">
 			<code value="1214"/>
 		</button>
-		<button name="NumPad8">
+		<button name="8">
 			<code value="1136"/>
 		</button>
-		<button name="NumPad9">
+		<button name="9">
 			<code value="1160"/>
 		</button>
-		<button name="ShiftTab">
+		<button name="Shifttab">
 			<code value="1096"/>
 		</button>
-		<button name="NumPad0">
+		<button name="0">
 			<code value="1234"/>
 		</button>
 		<button name="Tab">
 			<code value="1056"/>
 		</button>
-
-		<button name="MyVideos">
+		
+		<!-- TeleText Red !-->
+		<button name="Myvideos">
 			<code value="1200"/>
 		</button>
-		<!-- TeleText Red !-->
-		<button name="MyMusic">
+		<!-- TeleText Green !-->
+		<button name="Mymusic">
 			<code value="1082"/>
 		</button>
-		<!-- TeleText Green !-->
-		<button name="MyPictures">
+		<!-- TeleText Blue !-->
+		<button name="Mypictures">
 			<code value="1224"/>
 		</button>
-		<!-- TeleText Blue !-->
+		<!-- TeleText Yellow !-->
 		<button name="MyTV">
 			<code value="1040"/>
 		</button>
-		<!-- TeleText Yellow !-->
+		
 		<button name="Bookmark">
 			<code value="1008"/>
 		</button>
 		<button name="Thumbnail">
 			<code value="1188"/>
 		</button>
-		<button name="AspectRatio">
+		<button name="Aspectratio">
 			<code value="1106"/>
 		</button>
-		<button name="FullScreen">
+		<button name="Fullscreen">
 			<code value="1166"/>
 		</button>
+		<!-- TeleText Violet !-->
 		<button name="MyDVD">
 			<code value="1102"/>
 		</button>
@@ -171,19 +175,22 @@
 		<button name="Language">
 			<code value="1202"/>
 		</button>
-
+		
 		<button name="Up">
 			<code value="1250"/>
+			<code value="1168"/> <!-- Imon mini code -->
 		</button>
 		<button name="Down">
 			<code value="1248"/>
+			<code value="1024"/> <!-- Imon mini code -->
 		</button>
 		<button name="Left">
 			<code value="1246"/>
+			<code value="1104"/> <!-- Imon mini code -->
 		</button>
 		<button name="Right">
 			<code value="1244"/>
+			<code value="1232"/> <!-- Imon mini code -->
 		</button>
-
 	</remote>
 </remotes>

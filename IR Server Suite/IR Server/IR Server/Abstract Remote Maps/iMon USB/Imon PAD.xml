@@ -44,13 +44,14 @@
   <RemoteTable RawCode="1248" AbstractButton="Down" />
   <RemoteTable RawCode="1246" AbstractButton="Left" />
   <RemoteTable RawCode="1244" AbstractButton="Right" />
-  <RemoteTable RawCode="1230" AbstractButton="Win" />
+  <RemoteTable RawCode="1194" AbstractButton="Win" />
   <RemoteTable RawCode="1074" AbstractButton="Yellow" /> <!-- Caption -->
   <RemoteTable RawCode="1202" AbstractButton="Green" />  <!-- Language -->
   <RemoteTable RawCode="1198" AbstractButton="Guide" /> <!-- Timer -->
   <RemoteTable RawCode="1150" AbstractButton="Home" /> <!-- Taskswitcher -->
   <RemoteTable RawCode="1226" AbstractButton="LeftClick" />
   <RemoteTable RawCode="1228" AbstractButton="RightClick" />
+  <RemoteTable RawCode="1230" AbstractButton="Menu2" />
   <RemoteTable RawCode="1060" AbstractButton="Menu" />
   <RemoteTable RawCode="1124" AbstractButton="Applauncher" />
   <RemoteTable RawCode="1008" AbstractButton="Teletext" />  <!-- Bookmark -->
