@@ -170,7 +170,7 @@ namespace DebugClient
     private void ReceivedMessage(IrssMessage received)
     {
       Invoke(_addStatusLine,
-             new Object[] { String.Format("Received Message: \"{0}, {1}\"", received.Flags + ": " + received.Type) });
+          new Object[] { String.Format("Received Message: \"{0}, {1}\"", received.Flags , received.Type) });
 
       try
       {
