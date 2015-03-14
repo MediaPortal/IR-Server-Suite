@@ -113,10 +113,10 @@
 		<button name="0">
 			<code value="Number0" />
 		</button>
-		<button name="*">
+		<button name="Star">
 			<code value="Star" />
 		</button>
-		<button name="#">
+		<button name="Hash">
 			<code value="Hash" />
 		</button>		
 		<button name="Clear">
