@@ -33,7 +33,7 @@ using IrssUtils;
 using IrssUtils.Forms;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
-using MediaPortal.Hardware;
+//using MediaPortal.Hardware;
 using MediaPortal.Plugins.IRSS.MPControlPlugin.Forms;
 using MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper;
 using MediaPortal.Profile;
