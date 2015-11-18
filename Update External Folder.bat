@@ -2,7 +2,7 @@
 
 REM set paths
 set MP1=E:\svnroot\1.Mediaportal\MediaPortal-1
-set Ext=E:\svnroot\1.Mediaportal\IR Server Suite\External
+set Ext=E:\svnroot\1.2 Mediaportal plugin\IR Server Suite\External
 
 
 
