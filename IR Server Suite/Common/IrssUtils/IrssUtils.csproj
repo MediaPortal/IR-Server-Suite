@@ -21,13 +21,13 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,7 +40,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -52,12 +52,13 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -74,6 +75,26 @@
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="CommandGeneratedEventArgs .cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Forms\CommandManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\CommandManager.Designer.cs">
+      <DependentUpon>CommandManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LearnIR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LearnIR.Designer.cs">
+      <DependentUpon>LearnIR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MacroEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MacroEditor.Designer.cs">
+      <DependentUpon>MacroEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Audio.cs" />
@@ -175,11 +196,11 @@
     <Compile Include="Forms\EjectCommand.Designer.cs">
       <DependentUpon>EjectCommand.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\LearnIR.cs">
+    <Compile Include="Forms\IREditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\LearnIR.Designer.cs">
-      <DependentUpon>LearnIR.cs</DependentUpon>
+    <Compile Include="Forms\IREditor.Designer.cs">
+      <DependentUpon>IREditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MouseCommand.cs">
       <SubType>Form</SubType>
@@ -297,6 +318,16 @@
       <DependentUpon>CloseProgramCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CommandManager.resx">
+      <DependentUpon>CommandManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LearnIR.resx">
+      <DependentUpon>LearnIR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MacroEditor.resx">
+      <DependentUpon>MacroEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\WindowCommand.resx">
       <DependentUpon>WindowCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -341,8 +372,8 @@
       <DependentUpon>EjectCommand.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LearnIR.resx">
-      <DependentUpon>LearnIR.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\IREditor.resx">
+      <DependentUpon>IREditor.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MouseCommand.resx">
@@ -410,6 +441,7 @@
     <Content Include="Graphics\ClickMiddle.png" />
     <Content Include="Graphics\ClickRight.png" />
     <Content Include="Graphics\Connect.png" />
+    <None Include="Graphics\CopyDocument.png" />
     <Content Include="Graphics\Delete.png" />
     <Content Include="Graphics\DeleteAll.png" />
     <Content Include="Graphics\Detect.png" />
@@ -425,6 +457,7 @@
     <Content Include="Graphics\ImportDocument.png" />
     <Content Include="Graphics\Info.png" />
     <Content Include="Graphics\CloseDocument.png" />
+    <None Include="Graphics\Run.png" />
     <Content Include="Graphics\SaveAs.png" />
     <Content Include="Graphics\SaveAll.png" />
     <Content Include="Graphics\Left.png" />
@@ -440,6 +473,7 @@
     <Content Include="Graphics\Right.png" />
     <Content Include="Graphics\Save.png" />
     <Content Include="Graphics\ScrollDown.png" />
+    <None Include="Graphics\ScrollLeft.png" />
     <Content Include="Graphics\ScrollUp.png" />
     <Content Include="Graphics\Shortcut.png" />
     <Content Include="Graphics\Start.png" />
@@ -448,6 +482,12 @@
     <Content Include="Graphics\TopLeft.png" />
     <Content Include="Graphics\TopRight.png" />
     <Content Include="Graphics\WinLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ShellLink\ShellLink.csproj">
+      <Project>{28923f6e-8a68-4bc8-a507-825b09c3f64e}</Project>
+      <Name>ShellLink</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -187,7 +187,7 @@ namespace IrssUtils.Forms
     {
       if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK)
       {
-        textBoxProgram.Text = folderBrowserDialog.SelectedPath;
+          textBoxStartup.Text = folderBrowserDialog.SelectedPath;
       }
     }
 

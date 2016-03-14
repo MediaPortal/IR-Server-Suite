@@ -26,7 +26,6 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using IrssUtils;
 
 namespace IRServer.Plugin
 {
@@ -104,7 +103,11 @@ namespace IRServer.Plugin
       ///<summary>
       /// Device is disabled on specific platform
       ///</summary>
-      DeviceDisabled
+      DeviceDisabled,
+      ///<summary>
+      /// Device supports Plug&Play
+      /// </summary>
+      DeviceIsPlugAndPlay
     }
     #endregion
 

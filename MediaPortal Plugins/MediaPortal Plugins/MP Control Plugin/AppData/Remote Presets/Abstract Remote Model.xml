@@ -36,6 +36,7 @@
 		</button>
 		<button name="Info">
 			<code value="Info" />
+			<code value="Menu" />
 		</button>		
 		<button name="Up">
 			<code value="Up" />
@@ -82,40 +83,40 @@
 		<button name="DVDMenu">
 			<code value="DVD" />
 		</button>
-		<button name="NumPad1">
+		<button name="1">
 			<code value="Number1" />
 		</button>
-		<button name="NumPad2">
+		<button name="2">
 			<code value="Number2" />
 		</button>
-		<button name="NumPad3">
+		<button name="3">
 			<code value="Number3" />
 		</button>
-		<button name="NumPad4">
+		<button name="4">
 			<code value="Number4" />
 		</button>
-		<button name="NumPad5">
+		<button name="5">
 			<code value="Number5" />
 		</button>
-		<button name="NumPad6">
+		<button name="6">
 			<code value="Number6" />
 		</button>
-		<button name="NumPad7">
+		<button name="7">
 			<code value="Number7" />
 		</button>
-		<button name="NumPad8">
+		<button name="8">
 			<code value="Number8" />
 		</button>
-		<button name="NumPad9">
+		<button name="9">
 			<code value="Number9" />
 		</button>
-		<button name="NumPad0">
+		<button name="0">
 			<code value="Number0" />
 		</button>
-		<button name="Oem8">
+		<button name="Star">
 			<code value="Star" />
 		</button>
-		<button name="OemGate">
+		<button name="Hash">
 			<code value="Hash" />
 		</button>		
 		<button name="Clear">
@@ -152,7 +153,7 @@
 			<code value="TV" />
 		</button>
 		<button name="MyVideos">
-			<code value="Video" />
+			<code value="Videos" />
 		</button>
 		<button name="Print">
 			<code value="Print" />

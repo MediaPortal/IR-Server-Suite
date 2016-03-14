@@ -31,53 +31,27 @@ namespace IrssUtils
   /// </summary>
   public class IRServerInfo
   {
-    #region Variables
-
-    private bool _canLearn;
-    private bool _canReceive;
-    private bool _canTransmit;
-
-    private string[] _ports;
-
-    #endregion Variables
-
     #region Properties
 
     /// <summary>
     /// Can the IR Server learn IR Commands.
     /// </summary>
-    public bool CanLearn
-    {
-      get { return _canLearn; }
-      set { _canLearn = value; }
-    }
+    public bool CanLearn { get; set; }
 
     /// <summary>
     /// Can the IR Server receive IR commands.
     /// </summary>
-    public bool CanReceive
-    {
-      get { return _canReceive; }
-      set { _canReceive = value; }
-    }
+    public bool CanReceive { get; set; }
 
     /// <summary>
     /// Can the IR Server transmit IR Commands.
     /// </summary>
-    public bool CanTransmit
-    {
-      get { return _canTransmit; }
-      set { _canTransmit = value; }
-    }
+    public bool CanTransmit { get; set; }
 
     /// <summary>
     /// Available IR transmit ports.
     /// </summary>
-    public string[] Ports
-    {
-      get { return _ports; }
-      set { _ports = value; }
-    }
+    public string[] Ports { get; set; }
 
     #endregion Properties
 
@@ -88,7 +62,7 @@ namespace IrssUtils
     /// </summary>
     public IRServerInfo()
     {
-      _ports = new string[] {"None"};
+      Ports = new string[] {"None"};
     }
 
     #endregion Construcors
@@ -104,18 +78,18 @@ namespace IrssUtils
       try
       {
         StringBuilder ports = new StringBuilder();
-        for (int index = 0; index < _ports.Length; index++)
+        for (int index = 0; index < Ports.Length; index++)
         {
-          ports.Append(_ports[index]);
-          if (index < _ports.Length - 1)
+          ports.Append(Ports[index]);
+          if (index < Ports.Length - 1)
             ports.Append(',');
         }
 
         string data = String.Format("{0},{1},{2},{3},{4}",
-                                    _canLearn, // 0
-                                    _canReceive, // 1
-                                    _canTransmit, // 2
-                                    _ports.Length, // 3
+                                    CanLearn, // 0
+                                    CanReceive, // 1
+                                    CanTransmit, // 2
+                                    Ports.Length, // 3
                                     ports // 4
           );
 

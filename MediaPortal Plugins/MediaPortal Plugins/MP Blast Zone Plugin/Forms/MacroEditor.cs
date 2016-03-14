@@ -24,13 +24,12 @@ using System;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using IrssUtils;
 using IrssUtils.Exceptions;
 using IrssUtils.Forms;
 using MediaPortal.GUI.Library;
 using MPUtils.Forms;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
 {
   internal partial class MacroEditor : Form
   {

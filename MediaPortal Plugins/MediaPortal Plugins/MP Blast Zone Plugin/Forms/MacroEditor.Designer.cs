@@ -1,4 +1,4 @@
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
 {
   partial class MacroEditor
   {

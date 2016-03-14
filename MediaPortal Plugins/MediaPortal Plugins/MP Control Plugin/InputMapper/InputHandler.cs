@@ -34,7 +34,7 @@ using MediaPortal.Util;
 using MPUtils;
 using Action = MediaPortal.GUI.Library.Action;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
 {
   /// <summary>
   /// Remotecontrol-mapping class
@@ -440,6 +440,12 @@ namespace MediaPortal.Plugins
                     case "DVD":
                       if (g_Player.IsDVD)
                         found = map;
+                      break;
+                    case "MUSIC":
+                      if (g_Player.Playing && g_Player.IsMusic)
+                      
+                        found = map;
+                      
                       break;
                     case "MEDIA":
                       if (g_Player.Playing)

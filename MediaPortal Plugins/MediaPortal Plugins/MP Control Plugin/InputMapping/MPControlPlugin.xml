@@ -171,14 +171,14 @@
 			<action layer="0" condition="WINDOW" conproperty="600" command="ACTION" cmdproperty="88" sound="back.wav" />
 			<action layer="0" condition="*" conproperty="-1" command="ACTION" cmdproperty="93" cmdkeychar="48" cmdkeycode="0" sound="cursor.wav" />
 		</button>
-		<button name="*" code="29">
+		<button name="Star" code="29">
 			<action layer="0" condition="WINDOW" conproperty="1" command="WINDOW" cmdproperty="7700" sound="click.wav" />
 			<action layer="0" condition="WINDOW" conproperty="602" command="WINDOW" cmdproperty="7701" sound="click.wav" />
 			<action layer="0" condition="WINDOW" conproperty="7700" command="WINDOW" cmdproperty="7701" sound="click.wav" />
 			<action layer="0" condition="WINDOW" conproperty="7701" command="WINDOW" cmdproperty="7700" sound="click.wav" />
 			<action layer="0" condition="PLAYER" conproperty="TV" command="WINDOW" cmdproperty="7701" sound="click.wav" />
 		</button>
-		<button name="#" code="28">
+		<button name="Hash" code="28">
 			<action layer="0" condition="*" conproperty="-1" command="ACTION" cmdproperty="19" sound="click.wav" />
 		</button>
 		<button name="Clear" code="10" />

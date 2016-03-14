@@ -177,11 +177,11 @@ namespace IrssUtils
 
           if (commands[0].StartsWith(Common.VariablePrefix, StringComparison.OrdinalIgnoreCase))
             commands[0] = variables.GetVariable(commands[0].Substring(Common.VariablePrefix.Length));
-          commands[0] = Common.ReplaceSpecial(commands[0]).ToString();
+          commands[0] = Common.ReplaceSpecialVariables(commands[0]);
 
           if (commands[2].StartsWith(Common.VariablePrefix, StringComparison.OrdinalIgnoreCase))
             commands[2] = variables.GetVariable(commands[2].Substring(Common.VariablePrefix.Length));
-          commands[2] = Common.ReplaceSpecial(commands[2]).ToString();
+          commands[2] = Common.ReplaceSpecialVariables(commands[2]);
 
           if (EvaluateIfCommand(commands))
             position = GetLabelPosition(commandList, commands[3]);
@@ -202,7 +202,7 @@ namespace IrssUtils
           string[] commands = Common.SplitSetVarCommand(command.Substring(Common.CmdPrefixSetVar.Length));
 
           string variable = commands[0].Substring(Common.VariablePrefix.Length);
-          string value = Common.ReplaceSpecial(commands[1]).ToString();
+          string value = Common.ReplaceSpecialVariables(commands[1]);
 
           variables.SetVariable(variable, value);
         }
@@ -233,6 +233,9 @@ namespace IrssUtils
     /// <returns>string[] of Macros.</returns>
     public static string[] GetMacroList(string folder, bool commandPrefix)
     {
+      if (!Directory.Exists(folder))
+        Directory.CreateDirectory(folder);
+
       string[] files = Directory.GetFiles(folder, '*' + Common.FileExtensionMacro);
 
       for (int index = 0; index < files.Length; index++)

@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<DocumentElement>
-  <RemoteTable RawCode="1002" AbstractButton="Power" />
-  <RemoteTable RawCode="1016" AbstractButton="Power2" />
-  <RemoteTable RawCode="1064" AbstractButton="Record" />
+<DocumentElement> 
+  <RemoteTable RawCode="1002" AbstractButton="Power" /> 
+  <RemoteTable RawCode="1016" AbstractButton="Power2" /> <!-- App. Exit -->
+  <RemoteTable RawCode="1064" AbstractButton="Record" /> 
   <RemoteTable RawCode="1128" AbstractButton="Play" />
-  <RemoteTable RawCode="1114" AbstractButton="Eject" />
+  <RemoteTable RawCode="1114" AbstractButton="Open" /> 
   <RemoteTable RawCode="1130" AbstractButton="Rewind" />
   <RemoteTable RawCode="1144" AbstractButton="Pause" />
   <RemoteTable RawCode="1192" AbstractButton="FastForward" />
   <RemoteTable RawCode="1066" AbstractButton="NextChapter" />
   <RemoteTable RawCode="1220" AbstractButton="Stop" />
   <RemoteTable RawCode="1208" AbstractButton="PreviousChapter" />
-  <RemoteTable RawCode="1148" AbstractButton="OK" />
+  <RemoteTable RawCode="1148" AbstractButton="OK" /> 
   <RemoteTable RawCode="1038" AbstractButton="VolumeUp" />
   <RemoteTable RawCode="1042" AbstractButton="VolumeDown" />
   <RemoteTable RawCode="1022" AbstractButton="ChannelUp" />
@@ -29,30 +29,31 @@
   <RemoteTable RawCode="1214" AbstractButton="Number7" />
   <RemoteTable RawCode="1136" AbstractButton="Number8" />
   <RemoteTable RawCode="1160" AbstractButton="Number9" />
-  <RemoteTable RawCode="1034" AbstractButton="OK" />
+  <RemoteTable RawCode="1034" AbstractButton="Enter" /> <!-- OK -->
   <RemoteTable RawCode="1096" AbstractButton="Star" />
   <RemoteTable RawCode="1056" AbstractButton="Hash" />
-  <RemoteTable RawCode="1082" AbstractButton="Music" />
-  <RemoteTable RawCode="1224" AbstractButton="Pictures" />
-  <RemoteTable RawCode="1200" AbstractButton="Videos" />
-  <RemoteTable RawCode="1102" AbstractButton="DVD" />
-  <RemoteTable RawCode="1040" AbstractButton="TV" />
+  <RemoteTable RawCode="1082" AbstractButton="Music" /> <!-- Green -->
+  <RemoteTable RawCode="1224" AbstractButton="Pictures" /> <!-- Blue -->
+  <RemoteTable RawCode="1200" AbstractButton="Videos" />  <!-- Red -->
+  <RemoteTable RawCode="1102" AbstractButton="DVD" /> <!-- Magenta -->
+  <RemoteTable RawCode="1040" AbstractButton="TV" /> <!-- Yellow -->
   <RemoteTable RawCode="1106" AbstractButton="AspectRatio" />
   <RemoteTable RawCode="1086" AbstractButton="Eject" />
-  <RemoteTable RawCode="1166" AbstractButton="Red" />
+  <RemoteTable RawCode="1166" AbstractButton="Red" /> <!-- Language -->
   <RemoteTable RawCode="1250" AbstractButton="Up" />
   <RemoteTable RawCode="1248" AbstractButton="Down" />
   <RemoteTable RawCode="1246" AbstractButton="Left" />
   <RemoteTable RawCode="1244" AbstractButton="Right" />
-  <RemoteTable RawCode="1230" AbstractButton="Menu" />
-  <RemoteTable RawCode="1074" AbstractButton="Yellow" />
-  <RemoteTable RawCode="1202" AbstractButton="Green" />
-  <RemoteTable RawCode="1198" AbstractButton="Guide" />
-  <RemoteTable RawCode="1150" AbstractButton="Home" />
+  <RemoteTable RawCode="1194" AbstractButton="Win" />
+  <RemoteTable RawCode="1074" AbstractButton="Yellow" /> <!-- Caption -->
+  <RemoteTable RawCode="1202" AbstractButton="Green" />  <!-- Language -->
+  <RemoteTable RawCode="1198" AbstractButton="Guide" /> <!-- Timer -->
+  <RemoteTable RawCode="1150" AbstractButton="Home" /> <!-- Taskswitcher -->
   <RemoteTable RawCode="1226" AbstractButton="LeftClick" />
   <RemoteTable RawCode="1228" AbstractButton="RightClick" />
-  <RemoteTable RawCode="1060" AbstractButton="Info" />
-  <RemoteTable RawCode="1124" AbstractButton="Info" />
-  <RemoteTable RawCode="1008" AbstractButton="Teletext" />
+  <RemoteTable RawCode="1230" AbstractButton="Menu2" />
+  <RemoteTable RawCode="1060" AbstractButton="Menu" />
+  <RemoteTable RawCode="1124" AbstractButton="Applauncher" />
+  <RemoteTable RawCode="1008" AbstractButton="Teletext" />  <!-- Bookmark -->
   <RemoteTable RawCode="1188" AbstractButton="Snapshot" />
 </DocumentElement>

@@ -23,7 +23,7 @@
 using System;
 using MediaPortal.GUI.Library;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin
 {
   /// <summary>
   /// MappedEvent class is used to pass events into the Event Mapper feature.

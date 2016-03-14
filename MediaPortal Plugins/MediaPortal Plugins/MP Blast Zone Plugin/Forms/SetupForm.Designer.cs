@@ -1,4 +1,4 @@
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Forms
 {
   partial class SetupForm
   {
@@ -175,7 +175,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonEditTree
       // 
-      this.buttonEditTree.Image = global::MediaPortal.Plugins.Properties.Resources.Edit;
+      this.buttonEditTree.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.Edit;
       this.buttonEditTree.Location = new System.Drawing.Point(8, 120);
       this.buttonEditTree.Name = "buttonEditTree";
       this.buttonEditTree.Size = new System.Drawing.Size(24, 24);
@@ -186,7 +186,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonAdd
       // 
-      this.buttonAdd.Image = global::MediaPortal.Plugins.Properties.Resources.Plus;
+      this.buttonAdd.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.Plus;
       this.buttonAdd.Location = new System.Drawing.Point(8, 88);
       this.buttonAdd.Name = "buttonAdd";
       this.buttonAdd.Size = new System.Drawing.Size(24, 24);
@@ -197,7 +197,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonDeleteAll
       // 
-      this.buttonDeleteAll.Image = global::MediaPortal.Plugins.Properties.Resources.DeleteAll;
+      this.buttonDeleteAll.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.DeleteAll;
       this.buttonDeleteAll.Location = new System.Drawing.Point(8, 184);
       this.buttonDeleteAll.Name = "buttonDeleteAll";
       this.buttonDeleteAll.Size = new System.Drawing.Size(24, 24);
@@ -208,7 +208,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonDelete
       // 
-      this.buttonDelete.Image = global::MediaPortal.Plugins.Properties.Resources.Delete;
+      this.buttonDelete.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.Delete;
       this.buttonDelete.Location = new System.Drawing.Point(8, 152);
       this.buttonDelete.Name = "buttonDelete";
       this.buttonDelete.Size = new System.Drawing.Size(24, 24);
@@ -219,7 +219,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonBottom
       // 
-      this.buttonBottom.Image = global::MediaPortal.Plugins.Properties.Resources.MoveBottom;
+      this.buttonBottom.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.MoveBottom;
       this.buttonBottom.Location = new System.Drawing.Point(8, 256);
       this.buttonBottom.Name = "buttonBottom";
       this.buttonBottom.Size = new System.Drawing.Size(24, 24);
@@ -230,7 +230,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonDown
       // 
-      this.buttonDown.Image = global::MediaPortal.Plugins.Properties.Resources.MoveDown;
+      this.buttonDown.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.MoveDown;
       this.buttonDown.Location = new System.Drawing.Point(8, 224);
       this.buttonDown.Name = "buttonDown";
       this.buttonDown.Size = new System.Drawing.Size(24, 24);
@@ -241,7 +241,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonUp
       // 
-      this.buttonUp.Image = global::MediaPortal.Plugins.Properties.Resources.MoveUp;
+      this.buttonUp.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.MoveUp;
       this.buttonUp.Location = new System.Drawing.Point(8, 48);
       this.buttonUp.Name = "buttonUp";
       this.buttonUp.Size = new System.Drawing.Size(24, 24);
@@ -252,7 +252,7 @@ namespace MediaPortal.Plugins
       // 
       // buttonTop
       // 
-      this.buttonTop.Image = global::MediaPortal.Plugins.Properties.Resources.MoveTop;
+      this.buttonTop.Image = global::MediaPortal.Plugins.IRSS.MPBlastZonePlugin.Properties.Resources.MoveTop;
       this.buttonTop.Location = new System.Drawing.Point(8, 16);
       this.buttonTop.Name = "buttonTop";
       this.buttonTop.Size = new System.Drawing.Size(24, 24);

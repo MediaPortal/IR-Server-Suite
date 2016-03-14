@@ -34,7 +34,7 @@ namespace MediaCenterBlaster
   {
     #region Variables
 
-    private LearnIR _learnIR;
+    private IREditor _learnIR;
 
     #endregion Variables
 
@@ -113,7 +113,7 @@ namespace MediaCenterBlaster
 
         if (File.Exists(fileName))
         {
-          _learnIR = new LearnIR(
+          _learnIR = new IREditor(
             new LearnIrDelegate(Tray.LearnIR),
             new BlastIrDelegate(Tray.BlastIR),
             Tray.TransceiverInformation.Ports,
@@ -186,7 +186,7 @@ namespace MediaCenterBlaster
 
     private void buttonNewIR_Click(object sender, EventArgs e)
     {
-      _learnIR = new LearnIR(
+      _learnIR = new IREditor(
         new LearnIrDelegate(Tray.LearnIR),
         new BlastIrDelegate(Tray.BlastIR),
         Tray.TransceiverInformation.Ports);

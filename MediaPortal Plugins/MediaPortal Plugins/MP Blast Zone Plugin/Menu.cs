@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPBlastZonePlugin
 {
   /// <summary>
   /// Represents the root element of the menu tree

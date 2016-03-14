@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("LiveDrive Receiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the Tira transceiver")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

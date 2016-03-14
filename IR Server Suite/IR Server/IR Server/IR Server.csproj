@@ -35,13 +35,13 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,7 +53,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -71,6 +71,16 @@
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>..\..\..\bin\Release\</OutputPath>
     <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevAge.Core, Version=4.10.2845.21697, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">
@@ -165,6 +175,7 @@
     <Content Include="Abstract Remote Maps\iMon USB\Imon Volume Knob.xml" />
     <Content Include="Abstract Remote Maps\iMon USB\Microsoft MCE.xml" />
     <None Include="PostBuild.bat" />
+    <None Include="Properties\app.manifest" />
     <None Include="Resources\iconGreen.ico" />
     <None Include="RemoteTable.xsc">
       <DependentUpon>RemoteTable.xsd</DependentUpon>
@@ -222,7 +233,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>"$(ProjectDir)PostBuild.bat" "$(SolutionDir)" $(ConfigurationName) "$(TargetDir)"
-    </PostBuildEvent>
+</PostBuildEvent>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>

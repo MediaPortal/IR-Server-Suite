@@ -29,14 +29,13 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using IrssUtils;
 using IrssUtils.Forms;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.UserInterface.Controls;
 using Action = MediaPortal.GUI.Library.Action;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper
 {
   ///<summary>
   /// 
@@ -52,13 +51,13 @@ namespace MediaPortal.Plugins
     private readonly string[] _layerList = new string[] {"all", "1", "2"};
     private readonly Array _nativeActionList = Enum.GetValues(typeof (Action.ActionType));
 
-    private readonly string[] _nativePlayerList = new string[] {"TV", "DVD", "MEDIA"};
+    private readonly string[] _nativePlayerList = new string[] {"TV", "DVD", "MEDIA", "MUSIC" };
 
     private readonly string[] _nativePowerList = new string[] {"EXIT", "REBOOT", "SHUTDOWN", "STANDBY", "HIBERNATE"};
 
     private readonly string[] _nativeProcessList = new string[] {"CLOSE", "KILL"};
     private readonly Array _nativeWindowsList = Enum.GetValues(typeof (GUIWindow.Window));
-    private readonly string[] _playerList = new string[] {"TV is running", "DVD is playing", "Media is playing"};
+    private readonly string[] _playerList = new string[] {"TV is running", "DVD is playing", "Media is playing", "Music is playing" };
 
     private readonly string[] _powerList = new string[]
                                              {

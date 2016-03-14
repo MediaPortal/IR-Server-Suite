@@ -2289,6 +2289,7 @@ namespace IrssUtils
     /// </summary>
     /// <param name="fileName">Name of the file.</param>
     /// <returns>File icon.</returns>
+    [Obsolete("Method has been replaces by GetIconFromFile() and will be removed soon.")]
     public static Icon GetIconFor(string fileName)
     {
       if (String.IsNullOrEmpty(fileName))
@@ -2309,9 +2310,18 @@ namespace IrssUtils
       return icon;
     }
 
+
+    /// <summary>
+    /// Gets the icon for a supplied file.
+    /// </summary>
+    /// <param name="fileName">Name of the file.</param>
+    /// <returns>File icon.</returns>
     public static Icon GetIconFromFile(string fileName)
     {
       if (String.IsNullOrEmpty(fileName))
+        return null;
+
+      if (!File.Exists(fileName))
         return null;
 
       Icon icon = Icon.ExtractAssociatedIcon(fileName);
@@ -2321,10 +2331,42 @@ namespace IrssUtils
       return icon;
     }
 
+    /// <summary>
+    /// Gets the icon for a supplied file as Image.
+    /// </summary>
+    /// <param name="fileName">Name of the file.</param>
+    /// <returns>File icon as Image.</returns>
     public static Image GetImageFromFile(string fileName)
     {
-      return GetIconFromFile(fileName).ToBitmap();
+      Icon icon = GetIconFromFile(fileName);
+
+      if (icon == null)
+        icon = ExclamationMark;
+
+      return icon.ToBitmap();
     }
+
+    public static Icon ExclamationMark
+    {
+      get
+      {
+        if (_exclamationMark == null)
+        {
+          Icon large;
+          Icon small;
+
+          string folder = Environment.GetFolderPath(Environment.SpecialFolder.System);
+          string file = Path.Combine(folder, "user32.dll");
+          Win32.ExtractIcons(file, 1, out large, out small);
+
+          _exclamationMark = large;
+        }
+
+        return _exclamationMark;
+      }
+    }
+
+    private static Icon _exclamationMark;
 
 
     /// <summary>
@@ -2856,6 +2898,24 @@ namespace IrssUtils
     }
 
     #endregion Methods
+
+    #region SetThreadExecutionState
+
+    [FlagsAttribute]
+    public enum EXECUTION_STATE : uint
+    {
+      ES_AWAYMODE_REQUIRED = 0x00000040,
+      ES_CONTINUOUS = 0x80000000,
+      ES_DISPLAY_REQUIRED = 0x00000002,
+      ES_SYSTEM_REQUIRED = 0x00000001
+      // Legacy flag, should not be used.
+      // ES_USER_PRESENT = 0x00000004
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+
+    #endregion SetThreadExecutionState
   }
 
   /// <summary>

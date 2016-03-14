@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("USB-UIRT Transceiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the USB-UIRT transceiver")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

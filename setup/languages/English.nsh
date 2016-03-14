@@ -123,9 +123,9 @@
 !insertmacro LANG_STRING ServerServiceModePage_HEADER2   "Choose whether you want to install IRServer as Service or Application"
 !insertmacro LANG_STRING ServerServiceModePage_INFO      "Some Plugins doesn't work together with a windows service. If you have such a remote listed below, choose IRServer."
 
-!insertmacro LANG_STRING ServerServiceModePage_OPT0      "IR Server as Service (recommended)"
-!insertmacro LANG_STRING ServerServiceModePage_OPT0_DESC "Install IR Server as a windows service. If you don't know what to choose and you don't have a remote listed below, choose this option."
+!insertmacro LANG_STRING ServerServiceModePage_OPT0      "IR Server as Application (recommended)"
+!insertmacro LANG_STRING ServerServiceModePage_OPT0_DESC "Install IR Server as a windows application. Choose this if you have one of the following remotes:$\r$\n     - HID, FireDTV, FloppyDTV and some iMON devices"
 
-!insertmacro LANG_STRING ServerServiceModePage_OPT1      "IR Server as Application"
-!insertmacro LANG_STRING ServerServiceModePage_OPT1_DESC "Install IR Server as a windows application. Choose this if you have one of the following remotes:$\r$\n     - HID, FireDTV, FloppyDTV and some iMON devices"
+!insertmacro LANG_STRING ServerServiceModePage_OPT1      "IR Server as Service"
+!insertmacro LANG_STRING ServerServiceModePage_OPT1_DESC "Install IR Server as a windows service. If you don't know what to choose and you don't have a remote listed below, choose this option."
 

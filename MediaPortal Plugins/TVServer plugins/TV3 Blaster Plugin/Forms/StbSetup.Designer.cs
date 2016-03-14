@@ -1,4 +1,4 @@
-namespace TvEngine
+namespace TvEngine.Plugins.IRSS.TV3BlasterPlugin.Forms
 {
   partial class StbSetup
   {

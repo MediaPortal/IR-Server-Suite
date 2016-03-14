@@ -1,4 +1,4 @@
-namespace TvEngine.Forms
+namespace TvEngine.Plugins.IRSS.TV3BlasterPlugin.Forms
 {
   partial class MacroEditor
   {

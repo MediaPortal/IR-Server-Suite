@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("Wii Remote Receiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the Wii Remote")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

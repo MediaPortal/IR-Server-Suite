@@ -22,7 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
 using IRServer.Plugin;
@@ -34,7 +34,6 @@ using Button = SourceGrid.Cells.Button;
 using CheckBox = SourceGrid.Cells.CheckBox;
 using ColumnHeader = SourceGrid.Cells.ColumnHeader;
 using IRServer.Configuration.Properties;
-using System.ComponentModel;
 
 namespace IRServer.Configuration
 {
@@ -58,6 +57,7 @@ namespace IRServer.Configuration
     private string _hostComputer = String.Empty;
     private IRServerMode _mode = IRServerMode.ServerMode;
     private string _processPriority = String.Empty;
+    private string _logVerbosity = "Off";
     private BackgroundWorker monitorThread;
 
     #endregion Variables
@@ -106,7 +106,7 @@ namespace IRServer.Configuration
 
     private void setButtons()
     {
-      if (Shared._serviceInstalled == true)
+      if (Shared.serviceInstalled == true)
       {
         toolStripServiceButton.Text = "Uninstall Service";
       }
@@ -114,14 +114,14 @@ namespace IRServer.Configuration
       {
         toolStripServiceButton.Text = "Install Service";
       }
-      switch (Shared._irsStatus)
+      switch (Shared.irsStatus)
       {
         case IrsStatus.NotRunning:
           {
             toolStripButtonApplication.Image = IrssUtils.Properties.Resources.Start;
             toolStripButtonApplication.Enabled = true;
             toolStripButtonService.Image = IrssUtils.Properties.Resources.Start;
-            toolStripButtonService.Enabled = Shared._serviceInstalled;
+            toolStripButtonService.Enabled = Shared.serviceInstalled;
             break;
           }
         case IrsStatus.RunningApplication:
@@ -278,6 +278,10 @@ namespace IRServer.Configuration
           {
             IrssLog.Info("Plugin {0}: detected", plugin.Name);
           }
+          if (detected == PluginBase.DetectionResult.DeviceIsPlugAndPlay)
+          {
+            IrssLog.Info("Plugin {0}: Plug&Play device detected", plugin.Name);
+          }
           if (detected == PluginBase.DetectionResult.DeviceException)
           {
             IrssLog.Warn("Plugin {0}: exception during Detect()", plugin.Name);
@@ -286,12 +290,12 @@ namespace IRServer.Configuration
           // Receive
           checkBox = gridPlugins[row, ColReceive] as CheckBox;
           if (checkBox != null)
-            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent ? true : false);
+            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent || detected == PluginBase.DetectionResult.DeviceIsPlugAndPlay ? true : false);
 
           // Transmit
           checkBox = gridPlugins[row, ColTransmit] as CheckBox;
           if (checkBox != null)
-            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent ? true : false);
+            checkBox.Checked = (detected == PluginBase.DetectionResult.DevicePresent || detected == PluginBase.DetectionResult.DeviceIsPlugAndPlay ? true : false);
         }
         catch (Exception ex)
         {
@@ -312,6 +316,7 @@ namespace IRServer.Configuration
       advanced.Mode = _mode;
       advanced.HostComputer = _hostComputer;
       advanced.ProcessPriority = _processPriority;
+      advanced.LogVerbosity = _logVerbosity;
 
       if (advanced.ShowDialog(this) == DialogResult.OK)
       {
@@ -319,6 +324,7 @@ namespace IRServer.Configuration
         _mode = advanced.Mode;
         _hostComputer = advanced.HostComputer;
         _processPriority = advanced.ProcessPriority;
+        _logVerbosity = advanced.LogVerbosity;
       }
     }
 
@@ -407,6 +413,8 @@ namespace IRServer.Configuration
     {
       InitializeComponent();
       SetIcons();
+
+      IrssLog.Info("Load plugins from " + Application.StartupPath + "...");
 
       try
       {
@@ -532,7 +540,7 @@ namespace IRServer.Configuration
     private void toolStripServiceButton_Click(object sender, EventArgs e)
     {
       toolStripServiceButton.Enabled = false;
-      if (Shared._serviceInstalled == true)
+      if (Shared.serviceInstalled == true)
         Shared.ServiceUninstall();
       else
         Shared.ServiceInstall();
@@ -544,17 +552,17 @@ namespace IRServer.Configuration
 
     private void toolStripButtonService_Click(object sender, EventArgs e)
     {
-      if (Shared._irsStatus == IrsStatus.RunningService)
+      if (Shared.irsStatus == IrsStatus.RunningService)
         Shared.ServiceStop();
-      if (Shared._irsStatus == IrsStatus.NotRunning)
+      if (Shared.irsStatus == IrsStatus.NotRunning)
         Shared.ServiceStart();
     }
 
     private void toolStripButtonApplication_Click(object sender, EventArgs e)
     {
-      if (Shared._irsStatus == IrsStatus.RunningApplication)
+      if (Shared.irsStatus == IrsStatus.RunningApplication)
         Shared.ApplicationStop();
-      if (Shared._irsStatus == IrsStatus.NotRunning)
+      if (Shared.irsStatus == IrsStatus.NotRunning)
         Shared.ApplicationStart();
     }
 
@@ -568,6 +576,7 @@ namespace IRServer.Configuration
       _mode = Settings.Mode;
       _hostComputer = Settings.HostComputer;
       _processPriority = Settings.ProcessPriority;
+      _logVerbosity = Settings.LogVerbosity;
       PluginReceive = Settings.PluginNameReceive;
       PluginTransmit = Settings.PluginNameTransmit;
     }
@@ -578,6 +587,7 @@ namespace IRServer.Configuration
           (Settings.Mode != _mode) ||
           (Settings.HostComputer != _hostComputer) ||
           (Settings.ProcessPriority != _processPriority) ||
+          (Settings.LogVerbosity != _logVerbosity) ||
           (Settings.PluginNameReceive != PluginReceive) ||
           (Settings.PluginNameTransmit != PluginTransmit))
       {
@@ -591,6 +601,7 @@ namespace IRServer.Configuration
           Settings.Mode = _mode;
           Settings.HostComputer = _hostComputer;
           Settings.ProcessPriority = _processPriority;
+          Settings.LogVerbosity = _logVerbosity;
           Settings.PluginNameReceive = PluginReceive;
           Settings.PluginNameTransmit = PluginTransmit;
 

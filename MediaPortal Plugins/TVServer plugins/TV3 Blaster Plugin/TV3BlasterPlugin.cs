@@ -34,13 +34,13 @@ using SetupTv;
 using TvControl;
 using TvDatabase;
 using TvEngine.Events;
-using TvEngine.Forms;
+using TvEngine.Plugins.IRSS.TV3BlasterPlugin.Forms;
 using TvLibrary.Implementations;
 using TvLibrary.Interfaces;
 using TvLibrary.Log;
 using Server = IrssComms.Server;
 
-namespace TvEngine
+namespace TvEngine.Plugins.IRSS.TV3BlasterPlugin
 {
   /// <summary>
   /// MediaPortal TV3 Blaster Plugin for IR Server.
@@ -593,7 +593,7 @@ namespace TvEngine
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    internal static bool LearnIR(string fileName)
+    internal static bool LearnIR(string fileName, LearnStatusDelegate learnStatus = null)
     {
       try
       {

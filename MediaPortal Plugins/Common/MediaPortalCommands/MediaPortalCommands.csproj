@@ -12,31 +12,8 @@
     <AssemblyName>MediaPortalCommands</AssemblyName>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\IR Server Suite.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>
-    </DocumentationFile>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -49,6 +26,12 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Core">
+      <HintPath>..\..\..\External\Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Dialogs">
+      <HintPath>..\..\..\External\Dialogs.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -57,6 +40,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Utils">
+      <HintPath>..\..\..\External\Utils.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\IR Server Suite\SolutionInfo.cs">
@@ -117,29 +103,17 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Mediaportal-1\mediaportal\Core\Core.csproj">
-      <Project>{02FFFC1F-2555-4B99-8B01-3432D0673855}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Mediaportal-1\mediaportal\Dialogs\Dialogs.csproj">
-      <Project>{396C5208-5D46-4A11-92C1-FD0F2F42D7DD}</Project>
-      <Name>Dialogs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Mediaportal-1\mediaportal\Utils\Utils.csproj">
-      <Project>{6DA0E4DF-6230-4642-98B5-E690BB6942BB}</Project>
-      <Name>Utils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Commands\Command\Command.csproj">
+    <ProjectReference Include="..\..\..\IR Server Suite\Commands\Command\Command-Net35.csproj">
       <Project>{21E04B17-D850-43E7-AAD3-876C0E062BDB}</Project>
-      <Name>Command</Name>
+      <Name>Command-Net35</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Commands\VariableList\VariableList.csproj">
+    <ProjectReference Include="..\..\..\IR Server Suite\Commands\VariableList\VariableList-Net35.csproj">
       <Project>{106A69D2-670C-4DE5-A81C-A3CD5D3F21EB}</Project>
-      <Name>VariableList</Name>
+      <Name>VariableList-Net35</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils.csproj">
+    <ProjectReference Include="..\..\..\IR Server Suite\Common\IrssUtils\IrssUtils-Net35.csproj">
       <Project>{CA15769C-232E-4CA7-94FD-206A06CA3ABB}</Project>
-      <Name>IrssUtils</Name>
+      <Name>IrssUtils-Net35</Name>
     </ProjectReference>
     <ProjectReference Include="..\MPUtils\MPUtils.csproj">
       <Project>{08F57DD7-2C6E-484E-9CC5-835F70C5BC64}</Project>

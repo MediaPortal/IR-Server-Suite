@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<DocumentElement>
+  <!-- Missing Code compared to Imon PAD -->
+  <RemoteTable RawCode="1168" AbstractButton="Up" />
+  <RemoteTable RawCode="1104" AbstractButton="Left" />
+  <RemoteTable RawCode="1232" AbstractButton="Right" />
+  <RemoteTable RawCode="1024" AbstractButton="Down" />
+  <RemoteTable RawCode="1196" AbstractButton="NextChapter" />
+  <RemoteTable RawCode="1068" AbstractButton="FastForward" />
+  <RemoteTable RawCode="1132" AbstractButton="Play" />
+</DocumentElement>

@@ -125,6 +125,7 @@ namespace IRServer
       IrssLog.Info("Starting IR Server ...");
 
       Settings.LoadSettings();
+      IrssLog.LogLevel = IrssLog.Level.Debug;
 
       #region Process Priority Adjustment
 
@@ -145,6 +146,24 @@ namespace IRServer
       }
 
       #endregion Process Priority Adjustment
+
+      #region Log verbosity setting
+
+      try
+      {
+          IrssLog.Info("Log Verbosity Level: " + Settings.LogVerbosity.ToString());
+          IrssLog.LogLevel = (IrssLog.Level)Enum.Parse(typeof(IrssLog.Level), Settings.LogVerbosity);
+      }
+      catch (Exception ex)
+      {
+          IrssLog.Error(ex);
+      }
+
+      #endregion Log verbosity setting
+
+
+
+
 
       LoadPlugins();
 

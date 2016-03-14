@@ -23,7 +23,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin.Forms
 {
   internal partial class MultiMapNameBox : Form
   {

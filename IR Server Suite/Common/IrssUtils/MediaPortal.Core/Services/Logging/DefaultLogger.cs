@@ -37,12 +37,12 @@ namespace MediaPortal.Core.Services.Logging
   /// </summary>
   public class DefaultLogger : ILogger
   {
-    protected LogLevel _level; // Threshold for the log level
-    protected TextWriter _writer; // The writer to write the messages to
-    protected static readonly object _syncObject = new object();
-    protected bool _logMethodNames = false;
-    protected readonly string _myClassName;
-    protected bool _alwaysFlush;
+    protected LogLevel pLevel; // Threshold for the log level
+    protected TextWriter pWriter; // The writer to write the messages to
+    protected static readonly object pSyncObject = new object();
+    protected bool pLogMethodNames = false;
+    protected readonly string pMyClassName;
+    protected bool pAlwaysFlush;
 
     /// <summary>
     /// Creates a new <see cref="DefaultLogger"/> instance and initializes it with the given
@@ -61,11 +61,11 @@ namespace MediaPortal.Core.Services.Logging
     /// </remarks>
     public DefaultLogger(TextWriter writer, LogLevel level, bool logMethodNames, bool alwaysFlush)
     {
-      _myClassName = GetType().Name;
-      _writer = writer;
-      _level = level;
-      _logMethodNames = logMethodNames;
-      _alwaysFlush = alwaysFlush;
+      pMyClassName = GetType().Name;
+      pWriter = writer;
+      pLevel = level;
+      pLogMethodNames = logMethodNames;
+      pAlwaysFlush = alwaysFlush;
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ namespace MediaPortal.Core.Services.Logging
     /// <param name="messageLevel">The <see cref="LogLevel"/> of the message to write.</param>
     protected void Write(string message, LogLevel messageLevel)
     {
-      if (messageLevel > _level) // Levels are in reversed order
+      if (messageLevel > pLevel) // Levels are in reversed order
         return;
       StringBuilder messageBuilder = new StringBuilder();
       messageBuilder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffffff"));
@@ -103,7 +103,7 @@ namespace MediaPortal.Core.Services.Logging
       string thread = Thread.CurrentThread.Name ?? Thread.CurrentThread.ManagedThreadId.ToString();
       messageBuilder.Append(thread);
       messageBuilder.Append("]");
-      if (_logMethodNames)
+      if (pLogMethodNames)
       {
         StackTrace trace = new StackTrace(false);
         int step = 1;
@@ -114,7 +114,7 @@ namespace MediaPortal.Core.Services.Logging
           MethodBase method = trace.GetFrame(step++).GetMethod();
           className = method.DeclaringType.Name;
           methodName = method.Name;
-        } while (className.Equals(_myClassName));
+        } while (className.Equals(pMyClassName));
         messageBuilder.Append("[");
         messageBuilder.Append(className);
         messageBuilder.Append(".");
@@ -124,12 +124,12 @@ namespace MediaPortal.Core.Services.Logging
       messageBuilder.Append(": ");
       messageBuilder.Append(message);
 
-      Write(messageBuilder.ToString(), _alwaysFlush ? true : messageLevel == LogLevel.Critical);
+      Write(messageBuilder.ToString(), pAlwaysFlush ? true : messageLevel == LogLevel.Critical);
     }
 
     protected void Write(string message)
     {
-      Write(message, _alwaysFlush);
+      Write(message, pAlwaysFlush);
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ namespace MediaPortal.Core.Services.Logging
     /// <param name="messageLevel">Level of the exception to write.</param>
     protected void WriteException(Exception ex, LogLevel messageLevel)
     {
-      if (_level < messageLevel)
+      if (pLevel < messageLevel)
         return;
       Write("Exception: " + ex);
       Write("  Message: " + ex.Message);
@@ -178,32 +178,32 @@ namespace MediaPortal.Core.Services.Logging
     /// delay the writing of its buffer.</param>
     protected void Write(string message, bool flush)
     {
-      lock (_syncObject)
+      lock (pSyncObject)
       {
-        _writer.WriteLine(message);
+        pWriter.WriteLine(message);
         if (flush)
-          _writer.Flush();
+          pWriter.Flush();
       }
     }
 
     protected void Flush()
     {
-      lock (_syncObject)
-        _writer.Flush();
+      lock (pSyncObject)
+        pWriter.Flush();
     }
 
     #region ILogger implementation
 
     public bool LogMethodNames
     {
-      get { return _logMethodNames; }
-      set { _logMethodNames = value; }
+      get { return pLogMethodNames; }
+      set { pLogMethodNames = value; }
     }
 
     public LogLevel Level
     {
-      get { return _level; }
-      set { _level = value; }
+      get { return pLevel; }
+      set { pLevel = value; }
     }
 
     public void Debug(string format, params object[] args)

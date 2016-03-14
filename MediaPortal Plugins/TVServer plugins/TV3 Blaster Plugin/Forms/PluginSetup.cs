@@ -32,7 +32,7 @@ using TvDatabase;
 using TvLibrary.Log;
 using Server = IrssComms.Server;
 
-namespace TvEngine.Forms
+namespace TvEngine.Plugins.IRSS.TV3BlasterPlugin.Forms
 {
   internal partial class PluginSetup : SectionSettings
   {

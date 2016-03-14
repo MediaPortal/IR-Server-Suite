@@ -33,19 +33,20 @@ using IrssUtils;
 using IrssUtils.Forms;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
-using MediaPortal.Hardware;
+//using MediaPortal.Hardware;
+using MediaPortal.Plugins.IRSS.MPControlPlugin.Forms;
+using MediaPortal.Plugins.IRSS.MPControlPlugin.InputMapper;
 using MediaPortal.Profile;
 using Microsoft.Win32;
 using MPUtils;
 
-namespace MediaPortal.Plugins
+namespace MediaPortal.Plugins.IRSS.MPControlPlugin
 {
-  [PluginIcons("MediaPortal.Plugins.MPControlPlugin.IRSS.iconGreen.gif",
-    "MediaPortal.Plugins.MPControlPlugin.IRSS.iconGray.gif")]
-
   /// <summary>
-    /// MediaPortal Control Plugin for IR Server.
-    /// </summary>
+  /// MediaPortal Control Plugin for IR Server.
+  /// </summary>
+  [PluginIcons("MediaPortal.Plugins.IRSS.MPControlPlugin.iconGreen.gif",
+    "MediaPortal.Plugins.IRSS.MPControlPlugin.iconGray.gif")]
   public class MPControlPlugin : IPlugin, ISetupForm
   {
     #region Constants
@@ -681,6 +682,8 @@ namespace MediaPortal.Plugins
       if (RequireFocus && !GUIGraphicsContext.HasFocus)
         return;
 
+      IrssUtils.Win32.SetThreadExecutionState(IrssUtils.Win32.EXECUTION_STATE.ES_DISPLAY_REQUIRED);
+
       foreach (MappedKeyCode mapping in _remoteMap)
       {
         if (!mapping.KeyCode.Equals(keyCode, StringComparison.OrdinalIgnoreCase))
@@ -1183,7 +1186,7 @@ namespace MediaPortal.Plugins
     /// </summary>
     /// <param name="fileName">File to place learned IR command in (absolute path).</param>
     /// <returns><c>true</c> if successful, otherwise <c>false</c>.</returns>
-    internal static bool LearnIR(string fileName)
+    internal static bool LearnIR(string fileName, LearnStatusDelegate learnStatus=null)
     {
       try
       {

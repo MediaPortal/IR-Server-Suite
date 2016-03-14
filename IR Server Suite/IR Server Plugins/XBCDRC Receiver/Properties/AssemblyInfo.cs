@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("XBCDRC Receiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the XBCDRC receiver")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

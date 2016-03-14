@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("Windows Message Receiver")]
 [assembly: AssemblyDescription("IR Server plugin for use with Windows Messages")]
 [assembly: CLSCompliant(true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

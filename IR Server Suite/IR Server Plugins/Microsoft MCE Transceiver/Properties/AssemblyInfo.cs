@@ -31,4 +31,3 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle("Microsoft MCE Transceiver")]
 [assembly: AssemblyDescription("IR Server plugin to support the Microsoft MCE Driver")]
 [assembly: CLSCompliant(false)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

@@ -1,80 +1,42 @@
-#region Copyright (C) 2005-2009 Team MediaPortal
+#region Copyright (C) 2005-2012 Team MediaPortal
 
-// Copyright (C) 2005-2009 Team MediaPortal
+// Copyright (C) 2005-2012 Team MediaPortal
 // http://www.team-mediaportal.com
 // 
-// This Program is free software; you can redistribute it and/or modify
+// MediaPortal is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2, or (at your option)
-// any later version.
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
 // 
-// This Program is distributed in the hope that it will be useful,
+// MediaPortal is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
-// along with GNU Make; see the file COPYING.  If not, write to
-// the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-// http://www.gnu.org/copyleft/gpl.html
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
 
 #endregion
 
 using System;
-#if TRACE
-using System.Diagnostics;
-#endif
-using System.Drawing;
+using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using System.Xml;
-using IRServer.Plugin.Properties;
+using System.Management;
+using IRServer.Plugin.GamePad;
+using IRServer.Plugin.GamePad.Enums;
 using IrssUtils;
-using Microsoft.DirectX.DirectInput;
+using SlimDX.DirectInput;
+using System.Windows.Forms;
 
 namespace IRServer.Plugin
 {
   /// <summary>
   /// IR Server Plugin for Direct Input game controllers.
   /// </summary>
-  public class DirectInputReceiver : PluginBase, IRemoteReceiver, IMouseReceiver, IConfigure
+  public partial class DirectInputReceiver
   {
-    #region Debug
-
-    private static void Remote(string deviceName, string code)
-    {
-      Console.WriteLine("Remote: {0}", code);
-    }
-
-    private static void Mouse(string deviceName, int x, int y, int buttons)
-    {
-      Console.WriteLine("Mouse: ({0}, {1}) - {2}", x, y, buttons);
-    }
-
-    [STAThread]
-    private static void Main()
-    {
-      DirectInputReceiver c = new DirectInputReceiver();
-
-      c.Configure(null);
-
-      c.RemoteCallback += Remote;
-      c.MouseCallback += Mouse;
-
-      c.Start();
-
-      Application.Run();
-
-      c.Stop();
-      c = null;
-    }
-
-    #endregion Debug
-
     #region Constants
 
-    private const int AxisLimit = 4200;
     private static readonly string ConfigurationFile = Path.Combine(ConfigurationPath, "Direct Input Receiver.xml");
 
     #endregion Constants
@@ -132,158 +94,74 @@ namespace IRServer.Plugin
 
     #region Variables
 
-    private DeviceList _deviceList;
+    private IList<DeviceInstance> _deviceList;
     private DirectInputListener _diListener;
-    private MouseHandler _mouseHandler;
-    private RemoteHandler _remoteHandler;
 
-    private string _selectedDeviceGUID;
+    private Config _config;
 
     #endregion Variables
 
-    /// <summary>
-    /// Name of the IR Server plugin.
-    /// </summary>
-    public override string Name
+    private void RegisterDeviceNotification()
     {
-      get { return "Direct Input"; }
+      IrssLog.Debug("DirectInput: Registering device notifications...");
+      WqlEventQuery _q = new WqlEventQuery("__InstanceOperationEvent", "TargetInstance ISA 'Win32_USBControllerDevice' ");
+      _q.WithinInterval = TimeSpan.FromSeconds(1);
+      ManagementEventWatcher _w = new ManagementEventWatcher(_q);
+      _w.EventArrived += new EventArrivedEventHandler(onEventArrived);
+      _w.Start();
     }
 
-    /// <summary>
-    /// IR Server plugin version.
-    /// </summary>
-    public override string Version
+    private void onEventArrived(object sender, EventArrivedEventArgs e)
     {
-      get { return "1.4.2.0"; }
-    }
+      ManagementBaseObject _o = e.NewEvent["TargetInstance"] as ManagementBaseObject;
+      if (_o == null) return;
 
-    /// <summary>
-    /// The IR Server plugin's author.
-    /// </summary>
-    public override string Author
-    {
-      get { return "and-81, with original MediaPortal code by waeberd"; }
-    }
+      ManagementObject mo = new ManagementObject(_o["Dependent"].ToString());
+      if (mo == null) return;
 
-    /// <summary>
-    /// A description of the IR Server plugin.
-    /// </summary>
-    public override string Description
-    {
-      get { return "Supports Direct Input game controllers"; }
-    }
+      IList<DeviceInstance> newDeviceList = new DirectInput().GetDevices(DeviceClass.GameController,
+                                                                         DeviceEnumerationFlags.AttachedOnly);
+      if (_deviceList != null && _deviceList.Count == newDeviceList.Count) return;
 
-    /// <summary>
-    /// Gets a display icon for the plugin.
-    /// </summary>
-    /// <value>The icon.</value>
-    public override Icon DeviceIcon
-    {
-      get { return Resources.Icon; }
-    }
-
-    #region IConfigure Members
-
-    /// <summary>
-    /// Configure the IR Server plugin.
-    /// </summary>
-    public void Configure(IWin32Window owner)
-    {
-      LoadSettings();
-
-      InitDeviceList();
-
-      Configure config = new Configure(_deviceList);
-      config.DeviceGuid = _selectedDeviceGUID;
-
-      if (config.ShowDialog(owner) == DialogResult.OK)
-      {
-        if (!String.IsNullOrEmpty(config.DeviceGuid))
-        {
-          _selectedDeviceGUID = config.DeviceGuid;
-          SaveSettings();
-        }
-      }
-    }
-
-    #endregion
-
-    #region IMouseReceiver Members
-
-    /// <summary>
-    /// Callback for mouse events.
-    /// </summary>
-    public MouseHandler MouseCallback
-    {
-      get { return _mouseHandler; }
-      set { _mouseHandler = value; }
-    }
-
-    #endregion
-
-    #region IRemoteReceiver Members
-
-    /// <summary>
-    /// Callback for remote button presses.
-    /// </summary>
-    public RemoteHandler RemoteCallback
-    {
-      get { return _remoteHandler; }
-      set { _remoteHandler = value; }
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Detect the presence of this device.
-    /// </summary>
-    public override DetectionResult Detect()
-    {
-      if (IrssUtils.Win32.Check64Bit())
-      {
-        IrssLog.Warn("{0,15}: not available on current OS architecture (x64)", Name);
-        return DetectionResult.DeviceDisabled;
-      }
       try
       {
-        InitDeviceList();
-
-        if (_deviceList.Count != 0)
+        if (mo.GetPropertyValue("DeviceID").ToString() != string.Empty)
         {
-          return DetectionResult.DevicePresent;
+          //connected
+          IrssLog.Debug("DirectInput: An USB device has been connected");
+          RestartListener();
         }
       }
-      catch (Exception ex)
+      catch
       {
-        IrssLog.Error("{0,15}: exception {1}", Name, ex.Message);
-        return DetectionResult.DeviceException;
+        //disconnected
+        IrssLog.Debug("DirectInput: An USB device has been disconnected");
+        if (newDeviceList.Count == 0)
+          StopListener();
+        else
+          RestartListener();
       }
-
-      return DetectionResult.DeviceNotFound;
     }
 
-    /// <summary>
-    /// Start the IR Server plugin.
-    /// </summary>
-    /// <returns>true if successful, otherwise false.</returns>
-    public override void Start()
+    private void RestartListener()
     {
-      LoadSettings();
+      StopListener();
+      StartListener();
+    }
 
+    private void StartListener()
+    {
       InitDeviceList();
+      if (_deviceList.Count == 0) return;
 
-      if (_deviceList.Count == 0)
-        throw new InvalidOperationException("No Direct Input devices connected");
+      IrssLog.Debug("DirectInput: Start listening...");
 
-      if (String.IsNullOrEmpty(_selectedDeviceGUID))
+
+      if (String.IsNullOrEmpty(_config.DeviceGUID))
       {
-#if TRACE
-        Trace.WriteLine("No direct input device selected in plugin configuration, using first found");
-#endif
-        _deviceList.Reset(); // Move to the position before the first in the device list.
-        _deviceList.MoveNext(); // Move to the first position in the device list.
-        DeviceInstance di = (DeviceInstance)_deviceList.Current; // Retreive the first position in the device list.
-        _selectedDeviceGUID = di.InstanceGuid.ToString();
+        IrssLog.Info("No direct input device selected in plugin configuration, using first found");
+        // Retreive the first position in the device list.
+        _config.DeviceGUID = _deviceList[0].InstanceGuid.ToString();
       }
 
       _diListener = new DirectInputListener();
@@ -291,30 +169,13 @@ namespace IRServer.Plugin
       _diListener.OnStateChange += diListener_OnStateChange;
 
       if (!AcquireDevice())
-        throw new InvalidOperationException("Failed to acquire device");
+        IrssLog.Warn("Failed to acquire device");
     }
 
-    /// <summary>
-    /// Suspend the IR Server plugin when computer enters standby.
-    /// </summary>
-    public override void Suspend()
+    private void StopListener()
     {
-      Stop();
-    }
+      IrssLog.Debug("DirectInput: Stop listening...");
 
-    /// <summary>
-    /// Resume the IR Server plugin when the computer returns from standby.
-    /// </summary>
-    public override void Resume()
-    {
-      Start();
-    }
-
-    /// <summary>
-    /// Stop the IR Server plugin.
-    /// </summary>
-    public override void Stop()
-    {
       if (_diListener != null)
       {
         _diListener.DeInitDevice();
@@ -328,62 +189,10 @@ namespace IRServer.Plugin
     }
 
 
-    private void LoadSettings()
-    {
-      XmlDocument doc = new XmlDocument();
-
-      try
-      {
-        doc.Load(ConfigurationFile);
-      }
-      catch
-      {
-        return;
-      }
-
-      try
-      {
-        _selectedDeviceGUID = doc.DocumentElement.Attributes["DeviceGUID"].Value;
-      }
-      catch
-      {
-      }
-    }
-
-    private void SaveSettings()
-    {
-      try
-      {
-        using (XmlTextWriter writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8))
-        {
-          writer.Formatting = Formatting.Indented;
-          writer.Indentation = 1;
-          writer.IndentChar = (char)9;
-          writer.WriteStartDocument(true);
-          writer.WriteStartElement("settings"); // <settings>
-
-          writer.WriteAttributeString("DeviceGUID", _selectedDeviceGUID);
-
-          writer.WriteEndElement(); // </settings>
-          writer.WriteEndDocument();
-        }
-      }
-#if TRACE
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-#else
-      catch
-      {
-      }
-#endif
-    }
-
-
     private void InitDeviceList()
     {
-      _deviceList = Manager.GetDevices(DeviceClass.GameControl, EnumDevicesFlags.AttachedOnly);
+      DirectInput di = new DirectInput();
+      _deviceList = di.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
     }
 
     private void diListener_OnStateChange(object sender, JoystickState state)
@@ -396,9 +205,8 @@ namespace IRServer.Plugin
       if (_deviceList == null)
         return false;
 
-      _deviceList.Reset();
       foreach (DeviceInstance di in _deviceList)
-        if (_selectedDeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
+        if (_config.DeviceGUID.Equals(di.InstanceGuid.ToString(), StringComparison.OrdinalIgnoreCase))
           return _diListener.InitDevice(di.InstanceGuid);
 
       return false;
@@ -407,44 +215,22 @@ namespace IRServer.Plugin
     private void SendActions(JoystickState state)
     {
       int actionCode = -1;
+      GamePadState betterState = new GamePadState(_diListener.Converter, ref state);
 
-      //int curAxisValue = 0;
-      // todo: timer stuff!!
-
-      // buttons first!
-      byte[] buttons = state.GetButtons();
-      int button = 0;
-
-      // button combos
-      /*
-      string sep = "";
-      string pressedButtons = "";
-      foreach (byte b in buttons)
-      {
-        if ((b & 0x80) != 0)
-        {
-          pressedButtons += sep + button.ToString("00");
-          sep = ",";
-        }
-        button++;
-      }
-      */
-
-      // single buttons
+      // buttons
       if (actionCode == -1)
       {
-        button = 0;
-        bool foundButton = false;
-        foreach (byte b in buttons)
+        int button = -1;
+        for (int i = 0; i < betterState.ButtonCount; i++)
         {
-          if (0 != (b & 0x80))
+          if (betterState.IsButtonDown(i))
           {
-            foundButton = true;
+            button = i;
             break;
           }
-          button++;
         }
-        if (foundButton)
+
+        if (button != -1)
         {
           if ((button >= 0) && (button <= 19))
           {
@@ -454,136 +240,110 @@ namespace IRServer.Plugin
         }
       }
 
-      // pov next
+      // pov
       if (actionCode == -1)
       {
-        int[] pov = state.GetPointOfView();
-        switch (pov[0])
+        for (int i = 0; i < betterState.PovCount; i++)
         {
-          case 0:
-            actionCode = (int)joyButton.povN;
-            break;
-          case 4500:
-            actionCode = (int)joyButton.povNE;
-            break;
-          case 9000:
-            actionCode = (int)joyButton.povE;
-            break;
-          case 13500:
-            actionCode = (int)joyButton.povSE;
-            break;
-          case 18000:
-            actionCode = (int)joyButton.povS;
-            break;
-          case 22500:
-            actionCode = (int)joyButton.povSW;
-            break;
-          case 27000:
-            actionCode = (int)joyButton.povW;
-            break;
-          case 31500:
-            actionCode = (int)joyButton.povNW;
-            break;
+          switch (betterState.GetPov(i))
+          {
+            case 0:
+              actionCode = (int) joyButton.povN;
+              break;
+            case 4500:
+              actionCode = (int) joyButton.povNE;
+              break;
+            case 9000:
+              actionCode = (int) joyButton.povE;
+              break;
+            case 13500:
+              actionCode = (int) joyButton.povSE;
+              break;
+            case 18000:
+              actionCode = (int) joyButton.povS;
+              break;
+            case 22500:
+              actionCode = (int) joyButton.povSW;
+              break;
+            case 27000:
+              actionCode = (int) joyButton.povW;
+              break;
+            case 31500:
+              actionCode = (int) joyButton.povNW;
+              break;
+          }
+
+          if (actionCode != -1) break;
         }
       }
 
+      // axes
       if (actionCode == -1)
       {
-        // axes next
-        if (Math.Abs(state.X) > AxisLimit)
+        if (betterState.AvailableAxes.HasFlag(Axes.X) &&
+            Math.Abs(betterState.GetAxis(Axes.X)) > _config.AxisLimit)
         {
-          //curAxisValue = state.X;
-          if (state.X > 0)
-          {
-            actionCode = (int)joyButton.axisXUp; // right
-          }
+          if (betterState.GetAxis(Axes.X) > 0)
+            actionCode = (int) joyButton.axisXUp; // right
           else
-          {
-            actionCode = (int)joyButton.axisXDown; // left
-          }
+            actionCode = (int) joyButton.axisXDown; // left
         }
-        else if (Math.Abs(state.Y) > AxisLimit)
+        else if (betterState.AvailableAxes.HasFlag(Axes.Y) &&
+                 Math.Abs(betterState.GetAxis(Axes.Y)) > _config.AxisLimit)
         {
-          //curAxisValue = state.Y;
-          if (state.Y > 0)
-          {
-            // down
-            actionCode = (int)joyButton.axisYUp;
-          }
+          if (betterState.GetAxis(Axes.Y) > 0)
+            actionCode = (int) joyButton.axisYUp; // down
           else
-          {
-            // up
-            actionCode = (int)joyButton.axisYDown;
-          }
+            actionCode = (int) joyButton.axisYDown; // up
         }
-        else if (Math.Abs(state.Z) > AxisLimit)
+        else if (betterState.AvailableAxes.HasFlag(Axes.Z) &&
+                 Math.Abs(betterState.GetAxis(Axes.Z)) > _config.AxisLimit)
         {
-          //curAxisValue = state.Z;
-          if (state.Z > 0)
-          {
-            actionCode = (int)joyButton.axisZUp;
-          }
+          if (betterState.GetAxis(Axes.Z) > 0)
+            actionCode = (int) joyButton.axisZUp;
           else
-          {
-            actionCode = (int)joyButton.axisZDown;
-          }
+            actionCode = (int) joyButton.axisZDown;
+        }
+        else if (betterState.AvailableAxes.HasFlag(Axes.RotationX) &&
+                 Math.Abs(betterState.GetAxis(Axes.RotationX)) > _config.AxisLimit)
+        {
+          if (betterState.GetAxis(Axes.RotationX) > 0)
+            actionCode = (int) joyButton.rotationXUp;
+          else
+            actionCode = (int) joyButton.rotationXDown;
+        }
+        else if (betterState.AvailableAxes.HasFlag(Axes.RotationY) &&
+                 Math.Abs(betterState.GetAxis(Axes.RotationY)) > _config.AxisLimit)
+        {
+          if (betterState.GetAxis(Axes.RotationY) > 0)
+            actionCode = (int) joyButton.rotationYUp;
+          else
+            actionCode = (int) joyButton.rotationYDown;
+        }
+        else if (betterState.AvailableAxes.HasFlag(Axes.RotationZ) &&
+                 Math.Abs(betterState.GetAxis(Axes.RotationZ)) > _config.AxisLimit)
+        {
+          if (betterState.GetAxis(Axes.RotationZ) > 0)
+            actionCode = (int) joyButton.rotationZUp;
+          else
+            actionCode = (int) joyButton.rotationZDown;
         }
       }
 
-      if (actionCode == -1)
-      {
-        // rotation
-        if (Math.Abs(state.Rx) > AxisLimit)
-        {
-          //curAxisValue = state.Rx;
-          if (state.Rx > 0)
-          {
-            actionCode = (int)joyButton.rotationXUp;
-          }
-          else
-          {
-            actionCode = (int)joyButton.rotationXDown;
-          }
-        }
-        else if (Math.Abs(state.Ry) > AxisLimit)
-        {
-          //curAxisValue = state.Ry;
-          if (state.Ry > 0)
-          {
-            actionCode = (int)joyButton.rotationYUp;
-          }
-          else
-          {
-            actionCode = (int)joyButton.rotationYDown;
-          }
-        }
-        else if (Math.Abs(state.Rz) > AxisLimit)
-        {
-          //curAxisValue = state.Rz;
-          if (state.Rz > 0)
-          {
-            actionCode = (int)joyButton.rotationZUp;
-          }
-          else
-          {
-            actionCode = (int)joyButton.rotationZDown;
-          }
-        }
-      }
-
-      if (actionCode != -1 && _remoteHandler != null)
+      if (actionCode != -1 && RemoteCallback != null)
       {
         string keyCode = TranslateActionCode(actionCode);
+        IrssLog.Debug("DirectInput action mapped actionCode={0} to keyCode={1}", actionCode, keyCode);
 
-        _remoteHandler(Name, keyCode);
+        RemoteCallback(Name, keyCode);
       }
     }
 
     private string TranslateActionCode(int actionCode)
     {
-      joyButton j = (joyButton)actionCode;
+      joyButton j = (joyButton) actionCode;
 
-      return Enum.GetName(typeof(joyButton), j);
+      return Enum.GetName(typeof (joyButton), j);
     }
   }
 }

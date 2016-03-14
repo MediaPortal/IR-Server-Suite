@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<DocumentElement>
+  <RemoteTable RawCode="02001000" AbstractButton="Record" />
+  <RemoteTable RawCode="02000200" AbstractButton="Play" />
+  <RemoteTable RawCode="02000100" AbstractButton="Rewind" />
+  <RemoteTable RawCode="02000400" AbstractButton="Pause" />
+  <RemoteTable RawCode="02000080" AbstractButton="FastForward" />
+  <RemoteTable RawCode="02000020" AbstractButton="NextChapter" />
+  <RemoteTable RawCode="02000800" AbstractButton="Stop" />
+  <RemoteTable RawCode="02000040" AbstractButton="PreviousChapter" />
+  <RemoteTable RawCode="02000002" AbstractButton="VolumeUp" />
+  <RemoteTable RawCode="02000004" AbstractButton="VolumeDown" />
+  <RemoteTable RawCode="02000008" AbstractButton="ChannelUp" />
+  <RemoteTable RawCode="02000010" AbstractButton="ChannelDown" />
+  <RemoteTable RawCode="03002000" AbstractButton="Start" />
+  <RemoteTable RawCode="02004000" AbstractButton="Back" />
+  <RemoteTable RawCode="02000001" AbstractButton="Mute" />
+  <RemoteTable RawCode="03004000" AbstractButton="Red" />
+  <RemoteTable RawCode="03008000" AbstractButton="Green" />
+  <RemoteTable RawCode="03010000" AbstractButton="Yellow" />
+  <RemoteTable RawCode="03020000" AbstractButton="Blue" />
+  <RemoteTable RawCode="02002000" AbstractButton="Guide" />
+  <RemoteTable RawCode="02010000" AbstractButton="Info" />
+  <RemoteTable RawCode="03000010" AbstractButton="Teletext" />
+</DocumentElement>
