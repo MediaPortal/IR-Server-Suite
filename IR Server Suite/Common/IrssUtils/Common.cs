@@ -287,6 +287,11 @@ namespace IrssUtils
         private const int SegmentsBeepCommand = 2;
 
         /// <summary>
+        /// Number of Segments in a Beep Command.
+        /// </summary>
+        private const int SegmentsSoundCommand = 1;
+
+        /// <summary>
         /// Number of Segments in a Blast Command.
         /// </summary>
         private const int SegmentsBlastCommand = 2;
@@ -520,6 +525,16 @@ namespace IrssUtils
         public static string[] SplitBeepCommand(string command)
         {
             return SplitCommand(command, SegmentsBeepCommand);
+        }
+
+        /// <summary>
+        /// Splits a Sound Command into it's component parts.
+        /// </summary>
+        /// <param name="command">The command to be split.</param>
+        /// <returns>Returns string[] of command elements.</returns>
+        public static string[] SplitSoundCommand(string command)
+        {
+            return SplitCommand(command, SegmentsSoundCommand);
         }
 
         /// <summary>

@@ -920,6 +920,86 @@ namespace Translator
             }
         }
 
+
+        /// <summary>
+        /// Retrieve an open task by its executable-path.
+        /// </summary>
+        /// <param name="path">path, or file-name of the executable to be retrieved. If no path, retrieve the second window behind the front one (Translator).</param>
+        /// <returns>the window-handle on the retrieved task, or IntPtr.Zero if not found.</returns>
+        public static IntPtr FindProgram(string path = null)
+        {
+            IntPtr ret = IntPtr.Zero;
+            path = Path.GetFileName(path);
+            string name = Path.GetFileNameWithoutExtension(path);
+
+            try
+            {
+                Win32.EnumerateWindows( 
+                    (IntPtr hWnd, IntPtr lParam) => 
+                    {
+                        IntPtr style = Win32.GetWindowLongPtr(hWnd, Win32.GWL.GWL_STYLE);
+                        if (!Win32.CheckMask(style.ToInt32(), (int)Win32.WindowStyles.WS_VISIBLE))
+                            return true;
+
+                        IntPtr exStyle = Win32.GetWindowLongPtr(hWnd, Win32.GWL.GWL_EXSTYLE);
+                        if (Win32.CheckMask(exStyle.ToInt32(), (int)Win32.WindowExStyles.WS_EX_TOOLWINDOW))
+                            return true;
+
+                        string title = Win32.GetWindowTitle(hWnd);
+                        if (String.IsNullOrEmpty(title))
+                            return true;
+
+                        int pid = Win32.GetWindowPID(hWnd);
+                        if(pid==0) return true;
+
+                        Process process = Process.GetProcessById(pid);
+                        if (process == null) return true;
+
+                        if (path==null)
+                        {
+                            path = "";
+                            return true;
+                        }
+                        else if( path == "")
+                        {
+                            ret = hWnd;
+                            return false;
+                        }
+
+                        try
+                        {
+                            IrssLog.Debug("FindProgram path: " + process.MainModule.FileName);
+                            if (path == Path.GetFileName(process.MainModule.FileName))
+                            {
+                                ret = hWnd;
+                                return false;
+                            } 
+                        }
+                        catch
+                        {
+                            IrssLog.Debug("FindProgram name: " + process.ProcessName);
+                            if (name == Path.GetFileName(process.ProcessName) )
+                            {
+                                ret = hWnd;
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
+                    , IntPtr.Zero
+                    );
+            }
+            catch
+            {
+                IrssLog.Debug("FindProgram Failed to retrieve task: " + path);
+            }
+
+            return ret;
+        }
+
+
+
         private static ProgramSettings ActiveProgram()
         {
             try
@@ -954,7 +1034,7 @@ namespace Translator
                     {
                         return progSettings;
                     }
-                    if (processName.Equals(Path.GetFileName(progSettings.Name), StringComparison.OrdinalIgnoreCase))
+                    if (processName.Equals(Path.GetFileNameWithoutExtension(progSettings.FileName), StringComparison.OrdinalIgnoreCase))
                     {
                         return progSettings;
                     }
@@ -1002,18 +1082,18 @@ namespace Translator
                         {
                             IrssLog.Error(ex);
                         }
-
-                        return;
                     }
                 }
             }
             else
             {
                 // Try active program button mappings ...
+                bool found = false;
                 foreach (ButtonMapping buttonMap in active.ButtonMappings)
                 {
                     if (buttonMap.KeyCode.Equals(button, StringComparison.Ordinal))
                     {
+                        found = true;
                         IrssLog.Debug("KeyCode {0} mapped in \"{1}\" mappings", button, active.Name);
                         try
                         {
@@ -1023,12 +1103,10 @@ namespace Translator
                         {
                             IrssLog.Error(ex);
                         }
-
-                        return;
                     }
                 }
 
-                if (!active.IgnoreSystemWide)
+                if (!found && !active.IgnoreSystemWide)
                 {
                     // Try system wide button mappings ...
                     foreach (ButtonMapping buttonMap in _config.SystemWideMappings)
@@ -1044,8 +1122,6 @@ namespace Translator
                             {
                                 IrssLog.Error(ex);
                             }
-
-                            return;
                         }
                     }
                 }
@@ -1291,10 +1367,7 @@ namespace Translator
                 else if (command.StartsWith(Common.CmdPrefixKeys, StringComparison.OrdinalIgnoreCase))
                 {
                     string keyCommand = command.Substring(Common.CmdPrefixKeys.Length);
-                    if (_inConfiguration)
-                        MessageBox.Show(keyCommand, Common.UITextKeys, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    else
-                        Common.ProcessKeyCommand(keyCommand);
+                    Common.ProcessKeyCommand(keyCommand);
                 }
                 else if (command.StartsWith(Common.CmdPrefixMouse, StringComparison.OrdinalIgnoreCase))
                 {
@@ -1312,6 +1385,16 @@ namespace Translator
 
                     ShowPopupMessage showPopupMessage = new ShowPopupMessage(commands[0], commands[1], int.Parse(commands[2]));
                     showPopupMessage.ShowDialog();
+                }
+                else if (command.StartsWith(Common.CmdPrefixBeep, StringComparison.OrdinalIgnoreCase))
+                {
+                    string[] commands = Common.SplitBeepCommand(command.Substring(Common.CmdPrefixBeep.Length));
+                    Audio.PlayBeep(int.Parse(commands[0]), int.Parse(commands[1]));
+                }
+                else if (command.StartsWith(Common.CmdPrefixSound, StringComparison.OrdinalIgnoreCase))
+                {
+                    string[] commands = Common.SplitSoundCommand(command.Substring(Common.CmdPrefixSound.Length));
+                    Audio.PlayFile(commands[0], false);
                 }
                 else if (command.StartsWith(Common.CmdPrefixHibernate, StringComparison.OrdinalIgnoreCase))
                 {
@@ -1384,31 +1467,15 @@ namespace Translator
                 }
                 else if (command.StartsWith(Common.CmdPrefixVirtualKB, StringComparison.OrdinalIgnoreCase))
                 {
-                    if (_inConfiguration)
-                    {
-                        MessageBox.Show("Cannot show Virtual Keyboard in configuration", Common.UITextVirtualKB,
-                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        VirtualKeyboard vk = new VirtualKeyboard();
-                        if (vk.ShowDialog() == DialogResult.OK)
-                            Keyboard.ProcessCommand(vk.TextOutput);
-                    }
+                    VirtualKeyboard vk = new VirtualKeyboard();
+                    if (vk.ShowDialog() == DialogResult.OK)
+                        Keyboard.ProcessCommand(vk.TextOutput);
                 }
                 else if (command.StartsWith(Common.CmdPrefixSmsKB, StringComparison.OrdinalIgnoreCase))
                 {
-                    if (_inConfiguration)
-                    {
-                        MessageBox.Show("Cannot show SMS Keyboard in configuration", Common.UITextSmsKB, MessageBoxButtons.OK,
-                                        MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        SmsKeyboard sms = new SmsKeyboard();
-                        if (sms.ShowDialog() == DialogResult.OK)
-                            Keyboard.ProcessCommand(sms.TextOutput);
-                    }
+                    SmsKeyboard sms = new SmsKeyboard();
+                    if (sms.ShowDialog() == DialogResult.OK)
+                        Keyboard.ProcessCommand(sms.TextOutput);
                 }
                 else if (command.StartsWith(Common.CmdPrefixShowTrayIcon, StringComparison.OrdinalIgnoreCase))
                 {
@@ -1420,17 +1487,25 @@ namespace Translator
                 }
                 else
                 {
-                    throw new ArgumentException(String.Format("Cannot process unrecognized command \"{0}\"", command),
-                                                "commandObj");
+                    if (_inConfiguration)
+                    {
+                        MessageBox.Show ( String.Format("Cannot process unrecognized command \"{0}\"", command)
+                                        , "Translator Test", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    IrssLog.Error("Cannot process unrecognized command \"{0}\"", command);
                 }
             }
             catch (Exception ex)
             {
-                if (!String.IsNullOrEmpty(Thread.CurrentThread.Name) &&
-                    Thread.CurrentThread.Name.Equals(ProcessCommandThreadName, StringComparison.OrdinalIgnoreCase))
-                    IrssLog.Error(ex);
-                else
-                    throw;
+                if (_inConfiguration && commandObj!=null)
+                {
+                    string command = commandObj as string;
+                    MessageBox.Show(String.Format("Error processing command \"{0}\"", command)
+                                    , "Translator Test", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                IrssLog.Error(ex);
             }
         }
 

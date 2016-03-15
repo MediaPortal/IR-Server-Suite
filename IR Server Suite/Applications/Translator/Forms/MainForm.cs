@@ -550,6 +550,7 @@ namespace Translator
                     if (progSettings.Name.Equals(selectedItem))
                     {
                         Program.Config.Programs.Remove(progSettings);
+                        Edited = true;
                         break;
                     }
                 }
@@ -864,9 +865,41 @@ namespace Translator
             mappingsGridView.CurrentCell = mappingsGridView.Rows[row].Cells[1];
             string cmd = mappingsGridView.Rows[row].Cells[1].Value.ToString();
             if (cmd == "") return;
-            splitContainerMain.Enabled = false;
-            Program.ProcessCommand(cmd, false);
-            splitContainerMain.Enabled = true;
+
+            // Switch to selected program task
+            IntPtr hWnd = IntPtr.Zero;
+            string programName = SystemWide;
+            if (_selectedProgram != 0)
+            {
+                hWnd = IntPtr.Zero;
+                programName = programsListView.Items[_selectedProgram].Text;
+                ProgramSettings progSettings = Program.Config.Programs.Find( (ProgramSettings prog) => { return prog.Name.Equals(programName); } );
+                if(progSettings!=null)
+                {
+                    hWnd = Program.FindProgram(progSettings.FileName);
+                }
+            }
+
+            IrssLog.Debug("Test command: \"{0}\" on \"{1}\"", cmd, programName);
+
+            bool foundTask = false;
+            IntPtr prevWnd = Win32.GetForegroundWindow();
+            if (hWnd != IntPtr.Zero)  foundTask = Win32.SetForegroundWindow(hWnd, false);
+
+            if (_selectedProgram == 0 || foundTask)
+            {
+                this.Hide();
+                splitContainerMain.Enabled = false;
+                Program.ProcessCommand(cmd, false);
+                splitContainerMain.Enabled = true;
+                this.Show();
+
+                if (foundTask) Win32.SetForegroundWindow(prevWnd, true);
+            }
+            else
+            { 
+                MessageBox.Show("Application is not opened: " + programName, "Test command", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
         }
 
         private void EditButtonMapping(object sender, EventArgs e)
@@ -1320,6 +1353,7 @@ namespace Translator
                 progSettings.IgnoreSystemWide = editProg.IgnoreSystemWide;
 
                 Program.UpdateNotifyMenu();
+                Edited = true;
                 return true;
             }
 

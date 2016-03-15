@@ -2012,7 +2012,7 @@ namespace IrssUtils
       IntPtr lParam);
 
     [DllImport("user32.dll")]
-    private static extern IntPtr GetForegroundWindow();
+    public static extern IntPtr GetForegroundWindow();
 
     [DllImport("user32.dll", EntryPoint = "ExitWindowsEx", CharSet = CharSet.Ansi)]
     private static extern int ExitWindowsEx(
