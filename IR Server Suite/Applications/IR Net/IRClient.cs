@@ -266,7 +266,7 @@ namespace IRNet
         }
 
         /// <summary>
-        /// Send an IR command which has been lean by the Lean() method (or other learning component from IRSS, like translator).
+        /// Send an IR command which has been learnt by the Learn() method (or other learning component from IRSS, like translator).
         /// The command to send is defined by a file-name.
         /// </summary>
         /// <param name="irName">Name of the IR file</param>
