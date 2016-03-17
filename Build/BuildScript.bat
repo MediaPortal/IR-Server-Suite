@@ -25,10 +25,6 @@ REM set logfile where the infos are written to, and clear that file
 set LOG=build_%BUILD_TYPE%.log
 echo. > %LOG%
 
-REM Download NuGet packages
-echo Restore nuget packages
-@"%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" RestorePackages.targets
-
 echo.
 echo -= IR Server Suite =-
 echo -= build mode: %BUILD_TYPE% =-
@@ -48,6 +44,10 @@ echo Writing GIT revision assemblies...
 echo.
 echo Copying BuildReport resources...
 xcopy /I /Y .\BuildReport\_BuildReport_Files .\_BuildReport_Files >> %log%
+
+REM Download NuGet packages
+echo Restore nuget packages
+@"%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" RestorePackages.targets
 
 echo.
 echo Building IR Server Suite...
