@@ -1,4 +1,4 @@
-#region Copyright (C) 2005-2015 Team MediaPortal
+﻿#region Copyright (C) 2005-2015 Team MediaPortal
 
 // Copyright (C) 2005-2015 Team MediaPortal
 // http://www.team-mediaportal.com
@@ -22,11 +22,9 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Net.Sockets;
 using IrssComms;
 using IrssUtils;
 using System.Net;
@@ -145,14 +143,14 @@ namespace IRNet
             ClientMessageSink sink = ReceivedMessage;
 
             irss = new Client(endPoint, sink);
-            if(irss==null)
+            if (irss == null)
             {
                 LogErr("Failed to open connection to " + host);
                 return false;
             }
             irss.CommsFailureCallback = CommsFailure;
-            irss.ConnectCallback      = SocketConnected;
-            irss.DisconnectCallback   = SocketDisconnected;
+            irss.ConnectCallback = SocketConnected;
+            irss.DisconnectCallback = SocketDisconnected;
 
             bool ok = irss.Start();
 
@@ -183,7 +181,7 @@ namespace IRNet
 
             try
             {
-                if (!Connected || irss==null)
+                if (!Connected || irss == null)
                 {
                     LogWarn("Not connected");
                     return true;
@@ -197,7 +195,7 @@ namespace IRNet
 
                 irss.Dispose();
                 irss = null;
- 
+
             }
             catch (Exception ex)
             {
@@ -274,7 +272,7 @@ namespace IRNet
         /// <param name="irName">Name of the IR file</param>
         /// <param name="port">blaster-port on the tranceiver: must be "Both" (default), "Port_1" (or "1"), "Port_2" (or "2")</param>
         /// <returns>true if the blast command is successfully sent to the IRSS server</returns>
-        public bool Blast(string irName, string port="Both")
+        public bool Blast(string irName, string port = "Both")
         {
 
             if (irss == null)
@@ -296,11 +294,11 @@ namespace IRNet
             }
 
             // make filename
-            if (irName == null || irName == "")   return false;
+            if (irName == null || irName == "") return false;
             if (!irName.ToUpper().EndsWith(Common.FileExtensionIR)) irName += Common.FileExtensionIR;
 
             // Find port
-            if( ! ServerInfo.Ports.Contains(port) )
+            if (!ServerInfo.Ports.Contains(port))
             {
                 LogErr("Invalid port: supported Blast-ports for this server are: " + String.Join(" ", ServerInfo.Ports));
                 return false;
@@ -420,7 +418,7 @@ namespace IRNet
             catch (Exception ex)
             {
                 LogErr(ex.Message);
-                
+
                 args.Key = "Error";
                 args.Data = "ex.Message";
 
@@ -457,7 +455,7 @@ namespace IRNet
             Exception ex = obj as Exception;
 
             if (ex != null)
-                LogInfo( String.Format("Communications failure: {0}", ex.Message) );
+                LogInfo(String.Format("Communications failure: {0}", ex.Message));
             else
                 LogErr("Communications failure");
 

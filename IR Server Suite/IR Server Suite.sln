@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{0C209E91-5AD5-4662-AD0E-976A940D4806}"
 EndProject
@@ -149,7 +149,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ira Transceiver", "IR Serve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tira Transceiver", "IR Server Plugins\Tira Transceiver\Tira Transceiver.csproj", "{6137C390-DDB0-44B0-8ED5-51B45C0D4404}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Net", "Applications\IR Net\IR Net.csproj", "{5035F624-27FB-4106-BD9A-01CDFE09D96D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IR Net", "Applications\IR Net\IR Net.csproj", "{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -893,16 +893,18 @@ Global
 		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{6137C390-DDB0-44B0-8ED5-51B45C0D4404}.Release|x86.ActiveCfg = Release|x86
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D}.Release|x86.ActiveCfg = Release|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Debug|x86.Build.0 = Debug|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Release|x86.ActiveCfg = Release|Any CPU
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -974,7 +976,7 @@ Global
 		{49CF376E-811C-4EB4-817F-A39C9529B608} = {6AA1F598-03AD-427F-AA58-A0D967D42D4B}
 		{0E045E97-EEB2-461C-A416-CFC8E452E044} = {6E178F04-C237-4292-A964-4D3C935EB035}
 		{6137C390-DDB0-44B0-8ED5-51B45C0D4404} = {6E178F04-C237-4292-A964-4D3C935EB035}
-		{5035F624-27FB-4106-BD9A-01CDFE09D96D} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
+		{BBE10551-1F2B-49EB-B44B-9AE0EBEEDB3D} = {0C209E91-5AD5-4662-AD0E-976A940D4806}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		VisualSVNWorkingCopyRoot = ..
