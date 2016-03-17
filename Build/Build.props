@@ -5,7 +5,7 @@
   -->
   <PropertyGroup>
 
-    <ProjectRoot Condition="$(ProjectRoot) == ''">$(MSBuildThisFileDirectory)\..</ProjectRoot>
+    <ProjectRoot Condition="$(ProjectRoot) == ''">$(MSBuildThisFileDirectory)..</ProjectRoot>
     <NuGetExePath Condition="$(NuGetExePath) == ''">$(MSBuildThisFileDirectory)NuGet.exe</NuGetExePath>
     <MSBuildCommunityTasksPath Condition="$(MSBuildCommunityTasksPath) == ''">$(ProjectRoot)\Packages\MSBuildTasks.1.4.0.61\tools</MSBuildCommunityTasksPath>
 
