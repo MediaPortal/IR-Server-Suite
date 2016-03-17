@@ -5,22 +5,22 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("IR Power Shell")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("IR Net")]
+[assembly: AssemblyDescription("IRSS DLL for scripting, integration and automations")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("IR Power Shell")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyProduct("IRSS")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(true)]
+[assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("bf619ea8-a402-453f-a8e9-14b2e5546fcf")]
+[assembly: Guid("bbe10551-1f2b-49eb-b44b-9ae0ebeedb3d")]
 
 // Version information for an assembly consists of the following four values:
 //
