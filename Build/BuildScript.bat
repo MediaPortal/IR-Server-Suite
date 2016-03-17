@@ -25,6 +25,9 @@ REM set logfile where the infos are written to, and clear that file
 set LOG=build_%BUILD_TYPE%.log
 echo. > %LOG%
 
+REM Download NuGet packages
+echo Restore nuget packages
+@"%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" RestorePackages.targets
 
 echo.
 echo -= IR Server Suite =-
@@ -53,7 +56,7 @@ set xml=Build_Report_%BUILD_TYPE%_IRServer.xml
 set html=Build_Report_%BUILD_TYPE%_IRServer.html
 set logger=/l:XmlFileLogger,"BuildReport\MSBuild.ExtensionPack.Loggers.dll";logfile=%xml%
 
-"%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" %logger% /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86;AllowUnsafeBlocks=true "..\IR Server Suite\IR Server Suite.sln"
+"%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" %logger% /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform="Mixed Platforms";AllowUnsafeBlocks=true "..\IR Server Suite\IR Server Suite.sln"
 BuildReport\msxsl %xml% _BuildReport_Files\BuildReport.xslt -o %html%
 
 if not %2!==MPplugins! goto NoMPplugins
