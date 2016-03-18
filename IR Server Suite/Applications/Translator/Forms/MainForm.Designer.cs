@@ -73,12 +73,14 @@ namespace Translator
             this.createShortcutForMacroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageEvents = new System.Windows.Forms.TabPage();
             this.splitContainerEvents = new System.Windows.Forms.SplitContainer();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.labelHeaderHistoryEvents = new System.Windows.Forms.Label();
             this.listBoxHistoryEvents = new System.Windows.Forms.ListBox();
             this.eventsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.clearAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.listBoxTranslatorEvents = new System.Windows.Forms.ListBox();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.labelHeaderTranslatorEvents = new System.Windows.Forms.Label();
+            this.listBoxTranslatorEvents = new System.Windows.Forms.ListBox();
             this.mappingsToolStrip = new System.Windows.Forms.ToolStrip();
             this.newMappingToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.testMappingToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -108,7 +110,15 @@ namespace Translator
             this.splitContainerEvents.Panel1.SuspendLayout();
             this.splitContainerEvents.Panel2.SuspendLayout();
             this.splitContainerEvents.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.eventsContextMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
             this.mappingsToolStrip.SuspendLayout();
             this.programsPanel.SuspendLayout();
             this.programsToolStrip.SuspendLayout();
@@ -225,7 +235,7 @@ namespace Translator
             this.programsListView.Name = "programsListView";
             this.programsListView.ShowGroups = false;
             this.programsListView.ShowItemToolTips = true;
-            this.programsListView.Size = new System.Drawing.Size(400, 75);
+            this.programsListView.Size = new System.Drawing.Size(395, 75);
             this.programsListView.TabIndex = 0;
             this.programsListView.TileSize = new System.Drawing.Size(128, 48);
             this.toolTip.SetToolTip(this.programsListView, "Choose a Program to modify mappings");
@@ -236,7 +246,7 @@ namespace Translator
             // labelConnect
             // 
             this.labelConnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelConnect.Location = new System.Drawing.Point(427, 0);
+            this.labelConnect.Location = new System.Drawing.Point(422, 0);
             this.labelConnect.Name = "labelConnect";
             this.labelConnect.Size = new System.Drawing.Size(23, 23);
             this.labelConnect.TabIndex = 5;
@@ -256,7 +266,7 @@ namespace Translator
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
             this.menuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.menuStrip.Size = new System.Drawing.Size(446, 24);
+            this.menuStrip.Size = new System.Drawing.Size(441, 24);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -420,61 +430,80 @@ namespace Translator
             this.tabPageEvents.Location = new System.Drawing.Point(4, 22);
             this.tabPageEvents.Name = "tabPageEvents";
             this.tabPageEvents.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabPageEvents.Size = new System.Drawing.Size(275, 410);
+            this.tabPageEvents.Size = new System.Drawing.Size(279, 410);
             this.tabPageEvents.TabIndex = 1;
             this.tabPageEvents.Text = "Events";
             this.tabPageEvents.UseVisualStyleBackColor = true;
             // 
             // splitContainerEvents
             // 
-            this.splitContainerEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainerEvents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainerEvents.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainerEvents.IsSplitterFixed = true;
             this.splitContainerEvents.Location = new System.Drawing.Point(3, 3);
+            this.splitContainerEvents.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.splitContainerEvents.Name = "splitContainerEvents";
             this.splitContainerEvents.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainerEvents.Panel1
             // 
-            this.splitContainerEvents.Panel1.Controls.Add(this.labelHeaderHistoryEvents);
-            this.splitContainerEvents.Panel1.Controls.Add(this.listBoxHistoryEvents);
+            this.splitContainerEvents.Panel1.Controls.Add(this.splitContainer1);
             this.splitContainerEvents.Panel1MinSize = 100;
             // 
             // splitContainerEvents.Panel2
             // 
-            this.splitContainerEvents.Panel2.Controls.Add(this.listBoxTranslatorEvents);
-            this.splitContainerEvents.Panel2.Controls.Add(this.labelHeaderTranslatorEvents);
+            this.splitContainerEvents.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainerEvents.Panel2MinSize = 100;
-            this.splitContainerEvents.Size = new System.Drawing.Size(268, 404);
-            this.splitContainerEvents.SplitterDistance = 295;
+            this.splitContainerEvents.Size = new System.Drawing.Size(273, 404);
+            this.splitContainerEvents.SplitterDistance = 265;
             this.splitContainerEvents.TabIndex = 0;
             this.splitContainerEvents.TabStop = false;
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer1.IsSplitterFixed = true;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.labelHeaderHistoryEvents);
+            this.splitContainer1.Panel1MinSize = 18;
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.listBoxHistoryEvents);
+            this.splitContainer1.Size = new System.Drawing.Size(273, 265);
+            this.splitContainer1.SplitterDistance = 18;
+            this.splitContainer1.SplitterWidth = 3;
+            this.splitContainer1.TabIndex = 0;
+            // 
             // labelHeaderHistoryEvents
             // 
-            this.labelHeaderHistoryEvents.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.labelHeaderHistoryEvents.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.labelHeaderHistoryEvents.Dock = System.Windows.Forms.DockStyle.Top;
             this.labelHeaderHistoryEvents.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelHeaderHistoryEvents.Location = new System.Drawing.Point(1, 3);
+            this.labelHeaderHistoryEvents.Location = new System.Drawing.Point(0, 0);
             this.labelHeaderHistoryEvents.Name = "labelHeaderHistoryEvents";
-            this.labelHeaderHistoryEvents.Size = new System.Drawing.Size(262, 18);
+            this.labelHeaderHistoryEvents.Size = new System.Drawing.Size(273, 18);
             this.labelHeaderHistoryEvents.TabIndex = 0;
             this.labelHeaderHistoryEvents.Text = "Remote Events";
             this.labelHeaderHistoryEvents.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // listBoxHistoryEvents
             // 
-            this.listBoxHistoryEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBoxHistoryEvents.ContextMenuStrip = this.eventsContextMenuStrip;
+            this.listBoxHistoryEvents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBoxHistoryEvents.Enabled = false;
             this.listBoxHistoryEvents.FormattingEnabled = true;
-            this.listBoxHistoryEvents.Location = new System.Drawing.Point(1, 24);
+            this.listBoxHistoryEvents.Location = new System.Drawing.Point(0, 0);
+            this.listBoxHistoryEvents.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.listBoxHistoryEvents.Name = "listBoxHistoryEvents";
-            this.listBoxHistoryEvents.Size = new System.Drawing.Size(263, 238);
+            this.listBoxHistoryEvents.Size = new System.Drawing.Size(273, 244);
             this.listBoxHistoryEvents.TabIndex = 1;
             this.listBoxHistoryEvents.SelectedIndexChanged += new System.EventHandler(this.listBoxEvents_SelectedIndexChanged);
             this.listBoxHistoryEvents.DoubleClick += new System.EventHandler(this.listBoxEvents_DoubleClick);
@@ -497,34 +526,54 @@ namespace Translator
             this.clearAllToolStripMenuItem.Text = "&Clear all";
             this.clearAllToolStripMenuItem.Click += new System.EventHandler(this.listBoxEventsClearAllToolStripMenuItem_Click);
             // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer2.IsSplitterFixed = true;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.labelHeaderTranslatorEvents);
+            this.splitContainer2.Panel1.Padding = new System.Windows.Forms.Padding(0, 2, 0, 1);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.listBoxTranslatorEvents);
+            this.splitContainer2.Size = new System.Drawing.Size(273, 135);
+            this.splitContainer2.SplitterDistance = 25;
+            this.splitContainer2.SplitterWidth = 3;
+            this.splitContainer2.TabIndex = 0;
+            // 
+            // labelHeaderTranslatorEvents
+            // 
+            this.labelHeaderTranslatorEvents.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.labelHeaderTranslatorEvents.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.labelHeaderTranslatorEvents.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelHeaderTranslatorEvents.Location = new System.Drawing.Point(0, 6);
+            this.labelHeaderTranslatorEvents.Name = "labelHeaderTranslatorEvents";
+            this.labelHeaderTranslatorEvents.Size = new System.Drawing.Size(273, 18);
+            this.labelHeaderTranslatorEvents.TabIndex = 0;
+            this.labelHeaderTranslatorEvents.Text = "Translator Events";
+            this.labelHeaderTranslatorEvents.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // listBoxTranslatorEvents
             // 
-            this.listBoxTranslatorEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBoxTranslatorEvents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBoxTranslatorEvents.Enabled = false;
             this.listBoxTranslatorEvents.FormattingEnabled = true;
-            this.listBoxTranslatorEvents.Location = new System.Drawing.Point(0, 21);
+            this.listBoxTranslatorEvents.Location = new System.Drawing.Point(0, 0);
             this.listBoxTranslatorEvents.Name = "listBoxTranslatorEvents";
-            this.listBoxTranslatorEvents.Size = new System.Drawing.Size(263, 69);
+            this.listBoxTranslatorEvents.Size = new System.Drawing.Size(273, 107);
             this.listBoxTranslatorEvents.TabIndex = 1;
             this.listBoxTranslatorEvents.SelectedIndexChanged += new System.EventHandler(this.listBoxEvents_SelectedIndexChanged);
             this.listBoxTranslatorEvents.DoubleClick += new System.EventHandler(this.listBoxEvents_DoubleClick);
             this.listBoxTranslatorEvents.Enter += new System.EventHandler(this.listBoxEvents_Enter);
             this.listBoxTranslatorEvents.Leave += new System.EventHandler(this.listBoxEvents_Leave);
-            // 
-            // labelHeaderTranslatorEvents
-            // 
-            this.labelHeaderTranslatorEvents.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelHeaderTranslatorEvents.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.labelHeaderTranslatorEvents.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelHeaderTranslatorEvents.Location = new System.Drawing.Point(0, 0);
-            this.labelHeaderTranslatorEvents.Name = "labelHeaderTranslatorEvents";
-            this.labelHeaderTranslatorEvents.Size = new System.Drawing.Size(264, 18);
-            this.labelHeaderTranslatorEvents.TabIndex = 0;
-            this.labelHeaderTranslatorEvents.Text = "Translator Events";
-            this.labelHeaderTranslatorEvents.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // mappingsToolStrip
             // 
@@ -544,7 +593,7 @@ namespace Translator
             this.SaveToolStripButton});
             this.mappingsToolStrip.Location = new System.Drawing.Point(4, 404);
             this.mappingsToolStrip.Name = "mappingsToolStrip";
-            this.mappingsToolStrip.Size = new System.Drawing.Size(446, 25);
+            this.mappingsToolStrip.Size = new System.Drawing.Size(441, 25);
             this.mappingsToolStrip.TabIndex = 4;
             this.mappingsToolStrip.Text = "Button Mappings";
             // 
@@ -613,7 +662,7 @@ namespace Translator
             this.programsPanel.Controls.Add(this.programsToolStrip);
             this.programsPanel.Location = new System.Drawing.Point(4, 28);
             this.programsPanel.Name = "programsPanel";
-            this.programsPanel.Size = new System.Drawing.Size(447, 77);
+            this.programsPanel.Size = new System.Drawing.Size(442, 77);
             this.programsPanel.TabIndex = 2;
             // 
             // programsToolStrip
@@ -627,7 +676,7 @@ namespace Translator
             this.editProgramToolStripButton,
             this.removeProgramToolStripButton});
             this.programsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
-            this.programsToolStrip.Location = new System.Drawing.Point(400, 0);
+            this.programsToolStrip.Location = new System.Drawing.Point(395, 0);
             this.programsToolStrip.Name = "programsToolStrip";
             this.programsToolStrip.Size = new System.Drawing.Size(45, 75);
             this.programsToolStrip.TabIndex = 1;
@@ -681,7 +730,7 @@ namespace Translator
             this.mappingsGridView.Name = "mappingsGridView";
             this.mappingsGridView.RowHeadersVisible = false;
             this.mappingsGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.mappingsGridView.Size = new System.Drawing.Size(446, 294);
+            this.mappingsGridView.Size = new System.Drawing.Size(441, 294);
             this.mappingsGridView.StandardTab = true;
             this.mappingsGridView.TabIndex = 3;
             this.mappingsGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.mappingsGridView_CellEndEdit);
@@ -721,7 +770,7 @@ namespace Translator
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(283, 436);
+            this.tabControl.Size = new System.Drawing.Size(287, 436);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             this.tabControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl_KeyDown);
@@ -731,7 +780,7 @@ namespace Translator
             this.tabPageCommands.Location = new System.Drawing.Point(4, 22);
             this.tabPageCommands.Name = "tabPageCommands";
             this.tabPageCommands.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabPageCommands.Size = new System.Drawing.Size(204, 410);
+            this.tabPageCommands.Size = new System.Drawing.Size(206, 410);
             this.tabPageCommands.TabIndex = 2;
             this.tabPageCommands.Text = "Commands";
             this.tabPageCommands.UseVisualStyleBackColor = true;
@@ -759,7 +808,7 @@ namespace Translator
             // 
             this.splitContainerMain.Panel2.Controls.Add(this.tabControl);
             this.splitContainerMain.Size = new System.Drawing.Size(765, 436);
-            this.splitContainerMain.SplitterDistance = 478;
+            this.splitContainerMain.SplitterDistance = 474;
             this.splitContainerMain.TabIndex = 0;
             this.splitContainerMain.TabStop = false;
             // 
@@ -770,7 +819,7 @@ namespace Translator
             this.tableLayoutButtons.ColumnCount = 1;
             this.tableLayoutButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutButtons.Controls.Add(this.buttonAddCommand, 0, 2);
-            this.tableLayoutButtons.Location = new System.Drawing.Point(451, 22);
+            this.tableLayoutButtons.Location = new System.Drawing.Point(446, 22);
             this.tableLayoutButtons.Name = "tableLayoutButtons";
             this.tableLayoutButtons.RowCount = 5;
             this.tableLayoutButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
@@ -807,7 +856,7 @@ namespace Translator
             this.Controls.Add(this.splitContainerMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
-            this.MinimumSize = new System.Drawing.Size(552, 478);
+            this.MinimumSize = new System.Drawing.Size(551, 475);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Translator";
@@ -822,7 +871,15 @@ namespace Translator
             this.splitContainerEvents.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerEvents)).EndInit();
             this.splitContainerEvents.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.eventsContextMenuStrip.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
             this.mappingsToolStrip.ResumeLayout(false);
             this.mappingsToolStrip.PerformLayout();
             this.programsPanel.ResumeLayout(false);
@@ -910,6 +967,8 @@ namespace Translator
     private System.Windows.Forms.ToolStripButton testMappingToolStripButton;
     private System.Windows.Forms.ToolStripMenuItem testMappingToolStripMenuItem;
     private System.Windows.Forms.Label labelConnect;
-  }
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+    }
 }
 
