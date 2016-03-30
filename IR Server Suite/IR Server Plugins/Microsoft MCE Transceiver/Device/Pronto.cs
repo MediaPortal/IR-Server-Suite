@@ -198,7 +198,10 @@ namespace IRServer.Plugin
 
         if (index == start + sequence)
         {
-          switch (repeatCount)
+          done = true;
+          break;
+
+          /*switch (repeatCount)
           {
             case 0:
               if (repeatSeq != 0)
@@ -222,7 +225,7 @@ namespace IRServer.Plugin
               pulse = true;
               repeatCount++;
               break;
-          }
+          }*/
         }
       }
 
