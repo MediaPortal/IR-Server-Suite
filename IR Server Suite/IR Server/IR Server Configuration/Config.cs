@@ -120,8 +120,10 @@ namespace IRServer.Configuration
           {
             toolStripButtonApplication.Image = IrssUtils.Properties.Resources.Start;
             toolStripButtonApplication.Enabled = true;
+            toolStripButtonApplication.ToolTipText = "Start IR Server";
             toolStripButtonService.Image = IrssUtils.Properties.Resources.Start;
             toolStripButtonService.Enabled = Shared.serviceInstalled;
+            toolStripButtonService.ToolTipText = "Start IR Server";
             break;
           }
         case IrsStatus.RunningApplication:
@@ -129,6 +131,7 @@ namespace IRServer.Configuration
             toolStripButtonApplication.Image = IrssUtils.Properties.Resources.Stop;
             toolStripButtonApplication.Enabled = true;
             toolStripButtonService.Image = IrssUtils.Properties.Resources.Start;
+            toolStripButtonApplication.ToolTipText = "Stop IR Server";
             toolStripButtonService.Enabled = false;
             break;
           }
@@ -138,6 +141,7 @@ namespace IRServer.Configuration
             toolStripButtonApplication.Enabled = false;
             toolStripButtonService.Image = IrssUtils.Properties.Resources.Stop;
             toolStripButtonService.Enabled = true;
+            toolStripButtonService.ToolTipText = "Stop IR Server";
             break;
           }
       }

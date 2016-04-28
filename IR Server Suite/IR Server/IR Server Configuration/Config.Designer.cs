@@ -74,9 +74,9 @@ namespace IRServer.Configuration
       // 
       // groupBoxTransceiver
       // 
-      this.groupBoxTransceiver.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBoxTransceiver.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxTransceiver.Controls.Add(this.gridPlugins);
       this.groupBoxTransceiver.Location = new System.Drawing.Point(8, 32);
       this.groupBoxTransceiver.Name = "groupBoxTransceiver";
@@ -87,9 +87,9 @@ namespace IRServer.Configuration
       // 
       // gridPlugins
       // 
-      this.gridPlugins.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
+      this.gridPlugins.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.gridPlugins.BackColor = System.Drawing.SystemColors.Window;
       this.gridPlugins.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.gridPlugins.Location = new System.Drawing.Point(8, 16);
@@ -165,8 +165,8 @@ namespace IRServer.Configuration
       this.toolStripButtonService.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonService.Name = "toolStripButtonService";
       this.toolStripButtonService.Size = new System.Drawing.Size(23, 22);
-      this.toolStripButtonService.Text = "Stop";
-      this.toolStripButtonService.ToolTipText = "Stop the IR Server";
+      this.toolStripButtonService.Text = "Stop/Run the IR Server";
+      this.toolStripButtonService.ToolTipText = "Stop/Run the IR Server";
       this.toolStripButtonService.Click += new System.EventHandler(this.toolStripButtonService_Click);
       // 
       // toolStripServiceButton
@@ -194,7 +194,8 @@ namespace IRServer.Configuration
       this.toolStripButtonApplication.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonApplication.Name = "toolStripButtonApplication";
       this.toolStripButtonApplication.Size = new System.Drawing.Size(23, 22);
-      this.toolStripButtonApplication.Text = "Stop";
+      this.toolStripButtonApplication.Text = "Stop/Run the IR Server";
+      this.toolStripButtonApplication.ToolTipText = "Stop/Run the IR Server";
       this.toolStripButtonApplication.Click += new System.EventHandler(this.toolStripButtonApplication_Click);
       // 
       // Config
@@ -212,8 +213,8 @@ namespace IRServer.Configuration
       this.Name = "Config";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "IR Server Configuration";
-      this.Load += new System.EventHandler(this.Config_Load);
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Config_FormClosing);
+      this.Load += new System.EventHandler(this.Config_Load);
       this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.Config_HelpRequested);
       this.groupBoxTransceiver.ResumeLayout(false);
       this.toolStrip.ResumeLayout(false);
