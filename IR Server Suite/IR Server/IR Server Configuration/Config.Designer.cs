@@ -165,8 +165,7 @@ namespace IRServer.Configuration
       this.toolStripButtonService.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonService.Name = "toolStripButtonService";
       this.toolStripButtonService.Size = new System.Drawing.Size(23, 22);
-      this.toolStripButtonService.Text = "Stop/Run the IR Server";
-      this.toolStripButtonService.ToolTipText = "Stop/Run the IR Server";
+      this.toolStripButtonService.ToolTipText = "Start IR Server";
       this.toolStripButtonService.Click += new System.EventHandler(this.toolStripButtonService_Click);
       // 
       // toolStripServiceButton
@@ -194,8 +193,7 @@ namespace IRServer.Configuration
       this.toolStripButtonApplication.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonApplication.Name = "toolStripButtonApplication";
       this.toolStripButtonApplication.Size = new System.Drawing.Size(23, 22);
-      this.toolStripButtonApplication.Text = "Stop/Run the IR Server";
-      this.toolStripButtonApplication.ToolTipText = "Stop/Run the IR Server";
+      this.toolStripButtonApplication.ToolTipText = "Start IR Server";
       this.toolStripButtonApplication.Click += new System.EventHandler(this.toolStripButtonApplication_Click);
       // 
       // Config
